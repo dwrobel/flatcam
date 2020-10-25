@@ -1,4 +1,3 @@
-from camlib import Geometry
 from tclCommands.TclCommand import *
 
 
@@ -51,7 +50,7 @@ class TclCommandAddPolygon(TclCommandSignaled):
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, Geometry):
+        if obj.kind != 'geometry':
             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         if len(unnamed_args) % 2 != 0:
@@ -61,4 +60,3 @@ class TclCommandAddPolygon(TclCommandSignaled):
         points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(nr_points)]
 
         obj.add_polygon(points)
-        obj.plot()

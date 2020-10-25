@@ -22,10 +22,10 @@ from rtree import index as rtindex
 from lxml import etree as ET
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
+from shapely.geometry import Polygon, Point, LinearRing
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, substring
+from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -44,7 +44,7 @@ import rasterio
 from rasterio.features import shapes
 import ezdxf
 
-from Common import GracefulException as grace
+from appCommon.Common import GracefulException as grace
 
 # Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
@@ -225,13 +225,14 @@ class ApertureMacro:
         Pads the ``mods`` list with zeros resulting in an
         list of length n.
 
-        :param n: Length of the resulting list.
-        :type n: int
-        :param mods: List to be padded.
-        :type mods: list
-        :return: Zero-padded list.
-        :rtype: list
+        :param n:       Length of the resulting list.
+        :type n:        int
+        :param mods:    List to be padded.
+        :type mods:     list
+        :return:        Zero-padded list.
+        :rtype:         list
         """
+
         x = [0.0] * n
         na = len(mods)
         x[0:na] = mods
@@ -244,9 +245,12 @@ class ApertureMacro:
         :param mods: (Exposure 0/1, Diameter >=0, X-coord, Y-coord)
         :return:
         """
-
-        pol, dia, x, y = ApertureMacro.default2zero(4, mods)
-
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        dia = val[1]
+        x = val[2]
+        y = val[3]
+        # pol, dia, x, y = ApertureMacro.default2zero(4, mods)
         return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
@@ -257,7 +261,15 @@ class ApertureMacro:
             rotation angle around origin in degrees)
         :return:
         """
-        pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
+        val = ApertureMacro.default2zero(7, mods)
+        pol = val[0]
+        width = val[1]
+        xs = val[2]
+        ys = val[3]
+        xe = val[4]
+        ye = val[5]
+        angle = val[6]
+        # pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
 
         line = LineString([(xs, ys), (xe, ye)])
         box = line.buffer(width / 2, cap_style=2)
@@ -274,7 +286,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(4, mods)
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -290,7 +309,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x, y, x + width, y + height)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -330,7 +356,15 @@ class ApertureMacro:
         :return:
         """
 
-        pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        # pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        nverts = val[1]
+        x = val[2]
+        y = val[3]
+        dia = val[4]
+        angle = val[5]
+
         points = [(0, 0)] * nverts
 
         for i in range(nverts):
@@ -354,7 +388,17 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        # x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        val = ApertureMacro.default2zero(9, mods)
+        x = val[0]
+        y = val[1]
+        dia = val[2]
+        thickness = val[3]
+        gap = val[4]
+        nrings = val[5]
+        cross_th = val[6]
+        cross_len = val[7]
+        angle = val[8]
 
         r = dia / 2 - thickness / 2
         result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
@@ -369,13 +413,13 @@ class ApertureMacro:
             if r <= 0:
                 break
             ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
-            result = cascaded_union([result, ring])
+            result = unary_union([result, ring])
             i += 1
 
         # ## Crosshair
         hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th / 2.0, cap_style=2)
         ver = LineString([(x, y - cross_len), (x, y + cross_len)]).buffer(cross_th / 2.0, cap_style=2)
-        result = cascaded_union([result, hor, ver])
+        result = unary_union([result, hor, ver])
 
         return {"pol": 1, "geometry": result}
 
@@ -390,7 +434,14 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        # x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        x = val[0]
+        y = val[1]
+        dout = val[2]
+        din = val[3]
+        t = val[4]
+        angle = val[5]
 
         ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
         hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)
@@ -478,9 +529,6 @@ class Geometry(object):
         # Final geometry: MultiLineString or list (of LineString or Points)
         self.follow_geometry = None
 
-        # Attributes to be included in serialization
-        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry']
-
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
 
@@ -503,6 +551,9 @@ class Geometry(object):
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
+        # Attributes to be included in serialization
+        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry', 'tools']
+
     def plot_temp_shapes(self, element, color='red'):
 
         try:
@@ -520,69 +571,130 @@ class Geometry(object):
         for i, g in enumerate(self.flat_geometry):
             self.index.insert(i, g)
 
-    def add_circle(self, origin, radius):
+    def add_circle(self, origin, radius, tool=None):
         """
         Adds a circle to the object.
 
-        :param origin: Center of the circle.
-        :param radius: Radius of the circle.
+        :param origin:  Center of the circle.
+        :param radius:  Radius of the circle.
+        :param tool:    A tool in the Tools dictionary attribute of the object
         :return: None
         """
 
         if self.solid_geometry is None:
             self.solid_geometry = []
 
-        if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Point(origin).buffer(radius, int(self.geo_steps_per_circle)))
-            return
+        new_circle = Point(origin).buffer(radius, int(self.geo_steps_per_circle))
+        if not new_circle.is_valid:
+            return "fail"
 
+        # add to the solid_geometry
         try:
-            self.solid_geometry = self.solid_geometry.union(
-                Point(origin).buffer(radius, int(self.geo_steps_per_circle))
-            )
-        except Exception as e:
-            log.error("Failed to run union on polygons. %s" % str(e))
-            return
+            self.solid_geometry.append(new_circle)
+        except TypeError:
+            try:
+                self.solid_geometry = self.solid_geometry.union(new_circle)
+            except Exception as e:
+                log.error("Failed to run union on polygons. %s" % str(e))
+                return "fail"
 
-    def add_polygon(self, points):
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_circle)
+
+        # calculate bounds
+        try:
+            xmin, ymin, xmax, ymax = self.bounds()
+
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
+        except Exception as e:
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
+
+    def add_polygon(self, points, tool=None):
         """
         Adds a polygon to the object (by union)
 
-        :param points: The vertices of the polygon.
-        :return: None
+        :param points:  The vertices of the polygon.
+        :param tool:    A tool in the Tools dictionary attribute of the object
+        :return:        None
         """
         if self.solid_geometry is None:
             self.solid_geometry = []
 
+        new_poly = Polygon(points)
+        if not new_poly.is_valid:
+            return "fail"
+
+        # add to the solid_geometry
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Polygon(points))
-            return
+            self.solid_geometry.append(new_poly)
+        else:
+            try:
+                self.solid_geometry = self.solid_geometry.union(Polygon(points))
+            except Exception as e:
+                log.error("Failed to run union on polygons. %s" % str(e))
+                return "fail"
 
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_poly)
+
+        # calculate bounds
         try:
-            self.solid_geometry = self.solid_geometry.union(Polygon(points))
-        except Exception as e:
-            log.error("Failed to run union on polygons. %s" % str(e))
-            return
+            xmin, ymin, xmax, ymax = self.bounds()
 
-    def add_polyline(self, points):
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
+        except Exception as e:
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
+
+    def add_polyline(self, points, tool=None):
         """
         Adds a polyline to the object (by union)
 
-        :param points: The vertices of the polyline.
-        :return: None
+        :param points:  The vertices of the polyline.
+        :param tool:    A tool in the Tools dictionary attribute of the object
+        :return:        None
         """
         if self.solid_geometry is None:
             self.solid_geometry = []
 
-        if type(self.solid_geometry) is list:
-            self.solid_geometry.append(LineString(points))
-            return
+        new_line = LineString(points)
+        if not new_line.is_valid:
+            return "fail"
 
+        # add to the solid_geometry
+        if type(self.solid_geometry) is list:
+            self.solid_geometry.append(new_line)
+        else:
+            try:
+                self.solid_geometry = self.solid_geometry.union(new_line)
+            except Exception as e:
+                log.error("Failed to run union on polylines. %s" % str(e))
+                return "fail"
+
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_line)
+
+        # calculate bounds
         try:
-            self.solid_geometry = self.solid_geometry.union(LineString(points))
+            xmin, ymin, xmax, ymax = self.bounds()
+
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
         except Exception as e:
-            log.error("Failed to run union on polylines. %s" % str(e))
-            return
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
 
     def is_empty(self):
         if isinstance(self.solid_geometry, BaseGeometry) or isinstance(self.solid_geometry, Polygon) or \
@@ -592,8 +704,7 @@ class Geometry(object):
         if isinstance(self.solid_geometry, list):
             return len(self.solid_geometry) == 0
 
-        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                             _("self.solid_geometry is neither BaseGeometry or list."))
+        self.app.inform.emit('[ERROR_NOTCL] %s' % _("self.solid_geometry is neither BaseGeometry or list."))
         return
 
     def subtract_polygon(self, points):
@@ -610,15 +721,20 @@ class Geometry(object):
         # pathonly should be allways True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
-        polygon = Polygon(points)
-        toolgeo = cascaded_union(polygon)
+
+        if not isinstance(points, Polygon):
+            polygon = Polygon(points)
+        else:
+            polygon = points
+        toolgeo = unary_union(polygon)
         diffs = []
         for target in flat_geometry:
-            if type(target) == LineString or type(target) == LinearRing:
+            if isinstance(target, LineString) or isinstance(target, LineString) or isinstance(target, MultiLineString):
                 diffs.append(target.difference(toolgeo))
             else:
                 log.warning("Not implemented.")
-        self.solid_geometry = cascaded_union(diffs)
+
+        self.solid_geometry = unary_union(diffs)
 
     def bounds(self, flatten=False):
         """
@@ -652,6 +768,12 @@ class Geometry(object):
                             gmaxx = max(gmaxx, maxx_)
                             gmaxy = max(gmaxy, maxy_)
                     else:
+                        try:
+                            if k.is_empty:
+                                continue
+                        except Exception:
+                            pass
+
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                         gminx = min(gminx, minx_)
                         gminy = min(gminy, miny_)
@@ -716,7 +838,7 @@ class Geometry(object):
         #         if len(self.solid_geometry) == 0:
         #             log.debug('solid_geometry is empty []')
         #             return 0, 0, 0, 0
-        #         return cascaded_union(flatten(self.solid_geometry)).bounds
+        #         return unary_union(flatten(self.solid_geometry)).bounds
         #     else:
         #         return self.solid_geometry.bounds
         # except Exception as e:
@@ -731,7 +853,7 @@ class Geometry(object):
         #     if len(self.solid_geometry) == 0:
         #         log.debug('solid_geometry is empty []')
         #         return 0, 0, 0, 0
-        #     return cascaded_union(self.solid_geometry).bounds
+        #     return unary_union(self.solid_geometry).bounds
         # else:
         #     return self.solid_geometry.bounds
 
@@ -1019,7 +1141,7 @@ class Geometry(object):
             else:
                 yield item
 
-    def import_svg(self, filename, object_type=None, flip=True, units='MM'):
+    def import_svg(self, filename, object_type=None, flip=True, units=None):
         """
         Imports shapes from an SVG file into the object's geometry.
 
@@ -1043,10 +1165,32 @@ class Geometry(object):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
-        geos = getsvggeo(svg_root, object_type)
+        units = self.app.defaults['units'] if units is None else units
+        res = self.app.defaults['geometry_circle_steps']
+        factor = svgparse_viewbox(svg_root)
+
+        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        try:
+            for l in merged_lines:
+                geos.append(l)
+        except TypeError:
+            geos.append(merged_lines)
+            
         # Add to object
         if self.solid_geometry is None:
             self.solid_geometry = []
@@ -1068,26 +1212,60 @@ class Geometry(object):
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:
-                    _, minimy, _, maximy = i.bounds
+                    __, minimy, __, maximy = i.bounds
                     h2 = (maximy - minimy) * 0.5
                     geos_text_f.append(translate(scale(i, 1.0, -1.0, origin=(0, 0)), yoff=(h + h2)))
             if geos_text_f:
                 self.solid_geometry = self.solid_geometry + geos_text_f
 
-    def import_dxf(self, filename, object_type=None, units='MM'):
+        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        new_data = {k: v for k, v in self.options.items()}
+
+        self.tools.update({
+            1: {
+                'tooldia': tooldia,
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': _('Rough'),
+                'tool_type': 'C1',
+                'data': deepcopy(new_data),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+
+        self.tools[1]['data']['name'] = self.options['name']
+
+    def import_dxf_as_geo(self, filename, units='MM'):
         """
         Imports shapes from an DXF file into the object's geometry.
 
         :param filename:    Path to the DXF file.
         :type filename:     str
-        :param object_type:
         :param units:       Application units
         :return: None
         """
+        log.debug("Parsing DXF file geometry into a Geometry object solid geometry.")
 
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
+
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        for l in merged_lines:
+            geos.append(l)
 
         # Add to object
         if self.solid_geometry is None:
@@ -1101,12 +1279,24 @@ class Geometry(object):
         else:  # It's shapely geometry
             self.solid_geometry = [self.solid_geometry, geos]
 
-        # flatten the self.solid_geometry list for import_dxf() to import DXF as Gerber
-        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        if self.solid_geometry is not None:
-            self.solid_geometry = cascaded_union(self.solid_geometry)
-        else:
-            return
+        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        new_data = {k: v for k, v in self.options.items()}
+
+        self.tools.update({
+            1: {
+                'tooldia': tooldia,
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': _('Rough'),
+                'tool_type': 'C1',
+                'data': deepcopy(new_data),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+
+        self.tools[1]['data']['name'] = self.options['name']
 
         # commented until this function is ready
         # geos_text = getdxftext(dxf, object_type, units=units)
@@ -1186,7 +1376,7 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
+            # self.solid_geometry.append(unary_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
@@ -1196,7 +1386,7 @@ class Geometry(object):
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        self.solid_geometry = cascaded_union(self.solid_geometry)
+        self.solid_geometry = unary_union(self.solid_geometry)
 
         # self.solid_geometry = MultiPolygon(self.solid_geometry)
         # self.solid_geometry = self.solid_geometry.buffer(0.00000001)
@@ -1333,16 +1523,16 @@ class Geometry(object):
         valid cuts. Finalizes by cutting around the inside edge of
         the polygon.
 
-        :param polygon_to_clear: Shapely.geometry.Polygon
-        :param steps_per_circle: how many linear segments to use to approximate a circle
-        :param tooldia: Diameter of the tool
-        :param seedpoint: Shapely.geometry.Point or None
-        :param overlap: Tool fraction overlap bewteen passes
-        :param connect: Connect disjoint segment to minumize tool lifts
-        :param contour: Cut countour inside the polygon.
-        :return: List of toolpaths covering polygon.
-        :rtype: FlatCAMRTreeStorage | None
-        :param prog_plot: boolean; if True use the progressive plotting
+        :param polygon_to_clear:    Shapely.geometry.Polygon
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param tooldia:             Diameter of the tool
+        :param seedpoint:           Shapely.geometry.Point or None
+        :param overlap:             Tool fraction overlap bewteen passes
+        :param connect:             Connect disjoint segment to minumize tool lifts
+        :param contour:             Cut countour inside the polygon.
+        :param prog_plot:           boolean; if True use the progressive plotting
+        :return:                    List of toolpaths covering polygon.
+        :rtype:                     FlatCAMRTreeStorage | None
         """
 
         # log.debug("camlib.clear_polygon2()")
@@ -1362,7 +1552,7 @@ class Geometry(object):
         path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
 
         if path_margin.is_empty or path_margin is None:
-            return
+            return None
 
         # Estimate good seedpoint if not provided.
         if seedpoint is None:
@@ -1405,12 +1595,12 @@ class Geometry(object):
 
         # Clean inside edges (contours) of the original polygon
         if contour:
-            outer_edges = [
-                x.exterior for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
-            ]
+            buffered_poly = autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
+            outer_edges = [x.exterior for x in buffered_poly]
+
             inner_edges = []
             # Over resulting polygons
-            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))):
+            for x in buffered_poly:
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
@@ -1444,14 +1634,14 @@ class Geometry(object):
 
         This algorithm draws horizontal lines inside the polygon.
 
-        :param polygon: The polygon being painted.
-        :type polygon: shapely.geometry.Polygon
-        :param tooldia: Tool diameter.
-        :param steps_per_circle: how many linear segments to use to approximate a circle
-        :param overlap: Tool path overlap percentage.
-        :param connect: Connect lines to avoid tool lifts.
-        :param contour: Paint around the edges.
-        :param prog_plot: boolean; if to use the progressive plotting
+        :param polygon:             The polygon being painted.
+        :type polygon:              shapely.geometry.Polygon
+        :param tooldia:             Tool diameter.
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param overlap:             Tool path overlap percentage.
+        :param connect:             Connect lines to avoid tool lifts.
+        :param contour:             Paint around the edges.
+        :param prog_plot:           boolean; if to use the progressive plotting
         :return:
         """
 
@@ -1564,12 +1754,14 @@ class Geometry(object):
         try:
             for line in lines_trimmed:
                 if isinstance(line, LineString) or isinstance(line, LinearRing):
-                    geoms.insert(line)
+                    if not line.is_empty:
+                        geoms.insert(line)
                 else:
                     log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
-            geoms.insert(lines_trimmed)
+            if not lines_trimmed.is_empty:
+                geoms.insert(lines_trimmed)
 
         # Add margin (contour) to storage
         if contour:
@@ -1627,7 +1819,7 @@ class Geometry(object):
         """
 
         # log.debug("camlib.fill_with_lines()")
-        if not isinstance(line, LineString) and not isinstance(line, MultiLineString):
+        if not isinstance(line, LineString):
             log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
             return None
 
@@ -1849,7 +2041,9 @@ class Geometry(object):
                 # then reverse coordinates.
                 # but prefer the first one if last == first
                 if pt != candidate.coords[0] and pt == candidate.coords[-1]:
-                    candidate.coords = list(candidate.coords)[::-1]
+                    # in place coordinates update deprecated in Shapely 2.0
+                    # candidate.coords = list(candidate.coords)[::-1]
+                    candidate = LineString(list(candidate.coords)[::-1])
 
                 # Straight line from current_pt to pt.
                 # Is the toolpath inside the geometry?
@@ -1860,7 +2054,9 @@ class Geometry(object):
                     # log.debug("Walk to path #%d is inside. Joining." % path_count)
 
                     # Completely inside. Append...
-                    geo.coords = list(geo.coords) + list(candidate.coords)
+                    # in place coordinates update deprecated in Shapely 2.0
+                    # geo.coords = list(geo.coords) + list(candidate.coords)
+                    geo = LineString(list(geo.coords) + list(candidate.coords))
                     # try:
                     #     last = optimized_paths[-1]
                     #     last.coords = list(last.coords) + list(geo.coords)
@@ -1930,22 +2126,26 @@ class Geometry(object):
                 if type(left) == LineString:
                     if left.coords[0] == geo.coords[0]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords)[::-1] + list(left.coords)
+                        # geo.coords = list(geo.coords)[::-1] + list(left.coords)   # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(left.coords))
                         continue
 
                     if left.coords[-1] == geo.coords[0]:
                         storage.remove(left)
-                        geo.coords = list(left.coords) + list(geo.coords)
+                        # geo.coords = list(left.coords) + list(geo.coords)  # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(left.coords))
                         continue
 
                     if left.coords[0] == geo.coords[-1]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords) + list(left.coords)
+                        # geo.coords = list(geo.coords) + list(left.coords) # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(left.coords))
                         continue
 
                     if left.coords[-1] == geo.coords[-1]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords) + list(left.coords)[::-1]
+                        # geo.coords = list(geo.coords) + list(left.coords)[::-1] # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(left.coords)[::-1])
                         continue
 
                 _, right = storage.nearest(geo.coords[-1])
@@ -1955,22 +2155,26 @@ class Geometry(object):
                 if type(right) == LineString:
                     if right.coords[0] == geo.coords[-1]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords) + list(right.coords)
+                        # geo.coords = list(geo.coords) + list(right.coords)  # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(right.coords))
                         continue
 
                     if right.coords[-1] == geo.coords[-1]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords) + list(right.coords)[::-1]
+                        # geo.coords = list(geo.coords) + list(right.coords)[::-1]    # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(right.coords)[::-1])
                         continue
 
                     if right.coords[0] == geo.coords[0]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords)[::-1] + list(right.coords)
+                        # geo.coords = list(geo.coords)[::-1] + list(right.coords)    # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(right.coords))
                         continue
 
                     if right.coords[-1] == geo.coords[0]:
                         storage.remove(right)
-                        geo.coords = list(left.coords) + list(geo.coords)
+                        # geo.coords = list(left.coords) + list(geo.coords)   # Shapely 2.0
+                        geo = LineString(list(left.coords) + list(geo.coords))
                         continue
 
                 # right is either a LinearRing or it does not connect
@@ -2058,17 +2262,17 @@ class Geometry(object):
 
     def union(self):
         """
-        Runs a cascaded union on the list of objects in
+        Runs a unary_union on the list of objects in
         solid_geometry.
 
         :return: None
         """
-        self.solid_geometry = [cascaded_union(self.solid_geometry)]
+        self.solid_geometry = [unary_union(self.solid_geometry)]
 
     def export_svg(self, scale_stroke_factor=0.00,
                    scale_factor_x=None, scale_factor_y=None,
                    skew_factor_x=None, skew_factor_y=None,
-                   skew_reference='center',
+                   skew_reference='center', scale_reference='center',
                    mirror=None):
         """
         Exports the Geometry Object as a SVG Element
@@ -2082,11 +2286,11 @@ class Geometry(object):
             if self.multigeo:
                 for tool in self.tools:
                     flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
-                geom_svg = cascaded_union(flat_geo)
+                geom_svg = unary_union(flat_geo)
             else:
-                geom_svg = cascaded_union(self.flatten())
+                geom_svg = unary_union(self.flatten())
         else:
-            geom_svg = cascaded_union(self.flatten())
+            geom_svg = unary_union(self.flatten())
 
         skew_ref = 'center'
         if skew_reference != 'center':
@@ -2102,14 +2306,20 @@ class Geometry(object):
 
         geom = geom_svg
 
-        if scale_factor_x:
-            geom = affinity.scale(geom_svg, scale_factor_x, 1.0)
-        if scale_factor_y:
-            geom = affinity.scale(geom_svg, 1.0, scale_factor_y)
-        if skew_factor_x:
+        if scale_factor_x and not scale_factor_y:
+            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_reference)
+        elif not scale_factor_x and scale_factor_y:
+            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_reference)
+        elif scale_factor_x and scale_factor_y:
+            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_reference)
+
+        if skew_factor_x and not skew_factor_y:
             geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
-        if skew_factor_y:
+        elif not skew_factor_x and skew_factor_y:
             geom = affinity.skew(geom_svg, 0.0, skew_factor_y, origin=skew_ref)
+        elif skew_factor_x and skew_factor_y:
+            geom = affinity.skew(geom_svg, skew_factor_x, skew_factor_y, origin=skew_ref)
+
         if mirror:
             if mirror == 'x':
                 geom = affinity.scale(geom_svg, 1.0, -1.0)
@@ -2469,6 +2679,8 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
+        self.multidepth = False
+        self.z_depthpercut = depthpercut
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -2476,23 +2688,24 @@ class CNCjob(Geometry):
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
+        self.toolC = tooldia
         self.toolchange = False
         self.z_toolchange = toolchangez
         self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
 
-        self.toolC = tooldia
-
         self.startz = None
         self.z_end = endz
         self.xy_end = endxy
 
-        self.multidepth = False
-        self.z_depthpercut = depthpercut
-
+        self.extracut = False
         self.extracut_length = None
 
-        self.excellon_optimization_type = 'B'
+        self.tolerance = self.drawing_tolerance
+
+        # used by the self.generate_from_excellon_by_tool() method
+        # but set directly before the actual usage of the method with obj.excellon_optimization_type = value
+        self.excellon_optimization_type = 'No'
 
         # if set True then the GCode generation will use UI; used in Excellon GVode for now
         self.use_ui = False
@@ -2542,13 +2755,16 @@ class CNCjob(Geometry):
 
         self.tool = 0.0
 
+        self.measured_distance = 0.0
+        self.measured_down_distance = 0.0
+        self.measured_up_to_zero_distance = 0.0
+        self.measured_lift_distance = 0.0
+
         # here store the travelled distance
         self.travel_distance = 0.0
         # here store the routing time
         self.routing_time = 0.0
 
-        # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
-        self.exc_drills = None
         # store here the Excellon source object tools to be accessible locally
         self.exc_tools = None
 
@@ -2652,6 +2868,159 @@ class CNCjob(Geometry):
                 text = text.replace(match, str(value))
             return text
 
+    # Distance callback
+    class CreateDistanceCallback(object):
+        """Create callback to calculate distances between points."""
+
+        def __init__(self, locs, manager):
+            self.manager = manager
+            self.matrix = {}
+
+            if locs:
+                size = len(locs)
+
+                for from_node in range(size):
+                    self.matrix[from_node] = {}
+                    for to_node in range(size):
+                        if from_node == to_node:
+                            self.matrix[from_node][to_node] = 0
+                        else:
+                            x1 = locs[from_node][0]
+                            y1 = locs[from_node][1]
+                            x2 = locs[to_node][0]
+                            y2 = locs[to_node][1]
+                            self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
+
+        # def Distance(self, from_node, to_node):
+        #     return int(self.matrix[from_node][to_node])
+        def Distance(self, from_index, to_index):
+            # Convert from routing variable Index to distance matrix NodeIndex.
+            from_node = self.manager.IndexToNode(from_index)
+            to_node = self.manager.IndexToNode(to_index)
+            return self.matrix[from_node][to_node]
+
+    @staticmethod
+    def create_tool_data_array(points):
+        # Create the data.
+        return [(pt.coords.xy[0][0], pt.coords.xy[1][0]) for pt in points]
+
+    def optimized_ortools_meta(self, locations, start=None, opt_time=0):
+        optimized_path = []
+
+        tsp_size = len(locations)
+        num_routes = 1  # The number of routes, which is 1 in the TSP.
+        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+
+        depot = 0 if start is None else start
+
+        # Create routing model.
+        if tsp_size == 0:
+            log.warning('OR-tools metaheuristics - Specify an instance greater than 0.')
+            return optimized_path
+
+        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+        routing = pywrapcp.RoutingModel(manager)
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+        search_parameters.local_search_metaheuristic = (
+            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+
+        # Set search time limit in milliseconds.
+        if float(opt_time) != 0:
+            search_parameters.time_limit.seconds = int(
+                float(opt_time))
+        else:
+            search_parameters.time_limit.seconds = 3
+
+        # Callback to the distance function. The callback takes two
+        # arguments (the from and to node indices) and returns the distance between them.
+        dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
+
+        # if there are no distances then go to the next tool
+        if not dist_between_locations:
+            return
+
+        dist_callback = dist_between_locations.Distance
+        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        # Solve, returns a solution if any.
+        assignment = routing.SolveWithParameters(search_parameters)
+
+        if assignment:
+            # Solution cost.
+            log.info("OR-tools metaheuristics - Total distance: " + str(assignment.ObjectiveValue()))
+
+            # Inspect solution.
+            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+            route_number = 0
+            node = routing.Start(route_number)
+            start_node = node
+
+            while not routing.IsEnd(node):
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                optimized_path.append(node)
+                node = assignment.Value(routing.NextVar(node))
+        else:
+            log.warning('OR-tools metaheuristics - No solution found.')
+
+        return optimized_path
+        # ############################################# ##
+
+    def optimized_ortools_basic(self, locations, start=None):
+        optimized_path = []
+
+        tsp_size = len(locations)
+        num_routes = 1  # The number of routes, which is 1 in the TSP.
+
+        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+        depot = 0 if start is None else start
+
+        # Create routing model.
+        if tsp_size == 0:
+            log.warning('Specify an instance greater than 0.')
+            return optimized_path
+
+        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+        routing = pywrapcp.RoutingModel(manager)
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+
+        # Callback to the distance function. The callback takes two
+        # arguments (the from and to node indices) and returns the distance between them.
+        dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
+
+        # if there are no distances then go to the next tool
+        if not dist_between_locations:
+            return
+
+        dist_callback = dist_between_locations.Distance
+        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        # Solve, returns a solution if any.
+        assignment = routing.SolveWithParameters(search_parameters)
+
+        if assignment:
+            # Solution cost.
+            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+            # Inspect solution.
+            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+            route_number = 0
+            node = routing.Start(route_number)
+            start_node = node
+
+            while not routing.IsEnd(node):
+                optimized_path.append(node)
+                node = assignment.Value(routing.NextVar(node))
+        else:
+            log.warning('No solution found.')
+
+        return optimized_path
+        # ############################################# ##
+
     def optimized_travelling_salesman(self, points, start=None):
         """
         As solving the problem in the brute force way is too slow,
@@ -2687,7 +3056,398 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(self, exobj, tools="all", use_ui=False):
+    def geo_optimized_rtree(self, geometry):
+        locations = []
+
+        # ## Index first and last points in paths. What points to index.
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
+
+        for geo_shape in geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            if geo_shape is not None:
+                storage.insert(geo_shape)
+
+        current_pt = (0, 0)
+        pt, geo = storage.nearest(current_pt)
+        try:
+            while True:
+                storage.remove(geo)
+                locations.append((pt, geo))
+                current_pt = geo.coords[-1]
+                pt, geo = storage.nearest(current_pt)
+        except StopIteration:
+            pass
+
+        # if there are no locations then go to the next tool
+        if not locations:
+            return 'fail'
+
+        return locations
+
+    def check_zcut(self, zcut):
+        if zcut > 0:
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Cut Z parameter has positive value. "
+                                   "It is the depth value to drill into material.\n"
+                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                   "therefore the app will convert the value to negative. "
+                                   "Check the resulting CNC code (Gcode etc)."))
+            return -zcut
+        elif zcut == 0:
+            self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
+            return 'fail'
+
+    def excellon_tool_gcode_gen(self, tool, points, tools, first_pt, is_first=False, is_last=False, opt_type='T',
+                                toolchange=False):
+        """
+        Creates Gcode for this object from an Excellon object
+        for the specified tools.
+
+
+
+        :return:            A tuple made from tool_gcode,  another tuple holding the coordinates of the last point
+                            and the start gcode
+        :rtype:             tuple
+        """
+        log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
+
+        self.exc_tools = deepcopy(tools)
+        t_gcode = ''
+
+        # holds the temporary coordinates of the processed drill point
+        locx, locy = first_pt
+        temp_locx, temp_locy = first_pt
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # ##################################   DRILLING !!!   #########################################################
+        # #############################################################################################################
+        # #############################################################################################################
+        if opt_type == 'M':
+            log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+        elif opt_type == 'B':
+            log.debug("Using OR-Tools Basic drill path optimization.")
+        elif opt_type == 'T':
+            log.debug("Using Travelling Salesman drill path optimization.")
+        else:
+            log.debug("Using no path optimization.")
+
+        tool_dict = tools[tool]['data']
+        # check if it has drills
+        if not points:
+            log.debug("Failed. No drills for tool: %s" % str(tool))
+            return 'fail'
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
+
+        # #########################################################################################################
+        # #########################################################################################################
+        # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
+        # #########################################################################################################
+        # #########################################################################################################
+        self.tool = str(tool)
+        # Preprocessor
+        p = self.pp_excellon
+
+        # Z_cut parameter
+        if self.machinist_setting == 0:
+            self.z_cut = self.check_zcut(zcut=tool_dict["tools_drill_cutz"])
+            if self.z_cut == 'fail':
+                return 'fail'
+
+        # Depth parameters
+        self.z_cut = tool_dict['tools_drill_cutz']
+        old_zcut = deepcopy(tool_dict["tools_drill_cutz"])  # multidepth use this
+        self.multidepth = tool_dict['tools_drill_multidepth']
+        self.z_depthpercut = tool_dict['tools_drill_depthperpass']
+        self.z_move = tool_dict['tools_drill_travelz']
+        self.f_plunge = tool_dict["tools_drill_f_plunge"]   # used directly in the preprocessor Toolchange method
+        self.f_retract = tool_dict["tools_drill_f_retract"] # used in the current method
+
+        # Feedrate parameters
+        self.z_feedrate = tool_dict['tools_drill_feedrate_z']
+        self.feedrate = tool_dict['tools_drill_feedrate_z']
+        self.feedrate_rapid = tool_dict['tools_drill_feedrate_rapid']
+
+        # Spindle parameters
+        self.spindlespeed = tool_dict['tools_drill_spindlespeed']
+        self.dwell = tool_dict['tools_drill_dwell']
+        self.dwelltime = tool_dict['tools_drill_dwelltime']
+        self.spindledir = tool_dict['tools_drill_spindledir']
+
+        self.tooldia = tools[tool]["tooldia"]
+        self.postdata['toolC'] = tools[tool]["tooldia"]
+        self.toolchange = toolchange
+
+        # Z_toolchange parameter
+        self.z_toolchange = tool_dict['tools_drill_toolchangez']
+        # XY_toolchange parameter
+        self.xy_toolchange = tool_dict["tools_drill_toolchangexy"]
+        try:
+            if self.xy_toolchange == '':
+                self.xy_toolchange = None
+            else:
+                # either originally it was a string or not, xy_toolchange will be made string
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
+
+                # and now, xy_toolchange is made into a list of floats in format [x, y]
+                if self.xy_toolchange:
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
+                if self.xy_toolchange and len(self.xy_toolchange) != 2:
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
+            self.xy_toolchange = [0, 0]
+
+        # End position parameters
+        self.startz = tool_dict["tools_drill_startz"]
+        if self.startz == '':
+            self.startz = None
+        self.z_end = tool_dict["tools_drill_endz"]
+        self.xy_end = tool_dict["tools_drill_endxy"]
+
+        try:
+            if self.xy_end == '':
+                self.xy_end = None
+            else:
+                # either originally it was a string or not, xy_end will be made string
+                self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+                # and now, xy_end is made into a list of floats in format [x, y]
+                if self.xy_end:
+                    self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
+                if self.xy_end and len(self.xy_end) != 2:
+                    self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
+            self.xy_end = [0, 0]
+
+        # Probe parameters
+        self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
+        # #########################################################################################################
+        # #########################################################################################################
+
+        # #########################################################################################################
+        # ############ Create the data. ###########################################################################
+        # #########################################################################################################
+        locations = []
+        optimized_path = []
+
+        if opt_type == 'M':
+            locations = self.create_tool_data_array(points=points)
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            opt_time = self.app.defaults["excellon_search_time"]
+            optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
+        elif opt_type == 'B':
+            locations = self.create_tool_data_array(points=points)
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_path = self.optimized_ortools_basic(locations=locations)
+        elif opt_type == 'T':
+            locations = self.create_tool_data_array(points=points)
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_path = self.optimized_travelling_salesman(locations)
+        else:
+            # it's actually not optimized path but here we build a list of (x,y) coordinates
+            # out of the tool's drills
+            for drill in tools[tool]['drills']:
+                unoptimized_coords = (
+                    drill.x,
+                    drill.y
+                )
+                optimized_path.append(unoptimized_coords)
+        # #########################################################################################################
+        # #########################################################################################################
+
+        # Only if there are locations to drill
+        if not optimized_path:
+            log.debug("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
+            return 'fail'
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
+
+        start_gcode = ''
+        if is_first:
+            start_gcode = self.doformat(p.start_code)
+            t_gcode += start_gcode
+
+        # do the ToolChange event
+        t_gcode += self.doformat(p.z_feedrate_code)
+        t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
+        t_gcode += self.doformat(p.z_feedrate_code)
+
+        # Spindle start
+        t_gcode += self.doformat(p.spindle_code)
+        # Dwell time
+        if self.dwell is True:
+            t_gcode += self.doformat(p.dwell_code)
+
+        current_tooldia = float('%.*f' % (self.decimals, float(tools[tool]["tooldia"])))
+        self.app.inform.emit(
+            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                           str(current_tooldia),
+                           str(self.units))
+        )
+
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+        # because the values for Z offset are created in build_tool_ui()
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        try:
+            z_offset = float(tool_dict['tools_drill_offset']) * (-1)
+        except KeyError:
+            z_offset = 0
+        self.z_cut = z_offset + old_zcut
+
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        if self.coordinates_type == "G90":
+            # Drillling! for Absolute coordinates type G90
+            # variables to display the percentage of work done
+            geo_len = len(optimized_path)
+
+            old_disp_number = 0
+            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+            loc_nr = 0
+            for point in optimized_path:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                if opt_type == 'T':
+                    locx = point[0]
+                    locy = point[1]
+                else:
+                    locx = locations[point][0]
+                    locy = locations[point][1]
+
+                travels = self.app.exc_areas.travel_coordinates(start_point=(temp_locx, temp_locy),
+                                                                end_point=(locx, locy),
+                                                                tooldia=current_tooldia)
+                prev_z = None
+                for travel in travels:
+                    locx = travel[1][0]
+                    locy = travel[1][1]
+
+                    if travel[0] is not None:
+                        # move to next point
+                        t_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                        # raise to safe Z (travel[0]) each time because safe Z may be different
+                        self.z_move = travel[0]
+                        t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                        # restore z_move
+                        self.z_move = tool_dict['tools_drill_travelz']
+                    else:
+                        if prev_z is not None:
+                            # move to next point
+                            t_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                            # we assume that previously the z_move was altered therefore raise to
+                            # the travel_z (z_move)
+                            self.z_move = tool_dict['tools_drill_travelz']
+                            t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                        else:
+                            # move to next point
+                            t_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                    # store prev_z
+                    prev_z = travel[0]
+
+                # t_gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                    doc = deepcopy(self.z_cut)
+                    self.z_cut = 0.0
+
+                    while abs(self.z_cut) < abs(doc):
+
+                        self.z_cut -= self.z_depthpercut
+                        if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                            self.z_cut = doc
+                        # Move down the drill bit
+                        t_gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                        # Update the distance travelled down with the current one
+                        self.measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                        if self.f_retract is False:
+                            t_gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                            self.measured_up_to_zero_distance += abs(self.z_cut)
+                            self.measured_lift_distance += abs(self.z_move)
+                        else:
+                            self.measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                        t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                else:
+                    t_gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                    self.measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                    if self.f_retract is False:
+                        t_gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                        self.measured_up_to_zero_distance += abs(self.z_cut)
+                        self.measured_lift_distance += abs(self.z_move)
+                    else:
+                        self.measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                    t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                self.measured_distance += abs(distance_euclidian(locx, locy, temp_locx, temp_locy))
+                temp_locx = locx
+                temp_locy = locy
+                self.oldx = locx
+                self.oldy = locy
+
+                loc_nr += 1
+                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+
+                if old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    old_disp_number = disp_number
+
+        else:
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+            return 'fail'
+        self.z_cut = deepcopy(old_zcut)
+
+        if is_last:
+            t_gcode += self.doformat(p.spindle_stop_code)
+            # Move to End position
+            t_gcode += self.doformat(p.end_code, x=0, y=0)
+
+        self.app.inform.emit('%s %s' % (_("Finished G-Code generation for tool:"), str(tool)))
+        return t_gcode, (locx, locy), start_gcode
+
+    def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', use_ui=False):
         """
         Creates Gcode for this object from an Excellon object
         for the specified tools.
@@ -2696,43 +3456,40 @@ class CNCjob(Geometry):
         :type exobj:    Excellon
         :param tools:   Comma separated tool names
         :type tools:    str
+        :param order:   order of tools processing: "fwd", "rev" or "no"
+        :type order:    str
         :param use_ui:  if True the method will use parameters set in UI
         :type use_ui:   bool
         :return:        None
         :rtype:         None
         """
 
-        # create a local copy of the exobj.drills so it can be used for creating drill CCode geometry
-        self.exc_drills = deepcopy(exobj.drills)
+        # #############################################################################################################
+        # #############################################################################################################
+        # create a local copy of the exobj.tools so it can be used for creating drill CCode geometry
+        # #############################################################################################################
+        # #############################################################################################################
         self.exc_tools = deepcopy(exobj.tools)
 
         # the Excellon GCode preprocessor will use this info in the start_code() method
         self.use_ui = True if use_ui else False
 
+        # Z_cut parameter
+        if self.machinist_setting == 0:
+            self.z_cut = self.check_zcut(zcut=self.z_cut)
+            if self.z_cut == 'fail':
+                return 'fail'
+        # multidepth use this
         old_zcut = deepcopy(self.z_cut)
 
-        if self.machinist_setting == 0:
-            if self.z_cut > 0:
-                self.app.inform.emit('[WARNING] %s' %
-                                     _("The Cut Z parameter has positive value. "
-                                       "It is the depth value to drill into material.\n"
-                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                       "therefore the app will convert the value to negative. "
-                                       "Check the resulting CNC code (Gcode etc)."))
-                self.z_cut = -self.z_cut
-            elif self.z_cut == 0:
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                      exobj.options['name']))
-                return 'fail'
-
+        # XY_toolchange parameter
         try:
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
                 self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
 
-                if self.xy_toolchange and self.xy_toolchange != '':
+                if self.xy_toolchange:
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
                 if self.xy_toolchange and len(self.xy_toolchange) != 2:
@@ -2744,45 +3501,55 @@ class CNCjob(Geometry):
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
+        # XY_end parameter
         self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
-
         if self.xy_end and self.xy_end != '':
             self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
-
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'
 
+        # Prepprocessor
         self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
 
         log.debug("Creating CNC Job from Excellon...")
 
-        # Tools
-
+        # #############################################################################################################
+        # #############################################################################################################
+        # TOOLS
         # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
         # so we actually are sorting the tools by diameter
-        # sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
+        # #############################################################################################################
+        # #############################################################################################################
+        all_tools = []
+        for tool_as_key, v in list(self.exc_tools.items()):
+            all_tools.append((int(tool_as_key), float(v['tooldia'])))
 
-        sort = []
-        for k, v in list(exobj.tools.items()):
-            sort.append((k, v.get('C')))
-        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        if order == 'fwd':
+            sorted_tools = sorted(all_tools, key=lambda t1: t1[1])
+        elif order == 'rev':
+            sorted_tools = sorted(all_tools, key=lambda t1: t1[1], reverse=True)
+        else:
+            sorted_tools = all_tools
 
         if tools == "all":
-            tools = [i[0] for i in sorted_tools]  # we get a array of ordered tools
-            log.debug("Tools 'all' and sorted are: %s" % str(tools))
+            selected_tools = [i[0] for i in all_tools]  # we get a array of ordered tools
         else:
-            selected_tools = [x.strip() for x in tools.split(",")]  # we strip spaces and also separate the tools by ','
-            selected_tools = [t1 for t1 in selected_tools if t1 in selected_tools]
+            selected_tools = eval(tools)
 
-            # Create a sorted list of selected tools from the sorted_tools list
-            tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
-            log.debug("Tools selected and sorted are: %s" % str(tools))
+        # Create a sorted list of selected tools from the sorted_tools list
+        tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
 
+        log.debug("Tools sorted are: %s" % str(tools))
+
+        # #############################################################################################################
+        # #############################################################################################################
         # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
         # running this method from a Tcl Command
+        # #############################################################################################################
+        # #############################################################################################################
         build_tools_in_use_list = False
         if 'Tools_in_use' not in self.options:
             self.options['Tools_in_use'] = []
@@ -2791,29 +3558,35 @@ class CNCjob(Geometry):
         if not self.options['Tools_in_use']:
             build_tools_in_use_list = True
 
+        # #############################################################################################################
+        # #############################################################################################################
         # fill the data into the self.exc_cnc_tools dictionary
-        for it in sorted_tools:
+        # #############################################################################################################
+        # #############################################################################################################
+        for it in all_tools:
             for to_ol in tools:
                 if to_ol == it[0]:
-                    drill_no = 0
                     sol_geo = []
-                    for dr in exobj.drills:
-                        if dr['tool'] == it[0]:
-                            drill_no += 1
-                            sol_geo.append(dr['point'])
+
+                    drill_no = 0
+                    if 'drills' in exobj.tools[to_ol]:
+                        drill_no = len(exobj.tools[to_ol]['drills'])
+                        for drill in exobj.tools[to_ol]['drills']:
+                            sol_geo.append(drill.buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle))
+
                     slot_no = 0
-                    for dr in exobj.slots:
-                        if dr['tool'] == it[0]:
-                            slot_no += 1
-                            start = (dr['start'].x, dr['start'].y)
-                            stop = (dr['stop'].x, dr['stop'].y)
+                    if 'slots' in exobj.tools[to_ol]:
+                        slot_no = len(exobj.tools[to_ol]['slots'])
+                        for slot in exobj.tools[to_ol]['slots']:
+                            start = (slot[0].x, slot[0].y)
+                            stop = (slot[1].x, slot[1].y)
                             sol_geo.append(
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
 
                     if self.use_ui:
                         try:
-                            z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
+                            z_off = float(exobj.tools[it[0]]['data']['tools_drill_offset']) * (-1)
                         except KeyError:
                             z_off = 0
                     else:
@@ -2840,38 +3613,43 @@ class CNCjob(Geometry):
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
+        # #############################################################################################################
+        # #############################################################################################################
         # Points (Group by tool): a dictionary of shapely Point geo elements grouped by tool number
+        # #############################################################################################################
+        # #############################################################################################################
         points = {}
-        for drill in exobj.drills:
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise grace
+        for tool, tool_dict in self.exc_tools.items():
+            if tool in tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
 
-            if drill['tool'] in tools:
-                try:
-                    points[drill['tool']].append(drill['point'])
-                except KeyError:
-                    points[drill['tool']] = [drill['point']]
-
-        # log.debug("Found %d drills." % len(points))
+                if 'drills' in tool_dict and tool_dict['drills']:
+                    for drill_pt in tool_dict['drills']:
+                        try:
+                            points[tool].append(drill_pt)
+                        except KeyError:
+                            points[tool] = [drill_pt]
+        log.debug("Found %d TOOLS with drills." % len(points))
 
         # check if there are drill points in the exclusion areas.
         # If we find any within the exclusion areas return 'fail'
         for tool in points:
             for pt in points[tool]:
                 for area in self.app.exc_areas.exclusion_areas_storage:
-                    pt_buf = pt.buffer(exobj.tools[tool]['C'] / 2.0)
+                    pt_buf = pt.buffer(self.exc_tools[tool]['tooldia'] / 2.0)
                     if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
                         self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
                         return 'fail'
 
         # this holds the resulting GCode
         self.gcode = []
-
-        self.f_plunge = self.app.defaults["excellon_f_plunge"]
-        self.f_retract = self.app.defaults["excellon_f_retract"]
-
+        # #############################################################################################################
+        # #############################################################################################################
         # Initialization
+        # #############################################################################################################
+        # #############################################################################################################
         gcode = self.doformat(p.start_code)
         if use_ui is False:
             gcode += self.doformat(p.z_feedrate_code)
@@ -2883,49 +3661,6 @@ class CNCjob(Geometry):
             else:
                 gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
                 gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
-
-        # Distance callback
-        class CreateDistanceCallback(object):
-            """Create callback to calculate distances between points."""
-
-            def __init__(self, tool):
-                """Initialize distance array."""
-                locs = create_data_array(tool)
-                self.matrix = {}
-
-                if locs:
-                    size = len(locs)
-
-                    for from_node in range(size):
-                        self.matrix[from_node] = {}
-                        for to_node in range(size):
-                            if from_node == to_node:
-                                self.matrix[from_node][to_node] = 0
-                            else:
-                                x1 = locs[from_node][0]
-                                y1 = locs[from_node][1]
-                                x2 = locs[to_node][0]
-                                y2 = locs[to_node][1]
-                                self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
-
-            # def Distance(self, from_node, to_node):
-            #     return int(self.matrix[from_node][to_node])
-            def Distance(self, from_index, to_index):
-                # Convert from routing variable Index to distance matrix NodeIndex.
-                from_node = manager.IndexToNode(from_index)
-                to_node = manager.IndexToNode(to_index)
-                return self.matrix[from_node][to_node]
-
-        # Create the data.
-        def create_data_array(tool):
-            loc_list = []
-
-            if tool not in points:
-                return None
-
-            for pt in points[tool]:
-                loc_list.append((pt.coords.xy[0][0], pt.coords.xy[1][0]))
-            return loc_list
 
         if self.xy_toolchange is not None:
             self.oldx = self.xy_toolchange[0]
@@ -2939,731 +3674,1140 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
+        # #############################################################################################################
+        # #############################################################################################################
+        # GCODE creation
+        # #############################################################################################################
+        # #############################################################################################################
         self.app.inform.emit('%s...' % _("Starting G-Code"))
+
+        has_drills = None
+        for tool, tool_dict in self.exc_tools.items():
+            if 'drills' in tool_dict and tool_dict['drills']:
+                has_drills = True
+                break
+        if not has_drills:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                      "The loaded Excellon file has no drills ...")
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+            return 'fail'
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             used_excellon_optimization_type = self.excellon_optimization_type
-            if used_excellon_optimization_type == 'M':
-                log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
-                if exobj.drills:
-                    for tool in tools:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        self.tool = tool
-                        self.postdata['toolC'] = exobj.tools[tool]["C"]
-                        self.tooldia = exobj.tools[tool]["C"]
-
-                        if self.use_ui:
-                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                            self.feedrate = exobj.tools[tool]['data']['feedrate']
-                            gcode += self.doformat(p.z_feedrate_code)
-
-                            self.z_cut = exobj.tools[tool]['data']['cutz']
-
-                            if self.machinist_setting == 0:
-                                if self.z_cut > 0:
-                                    self.app.inform.emit('[WARNING] %s' %
-                                                         _("The Cut Z parameter has positive value. "
-                                                           "It is the depth value to drill into material.\n"
-                                                           "The Cut Z parameter needs to have a negative value, "
-                                                           "assuming it is a typo "
-                                                           "therefore the app will convert the value to negative. "
-                                                           "Check the resulting CNC code (Gcode etc)."))
-                                    self.z_cut = -self.z_cut
-                                elif self.z_cut == 0:
-                                    self.app.inform.emit('[WARNING] %s: %s' %
-                                                         (_(
-                                                             "The Cut Z parameter is zero. There will be no cut, "
-                                                             "skipping file"),
-                                                          exobj.options['name']))
-                                    return 'fail'
-
-                            old_zcut = deepcopy(self.z_cut)
-
-                            self.z_move = exobj.tools[tool]['data']['travelz']
-                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                            self.dwell = exobj.tools[tool]['data']['dwell']
-                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                            self.multidepth = exobj.tools[tool]['data']['multidepth']
-                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
-                        else:
-                            old_zcut = deepcopy(self.z_cut)
-
-                        # ###############################################
-                        # ############ Create the data. #################
-                        # ###############################################
-
-                        node_list = []
-                        locations = create_data_array(tool=tool)
-
-                        # if there are no locations then go to the next tool
-                        if not locations:
-                            continue
-
-                        tsp_size = len(locations)
-                        num_routes = 1  # The number of routes, which is 1 in the TSP.
-                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                        depot = 0
-                        # Create routing model.
-                        if tsp_size > 0:
-                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-                            routing = pywrapcp.RoutingModel(manager)
-                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-                            search_parameters.local_search_metaheuristic = (
-                                routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
-
-                            # Set search time limit in milliseconds.
-                            if float(self.app.defaults["excellon_search_time"]) != 0:
-                                search_parameters.time_limit.seconds = int(
-                                    float(self.app.defaults["excellon_search_time"]))
-                            else:
-                                search_parameters.time_limit.seconds = 3
-
-                            # Callback to the distance function. The callback takes two
-                            # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback(tool=tool)
-
-                            # if there are no distances then go to the next tool
-                            if not dist_between_locations:
-                                continue
-
-                            dist_callback = dist_between_locations.Distance
-                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-                            # Solve, returns a solution if any.
-                            assignment = routing.SolveWithParameters(search_parameters)
-
-                            if assignment:
-                                # Solution cost.
-                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
-
-                                # Inspect solution.
-                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                                route_number = 0
-                                node = routing.Start(route_number)
-                                start_node = node
-
-                                while not routing.IsEnd(node):
-                                    if self.app.abort_flag:
-                                        # graceful abort requested by the user
-                                        raise grace
-
-                                    node_list.append(node)
-                                    node = assignment.Value(routing.NextVar(node))
-                            else:
-                                log.warning('No solution found.')
-                        else:
-                            log.warning('Specify an instance greater than 0.')
-                        # ############################################# ##
-
-                        # Only if tool has points.
-                        if tool in points:
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            # Tool change sequence (optional)
-                            if self.toolchange:
-                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-                                gcode += self.doformat(p.spindle_code)  # Spindle start
-                                if self.dwell is True:
-                                    gcode += self.doformat(p.dwell_code)  # Dwell time
-                            else:
-                                gcode += self.doformat(p.spindle_code)
-                                if self.dwell is True:
-                                    gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
-
-                            self.app.inform.emit(
-                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                               str(current_tooldia),
-                                               str(self.units))
-                            )
-
-                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the appGUI, for TclCommand this will create an error
-                            # because the values for Z offset are created in build_ui()
-                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            try:
-                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
-                            except KeyError:
-                                z_offset = 0
-                            self.z_cut = z_offset + old_zcut
-
-                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
-                            if self.coordinates_type == "G90":
-                                # Drillling! for Absolute coordinates type G90
-                                # variables to display the percentage of work done
-                                geo_len = len(node_list)
-
-                                old_disp_number = 0
-                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
-
-                                loc_nr = 0
-                                for k in node_list:
-                                    if self.app.abort_flag:
-                                        # graceful abort requested by the user
-                                        raise grace
-
-                                    locx = locations[k][0]
-                                    locy = locations[k][1]
-
-                                    travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
-                                                                                    end_point=(locx, locy),
-                                                                                    tooldia=current_tooldia)
-                                    prev_z = None
-                                    for travel in travels:
-                                        locx = travel[1][0]
-                                        locy = travel[1][1]
-
-                                        if travel[0] is not None:
-                                            # move to next point
-                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                            # raise to safe Z (travel[0]) each time because safe Z may be different
-                                            self.z_move = travel[0]
-                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                            # restore z_move
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
-                                        else:
-                                            if prev_z is not None:
-                                                # move to next point
-                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                                # we assume that previously the z_move was altered therefore raise to
-                                                # the travel_z (z_move)
-                                                self.z_move = exobj.tools[tool]['data']['travelz']
-                                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                            else:
-                                                # move to next point
-                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                        # store prev_z
-                                        prev_z = travel[0]
-
-                                    # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
-                                        doc = deepcopy(self.z_cut)
-                                        self.z_cut = 0.0
-
-                                        while abs(self.z_cut) < abs(doc):
-
-                                            self.z_cut -= self.z_depthpercut
-                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
-                                                self.z_cut = doc
-                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                            if self.f_retract is False:
-                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                                measured_up_to_zero_distance += abs(self.z_cut)
-                                                measured_lift_distance += abs(self.z_move)
-                                            else:
-                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                    else:
-                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        if self.f_retract is False:
-                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                            measured_up_to_zero_distance += abs(self.z_cut)
-                                            measured_lift_distance += abs(self.z_move)
-                                        else:
-                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                    self.oldx = locx
-                                    self.oldy = locy
-
-                                    loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
-
-                                    if old_disp_number < disp_number <= 100:
-                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                        old_disp_number = disp_number
-
-                            else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
-                                return 'fail'
-                        self.z_cut = deepcopy(old_zcut)
-                else:
-                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                              "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
-                    return 'fail'
-
-                log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
-
-            if used_excellon_optimization_type == 'B':
-                log.debug("Using OR-Tools Basic drill path optimization.")
-                if exobj.drills:
-                    for tool in tools:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        self.tool = tool
-                        self.postdata['toolC'] = exobj.tools[tool]["C"]
-                        self.tooldia = exobj.tools[tool]["C"]
-
-                        if self.use_ui:
-                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                            self.feedrate = exobj.tools[tool]['data']['feedrate']
-                            gcode += self.doformat(p.z_feedrate_code)
-                            self.z_cut = exobj.tools[tool]['data']['cutz']
-
-                            if self.machinist_setting == 0:
-                                if self.z_cut > 0:
-                                    self.app.inform.emit('[WARNING] %s' %
-                                                         _("The Cut Z parameter has positive value. "
-                                                           "It is the depth value to drill into material.\n"
-                                                           "The Cut Z parameter needs to have a negative value, "
-                                                           "assuming it is a typo "
-                                                           "therefore the app will convert the value to negative. "
-                                                           "Check the resulting CNC code (Gcode etc)."))
-                                    self.z_cut = -self.z_cut
-                                elif self.z_cut == 0:
-                                    self.app.inform.emit('[WARNING] %s: %s' %
-                                                         (_(
-                                                             "The Cut Z parameter is zero. There will be no cut, "
-                                                             "skipping file"),
-                                                          exobj.options['name']))
-                                    return 'fail'
-
-                            old_zcut = deepcopy(self.z_cut)
-
-                            self.z_move = exobj.tools[tool]['data']['travelz']
-
-                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                            self.dwell = exobj.tools[tool]['data']['dwell']
-                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                            self.multidepth = exobj.tools[tool]['data']['multidepth']
-                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
-                        else:
-                            old_zcut = deepcopy(self.z_cut)
-
-                        # ###############################################
-                        # ############ Create the data. #################
-                        # ###############################################
-
-                        node_list = []
-                        locations = create_data_array(tool=tool)
-
-                        # if there are no locations then go to the next tool
-                        if not locations:
-                            continue
-
-                        tsp_size = len(locations)
-                        num_routes = 1  # The number of routes, which is 1 in the TSP.
-
-                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                        depot = 0
-
-                        # Create routing model.
-                        if tsp_size > 0:
-                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-                            routing = pywrapcp.RoutingModel(manager)
-                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-
-                            # Callback to the distance function. The callback takes two
-                            # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback(tool=tool)
-
-                            # if there are no distances then go to the next tool
-                            if not dist_between_locations:
-                                continue
-
-                            dist_callback = dist_between_locations.Distance
-                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-                            # Solve, returns a solution if any.
-                            assignment = routing.SolveWithParameters(search_parameters)
-
-                            if assignment:
-                                # Solution cost.
-                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
-
-                                # Inspect solution.
-                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                                route_number = 0
-                                node = routing.Start(route_number)
-                                start_node = node
-
-                                while not routing.IsEnd(node):
-                                    node_list.append(node)
-                                    node = assignment.Value(routing.NextVar(node))
-                            else:
-                                log.warning('No solution found.')
-                        else:
-                            log.warning('Specify an instance greater than 0.')
-                        # ############################################# ##
-
-                        # Only if tool has points.
-                        if tool in points:
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            # Tool change sequence (optional)
-                            if self.toolchange:
-                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-                                gcode += self.doformat(p.spindle_code)  # Spindle start)
-                                if self.dwell is True:
-                                    gcode += self.doformat(p.dwell_code)  # Dwell time
-                            else:
-                                gcode += self.doformat(p.spindle_code)
-                                if self.dwell is True:
-                                    gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
-
-                            self.app.inform.emit(
-                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                               str(current_tooldia),
-                                               str(self.units))
-                            )
-
-                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the appGUI, for TclCommand this will create an error
-                            # because the values for Z offset are created in build_ui()
-                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            try:
-                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
-                            except KeyError:
-                                z_offset = 0
-                            self.z_cut = z_offset + old_zcut
-
-                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
-                            if self.coordinates_type == "G90":
-                                # Drillling! for Absolute coordinates type G90
-                                # variables to display the percentage of work done
-                                geo_len = len(node_list)
-                                old_disp_number = 0
-                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
-
-                                loc_nr = 0
-                                for k in node_list:
-                                    if self.app.abort_flag:
-                                        # graceful abort requested by the user
-                                        raise grace
-
-                                    locx = locations[k][0]
-                                    locy = locations[k][1]
-
-                                    travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
-                                                                                    end_point=(locx, locy),
-                                                                                    tooldia=current_tooldia)
-                                    prev_z = None
-                                    for travel in travels:
-                                        locx = travel[1][0]
-                                        locy = travel[1][1]
-
-                                        if travel[0] is not None:
-                                            # move to next point
-                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                            # raise to safe Z (travel[0]) each time because safe Z may be different
-                                            self.z_move = travel[0]
-                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                            # restore z_move
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
-                                        else:
-                                            if prev_z is not None:
-                                                # move to next point
-                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                                # we assume that previously the z_move was altered therefore raise to
-                                                # the travel_z (z_move)
-                                                self.z_move = exobj.tools[tool]['data']['travelz']
-                                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                            else:
-                                                # move to next point
-                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                        # store prev_z
-                                        prev_z = travel[0]
-
-                                    # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
-                                        doc = deepcopy(self.z_cut)
-                                        self.z_cut = 0.0
-
-                                        while abs(self.z_cut) < abs(doc):
-
-                                            self.z_cut -= self.z_depthpercut
-                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
-                                                self.z_cut = doc
-                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                            if self.f_retract is False:
-                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                                measured_up_to_zero_distance += abs(self.z_cut)
-                                                measured_lift_distance += abs(self.z_move)
-                                            else:
-                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                    else:
-                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        if self.f_retract is False:
-                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                            measured_up_to_zero_distance += abs(self.z_cut)
-                                            measured_lift_distance += abs(self.z_move)
-                                        else:
-                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                    self.oldx = locx
-                                    self.oldy = locy
-
-                                    loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
-
-                                    if old_disp_number < disp_number <= 100:
-                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                        old_disp_number = disp_number
-
-                            else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
-                                return 'fail'
-                        self.z_cut = deepcopy(old_zcut)
-                else:
-                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                              "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                         _('The loaded Excellon file has no drills'))
-                    return 'fail'
-
-                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
         else:
             used_excellon_optimization_type = 'T'
 
-        if used_excellon_optimization_type == 'T':
+        # #############################################################################################################
+        # #############################################################################################################
+        # ##################################   DRILLING !!!   #########################################################
+        # #############################################################################################################
+        # #############################################################################################################
+        if used_excellon_optimization_type == 'M':
+            log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+        elif used_excellon_optimization_type == 'B':
+            log.debug("Using OR-Tools Basic drill path optimization.")
+        elif used_excellon_optimization_type == 'T':
             log.debug("Using Travelling Salesman drill path optimization.")
+        else:
+            log.debug("Using no path optimization.")
+
+        if self.toolchange is True:
             for tool in tools:
+                # check if it has drills
+                if not self.exc_tools[tool]['drills']:
+                    continue
+
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
 
-                if exobj.drills:
-                    self.tool = tool
-                    self.postdata['toolC'] = exobj.tools[tool]["C"]
-                    self.tooldia = exobj.tools[tool]["C"]
+                self.tool = tool
+                self.tooldia = self.exc_tools[tool]["tooldia"]
+                self.postdata['toolC'] = self.tooldia
 
-                    if self.use_ui:
-                        self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                        self.feedrate = exobj.tools[tool]['data']['feedrate']
-                        gcode += self.doformat(p.z_feedrate_code)
+                if self.use_ui:
+                    self.z_feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
+                    self.feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
+                    self.z_cut = self.exc_tools[tool]['data']['tools_drill_cutz']
+                    gcode += self.doformat(p.z_feedrate_code)
 
-                        self.z_cut = exobj.tools[tool]['data']['cutz']
+                    if self.machinist_setting == 0:
+                        if self.z_cut > 0:
+                            self.app.inform.emit('[WARNING] %s' %
+                                                 _("The Cut Z parameter has positive value. "
+                                                   "It is the depth value to drill into material.\n"
+                                                   "The Cut Z parameter needs to have a negative value, "
+                                                   "assuming it is a typo "
+                                                   "therefore the app will convert the value to negative. "
+                                                   "Check the resulting CNC code (Gcode etc)."))
+                            self.z_cut = -self.z_cut
+                        elif self.z_cut == 0:
+                            self.app.inform.emit('[WARNING] %s: %s' %
+                                                 (_(
+                                                     "The Cut Z parameter is zero. There will be no cut, "
+                                                     "skipping file"),
+                                                  exobj.options['name']))
+                            return 'fail'
 
-                        if self.machinist_setting == 0:
-                            if self.z_cut > 0:
-                                self.app.inform.emit('[WARNING] %s' %
-                                                     _("The Cut Z parameter has positive value. "
-                                                       "It is the depth value to drill into material.\n"
-                                                       "The Cut Z parameter needs to have a negative value, "
-                                                       "assuming it is a typo "
-                                                       "therefore the app will convert the value to negative. "
-                                                       "Check the resulting CNC code (Gcode etc)."))
-                                self.z_cut = -self.z_cut
-                            elif self.z_cut == 0:
-                                self.app.inform.emit('[WARNING] %s: %s' %
-                                                     (_(
-                                                         "The Cut Z parameter is zero. There will be no cut, "
-                                                         "skipping file"),
-                                                      exobj.options['name']))
-                                return 'fail'
+                    old_zcut = deepcopy(self.z_cut)
 
-                        old_zcut = deepcopy(self.z_cut)
+                    self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
+                    self.spindlespeed = self.exc_tools[tool]['data']['tools_drill_spindlespeed']
+                    self.dwell = self.exc_tools[tool]['data']['tools_drill_dwell']
+                    self.dwelltime = self.exc_tools[tool]['data']['tools_drill_dwelltime']
+                    self.multidepth = self.exc_tools[tool]['data']['tools_drill_multidepth']
+                    self.z_depthpercut = self.exc_tools[tool]['data']['tools_drill_depthperpass']
+                else:
+                    old_zcut = deepcopy(self.z_cut)
 
-                        self.z_move = exobj.tools[tool]['data']['travelz']
-                        self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                        self.dwell = exobj.tools[tool]['data']['dwell']
-                        self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                        self.multidepth = exobj.tools[tool]['data']['multidepth']
-                        self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
-                    else:
-                        old_zcut = deepcopy(self.z_cut)
+                # #########################################################################################################
+                # ############ Create the data. #################
+                # #########################################################################################################
+                locations = []
+                altPoints = []
+                optimized_path = []
 
-                    # Only if tool has points.
+                if used_excellon_optimization_type == 'M':
                     if tool in points:
+                        locations = self.create_tool_data_array(points=points[tool])
+                    # if there are no locations then go to the next tool
+                    if not locations:
+                        continue
+                    opt_time = self.app.defaults["excellon_search_time"]
+                    optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
+                elif used_excellon_optimization_type == 'B':
+                    if tool in points:
+                        locations = self.create_tool_data_array(points=points[tool])
+                    # if there are no locations then go to the next tool
+                    if not locations:
+                        continue
+                    optimized_path = self.optimized_ortools_basic(locations=locations)
+                elif used_excellon_optimization_type == 'T':
+                    for point in points[tool]:
+                        altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+                    optimized_path = self.optimized_travelling_salesman(altPoints)
+                else:
+                    # it's actually not optimized path but here we build a list of (x,y) coordinates
+                    # out of the tool's drills
+                    for drill in self.exc_tools[tool]['drills']:
+                        unoptimized_coords = (
+                            drill.x,
+                            drill.y
+                        )
+                        optimized_path.append(unoptimized_coords)
+                # #########################################################################################################
+                # #########################################################################################################
+
+                # Only if there are locations to drill
+                if not optimized_path:
+                    continue
+
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                # Tool change sequence (optional)
+                if self.toolchange:
+                    gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+                # Spindle start
+                gcode += self.doformat(p.spindle_code)
+                # Dwell time
+                if self.dwell is True:
+                    gcode += self.doformat(p.dwell_code)
+
+                current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
+
+                self.app.inform.emit(
+                    '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                   str(current_tooldia),
+                                   str(self.units))
+                )
+
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+                # because the values for Z offset are created in build_ui()
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                try:
+                    z_offset = float(self.exc_tools[tool]['data']['tools_drill_offset']) * (-1)
+                except KeyError:
+                    z_offset = 0
+                self.z_cut = z_offset + old_zcut
+
+                self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                if self.coordinates_type == "G90":
+                    # Drillling! for Absolute coordinates type G90
+                    # variables to display the percentage of work done
+                    geo_len = len(optimized_path)
+
+                    old_disp_number = 0
+                    log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+                    loc_nr = 0
+                    for point in optimized_path:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
 
-                        # Tool change sequence (optional)
-                        if self.toolchange:
-                            gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-                            gcode += self.doformat(p.spindle_code)  # Spindle start)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                        if used_excellon_optimization_type == 'T':
+                            locx = point[0]
+                            locy = point[1]
                         else:
-                            gcode += self.doformat(p.spindle_code)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                            locx = locations[point][0]
+                            locy = locations[point][1]
 
-                        current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
+                        travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                                                                        end_point=(locx, locy),
+                                                                        tooldia=current_tooldia)
+                        prev_z = None
+                        for travel in travels:
+                            locx = travel[1][0]
+                            locy = travel[1][1]
 
-                        self.app.inform.emit(
-                            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                           str(current_tooldia),
-                                           str(self.units))
-                        )
+                            if travel[0] is not None:
+                                # move to next point
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        # APPLY Offset only when using the appGUI, for TclCommand this will create an error
-                        # because the values for Z offset are created in build_ui()
-                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        try:
-                            z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
-                        except KeyError:
-                            z_offset = 0
-                        self.z_cut = z_offset + old_zcut
+                                # raise to safe Z (travel[0]) each time because safe Z may be different
+                                self.z_move = travel[0]
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
-                        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
-                        if self.coordinates_type == "G90":
-                            # Drillling! for Absolute coordinates type G90
-                            altPoints = []
-                            for point in points[tool]:
-                                altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+                                # restore z_move
+                                self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
+                            else:
+                                if prev_z is not None:
+                                    # move to next point
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                            node_list = self.optimized_travelling_salesman(altPoints)
-                            # variables to display the percentage of work done
-                            geo_len = len(node_list)
-                            old_disp_number = 0
-                            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
-
-                            loc_nr = 0
-                            for point in node_list:
-                                if self.app.abort_flag:
-                                    # graceful abort requested by the user
-                                    raise grace
-
-                                locx = point[0]
-                                locy = point[1]
-
-                                travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
-                                                                                end_point=(locx, locy),
-                                                                                tooldia=current_tooldia)
-                                prev_z = None
-                                for travel in travels:
-                                    locx = travel[1][0]
-                                    locy = travel[1][1]
-
-                                    if travel[0] is not None:
-                                        # move to next point
-                                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                        # raise to safe Z (travel[0]) each time because safe Z may be different
-                                        self.z_move = travel[0]
-                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                        # restore z_move
-                                        self.z_move = exobj.tools[tool]['data']['travelz']
-                                    else:
-                                        if prev_z is not None:
-                                            # move to next point
-                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                            # we assume that previously the z_move was altered therefore raise to
-                                            # the travel_z (z_move)
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
-                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                        else:
-                                            # move to next point
-                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                    # store prev_z
-                                    prev_z = travel[0]
-
-                                # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-
-                                if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
-                                    doc = deepcopy(self.z_cut)
-                                    self.z_cut = 0.0
-
-                                    while abs(self.z_cut) < abs(doc):
-
-                                        self.z_cut -= self.z_depthpercut
-                                        if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
-                                            self.z_cut = doc
-                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        if self.f_retract is False:
-                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                            measured_up_to_zero_distance += abs(self.z_cut)
-                                            measured_lift_distance += abs(self.z_move)
-                                        else:
-                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
-
-                                else:
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
-                                    else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
+                                    # we assume that previously the z_move was altered therefore raise to
+                                    # the travel_z (z_move)
+                                    self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
                                     gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                else:
+                                    # move to next point
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                self.oldx = locx
-                                self.oldy = locy
+                            # store prev_z
+                            prev_z = travel[0]
 
-                                loc_nr += 1
-                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+                        # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
+                        if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                            doc = deepcopy(self.z_cut)
+                            self.z_cut = 0.0
+
+                            while abs(self.z_cut) < abs(doc):
+
+                                self.z_cut -= self.z_depthpercut
+                                if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                    self.z_cut = doc
+                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                         else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
-                            return 'fail'
-                    else:
-                        log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                                  "The loaded Excellon file has no drills ...")
-                        self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
-                        return 'fail'
-                self.z_cut = deepcopy(old_zcut)
-            log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
+                            gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-        gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
+                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                            if self.f_retract is False:
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                measured_up_to_zero_distance += abs(self.z_cut)
+                                measured_lift_distance += abs(self.z_move)
+                            else:
+                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                        measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                        self.oldx = locx
+                        self.oldy = locy
+
+                        loc_nr += 1
+                        disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+
+                        if old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+                    return 'fail'
+                self.z_cut = deepcopy(old_zcut)
+        else:
+            # We are not using Toolchange therefore we need to decide which tool properties to use
+            one_tool = 1
+
+            all_points = []
+            for tool in points:
+                # check if it has drills
+                if not points[tool]:
+                    continue
+                all_points += points[tool]
+
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            self.tool = one_tool
+            self.tooldia = self.exc_tools[one_tool]["tooldia"]
+            self.postdata['toolC'] = self.tooldia
+
+            if self.use_ui:
+                self.z_feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
+                self.feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
+                self.z_cut = self.exc_tools[one_tool]['data']['tools_drill_cutz']
+                gcode += self.doformat(p.z_feedrate_code)
+
+                if self.machinist_setting == 0:
+                    if self.z_cut > 0:
+                        self.app.inform.emit('[WARNING] %s' %
+                                             _("The Cut Z parameter has positive value. "
+                                               "It is the depth value to drill into material.\n"
+                                               "The Cut Z parameter needs to have a negative value, "
+                                               "assuming it is a typo "
+                                               "therefore the app will convert the value to negative. "
+                                               "Check the resulting CNC code (Gcode etc)."))
+                        self.z_cut = -self.z_cut
+                    elif self.z_cut == 0:
+                        self.app.inform.emit('[WARNING] %s: %s' %
+                                             (_(
+                                                 "The Cut Z parameter is zero. There will be no cut, "
+                                                 "skipping file"),
+                                              exobj.options['name']))
+                        return 'fail'
+
+                old_zcut = deepcopy(self.z_cut)
+
+                self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
+                self.spindlespeed = self.exc_tools[one_tool]['data']['tools_drill_spindlespeed']
+                self.dwell = self.exc_tools[one_tool]['data']['tools_drill_dwell']
+                self.dwelltime = self.exc_tools[one_tool]['data']['tools_drill_dwelltime']
+                self.multidepth = self.exc_tools[one_tool]['data']['tools_drill_multidepth']
+                self.z_depthpercut = self.exc_tools[one_tool]['data']['tools_drill_depthperpass']
+            else:
+                old_zcut = deepcopy(self.z_cut)
+
+            # #########################################################################################################
+            # ############ Create the data. #################
+            # #########################################################################################################
+            locations = []
+            altPoints = []
+            optimized_path = []
+
+            if used_excellon_optimization_type == 'M':
+                if all_points:
+                    locations = self.create_tool_data_array(points=all_points)
+                # if there are no locations then go to the next tool
+                if not locations:
+                    return 'fail'
+                opt_time = self.app.defaults["excellon_search_time"]
+                optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
+            elif used_excellon_optimization_type == 'B':
+                if all_points:
+                    locations = self.create_tool_data_array(points=all_points)
+                # if there are no locations then go to the next tool
+                if not locations:
+                    return 'fail'
+                optimized_path = self.optimized_ortools_basic(locations=locations)
+            elif used_excellon_optimization_type == 'T':
+                for point in all_points:
+                    altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+                optimized_path = self.optimized_travelling_salesman(altPoints)
+            else:
+                # it's actually not optimized path but here we build a list of (x,y) coordinates
+                # out of the tool's drills
+                for pt in all_points:
+                    unoptimized_coords = (
+                        pt.x,
+                        pt.y
+                    )
+                    optimized_path.append(unoptimized_coords)
+            # #########################################################################################################
+            # #########################################################################################################
+
+            # Only if there are locations to drill
+            if not optimized_path:
+                return 'fail'
+
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            # Spindle start
+            gcode += self.doformat(p.spindle_code)
+            # Dwell time
+            if self.dwell is True:
+                gcode += self.doformat(p.dwell_code)
+
+            current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[one_tool]["tooldia"])))
+
+            self.app.inform.emit(
+                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                               str(current_tooldia),
+                               str(self.units))
+            )
+
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+            # because the values for Z offset are created in build_ui()
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            try:
+                z_offset = float(self.exc_tools[one_tool]['data']['tools_drill_offset']) * (-1)
+            except KeyError:
+                z_offset = 0
+            self.z_cut = z_offset + old_zcut
+
+            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+            if self.coordinates_type == "G90":
+                # Drillling! for Absolute coordinates type G90
+                # variables to display the percentage of work done
+                geo_len = len(optimized_path)
+
+                old_disp_number = 0
+                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+                loc_nr = 0
+                for point in optimized_path:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise grace
+
+                    if used_excellon_optimization_type == 'T':
+                        locx = point[0]
+                        locy = point[1]
+                    else:
+                        locx = locations[point][0]
+                        locy = locations[point][1]
+
+                    travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                                                                    end_point=(locx, locy),
+                                                                    tooldia=current_tooldia)
+                    prev_z = None
+                    for travel in travels:
+                        locx = travel[1][0]
+                        locy = travel[1][1]
+
+                        if travel[0] is not None:
+                            # move to next point
+                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                            # raise to safe Z (travel[0]) each time because safe Z may be different
+                            self.z_move = travel[0]
+                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                            # restore z_move
+                            self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
+                        else:
+                            if prev_z is not None:
+                                # move to next point
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                # we assume that previously the z_move was altered therefore raise to
+                                # the travel_z (z_move)
+                                self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                            else:
+                                # move to next point
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                        # store prev_z
+                        prev_z = travel[0]
+
+                    # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                        doc = deepcopy(self.z_cut)
+                        self.z_cut = 0.0
+
+                        while abs(self.z_cut) < abs(doc):
+
+                            self.z_cut -= self.z_depthpercut
+                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                self.z_cut = doc
+                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                            if self.f_retract is False:
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                measured_up_to_zero_distance += abs(self.z_cut)
+                                measured_lift_distance += abs(self.z_move)
+                            else:
+                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                    else:
+                        gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                        if self.f_retract is False:
+                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                            measured_up_to_zero_distance += abs(self.z_cut)
+                            measured_lift_distance += abs(self.z_move)
+                        else:
+                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                    self.oldx = locx
+                    self.oldy = locy
+
+                    loc_nr += 1
+                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+
+                    if old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+                return 'fail'
+            self.z_cut = deepcopy(old_zcut)
+
+        if used_excellon_optimization_type == 'M':
+            log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
+        elif used_excellon_optimization_type == 'B':
+            log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+        elif used_excellon_optimization_type == 'T':
+            log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
+        else:
+            log.debug("The total travel distance with with no optimization is: %s" % str(measured_distance))
+
+        # if used_excellon_optimization_type == 'M':
+        #     log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+        #
+        #     if has_drills:
+        #         for tool in tools:
+        #             if self.app.abort_flag:
+        #                 # graceful abort requested by the user
+        #                 raise grace
+        #
+        #             self.tool = tool
+        #             self.tooldia = self.exc_tools[tool]["tooldia"]
+        #             self.postdata['toolC'] = self.tooldia
+        #
+        #             if self.use_ui:
+        #                 self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+        #                 self.feedrate = self.exc_tools[tool]['data']['feedrate']
+        #                 gcode += self.doformat(p.z_feedrate_code)
+        #                 self.z_cut = self.exc_tools[tool]['data']['cutz']
+        #
+        #                 if self.machinist_setting == 0:
+        #                     if self.z_cut > 0:
+        #                         self.app.inform.emit('[WARNING] %s' %
+        #                                              _("The Cut Z parameter has positive value. "
+        #                                                "It is the depth value to drill into material.\n"
+        #                                                "The Cut Z parameter needs to have a negative value, "
+        #                                                "assuming it is a typo "
+        #                                                "therefore the app will convert the value to negative. "
+        #                                                "Check the resulting CNC code (Gcode etc)."))
+        #                         self.z_cut = -self.z_cut
+        #                     elif self.z_cut == 0:
+        #                         self.app.inform.emit('[WARNING] %s: %s' %
+        #                                              (_(
+        #                                                  "The Cut Z parameter is zero. There will be no cut, "
+        #                                                  "skipping file"),
+        #                                               exobj.options['name']))
+        #                         return 'fail'
+        #
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                 self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+        #                 self.dwell = self.exc_tools[tool]['data']['dwell']
+        #                 self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+        #                 self.multidepth = self.exc_tools[tool]['data']['multidepth']
+        #                 self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
+        #             else:
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #             # ###############################################
+        #             # ############ Create the data. #################
+        #             # ###############################################
+        #             locations = self.create_tool_data_array(tool=tool, points=points)
+        #             # if there are no locations then go to the next tool
+        #             if not locations:
+        #                 continue
+        #             optimized_path = self.optimized_ortools_meta(locations=locations)
+        #
+        #             # Only if tool has points.
+        #             if tool in points:
+        #                 if self.app.abort_flag:
+        #                     # graceful abort requested by the user
+        #                     raise grace
+        #
+        #                 # Tool change sequence (optional)
+        #                 if self.toolchange:
+        #                     gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+        #                 # Spindle start
+        #                 gcode += self.doformat(p.spindle_code)
+        #                 # Dwell time
+        #                 if self.dwell is True:
+        #                     gcode += self.doformat(p.dwell_code)
+        #
+        #                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
+        #
+        #                 self.app.inform.emit(
+        #                     '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+        #                                    str(current_tooldia),
+        #                                    str(self.units))
+        #                 )
+        #
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+        #                 # because the values for Z offset are created in build_ui()
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 try:
+        #                     z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
+        #                 except KeyError:
+        #                     z_offset = 0
+        #                 self.z_cut = z_offset + old_zcut
+        #
+        #                 self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        #                 if self.coordinates_type == "G90":
+        #                     # Drillling! for Absolute coordinates type G90
+        #                     # variables to display the percentage of work done
+        #                     geo_len = len(optimized_path)
+        #
+        #                     old_disp_number = 0
+        #                     log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+        #
+        #                     loc_nr = 0
+        #                     for k in optimized_path:
+        #                         if self.app.abort_flag:
+        #                             # graceful abort requested by the user
+        #                             raise grace
+        #
+        #                         locx = locations[k][0]
+        #                         locy = locations[k][1]
+        #
+        #                         travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+        #                                                                         end_point=(locx, locy),
+        #                                                                         tooldia=current_tooldia)
+        #                         prev_z = None
+        #                         for travel in travels:
+        #                             locx = travel[1][0]
+        #                             locy = travel[1][1]
+        #
+        #                             if travel[0] is not None:
+        #                                 # move to next point
+        #                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                 # raise to safe Z (travel[0]) each time because safe Z may be different
+        #                                 self.z_move = travel[0]
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                                 # restore z_move
+        #                                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                             else:
+        #                                 if prev_z is not None:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                     # we assume that previously the z_move was altered therefore raise to
+        #                                     # the travel_z (z_move)
+        #                                     self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                                     gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #                                 else:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                             # store prev_z
+        #                             prev_z = travel[0]
+        #
+        #                         # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                         if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+        #                             doc = deepcopy(self.z_cut)
+        #                             self.z_cut = 0.0
+        #
+        #                             while abs(self.z_cut) < abs(doc):
+        #
+        #                                 self.z_cut -= self.z_depthpercut
+        #                                 if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+        #                                     self.z_cut = doc
+        #                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                                 measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 if self.f_retract is False:
+        #                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                     measured_up_to_zero_distance += abs(self.z_cut)
+        #                                     measured_lift_distance += abs(self.z_move)
+        #                                 else:
+        #                                     measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         else:
+        #                             gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                             measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             if self.f_retract is False:
+        #                                 gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                 measured_up_to_zero_distance += abs(self.z_cut)
+        #                                 measured_lift_distance += abs(self.z_move)
+        #                             else:
+        #                                 measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+        #                         self.oldx = locx
+        #                         self.oldy = locy
+        #
+        #                         loc_nr += 1
+        #                         disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+        #
+        #                         if old_disp_number < disp_number <= 100:
+        #                             self.app.proc_container.update_view_text(' %d%%' % disp_number)
+        #                             old_disp_number = disp_number
+        #
+        #                 else:
+        #                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+        #                     return 'fail'
+        #             self.z_cut = deepcopy(old_zcut)
+        #     else:
+        #         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #                   "The loaded Excellon file has no drills ...")
+        #         self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+        #         return 'fail'
+        #
+        #     log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
+        #
+        # elif used_excellon_optimization_type == 'B':
+        #     log.debug("Using OR-Tools Basic drill path optimization.")
+        #
+        #     if has_drills:
+        #         for tool in tools:
+        #             if self.app.abort_flag:
+        #                 # graceful abort requested by the user
+        #                 raise grace
+        #
+        #             self.tool = tool
+        #             self.tooldia = self.exc_tools[tool]["tooldia"]
+        #             self.postdata['toolC'] = self.tooldia
+        #
+        #             if self.use_ui:
+        #                 self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+        #                 self.feedrate = self.exc_tools[tool]['data']['feedrate']
+        #                 gcode += self.doformat(p.z_feedrate_code)
+        #                 self.z_cut = self.exc_tools[tool]['data']['cutz']
+        #
+        #                 if self.machinist_setting == 0:
+        #                     if self.z_cut > 0:
+        #                         self.app.inform.emit('[WARNING] %s' %
+        #                                              _("The Cut Z parameter has positive value. "
+        #                                                "It is the depth value to drill into material.\n"
+        #                                                "The Cut Z parameter needs to have a negative value, "
+        #                                                "assuming it is a typo "
+        #                                                "therefore the app will convert the value to negative. "
+        #                                                "Check the resulting CNC code (Gcode etc)."))
+        #                         self.z_cut = -self.z_cut
+        #                     elif self.z_cut == 0:
+        #                         self.app.inform.emit('[WARNING] %s: %s' %
+        #                                              (_(
+        #                                                  "The Cut Z parameter is zero. There will be no cut, "
+        #                                                  "skipping file"),
+        #                                               exobj.options['name']))
+        #                         return 'fail'
+        #
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #
+        #                 self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+        #                 self.dwell = self.exc_tools[tool]['data']['dwell']
+        #                 self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+        #                 self.multidepth = self.exc_tools[tool]['data']['multidepth']
+        #                 self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
+        #             else:
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #             # ###############################################
+        #             # ############ Create the data. #################
+        #             # ###############################################
+        #             locations = self.create_tool_data_array(tool=tool, points=points)
+        #             # if there are no locations then go to the next tool
+        #             if not locations:
+        #                 continue
+        #             optimized_path = self.optimized_ortools_basic(locations=locations)
+        #
+        #             # Only if tool has points.
+        #             if tool in points:
+        #                 if self.app.abort_flag:
+        #                     # graceful abort requested by the user
+        #                     raise grace
+        #
+        #                 # Tool change sequence (optional)
+        #                 if self.toolchange:
+        #                     gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+        #                     gcode += self.doformat(p.spindle_code)  # Spindle start)
+        #                     if self.dwell is True:
+        #                         gcode += self.doformat(p.dwell_code)  # Dwell time
+        #                 else:
+        #                     gcode += self.doformat(p.spindle_code)
+        #                     if self.dwell is True:
+        #                         gcode += self.doformat(p.dwell_code)  # Dwell time
+        #
+        #                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
+        #
+        #                 self.app.inform.emit(
+        #                     '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+        #                                    str(current_tooldia),
+        #                                    str(self.units))
+        #                 )
+        #
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+        #                 # because the values for Z offset are created in build_ui()
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 try:
+        #                     z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
+        #                 except KeyError:
+        #                     z_offset = 0
+        #                 self.z_cut = z_offset + old_zcut
+        #
+        #                 self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        #                 if self.coordinates_type == "G90":
+        #                     # Drillling! for Absolute coordinates type G90
+        #                     # variables to display the percentage of work done
+        #                     geo_len = len(optimized_path)
+        #                     old_disp_number = 0
+        #                     log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+        #
+        #                     loc_nr = 0
+        #                     for k in optimized_path:
+        #                         if self.app.abort_flag:
+        #                             # graceful abort requested by the user
+        #                             raise grace
+        #
+        #                         locx = locations[k][0]
+        #                         locy = locations[k][1]
+        #
+        #                         travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+        #                                                                         end_point=(locx, locy),
+        #                                                                         tooldia=current_tooldia)
+        #                         prev_z = None
+        #                         for travel in travels:
+        #                             locx = travel[1][0]
+        #                             locy = travel[1][1]
+        #
+        #                             if travel[0] is not None:
+        #                                 # move to next point
+        #                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                 # raise to safe Z (travel[0]) each time because safe Z may be different
+        #                                 self.z_move = travel[0]
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                                 # restore z_move
+        #                                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                             else:
+        #                                 if prev_z is not None:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                     # we assume that previously the z_move was altered therefore raise to
+        #                                     # the travel_z (z_move)
+        #                                     self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                                     gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #                                 else:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                             # store prev_z
+        #                             prev_z = travel[0]
+        #
+        #                         # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                         if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+        #                             doc = deepcopy(self.z_cut)
+        #                             self.z_cut = 0.0
+        #
+        #                             while abs(self.z_cut) < abs(doc):
+        #
+        #                                 self.z_cut -= self.z_depthpercut
+        #                                 if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+        #                                     self.z_cut = doc
+        #                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                                 measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 if self.f_retract is False:
+        #                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                     measured_up_to_zero_distance += abs(self.z_cut)
+        #                                     measured_lift_distance += abs(self.z_move)
+        #                                 else:
+        #                                     measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         else:
+        #                             gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                             measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             if self.f_retract is False:
+        #                                 gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                 measured_up_to_zero_distance += abs(self.z_cut)
+        #                                 measured_lift_distance += abs(self.z_move)
+        #                             else:
+        #                                 measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+        #                         self.oldx = locx
+        #                         self.oldy = locy
+        #
+        #                         loc_nr += 1
+        #                         disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+        #
+        #                         if old_disp_number < disp_number <= 100:
+        #                             self.app.proc_container.update_view_text(' %d%%' % disp_number)
+        #                             old_disp_number = disp_number
+        #
+        #                 else:
+        #                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+        #                     return 'fail'
+        #             self.z_cut = deepcopy(old_zcut)
+        #     else:
+        #         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #                   "The loaded Excellon file has no drills ...")
+        #         self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+        #         return 'fail'
+        #
+        #     log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+        #
+        # elif used_excellon_optimization_type == 'T':
+        #     log.debug("Using Travelling Salesman drill path optimization.")
+        #
+        #     for tool in tools:
+        #         if self.app.abort_flag:
+        #             # graceful abort requested by the user
+        #             raise grace
+        #
+        #         if has_drills:
+        #             self.tool = tool
+        #             self.tooldia = self.exc_tools[tool]["tooldia"]
+        #             self.postdata['toolC'] = self.tooldia
+        #
+        #             if self.use_ui:
+        #                 self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+        #                 self.feedrate = self.exc_tools[tool]['data']['feedrate']
+        #                 gcode += self.doformat(p.z_feedrate_code)
+        #
+        #                 self.z_cut = self.exc_tools[tool]['data']['cutz']
+        #
+        #                 if self.machinist_setting == 0:
+        #                     if self.z_cut > 0:
+        #                         self.app.inform.emit('[WARNING] %s' %
+        #                                              _("The Cut Z parameter has positive value. "
+        #                                                "It is the depth value to drill into material.\n"
+        #                                                "The Cut Z parameter needs to have a negative value, "
+        #                                                "assuming it is a typo "
+        #                                                "therefore the app will convert the value to negative. "
+        #                                                "Check the resulting CNC code (Gcode etc)."))
+        #                         self.z_cut = -self.z_cut
+        #                     elif self.z_cut == 0:
+        #                         self.app.inform.emit('[WARNING] %s: %s' %
+        #                                              (_(
+        #                                                  "The Cut Z parameter is zero. There will be no cut, "
+        #                                                  "skipping file"),
+        #                                               exobj.options['name']))
+        #                         return 'fail'
+        #
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                 self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+        #                 self.dwell = self.exc_tools[tool]['data']['dwell']
+        #                 self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+        #                 self.multidepth = self.exc_tools[tool]['data']['multidepth']
+        #                 self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
+        #             else:
+        #                 old_zcut = deepcopy(self.z_cut)
+        #
+        #             # ###############################################
+        #             # ############ Create the data. #################
+        #             # ###############################################
+        #             altPoints = []
+        #             for point in points[tool]:
+        #                 altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+        #             optimized_path = self.optimized_travelling_salesman(altPoints)
+        #
+        #             # Only if tool has points.
+        #             if tool in points:
+        #                 if self.app.abort_flag:
+        #                     # graceful abort requested by the user
+        #                     raise grace
+        #
+        #                 # Tool change sequence (optional)
+        #                 if self.toolchange:
+        #                     gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
+        #                     gcode += self.doformat(p.spindle_code)  # Spindle start)
+        #                     if self.dwell is True:
+        #                         gcode += self.doformat(p.dwell_code)  # Dwell time
+        #                 else:
+        #                     gcode += self.doformat(p.spindle_code)
+        #                     if self.dwell is True:
+        #                         gcode += self.doformat(p.dwell_code)  # Dwell time
+        #
+        #                 current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
+        #
+        #                 self.app.inform.emit(
+        #                     '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+        #                                    str(current_tooldia),
+        #                                    str(self.units))
+        #                 )
+        #
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 # APPLY Offset only when using the appGUI, for TclCommand this will create an error
+        #                 # because the values for Z offset are created in build_ui()
+        #                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                 try:
+        #                     z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
+        #                 except KeyError:
+        #                     z_offset = 0
+        #                 self.z_cut = z_offset + old_zcut
+        #
+        #                 self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        #                 if self.coordinates_type == "G90":
+        #                     # Drillling! for Absolute coordinates type G90
+        #                     # variables to display the percentage of work done
+        #                     geo_len = len(optimized_path)
+        #                     old_disp_number = 0
+        #                     log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+        #
+        #                     loc_nr = 0
+        #                     for point in optimized_path:
+        #                         if self.app.abort_flag:
+        #                             # graceful abort requested by the user
+        #                             raise grace
+        #
+        #                         locx = point[0]
+        #                         locy = point[1]
+        #
+        #                         travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+        #                                                                         end_point=(locx, locy),
+        #                                                                         tooldia=current_tooldia)
+        #                         prev_z = None
+        #                         for travel in travels:
+        #                             locx = travel[1][0]
+        #                             locy = travel[1][1]
+        #
+        #                             if travel[0] is not None:
+        #                                 # move to next point
+        #                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                 # raise to safe Z (travel[0]) each time because safe Z may be different
+        #                                 self.z_move = travel[0]
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                                 # restore z_move
+        #                                 self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                             else:
+        #                                 if prev_z is not None:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                                     # we assume that previously the z_move was altered therefore raise to
+        #                                     # the travel_z (z_move)
+        #                                     self.z_move = self.exc_tools[tool]['data']['travelz']
+        #                                     gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #                                 else:
+        #                                     # move to next point
+        #                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                             # store prev_z
+        #                             prev_z = travel[0]
+        #
+        #                         # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+        #
+        #                         if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+        #                             doc = deepcopy(self.z_cut)
+        #                             self.z_cut = 0.0
+        #
+        #                             while abs(self.z_cut) < abs(doc):
+        #
+        #                                 self.z_cut -= self.z_depthpercut
+        #                                 if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+        #                                     self.z_cut = doc
+        #                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                                 measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 if self.f_retract is False:
+        #                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                     measured_up_to_zero_distance += abs(self.z_cut)
+        #                                     measured_lift_distance += abs(self.z_move)
+        #                                 else:
+        #                                     measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         else:
+        #                             gcode += self.doformat(p.down_code, x=locx, y=locy)
+        #
+        #                             measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             if self.f_retract is False:
+        #                                 gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+        #                                 measured_up_to_zero_distance += abs(self.z_cut)
+        #                                 measured_lift_distance += abs(self.z_move)
+        #                             else:
+        #                                 measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+        #
+        #                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
+        #
+        #                         measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+        #                         self.oldx = locx
+        #                         self.oldy = locy
+        #
+        #                         loc_nr += 1
+        #                         disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+        #
+        #                         if old_disp_number < disp_number <= 100:
+        #                             self.app.proc_container.update_view_text(' %d%%' % disp_number)
+        #                             old_disp_number = disp_number
+        #                 else:
+        #                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+        #                     return 'fail'
+        #             else:
+        #                 log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+        #                           "The loaded Excellon file has no drills ...")
+        #                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+        #                 return 'fail'
+        #         self.z_cut = deepcopy(old_zcut)
+        #     log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
+        #
+        # else:
+        #     log.debug("camlib.CNCJob.generate_from_excellon_by_tool(): Chosen drill optimization doesn't exist.")
+        #     return 'fail'
+
+        # Spindle stop
+        gcode += self.doformat(p.spindle_stop_code)
+        # Move to End position
         gcode += self.doformat(p.end_code, x=0, y=0)
 
+        # #############################################################################################################
+        # ############################# Calculate DISTANCE and ESTIMATED TIME #########################################
+        # #############################################################################################################
         measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
@@ -3678,7 +4822,11 @@ class CNCjob(Geometry):
         traveled_time = measured_distance / self.feedrate_rapid
         self.routing_time += lift_time + traveled_time
 
+        # #############################################################################################################
+        # ############################# Store the GCODE for further usage ############################################
+        # #############################################################################################################
         self.gcode = gcode
+
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
@@ -3727,7 +4875,7 @@ class CNCjob(Geometry):
         :return:                    GCode - string
         """
 
-        log.debug("Generate_from_multitool_geometry()")
+        log.debug("generate_from_multitool_geometry()")
 
         temp_solid_geometry = []
         if offset != 0.0:
@@ -3957,7 +5105,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapley 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
@@ -3979,9 +5128,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
-                                                               tolerance,  z_move=z_move, postproc=p,
-                                                               old_point=current_pt)
+                    gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
+                                                           tolerance,  z_move=z_move, postproc=p,
+                                                           old_point=current_pt)
+                    self.gcode += gc
 
                 # calculate the total distance
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
@@ -4011,6 +5161,375 @@ class CNCjob(Geometry):
             '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
         )
         return self.gcode
+
+    def geometry_tool_gcode_gen(self, tool, tools, first_pt, tolerance, is_first=False, is_last=False,
+                                toolchange=False):
+        """
+        Algorithm to generate GCode from multitool Geometry.
+
+        :param tool:        tool number for which to generate GCode
+        :type tool:         int
+        :param tools:       a dictionary holding all the tools and data
+        :type tools:        dict
+        :param first_pt:    a tuple of coordinates for the first point of the current tool
+        :type first_pt:     tuple
+        :param tolerance:   geometry tolerance
+        :type tolerance:
+        :param is_first:    if the current tool is the first tool (for this we need to add start GCode)
+        :type is_first:     bool
+        :param is_last:     if the current tool is the last tool (for this we need to add the end GCode)
+        :type is_last:      bool
+        :param toolchange:  add toolchange event
+        :type toolchange:   bool
+        :return:            GCode
+        :rtype:             str
+        """
+
+        log.debug("geometry_tool_gcode_gen()")
+
+        t_gcode = ''
+        temp_solid_geometry = []
+
+        # The Geometry from which we create GCode
+        geometry = tools[tool]['solid_geometry']
+        # ## Flatten the geometry. Only linear elements (no polygons) remain.
+        flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        # #########################################################################################################
+        # #########################################################################################################
+        # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
+        # #########################################################################################################
+        # #########################################################################################################
+        self.tool = str(tool)
+        tool_dict = tools[tool]['data']
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
+        # given under the name 'toolC'
+        self.postdata['toolC'] = float(tools[tool]['tooldia'])
+        self.tooldia = float(tools[tool]['tooldia'])
+        self.use_ui = True
+        self.tolerance = tolerance
+
+        # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'
+        opt_type = tool_dict['optimization_type']
+        opt_time = tool_dict['search_time'] if 'search_time' in tool_dict else 'R'
+
+        if opt_type == 'M':
+            log.debug("Using OR-Tools Metaheuristic Guided Local Search path optimization.")
+        elif opt_type == 'B':
+            log.debug("Using OR-Tools Basic path optimization.")
+        elif opt_type == 'T':
+            log.debug("Using Travelling Salesman path optimization.")
+        elif opt_type == 'R':
+            log.debug("Using RTree path optimization.")
+        else:
+            log.debug("Using no path optimization.")
+
+        # Preprocessor
+        self.pp_geometry_name = tool_dict['ppname_g']
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
+        p = self.pp_geometry
+
+        # Offset the Geometry if it is the case
+        # FIXME need to test if in ["Path", "In", "Out", "Custom"]. For now only 'Custom' is somehow done
+        offset = tools[tool]['offset_value']
+        if offset != 0.0:
+            for it in flat_geometry:
+                # if the geometry is a closed shape then create a Polygon out of it
+                if isinstance(it, LineString):
+                    if it.is_ring:
+                        it = Polygon(it)
+                temp_solid_geometry.append(it.buffer(offset, join_style=2))
+            temp_solid_geometry = self.flatten(temp_solid_geometry, reset=True, pathonly=True)
+        else:
+            temp_solid_geometry = flat_geometry
+
+        if self.z_cut is None:
+            if 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                           "other parameters."))
+                return 'fail'
+            else:
+                self.z_cut = 0
+        if self.machinist_setting == 0:
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
+                return 'fail'
+
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+        # made sure that depth_per_cut is no more then the z_cut
+        if abs(self.z_cut) < self.z_depthpercut:
+            self.z_depthpercut = abs(self.z_cut)
+
+        # Depth parameters
+        self.z_cut = float(tool_dict['cutz'])
+        self.multidepth = tool_dict['multidepth']
+        self.z_depthpercut = float(tool_dict['depthperpass'])
+        self.z_move = float(tool_dict['travelz'])
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
+
+        self.feedrate = float(tool_dict['feedrate'])
+        self.z_feedrate = float(tool_dict['feedrate_z'])
+        self.feedrate_rapid = float(tool_dict['feedrate_rapid'])
+
+        self.spindlespeed = float(tool_dict['spindlespeed'])
+        try:
+            self.spindledir = tool_dict['spindledir']
+        except KeyError:
+            self.spindledir = self.app.defaults["geometry_spindledir"]
+
+        self.dwell = tool_dict['dwell']
+        self.dwelltime = float(tool_dict['dwelltime'])
+
+        self.startz = float(tool_dict['startz']) if tool_dict['startz'] else None
+        if self.startz == '':
+            self.startz = None
+
+        self.z_end = float(tool_dict['endz'])
+        self.xy_end = tool_dict['endxy']
+        try:
+            if self.xy_end == '' or self.xy_end is None:
+                self.xy_end = None
+            else:
+                # either originally it was a string or not, xy_end will be made string
+                self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+                # and now, xy_end is made into a list of floats in format [x, y]
+                if self.xy_end:
+                    self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
+                if self.xy_end and len(self.xy_end) != 2:
+                    self.app.inform.emit('[ERROR]%s' % _("The End X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
+            self.xy_end = [0, 0]
+
+        self.z_toolchange = tool_dict['toolchangez']
+        self.xy_toolchange = tool_dict["toolchangexy"]
+        try:
+            if self.xy_toolchange == '':
+                self.xy_toolchange = None
+            else:
+                # either originally it was a string or not, xy_toolchange will be made string
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
+
+                # and now, xy_toolchange is made into a list of floats in format [x, y]
+                if self.xy_toolchange:
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
+                if self.xy_toolchange and len(self.xy_toolchange) != 2:
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
+            pass
+
+        self.extracut = tool_dict['extracut']
+        self.extracut_length = tool_dict['extracut_length']
+
+        # Probe parameters
+        # self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        # self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
+
+        # #########################################################################################################
+        # ############ Create the data. ###########################################################################
+        # #########################################################################################################
+        optimized_path = []
+
+        geo_storage = {}
+        for geo in temp_solid_geometry:
+            if not geo is None:
+                geo_storage[geo.coords[0]] = geo
+        locations = list(geo_storage.keys())
+
+        if opt_type == 'M':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
+            optimized_path = [(locations[loc], geo_storage[locations[loc]]) for loc in optimized_locations]
+        elif opt_type == 'B':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_ortools_basic(locations=locations)
+            optimized_path = [(locations[loc], geo_storage[locations[loc]]) for loc in optimized_locations]
+        elif opt_type == 'T':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_travelling_salesman(locations)
+            optimized_path = [(loc, geo_storage[loc]) for loc in optimized_locations]
+        elif opt_type == 'R':
+            optimized_path = self.geo_optimized_rtree(temp_solid_geometry)
+            if optimized_path == 'fail':
+                return 'fail'
+        else:
+            # it's actually not optimized path but here we build a list of (x,y) coordinates
+            # out of the tool's drills
+            for geo in temp_solid_geometry:
+                optimized_path.append(geo.coords[0])
+        # #########################################################################################################
+        # #########################################################################################################
+
+        # Only if there are locations to mill
+        if not optimized_path:
+            log.debug("camlib.CNCJob.geometry_tool_gcode_gen() -> Optimized path is empty.")
+            return 'fail'
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # ################# MILLING !!! ##############################################################################
+        # #############################################################################################################
+        # #############################################################################################################
+        log.debug("Starting G-Code...")
+
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
+        self.app.inform.emit('%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                            str(current_tooldia),
+                                            str(self.units)))
+
+        # Measurements
+        total_travel = 0.0
+        total_cut = 0.0
+
+        # Start GCode
+        start_gcode = ''
+        if is_first:
+            start_gcode = self.doformat(p.start_code)
+            t_gcode += start_gcode
+
+        # Toolchange code
+        t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
+        if toolchange:
+            t_gcode += self.doformat(p.toolchange_code)
+
+            if 'laser' not in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.spindle_code)  # Spindle start
+            else:
+                # for laser this will disable the laser
+                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+
+            if self.dwell:
+                t_gcode += self.doformat(p.dwell_code)  # Dwell time
+        else:
+            t_gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+            t_gcode += self.doformat(p.startz_code, x=0, y=0)
+
+            if 'laser' not in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.spindle_code)  # Spindle start
+
+            if self.dwell is True:
+                t_gcode += self.doformat(p.dwell_code)  # Dwell time
+        t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
+
+        # ## Iterate over geometry paths getting the nearest each time.
+        path_count = 0
+
+        # variables to display the percentage of work done
+        geo_len = len(flat_geometry)
+        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+        old_disp_number = 0
+
+        current_pt = (0, 0)
+        for pt, geo in optimized_path:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            path_count += 1
+
+            # If last point in geometry is the nearest but prefer the first one if last point == first point
+            # then reverse coordinates.
+            if pt != geo.coords[0] and pt == geo.coords[-1]:
+                geo = LineString(list(geo.coords)[::-1])
+
+            # ---------- Single depth/pass --------
+            if not self.multidepth:
+                # calculate the cut distance
+                total_cut = total_cut + geo.length
+
+                t_gcode += self.create_gcode_single_pass(geo, current_tooldia, self.extracut,
+                                                         self.extracut_length, self.tolerance,
+                                                         z_move=self.z_move, old_point=current_pt)
+
+            # --------- Multi-pass ---------
+            else:
+                # calculate the cut distance
+                # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                nr_cuts = 0
+                depth = abs(self.z_cut)
+                while depth > 0:
+                    nr_cuts += 1
+                    depth -= float(self.z_depthpercut)
+
+                total_cut += (geo.length * nr_cuts)
+
+                gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, self.extracut,
+                                                       self.extracut_length, self.tolerance,
+                                                       z_move=self.z_move, postproc=p, old_point=current_pt)
+                t_gcode += gc
+
+            # calculate the total distance
+            total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
+            current_pt = geo.coords[-1]
+
+            disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
+            if old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                old_disp_number = disp_number
+
+        log.debug("Finished G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
+
+        # Finish
+        if is_last:
+            t_gcode += self.doformat(p.spindle_stop_code)
+            t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+            t_gcode += self.doformat(p.end_code, x=0, y=0)
+            self.app.inform.emit(
+                '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
+            )
+
+        self.gcode = t_gcode
+        return self.gcode, start_gcode
 
     def generate_from_geometry_2(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
@@ -4054,10 +5573,6 @@ class CNCjob(Geometry):
         :param tool_no:
         :return:                    None
         """
-
-        if not isinstance(geometry, Geometry):
-            self.app.inform.emit('[ERROR] %s: %s' % (_("Expected a Geometry, got"), type(geometry)))
-            return 'fail'
         log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
@@ -4065,8 +5580,7 @@ class CNCjob(Geometry):
             self.app.inform.emit(
                 '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
             )
-
-        temp_solid_geometry = []
+            return 'fail'
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -4094,6 +5608,8 @@ class CNCjob(Geometry):
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
 
+        # Create the solid geometry which will be used to generate GCode
+        temp_solid_geometry = []
         if offset != 0.0:
             offset_for_use = offset
 
@@ -4191,9 +5707,7 @@ class CNCjob(Geometry):
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
                 if len(self.xy_toolchange) < 2:
-                    msg = _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y)\n"
-                            "but now there is only one value, not two.")
-                    self.app.inform.emit('[ERROR] %s' % msg)
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
@@ -4365,7 +5879,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapely 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
@@ -4386,9 +5901,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
-                                                               tolerance, z_move=z_move, postproc=p,
-                                                               old_point=current_pt)
+                    gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
+                                                           tolerance, z_move=z_move, postproc=p,
+                                                           old_point=current_pt)
+                    self.gcode += gc
 
                 # calculate the travel distance
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
@@ -4518,7 +6034,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapely 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 self.gcode += self.create_soldepaste_gcode(geo, p=p, old_point=current_pt)
                 current_pt = geo.coords[-1]
@@ -4718,17 +6235,17 @@ class CNCjob(Geometry):
 
             # Reverse coordinates if not a loop so we can continue cutting without returning to the beginning.
             if type(geometry) == LineString:
-                geometry.coords = list(geometry.coords)[::-1]
+                geometry = LineString(list(geometry.coords)[::-1])
                 reverse = True
 
         # If geometry is reversed, revert.
         if reverse:
             if type(geometry) == LineString:
-                geometry.coords = list(geometry.coords)[::-1]
+                geometry = LineString(list(geometry.coords)[::-1])
 
         # Lift the tool
         gcode_multi_pass += self.doformat(p.lift_code, x=old_point[0], y=old_point[1])
-        return gcode_multi_pass
+        return gcode_multi_pass, geometry
 
     def codes_split(self, gline):
         """
@@ -4808,7 +6325,7 @@ class CNCjob(Geometry):
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
 
-        Will return a dict in the format:
+        Will return a list of dict in the format:
         {
             "geom": LineString(path),
             "kind": kind
@@ -4906,22 +6423,27 @@ class CNCjob(Geometry):
                         )
 
                         # find the drill diameter knowing the drill coordinates
-                        for pt_dict in self.exc_drills:
-                            point_in_dict_coords = (
-                                float('%.*f' % (self.decimals, pt_dict['point'].x)),
-                                float('%.*f' % (self.decimals, pt_dict['point'].y))
-                            )
-                            if point_in_dict_coords == current_drill_point_coords:
-                                tool = pt_dict['tool']
-                                dia = self.exc_tools[tool]['C']
-                                kind = ['C', 'F']
-                                geometry.append(
-                                    {
-                                        "geom": Point(current_drill_point_coords).buffer(dia / 2.0).exterior,
-                                        "kind": kind
-                                    }
-                                )
-                                break
+                        break_loop = False
+                        for tool, tool_dict in self.exc_tools.items():
+                            if 'drills' in tool_dict:
+                                for drill_pt in tool_dict['drills']:
+                                    point_in_dict_coords = (
+                                        float('%.*f' % (self.decimals, drill_pt.x)),
+                                        float('%.*f' % (self.decimals, drill_pt.y))
+                                    )
+                                    if point_in_dict_coords == current_drill_point_coords:
+                                        dia = self.exc_tools[tool]['tooldia']
+                                        kind = ['C', 'F']
+                                        geometry.append(
+                                            {
+                                                "geom": Point(current_drill_point_coords).buffer(dia / 2.0).exterior,
+                                                "kind": kind
+                                            }
+                                        )
+                                        break_loop = True
+                                        break
+                                if break_loop:
+                                    break
 
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])
@@ -4976,6 +6498,149 @@ class CNCjob(Geometry):
             )
 
         self.gcode_parsed = geometry
+        return geometry
+
+    def excellon_tool_gcode_parse(self, dia, gcode, start_pt=(0, 0), force_parsing=None):
+        """
+        G-Code parser (from self.exc_cnc_tools['tooldia']['gcode']). Generates dictionary with
+        single-segment LineString's and "kind" indicating cut or travel,
+        fast or feedrate speed.
+
+        Will return the Geometry as a list of dict in the format:
+        {
+            "geom": LineString(path),
+            "kind": kind
+        }
+        where kind can be either ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
+
+        :param dia:             the dia is a tool diameter which is the key in self.exc_cnc_tools dict
+        :type dia:              float
+        :param gcode:           Gcode to parse
+        :type gcode:            str
+        :param start_pt:        the point coordinates from where to start the parsing
+        :type start_pt:         tuple
+        :param force_parsing:
+        :type force_parsing:    bool
+        :return:                Geometry as a list of dictionaries
+        :rtype:                 list
+        """
+
+        kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
+
+        # Results go here
+        geometry = []
+
+        # Last known instruction
+        current = {'X': 0.0, 'Y': 0.0, 'Z': 0.0, 'G': 0}
+
+        # Current path: temporary storage until tool is
+        # lifted or lowered.
+        pos_xy = start_pt
+
+        path = [pos_xy]
+        # path = [(0, 0)]
+
+        gcode_lines_list = gcode.splitlines()
+        self.app.inform.emit(
+            '%s: %s. %s: %d' % (_("Parsing GCode file for tool diameter"),
+                                str(dia), _("Number of lines"),
+                                len(gcode_lines_list))
+        )
+
+        # Process every instruction
+        for line in gcode_lines_list:
+            if force_parsing is False or force_parsing is None:
+                if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
+                    return "fail"
+
+            gobj = self.codes_split(line)
+
+            # ## Units
+            if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
+                self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]
+                continue
+
+            # TODO take into consideration the tools and update the travel line thickness
+            if 'T' in gobj:
+                pass
+
+            # ## Changing height
+            if 'Z' in gobj:
+                if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
+                    pass
+                elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
+                    pass
+                elif 'laser' in self.pp_excellon_name or 'laser' in self.pp_geometry_name:
+                    pass
+                elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
+                    if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':
+                        pass
+                    else:
+                        log.warning("Non-orthogonal motion: From %s" % str(current))
+                        log.warning("  To: %s" % str(gobj))
+
+                current['Z'] = gobj['Z']
+                # Store the path into geometry and reset path
+                if len(path) > 1:
+                    geometry.append({"geom": LineString(path),
+                                     "kind": kind})
+                    path = [path[-1]]  # Start with the last point of last path.
+
+                # create the geometry for the holes created when drilling Excellon drills
+                if current['Z'] < 0:
+                    current_drill_point_coords = (
+                        float('%.*f' % (self.decimals, current['X'])),
+                        float('%.*f' % (self.decimals, current['Y']))
+                    )
+
+                    kind = ['C', 'F']
+                    geometry.append(
+                        {
+                            "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
+                            "kind": kind
+                        }
+                    )
+
+            if 'G' in gobj:
+                current['G'] = int(gobj['G'])
+
+            if 'X' in gobj or 'Y' in gobj:
+                x = gobj['X'] if 'X' in gobj else current['X']
+                y = gobj['Y'] if 'Y' in gobj else current['Y']
+
+                kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
+
+                if current['Z'] > 0:
+                    kind[0] = 'T'
+                if current['G'] > 0:
+                    kind[1] = 'S'
+                if current['G'] in [0, 1]:  # line
+                    path.append((x, y))
+
+                arcdir = [None, None, "cw", "ccw"]
+                if current['G'] in [2, 3]:  # arc
+                    center = [gobj['I'] + current['X'], gobj['J'] + current['Y']]
+                    radius = np.sqrt(gobj['I'] ** 2 + gobj['J'] ** 2)
+                    start = np.arctan2(-gobj['J'], -gobj['I'])
+                    stop = np.arctan2(-center[1] + y, -center[0] + x)
+                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle))
+
+                current['X'] = x
+                current['Y'] = y
+
+            # Update current instruction
+            for code in gobj:
+                current[code] = gobj[code]
+
+        self.app.inform.emit('%s: %s' % (_("Creating Geometry from the parsed GCode file for tool diameter"), str(dia)))
+        # There might not be a change in height at the end, therefore, see here too if there is a final path.
+        if len(path) > 1:
+            geometry.append(
+                {
+                    "geom": LineString(path),
+                    "kind": kind
+                }
+            )
         return geometry
 
     # def plot(self, tooldia=None, dpi=75, margin=0.1,
@@ -5050,7 +6715,6 @@ class CNCjob(Geometry):
             }
 
         gcode_parsed = gcode_parsed if gcode_parsed else self.gcode_parsed
-        path_num = 0
 
         if tooldia is None:
             tooldia = self.tooldia
@@ -5070,30 +6734,42 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
         else:
-            text = []
-            pos = []
+            path_num = 0
+
             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
-                        current_position = geo['geom'].coords[0]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+                        start_position = geo['geom'].coords[0]
 
-                        current_position = geo['geom'].coords[-1]
-                        if current_position not in pos:
-                            pos.append(current_position)
+                        if tooldia not in obj.annotations_dict:
+                            obj.annotations_dict[tooldia] = {
+                                'pos': [],
+                                'text': []
+                            }
+                        if start_position not in obj.annotations_dict[tooldia]['pos']:
                             path_num += 1
-                            text.append(str(path_num))
+                            obj.annotations_dict[tooldia]['pos'].append(start_position)
+                            obj.annotations_dict[tooldia]['text'].append(str(path_num))
+
+                        end_position = geo['geom'].coords[-1]
+
+                        if tooldia not in obj.annotations_dict:
+                            obj.annotations_dict[tooldia] = {
+                                'pos': [],
+                                'text': []
+                            }
+                        if end_position not in obj.annotations_dict[tooldia]['pos']:
+                            path_num += 1
+                            obj.annotations_dict[tooldia]['pos'].append(end_position)
+                            obj.annotations_dict[tooldia]['text'].append(str(path_num))
 
                     # plot the geometry of Excellon objects
                     if self.origin_kind == 'excellon':
                         try:
+                            # if the geos are travel lines
                             if geo['kind'][0] == 'T':
-                                # if the geos are travel lines it will enter into Exception
                                 poly = geo['geom'].buffer(distance=(tooldia / 1.99999999),
                                                           resolution=self.steps_per_circle)
                             else:
@@ -5103,16 +6779,6 @@ class CNCjob(Geometry):
                         except Exception:
                             # deal here with unexpected plot errors due of LineStrings not valid
                             continue
-
-                        # try:
-                        #     poly = Polygon(geo['geom'])
-                        # except ValueError:
-                        #     # if the geos are travel lines it will enter into Exception
-                        #     poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                        #     poly = poly.simplify(tool_tolerance)
-                        # except Exception:
-                        #     # deal here with unexpected plot errors due of LineStrings not valid
-                        #     continue
                     else:
                         # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
@@ -5130,70 +6796,66 @@ class CNCjob(Geometry):
                             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                           visible=visible, layer=1)
             else:
-                # For Incremental coordinates type G91
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
-                for geo in gcode_parsed:
-                    if geo['kind'][0] == 'T':
-                        current_position = geo['geom'].coords[0]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+                return 'fail'
 
-                        current_position = geo['geom'].coords[-1]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+    def plot_annotations(self, obj, visible=True):
+        """
+        Plot annotations.
 
-                    # plot the geometry of Excellon objects
-                    if self.origin_kind == 'excellon':
-                        try:
-                            poly = Polygon(geo['geom'])
-                        except ValueError:
-                            # if the geos are travel lines it will enter into Exception
-                            poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                            poly = poly.simplify(tool_tolerance)
-                    else:
-                        # plot the geometry of any objects other than Excellon
-                        poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                        poly = poly.simplify(tool_tolerance)
+        :param obj:         FlatCAM CNCJob object for which to plot the annotations
+        :type obj:
+        :param visible:     annotaions visibility
+        :type visible:      bool
+        :return:            Nothing
+        :rtype:
+        """
 
-                    if kind == 'all':
-                        obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                                      visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
-                    elif kind == 'travel':
-                        if geo['kind'][0] == 'T':
-                            obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
-                                          visible=visible, layer=2)
-                    elif kind == 'cut':
-                        if geo['kind'][0] == 'C':
-                            obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
-                                          visible=visible, layer=1)
+        if not obj.annotations_dict:
+            return
 
-            try:
-                if self.app.defaults['global_theme'] == 'white':
-                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                       color=self.app.defaults["cncjob_annotation_fontcolor"])
-                else:
-                    # invert the color
-                    old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
-                    new_color = ''
-                    code = {}
-                    l1 = "#;0123456789abcdef"
-                    l2 = "#;fedcba9876543210"
-                    for i in range(len(l1)):
-                        code[l1[i]] = l2[i]
+        if visible is True:
+            obj.text_col.enabled = True
+        else:
+            obj.text_col.enabled = False
+            return
 
-                    for x in range(len(old_color)):
-                        new_color += code[old_color[x]]
+        text = []
+        pos = []
+        for tooldia in obj.annotations_dict:
+            pos += obj.annotations_dict[tooldia]['pos']
+            text += obj.annotations_dict[tooldia]['text']
 
-                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                       color=new_color)
-            except Exception as e:
-                log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
+        if not text or not pos:
+            return
+
+        try:
+            if self.app.defaults['global_theme'] == 'white':
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
+            else:
+                # invert the color
+                old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
+                new_color = ''
+                code = {}
+                l1 = "#;0123456789abcdef"
+                l2 = "#;fedcba9876543210"
+                for i in range(len(l1)):
+                    code[l1[i]] = l2[i]
+
+                for x in range(len(old_color)):
+                    new_color += code[old_color[x]]
+
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=new_color)
+        except Exception as e:
+            log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
+            if self.app.is_legacy is False:
+                obj.annotation.clear(update=True)
+
+        obj.annotation.redraw()
 
     def create_geometry(self):
         """
@@ -5204,10 +6866,10 @@ class CNCjob(Geometry):
         :rtype:     list
         """
 
-        # TODO: This takes forever. Too much data?
+        # This takes forever. Too much data?
         # self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
         #                                  str(len(self.gcode_parsed))))
-        # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        # self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # This is much faster but not so nice to look at as you can see different segments of the geometry
         self.solid_geometry = [geo['geom'] for geo in self.gcode_parsed]
@@ -5813,18 +7475,18 @@ class CNCjob(Geometry):
                 travels.append(g)
 
         # Used to determine the overall board size
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # Convert the cuts and travels into single geometry objects we can render as svg xml
         if travels:
-            travelsgeom = cascaded_union([geo['geom'] for geo in travels])
+            travelsgeom = unary_union([geo['geom'] for geo in travels])
 
         if self.app.abort_flag:
             # graceful abort requested by the user
             raise grace
 
         if cuts:
-            cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
+            cutsgeom = unary_union([geo['geom'] for geo in cuts])
 
         # Render the SVG Xml
         # The scale factor affects the size of the lines, and the stroke color adds different formatting for each set
@@ -6091,7 +7753,7 @@ class CNCjob(Geometry):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
         self.create_geometry()
         self.app.proc_container.new_text = ''
 
@@ -6200,7 +7862,7 @@ class CNCjob(Geometry):
                         self.old_disp_number = disp_number
 
                 # for the bounding box
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
 
         self.app.proc_container.new_text = ''
 
@@ -6572,7 +8234,7 @@ def dict2obj(d):
 #
 #     m = MultiLineString(edge_points)
 #     triangles = list(polygonize(m))
-#     return cascaded_union(triangles), edge_points
+#     return unary_union(triangles), edge_points
 
 # def voronoi(P):
 #     """

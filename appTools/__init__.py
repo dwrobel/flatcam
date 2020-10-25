@@ -19,6 +19,8 @@ from appTools.ToolCutOut import CutOut
 from appTools.ToolNCC import NonCopperClear
 from appTools.ToolPaint import ToolPaint
 from appTools.ToolIsolation import ToolIsolation
+from appTools.ToolDrilling import ToolDrilling
+from appTools.ToolMilling import ToolMilling
 
 from appTools.ToolOptimal import ToolOptimal
 

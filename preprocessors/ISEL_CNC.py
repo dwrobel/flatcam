@@ -17,6 +17,7 @@ class ISEL_CNC(PreProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
+        end_coords_xy = p['xy_end']
         gcode = '(This preprocessor is used with a ISEL CNC router.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
@@ -38,34 +39,36 @@ class ISEL_CNC(PreProc):
         elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
             gcode += '\n(TOOLS DIAMETER: )\n'
             for tool, val in p['exc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["C"]) + ')\n'
+                gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + ')\n'
 
             gcode += '\n(FEEDRATE Z: )\n'
             for tool, val in p['exc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % str(val['data']["feedrate_z"]) + ')\n'
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % \
+                         str(val['data']["tools_drill_feedrate_z"]) + ')\n'
 
             gcode += '\n(FEEDRATE RAPIDS: )\n'
             for tool, val in p['exc_tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate Rapids: %s' % \
-                         str(val['data']["feedrate_rapid"]) + ')\n'
+                         str(val['data']["tools_drill_feedrate_rapid"]) + ')\n'
 
             gcode += '\n(Z_CUT: )\n'
             for tool, val in p['exc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["cutz"]) + ')\n'
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["tools_drill_cutz"]) + ')\n'
 
             gcode += '\n(Tools Offset: )\n'
             for tool, val in p['exc_cnc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % str(val['offset_z']) + ')\n'
+                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % \
+                         str(val['data']["tools_drill_offset"]) + ')\n'
 
             if p['multidepth'] is True:
                 gcode += '\n(DEPTH_PER_CUT: )\n'
                 for tool, val in p['exc_tools'].items():
                     gcode += '(Tool: %s -> ' % str(tool) + 'DeptPerCut: %s' % \
-                             str(val['data']["depthperpass"]) + ')\n'
+                             str(val['data']["tools_drill_depthperpass"]) + ')\n'
 
             gcode += '\n(Z_MOVE: )\n'
             for tool, val in p['exc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["travelz"]) + ')\n'
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["tools_drill_travelz"]) + ')\n'
             gcode += '\n'
 
         if p['toolchange'] is True:
@@ -79,6 +82,12 @@ class ISEL_CNC(PreProc):
 
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
+        if end_coords_xy is not None:
+            gcode += '(X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
+                                                    p.decimals, end_coords_xy[1]) + units + ')\n'
+        else:
+            gcode += '(X,Y End: ' + "None" + units + ')\n'
+        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':

@@ -197,13 +197,11 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         # -----------------------------
         # --- Area Exclusion ----------
         # -----------------------------
-        self.adv_label = QtWidgets.QLabel('<b>%s:</b>' % _('Area Exclusion'))
-        self.adv_label.setToolTip(
-            _("Area exclusion parameters.\n"
-              "Those parameters are available only for\n"
-              "Advanced App. Level.")
+        self.area_exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Area Exclusion'))
+        self.area_exc_label.setToolTip(
+            _("Area exclusion parameters.")
         )
-        grid1.addWidget(self.adv_label, 13, 0, 1, 2)
+        grid1.addWidget(self.area_exc_label, 13, 0, 1, 2)
 
         # Exclusion Area CB
         self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))

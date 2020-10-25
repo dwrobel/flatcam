@@ -57,3 +57,5 @@ class TclCommandGetSys(TclCommand):
 
         if name in self.app.defaults:
             return self.app.defaults[name]
+        else:
+            return "The keyword: %s does not exist as a parameter" % str(name)

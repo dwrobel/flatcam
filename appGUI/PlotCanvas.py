@@ -224,6 +224,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         if state:
             self.axis_enabled = True
+            self.fcapp.defaults['global_axis'] = True
             self.v_line.parent = self.view.scene
             self.h_line.parent = self.view.scene
             self.fcapp.ui.axis_status_label.setStyleSheet("""
@@ -236,6 +237,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
+            self.fcapp.defaults['global_axis'] = False
             self.v_line.parent = None
             self.h_line.parent = None
             self.fcapp.ui.axis_status_label.setStyleSheet("")
@@ -271,10 +273,12 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         state = not self.grid_lines_enabled
 
         if state:
+            self.fcapp.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
             self.grid.parent = self.view.scene
             self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
         else:
+            self.fcapp.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
             self.grid.parent = None
             self.fcapp.inform[str, bool].emit(_("Grid disabled."), False)

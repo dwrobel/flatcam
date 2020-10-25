@@ -346,4 +346,14 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(plotting_label, 21, 0)
         grid0.addWidget(self.plotting_radio, 21, 1)
 
+        # Check Tool validity
+        self.valid_cb = FCCheckBox(label=_('Check validity'))
+        self.valid_cb.setToolTip(
+            _("If checked then the tools diameters are verified\n"
+              "if they will provide a complete isolation.")
+        )
+        self.valid_cb.setObjectName("n_check")
+
+        grid0.addWidget(self.valid_cb, 23, 0, 1, 2)
+
         self.layout.addStretch()

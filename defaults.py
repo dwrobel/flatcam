@@ -2,7 +2,7 @@ import os
 import stat
 import sys
 from copy import deepcopy
-from Common import LoudDict
+from appCommon.Common import LoudDict
 from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
@@ -16,7 +16,8 @@ from appParsers.ParseGerber import Gerber
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-log = logging.getLogger('FlatCAMDefaults')
+# log = logging.getLogger('FlatCAMDefaults')
+log = logging.getLogger('base')
 
 
 class FlatCAMDefaults:
@@ -29,6 +30,11 @@ class FlatCAMDefaults:
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": True,
+
+        "global_coords_show": True,
+        "global_delta_coords_show": False,
+        "global_status_show": True,
+
         "global_jump_ref": 'abs',
         "global_locate_pt": 'bl',
 
@@ -44,7 +50,6 @@ class FlatCAMDefaults:
             'in': [0.01, 0.02, 0.025, 0.05, 0.1],
             'mm': [0.1, 0.2, 0.5, 1, 2.54]
         },
-        "global_hud": True,
 
         # Persistence
         "global_last_folder": None,
@@ -82,13 +87,12 @@ class FlatCAMDefaults:
         "global_portable": False,
         "global_language": 'English',
 
-
         "global_systray_icon": True,
         "global_shell_at_startup": False,  # Show the shell at startup.
         "global_project_at_startup": False,
         "global_version_check": True,
         "global_send_stats": True,
-        "global_worker_number": 2,
+        "global_worker_number": int((os.cpu_count()) / 2) if os.cpu_count() > 4 else 2,
         "global_tolerance": 0.005,
 
         "global_save_compressed": True,
@@ -120,6 +124,7 @@ class FlatCAMDefaults:
         "global_project_autohide": True,
 
         # General App Settings
+        "global_grid_show": True,
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -127,6 +132,10 @@ class FlatCAMDefaults:
         "global_workspace": False,
         "global_workspaceT": "A4",
         "global_workspace_orientation": 'p',
+        "global_axis": True,
+        "global_hud": True,
+        "global_grid_lines": True,
+        "global_grid_snap": True,
 
         "global_cursor_type": "small",
         "global_cursor_size": 20,
@@ -150,6 +159,9 @@ class FlatCAMDefaults:
         "gerber_plot": True,
         "gerber_solid": True,
         "gerber_multicolored": False,
+        "gerber_color_list": [],
+        "gerber_store_color_list": True,
+
         "gerber_circle_steps": 64,
         "gerber_use_buffer_for_union": True,
         "gerber_clean_apertures": True,
@@ -223,6 +235,7 @@ class FlatCAMDefaults:
         "excellon_plot": True,
         "excellon_solid": True,
         "excellon_multicolored": False,
+        "excellon_merge_fuse_tools": True,
         "excellon_format_upper_in": 2,
         "excellon_format_lower_in": 4,
         "excellon_format_upper_mm": 3,
@@ -248,37 +261,12 @@ class FlatCAMDefaults:
 
         "excellon_milling_dia": 0.8,
 
-        "excellon_cutz": -1.7,
-        "excellon_multidepth": False,
-        "excellon_depthperpass": 0.7,
-        "excellon_travelz": 2,
-        "excellon_endz": 0.5,
-        "excellon_endxy": None,
-        "excellon_feedrate_z": 300,
-        "excellon_spindlespeed": 0,
-        "excellon_dwell": False,
-        "excellon_dwelltime": 1,
-        "excellon_toolchange": False,
-        "excellon_toolchangez": 15,
-        "excellon_ppname_e": 'default',
         "excellon_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
-        "excellon_gcode_type": "drills",
-        "excellon_area_exclusion": False,
-        "excellon_area_shape": "polygon",
-        "excellon_area_strategy": "over",
-        "excellon_area_overz": 1.0,
 
-        # Excellon Advanced Options
-        "excellon_offset": 0.0,
-        "excellon_toolchangexy": "0.0, 0.0",
-        "excellon_startz": None,
-        "excellon_feedrate_rapid": 1500,
-        "excellon_z_pdepth": -0.02,
-        "excellon_feedrate_probe": 75,
-        "excellon_spindledir": 'CW',
-        "excellon_f_plunge": False,
-        "excellon_f_retract": False,
+        # Excellon Advanced options
+        "excellon_tools_table_display": True,
+        "excellon_autoload_db": False,
 
         # Excellon Export
         "excellon_exp_units": 'INCH',
@@ -314,7 +302,10 @@ class FlatCAMDefaults:
         "geometry_multicolored": False,
         "geometry_circle_steps": 64,
         "geometry_cnctooldia": "2.4",
+        "geometry_merge_fuse_tools": True,
         "geometry_plot_line": "#FF0000",
+        "geometry_optimization_type": 'R',
+        "geometry_search_time": 3,
 
         # Geometry Options
         "geometry_cutz": -2.4,
@@ -351,6 +342,11 @@ class FlatCAMDefaults:
         "geometry_area_shape": "polygon",
         "geometry_area_strategy": "over",
         "geometry_area_overz": 1.0,
+        "geometry_polish": False,
+        "geometry_polish_dia": 10.0,
+        "geometry_polish_pressure": -1.0,
+        "geometry_polish_overlap": 1.0,
+        "geometry_polish_method": _("Standard"),
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
@@ -358,8 +354,6 @@ class FlatCAMDefaults:
 
         # CNC Job General
         "cncjob_plot": True,
-        "cncjob_plot_kind": 'all',
-        "cncjob_annotation": True,
         "cncjob_tooldia": 1.0,
         "cncjob_coords_type": "G90",
         "cncjob_coords_decimals": 4,
@@ -383,14 +377,29 @@ class FlatCAMDefaults:
         "cncjob_travel_fill": '#F0E24D4C',
 
         # CNC Job Options
-        "cncjob_prepend": "",
-        "cncjob_append": "",
+        "cncjob_plot_kind": 'all',
+        "cncjob_annotation": True,
 
         # CNC Job Advanced Options
-        "cncjob_toolchange_macro": "",
-        "cncjob_toolchange_macro_enable": False,
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
+        # Autolevelling
+        "cncjob_al_status": False,
+        "cncjob_al_mode": 'grid',
+        "cncjob_al_method": 'v',
+        "cncjob_al_rows": 4,
+        "cncjob_al_columns": 4,
+        "cncjob_al_travelz": 2.0,
+        "cncjob_al_probe_depth": -1.0,
+        "cncjob_al_probe_fr": 120,
+        "cncjob_al_controller": 'MACH3',
+        "cncjob_al_grbl_jog_step": 5,
+        "cncjob_al_grbl_jog_fr": 1500,
+        "cncjob_al_grbl_travelz": 15.0,
+
+        # CNC Job (GCode) Editor
+        "cncjob_prepend": "",
+        "cncjob_append": "",
 
         # Isolation Routing Tool
         "tools_iso_tooldia": "0.1",
@@ -408,7 +417,8 @@ class FlatCAMDefaults:
         "tools_iso_isotype": "full",
 
         "tools_iso_rest":           False,
-        "tools_iso_combine_passes": False,
+        "tools_iso_combine_passes": True,
+        "tools_iso_check_valid":    False,
         "tools_iso_isoexcept":      False,
         "tools_iso_selection":      _("All"),
         "tools_iso_poly_ints":      False,
@@ -416,56 +426,99 @@ class FlatCAMDefaults:
         "tools_iso_area_shape":     "square",
         "tools_iso_plotting":       'normal',
 
+        # Drilling Tool
+        "tools_drill_tool_order": 'no',
+        "tools_drill_cutz": -1.7,
+        "tools_drill_multidepth": False,
+        "tools_drill_depthperpass": 0.7,
+        "tools_drill_travelz": 2,
+        "tools_drill_endz": 0.5,
+        "tools_drill_endxy": None,
+
+        "tools_drill_feedrate_z": 300,
+        "tools_drill_spindlespeed": 0,
+        "tools_drill_dwell": False,
+        "tools_drill_dwelltime": 1,
+        "tools_drill_toolchange": False,
+        "tools_drill_toolchangez": 15,
+        "tools_drill_ppname_e": 'default',
+
+        "tools_drill_drill_slots": False,
+        "tools_drill_drill_overlap": 0.0,
+        "tools_drill_last_drill": True,
+
+        # Advanced Options
+        "tools_drill_offset": 0.0,
+        "tools_drill_toolchangexy": "0.0, 0.0",
+        "tools_drill_startz": None,
+        "tools_drill_feedrate_rapid": 1500,
+        "tools_drill_z_pdepth": -0.02,
+        "tools_drill_feedrate_probe": 75,
+        "tools_drill_spindledir": 'CW',
+        "tools_drill_f_plunge": False,
+        "tools_drill_f_retract": False,
+
+        "tools_drill_area_exclusion": False,
+        "tools_drill_area_shape": "polygon",
+        "tools_drill_area_strategy": "over",
+        "tools_drill_area_overz": 1.0,
+
         # NCC Tool
-        "tools_ncctools": "1.0, 0.5",
-        "tools_nccorder": 'rev',
-        "tools_nccoperation": 'clear',
-        "tools_nccoverlap": 40,
-        "tools_nccmargin": 1.0,
-        "tools_nccmethod": _("Seed"),
-        "tools_nccconnect": True,
-        "tools_ncccontour": True,
-        "tools_nccrest": False,
+        "tools_ncc_tools": "1.0, 0.5",
+        "tools_ncc_order": 'rev',
+        "tools_ncc_operation": 'clear',
+        "tools_ncc_overlap": 40,
+        "tools_ncc_margin": 1.0,
+        "tools_ncc_method": _("Seed"),
+        "tools_ncc_connect": True,
+        "tools_ncc_contour": True,
+        "tools_ncc_rest": False,
         "tools_ncc_offset_choice": False,
         "tools_ncc_offset_value": 0.0000,
-        "tools_nccref": _('Itself'),
+        "tools_ncc_ref": _('Itself'),
         "tools_ncc_area_shape": "square",
-        "tools_nccmilling_type": 'cl',
-        "tools_ncctool_type": 'C1',
-        "tools_ncccutz": -0.05,
-        "tools_ncctipdia": 0.1,
-        "tools_ncctipangle": 30,
-        "tools_nccnewdia": 0.1,
+        "tools_ncc_milling_type": 'cl',
+        "tools_ncc_tool_type": 'C1',
+        "tools_ncc_cutz": -0.05,
+        "tools_ncc_tipdia": 0.1,
+        "tools_ncc_tipangle": 30,
+        "tools_ncc_newdia": 0.1,
         "tools_ncc_plotting": 'normal',
+        "tools_ncc_check_valid": True,
 
         # Cutout Tool
-        "tools_cutouttooldia": 2.4,
-        "tools_cutoutkind": "single",
-        "tools_cutoutmargin": 0.1,
+        "tools_cutout_tooldia": 2.4,
+        "tools_cutout_kind": "single",
+        "tools_cutout_margin": 0.1,
         "tools_cutout_z": -1.8,
         "tools_cutout_depthperpass": 0.6,
         "tools_cutout_mdepth": True,
-        "tools_cutoutgapsize": 4,
-        "tools_gaps_ff": "4",
+        "tools_cutout_gapsize": 4,
+        "tools_cutout_gaps_ff": "4",
         "tools_cutout_convexshape": False,
+        "tools_cutout_big_cursor": True,
+        "tools_cutout_gap_type": 'b',
+        "tools_cutout_gap_depth": -1.0,
+        "tools_cutout_mb_dia": 0.6,
+        "tools_cutout_mb_spacing": 0.3,
 
         # Paint Tool
-        "tools_painttooldia": 0.3,
-        "tools_paintorder": 'rev',
-        "tools_paintoverlap": 20,
-        "tools_paintmargin": 0.0,
-        "tools_paintmethod": _("Seed"),
-        "tools_selectmethod": _("All"),
+        "tools_paint_tooldia": 0.3,
+        "tools_paint_order": 'rev',
+        "tools_paint_overlap": 20,
+        "tools_paint_offset": 0.0,
+        "tools_paint_method": _("Seed"),
+        "tools_paint_selectmethod": _("All"),
         "tools_paint_area_shape": "square",
-        "tools_pathconnect": True,
-        "tools_paintcontour": True,
+        "tools_paint_connect": True,
+        "tools_paint_contour": True,
         "tools_paint_plotting": 'normal',
-        "tools_paintrest": False,
-        "tools_painttool_type": 'C1',
-        "tools_paintcutz": -0.05,
-        "tools_painttipdia": 0.1,
-        "tools_painttipangle": 30,
-        "tools_paintnewdia": 0.1,
+        "tools_paint_rest": False,
+        "tools_paint_tool_type": 'C1',
+        "tools_paint_cutz": -0.05,
+        "tools_paint_tipdia": 0.1,
+        "tools_paint_tipangle": 30,
+        "tools_paint_newdia": 0.1,
 
         # 2-Sided Tool
         "tools_2sided_mirror_axis": "X",
@@ -490,12 +543,14 @@ class FlatCAMDefaults:
         "tools_film_file_type_radio": 'svg',
         "tools_film_orientation": 'p',
         "tools_film_pagesize": 'A4',
+        "tools_film_png_dpi": 96,
 
         # Panel Tool
         "tools_panelize_spacing_columns": 0.0,
         "tools_panelize_spacing_rows": 0.0,
         "tools_panelize_columns": 1,
         "tools_panelize_rows": 1,
+        "tools_panelize_optimization": True,
         "tools_panelize_constrain": False,
         "tools_panelize_constrainx": 200.0,
         "tools_panelize_constrainy": 290.0,
@@ -556,7 +611,6 @@ class FlatCAMDefaults:
         "tools_dist_snap_center": False,
 
         # Corner Markers Tool
-
         "tools_corners_thickness": 0.1,
         "tools_corners_length": 3.0,
         "tools_corners_margin": 0.0,
@@ -714,19 +768,22 @@ class FlatCAMDefaults:
     }
 
     @classmethod
-    def save_factory_defaults(cls, file_path: str, version: float):
+    def save_factory_defaults(cls, file_path: str, version: (float, str)):
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
-        # Delete any existing factory defaults file
+        # If the file exists
         if os.path.isfile(file_path):
-            # check if it has content other than an empty dict, because if it does we don't need it to be updated
-            # each time the app starts
+            # tst if it is empty
             with open(file_path, "r") as file:
                 f_defaults = simplejson.loads(file.read())
-                if f_defaults:
-                    return
 
-            os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-            os.remove(file_path)
+                # if the file is not empty
+                if f_defaults:
+                    # if it has the same version do nothing
+                    if str(f_defaults['version']) == str(version):
+                        return
+                    # if the versions differ then remove the file
+                    os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                    os.remove(file_path)
 
         cls.factory_defaults['version'] = version
 
@@ -743,12 +800,17 @@ class FlatCAMDefaults:
         except Exception as e:
             log.error("save_factory_defaults() -> %s" % str(e))
 
-    def __init__(self, callback=lambda x: None):
+    def __init__(self, callback=lambda x: None, beta=True, version=8.9):
         """
 
         :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
         """
         self.defaults = LoudDict()
+
+        self.beta = beta
+        self.version = version
+        self.factory_defaults['version'] = self.version
+
         self.defaults.update(self.factory_defaults)
         self.current_defaults = {}  # copy used for restoring after cancelled prefs changes
         self.current_defaults.update(self.factory_defaults)
@@ -782,8 +844,13 @@ class FlatCAMDefaults:
         with open(filename, "w") as file:
             simplejson.dump(self.defaults, file, default=to_dict, indent=2, sort_keys=True)
 
-    def load(self, filename: str):
-        """Loads the defaults from a file on disk, performing migration if required."""
+    def load(self, filename: str, inform):
+        """
+        Loads the defaults from a file on disk, performing migration if required.
+
+        :param filename:    a path to the file that is to be loaded
+        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        """
 
         # Read in the file
         try:
@@ -792,7 +859,7 @@ class FlatCAMDefaults:
             f.close()
         except IOError:
             log.error("Could not load defaults file.")
-            self.inform.emit('[ERROR] %s' % _("Could not load defaults file."))
+            inform.emit('[ERROR] %s' % _("Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
             return
@@ -805,7 +872,7 @@ class FlatCAMDefaults:
             self.defaults["global_toolbar_view"] = 511
             e = sys.exc_info()[0]
             log.error(str(e))
-            self.inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
+            inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if defaults is None:
             return
@@ -813,13 +880,24 @@ class FlatCAMDefaults:
         # Perform migration if necessary but only if the defaults dict is not empty
         if self.__is_old_defaults(defaults) and defaults:
             self.old_defaults_found = True
-            defaults = self.__migrate_old_defaults(defaults=defaults)
+
+            # while the app is in Beta status, delete the older Preferences files
+            if self.beta is False:
+                log.debug("Found old preferences files. Migrating.")
+                defaults = self.__migrate_old_defaults(defaults=defaults)
+                # Save the resulting defaults
+                self.defaults.update(defaults)
+                self.current_defaults.update(self.defaults)
+            else:
+                log.debug("Found old preferences files. Resetting the files.")
+                # wipeout the old defaults
+                self.reset_to_factory_defaults()
         else:
             self.old_defaults_found = False
 
-        # Save the resulting defaults
-        self.defaults.update(defaults)
-        self.current_defaults.update(self.defaults)
+            # Save the resulting defaults
+            self.defaults.update(defaults)
+            self.current_defaults.update(self.defaults)
 
         log.debug("FlatCAM defaults loaded from: %s" % filename)
 

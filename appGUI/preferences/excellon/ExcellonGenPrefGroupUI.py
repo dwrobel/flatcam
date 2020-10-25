@@ -1,9 +1,9 @@
 import platform
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -207,7 +207,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 7, 0, 1, 2)
 
-        self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
+        self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Path Optimization"))
         grid2.addWidget(self.excellon_general_label, 8, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:'))
@@ -219,25 +219,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
               "drill path optimization.\n"
               "\n"
-              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
-              "Travelling Salesman algorithm for path optimization.")
+              "Some options are disabled when the application works in 32bit mode.")
         )
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'},
                                                      {'label': _('TSA'), 'value': 'T'}],
                                                     orientation='vertical', stretch=False)
-        self.excellon_optimization_radio.setToolTip(
-            _("This sets the optimization type for the Excellon drill path.\n"
-              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
-              "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-              "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
-              "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
-              "drill path optimization.\n"
-              "\n"
-              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
-              "Travelling Salesman algorithm for path optimization.")
-        )
 
         grid2.addWidget(self.excellon_optimization_label, 9, 0)
         grid2.addWidget(self.excellon_optimization_radio, 9, 1)
@@ -263,9 +251,25 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 11, 0, 1, 2)
 
+        # Fuse Tools
+        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Option'))
+        grid2.addWidget(self.join_geo_label, 12, 0, 1, 2)
+
+        self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
+        self.fuse_tools_cb.setToolTip(
+            _("When checked, the tools will be merged\n"
+              "but only if they share some of their attributes.")
+        )
+        grid2.addWidget(self.fuse_tools_cb, 13, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 14, 0, 1, 2)
+
         # Excellon Object Color
         self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
-        grid2.addWidget(self.gerber_color_label, 12, 0, 1, 2)
+        grid2.addWidget(self.gerber_color_label, 17, 0, 1, 2)
 
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -274,8 +278,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.line_color_label, 13, 0)
-        grid2.addWidget(self.line_color_entry, 13, 1)
+        grid2.addWidget(self.line_color_label, 19, 0)
+        grid2.addWidget(self.line_color_entry, 19, 1)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -286,8 +290,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.fill_color_label, 14, 0)
-        grid2.addWidget(self.fill_color_entry, 14, 1)
+        grid2.addWidget(self.fill_color_label, 22, 0)
+        grid2.addWidget(self.fill_color_entry, 22, 1)
 
         # Plot Fill Transparency Level
         self.excellon_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -296,22 +300,18 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.excellon_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid2.addWidget(self.excellon_alpha_label, 15, 0)
-        grid2.addWidget(self.excellon_alpha_entry, 15, 1)
+        grid2.addWidget(self.excellon_alpha_label, 24, 0)
+        grid2.addWidget(self.excellon_alpha_entry, 24, 1)
 
         self.layout.addStretch()
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
-            self.excellon_optimization_label.setDisabled(False)
-            self.excellon_optimization_radio.setDisabled(False)
+            self.excellon_optimization_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], False)
             self.optimization_time_label.setDisabled(False)
             self.optimization_time_entry.setDisabled(False)
-            self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
-
         else:
-            self.excellon_optimization_label.setDisabled(True)
-            self.excellon_optimization_radio.setDisabled(True)
+            self.excellon_optimization_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], True)
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
@@ -329,6 +329,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         # call it once to make sure it is updated at startup
         self.on_update_exc_export(state=self.app.defaults["excellon_update"])
+
+        self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
 
     def optimization_selection(self):
         if self.excellon_optimization_radio.get_value() == 'M':

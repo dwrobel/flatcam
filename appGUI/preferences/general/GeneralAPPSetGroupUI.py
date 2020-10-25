@@ -386,9 +386,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         self.allow_edit_cb = FCCheckBox(_("Allow Edit"))
         self.allow_edit_cb.setToolTip(
-            _("When cheched, the user can edit the objects in the Project Tab\n"
-              "by using the left mouse button click on the object name.\n"
-              "Active after restart.")
+            _("When checked, the user can edit the object names in the Project Tab\n"
+              "by clicking on the object name. Active after restart.")
         )
         grid0.addWidget(self.allow_edit_cb, 31, 0, 1, 2)
 

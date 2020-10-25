@@ -22,6 +22,8 @@ import math
 import numpy as np
 from copy import deepcopy
 import traceback
+from collections import defaultdict
+from functools import reduce
 
 import gettext
 import appTranslation as fcTranslate
@@ -38,6 +40,8 @@ class GeometryObject(FlatCAMObj, Geometry):
     format.
     """
     optionChanged = QtCore.pyqtSignal(str)
+    builduiSig = QtCore.pyqtSignal()
+
     ui_type = GeometryObjectUI
 
     def __init__(self, name):
@@ -152,13 +156,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.param_fields = {}
 
         # store here the state of the exclusion checkbox state to be restored after building the UI
-        # TODO add this in the sel.app.defaults dict and in Preferences
-        self.exclusion_area_cb_is_checked = False
+        self.exclusion_area_cb_is_checked = self.app.defaults["geometry_area_exclusion"]
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'tools', 'multigeo']
+        self.ser_attrs += ['options', 'kind', 'multigeo', 'fill_color', 'outline_color', 'alpha_level']
 
     def build_ui(self):
         self.ui_disconnect()
@@ -175,70 +178,73 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units']
 
-        tool_idx = 0
+        row_idx = 0
 
         n = len(self.tools)
         self.ui.geo_tools_table.setRowCount(n)
 
         for tooluid_key, tooluid_value in self.tools.items():
-            tool_idx += 1
-            row_no = tool_idx - 1
 
-            tool_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            # -------------------- ID ------------------------------------------ #
+            tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
             tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.geo_tools_table.setItem(row_no, 0, tool_id)  # Tool name/id
+            self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 3 decimals diameter.
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
 
+            # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
+            # -------------------- OFFSET   ------------------------------------- #
             offset_item = FCComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
-            # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
+            # -------------------- TYPE     ------------------------------------- #
             type_item = FCComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
-            # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
 
+            # -------------------- TOOL TYPE ------------------------------------- #
             tool_type_item = FCComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
-                # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = tool_type_item.findText(tooluid_value['tool_type'])
             tool_type_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
 
+            # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+            self.ui.geo_tools_table.setItem(row_idx, 5, tool_uid_item)  # Tool unique ID
 
+            # -------------------- PLOT       ------------------------------------- #
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
 
-            self.ui.geo_tools_table.setItem(row_no, 1, dia_item)  # Diameter
-            self.ui.geo_tools_table.setCellWidget(row_no, 2, offset_item)
-            self.ui.geo_tools_table.setCellWidget(row_no, 3, type_item)
-            self.ui.geo_tools_table.setCellWidget(row_no, 4, tool_type_item)
-
-            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
-            self.ui.geo_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID
-            self.ui.geo_tools_table.setCellWidget(row_no, 6, plot_item)
-
+            # set an initial value for the OFFSET ENTRY
             try:
                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
             except Exception as e:
                 log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
 
+            row_idx += 1
+
         # make the diameter column editable
-        for row in range(tool_idx):
+        for row in range(row_idx):
             self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
                                                           QtCore.Qt.ItemIsEditable |
                                                           QtCore.Qt.ItemIsEnabled)
@@ -263,6 +269,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(4, 40)
@@ -374,7 +381,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         sel_rows = []
         sel_items = self.ui.geo_tools_table.selectedItems()
         for it in sel_items:
-            sel_rows.append(it.row())
+            new_row = it.row()
+            if new_row not in sel_rows:
+                sel_rows.append(new_row)
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -391,9 +400,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
+        # make sure the preprocessor combobox is clear
+        self.ui.pp_geometry_name_cb.clear()
         # populate preprocessor names in the combobox
         for name in list(self.app.preprocessors.keys()):
             self.ui.pp_geometry_name_cb.addItem(name)
+        # add tooltips
+        for it in range(self.ui.pp_geometry_name_cb.count()):
+            self.ui.pp_geometry_name_cb.setItemData(
+                it, self.ui.pp_geometry_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
@@ -424,6 +439,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             "area_shape": self.ui.area_shape_radio,
             "area_strategy": self.ui.strategy_radio,
             "area_overz": self.ui.over_z_entry,
+            "polish": self.ui.polish_cb,
+            "polish_dia": self.ui.polish_dia_entry,
+            "polish_pressure": self.ui.polish_pressure_entry,
+            "polish_overlap": self.ui.polish_over_entry,
+            "polish_method": self.ui.polish_method_combo,
         })
 
         self.param_fields.update({
@@ -460,41 +480,19 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # store here the default data for Geometry Data
         self.default_data = {}
-        self.default_data.update({
-            "name": None,
-            "plot": None,
-            "cutz": None,
-            "vtipdia": None,
-            "vtipangle": None,
-            "travelz": None,
-            "feedrate": None,
-            "feedrate_z": None,
-            "feedrate_rapid": None,
-            "dwell": None,
-            "dwelltime": None,
-            "multidepth": None,
-            "ppname_g": None,
-            "depthperpass": None,
-            "extracut": None,
-            "extracut_length": None,
-            "toolchange": None,
-            "toolchangez": None,
-            "endz": None,
-            "endxy": '',
-            "area_exclusion": None,
-            "area_shape": None,
-            "area_strategy": None,
-            "area_overz": None,
-            "spindlespeed": 0,
-            "toolchangexy": None,
-            "startz": None
-        })
 
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('geometry' + "_") == 0:
+                oname = opt_key[len('geometry') + 1:]
+                self.default_data[oname] = self.app.options[opt_key]
+            if opt_key.find('tools_mill' + "_") == 0:
+                oname = opt_key[len('tools_mill') + 1:]
+                self.default_data[oname] = self.app.options[opt_key]
         # fill in self.default_data values from self.options
-        for def_key in self.default_data:
-            for opt_key, opt_val in self.options.items():
-                if def_key == opt_key:
-                    self.default_data[def_key] = deepcopy(opt_val)
+        # for def_key in self.default_data:
+        #     for opt_key, opt_val in self.options.items():
+        #         if def_key == opt_key:
+        #             self.default_data[def_key] = deepcopy(opt_val)
 
         if type(self.options["cnctooldia"]) == float:
             tools_list = [self.options["cnctooldia"]]
@@ -588,12 +586,21 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
+        self.builduiSig.connect(self.build_ui)
+
         self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
             self.ui.e_cut_entry.setDisabled(True)
         self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
+        # Editor Signal
+        self.ui.editor_button.clicked.connect(self.app.object2editor)
+
+        # Properties
+        self.ui.properties_button.toggled.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -615,6 +622,42 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
         self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
+
+        self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
+
+    def rebuild_ui(self):
+        # read the table tools uid
+        current_uid_list = []
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            uid = int(self.ui.geo_tools_table.item(row, 5).text())
+            current_uid_list.append(uid)
+
+        new_tools = {}
+        new_uid = 1
+
+        for current_uid in current_uid_list:
+            new_tools[new_uid] = deepcopy(self.tools[current_uid])
+            new_uid += 1
+
+        self.tools = new_tools
+
+        # the tools table changed therefore we need to reconnect the signals to the cellWidgets
+        self.ui_disconnect()
+        self.ui_connect()
 
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
@@ -675,7 +718,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry):
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry) or \
+                    isinstance(current_widget, NumericalEvalTupleEntry):
                 current_widget.editingFinished.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.gui_form_to_storage)
@@ -691,19 +735,25 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
 
-        # self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
         self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
         # common parameters update
+        self.ui.toolchangeg_cb.stateChanged.connect(self.update_common_param_in_storage)
+        self.ui.toolchangez_entry.editingFinished.connect(self.update_common_param_in_storage)
+        self.ui.endz_entry.editingFinished.connect(self.update_common_param_in_storage)
+        self.ui.endxy_entry.editingFinished.connect(self.update_common_param_in_storage)
         self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
+        self.ui.exclusion_cb.stateChanged.connect(self.update_common_param_in_storage)
+        self.ui.polish_cb.stateChanged.connect(self.update_common_param_in_storage)
 
     def ui_disconnect(self):
 
@@ -723,7 +773,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry):
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry) or \
+                    isinstance(current_widget, NumericalEvalTupleEntry):
                 try:
                     current_widget.editingFinished.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
@@ -786,8 +837,74 @@ class GeometryObject(FlatCAMObj, Geometry):
         except (TypeError, AttributeError):
             pass
 
+        # common parameters update
+        try:
+            self.ui.toolchangeg_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.toolchangez_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.endz_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.endxy_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.pp_geometry_name_cb.currentIndexChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+
+    def on_toggle_all_rows(self):
+        """
+        will toggle the selection of all rows in Tools table
+
+        :return:
+        """
+        sel_model = self.ui.geo_tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.geo_tools_table.rowCount():
+            self.ui.geo_tools_table.clearSelection()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+        else:
+            self.ui.geo_tools_table.selectAll()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
     def on_row_selection_change(self):
-        self.update_ui()
+        sel_model = self.ui.geo_tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+        # for the rows other that the current one (first selected)
+        if len(sel_rows) == 1:
+            self.update_ui()
 
     def update_ui(self, row=None):
         self.ui_disconnect()
@@ -796,12 +913,47 @@ class GeometryObject(FlatCAMObj, Geometry):
             sel_rows = []
             sel_items = self.ui.geo_tools_table.selectedItems()
             for it in sel_items:
-                sel_rows.append(it.row())
+                new_row = it.row()
+                if new_row not in sel_rows:
+                    sel_rows.append(new_row)
         else:
             sel_rows = row if type(row) == list else [row]
 
         if not sel_rows:
-            sel_rows = [0]
+            # sel_rows = [0]
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.ui_connect()
+            return
+        else:
+            self.ui.generate_cnc_button.setDisabled(False)
+
+        # update the QLabel that shows for which Tool we have the parameters in the UI form
+        if len(sel_rows) == 1:
+            current_row = sel_rows[0]
+
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.geo_tools_table.item(current_row, 5)
+                if type(item) is not None:
+                    tooluid = int(item.text())
+                else:
+                    self.ui_connect()
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui_connect()
+                return
+
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            )
+        else:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
         for current_row in sel_rows:
             self.set_tool_offset_visibility(current_row)
@@ -819,64 +971,45 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.ui_connect()
                 return
 
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            if len(sel_rows) == 1:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
-                )
-
-                # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
-                # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-                try:
-                    item = self.ui.geo_tools_table.cellWidget(current_row, 4)
-                    if item is not None:
-                        tool_type_txt = item.currentText()
-                        self.ui_update_v_shape(tool_type_txt=tool_type_txt)
-                    else:
-                        self.ui_connect()
-                        return
-                except Exception as e:
-                    log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+            try:
+                item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+                if item is not None:
+                    tool_type_txt = item.currentText()
+                    self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                else:
+                    self.ui_connect()
                     return
+            except Exception as e:
+                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                return
 
-                try:
-                    # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.tools.items()):
-                        if int(tooluid_key) == tooluid:
-                            for key, value in list(tooluid_value.items()):
-                                if key == 'data':
-                                    form_value_storage = tooluid_value['data']
-                                    self.update_form(form_value_storage)
-                                if key == 'offset_value':
-                                    # update the offset value in the entry even if the entry is hidden
-                                    self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
+            try:
+                # set the form with data from the newly selected tool
+                for tooluid_key, tooluid_value in list(self.tools.items()):
+                    if int(tooluid_key) == tooluid:
+                        for key, value in list(tooluid_value.items()):
+                            if key == 'data':
+                                form_value_storage = tooluid_value['data']
+                                self.update_form(form_value_storage)
+                            if key == 'offset_value':
+                                # update the offset value in the entry even if the entry is hidden
+                                self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
 
-                                if key == 'tool_type' and value == 'V':
-                                    self.update_cutz()
-                except Exception as e:
-                    log.debug("GeometryObject.update_ui() -> %s " % str(e))
-
-            else:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-                )
+                            if key == 'tool_type' and value == 'V':
+                                self.update_cutz()
+            except Exception as e:
+                log.debug("GeometryObject.update_ui() -> %s " % str(e))
 
         self.ui_connect()
 
-    def on_tool_add(self, dia=None):
+    def on_tool_add(self, dia=None, new_geo=None):
         self.ui_disconnect()
 
         self.units = self.app.defaults['units'].upper()
 
-        if dia is not None:
-            tooldia = dia
-        else:
-            tooldia = float(self.ui.addtool_entry.get_value())
-
-        # construct a list of all 'tooluid' in the self.tools
-        # tool_uid_list = []
-        # for tooluid_key in self.tools:
-        #     tool_uid_list.append(int(tooluid_key))
+        tooldia = dia if dia is not None else float(self.ui.addtool_entry.get_value())
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
@@ -893,7 +1026,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             last_offset_value = self.tools[max_uid]['offset_value']
             last_type = self.tools[max_uid]['type']
             last_tool_type = self.tools[max_uid]['tool_type']
-            last_solid_geometry = self.tools[max_uid]['solid_geometry']
+
+            last_solid_geometry = self.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
 
             # if previous geometry was empty (it may happen for the first tool added)
             # then copy the object.solid_geometry
@@ -940,7 +1074,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_connect()
         self.build_ui()
 
-        # if there is no tool left in the Tools Table, enable the parameters appGUI
+        # if there is at least one tool left in the Tools Table, enable the parameters GUI
         if self.ui.geo_tools_table.rowCount() != 0:
             self.ui.geo_param_frame.setDisabled(False)
 
@@ -958,9 +1092,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 break
         self.app.on_tools_database()
         self.app.tools_db_tab.ok_to_add = True
-        self.app.tools_db_tab.buttons_frame.hide()
-        self.app.tools_db_tab.add_tool_from_db.show()
-        self.app.tools_db_tab.cancel_tool_from_db.show()
+        self.app.tools_db_tab.ui.buttons_frame.hide()
+        self.app.tools_db_tab.ui.add_tool_from_db.show()
+        self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def on_tool_from_db_inserted(self, tool):
         """
@@ -1047,7 +1181,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     except AttributeError:
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
                         self.ui_connect()
-                        self.build_ui()
+                        self.builduiSig.emit()
                         return
                     except Exception as e:
                         log.debug("on_tool_copy() --> " + str(e))
@@ -1056,7 +1190,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
                 self.ui_connect()
-                self.build_ui()
+                self.builduiSig.emit()
                 return
         else:
             # we copy all tools in geo_tools_table
@@ -1082,7 +1216,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         self.ui_connect()
-        self.build_ui()
+        self.builduiSig.emit()
         self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
@@ -1098,6 +1232,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
+        except AttributeError:
+            self.ui_connect()
+            return
 
         tool_dia = float('%.*f' % (self.decimals, d))
         tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())
@@ -1112,7 +1249,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
         self.ui_connect()
-        self.build_ui()
+        self.builduiSig.emit()
 
     def on_tool_delete(self, all_tools=None):
         self.ui_disconnect()
@@ -1141,7 +1278,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     except AttributeError:
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
                         self.ui_connect()
-                        self.build_ui()
+                        self.builduiSig.emit()
                         return
                     except Exception as e:
                         log.debug("on_tool_delete() --> " + str(e))
@@ -1150,7 +1287,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
                 self.ui_connect()
-                self.build_ui()
+                self.builduiSig.emit()
                 return
         else:
             # we delete all tools in geo_tools_table
@@ -1401,13 +1538,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
+            # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
+            if widget_idx == 1 or widget_idx == 3:
+                self.update_cutz()
         except Exception as e:
             log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
-            return
-
-        # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
-        if widget_idx == 1 or widget_idx == 3:
-            self.update_cutz()
 
         # the original connect() function of the OptionalInputSelection is no longer working because of the
         # ui_diconnect() so I use this 'hack'
@@ -1481,7 +1616,13 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def update_common_param_in_storage(self):
         for tooluid_value in self.tools.values():
+            tooluid_value['data']['toolchange'] = self.ui.toolchangeg_cb.get_value()
+            tooluid_value['data']['toolchangez'] = self.ui.toolchangez_entry.get_value()
+            tooluid_value['data']['endz'] = self.ui.endz_entry.get_value()
+            tooluid_value['data']['endxy'] = self.ui.endxy_entry.get_value()
             tooluid_value['data']['ppname_g'] = self.ui.pp_geometry_name_cb.get_value()
+            tooluid_value['data']['area_exclusion'] = self.ui.exclusion_cb.get_value()
+            tooluid_value['data']['polish'] = self.ui.polish_cb.get_value()
 
     def select_tools_table_row(self, row, clearsel=None):
         if clearsel:
@@ -1714,16 +1855,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
-                # try:
-                #     tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text())
-                # except ValueError:
-                #     # try to convert comma to decimal point. if it's still not working error message and return
-                #     try:
-                #         tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
-                #     except ValueError:
-                #         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                #                              _("Wrong value format entered, use a number."))
-                #         return
                 tooluid = int(self.ui.geo_tools_table.item(x.row(), 5).text())
 
                 for tooluid_key, tooluid_value in self.tools.items():
@@ -1759,7 +1890,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
         :param tools_in_use:    the tools that are used, needed by some preprocessors
-        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from appGUI
+        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
@@ -1784,10 +1915,12 @@ class GeometryObject(FlatCAMObj, Geometry):
             log.debug("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
-            msg += '%s %s' % ('FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->', str(e))
+            msg += '%s' % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
             return
+
+        self.multigeo = True
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -1817,6 +1950,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
             job_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
 
+            total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
 
@@ -1906,6 +2040,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 else:
                     dia_cnc_dict['gcode'] = res
 
+                total_gcode += res
+
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
@@ -1917,7 +2053,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # TODO this serve for bounding box creation only; should be optimized
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
                 # for bounding box values
-                # dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                # dia_cnc_dict['solid_geometry'] = unary_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
                 try:
                     dia_cnc_dict['solid_geometry'] = tool_solid_geometry
                     self.app.inform.emit('[success] %s...' % _("Finished G-Code processing"))
@@ -1928,6 +2064,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
+
+            job_obj.source_file = total_gcode
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -1967,6 +2105,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
+            total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
@@ -2039,22 +2178,23 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
                 tol = float(self.app.defaults['global_tolerance']) / 20
-                res = job_obj.generate_from_multitool_geometry(
-                    tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
-                    tolerance=tol, z_cut=z_cut, z_move=z_move,
-                    feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
-                    multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
-                    toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                    pp_geometry_name=pp_geometry_name,
-                    tool_no=tool_cnt)
 
+                tool_lst = list(tools_dict.keys())
+                is_first = True if tooluid_key == tool_lst[0] else False
+                is_last = True if tooluid_key == tool_lst[-1] else False
+                res, start_gcode = job_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
+                                                                   tolerance=tol,
+                                                                   is_first=is_first, is_last=is_last,
+                                                                   toolchange=True)
                 if res == 'fail':
                     log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
                     dia_cnc_dict['gcode'] = res
+                total_gcode += res
+
+                if start_gcode != '':
+                    job_obj.gc_start = start_gcode
 
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
@@ -2063,7 +2203,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # TODO this serve for bounding box creation only; should be optimized
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
                 # for bounding box values
-                # geo_for_bound_values = cascaded_union([
+                # geo_for_bound_values = unary_union([
                 #     geo['geom'] for geo in dia_cnc_dict['gcode_parsed'] if geo['geom'].is_valid is True
                 # ])
                 try:
@@ -2080,6 +2220,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
+
+            job_obj.source_file = total_gcode
 
         if use_thread:
             # To be run in separate thread
@@ -2103,11 +2245,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
-    def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None,
-            feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
-            multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None, segx=None, segy=None,
-            use_thread=True, plot=True):
+    def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None, feedrate=None,
+                       feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
+                       multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
+                       extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None,
+                       segx=None, segy=None, use_thread=True, plot=True):
         """
         Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
@@ -2220,17 +2362,18 @@ class GeometryObject(FlatCAMObj, Geometry):
             # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
             # to a value of 0.0005 which is 20 times less than 0.01
             tol = float(self.app.defaults['global_tolerance']) / 20
-            job_obj.generate_from_geometry_2(
-                self, tooldia=tooldia, offset=offset, tolerance=tol,
-                z_cut=z_cut, z_move=z_move,
-                feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
-                multidepth=multidepth, depthpercut=depthperpass,
-                toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
-                pp_geometry_name=ppname_g
-            )
+            res = job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
+                                                   z_cut=z_cut, z_move=z_move, feedrate=feedrate,
+                                                   feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                                                   spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                                                   multidepth=multidepth, depthpercut=depthperpass,
+                                                   toolchange=toolchange, toolchangez=toolchangez,
+                                                   toolchangexy=toolchangexy,
+                                                   extracut=extracut, extracut_length=extracut_length,
+                                                   startz=startz, endz=endz, endxy=endxy,
+                                                   pp_geometry_name=ppname_g)
 
+            job_obj.source_file = res
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"
@@ -2654,13 +2797,15 @@ class GeometryObject(FlatCAMObj, Geometry):
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self, visible=None, kind=None):
+    def plot(self, visible=None, kind=None, plot_tool=None):
         """
         Plot the object.
 
-        :param visible: Controls if the added shape is visible of not
-        :param kind: added so there is no error when a project is loaded and it has both geometry and CNCJob, because
-        CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot() has to be rewrited
+        :param visible:     Controls if the added shape is visible of not
+        :param kind:        added so there is no error when a project is loaded and it has both geometry and CNCJob,
+                            because CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot()
+                            has to be rewritten
+        :param plot_tool:   plot a specific tool for multigeo objects
         :return:
         """
 
@@ -2694,17 +2839,33 @@ class GeometryObject(FlatCAMObj, Geometry):
             # plot solid geometries found as members of self.tools attribute dict
             # for MultiGeo
             if self.multigeo is True:  # geo multi tool usage
-                for tooluid_key in self.tools:
-                    solid_geometry = self.tools[tooluid_key]['solid_geometry']
-                    self.plot_element(solid_geometry, visible=visible,
-                                      color=random_color() if self.options['multicolored']
-                                      else self.app.defaults["geometry_plot_line"])
+                if plot_tool is None:
+                    for tooluid_key in self.tools:
+                        solid_geometry = self.tools[tooluid_key]['solid_geometry']
+                        if 'override_color' in self.tools[tooluid_key]['data']:
+                            color = self.tools[tooluid_key]['data']['override_color']
+                        else:
+                            color = random_color() if self.options['multicolored'] else \
+                                self.app.defaults["geometry_plot_line"]
+
+                        self.plot_element(solid_geometry, visible=visible, color=color)
+                else:
+                    solid_geometry = self.tools[plot_tool]['solid_geometry']
+                    if 'override_color' in self.tools[plot_tool]['data']:
+                        color = self.tools[plot_tool]['data']['override_color']
+                    else:
+                        color = random_color() if self.options['multicolored'] else \
+                            self.app.defaults["geometry_plot_line"]
+
+                    self.plot_element(solid_geometry, visible=visible, color=color)
             else:
                 # plot solid geometry that may be an direct attribute of the geometry object
                 # for SingleGeo
                 if self.solid_geometry:
-                    self.plot_element(self.solid_geometry, visible=visible,
-                                      color=self.app.defaults["geometry_plot_line"])
+                    solid_geometry = self.solid_geometry
+                    color = self.app.defaults["geometry_plot_line"]
+
+                    self.plot_element(solid_geometry, visible=visible, color=color)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
 
@@ -2738,6 +2899,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         check_row = 0
 
         self.shapes.clear(update=True)
+
         for tooluid_key in self.tools:
             solid_geometry = self.tools[tooluid_key]['solid_geometry']
 
@@ -2747,8 +2909,13 @@ class GeometryObject(FlatCAMObj, Geometry):
                 if tooluid_item == int(tooluid_key):
                     check_row = row
                     break
+
             if self.ui.geo_tools_table.cellWidget(check_row, 6).isChecked():
-                self.plot_element(element=solid_geometry, visible=True)
+                try:
+                    color = self.tools[tooluid_key]['data']['override_color']
+                    self.plot_element(element=solid_geometry, visible=True, color=color)
+                except KeyError:
+                    self.plot_element(element=solid_geometry, visible=True)
         self.shapes.redraw()
 
         # make sure that the general plot is disabled if one of the row plot's are disabled and
@@ -2773,13 +2940,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.plot()
 
     @staticmethod
-    def merge(geo_list, geo_final, multigeo=None):
+    def merge(geo_list, geo_final, multi_geo=None, fuse_tools=None):
         """
         Merges the geometry of objects in grb_list into the geometry of geo_final.
 
-        :param geo_list: List of GerberObject Objects to join.
-        :param geo_final: Destination GerberObject object.
-        :param multigeo: if the merged geometry objects are of type MultiGeo
+        :param geo_list:    List of GerberObject Objects to join.
+        :param geo_final:   Destination GerberObject object.
+        :param multi_geo:   if the merged geometry objects are of type MultiGeo
+        :param fuse_tools:  If True will try to fuse tools of the same type for the Geometry objects
         :return: None
         """
 
@@ -2808,7 +2976,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 GeometryObject.merge(geo_list=geo_obj, geo_final=geo_final)
             # If not list, just append
             else:
-                if multigeo is None or multigeo is False:
+                if multi_geo is None or multi_geo is False:
                     geo_final.multigeo = False
                 else:
                     geo_final.multigeo = True
@@ -2833,7 +3001,57 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         geo_final.options.update(new_options)
         geo_final.solid_geometry = new_solid_geometry
-        geo_final.tools = new_tools
+
+        if new_tools and fuse_tools is True:
+            # merge the geometries of the tools that share the same tool diameter and the same tool_type
+            # and the same type
+            final_tools = {}
+            same_dia = defaultdict(list)
+            same_type = defaultdict(list)
+            same_tool_type = defaultdict(list)
+
+            # find tools that have the same diameter and group them by diameter
+            for k, v in new_tools.items():
+                same_dia[v['tooldia']].append(k)
+
+            # find tools that have the same type and group them by type
+            for k, v in new_tools.items():
+                same_type[v['type']].append(k)
+
+            # find tools that have the same tool_type and group them by tool_type
+            for k, v in new_tools.items():
+                same_tool_type[v['tool_type']].append(k)
+
+            # find the intersections in the above groups
+            intersect_list = []
+            for dia, dia_list in same_dia.items():
+                for ty, type_list in same_type.items():
+                    for t_ty, tool_type_list in same_tool_type.items():
+                        intersection = reduce(np.intersect1d, (dia_list, type_list, tool_type_list)).tolist()
+                        if intersection:
+                            intersect_list.append(intersection)
+
+            new_tool_nr = 1
+            for i_lst in intersect_list:
+                new_solid_geo = []
+                last_tool = None
+                for old_tool in i_lst:
+                    new_solid_geo += new_tools[old_tool]['solid_geometry']
+                    last_tool = old_tool
+
+                if new_solid_geo and last_tool:
+                    final_tools[new_tool_nr] = \
+                        {
+                            k: deepcopy(new_tools[last_tool][k]) for k in new_tools[last_tool] if k != 'solid_geometry'
+                        }
+                    final_tools[new_tool_nr]['solid_geometry'] = deepcopy(new_solid_geo)
+                    new_tool_nr += 1
+        else:
+            final_tools = new_tools
+
+        # if not final_tools:
+        #     return 'fail'
+        geo_final.tools = final_tools
 
     @staticmethod
     def get_pts(o):

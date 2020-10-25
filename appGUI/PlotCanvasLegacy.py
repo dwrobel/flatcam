@@ -332,6 +332,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         if state:
             self.axis_enabled = True
+            self.app.defaults['global_axis'] = True
             if self.h_line not in self.axes.lines and self.v_line not in self.axes.lines:
                 self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -345,6 +346,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.app.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
+            self.app.defaults['global_axis'] = False
             if self.h_line in self.axes.lines and self.v_line in self.axes.lines:
                 self.axes.lines.remove(self.h_line)
                 self.axes.lines.remove(self.v_line)
@@ -442,6 +444,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         state = not self.grid_lines_enabled
 
         if state:
+            self.app.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
             self.axes.grid(True)
             try:
@@ -450,6 +453,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 pass
             self.app.inform[str, bool].emit(_("Grid enabled."), False)
         else:
+            self.app.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
             self.axes.grid(False)
             try:
@@ -1272,6 +1276,7 @@ class ShapeCollectionLegacy:
                     'face_color': self._face_color,
                     'linewidth': line_width,
                     'alpha': self._alpha,
+                    'visible': self._visible,
                     'shape': sh
                 })
 
@@ -1285,6 +1290,7 @@ class ShapeCollectionLegacy:
                 'face_color': self._face_color,
                 'linewidth': line_width,
                 'alpha': self._alpha,
+                'visible': self._visible,
                 'shape': shape
             })
 
@@ -1336,19 +1342,20 @@ class ShapeCollectionLegacy:
         except AttributeError:
             obj_type = 'utility'
 
-        if self._visible:
-            # if we don't use this then when adding each new shape, the old ones will be added again, too
-            if obj_type == 'utility':
-                self.axes.patches.clear()
+        # if we don't use this then when adding each new shape, the old ones will be added again, too
+        # if obj_type == 'utility':
+        #     self.axes.patches.clear()
+        self.axes.patches.clear()
 
-            for element in local_shapes:
+        for element in local_shapes:
+            if local_shapes[element]['visible'] is True:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
                     if self.obj.options["solid"] and isinstance(local_shapes[element]['shape'], Polygon):
                         try:
                             patch = PolygonPatch(local_shapes[element]['shape'],
-                                                 facecolor="#C40000",
-                                                 edgecolor="#750000",
+                                                 facecolor=local_shapes[element]['face_color'],
+                                                 edgecolor=local_shapes[element]['color'],
                                                  alpha=local_shapes[element]['alpha'],
                                                  zorder=3,
                                                  linewidth=local_shapes[element]['linewidth']
@@ -1358,11 +1365,15 @@ class ShapeCollectionLegacy:
                             log.debug("ShapeCollectionLegacy.redraw() excellon poly --> %s" % str(e))
                     else:
                         try:
-                            x, y = local_shapes[element]['shape'].exterior.coords.xy
-                            self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
-                            for ints in local_shapes[element]['shape'].interiors:
-                                x, y = ints.coords.xy
-                                self.axes.plot(x, y, 'o-', linewidth=local_shapes[element]['linewidth'])
+                            if isinstance(local_shapes[element]['shape'], Polygon):
+                                x, y = local_shapes[element]['shape'].exterior.coords.xy
+                                self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
+                                for ints in local_shapes[element]['shape'].interiors:
+                                    x, y = ints.coords.xy
+                                    self.axes.plot(x, y, 'o-', linewidth=local_shapes[element]['linewidth'])
+                            elif isinstance(local_shapes[element]['shape'], LinearRing):
+                                x, y = local_shapes[element]['shape'].coords.xy
+                                self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
                             log.debug("ShapeCollectionLegacy.redraw() excellon no poly --> %s" % str(e))
                 elif obj_type == 'geometry':
@@ -1545,6 +1556,17 @@ class ShapeCollectionLegacy:
             if self._visible is False:
                 self.redraw()
         self._visible = value
+
+    def update_visibility(self, state, indexes=None):
+        if indexes:
+            for i in indexes:
+                if i in self._shapes:
+                    self._shapes[i]['visible'] = state
+        else:
+            for i in self._shapes:
+                self._shapes[i]['visible'] = state
+
+        self.redraw()
 
     @property
     def enabled(self):

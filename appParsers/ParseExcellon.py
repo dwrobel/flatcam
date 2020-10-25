@@ -40,30 +40,13 @@ class Excellon(Geometry):
     ================  ====================================
     Key               Value
     ================  ====================================
-    C                 Diameter of the tool
-    solid_geometry    Geometry list for each tool
+    tooldia           Diameter of the tool
+    drills            List that store the Shapely Points for drill points
+    slots             List that store the Shapely Points for slots. Each is a tuple: (start_point, stop_point)
     data              dictionary which holds the options for each tool
-    Others            Not supported (Ignored).
+    solid_geometry    Geometry list for each tool
     ================  ====================================
 
-    * ``drills`` (list): Each is a dictionary:
-
-    ================  ====================================
-    Key               Value
-    ================  ====================================
-    point             (Shapely.Point) Where to drill
-    tool              (str) A key in ``tools``
-    ================  ====================================
-
-    * ``slots`` (list): Each is a dictionary
-
-    ================  ====================================
-    Key               Value
-    ================  ====================================
-    start             (Shapely.Point) Start point of the slot
-    stop              (Shapely.Point) Stop point of the slot
-    tool              (str) A key in ``tools``
-    ================  ====================================
     """
 
     defaults = {
@@ -96,10 +79,6 @@ class Excellon(Geometry):
 
         # dictionary to store tools, see above for description
         self.tools = {}
-        # list to store the drills, see above for description
-        self.drills = []
-        # self.slots (list) to store the slots; each is a dictionary
-        self.slots = []
 
         self.source_file = ''
 
@@ -109,9 +88,6 @@ class Excellon(Geometry):
 
         self.match_routing_start = None
         self.match_routing_stop = None
-
-        self.num_tools = []  # List for keeping the tools sorted
-        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -142,9 +118,8 @@ class Excellon(Geometry):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
-        self.ser_attrs += ['tools', 'drills', 'zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
-                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots',
-                           'source_file']
+        self.ser_attrs += ['zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
+                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'source_file']
 
         # ### Patterns ####
         # Regex basics:
@@ -346,14 +321,22 @@ class Excellon(Geometry):
 
                         if match.group(2):
                             name_tool += 1
+
+                            # ----------  add a TOOL  ------------ #
+                            if name_tool not in self.tools:
+                                self.tools[name_tool] = {}
                             if line_units == 'MILS':
-                                spec = {"C": (float(match.group(2)) / 1000)}
-                                self.tools[str(name_tool)] = spec
-                                log.debug("Tool definition: %s %s" % (name_tool, spec))
+                                spec = {
+                                    'tooldia':  (float(match.group(2)) / 1000)
+                                }
+                                self.tools[name_tool]['tooldia'] = (float(match.group(2)) / 1000)
+                                log.debug("Tool definition: %d %s" % (name_tool, spec))
                             else:
-                                spec = {"C": float(match.group(2))}
-                                self.tools[str(name_tool)] = spec
-                                log.debug("Tool definition: %s %s" % (name_tool, spec))
+                                spec = {
+                                    'tooldia': float(match.group(2))
+                                }
+                                self.tools[name_tool]['tooldia'] = float(match.group(2))
+                                log.debug("Tool definition: %d %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
                     # search for Altium Excellon Format / Sprint Layout who is included as a comment
@@ -400,7 +383,7 @@ class Excellon(Geometry):
                         lower_tools = set()
                         if not self.excellon_units_found and self.tools:
                             for tool in self.tools:
-                                tool_dia = float(self.tools[tool]['C'])
+                                tool_dia = float(self.tools[tool]['tooldia'])
                                 lower_tools.add(tool_dia) if tool_dia <= 0.1 else greater_tools.add(tool_dia)
 
                             assumed_units = "IN" if len(lower_tools) > len(greater_tools) else "MM"
@@ -434,12 +417,12 @@ class Excellon(Geometry):
                     # ## Tool change ###
                     match = self.toolsel_re.search(eline)
                     if match:
-                        current_tool = str(int(match.group(1)))
+                        current_tool = int(match.group(1))
                         log.debug("Tool change: %s" % current_tool)
                         if bool(headerless):
                             match = self.toolset_hl_re.search(eline)
                             if match:
-                                name = str(int(match.group(1)))
+                                name = int(match.group(1))
                                 try:
                                     diam = float(match.group(2))
                                 except Exception:
@@ -467,8 +450,13 @@ class Excellon(Geometry):
                                     else:
                                         diam = (self.toolless_diam + (int(current_tool) - 1) / 100) / 25.4
 
-                                spec = {"C": diam, 'solid_geometry': []}
-                                self.tools[name] = spec
+                                # ----------  add a TOOL  ------------ #
+                                spec = {"tooldia": diam, 'solid_geometry': []}
+                                if name not in self.tools:
+                                    self.tools[name] = {}
+                                self.tools[name]['tooldia'] = diam
+                                self.tools[name]['solid_geometry'] = []
+
                                 log.debug("Tool definition out of header: %s %s" % (name, spec))
 
                         continue
@@ -479,8 +467,8 @@ class Excellon(Geometry):
                         match1 = self.stop_re.search(eline)
                         if match or match1:
                             name_tool += 1
-                            current_tool = str(name_tool)
-                            log.debug("Tool change for Allegro type of Excellon: %s" % current_tool)
+                            current_tool = name_tool
+                            log.debug("Tool change for Allegro type of Excellon: %d" % current_tool)
                             continue
 
                     # ## Slots parsing for drilled slots (contain G85)
@@ -546,7 +534,7 @@ class Excellon(Geometry):
                             # store current tool diameter as slot diameter
                             slot_dia = 0.05
                             try:
-                                slot_dia = float(self.tools[current_tool]['C'])
+                                slot_dia = float(self.tools[current_tool]['tooldia'])
                             except Exception:
                                 pass
                             log.debug(
@@ -556,13 +544,17 @@ class Excellon(Geometry):
                                 )
                             )
 
-                            self.slots.append(
-                                {
-                                    'start': Point(slot_start_x, slot_start_y),
-                                    'stop': Point(slot_stop_x, slot_stop_y),
-                                    'tool': current_tool
-                                }
+                            # ----------  add a slot  ------------ #
+                            slot = (
+                                Point(slot_start_x, slot_start_y),
+                                Point(slot_stop_x, slot_stop_y)
                             )
+                            if current_tool not in self.tools:
+                                self.tools[current_tool] = {}
+                            if 'slots' in self.tools[current_tool]:
+                                self.tools[current_tool]['slots'].append(slot)
+                            else:
+                                self.tools[current_tool]['slots'] = [slot]
                             continue
 
                         # Slot coordinates with period: Use literally. ###
@@ -616,7 +608,7 @@ class Excellon(Geometry):
                             # store current tool diameter as slot diameter
                             slot_dia = 0.05
                             try:
-                                slot_dia = float(self.tools[current_tool]['C'])
+                                slot_dia = float(self.tools[current_tool]['tooldia'])
                             except Exception:
                                 pass
                             log.debug(
@@ -626,13 +618,17 @@ class Excellon(Geometry):
                                 )
                             )
 
-                            self.slots.append(
-                                {
-                                    'start': Point(slot_start_x, slot_start_y),
-                                    'stop': Point(slot_stop_x, slot_stop_y),
-                                    'tool': current_tool
-                                }
+                            # ----------  add a Slot  ------------ #
+                            slot = (
+                                Point(slot_start_x, slot_start_y),
+                                Point(slot_stop_x, slot_stop_y)
                             )
+                            if current_tool not in self.tools:
+                                self.tools[current_tool] = {}
+                            if 'slots' in self.tools[current_tool]:
+                                self.tools[current_tool]['slots'].append(slot)
+                            else:
+                                self.tools[current_tool]['slots'] = [slot]
                         continue
 
                     # ## Coordinates without period # ##
@@ -660,7 +656,14 @@ class Excellon(Geometry):
                                     coordx += repeating_x
                                 if repeating_y:
                                     coordy += repeating_y
-                                self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
+
+                                # ----------  add a Drill  ------------ #
+                                if current_tool not in self.tools:
+                                    self.tools[current_tool] = {}
+                                if 'drills' in self.tools[current_tool]:
+                                    self.tools[current_tool]['drills'].append(Point((coordx, coordy)))
+                                else:
+                                    self.tools[current_tool]['drills'] = [Point((coordx, coordy))]
 
                                 repeat -= 1
                             current_x = coordx
@@ -710,19 +713,31 @@ class Excellon(Geometry):
                                     self.routing_flag = 1
                                     slot_stop_x = x
                                     slot_stop_y = y
-                                    self.slots.append(
-                                        {
-                                            'start': Point(slot_start_x, slot_start_y),
-                                            'stop': Point(slot_stop_x, slot_stop_y),
-                                            'tool': current_tool
-                                        }
+
+                                    # ----------  add a Slot  ------------ #
+                                    slot = (
+                                        Point(slot_start_x, slot_start_y),
+                                        Point(slot_stop_x, slot_stop_y)
                                     )
+                                    if current_tool not in self.tools:
+                                        self.tools[current_tool] = {}
+                                    if 'slots' in self.tools[current_tool]:
+                                        self.tools[current_tool]['slots'].append(slot)
+                                    else:
+                                        self.tools[current_tool]['slots'] = [slot]
                                     continue
 
                             if self.match_routing_start is None and self.match_routing_stop is None:
                                 # signal that there are drill operations
                                 self.defaults['excellon_drills'] = True
-                                self.drills.append({'point': Point((x, y)), 'tool': current_tool})
+
+                                # ----------  add a Drill  ------------ #
+                                if current_tool not in self.tools:
+                                    self.tools[current_tool] = {}
+                                if 'drills' in self.tools[current_tool]:
+                                    self.tools[current_tool]['drills'].append(Point((x, y)))
+                                else:
+                                    self.tools[current_tool]['drills'] = [Point((x, y))]
                                 # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                                 continue
 
@@ -778,13 +793,18 @@ class Excellon(Geometry):
                                 self.routing_flag = 1
                                 slot_stop_x = x
                                 slot_stop_y = y
-                                self.slots.append(
-                                    {
-                                        'start': Point(slot_start_x, slot_start_y),
-                                        'stop': Point(slot_stop_x, slot_stop_y),
-                                        'tool': current_tool
-                                    }
+
+                                # ----------  add a Slot  ------------ #
+                                slot = (
+                                    Point(slot_start_x, slot_start_y),
+                                    Point(slot_stop_x, slot_stop_y)
                                 )
+                                if current_tool not in self.tools:
+                                    self.tools[current_tool] = {}
+                                if 'slots' in self.tools[current_tool]:
+                                    self.tools[current_tool]['slots'].append(slot)
+                                else:
+                                    self.tools[current_tool]['slots'] = [slot]
                                 continue
 
                         if self.match_routing_start is None and self.match_routing_stop is None:
@@ -792,7 +812,14 @@ class Excellon(Geometry):
                             if repeat == 0:
                                 # signal that there are drill operations
                                 self.defaults['excellon_drills'] = True
-                                self.drills.append({'point': Point((x, y)), 'tool': current_tool})
+
+                                # ----------  add a Drill  ------------ #
+                                if current_tool not in self.tools:
+                                    self.tools[current_tool] = {}
+                                if 'drills' in self.tools[current_tool]:
+                                    self.tools[current_tool]['drills'].append(Point((x, y)))
+                                else:
+                                    self.tools[current_tool]['drills'] = [Point((x, y))]
                             else:
                                 coordx = x
                                 coordy = y
@@ -801,7 +828,15 @@ class Excellon(Geometry):
                                         coordx = (repeat * x) + repeating_x
                                     if repeating_y:
                                         coordy = (repeat * y) + repeating_y
-                                    self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
+
+                                    # ----------  add a Drill  ------------ #
+                                    if current_tool not in self.tools:
+                                        self.tools[current_tool] = {}
+                                    if 'drills' in self.tools[current_tool]:
+                                        self.tools[current_tool]['drills'].append(Point((coordx, coordy)))
+                                    else:
+                                        self.tools[current_tool]['drills'] = [Point((coordx, coordy))]
+
                                     repeat -= 1
                             repeating_x = repeating_y = 0
                             # log.debug("{:15} {:8} {:8}".format(eline, x, y))
@@ -813,9 +848,14 @@ class Excellon(Geometry):
                     # ## Tool definitions # ##
                     match = self.toolset_re.search(eline)
                     if match:
-                        name = str(int(match.group(1)))
+                        # ----------  add a TOOL  ------------ #
+                        name = int(match.group(1))
                         spec = {"C": float(match.group(2)), 'solid_geometry': []}
-                        self.tools[name] = spec
+                        if name not in self.tools:
+                            self.tools[name] = {}
+                        self.tools[name]['tooldia'] = float(match.group(2))
+                        self.tools[name]['solid_geometry'] = []
+
                         log.debug("Tool definition: %s %s" % (name, spec))
                         continue
 
@@ -917,6 +957,15 @@ class Excellon(Geometry):
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
 
+            # the data structure of the Excellon object has to include bot the 'drills' and the 'slots' keys otherwise
+            # I will need to test for them everywhere.
+            # Even if there are not drills or slots I just add the storage there with an empty list
+            for tool in self.tools:
+                if 'drills' not in self.tools[tool]:
+                    self.tools[tool]['drills'] = []
+                if 'slots' not in self.tools[tool]:
+                    self.tools[tool]['slots'] = []
+
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
@@ -977,8 +1026,9 @@ class Excellon(Geometry):
     def create_geometry(self):
         """
         Creates circles of the tool diameter at every point
-        specified in ``self.drills``. Also creates geometries (polygons)
-        for the slots as specified in ``self.slots``
+        specified in self.tools[tool]['drills'].
+        Also creates geometries (polygons)
+        for the slots as specified in self.tools[tool]['slots']
         All the resulting geometry is stored into self.solid_geometry list.
         The list self.solid_geometry has 2 elements: first is a dict with the drills geometry,
         and second element is another similar dict that contain the slots geometry.
@@ -1001,36 +1051,35 @@ class Excellon(Geometry):
                 self.tools[tool]['solid_geometry'] = []
                 self.tools[tool]['data'] = {}
 
-            for drill in self.drills:
-                # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
-                if drill['tool'] == '':
-                    self.app.inform.emit('[WARNING] %s' %
-                                         _("Excellon.create_geometry() -> a drill location was skipped "
-                                           "due of not having a tool associated.\n"
-                                           "Check the resulting GCode."))
-                    log.debug("appParsers.ParseExcellon.Excellon.create_geometry() -> a drill location was skipped "
-                              "due of not having a tool associated")
-                    continue
-                tooldia = self.tools[drill['tool']]['C']
-                poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+            for tool in self.tools:
+                tooldia = self.tools[tool]['tooldia']
 
-                tool_in_drills = drill['tool']
-                self.tools[tool_in_drills]['solid_geometry'].append(poly)
-                self.tools[tool_in_drills]['data'] = deepcopy(self.default_data)
+                if 'drills' in self.tools[tool]:
+                    for drill in self.tools[tool]['drills']:
+                        poly = drill.buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
 
-            for slot in self.slots:
-                slot_tooldia = self.tools[slot['tool']]['C']
-                start = slot['start']
-                stop = slot['stop']
+                        # add poly in the tools geometry
+                        self.tools[tool]['solid_geometry'].append(poly)
+                        self.tools[tool]['data'] = deepcopy(self.default_data)
 
-                lines_string = LineString([start, stop])
-                poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+                        # add poly to the total solid geometry
+                        self.solid_geometry.append(poly)
 
-                tool_in_slots = slot['tool']
-                self.tools[tool_in_slots]['solid_geometry'].append(poly)
-                self.tools[tool_in_slots]['data'] = deepcopy(self.default_data)
+                if 'slots' in self.tools[tool]:
+                    for slot in self.tools[tool]['slots']:
+                        start = slot[0]
+                        stop = slot[1]
+
+                        lines_string = LineString([start, stop])
+                        poly = lines_string.buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
+
+                        # add poly in the tools geometry
+                        self.tools[tool]['solid_geometry'].append(poly)
+                        self.tools[tool]['data'] = deepcopy(self.default_data)
+
+                        # add poly to the total solid geometry
+                        self.solid_geometry.append(poly)
+
         except Exception as e:
             log.debug("appParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
@@ -1126,7 +1175,7 @@ class Excellon(Geometry):
 
         # Tools
         for tname in self.tools:
-            self.tools[tname]["C"] *= factor
+            self.tools[tname]["tooldia"] *= factor
 
         self.create_geometry()
         return factor
@@ -1173,30 +1222,39 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.drills)
+            self.geo_len = len(self.tools)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
         self.el_count = 0
 
-        # Drills
-        for drill in self.drills:
-            drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
+        for tool in self.tools:
+            # Scale Drills
+            if 'drills' in self.tools[tool]:
+                new_drills = []
+                for drill in self.tools[tool]['drills']:
+                    new_drills.append(affinity.scale(drill, xfactor, yfactor, origin=(px, py)))
+                self.tools[tool]['drills'] = new_drills
 
+            # Scale Slots
+            if 'slots' in self.tools[tool]:
+                new_slots = []
+                for slot in self.tools[tool]['slots']:
+                    new_start = affinity.scale(slot[0], xfactor, yfactor, origin=(px, py))
+                    new_stop = affinity.scale(slot[1], xfactor, yfactor, origin=(px, py))
+                    new_slot = (new_start, new_stop)
+                    new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
+
+            # Scale solid_geometry
+            self.tools[tool]['solid_geometry'] = scale_geom(self.tools[tool]['solid_geometry'])
+
+            # update status display
             self.el_count += 1
             disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
-
-        # scale solid_geometry
-        for tool in self.tools:
-            self.tools[tool]['solid_geometry'] = scale_geom(self.tools[tool]['solid_geometry'])
-
-        # Slots
-        for slot in self.slots:
-            slot['stop'] = affinity.scale(slot['stop'], xfactor, yfactor, origin=(px, py))
-            slot['start'] = affinity.scale(slot['start'], xfactor, yfactor, origin=(px, py))
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
@@ -1231,30 +1289,39 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.drills)
+            self.geo_len = len(self.tools)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
         self.el_count = 0
 
-        # Drills
-        for drill in self.drills:
-            drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
+        for tool in self.tools:
+            # Offset Drills
+            if 'drills' in self.tools[tool]:
+                new_drills = []
+                for drill in self.tools[tool]['drills']:
+                    new_drills.append(affinity.translate(drill, xoff=dx, yoff=dy))
+                self.tools[tool]['drills'] = new_drills
 
+            # Offset Slots
+            if 'slots' in self.tools[tool]:
+                new_slots = []
+                for slot in self.tools[tool]['slots']:
+                    new_start = affinity.translate(slot[0], xoff=dx, yoff=dy)
+                    new_stop = affinity.translate(slot[1], xoff=dx, yoff=dy)
+                    new_slot = (new_start, new_stop)
+                    new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
+
+            # Offset solid_geometry
+            self.tools[tool]['solid_geometry'] = offset_geom(self.tools[tool]['solid_geometry'])
+
+            # update status display
             self.el_count += 1
             disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
-
-        # offset solid_geometry
-        for tool in self.tools:
-            self.tools[tool]['solid_geometry'] = offset_geom(self.tools[tool]['solid_geometry'])
-
-        # Slots
-        for slot in self.slots:
-            slot['stop'] = affinity.translate(slot['stop'], xoff=dx, yoff=dy)
-            slot['start'] = affinity.translate(slot['start'], xoff=dx, yoff=dy)
 
         # Recreate geometry
         self.create_geometry()
@@ -1291,30 +1358,39 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.drills)
+            self.geo_len = len(self.tools)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
         self.el_count = 0
 
-        # Drills
-        for drill in self.drills:
-            drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
+        for tool in self.tools:
+            # Offset Drills
+            if 'drills' in self.tools[tool]:
+                new_drills = []
+                for drill in self.tools[tool]['drills']:
+                    new_drills.append(affinity.scale(drill, xscale, yscale, origin=(px, py)))
+                self.tools[tool]['drills'] = new_drills
 
+            # Offset Slots
+            if 'slots' in self.tools[tool]:
+                new_slots = []
+                for slot in self.tools[tool]['slots']:
+                    new_start = affinity.scale(slot[0], xscale, yscale, origin=(px, py))
+                    new_stop = affinity.scale(slot[1], xscale, yscale, origin=(px, py))
+                    new_slot = (new_start, new_stop)
+                    new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
+
+            # Offset solid_geometry
+            self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
+
+            # update status display
             self.el_count += 1
             disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
-
-        # mirror solid_geometry
-        for tool in self.tools:
-            self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
-
-        # Slots
-        for slot in self.slots:
-            slot['stop'] = affinity.scale(slot['stop'], xscale, yscale, origin=(px, py))
-            slot['start'] = affinity.scale(slot['start'], xscale, yscale, origin=(px, py))
 
         # Recreate geometry
         self.create_geometry()
@@ -1361,7 +1437,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.drills)
+            self.geo_len = len(self.tools)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1369,47 +1445,36 @@ class Excellon(Geometry):
 
         if point is None:
             px, py = 0, 0
-
-            # Drills
-            for drill in self.drills:
-                drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
-                                               origin=(px, py))
-
-                self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                if self.old_disp_number < disp_number <= 100:
-                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                    self.old_disp_number = disp_number
-
-            # skew solid_geometry
-            for tool in self.tools:
-                self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
-
-            # Slots
-            for slot in self.slots:
-                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(px, py))
-                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(px, py))
         else:
             px, py = point
-            # Drills
-            for drill in self.drills:
-                drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
-                                               origin=(px, py))
 
-                self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                if self.old_disp_number < disp_number <= 100:
-                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                    self.old_disp_number = disp_number
+        for tool in self.tools:
+            # Offset Drills
+            if 'drills' in self.tools[tool]:
+                new_drills = []
+                for drill in self.tools[tool]['drills']:
+                    new_drills.append(affinity.skew(drill, angle_x, angle_y, origin=(px, py)))
+                self.tools[tool]['drills'] = new_drills
 
-            # skew solid_geometry
-            for tool in self.tools:
-                self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
+            # Offset Slots
+            if 'slots' in self.tools[tool]:
+                new_slots = []
+                for slot in self.tools[tool]['slots']:
+                    new_start = affinity.skew(slot[0], angle_x, angle_y, origin=(px, py))
+                    new_stop = affinity.skew(slot[1], angle_x, angle_y, origin=(px, py))
+                    new_slot = (new_start, new_stop)
+                    new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
-            # Slots
-            for slot in self.slots:
-                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(px, py))
-                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(px, py))
+            # Offset solid_geometry
+            self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
+
+            # update status display
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
@@ -1441,58 +1506,51 @@ class Excellon(Geometry):
                         return obj
                 else:
                     try:
-                        return affinity.rotate(obj, angle, origin=(px, py))
+                        return affinity.rotate(obj, angle, origin=orig)
                     except AttributeError:
                         return obj
 
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.drills)
+            self.geo_len = len(self.tools)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
         self.el_count = 0
 
         if point is None:
-            # Drills
-            for drill in self.drills:
-                drill['point'] = affinity.rotate(drill['point'], angle, origin='center')
-
-            # rotate solid_geometry
-            for tool in self.tools:
-                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
-
-                self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                if self.old_disp_number < disp_number <= 100:
-                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                    self.old_disp_number = disp_number
-
-            # Slots
-            for slot in self.slots:
-                slot['stop'] = affinity.rotate(slot['stop'], angle, origin='center')
-                slot['start'] = affinity.rotate(slot['start'], angle, origin='center')
+            orig = 'center'
         else:
-            px, py = point
-            # Drills
-            for drill in self.drills:
-                drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
+            orig = point
 
-                self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                if self.old_disp_number < disp_number <= 100:
-                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                    self.old_disp_number = disp_number
+        for tool in self.tools:
+            # Offset Drills
+            if 'drills' in self.tools[tool]:
+                new_drills = []
+                for drill in self.tools[tool]['drills']:
+                    new_drills.append(affinity.rotate(drill, angle, origin=orig))
+                self.tools[tool]['drills'] = new_drills
 
-            # rotate solid_geometry
-            for tool in self.tools:
-                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
+            # Offset Slots
+            if 'slots' in self.tools[tool]:
+                new_slots = []
+                for slot in self.tools[tool]['slots']:
+                    new_start = affinity.rotate(slot[0], angle, origin=orig)
+                    new_stop = affinity.rotate(slot[1], angle, origin=orig)
+                    new_slot = (new_start, new_stop)
+                    new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
-            # Slots
-            for slot in self.slots:
-                slot['stop'] = affinity.rotate(slot['stop'], angle, origin=(px, py))
-                slot['start'] = affinity.rotate(slot['start'], angle, origin=(px, py))
+            # Offset solid_geometry
+            self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin=orig)
+
+            # update status display
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
@@ -1534,8 +1592,8 @@ class Excellon(Geometry):
             except TypeError:
                 self.tools[tool]['solid_geometry'] = [res]
             if factor is None:
-                self.tools[tool]['C'] += distance
+                self.tools[tool]['tooldia'] += distance
             else:
-                self.tools[tool]['C'] *= distance
+                self.tools[tool]['tooldia'] *= distance
 
         self.create_geometry()

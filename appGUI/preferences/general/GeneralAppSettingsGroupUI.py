@@ -98,12 +98,26 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
         self.workspace_type_label = self.option_dict()["global_workspaceT"].label_widget
         self.workspace_orientation_field = self.option_dict()["global_workspace_orientation"].get_field()
         self.workspace_orientation_label = self.option_dict()["global_workspace_orientation"].label_widget
-        self.wks = OptionalInputSection(self.workspace_enabled_field, [self.workspace_type_label, self.workspace_type_field, self.workspace_orientation_label, self.workspace_orientation_field])
+        self.wks = OptionalInputSection(
+            self.workspace_enabled_field,
+            [
+                self.workspace_type_label,
+                self.workspace_type_field,
+                self.workspace_orientation_label,
+                self.workspace_orientation_field
+            ]
+        )
 
         self.mouse_cursor_color_enabled_field = self.option_dict()["global_cursor_color_enabled"].get_field()
         self.mouse_cursor_color_field = self.option_dict()["global_cursor_color"].get_field()
         self.mouse_cursor_color_label = self.option_dict()["global_cursor_color"].label_widget
-        self.mois = OptionalInputSection(self.mouse_cursor_color_enabled_field, [self.mouse_cursor_color_label, self.mouse_cursor_color_field])
+        self.mois = OptionalInputSection(
+            self.mouse_cursor_color_enabled_field,
+            [
+                self.mouse_cursor_color_label,
+                self.mouse_cursor_color_field
+            ]
+        )
         self.mouse_cursor_color_enabled_field.stateChanged.connect(self.on_mouse_cursor_color_enable)
         self.mouse_cursor_color_field.entry.editingFinished.connect(self.on_mouse_cursor_entry)
 

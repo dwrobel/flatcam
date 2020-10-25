@@ -7,6 +7,659 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.10.2020
+
+- added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
+- replaced the InputDialog in the Opacity pop menu for the objects in the Project Tab with a FCInputDialogSlider
+- minor changes
+- UI changes in the AppTextEditor and in CNCJob properties tab and in GCoe Editor
+- some changes in strings; updated all the translation strings to the latest changes
+- finished the Romanian translation
+- created two new preprocessors (from 'default' and from 'grbl_11') that will have no toolchange commands regardless of the settings in the software
+- updated the Turkish translation (by Mehmet Kaya)
+- the methods of the APP class that were the handlers for the File menu are now moved to their own class
+- fixed some of the Tcl Commands that depended on the methods refactored above
+- reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
+- fixed newly introduced issue when doing File -> Print(PDF)
+- fixed newly introduced issues with SysTray and Splash
+- added ability for the app to detect the current DPI used on the screen; applied this information in the Film Tool when exporting PNG files
+- found that Pillow v >= 7.2 breaks Reportlab 3.5.53 (latest version) and creates an error in Film Tool when exporting PNG files. Pillow 7.2 still works.
+
+23.10.2020
+
+- updated Copper Thieving Tool to work with the updated program
+- updated Rules Check Tool - Hole Size rule to work with the new data structure for the Excellon objects
+- updated Rules Check Tool - added an activity message
+- updated some strings, updated the translation strings
+- commented the ToolsDB class since it is not used currently
+- some minor changes in the AppTextEditor.py file
+- removed Hungarian language since it's looking like is no longer being translated
+- added a default properties tab which will hold a set of information's about the application
+- minor changes in the Properties Tool
+- Excellon UI: fixed a small issue with toggling all rows in Tools Table not toggling off and also the milling section in Utilities was not updated
+- some refactoring in the keys of the defaults dictionary
+- fixed an ambiguity in the Tools Database GUI elements
+
+22.10.2020
+
+- added  a message to show if voronoi_diagram method can be used (require Shapely >= 1.8)
+- modified behind the scene the UI for Tool Subtract
+- modified some strings and updated the translation strings
+- in NCC Tool added a check for the validity of the used tools; its only informative
+- in NCC Tool done some refactoring
+- in NCC Tool fixed a bug when using Rest Machining; optimizations
+- in NCC Tool fixed a UI issue
+- updated the Turkish translation (by Mehmet Kaya)
+- small change in the CNCJob UI by replacing the AL checkbox with a checkable QButton
+- disabled the Autolevelling feature in CNCJob due of being not finished and missing also a not-yet-released package: Shapely v 1.8
+- added some new strings for translation and updated the translation strings
+- in ToolsDB2UI class made the vertical layouts have a preferred minimum dimension as opposed to the previous fixed one
+- in Geometry Object made sure that the Tools Table second column is set to Resize to contents
+- fixed a bug in Tool PunchGerber when using an Excellon to punch holes in the Gerber apertures
+
+21.10.2020
+
+- in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here
+- in NCC and Paint Tool fixed some issues with missing keys in the tool data dictionary
+- In Excellon Object UI fixed the enable/disable for the Milling section according to the Tools Table row that is selected
+- In Excellon Object UI fixed the milling geometry generation
+- updated the translations strings to the changes in the source code
+- some strings changed
+- made the Properties checkbox in the Object UI into a checkable button and added to it an icon
+- fixed crash on using shortcut for creating a new Document Object
+- fixed Cutout Tool to work with the endxy parameter
+- added the exclusion parameters for Drilling Tool to the Preferences area
+- cascaded_union() method will be deprecated in Shapely 1.8 in favor of unary_union; replaced the usage of cascaded_union with unary_union in all the app
+- added some strings to the translatable strings and updated the translation strings
+- merged in the Autolevelling branch and made some PEP8 changes to the bilinearInterpolator.py file
+- added a button in Gerber UI that will hide/show the bounding box generation and the non-copper region section
+- compacted the UI for the 2Sided Tool
+- added a button in Excellon UI that will hide/show the milling section
+- optimized a bit the UI for Gerber/Excellon/Geometry objects
+- optimized FlatCAMObj.add_properties_items() method
+- updated the Turkish translation (by Mehmet Kaya)
+- added ability to run a callback function with callback_parameters after a new FlatCAM object is created
+
+20.10.2020
+
+- finished to add the Properties data to the Object Properties (former Selected Tab)
+
+19.10.2020
+
+- added a check (and added to Preferences too) for the verification of tools validity in the Isolation Tool
+- fixed QrCode Tool
+- updated the Turkish translation (by Mehmet Kaya)
+
+18.10.2020
+
+- fixed issue with calling the inform signal in the FlatCAMDefaults.load method
+- fixed macro parsing in Gerber files generated by KiCAD 4.99 (KiCAD 5.0)
+
+17.10.2020
+
+- updated Turkish translation (by Mehmet Kaya)
+
+8.10.2020
+
+- small change in the NCC Tool UI
+- some strings are changed and therefore the translation strings source are updated
+- Isolation Tool - added a check for having a complete isolation
+
+7.10.2020
+
+- working on adding DPI setting for PNG export in Film Tool - update
+- finished updating DPI setting feature for PNG export in Film Tool
+
+5.10.2020
+
+- working on adding DPI setting for PNG export in the Film Tool
+- finished working in adding DPI settings for PNG export in Film Tool although there are some limitations due of Reportlab
+- small change in TclCommandExportSVG
+
+26.09.2020
+
+- the Selected Tab is now Properties Tab for FlatCAM objects
+- modified the Properties Tab for various FlatCAM objects preparing the move of Properties Tool data into the Properties Tab
+- if the Properties tab is in focus (selected) when a new object is created then it is automatically selected therefore it's properties will be populated
+
+25.09.2020
+
+- minor GUI change in Isolation Tool
+
+24.09.2020
+
+- fixed a bug where end_xy parameter in Drilling Tool was not used
+- fixed an issue in Delete All method in the app_Main.py
+
+23.09.2020
+
+- added support for virtual units in SVG parser; warning: it may require the support for units which is not implemented yet
+- fixed canvas selection such that when selecting shape fails to be displayed with rounded corners a square selection shape is used
+- fixed canvas selection for the case when the selected object is a single line or a line made from multiple segments
+
+22.09.2020
+
+- fixed an error in importing SVG that has a single line
+- updated the POT file and the PO/MO files for Turkish language
+- working to add virtual units to SVG parser
+
+20.09.2020
+
+- in CNCJob UI Autolevelling: on manual add of probe points, only voronoi diagram is calculated
+- in SVG parser: made sure that the minimum number of steps to approximate an arc/circle/bezier is 10
+
+19.09.2020
+
+- removed some brackets in the GRBL laser preprocessor due of GRBL firmware interpreting the first closing bracket as the comment end
+
+3.09.2020
+
+- in CNCJob UI Autolevelling: changed the UI a bit
+- added a bilinear interpolation calculation class from: https://github.com/pmav99/interpolation
+- in CNCJob UI Autolevelling: made sure that the grid can't have less than 2 rows and 2 columns when using the bilinear interpolation or 1 row and 1 column when using the Voronoi polygons
+- in CNCJob UI Autolevelling: prepared the app for bilinear interpolation
+- in CNCJob UI Autolevelling: fixes in the UI
+
+2.09.2020
+
+- in CNCJob UI Autolevelling: solved some small errors: when manual adding probe points dragging the mouse with left button pressed created selection rectangles; detection of click inside the solid geometry was failing
+- in CNCJob UI Autolevelling: in manual adding of probe points make sure you always add a first probe point in origin
+- in CNCJob UI Autolevelling: first added point when manual adding of probe points is auto added in origin before adding first point
+- in CNCJob UI Autolevelling: temp geo for adding points in manual mode is now painted in solid black color and with a smaller diameter
+- in CNCJob UI Autolevelling - GRBL controller - added a way to save a GRBL height map
+- in CNCJob UI Autolevelling: added the UI for choosing the method used for the interpolation used in autolevelling
+
+31.08.2020
+
+- updated the Italian translation files by Massimiliano Golfetto
+- in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
+- in CNCJob UI Autolevelling: in manual mode, Points can be chosen only when clicking inside the object to be probed
+- in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
+- in CNCJob UI Autolevelling: remade the probing points generation so they could allow bilinear interpolation
+
+29.08.2020
+
+- 2Sided Tool - fixed newly introduced issues in the Alignment section
+- 2Sided Tool - modified the UI such that some of the fields will allow only numbers and some special characters ([,],(,),/,*,,,+,-,%)
+- Cutout Tool - working on adding mouse bites for the Freeform cutout
+- updated the translation files to the current state of the app
+- Cutout Tool - rectangular and freeform cutouts are done in a threaded way
+- Cutout Tool - added the Mouse Bites feature for the Rectangular and Freeform cutouts and right now it fails in case of using a Geometry object and Freeform cutout (weird result)
+- some changes in camlib due of warnings for future changes in Shapely 2.0
+- Cutout Tool - fixed mouse bites feature in case of using a Geometry object and Freeform cutout
+- Cutout Tool - can do cutouts on multigeo Geometry objects: it will automatically select the geometry of first tool
+- Geometry Editor - fixed exception raised when trying to move and there is no shape to move
+- Cutout Tool - finished adding the Mouse Bites feature by adding mouse bites for manual cutouts
+
+28.08.2020
+
+- Paint Tool - upgraded the UI and added the functionality that now adding a new tool is done by first searching the Tools DB for a suitable tool and if fails then it adds an default tool
+- Paint Tool - on start will attempt to search in the Tools DB for the default tools and if found will load them from the DB
+- NCC Tool - upgraded the UI and added the functionality that now adding a new tool is done by first searching the Tools DB for a suitable tool and if fails then it adds an default tool
+- NCC Tool - on start will attempt to search in the Tools DB for the default tools and if found will load them from the DB
+- fixes in NCC, Paint and Isolation Tool due of recent changes
+- modified the Tools Database and Preferences with the new parameters from CutOut Tool
+- changes in Tool Cutout: now on Cutout Tool start the app will look into Tools Database and search for a tool with same diameter (or within the set tolerance) as the one from Preferences and load it if found or load a default tool if not
+- Tool Cutout - this Tool can now load tools from Tools Database through buttons in the Cutout Tool
+
+27.08.2020
+
+- fixed the Tcl commands AddCircle, AddPolygon, AddPolyline and AddRectangle to have stored bounds therefore making them movable/selectable on canvas
+- in Tool Cutout, when using the Thin Gaps feature, the resulting geometry loose the extra color by toggling tool plot in Geometry UI Tools Table- fixed
+- in Tool Cutout fixed manual adding of gaps with thin gaps and plotting
+- in Tool Cutout, when using fix gaps made sure that this feature is not activated if the value is zero
+- in Tool Cutout: modified the UI in preparation for adding the Mouse Bites feature
+- Turkish translation strings were updated by the translator, Mehmet Kaya
+- Film Tool - moved the Tool UI in its own class
+- in Tools: Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
+- Tool Isolation - made sure that the app can load from Tools Database only tools marked for Isolation tool
+- Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
+- in Tools: Transform, SUb, RulesCheck, DistanceMin, Distance - moved the Tool UI in its own class
+- some small fixes
+- fixed a borderline issue in CNCJob UI Autolevelling - Voronoi polygons calculations
+
+26.08.2020
+
+- fix for issue nr 2 in case of Drilling Tool. Need to check Isolation Tool, Paint Tool, NCC Tool
+- Drilling Tool - UI changes
+- Geometry object - now plotting color for an individual tool can be specified
+- in CutOut Tool - when using  'thin gaps' option then the cut parts are colored differently than the rest of the geometry in the Geometry object
+- solved some deprecation warnings (Shapely module)
+- Drilling Tool - when replacing Tools if more than one tool for one diameter is found, the application exit the process and display an error in status bar; some minor fixes
+- Isolation Tool - remade the UI
+- Isolation Tool - modified the add new tool method to search first in Tools Database  for a suitable tool
+- Isolation Tool - added ability to find the tool diameter that will guarantee total isolation of the currently selected Gerber object
+- NCC Tool - UI change: if the operation is Isolation then some of the tool parameters are disabled
+- fixed issue when plotting a CNCJob object with multiple tools and annotations on by plotting annotations after all the tools geometries are plotted
+- fixed crash in Properties Tool, when applied on a CNCJob object made out of an Excellon object (fixed issue #444)
+- in Properties Tool, for CNCJob objects made out of Excellon objects, added the information's from Tool Data
+- in Properties Tool made sure that the set color for the Tree parents depends on the fact if the gray icons set are used (dark theme) or not
+- Properties Tool - properties for a Gerber objects has the Tool Data now at the end of the information's
+- in Gerber UI done some optimizations
+
+25.08.2020
+
+- in CNCJob UI Autolevelling - made the Voronoi calculations work even in the scenarios that previously did not work; it need a newer version of Shapely, currently I installed the GIT version
+- in CNCJob UI Autolevelling - Voronoi polygons are now plotted
+- in CNCJob UI Autolevelling - adding manual probe points now show some geometry (circles) for the added points until the adding is finished
+- 2Sided Tool - finished the feature that allows picking an Excellon drill hole center as a Point mirror reference
+- Tool Align Objects - moved the Tool Ui into its own class
+- for Tools: Calculators, Calibration, Copper Thieving, Corners, Fiducials - moved the Tool UI in its own class
+
+24.08.2020
+
+- fixed issues in units conversion
+- in CNCJob UI Autolevelling - changed how the probing code is generated and when
+- changed some strings in CNCJob UI Autolevelling
+- made sure that when doing units conversion keep only the decimals specified in the application decimals setting (should differentiate between values and display?)
+- in CNCJob UI Autolevelling - some UI changes
+- in CNCJob UI Autolevelling - GRBL controller - added the probing method
+- in CNCJob UI Autolevelling - GRBL controller - fixed the send_grbl_command() method
+
+23.08.2020
+
+- in CNCJob UI Autolevelling - autolevelling is made to be not available for cnc code generated with Roland or HPGL preprocessors
+- in CNCJob UI Autolevelling - added a save dialog for the probing GCode
+- added a new GUI element, a DoubleSlider
+- in CNCJob UI Autolevelling - GRBL controller - Control: trying to add DoubleSlider + DoubleSpinner combo controls
+- in GUI element FCDoubleSpinner fixed an range issue
+
+21.08.2020
+
+- in CNCJob UI Autolevelling - GRBL controller - Control: added a Origin button; changed the UI to have rounded rectangles 
+- in CNCJob UI Autolevelling - GRBL controller - Control: added feedrate and step size controls and added them in Preferences
+- in CNCJob UI Autolevelling - GRBL controller - added handlers for the Zeroing and for Homing and for Pause/Resume; some UI optimizations
+
+19.08.2020
+
+- in CNCJob UI Autolevelling - sending GCode/GRBL commands is now threaded
+- in CNCJob UI Autolevelling - Grbl Connect tab colors will change with the connection status
+- in CNCJob UI Autolevelling - GRBL Control and Sender tabs are disabled when the serial port is disconnected
+- in CNCJob UI Autolevelling - GRBL Sender - now only a single command can be sent 
+- in CNCJob UI Autolevelling - GRBL controller - changed the UI
+- in CNCJob UI Autolevelling - added some VOronoi poly calculations
+
+18.08.2020
+
+- in Doublesided Tool added some UI for Excellon hole snapping
+- in Doublesided Tool cleaned up the UI
+- in CNCJob UI Autolevelling - in COntrol section added  buttons for Jog an individual axes zeroing
+- in CNCJob UI Autolevelling - added handlers for: jogging, reset, sending commands
+- in CNCJob UI Autolevelling - added handlers for GRBL report and for getting GRBL parameters
+
+17.08.2020
+
+- in CNCJob UI Autolevelling - GRBL GUI controls are now organized in a tab widget
+
+16.08.2020
+
+- in CNCJob UI Autolevelling - updated the UI with controls for probing GCode parameters and added signals and slots for the UI
+- in CNCJob UI Autolevelling - added a mini gcode sender for the GRBL to be able to send the probing GCode and get the height map (I may make a small and light app for that so it does not need to have FlatCAM on the GCode sender PC)
+- in CNCJob UI Autolevelling finished the probing GCode generation for MACH/LinuxCNC controllers; this GCode can also be viewed
+- in CNCJob UI Autolevelling - Probing GCode has now a header
+- in CNCJob UI Autolevelling - Added entries in Preferences
+- in CNCJob UI Autolevelling - finished the Import Height Map method
+- in CNCJob UI Autolevelling - made autolevelling checkbox state persistent between app restarts
+
+14.08.2020
+
+- in CNCJob UI worked on the UI for the Autolevelling
+- in CNCJob UI finished working on adding test points in Grid mode
+- in CNCJob UI finished working on adding test points in Manual mode
+
+13.08.2020
+
+- in CNCJob UI added GUI for an eventual Autolevelling feature 
+- in CNCJob UI updated the GUI for Autolevelling
+- Cutout Tool - finished handler for gaps thickness control for the manual gaps
+- CNCJob object - working in generating Voronoi diagram for autolevelling
+
+11.08.2020
+
+- CutOut Tool - finished handler for gaps thickness control for the free form cutout
+
+9.08.2020
+
+- small fix so the cx_freeze 6.2 module will work in building a frozen version of FlatCAM
+
+7.08.2020
+
+- all Geometry objects resulted from Isolation Tool are now of type multi-geo
+- fixed minor glitch in the Isolation Tool UI
+- added an extra check when doing selection on canvas
+- fixed an UI problem in Gerber Editor
+
+5.08.2020
+
+- Tool Cutout - more work in gaps thickness control feature
+- Tool Cutout - added some icons to buttons
+- Tool Cutout - done handling the gaps thickness control for the rectangular cutout; TODO: check all app for the usage of geometry_spindledir and geometry_optimization_type defaults in tools and in options
+- Tool Cutout - some work in gaps thickness control for the free form cutout
+
+4.08.2020
+
+- removed the Toolchange Macro feature (in the future it will be replaced by full preprocessor customization)
+- modified GUI in Preferences
+- Tool Cutout - working in adding gaps thickness control feature; added the UI in the Tool
+
+3.08.2020
+
+- GCode Editor - GCode tool selection when clicking on tool in Tools table is working. The only issue is that the first tool gcode includes the start gcode which confuse the algorithm
+- GCode Editor - can not delete objects while in the Editor; can not close the Code Editor Tab except on Editor exit; activated the shortcut keys (for now only CTRL+S is working)
+- added a way to remember the old state of Tools toolbar before and after entering an Editor
+- GCode Editor - modified the UI
+
+2.08.2020
+
+- GCode Editor - closing the Editor will close also the Code Editor Tab
+- cleanup of the CNCJob UI; added a checkbox to signal if any append/prepend gcode was set in Preferences (unchecking it will override and disable the usage of the append/prepend GCode)
+- the start Gcode is now stored in the CNCJob object attribute gc_start
+- GCode Editor - finished adding the ability to select a row in the Tools table and select the related GCode
+- GCode Editor - working on GCode tool selection - not OK
+
+1.08.2020
+
+- Tools Database: added a Cutout Tool Parameters section
+- GCode Editor - work in the UI
+
+31.07.2020
+
+- minor work in GCode Editor
+
+29.07.2020
+
+- fixed an exception that was raised in Geometry object when using an Offset
+
+27.07.2020
+
+- Gerber parser - a single move with pen up D2 followed by a pen down D1 at the same location is now treated as a Flash; fixed issue #441
+
+25.07.2020
+
+- Tools Tab is hidden when entering into a Editor and showed on exit (this needs to be remade such that the toolbars state should be restored to whatever it was before entering in the Editor)
+
+22.07.2020
+
+- working on a proper GCode Editor
+- wip in the GCode Editor
+- added a Laser preprocessor named 'Z_laser' which will change the Z to the Travel Z on each ToolChange event allowing therefore control of the dot size
+- by default now a new blank Geometry object created by FlatCAM is of type multigeo
+- made sure that optimizations of lines when importing SVG or DXF as lines will not encounter polygons but only LinesStrings or LinearRings, otherwise having crashes
+- fixed the import SVG and import DXF, when importing as Geometry to be imported as multigeo tool
+- fixed the import SVG and import DXF, the source files will be saved as loaded into the source_file attribute of the resulting object (be it Geometry or Gerber)
+- in import SVG and import DXF methods made sure that any polygons that are imported as polygons will survive and only the lines are optimized (changed the behavior of the above made modification)
+
+21.07.2020
+
+- updated the FCRadio class with a method that allow disabling certain options
+- the Path optimization options for Excellon and Geometry objects are now available depending on the OS platform used (32bit vs 64bit)
+- fixed MultiColor checkbox in Excellon Object to work in Legacy Mode (2D)
+- modified the visibility change in Excellon UI to no longer do plot() when doing visibility toggle for one of the tools but only a visibility change in the shapes properties
+- Excellon UI in Legacy Mode (2D): fixed the Solid checkbox functionality
+- Excellon UI: fixed plot checkbox performing an extra plot function which was not required
+- Excellon UI: added a column which will color each row/tool of that column in the color used when checking Multicolor checkbox
+- Excellon UI: made sure that when the Multicolor checkbox is unchecked, the color is updated in the Color column of the tools table
+- made sure that the Preferences files are deleted on new version install, while the application is in Beta status
+- fixed issues with detecting older Preferences files
+- fixed some issues in Excellon Editor due of recent changes
+- moved the Gerber colors fill in the AppObject.on_object_created() slot and fixed some minor issues here
+- made sure there are no issues when plotting the Excellon object in one thread and trying to build the UI in another by using a signal
+
+20.07.2020
+
+- fixed a bug in the FlatCAMGerber.on_mark_cb_click_table() method when moving a Gerber object
+- added a way to remember the colors set for the Gerber objects; it will remember the order that they were loaded and set a color previously given
+- added a control in Preferences -> Gerber Tab for Gerber colors storage usage
+- made sure that the defaults on first install will set the number of workers to half the number of CPU's on the system but no less than 2
+
+18.07.2020
+
+- added some icons in the Code Editor
+- replaced some icons in the app
+- in Code Editor, when changing text, the Save Code button will change color (text and icon) to red and after save it will revert the color to the default one
+- in Code Editor some methods rework
+
+16.07.2020
+
+- added a new method for GCode generation for Geometry objects
+- added multiple algorithms for path optimization when generating GCode from an Geometry object beside the original Rtree algorithm: TSA, OR-Tools Basic, OR-Tools metaheuristics
+- added controls for Geometry object path optimization in Preferences
+
+15.07.2020
+
+- added icons to some of the push buttons
+- Tool Drilling - automatically switch to the Selected Tab after job finished
+- added Editor Push buttons in Geometry and CNCJob UI's
+- Tool Drilling - brushing through code and solved the report on estimation of execution time
+- Tool Drilling - more optimizations regarding of using Toolchange as opposed to not using it
+- modified the preprocessors to work with the new properties for Excellon objects
+- added to preprocessors information regarding the X,Y position at the end of the job
+- Tool Drilling made sure that on Toolchange event after toolchange event the tool feedrate is set
+- added some icons to more push buttons inside the app
+- a change of layout in Tools Database
+- a new icon for Search in DB
+
+14.07.2020
+
+- Drilling Tool - now there is an Excellon preference that control the autoload of tools from the Tools Database
+- Tools Database - remade the UI
+- made sure that the serializable attributes are added correctly and only once (self.ser_attrs)
+- Tools Database - some fixes in the UI (some of the widgets had duplicated names)
+- Tools Database - made sure the on save the tools are saved only with the properties that relate to their targeted area of the app
+- Tools Database - changes can be done only for one tool at a time
+- Tool Database - more changes to the UI
+
+13.07.2020
+
+- fixed a bug in Tools Database: due of not disconnecting the signals it created a race that was concluded into a RuntimeError exception (an dict changed size during iteration)
+- Drilling Tool - working in adding tools auto-load from Tools DB
+- some updates to the Excellon Object options
+- Drilling Tool - manual add from Tools DB is working
+- Drilling Tool - now slots are converted to drills if the checkbox is ON for the tool investigated
+- Drilling Tool - fixes due of changes in properties (preferences)
+- fixed the Drillcncjob TCL command
+- Multiple Tools fix - fixed issue with converting slots to drills selection being cleared when toggling all rows by clicking on the header
+- Multiple Tools fix - fixes for when having multiple tools selected which created issues in tool tables for many tools
+
+12.07.2020
+
+- when creating a new FlatCAM object, the options will be updated with FlatCAM tools properties that relate to them
+- updated the Tools DB class by separating the Tools DB UI into it's own class
+- Tools DB - added the parameters for Drilling Tool
+
+11.07.2020
+
+- moved all Excellon Advanced Preferences to Drilling Tool Preferences
+- updated Drilling Tool to use the new settings
+- updated the Excellon Editor: the default_data dict is populated now on Editor entry
+- Excellon Editor: added a new functionality: conversion of slots to drills
+- Excellon UI: added a new feature that is grouped in Advanced Settings: a toggle tools table visibility checkbox 
+- Drilling Tool - minor fixes
+- Drilling Tool - changes in UI
+- Isolation Tool - modified the UI; preparing to add new feature of polishing at the end of the milling job
+- Tool Paint - fixed an issue when launching the tool and an object other than Geometry or Excellon is selected
+- Geometry UI - moved the UI for polishing from Isolation Tool to Geometry UI (actually in the future Milling Tool) where it belongs
+- Gerber UI - optimized the mark shapes to use only one ShapeCollection
+
+10.07.2020
+
+- Tool Drilling - moved some of the Excellon Preferences related to drilling operation to it's own group Drilling Tool Options
+- optimized the CNCJob UI to look like other parts of the app 
+- in Gerber and Excellon UI added buttons to start the Editor
+- in all Editors Selected Tab added a button to Exit the Editor
+- Tool Drilling - fixed incorrect annotations in CNCJob objects generated; one drawback is that now each tool (when Toolchange is ON) has it's own annotation order which lead to overlapping in the start point of one tool and the end of previous tool
+- Tool Drilling - refactoring methods and optimizations
+
+9.07.2020
+
+- Tool Drilling - remade the methods used to generate GCode from Excellon, to parse the GCode. Now the GCode and GCode_parsed are stored individually for each tool and also they are plotted individually
+- Tool Drilling now works - I still need to add the method for converting slots to drill holes
+- CNCJob object - now it is possible for CNCJob objects originated from Excellon objects, to toggle the plot for a selection of tools
+- working in cleaning up the Excellon UI (Selected Tab)
+- finished the clean-up in Excellon UI
+- Tool Drilling - added new feature to drill the slots
+
+8.07.2020
+
+- Tool Drilling - working on the UI
+- Tool Drilling - added more tool parameters; laying the ground for adding "Drilling Slots" feature
+- added as ToolTip for the the Preprocessor combobox items, the actual name of the items
+- working on Tool Drilling - remaking the way that the GCode is stored, each tool will store it's own GCode
+- working on Tool Drilling
+
+7.07.2020
+
+- updated the Panelize Tool to save the source code for the panelized Excellon objects so it can be saved from the Save project tab context menu entry
+- updated the Panelize Tool to save the source code for the panelized Geometry objects as DXF file
+- fixed the Panelize Tool so the box object stay as selected on new objects are loaded; any selection shape on canvas is deleted when clicking Panelize
+
+6.07.2020
+
+- Convert Any to Excellon. Finished Gerber object conversion to Excellon. Flash's are converted to drills. Traces in the form of a linear LineString (no changes in direction) are converted to slots.
+- Turkish translation updated by Mehmet Kaya for the 8.993 version of strings
+
+2.07.2020
+
+- trying to optimize the resulting geometry in DXF import (and in SVG import) by merging contiguous lines; reduced the lines to about one third of the original
+- fixed importing DXF file as Gerber method such that now the resulting Gerber object is correctly created having the geometry attributes like self.apertures and self.follow_geometry
+- added Turkish translation - courtesy of Mehmet Kaya
+- modified the Gerber export method to take care of the situation where the exported Gerber file is a SVG/DXF file imported as Gerber
+- working in making a new functionality: Convert Any to Excellon. Finished Geometry object conversion to Excellon.
+
+30.06.2020
+
+- fixed the SVG parser so the SVG files with no information regarding the 'height' can be opened in FlatCAM; fixed issue #433
+
+29.06.2020
+
+- fixed the DXF parser to work with the latest version of ezdxf module (issues for the ellipse entity and modified attribute name for the knots_values to knots)
+- fixed the DXF parser to parse correctly the b-splines by not adding automatically a knot value 0f (0, 0) when the spline is not closed
+
+27.06.2020
+
+- Drilling Tool - UI is working as expected; I will have to propagate the changes to other tools too, to increase likeness between different parts of the app
+
+25.06.2020
+
+- made sure that when trying to view the source but no object is selected, the messages are correct
+- wip for Tool Drilling
+
+23.06.2020
+
+- working on Tool Drilling
+
+21.06.2020
+
+- wip
+
+18.06.2020
+
+- fixed bug in the Cutout Tool that did not allowed the manual cutous to be added on a Geometry created in the Tool
+- fixed bug in Cutout Tool that made the selection box show in the stage of adding manual gaps
+- updated Cutout Tool UI
+- Cutout Tool - in manual gap adding there is now an option to automatically turn on the big cursor which could help
+- Cutout Tool - fixed errors when trying to add a manual gap without having a geometry object selected in the combobox
+- Cutout Tool - made sure that all the paths generated by this tool are contiguous which means that two lines that meet at one end will become only one line therefore reducing unnecessary Z moves
+- Panelize Tool - added a new option for the panels of type Geometry named Path Optimization. If the checkbox is checked then all the LineStrings that are overlapped in the resulting multigeo Geometry panel object will keep only one of the paths thus minimizing the tool cuts.
+- Panelize Tool - fixed to work for panelizing Excellon objects with the new data structure storing drills and tools in the obj.tools dictionary
+- put the bases for a new Tool: Milling Holes Tool
+
+17.06.2020
+
+- added the multi-save capability if multiple CNCJob objects are selected in Project tab but only if all are of type CNCJob
+- added fuse tools control in Preferences UI for the Excellon objects: if checked the app will try to see if there are tools with same diameter and merge the drills for those tools; if not the tools will just be added to the new combined Excellon
+- modified generate_from_excellon_by_tool() method in camlib.CNCJob() such that when Toolchange option is False, since the drills will be drilled with one tool only, all tools will be optimized together
+
+16.06.2020
+
+- changed the data structure for the Excellon object; modified the Excellon parser and the Excellon object class
+- fixed partially the Excellon Editor to work with the new data structure
+- fixed Excellon export to work with the new data structure
+- fixed all transformations in the Excellon object attributes; still need to fix the App Tools that creates or use Excellon objects
+- fixed some problems (typos, missing data) generated by latest changes
+- more typos fixed in Excellon parser, slots processing
+- fixed Extract Drills Tool to work with the new Excellon data format
+- minor fix in App Tools that were updated to have UI in a separate class
+- Tool Punch Gerber - updated the UI
+- Tool Panelize - updated the UI
+- Tool Extract Drills - updated the UI
+- Tool QRcode - updated the UI
+- Tool SolderPaste - updated the UI
+- Tool DblSided - updated the UI
+
+15.06.2020
+
+- in Paint Tool and NCC Tool updated the way the selected tools were processed and made sure that the Tools Table rows are counted only once in the processing
+- modified the UI in Paint Tool such that in case of using rest machining the offset will apply for all tools
+- Paint Tool - made the rest machining function for the paint single polygon method
+- Paint Tool - refurbished the 'rest machining' for the entire tool
+- Isolation Tool - fixed to work with selection of tools in the Tool Table (previously it always used all the tools in the Tool Table)
+- Tools Database - added a context menu action to Save the changes to the database even if it's not in the Administration mode
+- Tool Isolation - fixed a UI minor issue: 'forced rest' checkbox state at startup was always enabled
+- started working in moving the Excellon drilling in its own Application Tool
+- created a new App Tool named Drilling Tool where I will move the drilling out of the Excellon UI
+- working on the Drilling Tool - started to create a new data structure that will hold the Excellon object data
+
+14.06.2020
+
+- made sure that clicking the icons in the status bar works only for the left mouse click
+- if clicking the activity icon in the status bar and there is no object selected then the effect will be a plot_all with fit_view
+- modified the FCLabel GUI element
+- NCC Tool - remade and optimized the copper clearing with rest machining: now it works as expected with a reasonable performance
+- fixed issue #428 - Cutout Tool -> Freeform geometry was not generated due of trying to get the bounds of the solid_geometry before it was available
+- NCC Tool - now the tools can be reordered (if the order UI radio is set to 'no')
+- remade the UI in Paint Tool and the tools in tools table ca now be reordered (if the order UI radio is set to 'no')
+- some updates in NCC Tool using code from Paint Tool
+- in Paint and NCC Tools made sure that using the key ESCAPE to cancel the tool will not create mouse events issues
+- some updates in Tcl commands Paint and CopperClear data dicts
+- modified the Isolation Tool UI: now the tools can be reordered (if the order UI radio is set to 'no')
+- modified the Paint, NCC and Isolation Tools that when no tools is selected in the Tools Table, a message will show that no Tool is selected and the Geometry generation button is disabled
+
+13.06.2020
+
+- modified the Tools Database such that there is now a way to mark a tool as meant to be used in a certain part of the application; it will disable or enable parts of the parameters of the tool
+- updated the FCTable GUI element to work correctly when doing drag&drop for the rows
+- updated the Geometry UI to work with the new FCTable
+- made the coordinates / delta coordinates / grid toolbar / actions toolbar visibility an option, controlled from the infobar (Status bar) context menu. How it's at app shutdown it's restored at the next application start
+- moved the init of activity view in the MainGUI file from the APP.__init__()
+- added a new string in the tooltip for the button that adds tool from database specifying the tools database administration is done in the menu
+- when opening a new tab in the PlotTabArea the coordinates toolbars will be hidden and shown after the tab is closed
+
+12.06.2020
+
+- NCC Tool optimization - moved the UI in its own class
+- NCC Tool optimization - optimized the Tool edit method
+- NCC Tool - allow no tool at NCC Tool start (the Preferences have no tool)
+- NCC Tool - optimized tool reset code
+- NCC Tool - fixed the non-rest copper clearing to work as expected: each tool in the tool table will make it's own copper clearing without interference from the rest of the tools 
+- Geometry UI - made again the header clickable and first click selects all rows, second click will deselect all rows.
+- Geometry UI - minor updates in the layout; moved the warning text to the tooltip of the generate_cncjob button
+- Geometry UI - working in making the modification of tool parameters such that if there is a selection of tools the modification in the Tool parameters will be applied to all selected
+
+11.06.2020
+
+- finished tool reordering in Geometry UI
+
+10.06.2020
+
+- fixed bug in the Isolation Tool that in certain cases an empty geometry was present in the solid_geometry which mae the CNCJob object generation to fail. It happen for Gerber objects created in the Gerber Editor
+- working on the tool reordering in the Geometry UI
+- continue - work in tool reordering in Geometry UI
+
+9.06.2020
+
+- fixed a possible problem in generating bounds value for a solid_geometry that have empty geo elements
+- added ability to merge tools when merging Geometry objects if they share the same attributes like: diameter, tool_type or type
+- added a control in Edit -> Preferences -> Geometry to control if to merge/fuse tools during Geometry merging
+
+8.06.2020
+
+- minor changes in the way that the tools are installed and connected
+- renamed the GeoEditor class/file to AppGeoEditor from FlatCAMGeoEditor making it easier to see in the IDE tree structure
+- some refactoring that lead to a working solution when using the Python 3.8 + PyQt 5.15
+- more refactoring in the app Editors
+- added a protection when trying to edit a Geometry object that have multiple tools but no tool is selected
+
 7.06.2020
 
 - refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
@@ -1327,7 +1980,7 @@ RELEASE 8.993
 13.11.2019
 
 - trying to improve the performance of View CNC Code command by using QPlainTextEdit; made the mods for it
-- when using the Find function in the TextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
+- when using the Find function in the AppTextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
 - finished improving the show of text files in FlatCAM (CNC Code, Source files)
 - fixed an issue in the FlatCAMObj.GerberObject.convert_units() which needed to be updated after changes elsewhere
 
@@ -1630,7 +2283,7 @@ RELEASE 8.993
 
 - fixed bug in Geometry Editor that did not allow the copy of geometric elements
 - created a new class that holds all the Code Editor functionality and integrated as a Editor in FlatCAM, the location is in flatcamEditors folder
-- remade all the functions for view_source, scripts and view_code to use the new TextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
+- remade all the functions for view_source, scripts and view_code to use the new AppTextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
 - changed the name of the new object FlatCAMNotes to a more general one DocumentObject
 - changed the way a new ScriptObject object is made, the method that is processing the Tcl commands when the Run button is clicked is moved to the FlatCAMObj.ScriptObject() class
 - reused the Multiprocessing Pool declared in the App for the ToolRulesCheck() class
@@ -2486,7 +3139,7 @@ RELEASE 8.993
 
 4.06.2019
 
-- PEP8 updates in FlatCAMExcEditor.py
+- PEP8 updates in AppExcEditor.py
 - added the Excellon Editor parameters to the Edit -> Preferences -> Excellon GUI
 - fixed a small bug in Excellon Editor
 - PEP8 cleanup in FlatCAMGui
@@ -2558,7 +3211,7 @@ RELEASE 8.993
 - fixed the Circle Steps parameter for both Gerber and Geometry objects not being applied and instead the app internal defaults were used.
 - fixed the Tcl command Geocutout issue that gave an error when using the 4 or 8 value for gaps parameter
 - made wider the '#' column for Apertures Table for Gerber Object and for Gerber Editor; in this way numbers with 3 digits can be seen
-- PEP8 corrections in FlatCAMGrbEditor.py
+- PEP8 corrections in AppGerberEditor.py
 - added a selection limit parameter for Geometry Editor
 - added entries in Edit -> Preferences for the new parameter Selection limit for both the Gerber and Geometry Editors.
 - set the buttons in the lower part of the Preferences Window to have a preferred minimum width instead of fixed width
@@ -2835,7 +3488,7 @@ RELEASE 8.993
 - Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
 - when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
 - Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
-- moved the polarity change processing from FlatCAMGrbEditor() class to camlib.Gerber().parse_lines()
+- moved the polarity change processing from AppGerberEditor() class to camlib.Gerber().parse_lines()
 - made optional the saving of an edited object. Now the user can cancel the changes to the object.
 - replaced the standard buttons in the QMessageBox's used in the app with custom ones that can have text translated
 - updated the POT translation file and the MO/PO files for English and Romanian language

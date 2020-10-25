@@ -21,12 +21,12 @@ class TclCommandExportSVG(TclCommand):
     arg_names = collections.OrderedDict([
         ('name', str),
         ('filename', str),
-        ('scale_factor', float)
+        ('scale_stroke_factor', float)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('scale_factor', float)
+        ('scale_stroke_factor', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -39,7 +39,7 @@ class TclCommandExportSVG(TclCommand):
             ('name', 'Name of the object export. Required.'),
             ('filename', 'Absolute path to file to export.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
-            ('scale_factor', 'Multiplication factor used for scaling line widths during export.')
+            ('scale_stroke_factor', 'Multiplication factor used for scaling line widths during export.')
         ]),
         'examples': ['export_svg my_geometry my_file.svg']
     }
@@ -52,4 +52,4 @@ class TclCommandExportSVG(TclCommand):
         :return:
         """
 
-        self.app.export_svg(**args)
+        self.app.f_handlers.export_svg(**args)

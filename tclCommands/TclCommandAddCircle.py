@@ -51,17 +51,18 @@ class TclCommandAddCircle(TclCommand):
         :return:
         """
 
-        obj_name = args['name']
+        name = args['name']
         center_x = args['center_x']
         center_y = args['center_y']
         radius = args['radius']
 
         try:
-            obj = self.app.collection.get_by_name(str(obj_name))
+            obj = self.app.collection.get_by_name(str(name))
         except Exception:
-            return "Could not retrieve object: %s" % obj_name
+            return "Could not retrieve object: %s" % name
         if obj is None:
-            return "Object not found: %s" % obj_name
+            return "Object not found: %s" % name
+        if obj.kind != 'geometry':
+            self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         obj.add_circle([float(center_x), float(center_y)], float(radius))
-
