@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 25.10.2020
 
 - updated the Italian translation (by Massimiliano Golfetto)
+- finished the update of the Spanish translation (Google translate)
 
 24.10.2020
 
