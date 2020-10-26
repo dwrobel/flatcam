@@ -509,6 +509,8 @@ class FCEntry(QtWidgets.QLineEdit):
                 align_val = QtCore.Qt.AlignLeft
             self.setAlignment(align_val)
 
+        self.menu = None
+
     def on_edit_finished(self):
         self.clearFocus()
 
@@ -523,6 +525,80 @@ class FCEntry(QtWidgets.QLineEdit):
             super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not self.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not self.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = self.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        self.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = self.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        self.insert(txt)
 
     def get_value(self):
         return str(self.text())
@@ -1254,6 +1330,19 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
 
         self.completer_enable = False
 
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
 
@@ -1320,9 +1409,9 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 clip_text = clipboard.text()
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
-
-        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
-            self.comment()
+        elif modifier & Qt.ControlModifier:
+            if key == Qt.Key_Slash:
+                self.comment()
 
         tc = self.textCursor()
         if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
@@ -1381,6 +1470,89 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
             else:
                 self.completer.popup().hide()
 
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
+
     def comment(self):
         """
         Got it from here:
@@ -1423,6 +1595,19 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
         self.completer_enable = False
 
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
     def append(self, text):
         """
         Added this to make this subclass compatible with FCTextAreaExtended
@@ -1460,6 +1645,89 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         if self.completer:
             self.completer.setWidget(self)
         QtWidgets.QPlainTextEdit.focusInEvent(self, event)
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
 
     def set_value(self, val):
         self.setPlainText(val)
