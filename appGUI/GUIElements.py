@@ -3069,15 +3069,31 @@ class _BrowserTextEdit(QTextEdit):
         self.app = app
 
     def contextMenuEvent(self, event):
-        self.menu = self.createStandardContextMenu(event.pos())
+        # self.menu = self.createStandardContextMenu(event.pos())
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
 
         if self.app:
-            save_action = QAction(_("Save Log"), self)
+            save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
+            # save_action.setShortcut(QKeySequence(Qt.Key_S))
             self.menu.addAction(save_action)
             save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
-        clear_action = QAction(_("Clear All"), self)
-        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))  # it's not working, the shortcut
+        clear_action = QAction('%s\t%s' % (_("Clear All"), _('Del')), self)
+        # clear_action.setShortcut(QKeySequence(Qt.Key_Delete))
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
 
@@ -3087,6 +3103,34 @@ class _BrowserTextEdit(QTextEdit):
         #     close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
 
         self.menu.exec_(event.globalPos())
+
+    def keyPressEvent(self, event) -> None:
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        key = event.key()
+
+        if modifiers == QtCore.Qt.ControlModifier:
+            # Select All
+            if key == QtCore.Qt.Key_A:
+                self.selectAll()
+            # Copy Text
+            elif key == QtCore.Qt.Key_C:
+                self.copy_text()
+                # Copy Text
+            elif key == QtCore.Qt.Key_S:
+                if self.app:
+                    self.save_log(app=self.app)
+
+        elif modifiers == QtCore.Qt.NoModifier:
+            if key == QtCore.Qt.Key_Delete:
+                self.clear()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
 
     def clear(self):
         QTextEdit.clear(self)

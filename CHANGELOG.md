@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - fixed a small issue with using the shortcut key for toggling the display of Properties tab
 - fixed issue with not updating the model view on the model used in the Project tab when using the shortcut keys 1, 2, 3 which made the color of the tree element not reflect the change in status
 - minor string fix; removed the 'Close' menu entry on the context menu for the TCL Shell
+- overloaded the context menu in the Tcl Shell and added key shortcuts; the menu entries are now translatable
 
 25.10.2020
 
