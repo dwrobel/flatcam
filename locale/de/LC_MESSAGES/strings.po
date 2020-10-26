@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-26 13:02+0200\n"
-"PO-Revision-Date: 2020-10-26 13:03+0200\n"
+"POT-Creation-Date: 2020-10-26 17:50+0200\n"
+"PO-Revision-Date: 2020-10-26 17:58+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -96,14 +96,14 @@ msgstr "Lesezeichen entfernt."
 msgid "Export Bookmarks"
 msgstr "Lesezeichen exportieren"
 
-#: Bookmark.py:293 appGUI/MainGUI.py:527
+#: Bookmark.py:293 appGUI/MainGUI.py:588
 msgid "Bookmarks"
 msgstr "Lesezeichen"
 
 #: Bookmark.py:300 Bookmark.py:342 appDatabase.py:2081 appDatabase.py:2127
 #: appEditors/AppExcEditor.py:1023 appEditors/AppExcEditor.py:1091
-#: appEditors/AppTextEditor.py:257 appGUI/MainGUI.py:2890
-#: appGUI/MainGUI.py:3112 appGUI/MainGUI.py:3327
+#: appEditors/AppTextEditor.py:257 appGUI/MainGUI.py:2999
+#: appGUI/MainGUI.py:3221 appGUI/MainGUI.py:3436
 #: appObjects/FlatCAMCNCJob.py:1750 appObjects/ObjectCollection.py:126
 #: appTools/ToolFilm.py:240 appTools/ToolFilm.py:386 appTools/ToolImage.py:112
 #: appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
@@ -221,23 +221,19 @@ msgstr "Ausgewählte Ausschlusszonen gelöscht."
 
 #: appDatabase.py:40
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: appDatabase.py:40
 msgid "Tool Name"
 msgstr "Werkzeugname"
 
 #: appDatabase.py:78
-#, fuzzy
-#| msgid "NCC Tool Options"
 msgid "Tool Description"
-msgstr "NCC-Tooloptionen"
+msgstr ""
 
 #: appDatabase.py:91
-#, fuzzy
-#| msgid "Milling Diameter"
 msgid "Milling Parameters"
-msgstr "Fräsdurchmesser"
+msgstr ""
 
 #: appDatabase.py:104
 msgid "NCC Parameters"
@@ -252,16 +248,12 @@ msgid "Isolation Parameters"
 msgstr "Isolationsparameter"
 
 #: appDatabase.py:143
-#, fuzzy
-#| msgid "Film Parameters"
 msgid "Drilling Parameters"
-msgstr "Film-Parameter"
+msgstr ""
 
 #: appDatabase.py:156
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Cutout Parameters"
-msgstr "Schlitze-Parameter"
+msgstr ""
 
 #: appDatabase.py:207 appEditors/AppGeoEditor.py:3287 appGUI/ObjectUI.py:219
 #: appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:894 appGUI/ObjectUI.py:1876
@@ -301,10 +293,8 @@ msgid "Tool Diameter."
 msgstr "Werkzeugdurchmesser."
 
 #: appDatabase.py:233
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "Diameter Tolerance"
-msgstr "Geo-Toleranz"
+msgstr ""
 
 #: appDatabase.py:235
 msgid ""
@@ -313,10 +303,8 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:241
-#, fuzzy
-#| msgid "in"
 msgid "Min"
-msgstr "in"
+msgstr ""
 
 #: appDatabase.py:243
 msgid "Set the tool tolerance minimum."
@@ -341,7 +329,7 @@ msgid "The kind of Application Tool where this tool is to be used."
 msgstr ""
 
 #: appDatabase.py:275 appDatabase.py:1778 appDatabase.py:1814
-#: appDatabase.py:1877 appDatabase.py:2162 appGUI/MainGUI.py:1302
+#: appDatabase.py:1877 appDatabase.py:2162 appGUI/MainGUI.py:1411
 #: app_Main.py:7315
 msgid "General"
 msgstr "Allgemeines"
@@ -365,24 +353,20 @@ msgid "Isolation"
 msgstr "Isolation"
 
 #: appDatabase.py:275 appDatabase.py:1850 appDatabase.py:2186
-#: appEditors/AppGeoEditor.py:528 appGUI/MainGUI.py:1509
+#: appEditors/AppGeoEditor.py:528 appGUI/MainGUI.py:1618
 #: appTools/ToolPaint.py:738 appTools/ToolPaint.py:2619
 msgid "Paint"
 msgstr "Malen"
 
 #: appDatabase.py:275 appDatabase.py:1856 appDatabase.py:2194
 #: appTools/ToolNCC.py:1046 appTools/ToolNCC.py:3708
-#, fuzzy
-#| msgid "CCW"
 msgid "NCC"
-msgstr "CCW"
+msgstr "NCC"
 
 #: appDatabase.py:275 appDatabase.py:1862 appTools/ToolCutOut.py:328
 #: appTools/ToolCutOut.py:465
-#, fuzzy
-#| msgid "Cutout PCB"
 msgid "Cutout"
-msgstr "Ausschnitt PCB"
+msgstr "Ausschnitt"
 
 #: appDatabase.py:291
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:218
@@ -1270,10 +1254,8 @@ msgstr ""
 
 #: appDatabase.py:1179 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
 #: appTools/ToolCutOut.py:2186
-#, fuzzy
-#| msgid "Image type"
 msgid "Gap type"
-msgstr "Bildtyp"
+msgstr ""
 
 #: appDatabase.py:1181 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
 #: appTools/ToolCutOut.py:2188
@@ -1297,23 +1279,15 @@ msgstr ""
 
 #: appDatabase.py:1201 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
 #: appTools/ToolCutOut.py:2207
-#, fuzzy
-#| msgid "MultiDepth"
 msgid "Depth"
-msgstr "Mehrfache Durchgänge"
+msgstr ""
 
 #: appDatabase.py:1203 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
 #: appTools/ToolCutOut.py:2209
-#, fuzzy
-#| msgid ""
-#| "The width of the travel lines to be\n"
-#| "rendered in the plot."
 msgid ""
 "The depth until the milling is done\n"
 "in order to thin the gaps."
 msgstr ""
-"Die Breite der Fahrlinien soll sein\n"
-"in der Handlung gerendert."
 
 #: appDatabase.py:1220 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
@@ -1444,7 +1418,7 @@ msgstr ""
 "Objekt / Anwendungswerkzeug nach Auswahl eines Werkzeugs\n"
 "in der Werkzeugdatenbank."
 
-#: appDatabase.py:1364 appGUI/MainGUI.py:1441
+#: appDatabase.py:1364 appGUI/MainGUI.py:1550
 #: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2311
 #: app_Main.py:3327 app_Main.py:4282 app_Main.py:4528 app_Main.py:8739
 msgid "Cancel"
@@ -1587,10 +1561,11 @@ msgstr "Werkzeugdatenbank wurde exportiert nach"
 msgid "Import FlatCAM Tools DB"
 msgstr "Import der FlatCAM-Werkzeugdatenbank"
 
-#: appDatabase.py:2156 appDatabase.py:2547 appObjects/FlatCAMGeometry.py:1090
-#: appTools/ToolCutOut.py:484 appTools/ToolCutOut.py:525
-#: appTools/ToolIsolation.py:2583 appTools/ToolIsolation.py:2667
-#: appTools/ToolNCC.py:3715 appTools/ToolNCC.py:3795 appTools/ToolPaint.py:2626
+#: appDatabase.py:2156 appDatabase.py:2547 appGUI/MainGUI.py:487
+#: appObjects/FlatCAMGeometry.py:1090 appTools/ToolCutOut.py:484
+#: appTools/ToolCutOut.py:525 appTools/ToolIsolation.py:2583
+#: appTools/ToolIsolation.py:2667 appTools/ToolNCC.py:3715
+#: appTools/ToolNCC.py:3795 appTools/ToolPaint.py:2626
 #: appTools/ToolPaint.py:2715 app_Main.py:5617 app_Main.py:5659
 #: app_Main.py:5690 app_Main.py:5710 app_Main.py:5720
 msgid "Tools Database"
@@ -1611,10 +1586,8 @@ msgstr ""
 "Gescheitert. Kein Werkzeug (keine Spalte) in der Werkzeugtabelle ausgewählt"
 
 #: appDatabase.py:2534 appTools/ToolDrilling.py:907
-#, fuzzy
-#| msgid "Tool Diameter."
 msgid "Tools DB empty."
-msgstr "Werkzeugdurchmesser."
+msgstr ""
 
 #: appDatabase.py:2551
 msgid "Cancelled adding tool from DB."
@@ -1766,7 +1739,7 @@ msgstr ""
 "Speichern Sie Excellon und bearbeiten Sie es erneut, wenn Sie dieses Tool "
 "hinzufügen müssen. "
 
-#: appEditors/AppExcEditor.py:2022 appGUI/MainGUI.py:3524
+#: appEditors/AppExcEditor.py:2022 appGUI/MainGUI.py:3633
 msgid "Added new tool with dia"
 msgstr "Neues Werkzeug mit Durchmesser hinzugefügt"
 
@@ -1811,7 +1784,7 @@ msgstr "Abgebrochen. Es ist kein Werkzeug / Bohrer ausgewählt"
 #: appEditors/AppGerberEditor.py:1085 appEditors/AppGerberEditor.py:1312
 #: appEditors/AppGerberEditor.py:1497 appEditors/AppGerberEditor.py:1766
 #: appEditors/AppGerberEditor.py:4625 appEditors/AppGerberEditor.py:4642
-#: appGUI/MainGUI.py:2871 appGUI/MainGUI.py:2883
+#: appGUI/MainGUI.py:2980 appGUI/MainGUI.py:2992
 #: appTools/ToolAlignObjects.py:253 appTools/ToolAlignObjects.py:275
 #: app_Main.py:4896 app_Main.py:5050
 msgid "Done."
@@ -1852,10 +1825,8 @@ msgstr ""
 "Wann werden zum Bohren verwendet."
 
 #: appEditors/AppExcEditor.py:3741
-#, fuzzy
-#| msgid "Total Slots"
 msgid "Convert Slots"
-msgstr "Schlitz insgesamt"
+msgstr ""
 
 #: appEditors/AppExcEditor.py:3743
 msgid "Convert the slots in the selected tools to drills."
@@ -1911,7 +1882,7 @@ msgstr ""
 "Löschen Sie ein Werkzeug in der Werkzeugliste\n"
 "indem Sie eine Zeile in der Werkzeugtabelle auswählen."
 
-#: appEditors/AppExcEditor.py:3811 appGUI/MainGUI.py:4593
+#: appEditors/AppExcEditor.py:3811 appGUI/MainGUI.py:4784
 msgid "Resize Drill(s)"
 msgstr "Größe der Bohrer ändern"
 
@@ -1935,8 +1906,8 @@ msgstr "Größe ändern"
 msgid "Resize drill(s)"
 msgstr "Bohrer verkleinern"
 
-#: appEditors/AppExcEditor.py:3860 appGUI/MainGUI.py:1567
-#: appGUI/MainGUI.py:4592
+#: appEditors/AppExcEditor.py:3860 appGUI/MainGUI.py:708 appGUI/MainGUI.py:1676
+#: appGUI/MainGUI.py:4778
 msgid "Add Drill Array"
 msgstr "Bohrer-Array hinzufügen"
 
@@ -2010,7 +1981,8 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:3908 appEditors/AppExcEditor.py:4030
 #: appEditors/AppExcEditor.py:4123 appEditors/AppGerberEditor.py:2820
-#: appGUI/GUIElements.py:3538
+#: appGUI/GUIElements.py:3538 appGUI/MainGUI.py:475 appGUI/MainGUI.py:668
+#: appGUI/MainGUI.py:4416 appGUI/MainGUI.py:4682
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:187
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:240
@@ -2022,7 +1994,8 @@ msgstr "X"
 
 #: appEditors/AppExcEditor.py:3909 appEditors/AppExcEditor.py:4031
 #: appEditors/AppExcEditor.py:4124 appEditors/AppGerberEditor.py:2821
-#: appGUI/GUIElements.py:3545
+#: appGUI/GUIElements.py:3545 appGUI/MainGUI.py:478 appGUI/MainGUI.py:4417
+#: appGUI/MainGUI.py:4683
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:188
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:241
@@ -2201,23 +2174,17 @@ msgstr "Geben Sie an, wie viele Steckplätze sich im Array befinden sollen."
 
 #: appEditors/AppExcEditor.py:4198 appEditors/AppGeoEditor.py:3301
 #: appEditors/AppGerberEditor.py:2899 appEditors/appGCodeEditor.py:758
-#, fuzzy
-#| msgid "Exc Editor"
 msgid "Exit Editor"
-msgstr "Exc-Editor"
+msgstr ""
 
 #: appEditors/AppExcEditor.py:4201 appEditors/AppGeoEditor.py:3304
 #: appEditors/AppGerberEditor.py:2902 appEditors/appGCodeEditor.py:761
-#, fuzzy
-#| msgid "Exc Editor"
 msgid "Exit from Editor."
-msgstr "Exc-Editor"
+msgstr ""
 
 #: appEditors/AppGeoEditor.py:49
-#, fuzzy
-#| msgid "Area Selection"
 msgid "Buffer Selection"
-msgstr "Bereichsauswahl"
+msgstr ""
 
 #: appEditors/AppGeoEditor.py:84
 msgid "Buffer distance:"
@@ -2285,7 +2252,7 @@ msgid "Full Buffer"
 msgstr "Voller Puffer"
 
 #: appEditors/AppGeoEditor.py:131 appEditors/AppGeoEditor.py:2959
-#: appGUI/MainGUI.py:4502
+#: appGUI/MainGUI.py:684 appGUI/MainGUI.py:4666
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:191
 msgid "Buffer Tool"
 msgstr "Pufferwerkzeug"
@@ -2300,8 +2267,6 @@ msgstr ""
 "versuchen Sie es erneut."
 
 #: appEditors/AppGeoEditor.py:194
-#, fuzzy
-#| msgid "Text Tool"
 msgid "Text Input Tool"
 msgstr "Textwerkzeug"
 
@@ -2320,11 +2285,11 @@ msgstr "Schrift"
 msgid "Size"
 msgstr "Größe"
 
-#: appEditors/AppGeoEditor.py:322 appGUI/MainGUI.py:1505
+#: appEditors/AppGeoEditor.py:322 appGUI/MainGUI.py:1614
 msgid "Text"
 msgstr "Text"
 
-#: appEditors/AppGeoEditor.py:328 appGUI/MainGUI.py:1425
+#: appEditors/AppGeoEditor.py:328 appGUI/MainGUI.py:1534
 msgid "Apply"
 msgstr "Anwenden"
 
@@ -2332,7 +2297,7 @@ msgstr "Anwenden"
 msgid "Text Tool"
 msgstr "Textwerkzeug"
 
-#: appEditors/AppGeoEditor.py:404 appGUI/MainGUI.py:514 appGUI/MainGUI.py:1248
+#: appEditors/AppGeoEditor.py:404 appGUI/MainGUI.py:573 appGUI/MainGUI.py:1357
 #: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:886
 #: appObjects/FlatCAMGeometry.py:951 appTools/ToolDrilling.py:711
 #: appTools/ToolDrilling.py:1033 appTools/ToolDrilling.py:2116
@@ -2346,8 +2311,8 @@ msgid "Tool"
 msgstr "Werkzeug"
 
 #: appEditors/AppGeoEditor.py:412 appEditors/AppGeoEditor.py:546
-#: appGUI/MainGUI.py:938 appGUI/MainGUI.py:2094 appGUI/ObjectUI.py:1783
-#: appTools/ToolPaint.py:228 appTools/ToolPaint.py:2730
+#: appGUI/MainGUI.py:688 appGUI/MainGUI.py:1047 appGUI/MainGUI.py:2203
+#: appGUI/ObjectUI.py:1783 appTools/ToolPaint.py:228 appTools/ToolPaint.py:2730
 msgid "Paint Tool"
 msgstr "Werkzeug Malen"
 
@@ -2388,7 +2353,8 @@ msgstr "Werkzeuge"
 
 #: appEditors/AppGeoEditor.py:606 appEditors/AppGeoEditor.py:1035
 #: appEditors/AppGerberEditor.py:5316 appEditors/AppGerberEditor.py:5745
-#: appGUI/MainGUI.py:963 appGUI/MainGUI.py:2119 appTools/ToolTransform.py:85
+#: appGUI/MainGUI.py:692 appGUI/MainGUI.py:1072 appGUI/MainGUI.py:2228
+#: appTools/ToolTransform.py:85
 msgid "Transform Tool"
 msgstr "Werkzeug Umwandeln"
 
@@ -2405,9 +2371,9 @@ msgid "Skew/Shear"
 msgstr "Neigung/Schere"
 
 #: appEditors/AppGeoEditor.py:609 appEditors/AppGerberEditor.py:2687
-#: appEditors/AppGerberEditor.py:5319 appGUI/MainGUI.py:1085
-#: appGUI/MainGUI.py:1552 appGUI/MainGUI.py:2241 appGUI/MainGUI.py:4714
-#: appGUI/ObjectUI.py:125
+#: appEditors/AppGerberEditor.py:5319 appGUI/MainGUI.py:773
+#: appGUI/MainGUI.py:1194 appGUI/MainGUI.py:1661 appGUI/MainGUI.py:2350
+#: appGUI/MainGUI.py:4919 appGUI/ObjectUI.py:125
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:147
 #: appTools/ToolTransform.py:515
 msgid "Scale"
@@ -2419,9 +2385,9 @@ msgid "Mirror (Flip)"
 msgstr "Spiegeln (Flip)"
 
 #: appEditors/AppGeoEditor.py:612 appEditors/AppGerberEditor.py:2647
-#: appEditors/AppGerberEditor.py:5322 appGUI/MainGUI.py:1083
-#: appGUI/MainGUI.py:1507 appGUI/MainGUI.py:1550 appGUI/MainGUI.py:2239
-#: appGUI/MainGUI.py:4712
+#: appEditors/AppGerberEditor.py:5322 appGUI/MainGUI.py:770
+#: appGUI/MainGUI.py:1192 appGUI/MainGUI.py:1616 appGUI/MainGUI.py:1659
+#: appGUI/MainGUI.py:2348 appGUI/MainGUI.py:4910
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:212
 #: appTools/ToolTransform.py:518
 msgid "Buffer"
@@ -2828,7 +2794,7 @@ msgstr "Keine Form ausgewählt."
 #: appEditors/AppGeoEditor.py:1115 appEditors/AppGerberEditor.py:5825
 #: appTools/ToolTransform.py:150
 msgid "Incorrect format for Point value. Needs format X,Y"
-msgstr "Falsches Format für Punktwert. Benötigt Format X, Y."
+msgstr "Falsches Format für Punktwert. Benötigt Format X, Y"
 
 #: appEditors/AppGeoEditor.py:1140 appEditors/AppGerberEditor.py:5850
 #: appTools/ToolTransform.py:167
@@ -3218,7 +3184,7 @@ msgstr "Ring"
 msgid "Line"
 msgstr "Linie"
 
-#: appEditors/AppGeoEditor.py:3569 appGUI/MainGUI.py:1499
+#: appEditors/AppGeoEditor.py:3569 appGUI/MainGUI.py:1608
 #: appGUI/ObjectUI.py:1615
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:224
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:424
@@ -3251,9 +3217,9 @@ msgstr "Rasterfang aktiviert."
 msgid "Grid Snap disabled."
 msgstr "Rasterfang deaktiviert."
 
-#: appEditors/AppGeoEditor.py:4407 appGUI/MainGUI.py:3206
-#: appGUI/MainGUI.py:3252 appGUI/MainGUI.py:3270 appGUI/MainGUI.py:3414
-#: appGUI/MainGUI.py:3453 appGUI/MainGUI.py:3465 appGUI/MainGUI.py:3482
+#: appEditors/AppGeoEditor.py:4407 appGUI/MainGUI.py:3315
+#: appGUI/MainGUI.py:3361 appGUI/MainGUI.py:3379 appGUI/MainGUI.py:3523
+#: appGUI/MainGUI.py:3562 appGUI/MainGUI.py:3574 appGUI/MainGUI.py:3591
 msgid "Click on target point."
 msgstr "Klicken Sie auf den Zielpunkt."
 
@@ -3470,7 +3436,7 @@ msgstr "Erledigt. Öffnungsbewegung abgeschlossen."
 msgid "Done. Apertures copied."
 msgstr "Erledigt. Blende kopiert."
 
-#: appEditors/AppGerberEditor.py:2462 appGUI/MainGUI.py:1530
+#: appEditors/AppGerberEditor.py:2462 appGUI/MainGUI.py:1639
 #: appGUI/ObjectUI.py:241
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:27
 msgid "Gerber Editor"
@@ -3588,9 +3554,10 @@ msgid "Add a new aperture to the aperture list."
 msgstr "Fügen Sie der Blendenliste eine neue Blende hinzu."
 
 #: appEditors/AppGerberEditor.py:2595 appEditors/AppGerberEditor.py:2743
-#: appGUI/MainGUI.py:760 appGUI/MainGUI.py:879 appGUI/MainGUI.py:1096
-#: appGUI/MainGUI.py:1580 appGUI/MainGUI.py:2038 appGUI/MainGUI.py:2251
-#: appGUI/MainGUI.py:4715 appGUI/ObjectUI.py:1132
+#: appGUI/MainGUI.py:420 appGUI/MainGUI.py:731 appGUI/MainGUI.py:790
+#: appGUI/MainGUI.py:869 appGUI/MainGUI.py:988 appGUI/MainGUI.py:1205
+#: appGUI/MainGUI.py:1689 appGUI/MainGUI.py:2147 appGUI/MainGUI.py:2360
+#: appGUI/MainGUI.py:4922 appGUI/ObjectUI.py:1132
 #: appObjects/FlatCAMGeometry.py:561 appTools/ToolIsolation.py:70
 #: appTools/ToolIsolation.py:3150 appTools/ToolNCC.py:69
 #: appTools/ToolNCC.py:4024 appTools/ToolPaint.py:143
@@ -3704,8 +3671,8 @@ msgstr "Löschen Sie alle markierten Polygone."
 msgid "Clear all the markings."
 msgstr "Alle Markierungen entfernen."
 
-#: appEditors/AppGerberEditor.py:2771 appGUI/MainGUI.py:1068
-#: appGUI/MainGUI.py:2224 appGUI/MainGUI.py:4712
+#: appEditors/AppGerberEditor.py:2771 appGUI/MainGUI.py:750
+#: appGUI/MainGUI.py:1177 appGUI/MainGUI.py:2333 appGUI/MainGUI.py:4909
 msgid "Add Pad Array"
 msgstr "Pad-Array hinzufügen"
 
@@ -3963,10 +3930,8 @@ msgstr ""
 "mit dem Text im Feld \"Ersetzen\" .."
 
 #: appEditors/AppTextEditor.py:120
-#, fuzzy
-#| msgid "Save changes"
 msgid "Save changes internally."
-msgstr "Änderungen speichern"
+msgstr ""
 
 #: appEditors/AppTextEditor.py:127
 msgid "Open a OS standard Preview Print window."
@@ -3986,10 +3951,8 @@ msgid "Will save the text in the editor into a file."
 msgstr "Speichert den Text im Editor in einer Datei."
 
 #: appEditors/AppTextEditor.py:149
-#, fuzzy
-#| msgid "Round"
 msgid "Run"
-msgstr "Runden"
+msgstr ""
 
 #: appEditors/AppTextEditor.py:150
 msgid "Will run the TCL commands found in the text file, one by one."
@@ -4045,10 +4008,8 @@ msgid "Loaded Machine Code into Code Editor"
 msgstr "Maschinencode in den Code-Editor geladen"
 
 #: appEditors/appGCodeEditor.py:667 appGUI/ObjectUI.py:1884
-#, fuzzy
-#| msgid "Code Editor"
 msgid "GCode Editor"
-msgstr "Code-Editor"
+msgstr ""
 
 #: appEditors/appGCodeEditor.py:692 appEditors/appGCodeEditor.py:703
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009 appGUI/ObjectUI.py:2019
@@ -4091,22 +4052,14 @@ msgid "Code snippet defined in Preferences."
 msgstr ""
 
 #: appEditors/appGCodeEditor.py:720 appEditors/appGCodeEditor.py:742
-#, fuzzy
-#| msgid ""
-#| "Type here any G-Code commands you would\n"
-#| "like to add at the beginning of the G-Code file."
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to insert at the cursor location."
 msgstr ""
-"Geben Sie hier alle G-Code-Befehle ein\n"
-"die Sie am Anfang der G-Code-Datei hinzufügen möchten."
 
 #: appEditors/appGCodeEditor.py:726 appEditors/appGCodeEditor.py:748
-#, fuzzy
-#| msgid "Insert QRCode"
 msgid "Insert Code"
-msgstr "QRCode einfügen"
+msgstr ""
 
 #: appEditors/appGCodeEditor.py:729 appEditors/appGCodeEditor.py:751
 msgid "Insert the code above at the cursor location."
@@ -4162,28 +4115,20 @@ msgid "Type >help< to get started"
 msgstr "Geben Sie> help <ein, um zu beginnen"
 
 #: appGUI/GUIElements.py:3461 appGUI/GUIElements.py:3478
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the Y axis."
-msgstr "Achse umschalten"
+msgstr ""
 
 #: appGUI/GUIElements.py:3469
-#, fuzzy
-#| msgid "Move to Origin"
 msgid "Move to Origin."
-msgstr "Zum Ursprung wechseln"
+msgstr ""
 
 #: appGUI/GUIElements.py:3486 appGUI/GUIElements.py:3494
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the X axis."
-msgstr "Achse umschalten"
+msgstr ""
 
 #: appGUI/GUIElements.py:3504 appGUI/GUIElements.py:3514
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the Z axis."
-msgstr "Achse umschalten"
+msgstr ""
 
 #: appGUI/GUIElements.py:3540
 msgid "Zero the CNC X axes at current position."
@@ -4194,10 +4139,8 @@ msgid "Zero the CNC Y axes at current position."
 msgstr ""
 
 #: appGUI/GUIElements.py:3553
-#, fuzzy
-#| msgid "LZ"
 msgid "Z"
-msgstr "LZ"
+msgstr "Z"
 
 #: appGUI/GUIElements.py:3556
 msgid "Zero the CNC Z axes at current position."
@@ -4227,12 +4170,11 @@ msgstr "Bewerbung gestartet ..."
 msgid "Hello!"
 msgstr "Hello!"
 
-#: appGUI/GUIElements.py:3815 appGUI/MainGUI.py:190 appGUI/MainGUI.py:921
-#: appGUI/MainGUI.py:2077
+#: appGUI/GUIElements.py:3815 appGUI/MainGUI.py:1030 appGUI/MainGUI.py:2186
 msgid "Run Script ..."
 msgstr "Skript ausführen ..."
 
-#: appGUI/GUIElements.py:3817 appGUI/MainGUI.py:192
+#: appGUI/GUIElements.py:3817 appGUI/MainGUI.py:196
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
@@ -4247,7 +4189,7 @@ msgstr ""
 msgid "Open"
 msgstr "Öffnen"
 
-#: appGUI/GUIElements.py:3830 appGUI/MainGUI.py:123
+#: appGUI/GUIElements.py:3830
 msgid "Open Project ..."
 msgstr "Offenes Projekt ..."
 
@@ -4263,11 +4205,11 @@ msgstr "&Excellon öffnen...\\STRG+E"
 msgid "Open G-&Code ..."
 msgstr "G-&Code öffnen..."
 
-#: appGUI/GUIElements.py:3856 appGUI/MainGUI.py:309
+#: appGUI/GUIElements.py:3856 appGUI/MainGUI.py:327
 msgid "Exit"
 msgstr "Ausgang"
 
-#: appGUI/MainGUI.py:67 appGUI/MainGUI.py:69 appGUI/MainGUI.py:1460
+#: appGUI/MainGUI.py:67 appGUI/MainGUI.py:69 appGUI/MainGUI.py:1569
 msgid "Toggle Panel"
 msgstr "Panel umschalten"
 
@@ -4275,1364 +4217,23 @@ msgstr "Panel umschalten"
 msgid "File"
 msgstr "Datei"
 
-#: appGUI/MainGUI.py:84
-#, fuzzy
-#| msgid "&New Project ...\tCtrl+N"
-msgid "New Project ...\tCtrl+N"
-msgstr "&Neues Projekt ...\\STRG+N"
+#: appGUI/MainGUI.py:84 appGUI/MainGUI.py:4428
+msgid "New Project"
+msgstr "Neues Projekt"
+
+#: appGUI/MainGUI.py:84 appGUI/MainGUI.py:4428
+msgid "Ctrl+N"
+msgstr "Strg+N"
 
 #: appGUI/MainGUI.py:86
 msgid "Will create a new, blank project"
 msgstr "Erzeugt ein neues leeres Projekt"
 
-#: appGUI/MainGUI.py:91 appGUI/MainGUI.py:1464 appGUI/ObjectUI.py:2342
+#: appGUI/MainGUI.py:91 appGUI/MainGUI.py:1573 appGUI/ObjectUI.py:2342
 msgid "New"
 msgstr "Neu"
 
-#: appGUI/MainGUI.py:95
-msgid "Geometry\tN"
-msgstr "Geometrie\tN"
-
-#: appGUI/MainGUI.py:97
-msgid "Will create a new, empty Geometry Object."
-msgstr "Erzeugt ein neues, leeres Geometrieobjekt."
-
-#: appGUI/MainGUI.py:100
-msgid "Gerber\tB"
-msgstr "Gerber\tB"
-
-#: appGUI/MainGUI.py:102
-msgid "Will create a new, empty Gerber Object."
-msgstr "Erzeugt ein neues, leeres Gerber-Objekt."
-
-#: appGUI/MainGUI.py:105
-msgid "Excellon\tL"
-msgstr "Excellon\tL"
-
-#: appGUI/MainGUI.py:107
-msgid "Will create a new, empty Excellon Object."
-msgstr "Erzeugt ein neues, leeres Excellon-Objekt."
-
-#: appGUI/MainGUI.py:112
-msgid "Document\tD"
-msgstr "Dokumentieren\tD"
-
-#: appGUI/MainGUI.py:114
-msgid "Will create a new, empty Document Object."
-msgstr "Erstellt ein neues, leeres Dokumentobjekt."
-
-#: appGUI/MainGUI.py:129
-#, fuzzy
-#| msgid "Open &Gerber ...\tCtrl+G"
-msgid "Open Gerber ...\tCtrl+G"
-msgstr "&Gerber öffnen...\\STRG+G"
-
-#: appGUI/MainGUI.py:134
-#, fuzzy
-#| msgid "Open &Excellon ...\tCtrl+E"
-msgid "Open Excellon ...\tCtrl+E"
-msgstr "&Excellon öffnen...\\STRG+E"
-
-#: appGUI/MainGUI.py:139
-#, fuzzy
-#| msgid "Open G-&Code ..."
-msgid "Open G-Code ..."
-msgstr "G-&Code öffnen..."
-
-#: appGUI/MainGUI.py:146
-msgid "Open Config ..."
-msgstr "Config öffnen..."
-
-#: appGUI/MainGUI.py:151
-msgid "Recent projects"
-msgstr "Letzte Projekte"
-
-#: appGUI/MainGUI.py:153
-msgid "Recent files"
-msgstr "Neueste Dateien"
-
-#: appGUI/MainGUI.py:156 appGUI/MainGUI.py:762 appGUI/MainGUI.py:1433
-msgid "Save"
-msgstr "Speichern"
-
-#: appGUI/MainGUI.py:160
-#, fuzzy
-#| msgid "&Save Project ...\tCtrl+S"
-msgid "Save Project ...\tCtrl+S"
-msgstr "Projekt speichern ...\\STRG+S"
-
-#: appGUI/MainGUI.py:165
-#, fuzzy
-#| msgid "Save Project &As ...\tCtrl+Shift+S"
-msgid "Save Project As ...\tCtrl+Shift+S"
-msgstr "Projekt speichern als ...\\STRG+Shift+S"
-
-#: appGUI/MainGUI.py:180
-msgid "Scripting"
-msgstr "Scripting"
-
-#: appGUI/MainGUI.py:184 appGUI/MainGUI.py:917 appGUI/MainGUI.py:2073
-msgid "New Script ..."
-msgstr "Neues Skript ..."
-
-#: appGUI/MainGUI.py:186 appGUI/MainGUI.py:919 appGUI/MainGUI.py:2075
-msgid "Open Script ..."
-msgstr "Skript öffnen ..."
-
-#: appGUI/MainGUI.py:188
-msgid "Open Example ..."
-msgstr "Beispiel öffnen ..."
-
-#: appGUI/MainGUI.py:207
-msgid "Import"
-msgstr "Importieren"
-
-#: appGUI/MainGUI.py:209
-#, fuzzy
-#| msgid "&SVG as Geometry Object ..."
-msgid "SVG as Geometry Object ..."
-msgstr "&SVG als Geometrieobjekt ..."
-
-#: appGUI/MainGUI.py:212
-#, fuzzy
-#| msgid "&SVG as Gerber Object ..."
-msgid "SVG as Gerber Object ..."
-msgstr "&SVG als Gerberobjekt ..."
-
-#: appGUI/MainGUI.py:217
-#, fuzzy
-#| msgid "&DXF as Geometry Object ..."
-msgid "DXF as Geometry Object ..."
-msgstr "&DXF als Geometrieobjekt ..."
-
-#: appGUI/MainGUI.py:220
-#, fuzzy
-#| msgid "&DXF as Gerber Object ..."
-msgid "DXF as Gerber Object ..."
-msgstr "&DXF als Gerberobjekt ..."
-
-#: appGUI/MainGUI.py:224
-msgid "HPGL2 as Geometry Object ..."
-msgstr "HPGL2 als Geometrieobjekt ..."
-
-#: appGUI/MainGUI.py:230
-msgid "Export"
-msgstr "Exportieren"
-
-#: appGUI/MainGUI.py:234
-#, fuzzy
-#| msgid "Export &SVG ..."
-msgid "Export SVG ..."
-msgstr "SVG exportieren ..."
-
-#: appGUI/MainGUI.py:238
-msgid "Export DXF ..."
-msgstr "DXF exportieren ..."
-
-#: appGUI/MainGUI.py:244
-#, fuzzy
-#| msgid "Export &PNG ..."
-msgid "Export PNG ..."
-msgstr "PNG exportieren ..."
-
-#: appGUI/MainGUI.py:246
-msgid ""
-"Will export an image in PNG format,\n"
-"the saved image will contain the visual \n"
-"information currently in FlatCAM Plot Area."
-msgstr ""
-"Exportiert ein Bild im PNG-Format,\n"
-"Das gespeicherte Bild enthält die\n"
-"Bildinformationen des FlatCAM-Plotbereiches."
-
-#: appGUI/MainGUI.py:255
-#, fuzzy
-#| msgid "Export &Excellon ..."
-msgid "Export Excellon ..."
-msgstr "Excellon exportieren ..."
-
-#: appGUI/MainGUI.py:257
-msgid ""
-"Will export an Excellon Object as Excellon file,\n"
-"the coordinates format, the file units and zeros\n"
-"are set in Preferences -> Excellon Export."
-msgstr ""
-"Exportieren Exportiert ein Excellon-Objekt als Excellon-Datei.\n"
-"Das Koordinatenformat, die Dateieinheiten und Nullen\n"
-"werden in den Einstellungen -> Excellon Export.Excellon eingestellt ..."
-
-#: appGUI/MainGUI.py:264
-#, fuzzy
-#| msgid "Export &Gerber ..."
-msgid "Export Gerber ..."
-msgstr "Gerber exportieren ..."
-
-#: appGUI/MainGUI.py:266
-msgid ""
-"Will export an Gerber Object as Gerber file,\n"
-"the coordinates format, the file units and zeros\n"
-"are set in Preferences -> Gerber Export."
-msgstr ""
-"Exportiert ein Gerber-Objekt als Gerber-Datei.\n"
-"das Koordinatenformat, die Dateieinheiten und Nullen\n"
-"werden in den Einstellungen -> Gerber Export eingestellt."
-
-#: appGUI/MainGUI.py:276
-msgid "Backup"
-msgstr "Sicherungskopie"
-
-#: appGUI/MainGUI.py:281
-msgid "Import Preferences from file ..."
-msgstr "Einstellungen aus Datei importieren ..."
-
-#: appGUI/MainGUI.py:287
-msgid "Export Preferences to file ..."
-msgstr "Einstellungen in Datei exportieren ..."
-
-#: appGUI/MainGUI.py:295 appGUI/preferences/PreferencesUIManager.py:1173
-msgid "Save Preferences"
-msgstr "Einstellungen speichern"
-
-#: appGUI/MainGUI.py:301 appGUI/MainGUI.py:4300
-msgid "Print (PDF)"
-msgstr "Drucken (PDF)"
-
-#: appGUI/MainGUI.py:317 appGUI/MainGUI.py:756 appGUI/MainGUI.py:1582
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: appGUI/MainGUI.py:321
-msgid "Edit Object\tE"
-msgstr "Objekt bearbeiten\tE"
-
-#: appGUI/MainGUI.py:323
-msgid "Close Editor\tCtrl+S"
-msgstr "Schließen Sie Editor\tSTRG+S"
-
-#: appGUI/MainGUI.py:333
-msgid "Conversion"
-msgstr "Umwandlung"
-
-#: appGUI/MainGUI.py:336
-msgid "Convert Single to MultiGeo"
-msgstr "Konvertieren Sie Single in MultiGeo"
-
-#: appGUI/MainGUI.py:338
-msgid ""
-"Will convert a Geometry object from single_geometry type\n"
-"to a multi_geometry type."
-msgstr ""
-"Konvertiert ein Geometrieobjekt vom Typ single_geometry\n"
-"zu einem multi_geometry-Typ."
-
-#: appGUI/MainGUI.py:342
-msgid "Convert Multi to SingleGeo"
-msgstr "Konvertieren Sie Multi in SingleGeo"
-
-#: appGUI/MainGUI.py:344
-msgid ""
-"Will convert a Geometry object from multi_geometry type\n"
-"to a single_geometry type."
-msgstr ""
-"Konvertiert ein Geometrieobjekt vom Typ multi_geometry\n"
-"zu einem single_geometry-Typ."
-
-#: appGUI/MainGUI.py:351
-msgid "Convert Any to Geo"
-msgstr "Konvertieren Sie Any zu Geo"
-
-#: appGUI/MainGUI.py:354
-msgid "Convert Any to Gerber"
-msgstr "Konvertieren Sie Any zu Gerber"
-
-#: appGUI/MainGUI.py:357
-#, fuzzy
-#| msgid "Convert Any to Geo"
-msgid "Convert Any to Excellon"
-msgstr "Konvertieren Sie Any zu Geo"
-
-#: appGUI/MainGUI.py:362
-#, fuzzy
-#| msgid "Align Objects"
-msgid "Join Objects"
-msgstr "Objekte ausrichten"
-
-#: appGUI/MainGUI.py:364
-#, fuzzy
-#| msgid "&Join Geo/Gerber/Exc -> Geo"
-msgid "Join Geo/Gerber/Exc -> Geo"
-msgstr "Geo/Gerber/Exc -> Geo zusammenfassen"
-
-#: appGUI/MainGUI.py:366
-msgid ""
-"Merge a selection of objects, which can be of type:\n"
-"- Gerber\n"
-"- Excellon\n"
-"- Geometry\n"
-"into a new combo Geometry object."
-msgstr ""
-"Zusammenführen einer Auswahl von Objekten, die vom Typ sein können:\n"
-"- Gerber\n"
-"- Excellon\n"
-"- Geometrie\n"
-"in ein neues Geometrieobjekt kombinieren."
-
-#: appGUI/MainGUI.py:373
-msgid "Join Excellon(s) -> Excellon"
-msgstr "Excellon(s) -> Excellon zusammenfassen"
-
-#: appGUI/MainGUI.py:375
-msgid "Merge a selection of Excellon objects into a new combo Excellon object."
-msgstr ""
-"Fassen Sie eine Auswahl von Excellon-Objekten in einem neuen Excellon-Objekt "
-"zusammen."
-
-#: appGUI/MainGUI.py:378
-msgid "Join Gerber(s) -> Gerber"
-msgstr "Gerber(s) -> Gerber zusammenfassen"
-
-#: appGUI/MainGUI.py:380
-msgid "Merge a selection of Gerber objects into a new combo Gerber object."
-msgstr ""
-"Mischen Sie eine Auswahl von Gerber-Objekten in ein neues Gerber-"
-"Kombinationsobjekt."
-
-#: appGUI/MainGUI.py:388
-#, fuzzy
-#| msgid "&Copy\tCtrl+C"
-msgid "Copy\tCtrl+C"
-msgstr "Kopieren\tSTRG+C"
-
-#: appGUI/MainGUI.py:393 appGUI/MainGUI.py:638 appGUI/MainGUI.py:682
-msgid "Delete\tDEL"
-msgstr "Löschen\tDEL"
-
-#: appGUI/MainGUI.py:398
-#, fuzzy
-#| msgid "Se&t Origin\tO"
-msgid "Set Origin\tO"
-msgstr "Ursprung festlegen\tO"
-
-#: appGUI/MainGUI.py:400
-msgid "Move to Origin\tShift+O"
-msgstr "Zum Ursprung wechseln\tShift+O"
-
-#: appGUI/MainGUI.py:403
-msgid "Jump to Location\tJ"
-msgstr "Zum Ort springen\tJ"
-
-#: appGUI/MainGUI.py:405
-msgid "Locate in Object\tShift+J"
-msgstr "Suchen Sie im Objekt\tShift+J"
-
-#: appGUI/MainGUI.py:410
-msgid "Toggle Units\tQ"
-msgstr "Einheiten umschalten\tQ"
-
-#: appGUI/MainGUI.py:412
-#, fuzzy
-#| msgid "&Select All\tCtrl+A"
-msgid "Select All\tCtrl+A"
-msgstr "Alles auswählen\tSTRG+A"
-
-#: appGUI/MainGUI.py:417
-#, fuzzy
-#| msgid "&Preferences\tShift+P"
-msgid "Preferences\tShift+P"
-msgstr "Einstellungen\tShift+P"
-
-#: appGUI/MainGUI.py:423 appObjects/FlatCAMObj.py:488
-#: appTools/ToolProperties.py:154
-msgid "Options"
-msgstr "Optionen"
-
-#: appGUI/MainGUI.py:425
-#, fuzzy
-#| msgid "&Rotate Selection\tShift+(R)"
-msgid "Rotate Selection\tShift+(R)"
-msgstr "Auswahl drehen\tShift+(R)"
-
-#: appGUI/MainGUI.py:430
-#, fuzzy
-#| msgid "&Skew on X axis\tShift+X"
-msgid "Skew on X axis\tShift+X"
-msgstr "Neigung auf der X-Achse\tShift+X"
-
-#: appGUI/MainGUI.py:432
-#, fuzzy
-#| msgid "S&kew on Y axis\tShift+Y"
-msgid "Skew on Y axis\tShift+Y"
-msgstr "Neigung auf der Y-Achse\tShift+Y"
-
-#: appGUI/MainGUI.py:437
-#, fuzzy
-#| msgid "Flip on &X axis\tX"
-msgid "Flip on X axis\tX"
-msgstr "X-Achse kippen\tX"
-
-#: appGUI/MainGUI.py:439
-#, fuzzy
-#| msgid "Flip on &Y axis\tY"
-msgid "Flip on Y axis\tY"
-msgstr "Y-Achse kippen\tY"
-
-#: appGUI/MainGUI.py:444
-msgid "View source\tAlt+S"
-msgstr "Quelltext anzeigen\tAlt+S"
-
-#: appGUI/MainGUI.py:446
-msgid "Tools DataBase\tCtrl+D"
-msgstr "Werkzeugdatenbank\tSTRG+D"
-
-#: appGUI/MainGUI.py:453 appGUI/MainGUI.py:1480
-msgid "View"
-msgstr "Aussicht"
-
-#: appGUI/MainGUI.py:455
-msgid "Enable all plots\tAlt+1"
-msgstr "Alle Diagramme aktivieren\tAlt+1"
-
-#: appGUI/MainGUI.py:457
-msgid "Disable all plots\tAlt+2"
-msgstr "Alle Diagramme deaktivieren\tAlt+2"
-
-#: appGUI/MainGUI.py:459
-#, fuzzy
-#| msgid "Disable non-selected\tAlt+3"
-msgid "Enable non-selected\tAlt+3"
-msgstr "Nicht ausgewählte Diagramme deaktivieren\tAlt+3"
-
-#: appGUI/MainGUI.py:461
-#, fuzzy
-#| msgid "Disable non-selected\tAlt+3"
-msgid "Disable non-selected\tAlt+4"
-msgstr "Nicht ausgewählte Diagramme deaktivieren\tAlt+3"
-
-#: appGUI/MainGUI.py:466
-#, fuzzy
-#| msgid "&Zoom Fit\tV"
-msgid "Zoom Fit\tV"
-msgstr "Passed zoomen\tV"
-
-#: appGUI/MainGUI.py:468
-#, fuzzy
-#| msgid "&Zoom In\t="
-msgid "Zoom In\t="
-msgstr "Hineinzoomen\t="
-
-#: appGUI/MainGUI.py:470
-#, fuzzy
-#| msgid "&Zoom Out\t-"
-msgid "Zoom Out\t-"
-msgstr "Rauszoomen\t-"
-
-#: appGUI/MainGUI.py:475
-msgid "Redraw All\tF5"
-msgstr "Alles neu zeichnen\tF5"
-
-#: appGUI/MainGUI.py:479
-msgid "Toggle Code Editor\tShift+E"
-msgstr "Code-Editor umschalten\tShift+E"
-
-#: appGUI/MainGUI.py:482
-#, fuzzy
-#| msgid "&Toggle FullScreen\tAlt+F10"
-msgid "Toggle FullScreen\tAlt+F10"
-msgstr "FullScreen umschalten\tAlt+F10"
-
-#: appGUI/MainGUI.py:484
-#, fuzzy
-#| msgid "&Toggle Plot Area\tCtrl+F10"
-msgid "Toggle Plot Area\tCtrl+F10"
-msgstr "Plotbereich umschalten\tSTRG+F10"
-
-#: appGUI/MainGUI.py:486
-#, fuzzy
-#| msgid "&Toggle Project/Sel/Tool\t`"
-msgid "Toggle Project/Sel/Tool\t`"
-msgstr "Projekt/Auswahl/Werkzeug umschalten\t`"
-
-#: appGUI/MainGUI.py:490
-#, fuzzy
-#| msgid "&Toggle Grid Snap\tG"
-msgid "Toggle Grid Snap\tG"
-msgstr "Schaltet den Rasterfang ein\tG"
-
-#: appGUI/MainGUI.py:492
-#, fuzzy
-#| msgid "&Toggle Grid Lines\tAlt+G"
-msgid "Toggle Grid Lines\tShift+G"
-msgstr "Gitterlinien umschalten\tAlt+G"
-
-#: appGUI/MainGUI.py:494
-#, fuzzy
-#| msgid "&Toggle Axis\tShift+G"
-msgid "Toggle Axis\tShift+A"
-msgstr "Achse umschalten\tShift+G"
-
-#: appGUI/MainGUI.py:496
-msgid "Toggle Workspace\tShift+W"
-msgstr "Arbeitsbereich umschalten\tShift+W"
-
-#: appGUI/MainGUI.py:498
-#, fuzzy
-#| msgid "Toggle HUD\tAlt+H"
-msgid "Toggle HUD\tShift+H"
-msgstr "Umschalten HUD\tAlt+H"
-
-#: appGUI/MainGUI.py:503
-msgid "Objects"
-msgstr "Objekte"
-
-#: appGUI/MainGUI.py:506 appGUI/MainGUI.py:4298
-#: appObjects/ObjectCollection.py:1128 appObjects/ObjectCollection.py:1175
-msgid "Select All"
-msgstr "Select All"
-
-#: appGUI/MainGUI.py:508 appObjects/ObjectCollection.py:1132
-#: appObjects/ObjectCollection.py:1179
-msgid "Deselect All"
-msgstr "Alle abwählen"
-
-#: appGUI/MainGUI.py:517
-#, fuzzy
-#| msgid "&Command Line\tS"
-msgid "Command Line\tS"
-msgstr "Befehlszeile\tS"
-
-#: appGUI/MainGUI.py:522
-msgid "Help"
-msgstr "Hilfe"
-
-#: appGUI/MainGUI.py:524
-msgid "Online Help\tF1"
-msgstr "Onlinehilfe\tF1"
-
-#: appGUI/MainGUI.py:530 app_Main.py:3263 app_Main.py:3272
-msgid "Bookmarks Manager"
-msgstr "Lesezeichen verwalten"
-
-#: appGUI/MainGUI.py:534
-msgid "Report a bug"
-msgstr "Einen Fehler melden"
-
-#: appGUI/MainGUI.py:537
-msgid "Excellon Specification"
-msgstr "Excellon-Spezifikation"
-
-#: appGUI/MainGUI.py:539
-msgid "Gerber Specification"
-msgstr "Gerber-Spezifikation"
-
-#: appGUI/MainGUI.py:544
-msgid "Shortcuts List\tF3"
-msgstr "Tastenkürzel Liste\tF3"
-
-#: appGUI/MainGUI.py:546
-msgid "YouTube Channel\tF4"
-msgstr "Youtube Kanal\tF4"
-
-#: appGUI/MainGUI.py:551 app_Main.py:3041
-#, fuzzy
-#| msgid "How To's"
-msgid "How To"
-msgstr "How To's"
-
-#: appGUI/MainGUI.py:554 app_Main.py:2713
-msgid "About FlatCAM"
-msgstr "Über FlatCAM"
-
-#: appGUI/MainGUI.py:563
-msgid "Add Circle\tO"
-msgstr "Kreis hinzufügen\tO"
-
-#: appGUI/MainGUI.py:566
-msgid "Add Arc\tA"
-msgstr "Bogen hinzufügen\tA"
-
-#: appGUI/MainGUI.py:569
-msgid "Add Rectangle\tR"
-msgstr "Rechteck hinzufügen\tR"
-
-#: appGUI/MainGUI.py:572
-msgid "Add Polygon\tN"
-msgstr "Polygon hinzufügen\tN"
-
-#: appGUI/MainGUI.py:575
-msgid "Add Path\tP"
-msgstr "Pfad hinzufügen\tP"
-
-#: appGUI/MainGUI.py:578
-msgid "Add Text\tT"
-msgstr "Text hinzufügen\tT"
-
-#: appGUI/MainGUI.py:581
-msgid "Polygon Union\tU"
-msgstr "Polygon-Vereinigung\tU"
-
-#: appGUI/MainGUI.py:583
-msgid "Polygon Intersection\tE"
-msgstr "Polygonschnitt\tE"
-
-#: appGUI/MainGUI.py:585
-msgid "Polygon Subtraction\tS"
-msgstr "Polygon-Subtraktion\tS"
-
-#: appGUI/MainGUI.py:589
-msgid "Cut Path\tX"
-msgstr "Pfad ausschneiden\tX"
-
-#: appGUI/MainGUI.py:593
-msgid "Copy Geom\tC"
-msgstr "Geometrie kopieren\tC"
-
-#: appGUI/MainGUI.py:595
-msgid "Delete Shape\tDEL"
-msgstr "Form löschen\tDEL"
-
-#: appGUI/MainGUI.py:599 appGUI/MainGUI.py:686
-msgid "Move\tM"
-msgstr "Bewegung\tM"
-
-#: appGUI/MainGUI.py:601
-msgid "Buffer Tool\tB"
-msgstr "Pufferwerkzeug\tB"
-
-#: appGUI/MainGUI.py:604
-msgid "Paint Tool\tI"
-msgstr "Malenwerkzeug\tI"
-
-#: appGUI/MainGUI.py:607
-msgid "Transform Tool\tAlt+R"
-msgstr "Transformationswerkzeug\tAlt+R"
-
-#: appGUI/MainGUI.py:611
-msgid "Toggle Corner Snap\tK"
-msgstr "Eckfang umschalten\tK"
-
-#: appGUI/MainGUI.py:617
-msgid ">Excellon Editor<"
-msgstr ">Excellon Editor<"
-
-#: appGUI/MainGUI.py:621
-msgid "Add Drill Array\tA"
-msgstr "Bohrfeld hinzufügen\tA"
-
-#: appGUI/MainGUI.py:623
-msgid "Add Drill\tD"
-msgstr "Bohrer hinzufügen\tD"
-
-#: appGUI/MainGUI.py:627
-msgid "Add Slot Array\tQ"
-msgstr "Steckplatz-Array hinzufügen\tQ"
-
-#: appGUI/MainGUI.py:629
-msgid "Add Slot\tW"
-msgstr "Slot hinzufügen\tW"
-
-#: appGUI/MainGUI.py:633
-msgid "Resize Drill(S)\tR"
-msgstr "Bohrer verkleinern\tR"
-
-#: appGUI/MainGUI.py:636 appGUI/MainGUI.py:680
-msgid "Copy\tC"
-msgstr "Kopieren\tC"
-
-#: appGUI/MainGUI.py:643
-msgid "Move Drill(s)\tM"
-msgstr "Bohrer verschieben\tM"
-
-#: appGUI/MainGUI.py:648
-msgid ">Gerber Editor<"
-msgstr ">Gerber-Editor<"
-
-#: appGUI/MainGUI.py:652
-msgid "Add Pad\tP"
-msgstr "Pad hinzufügen\tP"
-
-#: appGUI/MainGUI.py:654
-msgid "Add Pad Array\tA"
-msgstr "Pad-Array hinzufügen\tA"
-
-#: appGUI/MainGUI.py:656
-msgid "Add Track\tT"
-msgstr "Track hinzufügen\tA"
-
-#: appGUI/MainGUI.py:658
-msgid "Add Region\tN"
-msgstr "Region hinzufügen\tN"
-
-#: appGUI/MainGUI.py:662
-msgid "Poligonize\tAlt+N"
-msgstr "Polygonisieren\tAlt+N"
-
-#: appGUI/MainGUI.py:664
-msgid "Add SemiDisc\tE"
-msgstr "Halbschibe hinzufügen\tE"
-
-#: appGUI/MainGUI.py:666
-msgid "Add Disc\tD"
-msgstr "Schibe hinzufügen\tD"
-
-#: appGUI/MainGUI.py:668
-msgid "Buffer\tB"
-msgstr "Puffer\tB"
-
-#: appGUI/MainGUI.py:670
-msgid "Scale\tS"
-msgstr "Skalieren\tS"
-
-#: appGUI/MainGUI.py:672
-msgid "Mark Area\tAlt+A"
-msgstr "Bereich markieren\tAlt+A"
-
-#: appGUI/MainGUI.py:674
-msgid "Eraser\tCtrl+E"
-msgstr "Radiergummi\tSTRG+E"
-
-#: appGUI/MainGUI.py:676
-msgid "Transform\tAlt+R"
-msgstr "Transformationswerkzeug\tSTRG+R"
-
-#: appGUI/MainGUI.py:703
-msgid "Enable Plot"
-msgstr "Diagramm aktivieren"
-
-#: appGUI/MainGUI.py:705
-msgid "Disable Plot"
-msgstr "Diagramm deaktivieren"
-
-#: appGUI/MainGUI.py:709
-msgid "Set Color"
-msgstr "Farbsatz"
-
-#: appGUI/MainGUI.py:712 app_Main.py:7736
-msgid "Red"
-msgstr "Rote"
-
-#: appGUI/MainGUI.py:715 app_Main.py:7738
-msgid "Blue"
-msgstr "Blau"
-
-#: appGUI/MainGUI.py:718 app_Main.py:7741
-msgid "Yellow"
-msgstr "Gelb"
-
-#: appGUI/MainGUI.py:721 app_Main.py:7743
-msgid "Green"
-msgstr "Grün"
-
-#: appGUI/MainGUI.py:724 app_Main.py:7745
-msgid "Purple"
-msgstr "Lila"
-
-#: appGUI/MainGUI.py:727 app_Main.py:7747
-msgid "Brown"
-msgstr "Braun"
-
-#: appGUI/MainGUI.py:730 app_Main.py:7749 app_Main.py:7808
-msgid "White"
-msgstr "Weiß"
-
-#: appGUI/MainGUI.py:733 app_Main.py:7751
-msgid "Black"
-msgstr "Schwarz"
-
-#: appGUI/MainGUI.py:738 app_Main.py:7754
-msgid "Custom"
-msgstr "Benutzerdefiniert"
-
-#: appGUI/MainGUI.py:743 app_Main.py:7788
-msgid "Opacity"
-msgstr "Opazität"
-
-#: appGUI/MainGUI.py:746 app_Main.py:7764
-msgid "Default"
-msgstr "Standard"
-
-#: appGUI/MainGUI.py:751
-msgid "Generate CNC"
-msgstr "CNC generieren"
-
-#: appGUI/MainGUI.py:753
-msgid "View Source"
-msgstr "Quelltext anzeigen"
-
-#: appGUI/MainGUI.py:758 appGUI/MainGUI.py:877 appGUI/MainGUI.py:1094
-#: appGUI/MainGUI.py:1578 appGUI/MainGUI.py:2036 appGUI/MainGUI.py:2249
-#: appGUI/MainGUI.py:4712 appGUI/ObjectUI.py:1125
-#: appObjects/FlatCAMGeometry.py:558 appTools/ToolPanelize.py:325
-#: appTools/ToolPanelize.py:351 appTools/ToolPanelize.py:448
-#: appTools/ToolPanelize.py:477 appTools/ToolPanelize.py:538
-msgid "Copy"
-msgstr "Kopieren"
-
-#: appGUI/MainGUI.py:766 appGUI/MainGUI.py:1239 appGUI/MainGUI.py:1591
-#: appTools/ToolProperties.py:31
-msgid "Properties"
-msgstr "Eigenschaften"
-
-#: appGUI/MainGUI.py:795
-msgid "File Toolbar"
-msgstr "Dateisymbolleiste"
-
-#: appGUI/MainGUI.py:799
-msgid "Edit Toolbar"
-msgstr "Symbolleiste bearbeiten"
-
-#: appGUI/MainGUI.py:803
-msgid "View Toolbar"
-msgstr "Symbolleiste anzeigen"
-
-#: appGUI/MainGUI.py:807
-msgid "Shell Toolbar"
-msgstr "Shell-Symbolleiste"
-
-#: appGUI/MainGUI.py:811
-msgid "Tools Toolbar"
-msgstr "Werkzeugleiste"
-
-#: appGUI/MainGUI.py:815
-msgid "Excellon Editor Toolbar"
-msgstr "Excellon Editor-Symbolleiste"
-
-#: appGUI/MainGUI.py:821
-msgid "Geometry Editor Toolbar"
-msgstr "Geometrie Editor-Symbolleiste"
-
-#: appGUI/MainGUI.py:825
-msgid "Gerber Editor Toolbar"
-msgstr "Gerber Editor-Symbolleiste"
-
-#: appGUI/MainGUI.py:830 appGUI/MainGUI.py:1890
-#, fuzzy
-#| msgid "Coordinates copied to clipboard."
-msgid "Delta Coordinates Toolbar"
-msgstr "Koordinaten in die Zwischenablage kopiert."
-
-#: appGUI/MainGUI.py:833 appGUI/MainGUI.py:1898
-#, fuzzy
-#| msgid "Coordinates"
-msgid "Coordinates Toolbar"
-msgstr "Koordinaten"
-
-#: appGUI/MainGUI.py:836 appGUI/MainGUI.py:1906
-msgid "Grid Toolbar"
-msgstr "Raster-Symbolleiste"
-
-#: appGUI/MainGUI.py:845 appGUI/MainGUI.py:1914
-#, fuzzy
-#| msgid "Edit Toolbar"
-msgid "Status Toolbar"
-msgstr "Symbolleiste bearbeiten"
-
-#: appGUI/MainGUI.py:857 appGUI/MainGUI.py:2015 app_Main.py:8060
-#: app_Main.py:8065
-msgid "Open Gerber"
-msgstr "Gerber öffnen"
-
-#: appGUI/MainGUI.py:859 appGUI/MainGUI.py:2017 app_Main.py:8100
-#: app_Main.py:8105
-msgid "Open Excellon"
-msgstr "Excellon öffnen"
-
-#: appGUI/MainGUI.py:862 appGUI/MainGUI.py:2020
-msgid "Open project"
-msgstr "Projekt öffnen"
-
-#: appGUI/MainGUI.py:864 appGUI/MainGUI.py:2022
-msgid "Save project"
-msgstr "Projekt speichern"
-
-#: appGUI/MainGUI.py:870 appGUI/MainGUI.py:2028
-msgid "Editor"
-msgstr "Editor"
-
-#: appGUI/MainGUI.py:872 appGUI/MainGUI.py:2031
-msgid "Save Object and close the Editor"
-msgstr "Speichern Sie das Objekt und schließen Sie den Editor"
-
-#: appGUI/MainGUI.py:882 appGUI/MainGUI.py:2041 appGUI/MainGUI.py:4299
-#: appGUI/MainGUI.py:4509 appTools/ToolDistance.py:100
-#: appTools/ToolDistance.py:544
-msgid "Distance Tool"
-msgstr "Entfernungswerkzeug"
-
-#: appGUI/MainGUI.py:884 appGUI/MainGUI.py:2043
-msgid "Distance Min Tool"
-msgstr "Werkzeug für Mindestabstand"
-
-#: appGUI/MainGUI.py:886 appGUI/MainGUI.py:2045 appGUI/MainGUI.py:4292
-msgid "Set Origin"
-msgstr "Nullpunkt festlegen"
-
-#: appGUI/MainGUI.py:888 appGUI/MainGUI.py:2047
-msgid "Move to Origin"
-msgstr "Zum Ursprung wechseln"
-
-#: appGUI/MainGUI.py:891 appGUI/MainGUI.py:2049
-msgid "Jump to Location"
-msgstr "Zur Position springen\tJ"
-
-#: appGUI/MainGUI.py:893 appGUI/MainGUI.py:2051 appGUI/MainGUI.py:4304
-msgid "Locate in Object"
-msgstr "Suchen Sie im Objekt"
-
-#: appGUI/MainGUI.py:899 appGUI/MainGUI.py:1486 appGUI/MainGUI.py:2057
-msgid "Replot"
-msgstr "Replotieren"
-
-#: appGUI/MainGUI.py:901 appGUI/MainGUI.py:2059
-#, fuzzy
-#| msgid "&Clear plot"
-msgid "Clear plot"
-msgstr "Darstellung löschen &C"
-
-#: appGUI/MainGUI.py:903 appGUI/MainGUI.py:2061 appGUI/MainGUI.py:4295
-msgid "Zoom In"
-msgstr "Hineinzoomen"
-
-#: appGUI/MainGUI.py:905 appGUI/MainGUI.py:2063 appGUI/MainGUI.py:4295
-msgid "Zoom Out"
-msgstr "Rauszoomen"
-
-#: appGUI/MainGUI.py:907 appGUI/MainGUI.py:1482 appGUI/MainGUI.py:2065
-#: appGUI/MainGUI.py:4294
-msgid "Zoom Fit"
-msgstr "Passend zoomen"
-
-#: appGUI/MainGUI.py:915 appGUI/MainGUI.py:1157 appGUI/MainGUI.py:2071
-msgid "Command Line"
-msgstr "Befehlszeile"
-
-#: appGUI/MainGUI.py:927 appGUI/MainGUI.py:2083
-msgid "2Sided Tool"
-msgstr "2Seitiges Werkzeug"
-
-#: appGUI/MainGUI.py:929 appGUI/MainGUI.py:2085 appGUI/MainGUI.py:4311
-msgid "Align Objects Tool"
-msgstr "Werkzeug \"Objekte ausrichten\""
-
-#: appGUI/MainGUI.py:931 appGUI/MainGUI.py:2087 appGUI/MainGUI.py:4311
-#: appTools/ToolExtractDrills.py:98
-msgid "Extract Drills Tool"
-msgstr "Bohrer Extrahieren Werkzeug"
-
-#: appGUI/MainGUI.py:934 appGUI/MainGUI.py:2090 appGUI/ObjectUI.py:387
-#: appTools/ToolCutOut.py:156 appTools/ToolCutOut.py:2056
-msgid "Cutout Tool"
-msgstr "Ausschnittwerkzeug"
-
-#: appGUI/MainGUI.py:936 appGUI/MainGUI.py:2092 appGUI/ObjectUI.py:372
-#: appGUI/ObjectUI.py:1799 appTools/ToolNCC.py:202
-msgid "NCC Tool"
-msgstr "NCC Werkzeug"
-
-#: appGUI/MainGUI.py:940 appGUI/MainGUI.py:2096 appGUI/MainGUI.py:4313
-#: appTools/ToolIsolation.py:191 appTools/ToolIsolation.py:2938
-msgid "Isolation Tool"
-msgstr "Isolationswerkzeug"
-
-#: appGUI/MainGUI.py:942 appGUI/MainGUI.py:2098 appGUI/ObjectUI.py:721
-#: appTools/ToolDrilling.py:245 appTools/ToolDrilling.py:1979
-#: appTools/ToolMilling.py:169
-#, fuzzy
-#| msgid "Drilling"
-msgid "Drilling Tool"
-msgstr "Bohren"
-
-#: appGUI/MainGUI.py:946 appGUI/MainGUI.py:2102
-msgid "Panel Tool"
-msgstr "Platte Werkzeug"
-
-#: appGUI/MainGUI.py:948 appGUI/MainGUI.py:2104 appTools/ToolFilm.py:110
-msgid "Film Tool"
-msgstr "Filmwerkzeug"
-
-#: appGUI/MainGUI.py:950 appGUI/MainGUI.py:2106 appTools/ToolSolderPaste.py:116
-msgid "SolderPaste Tool"
-msgstr "Lötpaste-Werkzeug"
-
-#: appGUI/MainGUI.py:952 appGUI/MainGUI.py:2108 appGUI/MainGUI.py:4318
-#: appTools/ToolSub.py:611
-msgid "Subtract Tool"
-msgstr "Subtraktionswerkzeug"
-
-#: appGUI/MainGUI.py:954 appGUI/MainGUI.py:2110 appTools/ToolRulesCheck.py:115
-msgid "Rules Tool"
-msgstr "Regelwerkzeug"
-
-#: appGUI/MainGUI.py:956 appGUI/MainGUI.py:2112 appGUI/MainGUI.py:4315
-#: appTools/ToolOptimal.py:103 appTools/ToolOptimal.py:390
-msgid "Optimal Tool"
-msgstr "Optimierungswerkzeug"
-
-#: appGUI/MainGUI.py:961 appGUI/MainGUI.py:2117 appGUI/MainGUI.py:4311
-msgid "Calculators Tool"
-msgstr "Rechnerwerkzeug"
-
-#: appGUI/MainGUI.py:965 appGUI/MainGUI.py:2121 appGUI/MainGUI.py:4316
-#: appTools/ToolQRCode.py:114 appTools/ToolQRCode.py:629
-msgid "QRCode Tool"
-msgstr "QRCode Werkzeug"
-
-# Really don't know
-#: appGUI/MainGUI.py:967 appGUI/MainGUI.py:2123 appGUI/MainGUI.py:4313
-#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1133
-msgid "Copper Thieving Tool"
-msgstr "Copper Thieving Werkzeug"
-
-# Really don't know
-#: appGUI/MainGUI.py:970 appGUI/MainGUI.py:2126 appGUI/MainGUI.py:4312
-#: appTools/ToolFiducials.py:114 appTools/ToolFiducials.py:650
-msgid "Fiducials Tool"
-msgstr "Passermarken-Tool"
-
-#: appGUI/MainGUI.py:972 appGUI/MainGUI.py:2128 appTools/ToolCalibration.py:115
-#: appTools/ToolCalibration.py:735
-msgid "Calibration Tool"
-msgstr "Kalibierungswerkzeug"
-
-#: appGUI/MainGUI.py:974 appGUI/MainGUI.py:2130 appGUI/MainGUI.py:4313
-msgid "Punch Gerber Tool"
-msgstr "Stanzen Sie das Gerber-Werkzeug"
-
-#: appGUI/MainGUI.py:976 appGUI/MainGUI.py:2132 appGUI/MainGUI.py:4312
-#: appTools/ToolInvertGerber.py:175
-msgid "Invert Gerber Tool"
-msgstr "Invertieren Sie das Gerber-Werkzeug"
-
-#: appGUI/MainGUI.py:978 appGUI/MainGUI.py:2134 appGUI/MainGUI.py:4315
-#: appTools/ToolCorners.py:298
-msgid "Corner Markers Tool"
-msgstr "Eckmarkierungswerkzeug"
-
-#: appGUI/MainGUI.py:980 appGUI/MainGUI.py:2136
-#: appTools/ToolEtchCompensation.py:80 appTools/ToolEtchCompensation.py:251
-msgid "Etch Compensation Tool"
-msgstr "Ätzkompensationswerkzeug"
-
-#: appGUI/MainGUI.py:986 appGUI/MainGUI.py:1012 appGUI/MainGUI.py:1064
-#: appGUI/MainGUI.py:2142 appGUI/MainGUI.py:2220
-msgid "Select"
-msgstr "Wählen"
-
-#: appGUI/MainGUI.py:988 appGUI/MainGUI.py:2144
-msgid "Add Drill Hole"
-msgstr "Bohrloch hinzufügen"
-
-#: appGUI/MainGUI.py:990 appGUI/MainGUI.py:2146
-msgid "Add Drill Hole Array"
-msgstr "Bohrlochfeld hinzufügen"
-
-#: appGUI/MainGUI.py:992 appGUI/MainGUI.py:1570 appGUI/MainGUI.py:2150
-#: appGUI/MainGUI.py:4594
-msgid "Add Slot"
-msgstr "Steckplatz hinzufügen"
-
-#: appGUI/MainGUI.py:994 appGUI/MainGUI.py:1572 appGUI/MainGUI.py:2152
-#: appGUI/MainGUI.py:4593
-msgid "Add Slot Array"
-msgstr "Steckplatz-Array hinzufügen"
-
-#: appGUI/MainGUI.py:996 appGUI/MainGUI.py:1575 appGUI/MainGUI.py:2148
-msgid "Resize Drill"
-msgstr "Bohrergröße ändern"
-
-#: appGUI/MainGUI.py:1000 appGUI/MainGUI.py:2156
-msgid "Copy Drill"
-msgstr "Bohrer kopieren"
-
-#: appGUI/MainGUI.py:1002 appGUI/MainGUI.py:2158
-msgid "Delete Drill"
-msgstr "Bohrer löschen"
-
-#: appGUI/MainGUI.py:1006 appGUI/MainGUI.py:2162
-msgid "Move Drill"
-msgstr "Bohrer bewegen"
-
-#: appGUI/MainGUI.py:1014 appGUI/MainGUI.py:2170
-msgid "Add Circle"
-msgstr "Kreis hinzufügen"
-
-#: appGUI/MainGUI.py:1016 appGUI/MainGUI.py:2172
-msgid "Add Arc"
-msgstr "Bogen hinzufügen"
-
-#: appGUI/MainGUI.py:1018 appGUI/MainGUI.py:2174
-msgid "Add Rectangle"
-msgstr "Rechteck hinzufügen"
-
-#: appGUI/MainGUI.py:1022 appGUI/MainGUI.py:2178
-msgid "Add Path"
-msgstr "Pfad hinzufügen"
-
-#: appGUI/MainGUI.py:1024 appGUI/MainGUI.py:2180
-msgid "Add Polygon"
-msgstr "Polygon hinzufügen"
-
-#: appGUI/MainGUI.py:1027 appGUI/MainGUI.py:2183
-msgid "Add Text"
-msgstr "Text hinzufügen"
-
-#: appGUI/MainGUI.py:1029 appGUI/MainGUI.py:2185
-msgid "Add Buffer"
-msgstr "Puffer hinzufügen"
-
-#: appGUI/MainGUI.py:1031 appGUI/MainGUI.py:2187
-msgid "Paint Shape"
-msgstr "Malen Form"
-
-#: appGUI/MainGUI.py:1033 appGUI/MainGUI.py:1090 appGUI/MainGUI.py:1511
-#: appGUI/MainGUI.py:1556 appGUI/MainGUI.py:2189 appGUI/MainGUI.py:2245
-msgid "Eraser"
-msgstr "Radiergummi"
-
-#: appGUI/MainGUI.py:1037 appGUI/MainGUI.py:2193
-msgid "Polygon Union"
-msgstr "Polygon-Vereinigung"
-
-#: appGUI/MainGUI.py:1039 appGUI/MainGUI.py:2195
-msgid "Polygon Explode"
-msgstr "Polygon explodieren"
-
-#: appGUI/MainGUI.py:1042 appGUI/MainGUI.py:2198
-msgid "Polygon Intersection"
-msgstr "Polygonschnitt"
-
-#: appGUI/MainGUI.py:1044 appGUI/MainGUI.py:2200
-msgid "Polygon Subtraction"
-msgstr "Polygon-Subtraktion"
-
-#: appGUI/MainGUI.py:1048 appGUI/MainGUI.py:2204
-msgid "Cut Path"
-msgstr "Pfad ausschneiden"
-
-#: appGUI/MainGUI.py:1050
-msgid "Copy Shape(s)"
-msgstr "Form kopieren"
-
-#: appGUI/MainGUI.py:1053
-msgid "Delete Shape '-'"
-msgstr "Form löschen"
-
-#: appGUI/MainGUI.py:1055 appGUI/MainGUI.py:1098 appGUI/MainGUI.py:1523
-#: appGUI/MainGUI.py:1560 appGUI/MainGUI.py:2210 appGUI/MainGUI.py:2253
-#: appGUI/ObjectUI.py:109 appGUI/ObjectUI.py:152
-msgid "Transformations"
-msgstr "Transformationen"
-
-#: appGUI/MainGUI.py:1058
-msgid "Move Objects "
-msgstr "Objekte verschieben "
-
-#: appGUI/MainGUI.py:1066 appGUI/MainGUI.py:2222 appGUI/MainGUI.py:4713
-msgid "Add Pad"
-msgstr "Pad hinzufügen"
-
-#: appGUI/MainGUI.py:1070 appGUI/MainGUI.py:2226 appGUI/MainGUI.py:4714
-msgid "Add Track"
-msgstr "Track hinzufügen"
-
-#: appGUI/MainGUI.py:1072 appGUI/MainGUI.py:2228 appGUI/MainGUI.py:4713
-msgid "Add Region"
-msgstr "Region hinzufügen"
-
-#: appGUI/MainGUI.py:1074 appGUI/MainGUI.py:1542 appGUI/MainGUI.py:2230
-msgid "Poligonize"
-msgstr "Polygonisieren"
-
-#: appGUI/MainGUI.py:1077 appGUI/MainGUI.py:1544 appGUI/MainGUI.py:2233
-msgid "SemiDisc"
-msgstr "Halbscheibe"
-
-#: appGUI/MainGUI.py:1079 appGUI/MainGUI.py:1546 appGUI/MainGUI.py:2235
-msgid "Disc"
-msgstr "Scheibe"
-
-#: appGUI/MainGUI.py:1087 appGUI/MainGUI.py:1554 appGUI/MainGUI.py:2243
-msgid "Mark Area"
-msgstr "Bereich markieren"
-
-#: appGUI/MainGUI.py:1101 appGUI/MainGUI.py:1527 appGUI/MainGUI.py:1589
-#: appGUI/MainGUI.py:2256 appGUI/MainGUI.py:4713 appTools/ToolMove.py:27
-msgid "Move"
-msgstr "Bewegung"
-
-#: appGUI/MainGUI.py:1109
-msgid "Snap to grid"
-msgstr "Am Raster ausrichten"
-
-#: appGUI/MainGUI.py:1112
-msgid "Grid X snapping distance"
-msgstr "Raster X Fangdistanz"
-
-#: appGUI/MainGUI.py:1117
-msgid ""
-"When active, value on Grid_X\n"
-"is copied to the Grid_Y value."
-msgstr ""
-"Wenn aktiv, Wert auf Grid_X\n"
-"wird in den Wert von Grid_Y kopiert."
-
-#: appGUI/MainGUI.py:1124
-msgid "Grid Y snapping distance"
-msgstr "Raster Y Fangdistanz"
-
-#: appGUI/MainGUI.py:1131
-msgid "Snap to corner"
-msgstr "In der Ecke ausrichten"
-
-#: appGUI/MainGUI.py:1135 appGUI/preferences/general/GeneralAPPSetGroupUI.py:78
-msgid "Max. magnet distance"
-msgstr "Max. Magnetabstand"
-
-#: appGUI/MainGUI.py:1145
-msgid "Toggle the display of axis on canvas"
-msgstr "Schalten Sie die Anzeige der Achse auf der Leinwand um"
-
-#: appGUI/MainGUI.py:1151 appGUI/preferences/PreferencesUIManager.py:899
-#: appGUI/preferences/PreferencesUIManager.py:992
-#: appGUI/preferences/PreferencesUIManager.py:1020
-#: appGUI/preferences/PreferencesUIManager.py:1125 app_Main.py:5520
-#: app_Main.py:5525 app_Main.py:5540
-msgid "Preferences"
-msgstr "Einstellungen"
-
-#: appGUI/MainGUI.py:1163
-msgid "HUD (Heads up display)"
-msgstr "HUD (Heads-up-Display)"
-
-#: appGUI/MainGUI.py:1169 appGUI/preferences/general/GeneralAPPSetGroupUI.py:97
-msgid ""
-"Draw a delimiting rectangle on canvas.\n"
-"The purpose is to illustrate the limits for our work."
-msgstr ""
-"Zeichnen Sie ein begrenzendes Rechteck auf die Leinwand.\n"
-"Ziel ist es, die Grenzen unserer Arbeit aufzuzeigen."
-
-#: appGUI/MainGUI.py:1182
-msgid ""
-"Relative measurement.\n"
-"Reference is last click position"
-msgstr ""
-"Relative Messung\n"
-"Referenz ist Position des letzten Klicks"
-
-#: appGUI/MainGUI.py:1190
-msgid ""
-"Absolute measurement.\n"
-"Reference is (X=0, Y= 0) position"
-msgstr ""
-"Absolute Messung.\n"
-"Referenz ist (X = 0, Y = 0)"
-
-#: appGUI/MainGUI.py:1197
-#, fuzzy
-#| msgid "Show Shell"
-msgid "TCL Shell"
-msgstr "Shell anzeigen"
-
-#: appGUI/MainGUI.py:1224 appGUI/MainGUI.py:1473 app_Main.py:9031
-msgid "Project"
-msgstr "Projekt"
-
-#: appGUI/MainGUI.py:1267 appGUI/MainGUI.py:1275 appGUI/MainGUI.py:3809
-#: appGUI/MainGUI.py:3815 app_Main.py:2494 app_Main.py:8839
-msgid "Plot Area"
-msgstr "Grundstücksfläche"
-
-#: appGUI/MainGUI.py:1317 appTools/ToolCopperThieving.py:1165
-#: appTools/ToolCorners.py:318 appTools/ToolEtchCompensation.py:291
-#: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:875
-#: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:2986
-#: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:721
-#: appTools/ToolQRCode.py:660 appTools/ToolRulesCheck.py:1165
-#: appTools/ToolSolderPaste.py:1143 appTools/ToolSub.py:643
-msgid "GERBER"
-msgstr "GERBER"
-
-#: appGUI/MainGUI.py:1327 appTools/ToolDrilling.py:2032
-#: appTools/ToolMilling.py:1637 appTools/ToolRulesCheck.py:1303
-msgid "EXCELLON"
-msgstr "EXCELLON"
-
-#: appGUI/MainGUI.py:1337 appTools/ToolSub.py:695
-msgid "GEOMETRY"
-msgstr "GEOMETRY"
-
-#: appGUI/MainGUI.py:1347
-msgid "CNC-JOB"
-msgstr "CNC-Auftrag"
-
-#: appGUI/MainGUI.py:1356 appGUI/ObjectUI.py:353 appGUI/ObjectUI.py:717
-#: appGUI/ObjectUI.py:1760
-msgid "TOOLS"
-msgstr "WERKZEUGE"
-
-#: appGUI/MainGUI.py:1365
-msgid "TOOLS 2"
-msgstr "WERKZEUGE 2"
-
-#: appGUI/MainGUI.py:1375
-msgid "UTILITIES"
-msgstr "NUTZEN"
-
-#: appGUI/MainGUI.py:1391
-#: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:201
-msgid "Restore Defaults"
-msgstr "Standard wiederherstellen"
-
-#: appGUI/MainGUI.py:1395
-msgid ""
-"Restore the entire set of default values\n"
-"to the initial values loaded after first launch."
-msgstr ""
-"Stellen Sie den gesamten Satz von Standardwerten wieder her\n"
-"auf die nach dem ersten Start geladenen Anfangswerte."
-
-#: appGUI/MainGUI.py:1400
-msgid "Open Pref Folder"
-msgstr "Öffnen Sie den Einstellungsordner"
-
-#: appGUI/MainGUI.py:1404
-msgid "Open the folder where FlatCAM save the preferences files."
-msgstr ""
-"Öffnen Sie den Ordner, in dem FlatCAM die Voreinstellungsdateien speichert."
-
-#: appGUI/MainGUI.py:1408 appGUI/MainGUI.py:1986
-msgid "Clear GUI Settings"
-msgstr "Löschen Sie die GUI-Einstellungen"
-
-#: appGUI/MainGUI.py:1413
-msgid ""
-"Clear the GUI settings for FlatCAM,\n"
-"such as: layout, gui state, style, hdpi support etc."
-msgstr ""
-"Löschen Sie die GUI-Einstellungen für FlatCAM.\n"
-"wie zum Beispiel: Layout, GUI-Status, Stil, HDPI-Unterstützung usw."
-
-#: appGUI/MainGUI.py:1428
-msgid "Apply the current preferences without saving to a file."
-msgstr "Anwenden ohne zu speichern."
-
-#: appGUI/MainGUI.py:1436
-msgid ""
-"Save the current settings in the 'current_defaults' file\n"
-"which is the file storing the working default preferences."
-msgstr ""
-"Speichern Sie die aktuellen Einstellungen in der Datei 'current_defaults'\n"
-"Dies ist die Datei, in der die Arbeitseinstellungen gespeichert sind."
-
-#: appGUI/MainGUI.py:1444
-msgid "Will not save the changes and will close the preferences window."
-msgstr "Einstellungen werden geschlossen ohne die Änderungen zu speichern."
-
-#: appGUI/MainGUI.py:1458
-msgid "Toggle Visibility"
-msgstr "Sichtbarkeit umschalten"
-
-#: appGUI/MainGUI.py:1466
+#: appGUI/MainGUI.py:95 appGUI/MainGUI.py:1575
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
@@ -5649,7 +4250,46 @@ msgstr "Sichtbarkeit umschalten"
 msgid "Geometry"
 msgstr "Geometrie"
 
-#: appGUI/MainGUI.py:1470
+#: appGUI/MainGUI.py:95 appGUI/MainGUI.py:645 appGUI/MainGUI.py:756
+#: appGUI/MainGUI.py:4408 appGUI/MainGUI.py:4675 appGUI/MainGUI.py:4916
+msgid "N"
+msgstr "N"
+
+#: appGUI/MainGUI.py:97
+msgid "Will create a new, empty Geometry Object."
+msgstr "Erzeugt ein neues, leeres Geometrieobjekt."
+
+#: appGUI/MainGUI.py:100
+#: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:97
+#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:76
+#: appTools/ToolAlignObjects.py:398 appTools/ToolAlignObjects.py:434
+#: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
+#: appTools/ToolCalibration.py:891 appTools/ToolCalibration.py:1326
+#: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
+#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
+#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:527
+#: appTools/ToolDblSided.py:767 appTools/ToolFilm.py:927
+#: appTools/ToolFilm.py:950 appTools/ToolImage.py:117 appTools/ToolImage.py:138
+#: appTools/ToolImage.py:191 appTools/ToolIsolation.py:802
+#: appTools/ToolIsolation.py:3339 appTools/ToolIsolation.py:3391
+#: appTools/ToolNCC.py:805 appTools/ToolNCC.py:3849 appTools/ToolNCC.py:4323
+#: appTools/ToolPaint.py:167 appTools/ToolPaint.py:3143
+#: appTools/ToolPanelize.py:147 appTools/ToolPanelize.py:167
+#: appTools/ToolPanelize.py:715 appTools/ToolPanelize.py:809
+#: appTools/ToolTransform.py:126 appTools/ToolTransform.py:585 defaults.py:570
+msgid "Gerber"
+msgstr "Gerber"
+
+#: appGUI/MainGUI.py:100 appGUI/MainGUI.py:684 appGUI/MainGUI.py:770
+#: appGUI/MainGUI.py:4402 appGUI/MainGUI.py:4666 appGUI/MainGUI.py:4910
+msgid "B"
+msgstr "B"
+
+#: appGUI/MainGUI.py:102
+msgid "Will create a new, empty Gerber Object."
+msgstr "Erzeugt ein neues, leeres Gerber-Objekt."
+
+#: appGUI/MainGUI.py:105 appGUI/MainGUI.py:1579
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:77
 #: appTools/ToolAlignObjects.py:399 appTools/ToolAlignObjects.py:435
@@ -5667,107 +4307,1449 @@ msgstr "Geometrie"
 msgid "Excellon"
 msgstr "Excellon"
 
-#: appGUI/MainGUI.py:1477
+#: appGUI/MainGUI.py:105 appGUI/MainGUI.py:4406
+msgid "L"
+msgstr "L"
+
+#: appGUI/MainGUI.py:107
+msgid "Will create a new, empty Excellon Object."
+msgstr "Erzeugt ein neues, leeres Excellon-Objekt."
+
+#: appGUI/MainGUI.py:112
+msgid "Document"
+msgstr "Dokumentieren"
+
+#: appGUI/MainGUI.py:112 appGUI/MainGUI.py:711 appGUI/MainGUI.py:767
+#: appGUI/MainGUI.py:4668 appGUI/MainGUI.py:4780 appGUI/MainGUI.py:4912
+msgid "D"
+msgstr "D"
+
+#: appGUI/MainGUI.py:114
+msgid "Will create a new, empty Document Object."
+msgstr "Erstellt ein neues, leeres Dokumentobjekt."
+
+#: appGUI/MainGUI.py:123 appGUI/MainGUI.py:4429 app_Main.py:8180
+#: app_Main.py:8183
+msgid "Open Project"
+msgstr "Projekt öffnen"
+
+#: appGUI/MainGUI.py:123 appGUI/MainGUI.py:4429
+msgid "Ctrl+O"
+msgstr "Strg+O"
+
+#: appGUI/MainGUI.py:130 appGUI/MainGUI.py:966 appGUI/MainGUI.py:2124
+#: app_Main.py:8060 app_Main.py:8065
+msgid "Open Gerber"
+msgstr "Gerber öffnen"
+
+#: appGUI/MainGUI.py:130 appGUI/MainGUI.py:4426
+msgid "Ctrl+G"
+msgstr "Strg+G"
+
+#: appGUI/MainGUI.py:135 appGUI/MainGUI.py:968 appGUI/MainGUI.py:2126
+#: app_Main.py:8100 app_Main.py:8105
+msgid "Open Excellon"
+msgstr "Excellon öffnen"
+
+#: appGUI/MainGUI.py:135 appGUI/MainGUI.py:779 appGUI/MainGUI.py:4425
+#: appGUI/MainGUI.py:4926
+msgid "Ctrl+E"
+msgstr "Radiergummi"
+
+#: appGUI/MainGUI.py:140 app_Main.py:8143 app_Main.py:8148
+msgid "Open G-Code"
+msgstr "G-Code öffnen"
+
+#: appGUI/MainGUI.py:147
+msgid "Open Config"
+msgstr "Config öffnen"
+
+#: appGUI/MainGUI.py:152
+msgid "Recent projects"
+msgstr "Letzte Projekte"
+
+#: appGUI/MainGUI.py:154
+msgid "Recent files"
+msgstr "Neueste Dateien"
+
+#: appGUI/MainGUI.py:157 appGUI/MainGUI.py:871 appGUI/MainGUI.py:1542
+msgid "Save"
+msgstr "Speichern"
+
+#: appGUI/MainGUI.py:161 appGUI/MainGUI.py:4432
+msgid "Save Project"
+msgstr "Projekt speichern"
+
+#: appGUI/MainGUI.py:161 appGUI/MainGUI.py:343 appGUI/MainGUI.py:4432
+#: appGUI/MainGUI.py:4691 appGUI/MainGUI.py:4791 appGUI/MainGUI.py:4927
+msgid "Ctrl+S"
+msgstr "Strg+S"
+
+#: appGUI/MainGUI.py:167 appGUI/MainGUI.py:4483
+msgid "Save Project As"
+msgstr "Projekt speichern als"
+
+#: appGUI/MainGUI.py:167 appGUI/MainGUI.py:4483
+msgid "Ctrl+Shift+S"
+msgstr "Strg+Shift+S"
+
+#: appGUI/MainGUI.py:182
+msgid "Scripting"
+msgstr "Scripting"
+
+#: appGUI/MainGUI.py:186
+msgid "New Script"
+msgstr "Neues Skript"
+
+#: appGUI/MainGUI.py:188
+msgid "Open Script"
+msgstr "Skript öffnen"
+
+#: appGUI/MainGUI.py:191
+msgid "Open Example"
+msgstr "Beispiel öffnen"
+
+#: appGUI/MainGUI.py:194
+msgid "Run Script"
+msgstr ""
+
+#: appGUI/MainGUI.py:194 appGUI/MainGUI.py:4445
+msgid "Shift+S"
+msgstr "Shift+S"
+
+#: appGUI/MainGUI.py:211
+msgid "Import"
+msgstr "Importieren"
+
+#: appGUI/MainGUI.py:214
+msgid "SVG as Geometry Object"
+msgstr "SVG als Geometrieobjekt"
+
+#: appGUI/MainGUI.py:218
+msgid "SVG as Gerber Object"
+msgstr "SVG als Gerberobjekt"
+
+#: appGUI/MainGUI.py:224
+msgid "DXF as Geometry Object"
+msgstr "DXF als Geometrieobjekt"
+
+#: appGUI/MainGUI.py:228
+msgid "DXF as Gerber Object"
+msgstr "DXF als Gerberobjekt"
+
+#: appGUI/MainGUI.py:233
+msgid "HPGL2 as Geometry Object"
+msgstr "HPGL2 als Geometrieobjekt"
+
+#: appGUI/MainGUI.py:239
+msgid "Export"
+msgstr "Exportieren"
+
+#: appGUI/MainGUI.py:244 appTools/ToolQRCode.py:565 appTools/ToolQRCode.py:569
+#: app_Main.py:8298 app_Main.py:8302
+msgid "Export SVG"
+msgstr "SVG exportieren"
+
+#: appGUI/MainGUI.py:249 app_Main.py:8642 app_Main.py:8646
+msgid "Export DXF"
+msgstr "DXF exportieren"
+
+#: appGUI/MainGUI.py:256 appTools/ToolQRCode.py:518 appTools/ToolQRCode.py:522
+msgid "Export PNG"
+msgstr "PNG exportieren"
+
+#: appGUI/MainGUI.py:258
+msgid ""
+"Will export an image in PNG format,\n"
+"the saved image will contain the visual \n"
+"information currently in FlatCAM Plot Area."
+msgstr ""
+"Exportiert ein Bild im PNG-Format,\n"
+"Das gespeicherte Bild enthält die\n"
+"Bildinformationen des FlatCAM-Plotbereiches."
+
+#: appGUI/MainGUI.py:268 app_Main.py:8540 app_Main.py:8544
+msgid "Export Excellon"
+msgstr "Excellon exportieren"
+
+#: appGUI/MainGUI.py:270
+msgid ""
+"Will export an Excellon Object as Excellon file,\n"
+"the coordinates format, the file units and zeros\n"
+"are set in Preferences -> Excellon Export."
+msgstr ""
+"Exportieren Exportiert ein Excellon-Objekt als Excellon-Datei.\n"
+"Das Koordinatenformat, die Dateieinheiten und Nullen\n"
+"werden in den Einstellungen -> Excellon Export.Excellon eingestellt ..."
+
+#: appGUI/MainGUI.py:278 app_Main.py:8583 app_Main.py:8587
+msgid "Export Gerber"
+msgstr "Gerber exportieren"
+
+#: appGUI/MainGUI.py:280
+msgid ""
+"Will export an Gerber Object as Gerber file,\n"
+"the coordinates format, the file units and zeros\n"
+"are set in Preferences -> Gerber Export."
+msgstr ""
+"Exportiert ein Gerber-Objekt als Gerber-Datei.\n"
+"das Koordinatenformat, die Dateieinheiten und Nullen\n"
+"werden in den Einstellungen -> Gerber Export eingestellt."
+
+#: appGUI/MainGUI.py:290
+msgid "Backup"
+msgstr "Sicherungskopie"
+
+#: appGUI/MainGUI.py:295
+msgid "Import Preferences from file"
+msgstr "Einstellungen aus Datei importieren"
+
+#: appGUI/MainGUI.py:302
+msgid "Export Preferences to file"
+msgstr "Einstellungen in Datei exportieren"
+
+#: appGUI/MainGUI.py:311 appGUI/preferences/PreferencesUIManager.py:1173
+msgid "Save Preferences"
+msgstr "Einstellungen speichern"
+
+#: appGUI/MainGUI.py:318 appGUI/MainGUI.py:4430
+msgid "Print (PDF)"
+msgstr "Drucken (PDF)"
+
+#: appGUI/MainGUI.py:318 appGUI/MainGUI.py:4430
+msgid "Ctrl+P"
+msgstr "Strg+P"
+
+#: appGUI/MainGUI.py:335 appGUI/MainGUI.py:865 appGUI/MainGUI.py:1691
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: appGUI/MainGUI.py:340
+msgid "Edit Object"
+msgstr "Objekt bearbeiten"
+
+#: appGUI/MainGUI.py:340 appGUI/MainGUI.py:660 appGUI/MainGUI.py:764
+#: appGUI/MainGUI.py:4403 appGUI/MainGUI.py:4669 appGUI/MainGUI.py:4913
+msgid "E"
+msgstr "E"
+
+#: appGUI/MainGUI.py:343 appGUI/MainGUI.py:1693 app_Main.py:2305
+msgid "Close Editor"
+msgstr "Editor schließen"
+
+#: appGUI/MainGUI.py:353
+msgid "Conversion"
+msgstr "Umwandlung"
+
+#: appGUI/MainGUI.py:357
+msgid "Convert Single to MultiGeo"
+msgstr "Konvertieren Sie Single in MultiGeo"
+
+#: appGUI/MainGUI.py:359
+msgid ""
+"Will convert a Geometry object from single_geometry type\n"
+"to a multi_geometry type."
+msgstr ""
+"Konvertiert ein Geometrieobjekt vom Typ single_geometry\n"
+"zu einem multi_geometry-Typ."
+
+#: appGUI/MainGUI.py:364
+msgid "Convert Multi to SingleGeo"
+msgstr "Konvertieren Sie Multi in SingleGeo"
+
+#: appGUI/MainGUI.py:366
+msgid ""
+"Will convert a Geometry object from multi_geometry type\n"
+"to a single_geometry type."
+msgstr ""
+"Konvertiert ein Geometrieobjekt vom Typ multi_geometry\n"
+"zu einem single_geometry-Typ."
+
+#: appGUI/MainGUI.py:373
+msgid "Convert Any to Geo"
+msgstr "Konvertieren Sie Any zu Geo"
+
+#: appGUI/MainGUI.py:376
+msgid "Convert Any to Gerber"
+msgstr "Konvertieren Sie Any zu Gerber"
+
+#: appGUI/MainGUI.py:379
+msgid "Convert Any to Excellon"
+msgstr "Konvertieren Sie Any zu Excellon"
+
+#: appGUI/MainGUI.py:384
+msgid "Join Objects"
+msgstr ""
+
+#: appGUI/MainGUI.py:387
+msgid "Join Geo/Gerber/Exc -> Geo"
+msgstr "Geo/Gerber/Exc -> Geo zusammenfassen"
+
+#: appGUI/MainGUI.py:389
+msgid ""
+"Merge a selection of objects, which can be of type:\n"
+"- Gerber\n"
+"- Excellon\n"
+"- Geometry\n"
+"into a new combo Geometry object."
+msgstr ""
+"Zusammenführen einer Auswahl von Objekten, die vom Typ sein können:\n"
+"- Gerber\n"
+"- Excellon\n"
+"- Geometrie\n"
+"in ein neues Geometrieobjekt kombinieren."
+
+#: appGUI/MainGUI.py:397
+msgid "Join Excellon(s) -> Excellon"
+msgstr "Excellon(s) -> Excellon zusammenfassen"
+
+#: appGUI/MainGUI.py:399
+msgid "Merge a selection of Excellon objects into a new combo Excellon object."
+msgstr ""
+"Fassen Sie eine Auswahl von Excellon-Objekten in einem neuen Excellon-Objekt "
+"zusammen."
+
+#: appGUI/MainGUI.py:403
+msgid "Join Gerber(s) -> Gerber"
+msgstr "Gerber(s) -> Gerber zusammenfassen"
+
+#: appGUI/MainGUI.py:405
+msgid "Merge a selection of Gerber objects into a new combo Gerber object."
+msgstr ""
+"Mischen Sie eine Auswahl von Gerber-Objekten in ein neues Gerber-"
+"Kombinationsobjekt."
+
+#: appGUI/MainGUI.py:414 appGUI/MainGUI.py:728 appGUI/MainGUI.py:787
+#: appGUI/MainGUI.py:867 appGUI/MainGUI.py:986 appGUI/MainGUI.py:1203
+#: appGUI/MainGUI.py:1687 appGUI/MainGUI.py:2145 appGUI/MainGUI.py:2358
+#: appGUI/MainGUI.py:4911 appGUI/ObjectUI.py:1125
+#: appObjects/FlatCAMGeometry.py:558 appTools/ToolPanelize.py:325
+#: appTools/ToolPanelize.py:351 appTools/ToolPanelize.py:448
+#: appTools/ToolPanelize.py:477 appTools/ToolPanelize.py:538
+msgid "Copy"
+msgstr "Kopieren"
+
+#: appGUI/MainGUI.py:414 appGUI/MainGUI.py:4423
+msgid "Ctrl+C"
+msgstr "Kopieren"
+
+#: appGUI/MainGUI.py:420 appGUI/MainGUI.py:676 appGUI/MainGUI.py:731
+#: appGUI/MainGUI.py:790
+msgid "DEL"
+msgstr "DEL"
+
+#: appGUI/MainGUI.py:426 appGUI/MainGUI.py:995 appGUI/MainGUI.py:2154
+#: appGUI/MainGUI.py:4409
+msgid "Set Origin"
+msgstr "Nullpunkt festlegen"
+
+#: appGUI/MainGUI.py:426 appGUI/MainGUI.py:633 appGUI/MainGUI.py:4409
+#: appGUI/MainGUI.py:4676
+msgid "O"
+msgstr "O"
+
+#: appGUI/MainGUI.py:429 appGUI/MainGUI.py:997 appGUI/MainGUI.py:2156
+msgid "Move to Origin"
+msgstr "Zum Ursprung wechseln"
+
+#: appGUI/MainGUI.py:429
+msgid "Shift+O"
+msgstr "Shift+O"
+
+#: appGUI/MainGUI.py:433 appGUI/MainGUI.py:1000 appGUI/MainGUI.py:2158
+msgid "Jump to Location"
+msgstr "Zur Position springen\tJ"
+
+#: appGUI/MainGUI.py:433 appGUI/MainGUI.py:4405 appGUI/MainGUI.py:4671
+#: appGUI/MainGUI.py:4781 appGUI/MainGUI.py:4914
+msgid "J"
+msgstr "J"
+
+#: appGUI/MainGUI.py:436 appGUI/MainGUI.py:1002 appGUI/MainGUI.py:2160
+#: appGUI/MainGUI.py:4441
+msgid "Locate in Object"
+msgstr "Suchen Sie im Objekt"
+
+#: appGUI/MainGUI.py:436 appGUI/MainGUI.py:4441
+msgid "Shift+J"
+msgstr "Shift+J"
+
+#: appGUI/MainGUI.py:442 app_Main.py:4274
+msgid "Toggle Units"
+msgstr "Einheiten wechseln"
+
+#: appGUI/MainGUI.py:442 appGUI/MainGUI.py:716 appGUI/MainGUI.py:4410
+#: appGUI/MainGUI.py:4783
+msgid "Q"
+msgstr "Q"
+
+#: appGUI/MainGUI.py:445 appGUI/MainGUI.py:565 appGUI/MainGUI.py:4422
+#: appObjects/ObjectCollection.py:1128 appObjects/ObjectCollection.py:1175
+msgid "Select All"
+msgstr "Select All"
+
+#: appGUI/MainGUI.py:445 appGUI/MainGUI.py:4422
+msgid "Ctrl+A"
+msgstr "Strg+A"
+
+#: appGUI/MainGUI.py:451 appGUI/MainGUI.py:1260
+#: appGUI/preferences/PreferencesUIManager.py:899
+#: appGUI/preferences/PreferencesUIManager.py:992
+#: appGUI/preferences/PreferencesUIManager.py:1020
+#: appGUI/preferences/PreferencesUIManager.py:1125 app_Main.py:5520
+#: app_Main.py:5525 app_Main.py:5540
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: appGUI/MainGUI.py:451 appGUI/MainGUI.py:4443
+msgid "Shift+P"
+msgstr "Shift+P"
+
+#: appGUI/MainGUI.py:457 appObjects/FlatCAMObj.py:488
+#: appTools/ToolProperties.py:154
+msgid "Options"
+msgstr "Optionen"
+
+#: appGUI/MainGUI.py:460
+msgid "Rotate Selection"
+msgstr "Auswahl drehen"
+
+#: appGUI/MainGUI.py:460
+msgid "Shift+(R)"
+msgstr "Shift+(R)"
+
+#: appGUI/MainGUI.py:466 appGUI/MainGUI.py:4447
+msgid "Skew on X axis"
+msgstr "Neigung auf der X-Achse"
+
+#: appGUI/MainGUI.py:466 appGUI/MainGUI.py:4447 appGUI/MainGUI.py:4685
+msgid "Shift+X"
+msgstr "Shift+X"
+
+#: appGUI/MainGUI.py:469 appGUI/MainGUI.py:4448
+msgid "Skew on Y axis"
+msgstr "Neigung auf der Y-Achse"
+
+#: appGUI/MainGUI.py:469 appGUI/MainGUI.py:4448 appGUI/MainGUI.py:4686
+msgid "Shift+Y"
+msgstr "Shift+Y"
+
+#: appGUI/MainGUI.py:475
+msgid "Flip on X axis"
+msgstr "X-Achse kippen"
+
+#: appGUI/MainGUI.py:478
+msgid "Flip on Y axis"
+msgstr "Y-Achse kippen"
+
+#: appGUI/MainGUI.py:484
+msgid "View source"
+msgstr ""
+
+#: appGUI/MainGUI.py:484 appGUI/MainGUI.py:4468
+msgid "Alt+S"
+msgstr "Alt+S"
+
+#: appGUI/MainGUI.py:487 appGUI/MainGUI.py:4424
+msgid "Ctrl+D"
+msgstr "Strg+D"
+
+#: appGUI/MainGUI.py:494 appGUI/MainGUI.py:1589
+msgid "View"
+msgstr "Aussicht"
+
+#: appGUI/MainGUI.py:497 appGUI/MainGUI.py:4473
+msgid "Enable all"
+msgstr ""
+
+#: appGUI/MainGUI.py:497 appGUI/MainGUI.py:4473
+msgid "Alt+1"
+msgstr "Alt+1"
+
+#: appGUI/MainGUI.py:500 appGUI/MainGUI.py:4474
+msgid "Disable all"
+msgstr ""
+
+#: appGUI/MainGUI.py:500 appGUI/MainGUI.py:4474
+msgid "Alt+2"
+msgstr "Alt+2"
+
+#: appGUI/MainGUI.py:503
+msgid "Enable non-selected"
+msgstr ""
+
+#: appGUI/MainGUI.py:503 appGUI/MainGUI.py:4475
+msgid "Alt+3"
+msgstr "Alt+3"
+
+#: appGUI/MainGUI.py:506
+msgid "Disable non-selected"
+msgstr ""
+
+#: appGUI/MainGUI.py:506 appGUI/MainGUI.py:4476
+msgid "Alt+4"
+msgstr "Alt+4"
+
+#: appGUI/MainGUI.py:512 appGUI/MainGUI.py:1016 appGUI/MainGUI.py:1591
+#: appGUI/MainGUI.py:2174 appGUI/MainGUI.py:4415
+msgid "Zoom Fit"
+msgstr "Passend zoomen"
+
+#: appGUI/MainGUI.py:512 appGUI/MainGUI.py:4415
+msgid "V"
+msgstr "V"
+
+#: appGUI/MainGUI.py:515 appGUI/MainGUI.py:1012 appGUI/MainGUI.py:2170
+#: appGUI/MainGUI.py:4419
+msgid "Zoom In"
+msgstr "Hineinzoomen"
+
+#: appGUI/MainGUI.py:515 appGUI/MainGUI.py:4419
+msgid "="
+msgstr "="
+
+#: appGUI/MainGUI.py:518 appGUI/MainGUI.py:1014 appGUI/MainGUI.py:2172
+#: appGUI/MainGUI.py:4418
+msgid "Zoom Out"
+msgstr "Rauszoomen"
+
+#: appGUI/MainGUI.py:518 appGUI/MainGUI.py:4418
+msgid "-"
+msgstr "-"
+
+#: appGUI/MainGUI.py:524
+msgid "Redraw All"
+msgstr "Alles neu zeichnen"
+
+#: appGUI/MainGUI.py:524 appGUI/MainGUI.py:4490
+msgid "F5"
+msgstr "F5"
+
+#: appGUI/MainGUI.py:529 appGUI/MainGUI.py:4438
+msgid "Toggle Code Editor"
+msgstr "Code-Editor umschalten"
+
+#: appGUI/MainGUI.py:529 appGUI/MainGUI.py:4438
+msgid "Shift+E"
+msgstr "Shift+E"
+
+#: appGUI/MainGUI.py:533
+msgid "Toggle FullScreen"
+msgstr "Vollbild umschalten"
+
+#: appGUI/MainGUI.py:533 appGUI/MainGUI.py:4477
+msgid "Alt+F10"
+msgstr "Alt+F10"
+
+#: appGUI/MainGUI.py:536 appGUI/MainGUI.py:4433
+msgid "Toggle Plot Area"
+msgstr "Zeichenbereich umschalten0"
+
+#: appGUI/MainGUI.py:536 appGUI/MainGUI.py:4433
+msgid "Ctrl+F10"
+msgstr "Strg+F10"
+
+#: appGUI/MainGUI.py:539
+msgid "Toggle Project/Properties/Tool"
+msgstr "Projekt/Auswahl/Werkzeug umschalten"
+
+#: appGUI/MainGUI.py:539 appGUI/MainGUI.py:4493
+msgid "`"
+msgstr "`"
+
+#: appGUI/MainGUI.py:544
+msgid "Toggle Grid Snap"
+msgstr "Schaltet den Rasterfang ein"
+
+#: appGUI/MainGUI.py:544 appGUI/MainGUI.py:4404
+msgid "G"
+msgstr "G"
+
+#: appGUI/MainGUI.py:547 appGUI/MainGUI.py:4439
+msgid "Toggle Grid Lines"
+msgstr "Rasterlinien umschalten"
+
+#: appGUI/MainGUI.py:547 appGUI/MainGUI.py:4439
+msgid "Shift+G"
+msgstr "Shift+G"
+
+#: appGUI/MainGUI.py:550
+msgid "Toggle Axis"
+msgstr ""
+
+#: appGUI/MainGUI.py:550 appGUI/MainGUI.py:4436
+msgid "Shift+A"
+msgstr "Shift+A"
+
+#: appGUI/MainGUI.py:553
+msgid "Toggle Workspace"
+msgstr ""
+
+#: appGUI/MainGUI.py:553 appGUI/MainGUI.py:4446
+msgid "Shift+W"
+msgstr "Shift+W"
+
+#: appGUI/MainGUI.py:556 appGUI/MainGUI.py:4440
+msgid "Toggle HUD"
+msgstr "Umschalten HUD"
+
+#: appGUI/MainGUI.py:556 appGUI/MainGUI.py:4440
+msgid "Shift+H"
+msgstr "Shift+H"
+
+#: appGUI/MainGUI.py:561
+msgid "Objects"
+msgstr "Objekte"
+
+#: appGUI/MainGUI.py:568 appObjects/ObjectCollection.py:1132
+#: appObjects/ObjectCollection.py:1179
+msgid "Deselect All"
+msgstr "Alle abwählen"
+
+#: appGUI/MainGUI.py:577 appGUI/MainGUI.py:1024 appGUI/MainGUI.py:1266
+#: appGUI/MainGUI.py:2180
+msgid "Command Line"
+msgstr "Befehlszeile"
+
+#: appGUI/MainGUI.py:577 appGUI/MainGUI.py:663 appGUI/MainGUI.py:773
+#: appGUI/MainGUI.py:4413 appGUI/MainGUI.py:4679 appGUI/MainGUI.py:4919
+msgid "S"
+msgstr "S"
+
+#: appGUI/MainGUI.py:582
+msgid "Help"
+msgstr "Hilfe"
+
+#: appGUI/MainGUI.py:585
+msgid "Online Help"
+msgstr "Onlinehilfe"
+
+#: appGUI/MainGUI.py:585 appGUI/MainGUI.py:4488
+msgid "F1"
+msgstr "F1"
+
+#: appGUI/MainGUI.py:592 app_Main.py:3263 app_Main.py:3272
+msgid "Bookmarks Manager"
+msgstr "Lesezeichen verwalten"
+
+#: appGUI/MainGUI.py:597
+msgid "Report a bug"
+msgstr "Einen Fehler melden"
+
+#: appGUI/MainGUI.py:601
+msgid "Excellon Specification"
+msgstr "Excellon-Spezifikation"
+
+#: appGUI/MainGUI.py:604
+msgid "Gerber Specification"
+msgstr "Gerber-Spezifikation"
+
+#: appGUI/MainGUI.py:610
+msgid "Shortcuts List"
+msgstr "Tastenkürzel Liste"
+
+#: appGUI/MainGUI.py:610 appGUI/MainGUI.py:4398
+msgid "F3"
+msgstr "F3"
+
+#: appGUI/MainGUI.py:613
+msgid "YouTube Channel"
+msgstr "Youtube Kanal"
+
+#: appGUI/MainGUI.py:613 appGUI/MainGUI.py:4489
+msgid "F4"
+msgstr "F4"
+
+#: appGUI/MainGUI.py:619 app_Main.py:3041
+msgid "How To"
+msgstr ""
+
+#: appGUI/MainGUI.py:623 app_Main.py:2713
+msgid "About"
+msgstr "Über"
+
+#: appGUI/MainGUI.py:633 appGUI/MainGUI.py:1123 appGUI/MainGUI.py:2279
+msgid "Add Circle"
+msgstr "Kreis hinzufügen"
+
+#: appGUI/MainGUI.py:637 appGUI/MainGUI.py:1125 appGUI/MainGUI.py:2281
+msgid "Add Arc"
+msgstr "Bogen hinzufügen"
+
+#: appGUI/MainGUI.py:637 appGUI/MainGUI.py:708 appGUI/MainGUI.py:750
+#: appGUI/MainGUI.py:4665 appGUI/MainGUI.py:4778 appGUI/MainGUI.py:4909
+msgid "A"
+msgstr "A"
+
+#: appGUI/MainGUI.py:641 appGUI/MainGUI.py:1127 appGUI/MainGUI.py:2283
+msgid "Add Rectangle"
+msgstr "Rechteck hinzufügen"
+
+# I think this is FeedRate XY
+#: appGUI/MainGUI.py:641 appGUI/MainGUI.py:724 appGUI/MainGUI.py:4412
+#: appGUI/MainGUI.py:4678 appGUI/MainGUI.py:4784 appGUI/MainGUI.py:4918
+msgid "R"
+msgstr "R"
+
+#: appGUI/MainGUI.py:645 appGUI/MainGUI.py:1133 appGUI/MainGUI.py:2289
+msgid "Add Polygon"
+msgstr "Polygon hinzufügen"
+
+#: appGUI/MainGUI.py:649 appGUI/MainGUI.py:1131 appGUI/MainGUI.py:2287
+msgid "Add Path"
+msgstr "Pfad hinzufügen"
+
+#: appGUI/MainGUI.py:649 appGUI/MainGUI.py:747 appGUI/MainGUI.py:4411
+#: appGUI/MainGUI.py:4677 appGUI/MainGUI.py:4917 appGUI/ObjectUI.py:2009
+#: appGUI/ObjectUI.py:2020
+msgid "P"
+msgstr "P"
+
+#: appGUI/MainGUI.py:653 appGUI/MainGUI.py:1136 appGUI/MainGUI.py:2292
+msgid "Add Text"
+msgstr "Text hinzufügen"
+
+#: appGUI/MainGUI.py:653 appGUI/MainGUI.py:753 appGUI/MainGUI.py:4414
+#: appGUI/MainGUI.py:4680 appGUI/MainGUI.py:4785 appGUI/MainGUI.py:4920
+#: appGUI/MainGUI.py:4921
+msgid "T"
+msgstr "T"
+
+#: appGUI/MainGUI.py:657 appGUI/MainGUI.py:1146 appGUI/MainGUI.py:2302
+msgid "Polygon Union"
+msgstr "Polygon-Vereinigung"
+
+#: appGUI/MainGUI.py:657 appGUI/MainGUI.py:4681
+msgid "U"
+msgstr "U"
+
+#: appGUI/MainGUI.py:660 appGUI/MainGUI.py:1151 appGUI/MainGUI.py:2307
+msgid "Polygon Intersection"
+msgstr "Polygonschnitt"
+
+#: appGUI/MainGUI.py:663 appGUI/MainGUI.py:1153 appGUI/MainGUI.py:2309
+msgid "Polygon Subtraction"
+msgstr "Polygon-Subtraktion"
+
+#: appGUI/MainGUI.py:668 appGUI/MainGUI.py:1157 appGUI/MainGUI.py:2313
+msgid "Cut Path"
+msgstr "Pfad ausschneiden"
+
+#: appGUI/MainGUI.py:673
+msgid "Copy Geom"
+msgstr "Geometrie kopieren"
+
+#: appGUI/MainGUI.py:673 appGUI/MainGUI.py:728 appGUI/MainGUI.py:787
+#: appGUI/MainGUI.py:4667 appGUI/MainGUI.py:4779 appGUI/MainGUI.py:4911
+msgid "C"
+msgstr "C"
+
+#: appGUI/MainGUI.py:676 appGUI/MainGUI.py:2317 appGUI/MainGUI.py:4696
+msgid "Delete Shape"
+msgstr "Form löschen"
+
+#: appGUI/MainGUI.py:681 appGUI/MainGUI.py:795 appGUI/MainGUI.py:1210
+#: appGUI/MainGUI.py:1636 appGUI/MainGUI.py:1698 appGUI/MainGUI.py:2365
+#: appGUI/MainGUI.py:4915 appTools/ToolMove.py:27
+msgid "Move"
+msgstr "Bewegung"
+
+#: appGUI/MainGUI.py:681 appGUI/MainGUI.py:737 appGUI/MainGUI.py:795
+#: appGUI/MainGUI.py:4407 appGUI/MainGUI.py:4673 appGUI/MainGUI.py:4674
+#: appGUI/MainGUI.py:4782 appGUI/MainGUI.py:4915
+msgid "M"
+msgstr "M"
+
+#: appGUI/MainGUI.py:688 appGUI/MainGUI.py:4670
+msgid "I"
+msgstr "I"
+
+#: appGUI/MainGUI.py:692 appGUI/MainGUI.py:782 appGUI/MainGUI.py:4467
+#: appGUI/MainGUI.py:4687 appGUI/MainGUI.py:4930
+msgid "Alt+R"
+msgstr "Alt+R"
+
+#: appGUI/MainGUI.py:697 appGUI/MainGUI.py:4672
+msgid "Toggle Corner Snap"
+msgstr "Eckfang umschalten"
+
+#: appGUI/MainGUI.py:697 appGUI/MainGUI.py:4672
+msgid "K"
+msgstr "K"
+
+#: appGUI/MainGUI.py:703
+msgid ">Excellon Editor<"
+msgstr ">Excellon Editor<"
+
+#: appGUI/MainGUI.py:711 appGUI/MainGUI.py:1674 appGUI/MainGUI.py:4780
+msgid "Add Drill"
+msgstr "Bohrer hinzufügen"
+
+#: appGUI/MainGUI.py:716 appGUI/MainGUI.py:1103 appGUI/MainGUI.py:1681
+#: appGUI/MainGUI.py:2261 appGUI/MainGUI.py:4783
+msgid "Add Slot Array"
+msgstr "Steckplatz-Array hinzufügen"
+
+#: appGUI/MainGUI.py:719 appGUI/MainGUI.py:1101 appGUI/MainGUI.py:1679
+#: appGUI/MainGUI.py:2259 appGUI/MainGUI.py:4786
+msgid "Add Slot"
+msgstr "Steckplatz hinzufügen"
+
+#: appGUI/MainGUI.py:719 appGUI/MainGUI.py:4786
+msgid "W"
+msgstr "W"
+
+#: appGUI/MainGUI.py:724
+msgid "Resize Drill(S)"
+msgstr "Bohrer verkleinern"
+
+#: appGUI/MainGUI.py:737 appGUI/MainGUI.py:4782
+msgid "Move Drill(s)"
+msgstr "Bohrer verschieben"
+
+#: appGUI/MainGUI.py:742
+msgid ">Gerber Editor<"
+msgstr ">Gerber-Editor<"
+
+#: appGUI/MainGUI.py:747 appGUI/MainGUI.py:1175 appGUI/MainGUI.py:2331
+#: appGUI/MainGUI.py:4917
+msgid "Add Pad"
+msgstr "Pad hinzufügen"
+
+#: appGUI/MainGUI.py:753 appGUI/MainGUI.py:1179 appGUI/MainGUI.py:2335
+#: appGUI/MainGUI.py:4920
+msgid "Add Track"
+msgstr "Track hinzufügen"
+
+#: appGUI/MainGUI.py:756 appGUI/MainGUI.py:1181 appGUI/MainGUI.py:2337
+#: appGUI/MainGUI.py:4916
+msgid "Add Region"
+msgstr "Region hinzufügen"
+
+#: appGUI/MainGUI.py:761 appGUI/MainGUI.py:1183 appGUI/MainGUI.py:1651
+#: appGUI/MainGUI.py:2339
+msgid "Poligonize"
+msgstr "Polygonisieren"
+
+#: appGUI/MainGUI.py:761 appGUI/MainGUI.py:4463 appGUI/MainGUI.py:4929
+msgid "Alt+N"
+msgstr "Alt+N"
+
+#: appGUI/MainGUI.py:764 appGUI/MainGUI.py:4913
+msgid "Add SemiDisc"
+msgstr "Halbschibe hinzufügen"
+
+#: appGUI/MainGUI.py:767 appGUI/MainGUI.py:4912
+msgid "Add Disc"
+msgstr "Fügen Sie eine Scheiben hinzu"
+
+#: appGUI/MainGUI.py:776 appGUI/MainGUI.py:1196 appGUI/MainGUI.py:1663
+#: appGUI/MainGUI.py:2352
+msgid "Mark Area"
+msgstr "Bereich markieren"
+
+#: appGUI/MainGUI.py:776 appGUI/MainGUI.py:4451 appGUI/MainGUI.py:4928
+msgid "Alt+A"
+msgstr "Alt+A"
+
+#: appGUI/MainGUI.py:779 appGUI/MainGUI.py:1142 appGUI/MainGUI.py:1199
+#: appGUI/MainGUI.py:1620 appGUI/MainGUI.py:1665 appGUI/MainGUI.py:2298
+#: appGUI/MainGUI.py:2354
+msgid "Eraser"
+msgstr "Radiergummi"
+
+#: appGUI/MainGUI.py:782 app_Main.py:5890 app_Main.py:5941 app_Main.py:5978
+msgid "Transform"
+msgstr "Verwandeln"
+
+#: appGUI/MainGUI.py:812
+msgid "Enable Plot"
+msgstr "Diagramm aktivieren"
+
+#: appGUI/MainGUI.py:814
+msgid "Disable Plot"
+msgstr "Diagramm deaktivieren"
+
+#: appGUI/MainGUI.py:818
+msgid "Set Color"
+msgstr "Farbsatz"
+
+#: appGUI/MainGUI.py:821 app_Main.py:7736
+msgid "Red"
+msgstr "Rote"
+
+#: appGUI/MainGUI.py:824 app_Main.py:7738
+msgid "Blue"
+msgstr "Blau"
+
+#: appGUI/MainGUI.py:827 app_Main.py:7741
+msgid "Yellow"
+msgstr "Gelb"
+
+#: appGUI/MainGUI.py:830 app_Main.py:7743
+msgid "Green"
+msgstr "Grün"
+
+#: appGUI/MainGUI.py:833 app_Main.py:7745
+msgid "Purple"
+msgstr "Lila"
+
+#: appGUI/MainGUI.py:836 app_Main.py:7747
+msgid "Brown"
+msgstr "Braun"
+
+#: appGUI/MainGUI.py:839 app_Main.py:7749 app_Main.py:7808
+msgid "White"
+msgstr "Weiß"
+
+#: appGUI/MainGUI.py:842 app_Main.py:7751
+msgid "Black"
+msgstr "Schwarz"
+
+#: appGUI/MainGUI.py:847 app_Main.py:7754
+msgid "Custom"
+msgstr "Benutzerdefiniert"
+
+#: appGUI/MainGUI.py:852 app_Main.py:7788
+msgid "Opacity"
+msgstr "Opazität"
+
+#: appGUI/MainGUI.py:855 app_Main.py:7764
+msgid "Default"
+msgstr "Standard"
+
+#: appGUI/MainGUI.py:860
+msgid "Generate CNC"
+msgstr "CNC generieren"
+
+#: appGUI/MainGUI.py:862
+msgid "View Source"
+msgstr "Quelltext anzeigen"
+
+#: appGUI/MainGUI.py:875 appGUI/MainGUI.py:1348 appGUI/MainGUI.py:1700
+#: appTools/ToolProperties.py:31
+msgid "Properties"
+msgstr "Eigenschaften"
+
+#: appGUI/MainGUI.py:904
+msgid "File Toolbar"
+msgstr "Dateisymbolleiste"
+
+#: appGUI/MainGUI.py:908
+msgid "Edit Toolbar"
+msgstr "Symbolleiste bearbeiten"
+
+#: appGUI/MainGUI.py:912
+msgid "View Toolbar"
+msgstr "Symbolleiste anzeigen"
+
+#: appGUI/MainGUI.py:916
+msgid "Shell Toolbar"
+msgstr "Shell-Symbolleiste"
+
+#: appGUI/MainGUI.py:920
+msgid "Tools Toolbar"
+msgstr "Werkzeugleiste"
+
+#: appGUI/MainGUI.py:924
+msgid "Excellon Editor Toolbar"
+msgstr "Excellon Editor-Symbolleiste"
+
+#: appGUI/MainGUI.py:930
+msgid "Geometry Editor Toolbar"
+msgstr "Geometrie Editor-Symbolleiste"
+
+#: appGUI/MainGUI.py:934
+msgid "Gerber Editor Toolbar"
+msgstr "Gerber Editor-Symbolleiste"
+
+#: appGUI/MainGUI.py:939 appGUI/MainGUI.py:1999
+msgid "Delta Coordinates Toolbar"
+msgstr ""
+
+#: appGUI/MainGUI.py:942 appGUI/MainGUI.py:2007
+msgid "Coordinates Toolbar"
+msgstr ""
+
+#: appGUI/MainGUI.py:945 appGUI/MainGUI.py:2015
+msgid "Grid Toolbar"
+msgstr "Raster-Symbolleiste"
+
+#: appGUI/MainGUI.py:954 appGUI/MainGUI.py:2023
+msgid "Status Toolbar"
+msgstr ""
+
+#: appGUI/MainGUI.py:971 appGUI/MainGUI.py:2129
+msgid "Open project"
+msgstr "Projekt öffnen"
+
+#: appGUI/MainGUI.py:973 appGUI/MainGUI.py:2131
+msgid "Save project"
+msgstr "Projekt speichern"
+
+#: appGUI/MainGUI.py:979 appGUI/MainGUI.py:2137
+msgid "Editor"
+msgstr "Editor"
+
+#: appGUI/MainGUI.py:981 appGUI/MainGUI.py:2140
+msgid "Save Object and close the Editor"
+msgstr "Speichern Sie das Objekt und schließen Sie den Editor"
+
+#: appGUI/MainGUI.py:991 appGUI/MainGUI.py:2150 appGUI/MainGUI.py:4427
+#: appGUI/MainGUI.py:4690 appTools/ToolDistance.py:100
+#: appTools/ToolDistance.py:544
+msgid "Distance Tool"
+msgstr "Entfernungswerkzeug"
+
+#: appGUI/MainGUI.py:993 appGUI/MainGUI.py:2152
+msgid "Distance Min Tool"
+msgstr "Werkzeug für Mindestabstand"
+
+#: appGUI/MainGUI.py:1008 appGUI/MainGUI.py:1595 appGUI/MainGUI.py:2166
+msgid "Replot"
+msgstr "Replotieren"
+
+#: appGUI/MainGUI.py:1010 appGUI/MainGUI.py:2168
+msgid "Clear plot"
+msgstr ""
+
+#: appGUI/MainGUI.py:1026 appGUI/MainGUI.py:2182
+msgid "New Script ..."
+msgstr "Neues Skript ..."
+
+#: appGUI/MainGUI.py:1028 appGUI/MainGUI.py:2184
+msgid "Open Script ..."
+msgstr "Skript öffnen ..."
+
+#: appGUI/MainGUI.py:1036 appGUI/MainGUI.py:2192
+msgid "2Sided Tool"
+msgstr "2Seitiges Werkzeug"
+
+#: appGUI/MainGUI.py:1038 appGUI/MainGUI.py:2194 appGUI/MainGUI.py:4451
+msgid "Align Objects Tool"
+msgstr "Werkzeug \"Objekte ausrichten\""
+
+#: appGUI/MainGUI.py:1040 appGUI/MainGUI.py:2196 appGUI/MainGUI.py:4454
+#: appTools/ToolExtractDrills.py:98
+msgid "Extract Drills Tool"
+msgstr "Bohrer Extrahieren Werkzeug"
+
+#: appGUI/MainGUI.py:1043 appGUI/MainGUI.py:2199 appGUI/ObjectUI.py:387
+#: appTools/ToolCutOut.py:156 appTools/ToolCutOut.py:2056
+msgid "Cutout Tool"
+msgstr "Ausschnittwerkzeug"
+
+#: appGUI/MainGUI.py:1045 appGUI/MainGUI.py:2201 appGUI/ObjectUI.py:372
+#: appGUI/ObjectUI.py:1799 appTools/ToolNCC.py:202
+msgid "NCC Tool"
+msgstr "NCC Werkzeug"
+
+#: appGUI/MainGUI.py:1049 appGUI/MainGUI.py:2205 appGUI/MainGUI.py:4458
+#: appTools/ToolIsolation.py:191 appTools/ToolIsolation.py:2938
+msgid "Isolation Tool"
+msgstr "Isolationswerkzeug"
+
+#: appGUI/MainGUI.py:1051 appGUI/MainGUI.py:2207 appGUI/ObjectUI.py:721
+#: appTools/ToolDrilling.py:245 appTools/ToolDrilling.py:1979
+#: appTools/ToolMilling.py:169
+msgid "Drilling Tool"
+msgstr ""
+
+#: appGUI/MainGUI.py:1055 appGUI/MainGUI.py:2211
+msgid "Panel Tool"
+msgstr "Platte Werkzeug"
+
+#: appGUI/MainGUI.py:1057 appGUI/MainGUI.py:2213 appTools/ToolFilm.py:110
+msgid "Film Tool"
+msgstr "Filmwerkzeug"
+
+#: appGUI/MainGUI.py:1059 appGUI/MainGUI.py:2215
+#: appTools/ToolSolderPaste.py:116
+msgid "SolderPaste Tool"
+msgstr "Lötpaste-Werkzeug"
+
+#: appGUI/MainGUI.py:1061 appGUI/MainGUI.py:2217 appGUI/MainGUI.py:4470
+#: appTools/ToolSub.py:611
+msgid "Subtract Tool"
+msgstr "Subtraktionswerkzeug"
+
+#: appGUI/MainGUI.py:1063 appGUI/MainGUI.py:2219 appTools/ToolRulesCheck.py:115
+msgid "Rules Tool"
+msgstr "Regelwerkzeug"
+
+#: appGUI/MainGUI.py:1065 appGUI/MainGUI.py:2221 appGUI/MainGUI.py:4464
+#: appTools/ToolOptimal.py:103 appTools/ToolOptimal.py:390
+msgid "Optimal Tool"
+msgstr "Optimierungswerkzeug"
+
+#: appGUI/MainGUI.py:1070 appGUI/MainGUI.py:2226 appGUI/MainGUI.py:4452
+msgid "Calculators Tool"
+msgstr "Rechnerwerkzeug"
+
+#: appGUI/MainGUI.py:1074 appGUI/MainGUI.py:2230 appGUI/MainGUI.py:4466
+#: appTools/ToolQRCode.py:114 appTools/ToolQRCode.py:629
+msgid "QRCode Tool"
+msgstr "QRCode Werkzeug"
+
+# Really don't know
+#: appGUI/MainGUI.py:1076 appGUI/MainGUI.py:2232 appGUI/MainGUI.py:4459
+#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1133
+msgid "Copper Thieving Tool"
+msgstr "Copper Thieving Werkzeug"
+
+# Really don't know
+#: appGUI/MainGUI.py:1079 appGUI/MainGUI.py:2235 appGUI/MainGUI.py:4455
+#: appTools/ToolFiducials.py:114 appTools/ToolFiducials.py:650
+msgid "Fiducials Tool"
+msgstr "Passermarken-Tool"
+
+#: appGUI/MainGUI.py:1081 appGUI/MainGUI.py:2237
+#: appTools/ToolCalibration.py:115 appTools/ToolCalibration.py:735
+msgid "Calibration Tool"
+msgstr "Kalibierungswerkzeug"
+
+#: appGUI/MainGUI.py:1083 appGUI/MainGUI.py:2239 appGUI/MainGUI.py:4457
+msgid "Punch Gerber Tool"
+msgstr "Stanzen Sie das Gerber-Werkzeug"
+
+#: appGUI/MainGUI.py:1085 appGUI/MainGUI.py:2241 appGUI/MainGUI.py:4456
+#: appTools/ToolInvertGerber.py:175
+msgid "Invert Gerber Tool"
+msgstr "Invertieren Sie das Gerber-Werkzeug"
+
+#: appGUI/MainGUI.py:1087 appGUI/MainGUI.py:2243 appGUI/MainGUI.py:4462
+#: appTools/ToolCorners.py:298
+msgid "Corner Markers Tool"
+msgstr "Eckmarkierungswerkzeug"
+
+#: appGUI/MainGUI.py:1089 appGUI/MainGUI.py:2245
+#: appTools/ToolEtchCompensation.py:80 appTools/ToolEtchCompensation.py:251
+msgid "Etch Compensation Tool"
+msgstr "Ätzkompensationswerkzeug"
+
+#: appGUI/MainGUI.py:1095 appGUI/MainGUI.py:1121 appGUI/MainGUI.py:1173
+#: appGUI/MainGUI.py:2251 appGUI/MainGUI.py:2329
+msgid "Select"
+msgstr "Wählen"
+
+#: appGUI/MainGUI.py:1097 appGUI/MainGUI.py:2253
+msgid "Add Drill Hole"
+msgstr "Bohrloch hinzufügen"
+
+#: appGUI/MainGUI.py:1099 appGUI/MainGUI.py:2255
+msgid "Add Drill Hole Array"
+msgstr "Bohrlochfeld hinzufügen"
+
+#: appGUI/MainGUI.py:1105 appGUI/MainGUI.py:1684 appGUI/MainGUI.py:2257
+msgid "Resize Drill"
+msgstr "Bohrergröße ändern"
+
+#: appGUI/MainGUI.py:1109 appGUI/MainGUI.py:2265
+msgid "Copy Drill"
+msgstr "Bohrer kopieren"
+
+#: appGUI/MainGUI.py:1111 appGUI/MainGUI.py:2267
+msgid "Delete Drill"
+msgstr "Bohrer löschen"
+
+#: appGUI/MainGUI.py:1115 appGUI/MainGUI.py:2271
+msgid "Move Drill"
+msgstr "Bohrer bewegen"
+
+#: appGUI/MainGUI.py:1138 appGUI/MainGUI.py:2294
+msgid "Add Buffer"
+msgstr "Puffer hinzufügen"
+
+#: appGUI/MainGUI.py:1140 appGUI/MainGUI.py:2296
+msgid "Paint Shape"
+msgstr "Malen Form"
+
+#: appGUI/MainGUI.py:1148 appGUI/MainGUI.py:2304
+msgid "Polygon Explode"
+msgstr "Polygon explodieren"
+
+#: appGUI/MainGUI.py:1159
+msgid "Copy Shape(s)"
+msgstr "Form kopieren"
+
+#: appGUI/MainGUI.py:1162
+msgid "Delete Shape '-'"
+msgstr "Form löschen"
+
+#: appGUI/MainGUI.py:1164 appGUI/MainGUI.py:1207 appGUI/MainGUI.py:1632
+#: appGUI/MainGUI.py:1669 appGUI/MainGUI.py:2319 appGUI/MainGUI.py:2362
+#: appGUI/ObjectUI.py:109 appGUI/ObjectUI.py:152
+msgid "Transformations"
+msgstr "Transformationen"
+
+#: appGUI/MainGUI.py:1167
+msgid "Move Objects "
+msgstr "Objekte verschieben "
+
+#: appGUI/MainGUI.py:1186 appGUI/MainGUI.py:1653 appGUI/MainGUI.py:2342
+msgid "SemiDisc"
+msgstr "Halbscheibe"
+
+#: appGUI/MainGUI.py:1188 appGUI/MainGUI.py:1655 appGUI/MainGUI.py:2344
+msgid "Disc"
+msgstr "Scheibe"
+
+#: appGUI/MainGUI.py:1218
+msgid "Snap to grid"
+msgstr "Am Raster ausrichten"
+
+#: appGUI/MainGUI.py:1221
+msgid "Grid X snapping distance"
+msgstr "Raster X Fangdistanz"
+
+#: appGUI/MainGUI.py:1226
+msgid ""
+"When active, value on Grid_X\n"
+"is copied to the Grid_Y value."
+msgstr ""
+"Wenn aktiv, Wert auf Grid_X\n"
+"wird in den Wert von Grid_Y kopiert."
+
+#: appGUI/MainGUI.py:1233
+msgid "Grid Y snapping distance"
+msgstr "Raster Y Fangdistanz"
+
+#: appGUI/MainGUI.py:1240
+msgid "Snap to corner"
+msgstr "In der Ecke ausrichten"
+
+#: appGUI/MainGUI.py:1244 appGUI/preferences/general/GeneralAPPSetGroupUI.py:78
+msgid "Max. magnet distance"
+msgstr "Max. Magnetabstand"
+
+#: appGUI/MainGUI.py:1254
+msgid "Toggle the display of axis on canvas"
+msgstr "Schalten Sie die Anzeige der Achse auf der Leinwand um"
+
+#: appGUI/MainGUI.py:1272
+msgid "HUD (Heads up display)"
+msgstr "HUD (Heads-up-Display)"
+
+#: appGUI/MainGUI.py:1278 appGUI/preferences/general/GeneralAPPSetGroupUI.py:97
+msgid ""
+"Draw a delimiting rectangle on canvas.\n"
+"The purpose is to illustrate the limits for our work."
+msgstr ""
+"Zeichnen Sie ein begrenzendes Rechteck auf die Leinwand.\n"
+"Ziel ist es, die Grenzen unserer Arbeit aufzuzeigen."
+
+#: appGUI/MainGUI.py:1291
+msgid ""
+"Relative measurement.\n"
+"Reference is last click position"
+msgstr ""
+"Relative Messung\n"
+"Referenz ist Position des letzten Klicks"
+
+#: appGUI/MainGUI.py:1299
+msgid ""
+"Absolute measurement.\n"
+"Reference is (X=0, Y= 0) position"
+msgstr ""
+"Absolute Messung.\n"
+"Referenz ist (X = 0, Y = 0)"
+
+#: appGUI/MainGUI.py:1306
+msgid "TCL Shell"
+msgstr "TCL Shell"
+
+#: appGUI/MainGUI.py:1333 appGUI/MainGUI.py:1582 app_Main.py:9031
+msgid "Project"
+msgstr "Projekt"
+
+#: appGUI/MainGUI.py:1376 appGUI/MainGUI.py:1384 appGUI/MainGUI.py:3918
+#: appGUI/MainGUI.py:3924 app_Main.py:2494 app_Main.py:8839
+msgid "Plot Area"
+msgstr "Grundstücksfläche"
+
+#: appGUI/MainGUI.py:1426 appTools/ToolCopperThieving.py:1165
+#: appTools/ToolCorners.py:318 appTools/ToolEtchCompensation.py:291
+#: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:875
+#: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:2986
+#: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:721
+#: appTools/ToolQRCode.py:660 appTools/ToolRulesCheck.py:1165
+#: appTools/ToolSolderPaste.py:1143 appTools/ToolSub.py:643
+msgid "GERBER"
+msgstr "GERBER"
+
+#: appGUI/MainGUI.py:1436 appTools/ToolDrilling.py:2032
+#: appTools/ToolMilling.py:1637 appTools/ToolRulesCheck.py:1303
+msgid "EXCELLON"
+msgstr "EXCELLON"
+
+#: appGUI/MainGUI.py:1446 appTools/ToolSub.py:695
+msgid "GEOMETRY"
+msgstr "GEOMETRY"
+
+#: appGUI/MainGUI.py:1456
+msgid "CNC-JOB"
+msgstr "CNC-Auftrag"
+
+#: appGUI/MainGUI.py:1465 appGUI/ObjectUI.py:353 appGUI/ObjectUI.py:717
+#: appGUI/ObjectUI.py:1760
+msgid "TOOLS"
+msgstr "WERKZEUGE"
+
+#: appGUI/MainGUI.py:1474
+msgid "TOOLS 2"
+msgstr "WERKZEUGE 2"
+
+#: appGUI/MainGUI.py:1484
+msgid "UTILITIES"
+msgstr "NUTZEN"
+
+#: appGUI/MainGUI.py:1500
+#: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:201
+msgid "Restore Defaults"
+msgstr "Standard wiederherstellen"
+
+#: appGUI/MainGUI.py:1504
+msgid ""
+"Restore the entire set of default values\n"
+"to the initial values loaded after first launch."
+msgstr ""
+"Stellen Sie den gesamten Satz von Standardwerten wieder her\n"
+"auf die nach dem ersten Start geladenen Anfangswerte."
+
+#: appGUI/MainGUI.py:1509
+msgid "Open Pref Folder"
+msgstr "Öffnen Sie den Einstellungsordner"
+
+#: appGUI/MainGUI.py:1513
+msgid "Open the folder where FlatCAM save the preferences files."
+msgstr ""
+"Öffnen Sie den Ordner, in dem FlatCAM die Voreinstellungsdateien speichert."
+
+#: appGUI/MainGUI.py:1517 appGUI/MainGUI.py:2095
+msgid "Clear GUI Settings"
+msgstr "Löschen Sie die GUI-Einstellungen"
+
+#: appGUI/MainGUI.py:1522
+msgid ""
+"Clear the GUI settings for FlatCAM,\n"
+"such as: layout, gui state, style, hdpi support etc."
+msgstr ""
+"Löschen Sie die GUI-Einstellungen für FlatCAM.\n"
+"wie zum Beispiel: Layout, GUI-Status, Stil, HDPI-Unterstützung usw."
+
+#: appGUI/MainGUI.py:1537
+msgid "Apply the current preferences without saving to a file."
+msgstr "Anwenden ohne zu speichern."
+
+#: appGUI/MainGUI.py:1545
+msgid ""
+"Save the current settings in the 'current_defaults' file\n"
+"which is the file storing the working default preferences."
+msgstr ""
+"Speichern Sie die aktuellen Einstellungen in der Datei 'current_defaults'\n"
+"Dies ist die Datei, in der die Arbeitseinstellungen gespeichert sind."
+
+#: appGUI/MainGUI.py:1553
+msgid "Will not save the changes and will close the preferences window."
+msgstr "Einstellungen werden geschlossen ohne die Änderungen zu speichern."
+
+#: appGUI/MainGUI.py:1567
+msgid "Toggle Visibility"
+msgstr "Sichtbarkeit umschalten"
+
+#: appGUI/MainGUI.py:1586
 msgid "Grids"
 msgstr "Raster"
 
-#: appGUI/MainGUI.py:1484
+#: appGUI/MainGUI.py:1593
 msgid "Clear Plot"
 msgstr "Plot klar löschen"
 
-#: appGUI/MainGUI.py:1490
+#: appGUI/MainGUI.py:1599
 msgid "Geo Editor"
 msgstr "Geo-Editor"
 
-#: appGUI/MainGUI.py:1492
+#: appGUI/MainGUI.py:1601
 msgid "Path"
 msgstr "Pfad"
 
-#: appGUI/MainGUI.py:1494
+#: appGUI/MainGUI.py:1603
 msgid "Rectangle"
 msgstr "Rechteck"
 
-#: appGUI/MainGUI.py:1497
+#: appGUI/MainGUI.py:1606
 msgid "Circle"
 msgstr "Kreis"
 
-#: appGUI/MainGUI.py:1501
+#: appGUI/MainGUI.py:1610
 msgid "Arc"
 msgstr "Bogen"
 
-#: appGUI/MainGUI.py:1515
+#: appGUI/MainGUI.py:1624
 msgid "Union"
 msgstr "Vereinigung"
 
-#: appGUI/MainGUI.py:1517
+#: appGUI/MainGUI.py:1626
 msgid "Intersection"
 msgstr "Überschneidung"
 
-#: appGUI/MainGUI.py:1519
+#: appGUI/MainGUI.py:1628
 msgid "Subtraction"
 msgstr "Subtraktion"
 
-#: appGUI/MainGUI.py:1521 appGUI/ObjectUI.py:1866
+#: appGUI/MainGUI.py:1630 appGUI/ObjectUI.py:1866
 #: appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:63
 msgid "Cut"
 msgstr "Schnitt"
 
-#: appGUI/MainGUI.py:1532
+#: appGUI/MainGUI.py:1641
 msgid "Pad"
 msgstr "Pad"
 
-#: appGUI/MainGUI.py:1534
+#: appGUI/MainGUI.py:1643
 msgid "Pad Array"
 msgstr "Pad-Array"
 
-#: appGUI/MainGUI.py:1538
+#: appGUI/MainGUI.py:1647
 msgid "Track"
 msgstr "Track"
 
-#: appGUI/MainGUI.py:1540
+#: appGUI/MainGUI.py:1649
 msgid "Region"
 msgstr "Region"
 
-#: appGUI/MainGUI.py:1563
+#: appGUI/MainGUI.py:1672
 msgid "Exc Editor"
 msgstr "Exc-Editor"
 
-#: appGUI/MainGUI.py:1565 appGUI/MainGUI.py:4592
-msgid "Add Drill"
-msgstr "Bohrer hinzufügen"
-
-#: appGUI/MainGUI.py:1584 app_Main.py:2305
-msgid "Close Editor"
-msgstr "Editor schließen"
-
-#: appGUI/MainGUI.py:1615
+#: appGUI/MainGUI.py:1724
 msgid "Application units"
 msgstr "Anwendungseinheiten"
 
-#: appGUI/MainGUI.py:1710
+#: appGUI/MainGUI.py:1819
 msgid "Lock Toolbars"
 msgstr "Symbolleisten sperren"
 
-#: appGUI/MainGUI.py:1867
+#: appGUI/MainGUI.py:1976
 msgid "Detachable Tabs"
 msgstr "Abnehmbare Laschen"
 
-#: appGUI/MainGUI.py:1967
+#: appGUI/MainGUI.py:2076
 msgid "FlatCAM Preferences Folder opened."
 msgstr "FlatCAM-Einstellungsordner geöffnet."
 
-#: appGUI/MainGUI.py:1985
+#: appGUI/MainGUI.py:2094
 msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "Möchten Sie die GUI-Einstellungen wirklich löschen?\n"
 
-#: appGUI/MainGUI.py:1990 appGUI/preferences/PreferencesUIManager.py:931
+#: appGUI/MainGUI.py:2099 appGUI/preferences/PreferencesUIManager.py:931
 #: appGUI/preferences/PreferencesUIManager.py:1177 appTranslation.py:111
 #: appTranslation.py:213 app_Main.py:2309 app_Main.py:3325 app_Main.py:5750
 #: app_Main.py:8737
 msgid "Yes"
 msgstr "Ja"
 
-#: appGUI/MainGUI.py:1991 appGUI/preferences/PreferencesUIManager.py:1178
+#: appGUI/MainGUI.py:2100 appGUI/preferences/PreferencesUIManager.py:1178
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:49
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:164
@@ -5779,23 +5761,19 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
-#: appGUI/MainGUI.py:2168
+#: appGUI/MainGUI.py:2277
 msgid "Select 'Esc'"
 msgstr "Wählen"
 
-#: appGUI/MainGUI.py:2206
+#: appGUI/MainGUI.py:2315
 msgid "Copy Objects"
 msgstr "Objekte kopieren"
 
-#: appGUI/MainGUI.py:2208 appGUI/MainGUI.py:4512
-msgid "Delete Shape"
-msgstr "Form löschen"
-
-#: appGUI/MainGUI.py:2214
+#: appGUI/MainGUI.py:2323
 msgid "Move Objects"
 msgstr "Objekte verschieben"
 
-#: appGUI/MainGUI.py:2808
+#: appGUI/MainGUI.py:2917
 msgid ""
 "Please first select a geometry item to be cutted\n"
 "then select the geometry item that will be cutted\n"
@@ -5807,12 +5785,12 @@ msgstr ""
 "aus dem ersten Artikel. Zum Schluss drücken Sie die Taste ~ X ~ oder\n"
 "die Symbolleisten-Schaltfläche."
 
-#: appGUI/MainGUI.py:2815 appGUI/MainGUI.py:2979 appGUI/MainGUI.py:3026
-#: appGUI/MainGUI.py:3048
+#: appGUI/MainGUI.py:2924 appGUI/MainGUI.py:3088 appGUI/MainGUI.py:3135
+#: appGUI/MainGUI.py:3157
 msgid "Warning"
 msgstr "Warnung"
 
-#: appGUI/MainGUI.py:2974
+#: appGUI/MainGUI.py:3083
 msgid ""
 "Please select geometry items \n"
 "on which to perform Intersection Tool."
@@ -5820,7 +5798,7 @@ msgstr ""
 "Bitte wählen Sie Geometrieelemente aus\n"
 "auf dem das Verschneidungswerkzeug ausgeführt werden soll."
 
-#: appGUI/MainGUI.py:3021
+#: appGUI/MainGUI.py:3130
 msgid ""
 "Please select geometry items \n"
 "on which to perform Substraction Tool."
@@ -5828,7 +5806,7 @@ msgstr ""
 "Bitte wählen Sie Geometrieelemente aus\n"
 "auf dem das Subtraktionswerkzeug ausgeführt werden soll."
 
-#: appGUI/MainGUI.py:3043
+#: appGUI/MainGUI.py:3152
 msgid ""
 "Please select geometry items \n"
 "on which to perform union."
@@ -5836,289 +5814,350 @@ msgstr ""
 "Bitte wählen Sie Geometrieelemente aus\n"
 "auf dem die Polygonverbindung ausgeführt werden soll."
 
-#: appGUI/MainGUI.py:3128 appGUI/MainGUI.py:3343
+#: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3452
 msgid "Cancelled. Nothing selected to delete."
 msgstr "Abgebrochen. Nichts zum Löschen ausgewählt."
 
-#: appGUI/MainGUI.py:3212 appGUI/MainGUI.py:3459
+#: appGUI/MainGUI.py:3321 appGUI/MainGUI.py:3568
 msgid "Cancelled. Nothing selected to copy."
 msgstr "Abgebrochen. Nichts zum Kopieren ausgewählt."
 
-#: appGUI/MainGUI.py:3258 appGUI/MainGUI.py:3488
+#: appGUI/MainGUI.py:3367 appGUI/MainGUI.py:3597
 msgid "Cancelled. Nothing selected to move."
 msgstr "Abgebrochen. Nichts ausgewählt, um sich zu bewegen."
 
-#: appGUI/MainGUI.py:3514
+#: appGUI/MainGUI.py:3623
 msgid "New Tool ..."
 msgstr "Neues Werkzeug ..."
 
-#: appGUI/MainGUI.py:3515 appTools/ToolIsolation.py:783 appTools/ToolNCC.py:455
+#: appGUI/MainGUI.py:3624 appTools/ToolIsolation.py:783 appTools/ToolNCC.py:455
 #: appTools/ToolPaint.py:387 appTools/ToolSolderPaste.py:123
 msgid "Enter a Tool Diameter"
 msgstr "Geben Sie einen Werkzeugdurchmesser ein"
 
-#: appGUI/MainGUI.py:3527
+#: appGUI/MainGUI.py:3636
 msgid "Adding Tool cancelled ..."
 msgstr "Tool wird hinzugefügt abgebrochen ..."
 
-#: appGUI/MainGUI.py:3557
+#: appGUI/MainGUI.py:3666
 msgid "Distance Tool exit..."
 msgstr "Entfernungstool beenden ..."
 
-#: appGUI/MainGUI.py:3737 app_Main.py:3313
+#: appGUI/MainGUI.py:3846 app_Main.py:3313
 msgid "Application is saving the project. Please wait ..."
 msgstr "Anwendung speichert das Projekt. Warten Sie mal ..."
 
-#: appGUI/MainGUI.py:3876
+#: appGUI/MainGUI.py:3985
 msgid "Shell enabled."
 msgstr "Shell aktiviert."
 
-#: appGUI/MainGUI.py:3879
+#: appGUI/MainGUI.py:3988
 msgid "Shell disabled."
 msgstr "Shell deaktiviert."
 
-#: appGUI/MainGUI.py:3893
+#: appGUI/MainGUI.py:4002
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b> Liste der Tastenkombinationen </b>"
 
-#: appGUI/MainGUI.py:4288
+#: appGUI/MainGUI.py:4397
 msgid "General Shortcut list"
 msgstr "Tastenkürzel Liste"
 
-#: appGUI/MainGUI.py:4289
+#: appGUI/MainGUI.py:4398
 msgid "SHOW SHORTCUT LIST"
 msgstr "Verknüpfungsliste anzeigen"
 
-#: appGUI/MainGUI.py:4289
+#: appGUI/MainGUI.py:4399
+msgid "1"
+msgstr "1"
+
+#: appGUI/MainGUI.py:4399
 msgid "Switch to Project Tab"
 msgstr "Wechseln Sie zur Registerkarte Projekt"
 
-#: appGUI/MainGUI.py:4289
+#: appGUI/MainGUI.py:4400
+msgid "2"
+msgstr "2"
+
+#: appGUI/MainGUI.py:4400
 msgid "Switch to Selected Tab"
 msgstr "Wechseln Sie zur ausgewählten Registerkarte"
 
-#: appGUI/MainGUI.py:4290
+#: appGUI/MainGUI.py:4401
+msgid "3"
+msgstr "3"
+
+#: appGUI/MainGUI.py:4401
 msgid "Switch to Tool Tab"
 msgstr "Wechseln Sie zur Werkzeugregisterkarte"
 
-#: appGUI/MainGUI.py:4291
+#: appGUI/MainGUI.py:4402
 msgid "New Gerber"
 msgstr "Neuer Gerber"
 
-#: appGUI/MainGUI.py:4291
+#: appGUI/MainGUI.py:4403
 msgid "Edit Object (if selected)"
 msgstr "Objekt bearbeiten (falls ausgewählt)"
 
-#: appGUI/MainGUI.py:4291 app_Main.py:6049
+#: appGUI/MainGUI.py:4404 app_Main.py:6049
 msgid "Grid On/Off"
 msgstr "Raster ein/aus"
 
-#: appGUI/MainGUI.py:4291
+#: appGUI/MainGUI.py:4405
 msgid "Jump to Coordinates"
 msgstr "Springe zu den Koordinaten"
 
-#: appGUI/MainGUI.py:4292
+#: appGUI/MainGUI.py:4406
 msgid "New Excellon"
 msgstr "Neuer Excellon"
 
-#: appGUI/MainGUI.py:4292
+#: appGUI/MainGUI.py:4407
 msgid "Move Obj"
 msgstr "Objekt verschieben"
 
-#: appGUI/MainGUI.py:4292
+#: appGUI/MainGUI.py:4408
 msgid "New Geometry"
 msgstr "Neue Geometrie"
 
-#: appGUI/MainGUI.py:4292
+#: appGUI/MainGUI.py:4410
 msgid "Change Units"
 msgstr "Einheiten ändern"
 
-#: appGUI/MainGUI.py:4293
+#: appGUI/MainGUI.py:4411
 msgid "Open Properties Tool"
 msgstr "Öffnen Sie das Eigenschaften-Tool"
 
-#: appGUI/MainGUI.py:4293
+#: appGUI/MainGUI.py:4412
 msgid "Rotate by 90 degree CW"
 msgstr "Um 90 Grad im Uhrzeigersinn drehen"
 
-#: appGUI/MainGUI.py:4293
+#: appGUI/MainGUI.py:4413
 msgid "Shell Toggle"
 msgstr "Shell umschalten"
 
-#: appGUI/MainGUI.py:4294
+#: appGUI/MainGUI.py:4414
 msgid ""
 "Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"
 msgstr ""
 "Hinzufügen eines Werkzeugs (auf der Registerkarte \"Geometrie ausgewählt\" "
 "oder unter \"Werkzeuge\", \"NCC\" oder \"Werkzeuge\", \"Malen\")"
 
-#: appGUI/MainGUI.py:4295
+#: appGUI/MainGUI.py:4416
 msgid "Flip on X_axis"
 msgstr "Auf X-Achse spiegeln"
 
-#: appGUI/MainGUI.py:4295
+#: appGUI/MainGUI.py:4417
 msgid "Flip on Y_axis"
 msgstr "Auf Y-Achse spiegeln"
 
-#: appGUI/MainGUI.py:4298
+#: appGUI/MainGUI.py:4423
 msgid "Copy Obj"
 msgstr "Objekt kopieren"
 
-#: appGUI/MainGUI.py:4298
+#: appGUI/MainGUI.py:4424
 msgid "Open Tools Database"
 msgstr "Werkzeugdatenbank öffnen"
 
-#: appGUI/MainGUI.py:4299
+#: appGUI/MainGUI.py:4425
 msgid "Open Excellon File"
 msgstr "Öffnen Sie die Excellon-Datei"
 
-#: appGUI/MainGUI.py:4299
+#: appGUI/MainGUI.py:4426
 msgid "Open Gerber File"
 msgstr "Öffnen Sie die Gerber-Datei"
 
-#: appGUI/MainGUI.py:4299
-msgid "New Project"
-msgstr "Neues Projekt"
+#: appGUI/MainGUI.py:4427 appGUI/MainGUI.py:4690
+msgid "Ctrl+M"
+msgstr "Strg+M"
 
-#: appGUI/MainGUI.py:4300 app_Main.py:8180 app_Main.py:8183
-msgid "Open Project"
-msgstr "Projekt öffnen"
+#: appGUI/MainGUI.py:4431
+msgid "Ctrl+Q"
+msgstr "Strg+Q"
 
-#: appGUI/MainGUI.py:4300 appTools/ToolPDF.py:41
+#: appGUI/MainGUI.py:4431 appTools/ToolPDF.py:41
 msgid "PDF Import Tool"
 msgstr "PDF-Importwerkzeug"
 
-#: appGUI/MainGUI.py:4300
-msgid "Save Project"
-msgstr "Projekt speichern"
-
-#: appGUI/MainGUI.py:4300
-msgid "Toggle Plot Area"
-msgstr "Zeichenbereich umschalten0"
-
-#: appGUI/MainGUI.py:4303
+#: appGUI/MainGUI.py:4436
 msgid "Toggle the axis"
 msgstr "Achse umschalten"
 
-#: appGUI/MainGUI.py:4303
+#: appGUI/MainGUI.py:4437
+msgid "Shift+C"
+msgstr "Shift+C"
+
+#: appGUI/MainGUI.py:4437
 msgid "Copy Obj_Name"
 msgstr "Kopieren Sie den Namen des Objekts"
 
-#: appGUI/MainGUI.py:4304
-msgid "Toggle Code Editor"
-msgstr "Code-Editor umschalten"
+#: appGUI/MainGUI.py:4442 appGUI/MainGUI.py:4684 appGUI/MainGUI.py:4787
+#: appGUI/MainGUI.py:4925
+msgid "Shift+M"
+msgstr "Shift+M"
 
-#: appGUI/MainGUI.py:4304
-msgid "Toggle Grid Lines"
-msgstr "Rasterlinien umschalten"
-
-#: appGUI/MainGUI.py:4304
-#, fuzzy
-#| msgid "Toggle HUD\tAlt+H"
-msgid "Toggle HUD"
-msgstr "Umschalten HUD\tAlt+H"
-
-#: appGUI/MainGUI.py:4305 appGUI/MainGUI.py:4507 appGUI/MainGUI.py:4594
-#: appGUI/MainGUI.py:4716
+#: appGUI/MainGUI.py:4442 appGUI/MainGUI.py:4684 appGUI/MainGUI.py:4787
+#: appGUI/MainGUI.py:4925
 msgid "Distance Minimum Tool"
 msgstr "Mindestabstand Werkzeug"
 
-#: appGUI/MainGUI.py:4306
+#: appGUI/MainGUI.py:4443
 msgid "Open Preferences Window"
 msgstr "Öffnen Sie das Einstellungsfenster"
 
-#: appGUI/MainGUI.py:4307
+#: appGUI/MainGUI.py:4444
+msgid "Shift+R"
+msgstr "Shift+R"
+
+#: appGUI/MainGUI.py:4444
 msgid "Rotate by 90 degree CCW"
 msgstr "Um 90 Grad gegen den Uhrzeigersinn drehen"
 
-#: appGUI/MainGUI.py:4307
+#: appGUI/MainGUI.py:4445
 msgid "Run a Script"
 msgstr "Führen Sie ein Skript aus"
 
-#: appGUI/MainGUI.py:4307
+#: appGUI/MainGUI.py:4446
 msgid "Toggle the workspace"
 msgstr "Arbeitsbereich umschalten"
 
-#: appGUI/MainGUI.py:4307
-msgid "Skew on X axis"
-msgstr "Neigung auf der X-Achse"
+#: appGUI/MainGUI.py:4452
+msgid "Alt+C"
+msgstr "Alt+C"
 
-#: appGUI/MainGUI.py:4308
-msgid "Skew on Y axis"
-msgstr "Neigung auf der Y-Achse"
+#: appGUI/MainGUI.py:4453
+msgid "Alt+D"
+msgstr "Alt+D"
 
-#: appGUI/MainGUI.py:4311
+#: appGUI/MainGUI.py:4453
 msgid "2-Sided PCB Tool"
 msgstr "2-seitiges PCB Werkzeug"
 
-#: appGUI/MainGUI.py:4314
+#: appGUI/MainGUI.py:4454
+msgid "Alt+E"
+msgstr "Alt+E"
+
+#: appGUI/MainGUI.py:4455
+msgid "Alt+F"
+msgstr "Alt+F"
+
+#: appGUI/MainGUI.py:4456
+msgid "Alt+G"
+msgstr "Alt+G"
+
+#: appGUI/MainGUI.py:4457
+msgid "Alt+H"
+msgstr "Alt+H"
+
+#: appGUI/MainGUI.py:4458
+msgid "Alt+I"
+msgstr "Alt+I"
+
+#: appGUI/MainGUI.py:4459
+msgid "Alt+J"
+msgstr "Alt+J"
+
+#: appGUI/MainGUI.py:4460
+msgid "Alt+K"
+msgstr "Alt+K"
+
+#: appGUI/MainGUI.py:4460
 msgid "Solder Paste Dispensing Tool"
 msgstr "Lotpasten-Dosierwerkzeug"
 
-#: appGUI/MainGUI.py:4315
+#: appGUI/MainGUI.py:4461
+msgid "Alt+L"
+msgstr "Alt+L"
+
+#: appGUI/MainGUI.py:4461
 msgid "Film PCB Tool"
 msgstr "Film PCB Werkzeug"
 
-#: appGUI/MainGUI.py:4315
+#: appGUI/MainGUI.py:4462
+msgid "Alt+M"
+msgstr "Alt+M"
+
+#: appGUI/MainGUI.py:4463
 msgid "Non-Copper Clearing Tool"
 msgstr "Nicht-Kupfer-Räumwerkzeug"
 
-#: appGUI/MainGUI.py:4316
+#: appGUI/MainGUI.py:4464
+msgid "Alt+O"
+msgstr "Alt+O"
+
+#: appGUI/MainGUI.py:4465
+msgid "Alt+P"
+msgstr "Alt+P"
+
+#: appGUI/MainGUI.py:4465
 msgid "Paint Area Tool"
 msgstr "Malbereichswerkzeug"
 
-#: appGUI/MainGUI.py:4316
+#: appGUI/MainGUI.py:4466
+msgid "Alt+Q"
+msgstr "Alt+Q"
+
+#: appGUI/MainGUI.py:4467
 msgid "Rules Check Tool"
 msgstr "Regelprüfwerkzeug"
 
-#: appGUI/MainGUI.py:4317
+#: appGUI/MainGUI.py:4468
 msgid "View File Source"
 msgstr "Dateiquelle anzeigen"
 
-#: appGUI/MainGUI.py:4317
+#: appGUI/MainGUI.py:4469
+msgid "Alt+T"
+msgstr "Alt+T"
+
+#: appGUI/MainGUI.py:4469
 msgid "Transformations Tool"
 msgstr "Transformations-Tool"
 
-#: appGUI/MainGUI.py:4318
+#: appGUI/MainGUI.py:4470
+msgid "Alt+W"
+msgstr "Alt+W"
+
+#: appGUI/MainGUI.py:4471 appGUI/MainGUI.py:4688
+msgid "Alt+X"
+msgstr "Alt+X"
+
+#: appGUI/MainGUI.py:4471
 msgid "Cutout PCB Tool"
 msgstr "Ausschnitt PCB Tool"
 
-#: appGUI/MainGUI.py:4318 appTools/ToolPanelize.py:35
+#: appGUI/MainGUI.py:4472
+msgid "Alt+Z"
+msgstr "Alt+Z"
+
+#: appGUI/MainGUI.py:4472 appTools/ToolPanelize.py:35
 #: appTools/ToolPanelize.py:634
 msgid "Panelize PCB"
 msgstr "Panelisierung PCB"
 
-#: appGUI/MainGUI.py:4319
-msgid "Enable all Plots"
-msgstr "Alle Zeichnungen aktivieren"
+#: appGUI/MainGUI.py:4475
+msgid "Enable Non-selected Objects"
+msgstr ""
 
-#: appGUI/MainGUI.py:4319
-msgid "Disable all Plots"
-msgstr "Alle Zeichnungen deaktivieren"
+#: appGUI/MainGUI.py:4476
+msgid "Disable Non-selected Objects"
+msgstr ""
 
-#: appGUI/MainGUI.py:4320
-#, fuzzy
-#| msgid "Disable Non-selected Plots"
-msgid "Enable Non-selected Plots"
-msgstr "Nicht ausgewählte Zeichnungen deaktiv"
-
-#: appGUI/MainGUI.py:4320
-msgid "Disable Non-selected Plots"
-msgstr "Nicht ausgewählte Zeichnungen deaktiv"
-
-#: appGUI/MainGUI.py:4321
+#: appGUI/MainGUI.py:4477
 msgid "Toggle Full Screen"
 msgstr "Vollbild umschalten"
 
-#: appGUI/MainGUI.py:4324
+#: appGUI/MainGUI.py:4480
+msgid "Ctrl+Alt+X"
+msgstr "Strg+Alt+X"
+
+#: appGUI/MainGUI.py:4480
 msgid "Abort current task (gracefully)"
 msgstr "Aktuelle Aufgabe abbrechen (ordnungsgemäß)"
 
-#: appGUI/MainGUI.py:4327
-msgid "Save Project As"
-msgstr "Projekt speichern als"
+#: appGUI/MainGUI.py:4484
+msgid "Ctrl+Shift+V"
+msgstr "Ctrl+Shift+V"
 
-#: appGUI/MainGUI.py:4328
+#: appGUI/MainGUI.py:4484
 msgid ""
 "Paste Special. Will convert a Windows path style to the one required in Tcl "
 "Shell"
@@ -6126,224 +6165,242 @@ msgstr ""
 "Paste Special. Konvertiert einen Windows-Pfadstil in den in Tcl Shell "
 "erforderlichen"
 
-#: appGUI/MainGUI.py:4331
+#: appGUI/MainGUI.py:4488
 msgid "Open Online Manual"
 msgstr "Online-Handbuch öffnen"
 
-#: appGUI/MainGUI.py:4332
+#: appGUI/MainGUI.py:4489
 msgid "Open Online Tutorials"
 msgstr "Öffnen Sie Online-Tutorials"
 
-#: appGUI/MainGUI.py:4332
+#: appGUI/MainGUI.py:4490
 msgid "Refresh Plots"
 msgstr "Zeichnungen aktualisieren"
 
-#: appGUI/MainGUI.py:4332 appTools/ToolSolderPaste.py:71
+#: appGUI/MainGUI.py:4491 appGUI/MainGUI.py:4492 appGUI/MainGUI.py:4696
+#: appGUI/MainGUI.py:4788 appGUI/MainGUI.py:4789 appGUI/MainGUI.py:4922
+#: appGUI/MainGUI.py:4923
+msgid "Del"
+msgstr "Del"
+
+#: appGUI/MainGUI.py:4491 appTools/ToolSolderPaste.py:71
 msgid "Delete Object"
 msgstr "Objekt löschen"
 
-#: appGUI/MainGUI.py:4332
+#: appGUI/MainGUI.py:4492
 msgid "Alternate: Delete Tool"
 msgstr "Alternative: Werkzeug löschen"
 
-#: appGUI/MainGUI.py:4333
+#: appGUI/MainGUI.py:4493
 msgid "(left to Key_1)Toggle Notebook Area (Left Side)"
 msgstr "(links neben Taste_1) Notebook-Bereich umschalten (linke Seite)"
 
-#: appGUI/MainGUI.py:4333
+#: appGUI/MainGUI.py:4494
+msgid "SPACE"
+msgstr "SPACE"
+
+#: appGUI/MainGUI.py:4494
 msgid "En(Dis)able Obj Plot"
 msgstr "Objektzeichnung (de)aktivieren"
 
-#: appGUI/MainGUI.py:4334
+#: appGUI/MainGUI.py:4495 appGUI/MainGUI.py:4695 appGUI/MainGUI.py:4924
+msgid "ESC"
+msgstr "ESC"
+
+#: appGUI/MainGUI.py:4495
 msgid "Deselects all objects"
 msgstr "Hebt die Auswahl aller Objekte auf"
 
-#: appGUI/MainGUI.py:4348
+#: appGUI/MainGUI.py:4509
 msgid "Editor Shortcut list"
 msgstr "Editor-Verknüpfungsliste"
 
-#: appGUI/MainGUI.py:4502
+#: appGUI/MainGUI.py:4664
 msgid "GEOMETRY EDITOR"
 msgstr "GEOMETRIE-EDITOR"
 
-#: appGUI/MainGUI.py:4502
+#: appGUI/MainGUI.py:4665
 msgid "Draw an Arc"
 msgstr "Zeichnen Sie einen Bogen"
 
-#: appGUI/MainGUI.py:4502
+#: appGUI/MainGUI.py:4667
 msgid "Copy Geo Item"
 msgstr "Geo-Objekt kopieren"
 
-#: appGUI/MainGUI.py:4503
+#: appGUI/MainGUI.py:4668
 msgid "Within Add Arc will toogle the ARC direction: CW or CCW"
 msgstr ""
 "Innerhalb von Bogen hinzufügen wird die ARC-Richtung getippt: CW oder CCW"
 
-#: appGUI/MainGUI.py:4503
+#: appGUI/MainGUI.py:4669
 msgid "Polygon Intersection Tool"
 msgstr "Werkzeug Polygonschnitt"
 
-#: appGUI/MainGUI.py:4504
+#: appGUI/MainGUI.py:4670
 msgid "Geo Paint Tool"
 msgstr "Geo-Malwerkzeug"
 
-#: appGUI/MainGUI.py:4504 appGUI/MainGUI.py:4593 appGUI/MainGUI.py:4713
+#: appGUI/MainGUI.py:4671 appGUI/MainGUI.py:4781 appGUI/MainGUI.py:4914
 msgid "Jump to Location (x, y)"
 msgstr "Zum Standort springen (x, y)"
 
-#: appGUI/MainGUI.py:4504
-msgid "Toggle Corner Snap"
-msgstr "Eckfang umschalten"
-
-#: appGUI/MainGUI.py:4504
+#: appGUI/MainGUI.py:4673
 msgid "Move Geo Item"
 msgstr "Geo-Objekt verschieben"
 
-#: appGUI/MainGUI.py:4505
+#: appGUI/MainGUI.py:4674
 msgid "Within Add Arc will cycle through the ARC modes"
 msgstr "Innerhalb von Bogen hinzufügen werden die ARC-Modi durchlaufen"
 
-#: appGUI/MainGUI.py:4505
+#: appGUI/MainGUI.py:4675
 msgid "Draw a Polygon"
 msgstr "Zeichnen Sie ein Polygon"
 
-#: appGUI/MainGUI.py:4505
+#: appGUI/MainGUI.py:4676
 msgid "Draw a Circle"
 msgstr "Zeichne einen Kreis"
 
-#: appGUI/MainGUI.py:4506
+#: appGUI/MainGUI.py:4677
 msgid "Draw a Path"
 msgstr "Zeichne einen Pfad"
 
-#: appGUI/MainGUI.py:4506
+#: appGUI/MainGUI.py:4678
 msgid "Draw Rectangle"
 msgstr "Rechteck zeichnen"
 
-#: appGUI/MainGUI.py:4506
+#: appGUI/MainGUI.py:4679
 msgid "Polygon Subtraction Tool"
 msgstr "Polygon-Subtraktionswerkzeug"
 
-#: appGUI/MainGUI.py:4506
+#: appGUI/MainGUI.py:4680
 msgid "Add Text Tool"
 msgstr "Textwerkzeug hinzufügen"
 
-#: appGUI/MainGUI.py:4507
+#: appGUI/MainGUI.py:4681
 msgid "Polygon Union Tool"
 msgstr "Polygonverbindungswerkzeug"
 
-#: appGUI/MainGUI.py:4507
+#: appGUI/MainGUI.py:4682
 msgid "Flip shape on X axis"
 msgstr "Form auf der X-Achse spiegeln"
 
-#: appGUI/MainGUI.py:4507
+#: appGUI/MainGUI.py:4683
 msgid "Flip shape on Y axis"
 msgstr "Form auf der Y-Achse spiegeln"
 
-#: appGUI/MainGUI.py:4508
+#: appGUI/MainGUI.py:4685
 msgid "Skew shape on X axis"
 msgstr "Neigung auf der X-Achse"
 
-#: appGUI/MainGUI.py:4508
+#: appGUI/MainGUI.py:4686
 msgid "Skew shape on Y axis"
 msgstr "Neigung auf der Y-Achse"
 
-#: appGUI/MainGUI.py:4508
+#: appGUI/MainGUI.py:4687
 msgid "Editor Transformation Tool"
 msgstr "Editor-Transformationstool"
 
-#: appGUI/MainGUI.py:4509
+#: appGUI/MainGUI.py:4688
 msgid "Offset shape on X axis"
 msgstr "Versetzte Form auf der X-Achse"
 
-#: appGUI/MainGUI.py:4509
+#: appGUI/MainGUI.py:4689
+msgid "Alt+Y"
+msgstr "Alt+Y"
+
+#: appGUI/MainGUI.py:4689
 msgid "Offset shape on Y axis"
 msgstr "Versetzte Form auf der Y-Achse"
 
-#: appGUI/MainGUI.py:4510 appGUI/MainGUI.py:4596 appGUI/MainGUI.py:4718
+#: appGUI/MainGUI.py:4691 appGUI/MainGUI.py:4791 appGUI/MainGUI.py:4927
 msgid "Save Object and Exit Editor"
 msgstr "Objekt speichern und Editor beenden"
 
-#: appGUI/MainGUI.py:4510
+#: appGUI/MainGUI.py:4692
+msgid "Ctrl+X"
+msgstr "Strg+X"
+
+#: appGUI/MainGUI.py:4692
 msgid "Polygon Cut Tool"
 msgstr "Polygon-Schneidewerkzeug"
 
-#: appGUI/MainGUI.py:4511
+#: appGUI/MainGUI.py:4693
+msgid "Space"
+msgstr "Space"
+
+#: appGUI/MainGUI.py:4693
 msgid "Rotate Geometry"
 msgstr "Geometrie drehen"
 
-#: appGUI/MainGUI.py:4511
+#: appGUI/MainGUI.py:4694
+msgid "ENTER"
+msgstr "ENTER"
+
+#: appGUI/MainGUI.py:4694
 msgid "Finish drawing for certain tools"
 msgstr "Beenden Sie das Zeichnen für bestimmte Werkzeuge"
 
-#: appGUI/MainGUI.py:4511 appGUI/MainGUI.py:4596 appGUI/MainGUI.py:4716
+#: appGUI/MainGUI.py:4695 appGUI/MainGUI.py:4790 appGUI/MainGUI.py:4924
 msgid "Abort and return to Select"
 msgstr "Abbrechen und zurück zu Auswählen"
 
-#: appGUI/MainGUI.py:4592
+#: appGUI/MainGUI.py:4777
 msgid "EXCELLON EDITOR"
 msgstr "EXCELLON EDITOR"
 
-#: appGUI/MainGUI.py:4592
+#: appGUI/MainGUI.py:4779
 msgid "Copy Drill(s)"
 msgstr "Bohrer kopieren"
 
-#: appGUI/MainGUI.py:4593
-msgid "Move Drill(s)"
-msgstr "Bohrer verschieben"
-
-#: appGUI/MainGUI.py:4594
+#: appGUI/MainGUI.py:4785
 msgid "Add a new Tool"
 msgstr "Fügen Sie ein neues Werkzeug hinzu"
 
-#: appGUI/MainGUI.py:4595
+#: appGUI/MainGUI.py:4788
 msgid "Delete Drill(s)"
 msgstr "Bohrer löschen"
 
-#: appGUI/MainGUI.py:4595
+#: appGUI/MainGUI.py:4789
 msgid "Alternate: Delete Tool(s)"
 msgstr "Alternative: Werkzeug (e) löschen"
 
-#: appGUI/MainGUI.py:4712
+#: appGUI/MainGUI.py:4790
+msgid "Esc"
+msgstr "Esc"
+
+#: appGUI/MainGUI.py:4908
 msgid "GERBER EDITOR"
 msgstr "GERBER EDITOR"
 
-#: appGUI/MainGUI.py:4712
-msgid "Add Disc"
-msgstr "Fügen Sie eine Scheiben hinzu"
-
-#: appGUI/MainGUI.py:4712
-msgid "Add SemiDisc"
-msgstr "Halbschibe hinzufügen"
-
-#: appGUI/MainGUI.py:4714
+#: appGUI/MainGUI.py:4918
 msgid "Within Track & Region Tools will cycle in REVERSE the bend modes"
 msgstr ""
 "Innerhalb von Track- und Region-Werkzeugen werden die Biegemodi umgekehrt"
 
-#: appGUI/MainGUI.py:4715
+#: appGUI/MainGUI.py:4921
 msgid "Within Track & Region Tools will cycle FORWARD the bend modes"
 msgstr ""
 "Innerhalb von Track und Region werden mit Tools die Biegemodi vorwärts "
 "durchlaufen"
 
-#: appGUI/MainGUI.py:4716
+#: appGUI/MainGUI.py:4923
 msgid "Alternate: Delete Apertures"
 msgstr "Alternative: Löschen Sie die Blenden"
 
-#: appGUI/MainGUI.py:4717
+#: appGUI/MainGUI.py:4926
 msgid "Eraser Tool"
 msgstr "Radiergummi"
 
-#: appGUI/MainGUI.py:4718
+#: appGUI/MainGUI.py:4928
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:221
 msgid "Mark Area Tool"
 msgstr "Bereich markieren Werkzeug"
 
-#: appGUI/MainGUI.py:4718
+#: appGUI/MainGUI.py:4929
 msgid "Poligonize Tool"
 msgstr "Werkzeug Polygonisieren"
 
-#: appGUI/MainGUI.py:4718
+#: appGUI/MainGUI.py:4930
 msgid "Transformation Tool"
 msgstr "Transformationswerkzeug"
 
@@ -6452,10 +6509,8 @@ msgid "Plot (show) this object."
 msgstr "Plotten (zeigen) dieses Objekt."
 
 #: appGUI/ObjectUI.py:244
-#, fuzzy
-#| msgid "Gerber Object"
 msgid "Edit an Gerber object."
-msgstr "Gerber-Objekt"
+msgstr ""
 
 #: appGUI/ObjectUI.py:255 appGUI/ObjectUI.py:594 appGUI/ObjectUI.py:916
 #: appGUI/ObjectUI.py:1899
@@ -6464,18 +6519,14 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:257 appGUI/ObjectUI.py:596 appGUI/ObjectUI.py:918
 #: appGUI/ObjectUI.py:1901
-#, fuzzy
-#| msgid "Properties"
 msgid "Show the Properties."
-msgstr "Eigenschaften"
+msgstr ""
 
 #: appGUI/ObjectUI.py:291 appGUI/ObjectUI.py:629
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:50
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:54
-#, fuzzy
-#| msgid "Toggle the display of axis on canvas"
 msgid "Toggle the display of the Tools Table."
-msgstr "Schalten Sie die Anzeige der Achse auf der Leinwand um"
+msgstr ""
 
 #: appGUI/ObjectUI.py:300
 msgid "Mark All"
@@ -6542,16 +6593,12 @@ msgstr ""
 "der Brettausschnitt."
 
 #: appGUI/ObjectUI.py:407 appGUI/ObjectUI.py:756
-#, fuzzy
-#| msgid "UTILITIES"
 msgid "UTILTIES"
-msgstr "NUTZEN"
+msgstr ""
 
 #: appGUI/ObjectUI.py:409 appGUI/ObjectUI.py:758
-#, fuzzy
-#| msgid "Properties"
 msgid "Show the Utilties."
-msgstr "Eigenschaften"
+msgstr ""
 
 #: appGUI/ObjectUI.py:433 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32
 msgid "Non-copper regions"
@@ -6646,10 +6693,8 @@ msgid "Solid circles."
 msgstr "Feste Kreise."
 
 #: appGUI/ObjectUI.py:583
-#, fuzzy
-#| msgid "Excellon Object"
 msgid "Edit an Excellon object."
-msgstr "Excellon-Objekt"
+msgstr ""
 
 #: appGUI/ObjectUI.py:671 appTools/ToolDrilling.py:2067
 #: appTools/ToolMilling.py:1672
@@ -6809,10 +6854,8 @@ msgid "Geometry Object"
 msgstr "Geometrieobjekt"
 
 #: appGUI/ObjectUI.py:905
-#, fuzzy
-#| msgid "Geometry Object"
 msgid "Edit an Geometry object."
-msgstr "Geometrieobjekt"
+msgstr ""
 
 #: appGUI/ObjectUI.py:969
 msgid ""
@@ -6982,26 +7025,18 @@ msgstr ""
 #: appGUI/ObjectUI.py:1103 appTools/ToolCutOut.py:2087
 #: appTools/ToolIsolation.py:65 appTools/ToolIsolation.py:3133
 #: appTools/ToolNCC.py:4007 appTools/ToolPaint.py:2909
-#, fuzzy
-#| msgid "Add from DB"
 msgid "Pick from DB"
-msgstr "Aus DB hinzufügen"
+msgstr ""
 
 #: appGUI/ObjectUI.py:1106 appTools/ToolCutOut.py:2090
 #: appTools/ToolIsolation.py:3136 appTools/ToolNCC.py:4010
 #: appTools/ToolPaint.py:2912
-#, fuzzy
-#| msgid ""
-#| "Add a new tool to the Tool Table\n"
-#| "from the Tool DataBase."
 msgid ""
 "Add a new tool to the Tool Table\n"
 "from the Tools Database.\n"
 "Tools database administration in in:\n"
 "Menu: Options -> Tools Database"
 msgstr ""
-"Fügen Sie der Werkzeugtabelle ein neues Werkzeug aus der\n"
-"aus der Werkzeugdatenbank hinzu."
 
 #: appGUI/ObjectUI.py:1128
 msgid ""
@@ -7325,10 +7360,8 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:1520 appTools/ToolDrilling.py:2454
 #: appTools/ToolMilling.py:2124
-#, fuzzy
-#| msgid "Coordinates"
 msgid "X,Y coordinates"
-msgstr "Koordinaten"
+msgstr "Koordinaten X-Y"
 
 #: appGUI/ObjectUI.py:1526
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:255
@@ -7498,10 +7531,8 @@ msgid "Delete all exclusion areas that are selected in the table."
 msgstr "Löschen Sie alle in der Tabelle ausgewählten Ausschlussbereiche."
 
 #: appGUI/ObjectUI.py:1642
-#, fuzzy
-#| msgid "Add Polygon"
 msgid "Add Polish"
-msgstr "Polygon hinzufügen"
+msgstr ""
 
 #: appGUI/ObjectUI.py:1644
 msgid ""
@@ -7510,16 +7541,12 @@ msgid ""
 msgstr ""
 
 #: appGUI/ObjectUI.py:1652
-#, fuzzy
-#| msgid "Diameter for the new tool."
 msgid "Diameter for the polishing tool."
-msgstr "Durchmesser für das neue Werkzeug."
+msgstr ""
 
 #: appGUI/ObjectUI.py:1663
-#, fuzzy
-#| msgid "Measure"
 msgid "Pressure"
-msgstr "Messen"
+msgstr ""
 
 #: appGUI/ObjectUI.py:1665
 msgid ""
@@ -7608,10 +7635,8 @@ msgid "Travel"
 msgstr "Reise"
 
 #: appGUI/ObjectUI.py:1888
-#, fuzzy
-#| msgid "Create the QRCode object."
 msgid "Edit an GCode object."
-msgstr "Erzeugen des QRCode Objektes."
+msgstr ""
 
 #: appGUI/ObjectUI.py:1925 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:71
 msgid "Display Annotation"
@@ -7680,10 +7705,6 @@ msgstr ""
 "Der 'Werkzeugtyp' (TT) kann kreisförmig mit 1 bis 4 Zähnen (C1..C4) sein.\n"
 "Kugel (B) oder V-Form (V)."
 
-#: appGUI/ObjectUI.py:2009 appGUI/ObjectUI.py:2020
-msgid "P"
-msgstr "P"
-
 #: appGUI/ObjectUI.py:2030
 msgid "Update Plot"
 msgstr "Plot aktualisieren"
@@ -7712,10 +7733,8 @@ msgid "Enable the autolevelling feature."
 msgstr ""
 
 #: appGUI/ObjectUI.py:2081
-#, fuzzy
-#| msgid "Tools Table"
 msgid "Probe Points Table"
-msgstr "Werkzeugtabelle"
+msgstr ""
 
 #: appGUI/ObjectUI.py:2082
 msgid "Generate GCode that will obtain the height map"
@@ -7726,16 +7745,12 @@ msgid "Show"
 msgstr ""
 
 #: appGUI/ObjectUI.py:2085
-#, fuzzy
-#| msgid "Toggle the display of axis on canvas"
 msgid "Toggle the display of the Probe Points table."
-msgstr "Schalten Sie die Anzeige der Achse auf der Leinwand um"
+msgstr ""
 
 #: appGUI/ObjectUI.py:2098
-#, fuzzy
-#| msgid "Coordinates"
 msgid "X-Y Coordinates"
-msgstr "Koordinaten"
+msgstr "Koordinaten X-Y"
 
 #: appGUI/ObjectUI.py:2098
 #, fuzzy
@@ -7792,10 +7807,8 @@ msgstr "Vorschubgeschwindigkeit"
 
 #: appGUI/ObjectUI.py:2170
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:71
-#, fuzzy
-#| msgid "Mode:"
 msgid "Mode"
-msgstr "Modus:"
+msgstr "Modus"
 
 #: appGUI/ObjectUI.py:2171
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:72
@@ -7830,7 +7843,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:2191
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:92
 msgid "Voronoi"
-msgstr ""
+msgstr "Voronoi"
 
 #: appGUI/ObjectUI.py:2192
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:93
@@ -8022,20 +8035,16 @@ msgid "Type GRBL parameter ..."
 msgstr ""
 
 #: appGUI/ObjectUI.py:2524
-#, fuzzy
-#| msgid "Geo"
 msgid "Get"
-msgstr "Geo"
+msgstr ""
 
 #: appGUI/ObjectUI.py:2526
 msgid "Get the value of a specified GRBL parameter."
 msgstr ""
 
 #: appGUI/ObjectUI.py:2534
-#, fuzzy
-#| msgid "Gerber Export"
 msgid "Get Report"
-msgstr "Gerber Export"
+msgstr ""
 
 #: appGUI/ObjectUI.py:2536
 msgid "Print in shell the GRBL report."
@@ -8063,10 +8072,8 @@ msgid "Save Probing GCode"
 msgstr "G-Code starten"
 
 #: appGUI/ObjectUI.py:2565
-#, fuzzy
-#| msgid "Starting G-Code"
 msgid "Will save the probing GCode."
-msgstr "G-Code starten"
+msgstr ""
 
 #: appGUI/ObjectUI.py:2574
 msgid "View/Edit the probing GCode."
@@ -8297,6 +8304,7 @@ msgstr "Erw. CNC-Joboptionen"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:30
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:31
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:33
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
@@ -9425,10 +9433,8 @@ msgstr ""
 "Menüverknüpfung oder Tastenkombination."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:387
-#, fuzzy
-#| msgid "Excellon Editor"
 msgid "Allow Edit"
-msgstr "Excellon Editor"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:389
 msgid ""
@@ -9592,10 +9598,8 @@ msgid "OpenGL(3D)"
 msgstr "OpenGL (3D)"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:98
-#, fuzzy
-#| msgid "APP. LEVEL"
 msgid "APPLICATION LEVEL"
-msgstr "Darstellung"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:99
 msgid ""
@@ -9943,10 +9947,8 @@ msgstr ""
 "Es wird beim nächsten App-Start angewendet."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:111
-#, fuzzy
-#| msgid "Activate HDPI Support"
 msgid "HDPI Support"
-msgstr "Aktivieren Sie die HDPI-Unterstützung"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:113
 msgid ""
@@ -9957,10 +9959,8 @@ msgstr ""
 "Es wird beim nächsten App-Start angewendet."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:127
-#, fuzzy
-#| msgid "Convex Shape"
 msgid "Hover Shape"
-msgstr "Konvexe Form"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:129
 msgid ""
@@ -9973,10 +9973,8 @@ msgstr ""
 "über jede Art von nicht ausgewähltem Objekt."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:136
-#, fuzzy
-#| msgid "Display Selection Shape"
 msgid "Selection Shape"
-msgstr "Auswahlform anzeigen"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:138
 msgid ""
@@ -10210,10 +10208,8 @@ msgstr "Gebietsausschluss"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:402
-#, fuzzy
-#| msgid "Add exclusion areas"
 msgid "Area exclusion parameters."
-msgstr "Ausschlussbereiche hinzufügen"
+msgstr ""
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:207
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
@@ -10321,7 +10317,7 @@ msgstr ""
 
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:108
 msgid "Rtree"
-msgstr ""
+msgstr "Rtree"
 
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:29
 msgid "Geometry Options"
@@ -11833,10 +11829,8 @@ msgstr "Box"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:87
 #: appTools/ToolDblSided.py:696
-#, fuzzy
-#| msgid "Hole Size"
 msgid "Hole Snap"
-msgstr "Lochgröße"
+msgstr ""
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:90
 msgid "Axis Ref"
@@ -12738,10 +12732,6 @@ msgstr ""
 msgid "Paint Tool Options"
 msgstr "Paint werkzeug-Optionen"
 
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:33
-msgid "<b>Parameters:</b>"
-msgstr "<b>Parameter:</b>"
-
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:105
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:114
 msgid ""
@@ -12847,26 +12837,6 @@ msgstr "Anzahl der Spalten des gewünschten Bereichs"
 #: appTools/ToolPanelize.py:799
 msgid "Number of rows of the desired panel"
 msgstr "Anzahl der Zeilen des gewünschten Panels"
-
-#: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:97
-#: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:76
-#: appTools/ToolAlignObjects.py:398 appTools/ToolAlignObjects.py:434
-#: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
-#: appTools/ToolCalibration.py:891 appTools/ToolCalibration.py:1326
-#: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
-#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:527
-#: appTools/ToolDblSided.py:767 appTools/ToolFilm.py:927
-#: appTools/ToolFilm.py:950 appTools/ToolImage.py:117 appTools/ToolImage.py:138
-#: appTools/ToolImage.py:191 appTools/ToolIsolation.py:802
-#: appTools/ToolIsolation.py:3339 appTools/ToolIsolation.py:3391
-#: appTools/ToolNCC.py:805 appTools/ToolNCC.py:3849 appTools/ToolNCC.py:4323
-#: appTools/ToolPaint.py:167 appTools/ToolPaint.py:3143
-#: appTools/ToolPanelize.py:147 appTools/ToolPanelize.py:167
-#: appTools/ToolPanelize.py:715 appTools/ToolPanelize.py:809
-#: appTools/ToolTransform.py:126 appTools/ToolTransform.py:585 defaults.py:570
-msgid "Gerber"
-msgstr "Gerber"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:98
 #: appTools/ToolPanelize.py:810
@@ -13899,10 +13869,8 @@ msgstr "GCode Geometrie"
 
 #: appObjects/FlatCAMObj.py:770 appObjects/FlatCAMObj.py:843
 #: appTools/ToolProperties.py:464 appTools/ToolProperties.py:537
-#, fuzzy
-#| msgid "Tool Dia"
 msgid "Tool Data"
-msgstr "Werkzeugdurchm"
+msgstr ""
 
 #: appObjects/FlatCAMObj.py:807 appTools/ToolProperties.py:501
 msgid "Depth of Cut"
@@ -14156,10 +14124,8 @@ msgid "Object to be aligned."
 msgstr "Zu ausrichtendes Objekt."
 
 #: appTools/ToolAlignObjects.py:423
-#, fuzzy
-#| msgid "TARGET object"
 msgid "DESTINATION object"
-msgstr "ZIEL-Objekt"
+msgstr ""
 
 #: appTools/ToolAlignObjects.py:425
 msgid ""
@@ -15167,16 +15133,12 @@ msgid "Tool Parameters"
 msgstr "Werkzeugparameter"
 
 #: appTools/ToolCutOut.py:2253
-#, fuzzy
-#| msgid "Auto"
 msgid "Automatic"
 msgstr "Auto"
 
 #: appTools/ToolCutOut.py:2253 appTools/ToolCutOut.py:2328
-#, fuzzy
-#| msgid "B. Manual Bridge Gaps"
 msgid "Bridge Gaps"
-msgstr "B. Manuelle Brückenlücken"
+msgstr ""
 
 #: appTools/ToolCutOut.py:2255
 msgid "This section handle creation of automatic bridge gaps."
@@ -15231,10 +15193,8 @@ msgstr ""
 "Wählen Sie in der oberen Objekt-Combobox die Quell-Gerber-Datei aus."
 
 #: appTools/ToolCutOut.py:2369
-#, fuzzy
-#| msgid "Subtract Geometry"
 msgid "Manual cutout Geometry"
-msgstr "Geometrie subtrahieren"
+msgstr ""
 
 #: appTools/ToolCutOut.py:2371
 msgid "Geometry object used to create the manual cutout."
@@ -15301,10 +15261,8 @@ msgid "Click on canvas within the desired Excellon drill hole"
 msgstr ""
 
 #: appTools/ToolDblSided.py:282
-#, fuzzy
-#| msgid "Mirror Reference point"
 msgid "Mirror reference point set."
-msgstr "Referenzpunkt spiegeln"
+msgstr ""
 
 #: appTools/ToolDblSided.py:310
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
@@ -17241,16 +17199,12 @@ msgid "Paint failed."
 msgstr "Malen Alle Polygone sind fehlgeschlagen."
 
 #: appTools/ToolPaint.py:2182
-#, fuzzy
-#| msgid "Paint done."
 msgid "Paint Done."
 msgstr "Malen fertig."
 
 #: appTools/ToolPaint.py:2187
-#, fuzzy
-#| msgid "Painting polygon..."
 msgid "Painting..."
-msgstr "Polygon malen ..."
+msgstr "Malen ..."
 
 #: appTools/ToolPaint.py:2221 appTools/ToolPaint.py:2226
 #: appTools/ToolPaint.py:2234 appTools/ToolPaint.py:2321
@@ -17819,15 +17773,6 @@ msgstr "Klicken Sie auf den Zielpunkt ..."
 msgid "QRCode Tool done."
 msgstr "QRCode Tool fertig."
 
-#: appTools/ToolQRCode.py:518 appTools/ToolQRCode.py:522
-msgid "Export PNG"
-msgstr "PNG exportieren"
-
-#: appTools/ToolQRCode.py:565 appTools/ToolQRCode.py:569 app_Main.py:8298
-#: app_Main.py:8302
-msgid "Export SVG"
-msgstr "SVG exportieren"
-
 #: appTools/ToolQRCode.py:662
 msgid "Gerber Object to which the QRCode will be added."
 msgstr "Gerber-Objekt zu dem der QRCode hinzugefügt wird."
@@ -18101,10 +18046,9 @@ msgid "...processing..."
 msgstr "...wird bearbeitet..."
 
 #: appTools/ToolShell.py:293
-#, fuzzy
 #| msgid "FlatCAM Beta"
 msgid "FlatCAM Shell"
-msgstr "FlatCAM Beta"
+msgstr "FlatCAM Shell"
 
 #: appTools/ToolSolderPaste.py:459
 msgid "Please enter a tool diameter to add, in Float format."
@@ -18632,8 +18576,8 @@ msgstr ""
 "Möchten Sie das Projekt speichern?"
 
 #: app_Main.py:490
-msgid "FlatCAM is initializing ..."
-msgstr "FlatCAM wird initialisiert ..."
+msgid "The application is initializing ..."
+msgstr ""
 
 #: app_Main.py:651
 msgid "Could not find the Language files. The App strings are missing."
@@ -18643,21 +18587,16 @@ msgstr ""
 
 #: app_Main.py:723
 msgid ""
-"FlatCAM is initializing ...\n"
+"The application is initializing ...\n"
 "Canvas initialization started."
 msgstr ""
-"FlatCAM wird initialisiert ...\n"
-"Die Canvas-Initialisierung wurde gestartet."
 
 #: app_Main.py:743
 msgid ""
-"FlatCAM is initializing ...\n"
+"The application is initializing ...\n"
 "Canvas initialization started.\n"
 "Canvas initialization finished in"
 msgstr ""
-"FlatCAM wird initialisiert ...\n"
-"Die Canvas-Initialisierung wurde gestartet.\n"
-"Canvas-Initialisierung abgeschlossen in"
 
 #: app_Main.py:1275 app_Main.py:8845
 msgid "New Project - Not saved"
@@ -18983,17 +18922,9 @@ msgid ""
 "2. Someone forked FlatCAM project and wants to point\n"
 "to his own website\n"
 "\n"
-"If you can't get any informations about FlatCAM beta\n"
+"If you can't get any informations about the application\n"
 "use the YouTube channel link from the Help menu."
 msgstr ""
-"Dieser Eintrag wird auf eine andere Website aufgelöst, wenn:\n"
-"\n"
-"1. Die FlatCAM.org-Website ist ausgefallen\n"
-"2. Jemand hat FlatCAM-Projekt gegabelt und möchte zeigen\n"
-"auf seiner eigenen website\n"
-"\n"
-"Wenn Sie keine Informationen zu FlatCAM beta erhalten können\n"
-"Verwenden Sie den Link zum YouTube-Kanal im Menü Hilfe."
 
 #: app_Main.py:3294
 msgid "Alternative website"
@@ -19078,10 +19009,6 @@ msgstr "Ein Geometrieobjekt wurde in den MultiGeo-Typ konvertiert."
 #: app_Main.py:4041
 msgid "A Geometry object was converted to SingleGeo type."
 msgstr "Ein Geometrieobjekt wurde in den SingleGeo-Typ konvertiert."
-
-#: app_Main.py:4274
-msgid "Toggle Units"
-msgstr "Einheiten wechseln"
 
 #: app_Main.py:4278
 msgid ""
@@ -19251,10 +19178,6 @@ msgid "No object selected to Rotate."
 msgstr "Es wurde kein Objekt zum Drehen ausgewählt."
 
 #: app_Main.py:5890 app_Main.py:5941 app_Main.py:5978
-msgid "Transform"
-msgstr "Verwandeln"
-
-#: app_Main.py:5890 app_Main.py:5941 app_Main.py:5978
 msgid "Enter the Angle value:"
 msgstr "Geben Sie den Winkelwert ein:"
 
@@ -19393,10 +19316,9 @@ msgid "Clear Recent files"
 msgstr "Letzte Dateien löschen"
 
 #: app_Main.py:7317
-#, fuzzy
 #| msgid "FlatCAM.org"
 msgid "FlatCAM Evo"
-msgstr "FlatCAM.org"
+msgstr "FlatCAM Evo"
 
 #: app_Main.py:7321
 msgid "Release date"
@@ -19407,32 +19329,24 @@ msgid "Displayed"
 msgstr ""
 
 #: app_Main.py:7328
-#, fuzzy
-#| msgid "Snap Max"
 msgid "Snap"
-msgstr "Fang Max"
+msgstr ""
 
 #: app_Main.py:7337
 msgid "Canvas"
 msgstr ""
 
 #: app_Main.py:7342
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace active"
-msgstr "Arbeitsbereichseinstellungen"
+msgstr ""
 
 #: app_Main.py:7346
-#, fuzzy
-#| msgid "Workspace disabled."
 msgid "Workspace size"
-msgstr "Arbeitsbereich deaktiviert."
+msgstr ""
 
 #: app_Main.py:7350
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace orientation"
-msgstr "Arbeitsbereichseinstellungen"
+msgstr ""
 
 #: app_Main.py:7413
 msgid "Failed checking for latest version. Could not connect."
@@ -19485,10 +19399,8 @@ msgid "All plots enabled."
 msgstr "Alle Diagramme aktiviert."
 
 #: app_Main.py:7564
-#, fuzzy
-#| msgid "All non selected plots disabled."
 msgid "All non selected plots enabled."
-msgstr "Alle nicht ausgewählten Diagramme sind deaktiviert."
+msgstr ""
 
 #: app_Main.py:7570
 msgid "Selected plots enabled..."
@@ -19530,10 +19442,6 @@ msgstr "Gerber-Datei öffnen."
 #: app_Main.py:8113
 msgid "Opening Excellon file."
 msgstr "Excellon-Datei öffnen."
-
-#: app_Main.py:8143 app_Main.py:8148
-msgid "Open G-Code"
-msgstr "G-Code öffnen"
 
 #: app_Main.py:8157
 msgid "Opening G-Code file."
@@ -19607,21 +19515,9 @@ msgstr ""
 msgid "Save Excellon source file"
 msgstr "Speichern Sie die Excellon-Quelldatei"
 
-#: app_Main.py:8540 app_Main.py:8544
-msgid "Export Excellon"
-msgstr "Excellon exportieren"
-
-#: app_Main.py:8583 app_Main.py:8587
-msgid "Export Gerber"
-msgstr "Gerber exportieren"
-
 #: app_Main.py:8626
 msgid "Only Geometry objects can be used."
 msgstr "Es können nur Geometrieobjekte verwendet werden."
-
-#: app_Main.py:8642 app_Main.py:8646
-msgid "Export DXF"
-msgstr "DXF exportieren"
 
 #: app_Main.py:8670 app_Main.py:8674
 msgid "Import SVG"
@@ -19730,10 +19626,8 @@ msgid "Exporting Gerber"
 msgstr "Gerber exportieren"
 
 #: app_Main.py:9694 app_Main.py:9701
-#, fuzzy
-#| msgid "Could not export DXF file."
 msgid "Could not export file."
-msgstr "DXF-Datei konnte nicht exportiert werden."
+msgstr "Datei konnte nicht exportiert werden."
 
 #: app_Main.py:9747
 msgid "DXF file exported to"
@@ -19896,14 +19790,8 @@ msgid "Failed to parse saved project file"
 msgstr "Fehler beim Parsen der Projektdatei"
 
 #: app_Main.py:10477
-#, fuzzy
-#| msgid ""
-#| "Save cancelled because source file is empty. Try to export the Gerber "
-#| "file."
 msgid "Save cancelled because source file is empty. Try to export the file."
 msgstr ""
-"Speichern abgebrochen, da die Quelldatei leer ist. Versuchen Sie einen "
-"Export der Gerber Datei."
 
 #: assets/linux/flatcam-beta.desktop:3
 msgid "FlatCAM Beta"
@@ -19981,12 +19869,8 @@ msgstr ""
 "Überprüfen Sie den resultierenden CNC-Code (Gcode usw.)."
 
 #: camlib.py:3109
-#, fuzzy
-#| msgid "The Cut Z parameter is zero. There will be no cut, skipping file"
 msgid "The Cut Z parameter is zero. There will be no cut, aborting"
 msgstr ""
-"Der Parameter Cut Z ist Null. Es wird kein Schnitt ausgeführt, und die Datei "
-"wird übersprungen"
 
 #: camlib.py:3237 camlib.py:5330
 msgid "The End X,Y format has to be (x, y)."
@@ -20002,10 +19886,8 @@ msgid "G91 coordinates not implemented"
 msgstr "G91 Koordinaten nicht implementiert"
 
 #: camlib.py:3447
-#, fuzzy
-#| msgid "Finished G-Code generation"
 msgid "Finished G-Code generation for tool:"
-msgstr "Fertige G-Code-Generierung"
+msgstr ""
 
 #: camlib.py:3497
 msgid ""
@@ -20141,22 +20023,16 @@ msgid "Creating Geometry from the parsed GCode file. "
 msgstr "Erstellen von Geometrie aus der analysierten GCode-Datei. "
 
 #: camlib.py:6545
-#, fuzzy
-#| msgid "Starting G-Code for tool with diameter"
 msgid "Parsing GCode file for tool diameter"
-msgstr "Start-G-Code für Werkzeug mit Durchmesser"
+msgstr ""
 
 #: camlib.py:6546
-#, fuzzy
-#| msgid "Nr of slots"
 msgid "Number of lines"
-msgstr "Anzahl der Slots"
+msgstr ""
 
 #: camlib.py:6635
-#, fuzzy
-#| msgid "Creating Geometry from the parsed GCode file. "
 msgid "Creating Geometry from the parsed GCode file for tool diameter"
-msgstr "Erstellen von Geometrie aus der analysierten GCode-Datei. "
+msgstr ""
 
 #: camlib.py:7069 camlib.py:7217 camlib.py:7386
 msgid "G91 coordinates not implemented ..."
@@ -20267,6 +20143,303 @@ msgstr ""
 "Kein Geometriename in args. Geben Sie einen Namen ein und versuchen Sie es "
 "erneut."
 
+#~ msgid "<b>Parameters:</b>"
+#~ msgstr "<b>Parameter:</b>"
+
+#~ msgid "New Project ..."
+#~ msgstr "Neues Projekt ..."
+
+#, fuzzy
+#~| msgid "Open Gerber"
+#~ msgid "Open Gerber ..."
+#~ msgstr "Gerber öffnen"
+
+#, fuzzy
+#~| msgid "Open Excellon"
+#~ msgid "Open Excellon ..."
+#~ msgstr "Excellon öffnen"
+
+#, fuzzy
+#~| msgid "Open G-&Code ..."
+#~ msgid "Open G-Code ..."
+#~ msgstr "G-&Code öffnen..."
+
+#, fuzzy
+#~| msgid "&Save Project ..."
+#~ msgid "Save Project ..."
+#~ msgstr "Projekt speichern ..."
+
+#, fuzzy
+#~| msgid "Export &SVG ..."
+#~ msgid "Export SVG ..."
+#~ msgstr "SVG exportieren ..."
+
+#~ msgid "Export DXF ..."
+#~ msgstr "DXF exportieren ..."
+
+#, fuzzy
+#~| msgid "Export &PNG ..."
+#~ msgid "Export PNG ..."
+#~ msgstr "PNG exportieren ..."
+
+#, fuzzy
+#~| msgid "Export &Excellon ..."
+#~ msgid "Export Excellon ..."
+#~ msgstr "Excellon exportieren ..."
+
+#, fuzzy
+#~| msgid "Export &Gerber ..."
+#~ msgid "Export Gerber ..."
+#~ msgstr "Gerber exportieren ..."
+
+#, fuzzy
+#~| msgid "&New Project ...\tCtrl+N"
+#~ msgid "New Project ...\tCtrl+N"
+#~ msgstr "&Neues Projekt ...\\STRG+N"
+
+#~ msgid "Geometry\tN"
+#~ msgstr "Geometrie\tN"
+
+#~ msgid "Gerber\tB"
+#~ msgstr "Gerber\tB"
+
+#~ msgid "Excellon\tL"
+#~ msgstr "Excellon\tL"
+
+#, fuzzy
+#~| msgid "Open &Gerber ...\tCtrl+G"
+#~ msgid "Open Gerber ...\tCtrl+G"
+#~ msgstr "&Gerber öffnen...\\STRG+G"
+
+#, fuzzy
+#~| msgid "Open &Excellon ...\tCtrl+E"
+#~ msgid "Open Excellon ...\tCtrl+E"
+#~ msgstr "&Excellon öffnen...\\STRG+E"
+
+#, fuzzy
+#~| msgid "&Save Project ...\tCtrl+S"
+#~ msgid "Save Project ...\tCtrl+S"
+#~ msgstr "Projekt speichern ...\\STRG+S"
+
+#, fuzzy
+#~| msgid "Save Project &As ...\tCtrl+Shift+S"
+#~ msgid "Save Project As ...\tCtrl+Shift+S"
+#~ msgstr "Projekt speichern als ...\\STRG+Shift+S"
+
+#~ msgid "Close Editor\tCtrl+S"
+#~ msgstr "Schließen Sie Editor\tSTRG+S"
+
+#~ msgid "Delete\tDEL"
+#~ msgstr "Löschen\tDEL"
+
+#, fuzzy
+#~| msgid "Se&t Origin\tO"
+#~ msgid "Set Origin\tO"
+#~ msgstr "Ursprung festlegen\tO"
+
+#~ msgid "Move to Origin\tShift+O"
+#~ msgstr "Zum Ursprung wechseln\tShift+O"
+
+#~ msgid "Jump to Location\tJ"
+#~ msgstr "Zum Ort springen\tJ"
+
+#~ msgid "Locate in Object\tShift+J"
+#~ msgstr "Suchen Sie im Objekt\tShift+J"
+
+#~ msgid "Toggle Units\tQ"
+#~ msgstr "Einheiten umschalten\tQ"
+
+#, fuzzy
+#~| msgid "&Select All\tCtrl+A"
+#~ msgid "Select All\tCtrl+A"
+#~ msgstr "Alles auswählen\tSTRG+A"
+
+#, fuzzy
+#~| msgid "&Preferences\tShift+P"
+#~ msgid "Preferences\tShift+P"
+#~ msgstr "Einstellungen\tShift+P"
+
+#, fuzzy
+#~| msgid "&Skew on X axis\tShift+X"
+#~ msgid "Skew on X axis\tShift+X"
+#~ msgstr "Neigung auf der X-Achse\tShift+X"
+
+#, fuzzy
+#~| msgid "S&kew on Y axis\tShift+Y"
+#~ msgid "Skew on Y axis\tShift+Y"
+#~ msgstr "Neigung auf der Y-Achse\tShift+Y"
+
+#~ msgid "View source\tAlt+S"
+#~ msgstr "Quelltext anzeigen\tAlt+S"
+
+#~ msgid "Tools DataBase\tCtrl+D"
+#~ msgstr "Werkzeugdatenbank\tSTRG+D"
+
+#~ msgid "Enable all plots\tAlt+1"
+#~ msgstr "Alle Diagramme aktivieren\tAlt+1"
+
+#~ msgid "Disable all plots\tAlt+2"
+#~ msgstr "Alle Diagramme deaktivieren\tAlt+2"
+
+#, fuzzy
+#~| msgid "&Zoom Fit\tV"
+#~ msgid "Zoom Fit\tV"
+#~ msgstr "Passed zoomen\tV"
+
+#, fuzzy
+#~| msgid "&Zoom In\t="
+#~ msgid "Zoom In\t="
+#~ msgstr "Hineinzoomen\t="
+
+#, fuzzy
+#~| msgid "&Zoom Out\t-"
+#~ msgid "Zoom Out\t-"
+#~ msgstr "Rauszoomen\t-"
+
+#~ msgid "Toggle Code Editor\tShift+E"
+#~ msgstr "Code-Editor umschalten\tShift+E"
+
+#, fuzzy
+#~| msgid "&Toggle FullScreen\tAlt+F10"
+#~ msgid "Toggle FullScreen\tAlt+F10"
+#~ msgstr "FullScreen umschalten\tAlt+F10"
+
+#, fuzzy
+#~| msgid "&Toggle Plot Area\tCtrl+F10"
+#~ msgid "Toggle Plot Area\tCtrl+F10"
+#~ msgstr "Plotbereich umschalten\tSTRG+F10"
+
+#, fuzzy
+#~| msgid "&Toggle Grid Lines\tAlt+G"
+#~ msgid "Toggle Grid Lines\tShift+G"
+#~ msgstr "Gitterlinien umschalten\tAlt+G"
+
+#, fuzzy
+#~| msgid "&Toggle Axis\tShift+G"
+#~ msgid "Toggle Axis\tShift+A"
+#~ msgstr "Achse umschalten\tShift+G"
+
+#~ msgid "Toggle Workspace\tShift+W"
+#~ msgstr "Arbeitsbereich umschalten\tShift+W"
+
+#, fuzzy
+#~| msgid "Toggle HUD\tAlt+H"
+#~ msgid "Toggle HUD\tShift+H"
+#~ msgstr "Umschalten HUD\tAlt+H"
+
+#, fuzzy
+#~| msgid "&Command Line\tS"
+#~ msgid "Command Line\tS"
+#~ msgstr "Befehlszeile\tS"
+
+#~ msgid "Shortcuts List\tF3"
+#~ msgstr "Tastenkürzel Liste\tF3"
+
+#~ msgid "About FlatCAM"
+#~ msgstr "Über FlatCAM"
+
+#~ msgid "Add Circle\tO"
+#~ msgstr "Kreis hinzufügen\tO"
+
+#~ msgid "Add Arc\tA"
+#~ msgstr "Bogen hinzufügen\tA"
+
+#~ msgid "Add Rectangle\tR"
+#~ msgstr "Rechteck hinzufügen\tR"
+
+#~ msgid "Add Polygon\tN"
+#~ msgstr "Polygon hinzufügen\tN"
+
+#~ msgid "Add Path\tP"
+#~ msgstr "Pfad hinzufügen\tP"
+
+#~ msgid "Add Text\tT"
+#~ msgstr "Text hinzufügen\tT"
+
+#~ msgid "Polygon Union\tU"
+#~ msgstr "Polygon-Vereinigung\tU"
+
+#~ msgid "Polygon Intersection\tE"
+#~ msgstr "Polygonschnitt\tE"
+
+#~ msgid "Polygon Subtraction\tS"
+#~ msgstr "Polygon-Subtraktion\tS"
+
+#~ msgid "Cut Path\tX"
+#~ msgstr "Pfad ausschneiden\tX"
+
+#~ msgid "Delete Shape\tDEL"
+#~ msgstr "Form löschen\tDEL"
+
+#~ msgid "Move\tM"
+#~ msgstr "Bewegung\tM"
+
+#~ msgid "Buffer Tool\tB"
+#~ msgstr "Pufferwerkzeug\tB"
+
+#~ msgid "Paint Tool\tI"
+#~ msgstr "Malenwerkzeug\tI"
+
+#~ msgid "Transform Tool\tAlt+R"
+#~ msgstr "Transformationswerkzeug\tAlt+R"
+
+#~ msgid "Toggle Corner Snap\tK"
+#~ msgstr "Eckfang umschalten\tK"
+
+#~ msgid "Add Drill Array\tA"
+#~ msgstr "Bohrfeld hinzufügen\tA"
+
+#~ msgid "Add Drill\tD"
+#~ msgstr "Bohrer hinzufügen\tD"
+
+#~ msgid "Add Slot Array\tQ"
+#~ msgstr "Steckplatz-Array hinzufügen\tQ"
+
+#~ msgid "Add Slot\tW"
+#~ msgstr "Slot hinzufügen\tW"
+
+#~ msgid "Copy\tC"
+#~ msgstr "Kopieren\tC"
+
+#~ msgid "Move Drill(s)\tM"
+#~ msgstr "Bohrer verschieben\tM"
+
+#~ msgid "Add Pad\tP"
+#~ msgstr "Pad hinzufügen\tP"
+
+#~ msgid "Add Pad Array\tA"
+#~ msgstr "Pad-Array hinzufügen\tA"
+
+#~ msgid "Add Track\tT"
+#~ msgstr "Track hinzufügen\tA"
+
+#~ msgid "Add Region\tN"
+#~ msgstr "Region hinzufügen\tN"
+
+#~ msgid "Poligonize\tAlt+N"
+#~ msgstr "Polygonisieren\tAlt+N"
+
+#~ msgid "Add SemiDisc\tE"
+#~ msgstr "Halbschibe hinzufügen\tE"
+
+#~ msgid "Add Disc\tD"
+#~ msgstr "Schibe hinzufügen\tD"
+
+#~ msgid "Buffer\tB"
+#~ msgstr "Puffer\tB"
+
+#~ msgid "Scale\tS"
+#~ msgstr "Skalieren\tS"
+
+#~ msgid "Mark Area\tAlt+A"
+#~ msgstr "Bereich markieren\tAlt+A"
+
+#~ msgid "Transform\tAlt+R"
+#~ msgstr "Transformationswerkzeug\tSTRG+R"
+
+#~ msgid "Enable all Plots"
+#~ msgstr "Alle Zeichnungen aktivieren"
+
 #~ msgid "Important Information's"
 #~ msgstr "Important Information's"
 
@@ -20325,10 +20498,6 @@ msgstr ""
 
 #~ msgid "Tool Shape"
 #~ msgstr "Werkzeugform"
-
-# I think this is FeedRate XY
-#~ msgid "FR"
-#~ msgstr "Vorschub (XY)"
 
 #~ msgid "FR Z"
 #~ msgstr "Vorschub  (Z)"
@@ -21593,9 +21762,6 @@ msgstr ""
 #~ msgid "Export Code cancelled."
 #~ msgstr "Exportcode abgebrochen."
 
-#~ msgid "&Save Project ..."
-#~ msgstr "Projekt speichern ..."
-
 #~ msgid "Save Project C&opy ..."
 #~ msgstr "Projektkopie speichern ..."
 
@@ -22254,9 +22420,6 @@ msgstr ""
 #~ msgid "{l_save}/FlatCAM_Bookmarks_{date}"
 #~ msgstr "{l_save}/FlatCAM_Bookmarks_{date}"
 
-#~ msgid "Go"
-#~ msgstr "Gehen"
-
 #~ msgid "There are no polygons to mark area."
 #~ msgstr "Es gibt keine Polygone zum Markieren der Fläche."
 
@@ -22361,11 +22524,6 @@ msgstr ""
 #~| msgid "Generate CNC"
 #~ msgid "Generate CNCJob"
 #~ msgstr "CNC generieren"
-
-#, fuzzy
-#~| msgid "Shortcuts List\tF3"
-#~ msgid "Shortcuts List"
-#~ msgstr "Tastenkürzel Liste\tF3"
 
 #, fuzzy
 #~| msgid "Key Shortcut List"
@@ -22590,9 +22748,6 @@ msgstr ""
 
 #~ msgid "[success] Paint done."
 #~ msgstr "[success] Malen Sie fertig."
-
-#~ msgid "About"
-#~ msgstr "Über"
 
 #~ msgid ""
 #~ "<b>General Shortcut list</b><br>\n"
