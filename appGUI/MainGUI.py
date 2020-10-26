@@ -81,7 +81,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # New Project
         self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/file16.png'),
-                                                    '%s\t%s...' % (_('New Project'), _("Ctrl+N")), self)
+                                                    '%s...\t%s' % (_('New Project'), _("Ctrl+N")), self)
         self.menufilenewproject.setToolTip(
             _("Will create a new, blank project")
         )
@@ -120,31 +120,31 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Open Project ...
         self.menufileopenproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/folder16.png'), '%s\t%s...' % (_('Open Project'), _('Ctrl+O')),
+            QtGui.QIcon(self.app.resource_location + '/folder16.png'), '%s...\t%s' % (_('Open Project'), _('Ctrl+O')),
             self)
         self.menufile_open.addAction(self.menufileopenproject)
         self.menufile_open.addSeparator()
 
         # Open Gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                    '%s\t%s...' % (_('Open Gerber'), _('Ctrl+G')), self)
+                                                    '%s...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                      '%s\t%s...' % (_('Open Excellon'), _('Ctrl+E')), self)
+                                                      '%s...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
         self.menufileopengcode = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/code.png'), '%s\t%s...' % (_('Open G-Code'), ''), self)
+            QtGui.QIcon(self.app.resource_location + '/code.png'), '%s...\t%s' % (_('Open G-Code'), ''), self)
         self.menufile_open.addAction(self.menufileopengcode)
 
         self.menufile_open.addSeparator()
 
         # Open Config File...
         self.menufileopenconfig = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/folder16.png'), '%s\t%s...' % (_('Open Config'), ''), self)
+            QtGui.QIcon(self.app.resource_location + '/folder16.png'), '%s...\t%s' % (_('Open Config'), ''), self)
         self.menufile_open.addAction(self.menufileopenconfig)
 
         # Recent
@@ -158,13 +158,13 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Save Project
         self.menufilesaveproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), '%s\t%s...' % (_('Save Project'), _('Ctrl+S')),
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), '%s...\t%s' % (_('Save Project'), _('Ctrl+S')),
             self)
         self.menufile_save.addAction(self.menufilesaveproject)
 
         # Save Project As ...
         self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
-                                                       '%s\t%s...' % (_('Save Project As'), _('Ctrl+Shift+S')), self)
+                                                       '%s...\t%s' % (_('Save Project As'), _('Ctrl+Shift+S')), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
@@ -183,15 +183,15 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufile_scripting.setToolTipsVisible(True)
 
         self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script_new16.png'),
-                                                   '%s\t%s...' % (_('New Script'), ''), self)
+                                                   '%s...\t%s' % (_('New Script'), ''), self)
         self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_script32.png'),
-                                                    '%s\t%s...' % (_('Open Script'), ''), self)
+                                                    '%s...\t%s' % (_('Open Script'), ''), self)
         self.menufileopenscriptexample = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'),
-            '%s\t%s...' % (_('Open Example'), ''), self)
+            '%s...\t%s' % (_('Open Example'), ''), self)
         self.menufilerunscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'),
-            '%s\t%s...' % (_('Run Script'), _('Shift+S')), self)
+            '%s...\t%s' % (_('Run Script'), _('Shift+S')), self)
         self.menufilerunscript.setToolTip(
             _("Will run the opened Tcl Script thus\n"
               "enabling the automation of certain\n"
@@ -211,26 +211,26 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
         self.menufileimportsvg = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/svg16.png'),
-            '%s\t%s...' % (_('SVG as Geometry Object'), ''), self)
+            '%s...\t%s' % (_('SVG as Geometry Object'), ''), self)
         self.menufileimport.addAction(self.menufileimportsvg)
         self.menufileimportsvg_as_gerber = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/svg16.png'),
-            '%s\t%s...' % (_('SVG as Gerber Object'), ''), self)
+            '%s...\t%s' % (_('SVG as Gerber Object'), ''), self)
         self.menufileimport.addAction(self.menufileimportsvg_as_gerber)
         self.menufileimport.addSeparator()
 
         self.menufileimportdxf = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-            '%s\t%s...' % (_('DXF as Geometry Object'), ''), self)
+            '%s...\t%s' % (_('DXF as Geometry Object'), ''), self)
         self.menufileimport.addAction(self.menufileimportdxf)
         self.menufileimportdxf_as_gerber = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-            '%s\t%s...' % (_('DXF as Gerber Object'), ''), self)
+            '%s...\t%s' % (_('DXF as Gerber Object'), ''), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
         self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-            '%s\t%s...' % (_('HPGL2 as Geometry Object'), ''), self)
+            '%s...\t%s' % (_('HPGL2 as Geometry Object'), ''), self)
         self.menufileimport.addAction(self.menufileimport_hpgl2_as_geo)
         self.menufileimport.addSeparator()
 
@@ -241,19 +241,19 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menufileexportsvg = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/export.png'),
-            '%s\t%s...' % (_('Export SVG'), ''), self)
+            '%s...\t%s' % (_('Export SVG'), ''), self)
         self.menufileexport.addAction(self.menufileexportsvg)
 
         self.menufileexportdxf = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/export.png'),
-            '%s\t%s...' % (_('Export DXF'), ''), self)
+            '%s...\t%s' % (_('Export DXF'), ''), self)
         self.menufileexport.addAction(self.menufileexportdxf)
 
         self.menufileexport.addSeparator()
 
         self.menufileexportpng = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/export_png32.png'),
-            '%s\t%s...' % (_('Export PNG'), ''), self)
+            '%s...\t%s' % (_('Export PNG'), ''), self)
         self.menufileexportpng.setToolTip(
             _("Will export an image in PNG format,\n"
               "the saved image will contain the visual \n"
@@ -265,7 +265,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menufileexportexcellon = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/drill32.png'),
-            '%s\t%s...' % (_('Export Excellon'), ''), self)
+            '%s...\t%s' % (_('Export Excellon'), ''), self)
         self.menufileexportexcellon.setToolTip(
             _("Will export an Excellon Object as Excellon file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -275,7 +275,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menufileexportgerber = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'),
-            '%s\t%s...' % (_('Export Gerber'), ''), self)
+            '%s...\t%s' % (_('Export Gerber'), ''), self)
         self.menufileexportgerber.setToolTip(
             _("Will export an Gerber Object as Gerber file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -292,14 +292,14 @@ class MainGUI(QtWidgets.QMainWindow):
         # Import Preferences
         self.menufileimportpref = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/backup_import24.png'),
-            '%s\t%s...' % (_('Import Preferences from file'), ''), self
+            '%s...\t%s' % (_('Import Preferences from file'), ''), self
         )
         self.menufile_backup.addAction(self.menufileimportpref)
 
         # Export Preferences
         self.menufileexportpref = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/backup_export24.png'),
-            '%s\t%s...' % (_('Export Preferences to file'), ''), self)
+            '%s...\t%s' % (_('Export Preferences to file'), ''), self)
         self.menufile_backup.addAction(self.menufileexportpref)
 
         # Separator
