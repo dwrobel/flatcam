@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-26 18:25+0200\n"
-"PO-Revision-Date: 2020-10-26 19:28+0200\n"
+"POT-Creation-Date: 2020-10-26 21:39+0200\n"
+"PO-Revision-Date: 2020-10-26 21:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -113,13 +113,13 @@ msgstr "Segnalibri"
 #: appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
 #: appTools/ToolPcbWizard.py:212 appTools/ToolQRCode.py:527
 #: appTools/ToolQRCode.py:574 app_Main.py:1767 app_Main.py:2601
-#: app_Main.py:4345 app_Main.py:8079 app_Main.py:8118 app_Main.py:8162
-#: app_Main.py:8188 app_Main.py:8228 app_Main.py:8253 app_Main.py:8307
-#: app_Main.py:8343 app_Main.py:8387 app_Main.py:8427 app_Main.py:8468
-#: app_Main.py:8509 app_Main.py:8549 app_Main.py:8592 app_Main.py:8651
-#: app_Main.py:8683 app_Main.py:8713 app_Main.py:8888 app_Main.py:8925
-#: app_Main.py:8968 app_Main.py:9040 app_Main.py:9094 app_Main.py:9361
-#: app_Main.py:9396
+#: app_Main.py:4345 app_Main.py:8080 app_Main.py:8119 app_Main.py:8163
+#: app_Main.py:8189 app_Main.py:8229 app_Main.py:8254 app_Main.py:8308
+#: app_Main.py:8344 app_Main.py:8388 app_Main.py:8428 app_Main.py:8469
+#: app_Main.py:8510 app_Main.py:8550 app_Main.py:8593 app_Main.py:8652
+#: app_Main.py:8684 app_Main.py:8714 app_Main.py:8889 app_Main.py:8926
+#: app_Main.py:8969 app_Main.py:9041 app_Main.py:9095 app_Main.py:9362
+#: app_Main.py:9397
 msgid "Cancelled."
 msgstr "Cancellato."
 
@@ -127,8 +127,8 @@ msgstr "Cancellato."
 #: appObjects/FlatCAMCNCJob.py:1672 appObjects/FlatCAMCNCJob.py:1862
 #: appObjects/FlatCAMCNCJob.py:2311 appTools/ToolFilm.py:585
 #: appTools/ToolFilm.py:834 appTools/ToolSolderPaste.py:1097 app_Main.py:2609
-#: app_Main.py:9331 app_Main.py:9539 app_Main.py:9674 app_Main.py:9740
-#: app_Main.py:10492
+#: app_Main.py:9332 app_Main.py:9540 app_Main.py:9675 app_Main.py:9741
+#: app_Main.py:10493
 msgid ""
 "Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -683,7 +683,7 @@ msgstr ""
 "- Cancella -> la normale pulizia non-rame."
 
 #: appDatabase.py:596 appEditors/AppGerberEditor.py:2749
-#: appGUI/GUIElements.py:3079 appTools/ToolNCC.py:4059
+#: appTools/ToolNCC.py:4059
 msgid "Clear"
 msgstr "Pulisci"
 
@@ -1408,7 +1408,7 @@ msgstr ""
 
 #: appDatabase.py:1364 appGUI/MainGUI.py:1550
 #: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2311
-#: app_Main.py:3327 app_Main.py:4282 app_Main.py:4528 app_Main.py:8739
+#: app_Main.py:3327 app_Main.py:4282 app_Main.py:4528 app_Main.py:8740
 msgid "Cancel"
 msgstr "Cancellare"
 
@@ -1496,7 +1496,7 @@ msgstr "Copia da DB"
 msgid "Delete from DB"
 msgstr "Cancella da DB"
 
-#: appDatabase.py:1656 appTranslation.py:209 app_Main.py:3321 app_Main.py:8733
+#: appDatabase.py:1656 appTranslation.py:209 app_Main.py:3321 app_Main.py:8734
 msgid "Save changes"
 msgstr "Salva modifiche"
 
@@ -2430,7 +2430,7 @@ msgstr "Minimo"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
 #: appTools/ToolExtractDrills.py:557 appTools/ToolExtractDrills.py:678
 #: appTools/ToolPunchGerber.py:849 appTools/ToolPunchGerber.py:965
-#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889 app_Main.py:7793
+#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889 app_Main.py:7794
 msgid "Value"
 msgstr "Valore"
 
@@ -3749,8 +3749,8 @@ msgstr ""
 
 #: appEditors/AppGerberEditor.py:4364 appObjects/AppObject.py:164
 #: appObjects/FlatCAMGeometry.py:1917 appParsers/ParseExcellon.py:972
-#: appTools/ToolPcbWizard.py:318 app_Main.py:7468 app_Main.py:9910
-#: app_Main.py:9970 app_Main.py:10101 app_Main.py:10166
+#: appTools/ToolPcbWizard.py:318 app_Main.py:7468 app_Main.py:9911
+#: app_Main.py:9971 app_Main.py:10102 app_Main.py:10167
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Errore interno. Vedi shell.\n"
 
@@ -4059,10 +4059,9 @@ msgstr ""
 msgid "Save Log"
 msgstr "Salva log"
 
-#: appGUI/GUIElements.py:3085 app_Main.py:2746 app_Main.py:3125
-#: app_Main.py:3298
-msgid "Close"
-msgstr "Chiudi"
+#: appGUI/GUIElements.py:3079
+msgid "Clear All"
+msgstr "Cancella tutto"
 
 #: appGUI/GUIElements.py:3094 appTools/ToolShell.py:296
 msgid "Type >help< to get started"
@@ -4206,7 +4205,6 @@ msgstr "Geometria"
 
 #: appGUI/MainGUI.py:95 appGUI/MainGUI.py:645 appGUI/MainGUI.py:756
 #: appGUI/MainGUI.py:4408 appGUI/MainGUI.py:4675 appGUI/MainGUI.py:4916
-#| msgid "No"
 msgid "N"
 msgstr "N"
 
@@ -4263,7 +4261,6 @@ msgid "Excellon"
 msgstr "Excellon"
 
 #: appGUI/MainGUI.py:105 appGUI/MainGUI.py:4406
-#| msgid "LZ"
 msgid "L"
 msgstr "L"
 
@@ -4277,7 +4274,6 @@ msgstr "Documento"
 
 #: appGUI/MainGUI.py:112 appGUI/MainGUI.py:711 appGUI/MainGUI.py:767
 #: appGUI/MainGUI.py:4668 appGUI/MainGUI.py:4780 appGUI/MainGUI.py:4912
-#| msgid "ID"
 msgid "D"
 msgstr "D"
 
@@ -4285,8 +4281,8 @@ msgstr "D"
 msgid "Will create a new, empty Document Object."
 msgstr "Creerà un nuovo oggetto Documento vuoto."
 
-#: appGUI/MainGUI.py:123 appGUI/MainGUI.py:4429 app_Main.py:8180
-#: app_Main.py:8183
+#: appGUI/MainGUI.py:123 appGUI/MainGUI.py:4429 app_Main.py:8181
+#: app_Main.py:8184
 msgid "Open Project"
 msgstr "Apri progetto"
 
@@ -4295,7 +4291,7 @@ msgid "Ctrl+O"
 msgstr "Ctrl+O"
 
 #: appGUI/MainGUI.py:130 appGUI/MainGUI.py:966 appGUI/MainGUI.py:2124
-#: app_Main.py:8060 app_Main.py:8065
+#: app_Main.py:8061 app_Main.py:8066
 msgid "Open Gerber"
 msgstr "Apri Gerber"
 
@@ -4304,17 +4300,16 @@ msgid "Ctrl+G"
 msgstr "Ctrl+G"
 
 #: appGUI/MainGUI.py:135 appGUI/MainGUI.py:968 appGUI/MainGUI.py:2126
-#: app_Main.py:8100 app_Main.py:8105
+#: app_Main.py:8101 app_Main.py:8106
 msgid "Open Excellon"
 msgstr "Apri Excellon"
 
 #: appGUI/MainGUI.py:135 appGUI/MainGUI.py:779 appGUI/MainGUI.py:4425
 #: appGUI/MainGUI.py:4926
-#| msgid "Eraser\tCtrl+E"
 msgid "Ctrl+E"
 msgstr "Ctrl+E"
 
-#: appGUI/MainGUI.py:140 app_Main.py:8143 app_Main.py:8148
+#: appGUI/MainGUI.py:140 app_Main.py:8144 app_Main.py:8149
 msgid "Open G-Code"
 msgstr "Apri G-Code"
 
@@ -4404,11 +4399,11 @@ msgid "Export"
 msgstr "Esporta"
 
 #: appGUI/MainGUI.py:244 appTools/ToolQRCode.py:565 appTools/ToolQRCode.py:569
-#: app_Main.py:8298 app_Main.py:8302
+#: app_Main.py:8299 app_Main.py:8303
 msgid "Export SVG"
 msgstr "Esporta SVG"
 
-#: appGUI/MainGUI.py:249 app_Main.py:8642 app_Main.py:8646
+#: appGUI/MainGUI.py:249 app_Main.py:8643 app_Main.py:8647
 msgid "Export DXF"
 msgstr "Esporta DXF"
 
@@ -4426,7 +4421,7 @@ msgstr ""
 "l'immagine salvata conterrà le informazioni\n"
 "visive attualmente nell'area del grafico FlatCAM."
 
-#: appGUI/MainGUI.py:268 app_Main.py:8540 app_Main.py:8544
+#: appGUI/MainGUI.py:268 app_Main.py:8541 app_Main.py:8545
 msgid "Export Excellon"
 msgstr "Esporta Excellon"
 
@@ -4440,7 +4435,7 @@ msgstr ""
 "il formato delle coordinate, le unità di file e gli zeri\n"
 "sono impostati in Preferenze -> Esporta Excellon."
 
-#: appGUI/MainGUI.py:278 app_Main.py:8583 app_Main.py:8587
+#: appGUI/MainGUI.py:278 app_Main.py:8584 app_Main.py:8588
 msgid "Export Gerber"
 msgstr "Esporta Gerber"
 
@@ -4587,7 +4582,6 @@ msgid "Copy"
 msgstr "Copia"
 
 #: appGUI/MainGUI.py:414 appGUI/MainGUI.py:4423
-#| msgid "Copy\tCtrl+C"
 msgid "Ctrl+C"
 msgstr "Ctrl+C"
 
@@ -4603,7 +4597,6 @@ msgstr "Imposta origine"
 
 #: appGUI/MainGUI.py:426 appGUI/MainGUI.py:633 appGUI/MainGUI.py:4409
 #: appGUI/MainGUI.py:4676
-#| msgid "Ok"
 msgid "O"
 msgstr "O"
 
@@ -4809,7 +4802,6 @@ msgid "Ctrl+F10"
 msgstr "Ctrl+F10"
 
 #: appGUI/MainGUI.py:539
-#| msgid "Toggle Project/Sel/Tool\t`"
 msgid "Toggle Project/Properties/Tool"
 msgstr "(Dis)attiva Progetto/Sel/Strumento"
 
@@ -4947,7 +4939,6 @@ msgstr "Aggiungi rettangolo"
 
 #: appGUI/MainGUI.py:641 appGUI/MainGUI.py:724 appGUI/MainGUI.py:4412
 #: appGUI/MainGUI.py:4678 appGUI/MainGUI.py:4784 appGUI/MainGUI.py:4918
-#| msgid "FR"
 msgid "R"
 msgstr "R"
 
@@ -4972,7 +4963,6 @@ msgstr "Aggiungi Testo"
 #: appGUI/MainGUI.py:653 appGUI/MainGUI.py:753 appGUI/MainGUI.py:4414
 #: appGUI/MainGUI.py:4680 appGUI/MainGUI.py:4785 appGUI/MainGUI.py:4920
 #: appGUI/MainGUI.py:4921
-#| msgid "TT"
 msgid "T"
 msgstr "T"
 
@@ -4981,7 +4971,6 @@ msgid "Polygon Union"
 msgstr "Unione Poligono"
 
 #: appGUI/MainGUI.py:657 appGUI/MainGUI.py:4681
-#| msgid "Up"
 msgid "U"
 msgstr "U"
 
@@ -5003,7 +4992,6 @@ msgstr "Copia Geometria"
 
 #: appGUI/MainGUI.py:673 appGUI/MainGUI.py:728 appGUI/MainGUI.py:787
 #: appGUI/MainGUI.py:4667 appGUI/MainGUI.py:4779 appGUI/MainGUI.py:4911
-#| msgid "CW"
 msgid "C"
 msgstr "C"
 
@@ -5020,12 +5008,10 @@ msgstr "Sposta"
 #: appGUI/MainGUI.py:681 appGUI/MainGUI.py:737 appGUI/MainGUI.py:795
 #: appGUI/MainGUI.py:4407 appGUI/MainGUI.py:4673 appGUI/MainGUI.py:4674
 #: appGUI/MainGUI.py:4782 appGUI/MainGUI.py:4915
-#| msgid "MM"
 msgid "M"
 msgstr "M"
 
 #: appGUI/MainGUI.py:688 appGUI/MainGUI.py:4670
-#| msgid "ID"
 msgid "I"
 msgstr "I"
 
@@ -5061,7 +5047,6 @@ msgid "Add Slot"
 msgstr "Aggiungi Slot"
 
 #: appGUI/MainGUI.py:719 appGUI/MainGUI.py:4786
-#| msgid "CW"
 msgid "W"
 msgstr "W"
 
@@ -5140,47 +5125,47 @@ msgstr "Disabilita Plot"
 msgid "Set Color"
 msgstr "Imposta Colore"
 
-#: appGUI/MainGUI.py:821 app_Main.py:7736
+#: appGUI/MainGUI.py:821 app_Main.py:7737
 msgid "Red"
 msgstr "Rosso"
 
-#: appGUI/MainGUI.py:824 app_Main.py:7738
+#: appGUI/MainGUI.py:824 app_Main.py:7739
 msgid "Blue"
 msgstr "Blu"
 
-#: appGUI/MainGUI.py:827 app_Main.py:7741
+#: appGUI/MainGUI.py:827 app_Main.py:7742
 msgid "Yellow"
 msgstr "Giallo"
 
-#: appGUI/MainGUI.py:830 app_Main.py:7743
+#: appGUI/MainGUI.py:830 app_Main.py:7744
 msgid "Green"
 msgstr "Verde"
 
-#: appGUI/MainGUI.py:833 app_Main.py:7745
+#: appGUI/MainGUI.py:833 app_Main.py:7746
 msgid "Purple"
 msgstr "Porpora"
 
-#: appGUI/MainGUI.py:836 app_Main.py:7747
+#: appGUI/MainGUI.py:836 app_Main.py:7748
 msgid "Brown"
 msgstr "Marrone"
 
-#: appGUI/MainGUI.py:839 app_Main.py:7749 app_Main.py:7808
+#: appGUI/MainGUI.py:839 app_Main.py:7750 app_Main.py:7809
 msgid "White"
 msgstr "Bianco"
 
-#: appGUI/MainGUI.py:842 app_Main.py:7751
+#: appGUI/MainGUI.py:842 app_Main.py:7752
 msgid "Black"
 msgstr "Nero"
 
-#: appGUI/MainGUI.py:847 app_Main.py:7754
+#: appGUI/MainGUI.py:847 app_Main.py:7755
 msgid "Custom"
 msgstr "Personalizzato"
 
-#: appGUI/MainGUI.py:852 app_Main.py:7788
+#: appGUI/MainGUI.py:852 app_Main.py:7789
 msgid "Opacity"
 msgstr "Trasparenza"
 
-#: appGUI/MainGUI.py:855 app_Main.py:7764
+#: appGUI/MainGUI.py:855 app_Main.py:7765
 msgid "Default"
 msgstr "Valori di default"
 
@@ -5522,12 +5507,12 @@ msgstr ""
 msgid "TCL Shell"
 msgstr "Shell TCL"
 
-#: appGUI/MainGUI.py:1333 appGUI/MainGUI.py:1582 app_Main.py:9031
+#: appGUI/MainGUI.py:1333 appGUI/MainGUI.py:1582 app_Main.py:9032
 msgid "Project"
 msgstr "Progetto"
 
 #: appGUI/MainGUI.py:1376 appGUI/MainGUI.py:1384 appGUI/MainGUI.py:3918
-#: appGUI/MainGUI.py:3924 app_Main.py:2494 app_Main.py:8839
+#: appGUI/MainGUI.py:3924 app_Main.py:2494 app_Main.py:8840
 msgid "Plot Area"
 msgstr "Area Grafica"
 
@@ -5708,7 +5693,7 @@ msgstr "Sicuro di voler cancellare le impostazioni GUI?\n"
 #: appGUI/MainGUI.py:2099 appGUI/preferences/PreferencesUIManager.py:931
 #: appGUI/preferences/PreferencesUIManager.py:1177 appTranslation.py:111
 #: appTranslation.py:213 app_Main.py:2309 app_Main.py:3325 app_Main.py:5750
-#: app_Main.py:8737
+#: app_Main.py:8738
 msgid "Yes"
 msgstr "Sì"
 
@@ -5720,7 +5705,7 @@ msgstr "Sì"
 #: appTools/ToolDrilling.py:2090 appTools/ToolIsolation.py:3066
 #: appTools/ToolMilling.py:1695 appTools/ToolNCC.py:3935
 #: appTools/ToolPaint.py:2851 appTranslation.py:112 appTranslation.py:214
-#: app_Main.py:2310 app_Main.py:3326 app_Main.py:5751 app_Main.py:8738
+#: app_Main.py:2310 app_Main.py:3326 app_Main.py:5751 app_Main.py:8739
 msgid "No"
 msgstr "No"
 
@@ -6142,7 +6127,6 @@ msgstr "Aggiorna plot"
 #: appGUI/MainGUI.py:4491 appGUI/MainGUI.py:4492 appGUI/MainGUI.py:4696
 #: appGUI/MainGUI.py:4788 appGUI/MainGUI.py:4789 appGUI/MainGUI.py:4922
 #: appGUI/MainGUI.py:4923
-#| msgid "Dwell"
 msgid "Del"
 msgstr "Del"
 
@@ -8161,7 +8145,7 @@ msgid "Preferences default values are restored."
 msgstr "I valori predefiniti delle preferenze vengono ripristinati."
 
 #: appGUI/preferences/PreferencesUIManager.py:1068 app_Main.py:2633
-#: app_Main.py:9407
+#: app_Main.py:9408
 msgid "Failed to write defaults to file."
 msgstr "Impossibile scrivere le impostazioni predefinite nel file."
 
@@ -15964,7 +15948,7 @@ msgstr "Strumento Immagine"
 msgid "Import IMAGE"
 msgstr "Importa IMMAGINE"
 
-#: appTools/ToolImage.py:142 app_Main.py:9793 app_Main.py:9843
+#: appTools/ToolImage.py:142 app_Main.py:9794 app_Main.py:9844
 msgid ""
 "Not supported type is picked as parameter. Only Geometry and Gerber are "
 "supported"
@@ -15974,9 +15958,9 @@ msgstr "Parametro non supportato. Utilizzare solo Geometrie o Gerber"
 msgid "Importing Image"
 msgstr "Importo immagine"
 
-#: appTools/ToolImage.py:162 appTools/ToolPDF.py:154 app_Main.py:9821
-#: app_Main.py:9876 app_Main.py:9940 app_Main.py:10003 app_Main.py:10069
-#: app_Main.py:10134 app_Main.py:10191
+#: appTools/ToolImage.py:162 appTools/ToolPDF.py:154 app_Main.py:9822
+#: app_Main.py:9877 app_Main.py:9941 app_Main.py:10004 app_Main.py:10070
+#: app_Main.py:10135 app_Main.py:10192
 msgid "Opened"
 msgstr "Aperto"
 
@@ -16810,11 +16794,11 @@ msgstr "Apertura PDF annullata"
 msgid "Parsing PDF file ..."
 msgstr "Analisi file PDF ..."
 
-#: appTools/ToolPDF.py:138 app_Main.py:10034
+#: appTools/ToolPDF.py:138 app_Main.py:10035
 msgid "Failed to open"
 msgstr "Errore di apertura"
 
-#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:331 app_Main.py:9983
+#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:331 app_Main.py:9984
 msgid "No geometry found in file"
 msgstr "Nessuna geometria trovata nel file"
 
@@ -17236,7 +17220,7 @@ msgstr "File PcbWizard caricato."
 msgid "Main PcbWizard Excellon file loaded."
 msgstr "File principale PcbWizard caricato."
 
-#: appTools/ToolPcbWizard.py:310 app_Main.py:9963
+#: appTools/ToolPcbWizard.py:310 app_Main.py:9964
 msgid "This is not Excellon file."
 msgstr "Non è un file Excellon."
 
@@ -17367,9 +17351,9 @@ msgstr ""
 "l'altro ha estensione .INF."
 
 #: appTools/ToolProperties.py:112 appTools/ToolTransform.py:142
-#: app_Main.py:4911 app_Main.py:8267 app_Main.py:8365 app_Main.py:8405
-#: app_Main.py:8445 app_Main.py:8486 app_Main.py:8527 app_Main.py:8570
-#: app_Main.py:8613 app_Main.py:9072 app_Main.py:9076
+#: app_Main.py:4911 app_Main.py:8268 app_Main.py:8366 app_Main.py:8406
+#: app_Main.py:8446 app_Main.py:8487 app_Main.py:8528 app_Main.py:8571
+#: app_Main.py:8614 app_Main.py:9073 app_Main.py:9077
 msgid "No object selected."
 msgstr "Nessun oggetto selezionato."
 
@@ -18307,7 +18291,7 @@ msgstr ""
 "Inizializzazione della Grafica avviata.\n"
 "Inizializzazione della Grafica completata"
 
-#: app_Main.py:1275 app_Main.py:8845
+#: app_Main.py:1275 app_Main.py:8846
 msgid "New Project - Not saved"
 msgstr "Nuovo progetto - Non salvato"
 
@@ -18423,6 +18407,10 @@ msgstr "DOWNLOAD"
 #: app_Main.py:2742
 msgid "Issue tracker"
 msgstr "Flusso problemi"
+
+#: app_Main.py:2746 app_Main.py:3125 app_Main.py:3298
+msgid "Close"
+msgstr "Chiudi"
 
 #: app_Main.py:2761
 msgid "Licensed under the MIT license"
@@ -18716,8 +18704,8 @@ msgstr ""
 "\n"
 "Vuoi continuare?"
 
-#: app_Main.py:4281 app_Main.py:4444 app_Main.py:4527 app_Main.py:8273
-#: app_Main.py:8288 app_Main.py:8619 app_Main.py:8631
+#: app_Main.py:4281 app_Main.py:4444 app_Main.py:4527 app_Main.py:8274
+#: app_Main.py:8289 app_Main.py:8620 app_Main.py:8632
 msgid "Ok"
 msgstr "Ok"
 
@@ -19088,24 +19076,24 @@ msgstr "Tracce selezionate attive..."
 msgid "Selected plots disabled..."
 msgstr "Tracce selezionate disattive..."
 
-#: app_Main.py:7611
+#: app_Main.py:7612
 msgid "Enabling plots ..."
 msgstr "Abilitazione tracce ..."
 
-#: app_Main.py:7656
+#: app_Main.py:7659
 msgid "Disabling plots ..."
 msgstr "Disabilitazione tracce ..."
 
-#: app_Main.py:7681
+#: app_Main.py:7682
 msgid "Working ..."
 msgstr "Elaborazione ..."
 
-#: app_Main.py:7793
+#: app_Main.py:7794
 msgid "Set alpha level ..."
 msgstr "Imposta livello alfa ..."
 
-#: app_Main.py:8071 app_Main.py:8110 app_Main.py:8154 app_Main.py:8220
-#: app_Main.py:8946 app_Main.py:10204 app_Main.py:10266
+#: app_Main.py:8072 app_Main.py:8111 app_Main.py:8155 app_Main.py:8221
+#: app_Main.py:8947 app_Main.py:10205 app_Main.py:10267
 msgid ""
 "Canvas initialization started.\n"
 "Canvas initialization finished in"
@@ -19113,94 +19101,94 @@ msgstr ""
 "Inizializzazione della tela avviata.\n"
 "Inizializzazione della tela completata"
 
-#: app_Main.py:8074
+#: app_Main.py:8075
 msgid "Opening Gerber file."
 msgstr "Apertura file Gerber."
 
-#: app_Main.py:8113
+#: app_Main.py:8114
 msgid "Opening Excellon file."
 msgstr "Apertura file Excellon."
 
-#: app_Main.py:8157
+#: app_Main.py:8158
 msgid "Opening G-Code file."
 msgstr "Apertura file G-Code."
 
-#: app_Main.py:8211 app_Main.py:8215
+#: app_Main.py:8212 app_Main.py:8216
 msgid "Open HPGL2"
 msgstr "Apri HPGL2"
 
-#: app_Main.py:8223
+#: app_Main.py:8224
 msgid "Opening HPGL2 file."
 msgstr "Apertura file HPGL2."
 
-#: app_Main.py:8246 app_Main.py:8249
+#: app_Main.py:8247 app_Main.py:8250
 msgid "Open Configuration File"
 msgstr "Apri file di configurazione"
 
-#: app_Main.py:8268 app_Main.py:8614
+#: app_Main.py:8269 app_Main.py:8615
 msgid "Please Select a Geometry object to export"
 msgstr "Selezionare un oggetto geometria da esportare"
 
-#: app_Main.py:8283
+#: app_Main.py:8284
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "Possono essere usati solo geometrie, gerber od oggetti CNCJob."
 
-#: app_Main.py:8328
+#: app_Main.py:8329
 msgid "Data must be a 3D array with last dimension 3 or 4"
 msgstr "I dati devono essere una matrice 3D con ultima dimensione pari a 3 o 4"
 
-#: app_Main.py:8334 app_Main.py:8338
+#: app_Main.py:8335 app_Main.py:8339
 msgid "Export PNG Image"
 msgstr "Esporta immagine PNG"
 
-#: app_Main.py:8370 app_Main.py:8575
+#: app_Main.py:8371 app_Main.py:8576
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr "Errore. Solo oggetti Gerber possono essere salvati come file Gerber..."
 
-#: app_Main.py:8382
+#: app_Main.py:8383
 msgid "Save Gerber source file"
 msgstr "Salva il file sorgente Gerber"
 
-#: app_Main.py:8410
+#: app_Main.py:8411
 msgid "Failed. Only Script objects can be saved as TCL Script files..."
 msgstr ""
 "Errore. Solo oggetti Script possono essere salvati come file Script TCL..."
 
-#: app_Main.py:8422
+#: app_Main.py:8423
 msgid "Save Script source file"
 msgstr "Salva il file sorgente dello Script"
 
-#: app_Main.py:8450
+#: app_Main.py:8451
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
 "Errore. Solo oggetti Documenti possono essere salvati come file Documenti..."
 
-#: app_Main.py:8462
+#: app_Main.py:8463
 msgid "Save Document source file"
 msgstr "Salva il file di origine del Documento"
 
-#: app_Main.py:8491 app_Main.py:8532 app_Main.py:9448
+#: app_Main.py:8492 app_Main.py:8533 app_Main.py:9449
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "Errore. Solo oggetti Excellon possono essere salvati come file Excellon..."
 
-#: app_Main.py:8499 app_Main.py:8504
+#: app_Main.py:8500 app_Main.py:8505
 msgid "Save Excellon source file"
 msgstr "Salva il file sorgente di Excellon"
 
-#: app_Main.py:8626
+#: app_Main.py:8627
 msgid "Only Geometry objects can be used."
 msgstr "Possono essere usate solo oggetti Geometrie."
 
-#: app_Main.py:8670 app_Main.py:8674
+#: app_Main.py:8671 app_Main.py:8675
 msgid "Import SVG"
 msgstr "Importa SVG"
 
-#: app_Main.py:8700 app_Main.py:8704
+#: app_Main.py:8701 app_Main.py:8705
 msgid "Import DXF"
 msgstr "Importa DXF"
 
-#: app_Main.py:8730
+#: app_Main.py:8731
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -19210,167 +19198,167 @@ msgstr ""
 "Creare un nuovo progetto li cancellerà.\n"
 "Vuoi salvare il progetto?"
 
-#: app_Main.py:8753
+#: app_Main.py:8754
 msgid "New Project created"
 msgstr "Nuovo progetto creato"
 
-#: app_Main.py:8855
+#: app_Main.py:8856
 msgid "New TCL script file created in Code Editor."
 msgstr "Nuovo Script TCL creato nell'edito di codice."
 
-#: app_Main.py:8882 app_Main.py:8884 app_Main.py:8919 app_Main.py:8921
+#: app_Main.py:8883 app_Main.py:8885 app_Main.py:8920 app_Main.py:8922
 msgid "Open TCL script"
 msgstr "Apri Script TCL"
 
-#: app_Main.py:8948
+#: app_Main.py:8949
 msgid "Executing ScriptObject file."
 msgstr "Esecuzione file oggetto Script."
 
-#: app_Main.py:8956 app_Main.py:8960
+#: app_Main.py:8957 app_Main.py:8961
 msgid "Run TCL script"
 msgstr "Esegui Script TCL"
 
-#: app_Main.py:8983
+#: app_Main.py:8984
 msgid "TCL script file opened in Code Editor and executed."
 msgstr "Fil script TCL aperto nell'edito ed eseguito."
 
-#: app_Main.py:9029 app_Main.py:9035
+#: app_Main.py:9030 app_Main.py:9036
 msgid "Save Project As ..."
 msgstr "Salva progetto come ..."
 
-#: app_Main.py:9069
+#: app_Main.py:9070
 msgid "FlatCAM objects print"
 msgstr "Stampa oggetto FlatCAM"
 
-#: app_Main.py:9082 app_Main.py:9089
+#: app_Main.py:9083 app_Main.py:9090
 msgid "Save Object as PDF ..."
 msgstr "Salva oggetto come PDF ..."
 
-#: app_Main.py:9098
+#: app_Main.py:9099
 msgid "Printing PDF ... Please wait."
 msgstr "Stampa PDF ... Attendere."
 
-#: app_Main.py:9273
+#: app_Main.py:9274
 msgid "PDF file saved to"
 msgstr "File PDF salvato in"
 
-#: app_Main.py:9295
+#: app_Main.py:9296
 msgid "Exporting SVG"
 msgstr "Esportazione SVG"
 
-#: app_Main.py:9338
+#: app_Main.py:9339
 msgid "SVG file exported to"
 msgstr "File SVG esportato in"
 
-#: app_Main.py:9353 app_Main.py:9357
+#: app_Main.py:9354 app_Main.py:9358
 msgid "Import FlatCAM Preferences"
 msgstr "Importa le preferenze di FlatCAM"
 
-#: app_Main.py:9368
+#: app_Main.py:9369
 msgid "Imported Defaults from"
 msgstr "Predefiniti importati da"
 
-#: app_Main.py:9387 app_Main.py:9393
+#: app_Main.py:9388 app_Main.py:9394
 msgid "Export FlatCAM Preferences"
 msgstr "Esporta le preferenze di FlatCAM"
 
-#: app_Main.py:9413
+#: app_Main.py:9414
 msgid "Exported preferences to"
 msgstr "Preferenze esportate in"
 
-#: app_Main.py:9546
+#: app_Main.py:9547
 msgid "Excellon file exported to"
 msgstr "File Excellon esportato in"
 
-#: app_Main.py:9555
+#: app_Main.py:9556
 msgid "Exporting Excellon"
 msgstr "Esportazione Excellon"
 
-#: app_Main.py:9560 app_Main.py:9567
+#: app_Main.py:9561 app_Main.py:9568
 msgid "Could not export Excellon file."
 msgstr "Impossibile esportare file Excellon."
 
-#: app_Main.py:9681
+#: app_Main.py:9682
 msgid "Gerber file exported to"
 msgstr "File Gerber esportato in"
 
-#: app_Main.py:9689
+#: app_Main.py:9690
 msgid "Exporting Gerber"
 msgstr "Esportazione Gerber"
 
-#: app_Main.py:9694 app_Main.py:9701
+#: app_Main.py:9695 app_Main.py:9702
 msgid "Could not export file."
 msgstr "Impossibile esportare il file."
 
-#: app_Main.py:9747
+#: app_Main.py:9748
 msgid "DXF file exported to"
 msgstr "File DXF esportato in"
 
-#: app_Main.py:9756
+#: app_Main.py:9757
 msgid "Exporting DXF"
 msgstr "Esportazione DXF"
 
-#: app_Main.py:9761 app_Main.py:9768
+#: app_Main.py:9762 app_Main.py:9769
 msgid "Could not export DXF file."
 msgstr "Impossibile esportare file DXF."
 
-#: app_Main.py:9806
+#: app_Main.py:9807
 msgid "Importing SVG"
 msgstr "Importazione SVG"
 
-#: app_Main.py:9814 app_Main.py:9869
+#: app_Main.py:9815 app_Main.py:9870
 msgid "Import failed."
 msgstr "Importazione fallita."
 
-#: app_Main.py:9861
+#: app_Main.py:9862
 msgid "Importing DXF"
 msgstr "Importazione DXF"
 
-#: app_Main.py:9902 app_Main.py:10093 app_Main.py:10158
+#: app_Main.py:9903 app_Main.py:10094 app_Main.py:10159
 msgid "Failed to open file"
 msgstr "Errore nell'apertura file"
 
-#: app_Main.py:9905 app_Main.py:10096 app_Main.py:10161
+#: app_Main.py:9906 app_Main.py:10097 app_Main.py:10162
 msgid "Failed to parse file"
 msgstr "Errore nell'analisi del file"
 
-#: app_Main.py:9917
+#: app_Main.py:9918
 msgid "Object is not Gerber file or empty. Aborting object creation."
 msgstr "L'oggetto non è Gerber o è vuoto. Annullo creazione oggetto."
 
-#: app_Main.py:9922
+#: app_Main.py:9923
 msgid "Opening Gerber"
 msgstr "Apertura Gerber"
 
-#: app_Main.py:9933
+#: app_Main.py:9934
 msgid "Open Gerber failed. Probable not a Gerber file."
 msgstr "Apertura Gerber fallita. Forse non è un file Gerber."
 
-#: app_Main.py:9966
+#: app_Main.py:9967
 msgid "Cannot open file"
 msgstr "Impossibile aprire il file"
 
-#: app_Main.py:9986
+#: app_Main.py:9987
 msgid "Opening Excellon."
 msgstr "Apertura Excellon."
 
-#: app_Main.py:9996
+#: app_Main.py:9997
 msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Apertura Excellon fallita. Forse non è un file Excellon."
 
-#: app_Main.py:10028
+#: app_Main.py:10029
 msgid "Reading GCode file"
 msgstr "Lettura file GCode"
 
-#: app_Main.py:10041
+#: app_Main.py:10042
 msgid "This is not GCODE"
 msgstr "Non è G-CODE"
 
-#: app_Main.py:10046
+#: app_Main.py:10047
 msgid "Opening G-Code."
 msgstr "Apertura G-Code."
 
-#: app_Main.py:10059
+#: app_Main.py:10060
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -19382,83 +19370,83 @@ msgstr ""
 " Tentativo di creazione di oggetto FlatCAM CNCJob da file G-Code fallito "
 "durante l'analisi"
 
-#: app_Main.py:10115
+#: app_Main.py:10116
 msgid "Object is not HPGL2 file or empty. Aborting object creation."
 msgstr "L'oggetto non è un file HPGL2 o è vuoto. Annullo creazione oggetto."
 
-#: app_Main.py:10120
+#: app_Main.py:10121
 msgid "Opening HPGL2"
 msgstr "Apertura HPGL2"
 
-#: app_Main.py:10127
+#: app_Main.py:10128
 msgid " Open HPGL2 failed. Probable not a HPGL2 file."
 msgstr " Apertura HPGL2 fallita. Forse non è un file HPGL2."
 
-#: app_Main.py:10153
+#: app_Main.py:10154
 msgid "TCL script file opened in Code Editor."
 msgstr "Script TCL aperto nell'editor."
 
-#: app_Main.py:10173
+#: app_Main.py:10174
 msgid "Opening TCL Script..."
 msgstr "Apertura Script TCL..."
 
-#: app_Main.py:10184
+#: app_Main.py:10185
 msgid "Failed to open TCL Script."
 msgstr "Errore nell'apertura dello Script TCL."
 
-#: app_Main.py:10207
+#: app_Main.py:10208
 msgid "Opening FlatCAM Config file."
 msgstr "Apertura file di configurazione FlatCAM."
 
-#: app_Main.py:10234
+#: app_Main.py:10235
 msgid "Failed to open config file"
 msgstr "Errore nell'apertura sel file di configurazione"
 
-#: app_Main.py:10263
+#: app_Main.py:10264
 msgid "Loading Project ... Please Wait ..."
 msgstr "Apertura progetto … Attendere ..."
 
-#: app_Main.py:10269
+#: app_Main.py:10270
 msgid "Opening FlatCAM Project file."
 msgstr "Apertura file progetto FlatCAM."
 
-#: app_Main.py:10284 app_Main.py:10288 app_Main.py:10306
+#: app_Main.py:10285 app_Main.py:10289 app_Main.py:10307
 msgid "Failed to open project file"
 msgstr "Errore nell'apertura file progetto"
 
-#: app_Main.py:10346
+#: app_Main.py:10347
 msgid "Loading Project ... restoring"
 msgstr "Apertura progetto … ripristino"
 
-#: app_Main.py:10350
+#: app_Main.py:10351
 msgid "Project loaded from"
 msgstr "Progetto caricato da"
 
-#: app_Main.py:10379
+#: app_Main.py:10380
 msgid "Saving FlatCAM Project"
 msgstr "Salva progetto FlatCAM"
 
-#: app_Main.py:10401 app_Main.py:10437
+#: app_Main.py:10402 app_Main.py:10438
 msgid "Project saved to"
 msgstr "Progetto salvato in"
 
-#: app_Main.py:10408
+#: app_Main.py:10409
 msgid "The object is used by another application."
 msgstr "L'oggetto è usato da un'altra applicazione."
 
-#: app_Main.py:10422
+#: app_Main.py:10423
 msgid "Failed to verify project file"
 msgstr "Errore durante l'analisi del file progetto"
 
-#: app_Main.py:10422 app_Main.py:10430 app_Main.py:10440
+#: app_Main.py:10423 app_Main.py:10431 app_Main.py:10441
 msgid "Retry to save it."
 msgstr "Ritenta il salvataggio."
 
-#: app_Main.py:10430 app_Main.py:10440
+#: app_Main.py:10431 app_Main.py:10441
 msgid "Failed to parse saved project file"
 msgstr "Errore nell'analisi del progetto salvato"
 
-#: app_Main.py:10477
+#: app_Main.py:10478
 msgid "Save cancelled because source file is empty. Try to export the file."
 msgstr ""
 "Salvataggio annullato a causa di sorgenti vuoti. Provare ad esportare il "

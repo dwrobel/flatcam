@@ -7663,8 +7663,6 @@ class App(QtCore.QObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=False)
-                for plot_obj in objs:
-                    plot_obj.shapes.redraw()
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
