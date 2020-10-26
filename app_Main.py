@@ -7606,6 +7606,7 @@ class App(QtCore.QObject):
                 except AttributeError:
                     pass
                 obj.options.set_change_callback(obj.on_options_change)
+        self.collection.update_view()
 
         def worker_task(objs):
             with self.proc_container.new(_("Enabling plots ...")):
@@ -7652,6 +7653,8 @@ class App(QtCore.QObject):
         except Exception as e:
             log.debug("App.disable_plots() --> %s" % str(e))
 
+        self.collection.update_view()
+
         def worker_task(objs):
             with self.proc_container.new(_("Disabling plots ...")):
                 for plot_obj in objs:
@@ -7660,8 +7663,6 @@ class App(QtCore.QObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=False)
-                for plot_obj in objs:
-                    plot_obj.shapes.redraw()
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
