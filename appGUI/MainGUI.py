@@ -548,7 +548,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuhelp.addSeparator()
 
         self.menuhelp_readme = self.menuhelp.addAction(
-            QtGui.QIcon(self.app.resource_location + '/warning.png'), _('How To'))
+            QtGui.QIcon(self.app.resource_location + '/warning.png'), _("How To"))
 
         self.menuhelp_about = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/about32.png'), _('About FlatCAM'))
@@ -4317,7 +4317,7 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _("View File Source"), _("Transformations Tool"),
                     _("Subtract Tool"), _("Cutout PCB Tool"), _("Panelize PCB"),
                     _("Enable all Plots"), _("Disable all Plots"),
-                    _("Enable Non-selected Plots"), _("Disable Non-selected Plots"),
+                    _("Enable Non-selected Objects"), _("Disable Non-selected Objects"),
                     _("Toggle Full Screen"),
 
                     # CTRL + ALT section

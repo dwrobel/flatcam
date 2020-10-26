@@ -14,7 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed the enable/disable all plots functionality
 - fixed issue with the app window restored in a shifted position after doing Fullscreen
 - fixed issue with coords, delta_coords and status toolbars being disabled when entering fullscreen mode and remaining disabled after restore to normal mode
-
+- changed some of the strings (added a few in the How To section)
 
 25.10.2020
 

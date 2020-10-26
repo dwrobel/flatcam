@@ -1465,7 +1465,7 @@ class App(QtCore.QObject):
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
-        self.ui.menuhelp_readme.triggered.connect(self.on_readme)
+        self.ui.menuhelp_readme.triggered.connect(self.on_howto)
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
         self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
@@ -3015,14 +3015,14 @@ class App(QtCore.QObject):
 
         AboutDialog(app=self, parent=self.ui).exec_()
 
-    def on_readme(self):
+    def on_howto(self):
         """
         Displays the "about" dialog found in the Menu --> Help.
 
         :return: None
         """
 
-        class ReadmeDialog(QtWidgets.QDialog):
+        class HowtoDialog(QtWidgets.QDialog):
             def __init__(self, app, parent=None):
                 QtWidgets.QDialog.__init__(self, parent)
 
@@ -3033,12 +3033,12 @@ class App(QtCore.QObject):
                                     "<b>click</b></a>"
 
                 bugs_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/issues/new'<b>click</b></a>"
-                # donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
-                #                 "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
+                donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
+                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
-                self.setWindowTitle(_("Important Information's"))
+                self.setWindowTitle('%s ...' % _("How To"))
                 self.resize(750, 375)
 
                 logo = QtWidgets.QLabel()
@@ -3076,6 +3076,7 @@ class App(QtCore.QObject):
                 #     )
                 # )
 
+                # font-weight: bold;
                 content = QtWidgets.QLabel(
                     "%s<br>"
                     "%s<br><br>"
@@ -3084,7 +3085,10 @@ class App(QtCore.QObject):
                     "<ul>"
                     "<li> &nbsp;%s %s</li>"
                     "<li> &nbsp;%s %s</li>"
-                    "</ul>" %
+                    "</ul>"
+                    "<br><br>"
+                    "%s <br>"
+                    "<span style='color: blue;'>%s</span> %s %s<br>" %
                     (
                         _("This program is %s and free in a very wide meaning of the word.") % open_source_link,
                         _("Yet it cannot evolve without <b>contributions</b>."),
@@ -3093,7 +3097,10 @@ class App(QtCore.QObject):
                         _("Pull Requests on the Bitbucket repository, if you are a developer"),
                         new_features_link,
                         _("Bug Reports by providing the steps required to reproduce the bug"),
-                        bugs_link
+                        bugs_link,
+                        _("If you like what you have seen so far ..."),
+                        _("Donations are NOT required."), _("But they are welcomed"),
+                        donation_link
                     )
                 )
                 content.setOpenExternalLinks(True)
@@ -3183,7 +3190,7 @@ class App(QtCore.QObject):
                 # BUTTONS section
                 closebtn.clicked.connect(self.accept)
 
-        ReadmeDialog(app=self, parent=self.ui).exec_()
+        HowtoDialog(app=self, parent=self.ui).exec_()
 
     def install_bookmarks(self, book_dict=None):
         """
@@ -5829,8 +5836,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected to Flip on X axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Flip on X axis."))
         else:
             try:
                 # first get a bounding box to fit all
