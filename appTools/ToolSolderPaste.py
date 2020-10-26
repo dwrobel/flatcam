@@ -300,7 +300,7 @@ class SolderPaste(AppTool):
                 if int(tooluid_key) == tooluid:
                     self.set_form(deepcopy(tooluid_value['data']))
         except Exception as e:
-            log.debug("FlatCAMObj ---> update_ui() " + str(e))
+            log.debug("ToolSolderPaste ---> update_ui() " + str(e))
 
         self.ui_connect()
 

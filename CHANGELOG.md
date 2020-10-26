@@ -15,6 +15,11 @@ CHANGELOG for FlatCAM beta
 - fixed issue with the app window restored in a shifted position after doing Fullscreen
 - fixed issue with coords, delta_coords and status toolbars being disabled when entering fullscreen mode and remaining disabled after restore to normal mode
 - changed some of the strings (added a few in the How To section)
+- more strings updated
+- modified the shortcut strings and the way the shortcuts were listed in the Shortcut keys list such that it will allow a future Shortcuts Manager
+- updated all the language strings according to the modifications done above
+- fixed a small issue with using the shortcut key for toggling the display of Properties tab
+
 
 25.10.2020
 

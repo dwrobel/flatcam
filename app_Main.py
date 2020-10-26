@@ -487,7 +487,7 @@ class App(QtCore.QObject):
             self.splash.move(current_screen_center - self.splash.rect().center())
 
             self.splash.show()
-            self.splash.showMessage(_("FlatCAM is initializing ..."),
+            self.splash.showMessage(_("The application is initializing ..."),
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
         else:
@@ -720,7 +720,7 @@ class App(QtCore.QObject):
         self.axes = None
 
         if show_splash:
-            self.splash.showMessage(_("FlatCAM is initializing ...\n"
+            self.splash.showMessage(_("The application is initializing ...\n"
                                       "Canvas initialization started."),
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
@@ -740,7 +740,7 @@ class App(QtCore.QObject):
         self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
 
         if show_splash:
-            self.splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
+            self.splash.showMessage('%s: %ssec' % (_("The application is initializing ...\n"
                                                      "Canvas initialization started.\n"
                                                      "Canvas initialization finished in"), '%.2f' % self.used_time),
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
@@ -2710,7 +2710,7 @@ class App(QtCore.QObject):
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
-                self.setWindowTitle(_("About FlatCAM"))
+                self.setWindowTitle(_("About"))
                 self.resize(600, 200)
                 # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
                 # self.setStyleSheet(
@@ -3288,7 +3288,7 @@ class App(QtCore.QObject):
                          "1. FlatCAM.org website is down\n"
                          "2. Someone forked FlatCAM project and wants to point\n"
                          "to his own website\n\n"
-                         "If you can't get any informations about FlatCAM beta\n"
+                         "If you can't get any informations about the application\n"
                          "use the YouTube channel link from the Help menu."))
 
         msgbox.setWindowTitle(_("Alternative website"))
@@ -6148,7 +6148,7 @@ class App(QtCore.QObject):
 
         if name == 'project':
             self.ui.notebook.setCurrentWidget(self.ui.project_tab)
-        elif name == 'selected':
+        elif name == 'properties':
             self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
