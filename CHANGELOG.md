@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.10.2020
+
+- added a new menu entry and functionality in the View category: enable all non-selected (shortcut key ALT+3)
+- fixed shortcut keys for a number of functionality and in some cases added some new
+- fixed the enable/disable all plots functionality
+- fixed issue with the app window restored in a shifted position after doing Fullscreen
+- fixed issue with coords, delta_coords and status toolbars being disabled when entering fullscreen mode and remaining disabled after restore to normal mode
+
+
 25.10.2020
 
 - updated the Italian translation (by Massimiliano Golfetto)

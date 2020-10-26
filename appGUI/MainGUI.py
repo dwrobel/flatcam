@@ -455,8 +455,11 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tAlt+1'))
         self.menuviewdisableall = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tAlt+2'))
+        self.menuviewenableother = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable non-selected\tAlt+3'))
         self.menuviewdisableother = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+3'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+4'))
+
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(
@@ -486,13 +489,13 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_grid = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("Toggle Grid Snap\tG"))
         self.menuview_toggle_grid_lines = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'), _("Toggle Grid Lines\tAlt+G"))
+            QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'), _("Toggle Grid Lines\tShift+G"))
         self.menuview_toggle_axis = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("Toggle Axis\tShift+G"))
+            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("Toggle Axis\tShift+A"))
         self.menuview_toggle_workspace = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
         self.menuview_toggle_hud = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+H"))
+            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tShift+H"))
 
         # ########################################################################
         # ########################## Objects # ###################################
@@ -1595,18 +1598,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.infobar.addWidget(self.delta_coords_toolbar)
-        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_show"])
+        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
 
         self.infobar.addWidget(self.coords_toolbar)
-        self.coords_toolbar.setVisible(self.app.defaults["global_coords_show"])
+        self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
 
         self.grid_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.grid_toolbar)
-        self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
+        self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
-        self.status_toolbar.setVisible(self.app.defaults["global_status_show"])
+        self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
         self.units_label = QtWidgets.QLabel("[mm]")
         self.units_label.setToolTip(_("Application units"))
@@ -1754,6 +1757,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.y_pos = None
         self.width = None
         self.height = None
+        self.titlebar_height = None
 
         self.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.final_save.connect(self.app.final_save)
@@ -1887,7 +1891,7 @@ class MainGUI(QtWidgets.QMainWindow):
         delta_coords_action = QtWidgets.QAction(self)
         delta_coords_action.setCheckable(True)
         delta_coords_action.setText(delta_coords_action_name)
-        delta_coords_action.setChecked(self.app.defaults["global_delta_coords_show"])
+        delta_coords_action.setChecked(self.app.defaults["global_delta_coordsbar_show"])
         self.infobar.addAction(delta_coords_action)
         delta_coords_action.triggered.connect(self.toggle_delta_coords)
 
@@ -1895,7 +1899,7 @@ class MainGUI(QtWidgets.QMainWindow):
         coords_action = QtWidgets.QAction(self)
         coords_action.setCheckable(True)
         coords_action.setText(coords_action_name)
-        coords_action.setChecked(self.app.defaults["global_coords_show"])
+        coords_action.setChecked(self.app.defaults["global_coordsbar_show"])
         self.infobar.addAction(coords_action)
         coords_action.triggered.connect(self.toggle_coords)
 
@@ -1903,7 +1907,7 @@ class MainGUI(QtWidgets.QMainWindow):
         grid_action = QtWidgets.QAction(self)
         grid_action.setCheckable(True)
         grid_action.setText(grid_action_name)
-        grid_action.setChecked(self.app.defaults["global_grid_show"])
+        grid_action.setChecked(self.app.defaults["global_gridbar_show"])
         self.infobar.addAction(grid_action)
         grid_action.triggered.connect(self.toggle_gridbar)
 
@@ -1911,24 +1915,24 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action = QtWidgets.QAction(self)
         status_action.setCheckable(True)
         status_action.setText(status_action_name)
-        status_action.setChecked(self.app.defaults["global_status_show"])
+        status_action.setChecked(self.app.defaults["global_statusbar_show"])
         self.infobar.addAction(status_action)
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.defaults["global_coords_show"] = checked
+        self.app.defaults["global_coordsbar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.defaults["global_delta_coords_show"] = checked
+        self.app.defaults["global_delta_coordsbar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.defaults["global_grid_show"] = checked
+        self.app.defaults["global_gridbar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
-        self.app.defaults["global_status_show"] = checked
+        self.app.defaults["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
 
     def eventFilter(self, obj, event):
@@ -2399,6 +2403,10 @@ class MainGUI(QtWidgets.QMainWindow):
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
 
+                # Toggle axis
+                if key == QtCore.Qt.Key_A:
+                    self.app.plotcanvas.on_toggle_axis()
+
                 # Copy Object Name
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_name()
@@ -2407,9 +2415,10 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_E:
                     self.app.on_toggle_code_editor()
 
-                # Toggle axis
+                # Toggle Grid lines
                 if key == QtCore.Qt.Key_G:
-                    self.app.plotcanvas.on_toggle_axis()
+                    self.app.plotcanvas.on_toggle_grid_lines()
+                    return
 
                 # Toggle HUD (Heads-Up Display)
                 if key == QtCore.Qt.Key_H:
@@ -2464,6 +2473,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Disable all other plots
                 if key == Qt.Key_3:
+                    self.app.enable_other_plots()
+
+                # Disable all other plots
+                if key == Qt.Key_4:
                     self.app.disable_other_plots()
 
                 # Align in Object Tool
@@ -2490,10 +2503,9 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.fiducial_tool.run(toggle=True)
                     return
 
-                # Toggle Grid lines
+                # Punch Gerber Tool
                 if key == QtCore.Qt.Key_G:
-                    self.app.plotcanvas.on_toggle_grid_lines()
-                    return
+                    self.app.invert_tool.run(toggle=True)
 
                 # Punch Gerber Tool
                 if key == QtCore.Qt.Key_H:
@@ -3748,13 +3760,14 @@ class MainGUI(QtWidgets.QMainWindow):
             self.y_pos = a.y()
             self.width = a.width()
             self.height = a.height()
+            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight)
 
             # set new geometry to full desktop rect
             # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
             # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
             # everything else will not work without this hack. This happen in Windows.
             # https://bugreports.qt.io/browse/QTBUG-41309
-            desktop = QtWidgets.QApplication.desktop()
+            desktop = self.app.qapp.desktop()
             screen = desktop.screenNumber(QtGui.QCursor.pos())
 
             rec = desktop.screenGeometry(screen)
@@ -3762,6 +3775,7 @@ class MainGUI(QtWidgets.QMainWindow):
             y = rec.y() - 1
             h = rec.height() + 2
             w = rec.width() + 2
+
             self.setGeometry(x, y, w, h)
             self.show()
 
@@ -3769,13 +3783,17 @@ class MainGUI(QtWidgets.QMainWindow):
             for tb in self.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
 
-            self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
+            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
+            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
+            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
+            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
             self.splitter.setSizes([0, 1])
             self.toggle_fscreen = True
         elif self.toggle_fscreen is True or disable is True:
             self.setWindowFlags(flags & ~Qt.FramelessWindowHint)
-            self.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+            # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
+            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
             self.showNormal()
             self.restore_toolbar_view()
             self.toggle_fscreen = False
@@ -4041,6 +4059,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Shift+A</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Shift+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -4050,6 +4072,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Shift+G</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Shift+H</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -4191,6 +4217,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Alt+4</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Alt+F10</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -4270,22 +4300,24 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project"), _("Toggle Plot Area"),
 
                     # SHIFT section
-                    _("Copy Obj_Name"),
-                    _("Toggle Code Editor"), _("Toggle the axis"), _("Locate in Object"), _("Distance Minimum Tool"),
+                    _("Toggle the axis"), _("Copy Obj_Name"),
+                    _("Toggle Code Editor"), _("Toggle Grid Lines"), _("Toggle HUD"), _("Locate in Object"),
+                    _("Distance Minimum Tool"),
                     _("Open Preferences Window"),
                     _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                     _("Skew on Y axis"),
 
                     # ALT section
                     _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Extract Drills Tool"),
-                    _("Fiducials Tool"), _("Toggle Grid Lines"),
+                    _("Fiducials Tool"), _("Invert Gerber Tool"),
                     _("Punch Gerber Tool"), _("Isolation Tool"), _("Copper Thieving Tool"),
                     _("Solder Paste Dispensing Tool"),
                     _("Film PCB Tool"), _("Corner Markers Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                     _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
                     _("View File Source"), _("Transformations Tool"),
                     _("Subtract Tool"), _("Cutout PCB Tool"), _("Panelize PCB"),
-                    _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
+                    _("Enable all Plots"), _("Disable all Plots"),
+                    _("Enable Non-selected Plots"), _("Disable Non-selected Plots"),
                     _("Toggle Full Screen"),
 
                     # CTRL + ALT section

@@ -1440,9 +1440,10 @@ class App(QtCore.QObject):
         self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
         self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
 
-        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
-        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
+        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
+        self.ui.menuviewenableother.triggered.connect(self.enable_other_plots)
+        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
 
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
@@ -5763,8 +5764,8 @@ class App(QtCore.QObject):
             pass
 
         # restore the coords toolbars
-        self.ui.toggle_coords(checked=self.defaults["global_coords_show"])
-        self.ui.toggle_delta_coords(checked=self.defaults["global_delta_coords_show"])
+        self.ui.toggle_coords(checked=self.defaults["global_coordsbar_show"])
+        self.ui.toggle_delta_coords(checked=self.defaults["global_delta_coordsbar_show"])
 
     def on_flipy(self):
         """
@@ -7536,22 +7537,25 @@ class App(QtCore.QObject):
         self.defaults.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
-        self.inform.emit('[success] %s' %
-                         _("All plots disabled."))
+        self.inform.emit('[success] %s' % _("All plots disabled."))
 
     def disable_other_plots(self):
         self.defaults.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
-        self.inform.emit('[success] %s' %
-                         _("All non selected plots disabled."))
+        self.inform.emit('[success] %s' % _("All non selected plots disabled."))
 
     def enable_all_plots(self):
         self.defaults.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
-        self.inform.emit('[success] %s' %
-                         _("All plots enabled."))
+        self.inform.emit('[success] %s' % _("All plots enabled."))
+
+    def enable_other_plots(self):
+        self.defaults.report_usage("enable_other_plots()")
+
+        self.enable_plots(self.collection.get_non_selected())
+        self.inform.emit('[success] %s' % _("All non selected plots enabled."))
 
     def on_enable_sel_plots(self):
         log.debug("App.on_enable_sel_plot()")
@@ -7616,10 +7620,6 @@ class App(QtCore.QObject):
         :return:
         """
 
-        # if no objects selected then do nothing
-        if not self.collection.get_selected():
-            return
-
         log.debug("Disabling plots ...")
         # self.inform.emit(_("Working ..."))
 
@@ -7654,6 +7654,8 @@ class App(QtCore.QObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=False)
+                for plot_obj in objs:
+                    plot_obj.shapes.redraw()
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
