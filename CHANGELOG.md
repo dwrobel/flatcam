@@ -19,7 +19,7 @@ CHANGELOG for FlatCAM beta
 - modified the shortcut strings and the way the shortcuts were listed in the Shortcut keys list such that it will allow a future Shortcuts Manager
 - updated all the language strings according to the modifications done above
 - fixed a small issue with using the shortcut key for toggling the display of Properties tab
-
+- fixed issue with not updating the model view on the model used in the Project tab when using the shortcut keys 1, 2, 3 which made the color of the tree element not reflect the change in status
 
 25.10.2020
 

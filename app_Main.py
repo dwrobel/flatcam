@@ -7606,6 +7606,7 @@ class App(QtCore.QObject):
                 except AttributeError:
                     pass
                 obj.options.set_change_callback(obj.on_options_change)
+        self.collection.update_view()
 
         def worker_task(objs):
             with self.proc_container.new(_("Enabling plots ...")):
@@ -7651,6 +7652,8 @@ class App(QtCore.QObject):
             self.delete_selection_shape()
         except Exception as e:
             log.debug("App.disable_plots() --> %s" % str(e))
+
+        self.collection.update_view()
 
         def worker_task(objs):
             with self.proc_container.new(_("Disabling plots ...")):
