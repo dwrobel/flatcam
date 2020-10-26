@@ -9022,7 +9022,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
-        date = self.date.replace(' ', '_')
+        date = date.replace(' ', '_')
 
         filter_ = "FlatCAM Project .FlatPrj (*.FlatPrj);; All Files (*.*)"
         try:
@@ -10390,8 +10390,8 @@ class MenuFileHandlers(QtCore.QObject):
             # Serialize the whole project
             d = {
                 "objs":     [obj.to_dict() for obj in self.app.collection.get_list()],
-                "options":  self.options,
-                "version":  self.version
+                "options":  self.app.options,
+                "version":  self.app.version
             }
 
             if self.defaults["global_save_compressed"] is True:

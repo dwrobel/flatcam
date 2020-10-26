@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:13+0200\n"
-"PO-Revision-Date: 2020-10-27 01:17+0200\n"
+"PO-Revision-Date: 2020-10-27 01:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -356,7 +356,7 @@ msgstr "Găurire"
 #: appDatabase.py:2178 appTools/ToolIsolation.py:1101
 #: appTools/ToolIsolation.py:2576 appTools/ToolNCC.py:4060
 msgid "Isolation"
-msgstr "Tip de izolare"
+msgstr "Izolare"
 
 #: appDatabase.py:275 appDatabase.py:1850 appDatabase.py:2186
 #: appEditors/AppGeoEditor.py:528 appGUI/MainGUI.py:1618

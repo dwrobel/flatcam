@@ -28,6 +28,7 @@ CHANGELOG for FlatCAM beta
 - another GUI element for which I've overloaded the context menu to make it translatable: _ExpandableTextEdit
 - overloaded the context menu for FCSpinner and for FCDoubleSpinner
 - added new strings and therefore updated the translation strings
+- fixed some minor issues when doing a project save
 
 25.10.2020
 
