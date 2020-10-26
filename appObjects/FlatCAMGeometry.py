@@ -269,6 +269,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(4, 40)
@@ -1914,7 +1915,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             log.debug("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
-            msg += '%s %s' % ('FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->', str(e))
+            msg += '%s' % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
             return

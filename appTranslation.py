@@ -29,7 +29,6 @@ languages_dict = {
     'en': 'English',
     'es': 'Spanish',
     'fr': 'French',
-    'hu': 'Hungarian',
     'it': 'Italian',
     'pt_BR': 'Brazilian Portuguese',
     'ro': 'Romanian',

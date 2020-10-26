@@ -52,4 +52,4 @@ class TclCommandExportSVG(TclCommand):
         :return:
         """
 
-        self.app.export_svg(**args)
+        self.app.f_handlers.export_svg(**args)

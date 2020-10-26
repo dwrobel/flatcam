@@ -310,7 +310,7 @@ class TextInputTool(AppTool):
         self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.form_layout.addRow(FCLabel('%s:' % "Size"), hlay)
+        self.form_layout.addRow(FCLabel('%s:' % _("Size")), hlay)
 
         # Text input
         self.text_input_entry = FCTextAreaRich()
@@ -547,33 +547,33 @@ class PaintOptionsTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        if self.app.defaults["tools_painttooldia"]:
-            self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
+        if self.app.defaults["tools_paint_tooldia"]:
+            self.painttooldia_entry.set_value(self.app.defaults["tools_paint_tooldia"])
         else:
             self.painttooldia_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintoverlap"]:
-            self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+        if self.app.defaults["tools_paint_overlap"]:
+            self.paintoverlap_entry.set_value(self.app.defaults["tools_paint_overlap"])
         else:
             self.paintoverlap_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintoffset"]:
-            self.paintmargin_entry.set_value(self.app.defaults["tools_paintoffset"])
+        if self.app.defaults["tools_paint_offset"]:
+            self.paintmargin_entry.set_value(self.app.defaults["tools_paint_offset"])
         else:
             self.paintmargin_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintmethod"]:
-            self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        if self.app.defaults["tools_paint_method"]:
+            self.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
         else:
             self.paintmethod_combo.set_value(_("Seed"))
 
-        if self.app.defaults["tools_pathconnect"]:
-            self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        if self.app.defaults["tools_paint_connect"]:
+            self.pathconnect_cb.set_value(self.app.defaults["tools_paint_connect"])
         else:
             self.pathconnect_cb.set_value(False)
 
-        if self.app.defaults["tools_paintcontour"]:
-            self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        if self.app.defaults["tools_paint_contour"]:
+            self.paintcontour_cb.set_value(self.app.defaults["tools_paint_contour"])
         else:
             self.paintcontour_cb.set_value(False)
 
@@ -3419,57 +3419,15 @@ class AppGeoEditor(QtCore.QObject):
 
         self.rtree_index = rtindex.Index()
 
-        def entry2option(opt, entry):
-            """
-
-            :param opt:     A option from the self.options dictionary
-            :param entry:   A GUI element which text value is used
-            :return:
-            """
-            try:
-                text_value = entry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                self.options[opt] = float(text_value)
-            except Exception as e:
-                entry.set_value(self.app.defaults[opt])
-                log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
-                return
-
-        def grid_changed(goption, gentry):
-            """
-
-            :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
-            :param gentry:      A GUI element which text value is read and used
-            :return:
-            """
-            if goption not in ['global_gridx', 'global_gridy']:
-                return
-
-            entry2option(opt=goption, entry=gentry)
-            # if the grid link is checked copy the value in the GridX field to GridY
-            try:
-                text_value = gentry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                val = float(text_value)
-            except ValueError:
-                return
-
-            if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
-
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
-        self.app.ui.grid_gap_x_entry.textChanged.connect(
-            lambda: grid_changed("global_gridx", self.app.ui.grid_gap_x_entry))
+        self.app.ui.grid_gap_x_entry.textChanged.connect(self.on_gridx_val_changed)
 
         self.app.ui.grid_gap_y_entry.setValidator(QtGui.QDoubleValidator())
-        self.app.ui.grid_gap_y_entry.textChanged.connect(
-            lambda: entry2option("global_gridy", self.app.ui.grid_gap_y_entry))
+        self.app.ui.grid_gap_y_entry.textChanged.connect(self.on_gridy_val_changed)
 
         self.app.ui.snap_max_dist_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.snap_max_dist_entry.textChanged.connect(
-            lambda: entry2option("snap_max", self.app.ui.snap_max_dist_entry))
+            lambda: self.entry2option("snap_max", self.app.ui.snap_max_dist_entry))
 
         # if using Paint store here the tool diameter used
         self.paint_tooldia = None
@@ -3522,15 +3480,65 @@ class AppGeoEditor(QtCore.QObject):
         self.delete_selected()
         self.replot()
 
+    def entry2option(self, opt, entry):
+        """
+
+        :param opt:     A option from the self.options dictionary
+        :param entry:   A GUI element which text value is used
+        :return:
+        """
+        try:
+            text_value = entry.text()
+            if ',' in text_value:
+                text_value = text_value.replace(',', '.')
+            self.options[opt] = float(text_value)
+        except Exception as e:
+            entry.set_value(self.app.defaults[opt])
+            log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
+            return
+
+    def grid_changed(self, goption, gentry):
+        """
+
+        :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
+        :param gentry:      A GUI element which text value is read and used
+        :return:
+        """
+        if goption not in ['global_gridx', 'global_gridy']:
+            return
+
+        self.entry2option(opt=goption, entry=gentry)
+        # if the grid link is checked copy the value in the GridX field to GridY
+        try:
+            text_value = gentry.text()
+            if ',' in text_value:
+                text_value = text_value.replace(',', '.')
+            val = float(text_value)
+        except ValueError:
+            return
+
+        if self.app.ui.grid_gap_link_cb.isChecked():
+            self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
+
+    def on_gridx_val_changed(self):
+        self.grid_changed("global_gridx", self.app.ui.grid_gap_x_entry)
+        # try:
+        #     self.app.defaults["global_gridx"] =  float(self.app.ui.grid_gap_x_entry.get_value())
+        # except ValueError:
+        #     return
+
+    def on_gridy_val_changed(self):
+        self.entry2option("global_gridy", self.app.ui.grid_gap_y_entry)
+
     def set_ui(self):
         # updated units
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
 
         # Remove anything else in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.takeWidget()
+        self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the appGUI Properties Tab
-        self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
+        self.app.ui.properties_scroll_area.setWidget(self.geo_edit_widget)
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
@@ -4025,9 +4033,11 @@ class AppGeoEditor(QtCore.QObject):
 
         # make sure that the cursor shape is enabled/disabled, too
         if self.options['grid_snap'] is True:
+            self.app.defaults['global_grid_snap'] = True
             self.app.inform[str, bool].emit(_("Grid Snap enabled."), False)
             self.app.app_cursor.enabled = True
         else:
+            self.app.defaults['global_grid_snap'] = False
             self.app.app_cursor.enabled = False
             self.app.inform[str, bool].emit(_("Grid Snap disabled."), False)
 

@@ -37,6 +37,7 @@ class AppTextEditor(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.MinimumExpanding
         )
 
+        # UI Layout
         self.main_editor_layout = QtWidgets.QVBoxLayout(self)
         self.main_editor_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -48,6 +49,7 @@ class AppTextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
+        # CODE Editor
         if self.plain_text:
             self.editor_class = FCTextAreaLineNumber()
             self.code_editor = self.editor_class.edit
@@ -72,90 +74,86 @@ class AppTextEditor(QtWidgets.QWidget):
         if text:
             self.code_editor.setPlainText(text)
 
-        self.buttonPreview = FCButton(_('Print Preview'))
-        self.buttonPreview.setIcon(QtGui.QIcon(self.app.resource_location + '/preview32.png'))
-        self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
-        self.buttonPreview.setMinimumWidth(100)
+        # #############################################################################################################
+        # UI SETUP
+        # #############################################################################################################
+        control_lay = QtWidgets.QHBoxLayout()
+        self.work_editor_layout.addLayout(control_lay, 1, 0, 1, 5)
 
-        self.buttonPrint = FCButton(_('Print Code'))
-        self.buttonPrint.setIcon(QtGui.QIcon(self.app.resource_location + '/printer32.png'))
-        self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
-        self.buttonPrint.setMinimumWidth(100)
-
-        self.buttonFind = FCButton(_('Find in Code'))
+        # FIND
+        self.buttonFind = FCButton(_('Find'))
         self.buttonFind.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
         self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
-        self.buttonFind.setMinimumWidth(100)
+        control_lay.addWidget(self.buttonFind)
 
+        # Entry FIND
         self.entryFind = FCEntry()
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
+        control_lay.addWidget(self.entryFind)
 
+        # REPLACE
         self.buttonReplace = FCButton(_('Replace With'))
         self.buttonReplace.setIcon(QtGui.QIcon(self.app.resource_location + '/replace32.png'))
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
-        self.buttonReplace.setMinimumWidth(100)
+        control_lay.addWidget(self.buttonReplace)
 
+        # Entry REPLACE
         self.entryReplace = FCEntry()
         self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
+        control_lay.addWidget(self.entryReplace)
 
+        # Select All
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
+        control_lay.addWidget(self.sel_all_cb)
 
-        self.button_copy_all = FCButton(_('Copy All'))
-        self.button_copy_all.setIcon(QtGui.QIcon(self.app.resource_location + '/copy_file32.png'))
-        self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
-        self.button_copy_all.setMinimumWidth(100)
+        # COPY All
+        # self.button_copy_all = FCButton(_('Copy All'))
+        # self.button_copy_all.setIcon(QtGui.QIcon(self.app.resource_location + '/copy_file32.png'))
+        # self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
+        # control_lay.addWidget(self.button_copy_all)
 
+        # Update
         self.button_update_code = QtWidgets.QToolButton()
         self.button_update_code.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.button_update_code.setToolTip(_("Save changes internally."))
         self.button_update_code.hide()
+        control_lay.addWidget(self.button_update_code)
 
-        self.buttonOpen = FCButton(_('Open Code'))
+        # Print PREVIEW
+        self.buttonPreview = QtWidgets.QToolButton()
+        self.buttonPreview.setIcon(QtGui.QIcon(self.app.resource_location + '/preview32.png'))
+        self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
+        control_lay.addWidget(self.buttonPreview)
+
+        # PRINT
+        self.buttonPrint = QtWidgets.QToolButton()
+        self.buttonPrint.setIcon(QtGui.QIcon(self.app.resource_location + '/printer32.png'))
+        self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
+        control_lay.addWidget(self.buttonPrint)
+
+        # OPEN
+        self.buttonOpen = QtWidgets.QToolButton()
         self.buttonOpen.setIcon(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
-        self.buttonOpen.setMinimumWidth(100)
+        control_lay.addWidget(self.buttonOpen)
 
-        self.buttonSave = FCButton(_('Save Code'))
+        # SAVE
+        self.buttonSave = QtWidgets.QToolButton()
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
-        self.buttonSave.setMinimumWidth(100)
+        control_lay.addWidget(self.buttonSave)
 
-        self.buttonRun = FCButton(_('Run Code'))
+        # RUN
+        self.buttonRun = FCButton(_('Run'))
         self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
-        self.buttonRun.setMinimumWidth(100)
-
         self.buttonRun.hide()
+        control_lay.addWidget(self.buttonRun)
 
-        editor_hlay_1 = QtWidgets.QHBoxLayout()
-        # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        editor_hlay_1.addWidget(self.buttonFind)
-        editor_hlay_1.addWidget(self.entryFind)
-        editor_hlay_1.addWidget(self.buttonReplace)
-        editor_hlay_1.addWidget(self.entryReplace)
-        editor_hlay_1.addWidget(self.sel_all_cb)
-        editor_hlay_1.addWidget(self.button_copy_all)
-        editor_hlay_1.addWidget(self.button_update_code)
-        self.work_editor_layout.addLayout(editor_hlay_1, 1, 0, 1, 5)
-
-        editor_hlay_2 = QtWidgets.QHBoxLayout()
-        editor_hlay_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        editor_hlay_2.addWidget(self.buttonPreview)
-        editor_hlay_2.addWidget(self.buttonPrint)
-        self.work_editor_layout.addLayout(editor_hlay_2, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
-
-        cnc_tab_lay_4 = QtWidgets.QHBoxLayout()
-        cnc_tab_lay_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        cnc_tab_lay_4.addWidget(self.buttonOpen)
-        cnc_tab_lay_4.addWidget(self.buttonSave)
-        cnc_tab_lay_4.addWidget(self.buttonRun)
-        self.work_editor_layout.addLayout(cnc_tab_lay_4, 2, 4, 1, 1)
-
-        # #################################################################################
-        # ################### SIGNALS #####################################################
-        # #################################################################################
-
+        # #############################################################################################################
+        # ################### SIGNALS #################################################################################
+        # #############################################################################################################
         self.code_editor.textChanged.connect(self.handleTextChanged)
         self.buttonOpen.clicked.connect(self.handleOpen)
         self.buttonSave.clicked.connect(self.handleSaveGCode)
@@ -163,7 +161,7 @@ class AppTextEditor(QtWidgets.QWidget):
         self.buttonPreview.clicked.connect(self.handlePreview)
         self.buttonFind.clicked.connect(self.handleFindGCode)
         self.buttonReplace.clicked.connect(self.handleReplaceGCode)
-        self.button_copy_all.clicked.connect(self.handleCopyAll)
+        # self.button_copy_all.clicked.connect(self.handleCopyAll)
 
         self.code_editor.set_model_data(self.app.myKeywords)
 
@@ -173,18 +171,14 @@ class AppTextEditor(QtWidgets.QWidget):
         self.callback = callback
 
     def handlePrint(self):
-        self.app.defaults.report_usage("handlePrint()")
-
         dialog = QtPrintSupport.QPrintDialog()
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+        if dialog.exec() == QtWidgets.QDialog.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
-        self.app.defaults.report_usage("handlePreview()")
-
         dialog = QtPrintSupport.QPrintPreviewDialog()
-        dialog.paintRequested.connect(self.code_editor.print_)
-        dialog.exec_()
+        dialog.paintRequested.connect(self.code_editor.print)
+        dialog.exec()
 
     def handleTextChanged(self):
         # enable = not self.ui.code_editor.document().isEmpty()
@@ -368,10 +362,10 @@ class AppTextEditor(QtWidgets.QWidget):
             # Mark end of undo block
             cursor.endEditBlock()
 
-    def handleCopyAll(self):
-        text = self.code_editor.toPlainText()
-        self.app.clipboard.setText(text)
-        self.app.inform.emit(_("Content copied to clipboard ..."))
+    # def handleCopyAll(self):
+    #     text = self.code_editor.toPlainText()
+    #     self.app.clipboard.setText(text)
+    #     self.app.inform.emit(_("Content copied to clipboard ..."))
 
     # def closeEvent(self, QCloseEvent):
     #     super().closeEvent(QCloseEvent)

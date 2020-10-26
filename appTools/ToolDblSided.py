@@ -205,8 +205,10 @@ class DblSidedTool(AppTool):
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
             obj_inst.create_geometry()
-            obj_inst.source_file = app_inst.export_excellon(obj_name=obj_inst.options['name'], local_use=obj_inst,
-                                                            filename=None, use_thread=False)
+            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
+                                                                       local_use=obj_inst,
+                                                                       filename=None,
+                                                                       use_thread=False)
 
         self.app.app_obj.new_object("excellon", "Alignment Drills", obj_init)
         self.drill_values = ''
@@ -518,10 +520,7 @@ class DsidedUI:
         # Type of object to be cutout
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be cutout.\n"
-              "It can be of type: Gerber or Geometry.\n"
-              "What is selected here will dictate the kind\n"
-              "of objects that will populate the 'Object' combobox.")
+            _("Select the type of application object to be processed in this tool.")
         )
 
         self.object_type_radio = RadioSet([
@@ -688,7 +687,7 @@ class DsidedUI:
               "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
               "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
               "bounding box of another object selected below\n"
-              "- Hole Snap -> a point defined by the center of a drill hone in a Excellon object")
+              "- Hole Snap -> a point defined by the center of a drill hole in a Excellon object")
         )
         self.axis_location = RadioSet(
             [
@@ -726,7 +725,7 @@ class DsidedUI:
 
         self.exc_hole_lbl = QtWidgets.QLabel('%s:' % _("Excellon"))
         self.exc_hole_lbl.setToolTip(
-            _("Object that holds holes that can be picked as reference for mirroing.")
+            _("Object that holds holes that can be picked as reference for mirroring.")
         )
 
         # Excellon Object that holds the holes

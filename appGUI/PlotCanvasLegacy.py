@@ -332,6 +332,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         if state:
             self.axis_enabled = True
+            self.app.defaults['global_axis'] = True
             if self.h_line not in self.axes.lines and self.v_line not in self.axes.lines:
                 self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -345,6 +346,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.app.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
+            self.app.defaults['global_axis'] = False
             if self.h_line in self.axes.lines and self.v_line in self.axes.lines:
                 self.axes.lines.remove(self.h_line)
                 self.axes.lines.remove(self.v_line)
@@ -442,6 +444,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         state = not self.grid_lines_enabled
 
         if state:
+            self.app.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
             self.axes.grid(True)
             try:
@@ -450,6 +453,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 pass
             self.app.inform[str, bool].emit(_("Grid enabled."), False)
         else:
+            self.app.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
             self.axes.grid(False)
             try:

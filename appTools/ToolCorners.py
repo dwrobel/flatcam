@@ -133,9 +133,10 @@ class ToolCorners(AppTool):
 
         self.add_corners_geo(points, g_obj=self.grb_object)
 
-        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                             filename=None,
-                                                             local_use=self.grb_object, use_thread=False)
+        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                        filename=None,
+                                                                        local_use=self.grb_object,
+                                                                        use_thread=False)
         self.on_exit()
 
     def add_corners_geo(self, points_storage, g_obj):

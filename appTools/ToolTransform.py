@@ -457,14 +457,14 @@ class ToolTransform(AppTool):
                             self.app.inform.emit(_("CNCJob objects can't be buffered."))
                         elif sel_obj.kind.lower() == 'gerber':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.export_gerber(obj_name=sel_obj.options['name'],
-                                                                         filename=None, local_use=sel_obj,
-                                                                         use_thread=False)
+                            sel_obj.source_file = self.app.f_handlers.export_gerber(obj_name=sel_obj.options['name'],
+                                                                                    filename=None, local_use=sel_obj,
+                                                                                    use_thread=False)
                         elif sel_obj.kind.lower() == 'excellon':
                             sel_obj.buffer(value, join, factor)
-                            sel_obj.source_file = self.app.export_excellon(obj_name=sel_obj.options['name'],
-                                                                           filename=None, local_use=sel_obj,
-                                                                           use_thread=False)
+                            sel_obj.source_file = self.app.f_handlers.export_excellon(obj_name=sel_obj.options['name'],
+                                                                                      filename=None, local_use=sel_obj,
+                                                                                      use_thread=False)
                         elif sel_obj.kind.lower() == 'geometry':
                             sel_obj.buffer(value, join, factor)
 

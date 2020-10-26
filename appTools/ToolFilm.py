@@ -63,6 +63,8 @@ class Film(AppTool):
         self.ui.file_type_radio.activated_custom.connect(self.ui.on_file_type)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
+        self.screen_dpi = 96
+
     def on_type_obj_index_changed(self, val):
         obj_type = 2 if val == 'geo' else 0
         self.ui.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -446,9 +448,10 @@ class Film(AppTool):
 
             scale_reference = 'center'
 
-            default_dpi = 96
+            self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
+
             new_png_dpi = self.ui.png_dpi_spinner.get_value()
-            dpi_rate = new_png_dpi / default_dpi
+            dpi_rate = new_png_dpi / self.screen_dpi
             # Determine bounding area for svg export
             bounds = box.bounds()
             tr_scale_reference = (bounds[0], bounds[1])
@@ -703,9 +706,10 @@ class Film(AppTool):
 
             scale_reference = 'center'
 
-            default_dpi = 96
+            self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
+
             new_png_dpi = self.ui.png_dpi_spinner.get_value()
-            dpi_rate = new_png_dpi / default_dpi
+            dpi_rate = new_png_dpi / self.screen_dpi
             # Determine bounding area for svg export
             bounds = box.bounds()
             tr_scale_reference = (bounds[0], bounds[1])
@@ -835,11 +839,6 @@ class Film(AppTool):
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
                     renderPM.drawToFile(drawing, filename, 'PNG')
-
-                    # if new_png_dpi == default_dpi:
-                    #     renderPM.drawToFile(drawing, filename, 'PNG')
-                    # else:
-                    #     renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'

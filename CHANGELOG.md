@@ -7,6 +7,70 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.10.2020
+
+- added a new menu entry and functionality in the View category: enable all non-selected (shortcut key ALT+3)
+- fixed shortcut keys for a number of functionality and in some cases added some new
+- fixed the enable/disable all plots functionality
+- fixed issue with the app window restored in a shifted position after doing Fullscreen
+- fixed issue with coords, delta_coords and status toolbars being disabled when entering fullscreen mode and remaining disabled after restore to normal mode
+- changed some of the strings (added a few in the How To section)
+
+25.10.2020
+
+- updated the Italian translation (by Massimiliano Golfetto)
+- finished the update of the Spanish translation (Google translate)
+
+24.10.2020
+
+- added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
+- replaced the InputDialog in the Opacity pop menu for the objects in the Project Tab with a FCInputDialogSlider
+- minor changes
+- UI changes in the AppTextEditor and in CNCJob properties tab and in GCoe Editor
+- some changes in strings; updated all the translation strings to the latest changes
+- finished the Romanian translation
+- created two new preprocessors (from 'default' and from 'grbl_11') that will have no toolchange commands regardless of the settings in the software
+- updated the Turkish translation (by Mehmet Kaya)
+- the methods of the APP class that were the handlers for the File menu are now moved to their own class
+- fixed some of the Tcl Commands that depended on the methods refactored above
+- reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
+- fixed newly introduced issue when doing File -> Print(PDF)
+- fixed newly introduced issues with SysTray and Splash
+- added ability for the app to detect the current DPI used on the screen; applied this information in the Film Tool when exporting PNG files
+- found that Pillow v >= 7.2 breaks Reportlab 3.5.53 (latest version) and creates an error in Film Tool when exporting PNG files. Pillow 7.2 still works.
+
+23.10.2020
+
+- updated Copper Thieving Tool to work with the updated program
+- updated Rules Check Tool - Hole Size rule to work with the new data structure for the Excellon objects
+- updated Rules Check Tool - added an activity message
+- updated some strings, updated the translation strings
+- commented the ToolsDB class since it is not used currently
+- some minor changes in the AppTextEditor.py file
+- removed Hungarian language since it's looking like is no longer being translated
+- added a default properties tab which will hold a set of information's about the application
+- minor changes in the Properties Tool
+- Excellon UI: fixed a small issue with toggling all rows in Tools Table not toggling off and also the milling section in Utilities was not updated
+- some refactoring in the keys of the defaults dictionary
+- fixed an ambiguity in the Tools Database GUI elements
+
+22.10.2020
+
+- added  a message to show if voronoi_diagram method can be used (require Shapely >= 1.8)
+- modified behind the scene the UI for Tool Subtract
+- modified some strings and updated the translation strings
+- in NCC Tool added a check for the validity of the used tools; its only informative
+- in NCC Tool done some refactoring
+- in NCC Tool fixed a bug when using Rest Machining; optimizations
+- in NCC Tool fixed a UI issue
+- updated the Turkish translation (by Mehmet Kaya)
+- small change in the CNCJob UI by replacing the AL checkbox with a checkable QButton
+- disabled the Autolevelling feature in CNCJob due of being not finished and missing also a not-yet-released package: Shapely v 1.8
+- added some new strings for translation and updated the translation strings
+- in ToolsDB2UI class made the vertical layouts have a preferred minimum dimension as opposed to the previous fixed one
+- in Geometry Object made sure that the Tools Table second column is set to Resize to contents
+- fixed a bug in Tool PunchGerber when using an Excellon to punch holes in the Gerber apertures
+
 21.10.2020
 
 - in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here
@@ -28,6 +92,7 @@ CHANGELOG for FlatCAM beta
 - optimized a bit the UI for Gerber/Excellon/Geometry objects
 - optimized FlatCAMObj.add_properties_items() method
 - updated the Turkish translation (by Mehmet Kaya)
+- added ability to run a callback function with callback_parameters after a new FlatCAM object is created
 
 20.10.2020
 

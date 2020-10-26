@@ -34,7 +34,7 @@ class AppObject(QtCore.QObject):
     # Emitted by app_obj.new_object() and passes the new object as argument, plot flag.
     # on_object_created() adds the object to the collection, plots on appropriate flag
     # and emits app_obj.new_object_available.
-    object_created = QtCore.pyqtSignal(object, bool, bool)
+    object_created = QtCore.pyqtSignal(object, bool, bool, object, list)
 
     # Emitted when a object has been changed (like scaled, mirrored)
     object_changed = QtCore.pyqtSignal(object)
@@ -56,7 +56,7 @@ class AppObject(QtCore.QObject):
         self.object_plotted.connect(self.on_object_plotted)
         self.plots_updated.connect(self.app.on_plots_updated)
 
-    def new_object(self, kind, name, initialize, plot=True, autoselected=True):
+    def new_object(self, kind, name, initialize, plot=True, autoselected=True, callback=None, callback_params=None):
         """
         Creates a new specialized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
@@ -78,10 +78,18 @@ class AppObject(QtCore.QObject):
         :param plot:            If to plot the resulting object
         :param autoselected:    if the resulting object is autoselected in the Project tab and therefore in the
                                 self.collection
+        :param callback:        a method that is launched after the object is created
+        :type callback:         function
+
+        :param callback_params: a list of parameters for the parameter: callback
+        :type callback_params:  list
+
         :return:                Either the object or the string 'fail'
         :rtype:                 object
         """
 
+        if callback_params is None:
+            callback_params = [None]
         log.debug("AppObject.new_object()")
         obj_plot = plot
         obj_autoselected = autoselected
@@ -204,7 +212,10 @@ class AppObject(QtCore.QObject):
         # Move the object to the main thread and let the app know that it is available.
         # ############################################################################################################
         obj.moveToThread(self.app.main_thread)
-        self.object_created.emit(obj, obj_plot, obj_autoselected)
+
+        if callback_params is None:
+            callback_params = []
+        self.object_created.emit(obj, obj_plot, obj_autoselected, callback, callback_params)
 
         return obj
 
@@ -324,15 +335,18 @@ class AppObject(QtCore.QObject):
 
         self.new_object('document', 'new_document', initialize, plot=False)
 
-    def on_object_created(self, obj, plot, auto_select):
+    def on_object_created(self, obj, plot, auto_select, callback, callback_params):
         """
         Event callback for object creation.
         It will add the new object to the collection. After that it will plot the object in a threaded way
 
-        :param obj: The newly created FlatCAM object.
-        :param plot: if the newly create object t obe plotted
-        :param auto_select: if the newly created object to be autoselected after creation
-        :return: None
+        :param obj:             The newly created FlatCAM object.
+        :param plot:            if the newly create object to be plotted
+        :param auto_select:     if the newly created object to be autoselected after creation
+        :param callback:        a method that is launched after the object is created
+        :param callback_params: a list of parameters for the parameter: callback
+        :type callback_params:  list
+        :return:                None
         """
 
         t0 = time.time()  # DEBUG
@@ -435,7 +449,7 @@ class AppObject(QtCore.QObject):
             self.app.collection.set_all_inactive()
 
         # here it is done the object plotting
-        def task(t_obj):
+        def plotting_task(t_obj):
             with self.app.proc_container.new(_("Plotting")):
                 if t_obj.kind == 'cncjob':
                     t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
@@ -456,7 +470,11 @@ class AppObject(QtCore.QObject):
         # Send to worker
         # self.worker.add_task(worker_task, [self])
         if plot is True:
-            self.app.worker_task.emit({'fcn': task, 'params': [obj]})
+            self.app.worker_task.emit({'fcn': plotting_task, 'params': [obj]})
+
+        if callback is not None:
+            # callback(*callback_params)
+            self.app.worker_task.emit({'fcn': callback, 'params': callback_params})
 
     def on_object_changed(self, obj):
         """

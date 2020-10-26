@@ -81,14 +81,14 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # New Project
         self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/file16.png'),
-                                                    _('&New Project ...\tCtrl+N'), self)
+                                                    _('New Project ...\tCtrl+N'), self)
         self.menufilenewproject.setToolTip(
             _("Will create a new, blank project")
         )
         self.menufile.addAction(self.menufilenewproject)
 
         # New Category (Excellon, Geometry)
-        self.menufilenew = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/file16.png'), _('&New'))
+        self.menufilenew = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/file16.png'), _('New'))
         self.menufilenew.setToolTipsVisible(True)
 
         self.menufilenewgeo = self.menufilenew.addAction(
@@ -120,23 +120,23 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Open Project ...
         self.menufileopenproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open &Project ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open Project ...'), self)
         self.menufile_open.addAction(self.menufileopenproject)
         self.menufile_open.addSeparator()
 
         # Open Gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                    _('Open &Gerber ...\tCtrl+G'), self)
+                                                    _('Open Gerber ...\tCtrl+G'), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                      _('Open &Excellon ...\tCtrl+E'), self)
+                                                      _('Open Excellon ...\tCtrl+E'), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
         self.menufileopengcode = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/code.png'), _('Open G-&Code ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/code.png'), _('Open G-Code ...'), self)
         self.menufile_open.addAction(self.menufileopengcode)
 
         self.menufile_open.addSeparator()
@@ -157,17 +157,17 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Save Project
         self.menufilesaveproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...\tCtrl+S'), self)
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project ...\tCtrl+S'), self)
         self.menufile_save.addAction(self.menufilesaveproject)
 
         # Save Project As ...
         self.menufilesaveprojectas = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project &As ...\tCtrl+Shift+S'), self)
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project As ...\tCtrl+Shift+S'), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
         # self.menufilesaveprojectcopy = QtWidgets.QAction(
-        #     QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
+        #     QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project Copy ...'), self)
         # self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
         self.menufile_save.addSeparator()
@@ -206,18 +206,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufileimport = self.menufile.addMenu(
             QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
         self.menufileimportsvg = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('&SVG as Geometry Object ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('SVG as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg)
         self.menufileimportsvg_as_gerber = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('&SVG as Gerber Object ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('SVG as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg_as_gerber)
         self.menufileimport.addSeparator()
 
         self.menufileimportdxf = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('&DXF as Geometry Object ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('DXF as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf)
         self.menufileimportdxf_as_gerber = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('&DXF as Gerber Object ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('DXF as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
         self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(
@@ -231,7 +231,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufileexport.setToolTipsVisible(True)
 
         self.menufileexportsvg = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export &SVG ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export SVG ...'), self)
         self.menufileexport.addAction(self.menufileexportsvg)
 
         self.menufileexportdxf = QtWidgets.QAction(
@@ -241,7 +241,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufileexport.addSeparator()
 
         self.menufileexportpng = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/export_png32.png'), _('Export &PNG ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/export_png32.png'), _('Export PNG ...'), self)
         self.menufileexportpng.setToolTip(
             _("Will export an image in PNG format,\n"
               "the saved image will contain the visual \n"
@@ -252,7 +252,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufileexport.addSeparator()
 
         self.menufileexportexcellon = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _('Export &Excellon ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _('Export Excellon ...'), self)
         self.menufileexportexcellon.setToolTip(
             _("Will export an Excellon Object as Excellon file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -261,7 +261,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menufileexport.addAction(self.menufileexportexcellon)
 
         self.menufileexportgerber = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _('Export &Gerber ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _('Export Gerber ...'), self)
         self.menufileexportgerber.setToolTip(
             _("Will export an Gerber Object as Gerber file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -306,7 +306,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Quit
         self.menufile_exit = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/power16.png'), _('E&xit'), self)
+            QtGui.QIcon(self.app.resource_location + '/power16.png'), _('Exit'), self)
         # exitAction.setShortcut('Ctrl+Q')
         # exitAction.setStatusTip('Exit application')
         self.menufile.addAction(self.menufile_exit)
@@ -361,7 +361,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuedit_join = self.menuedit.addMenu(
             QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Objects'))
         self.menuedit_join2geo = self.menuedit_join.addAction(
-            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Geo/Gerber/Exc -> Geo'))
         self.menuedit_join2geo.setToolTip(
             _("Merge a selection of objects, which can be of type:\n"
               "- Gerber\n"
@@ -385,17 +385,17 @@ class MainGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menueditcopyobject = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCtrl+C'))
+            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('Copy\tCtrl+C'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menueditdelete = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash16.png'), _('&Delete\tDEL'))
+            QtGui.QIcon(self.app.resource_location + '/trash16.png'), _('Delete\tDEL'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menueditorigin = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
+            QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Set Origin\tO'))
         self.menuedit_move2origin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tShift+O'))
 
@@ -409,12 +409,12 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuedittoggleunits = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/toggle_units16.png'), _('Toggle Units\tQ'))
         self.menueditselectall = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCtrl+A'))
+            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('Select All\tCtrl+A'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menueditpreferences = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tShift+P'))
+            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('Preferences\tShift+P'))
 
         # ########################################################################
         # ########################## OPTIONS # ###################################
@@ -422,21 +422,21 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menuoptions = self.menu.addMenu(_('Options'))
         self.menuoptions_transform_rotate = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tShift+(R)"))
+            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("Rotate Selection\tShift+(R)"))
         # Separator
         self.menuoptions.addSeparator()
 
         self.menuoptions_transform_skewx = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tShift+X"))
+            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("Skew on X axis\tShift+X"))
         self.menuoptions_transform_skewy = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tShift+Y"))
+            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("Skew on Y axis\tShift+Y"))
 
         # Separator
         self.menuoptions.addSeparator()
         self.menuoptions_transform_flipx = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/flipx.png'), _("Flip on &X axis\tX"))
+            QtGui.QIcon(self.app.resource_location + '/flipx.png'), _("Flip on X axis\tX"))
         self.menuoptions_transform_flipy = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/flipy.png'), _("Flip on &Y axis\tY"))
+            QtGui.QIcon(self.app.resource_location + '/flipy.png'), _("Flip on Y axis\tY"))
         # Separator
         self.menuoptions.addSeparator()
 
@@ -455,16 +455,19 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tAlt+1'))
         self.menuviewdisableall = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tAlt+2'))
+        self.menuviewenableother = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable non-selected\tAlt+3'))
         self.menuviewdisableother = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+3'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+4'))
+
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("&Zoom Fit\tV"))
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit\tV"))
         self.menuview_zoom_in = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("&Zoom In\t="))
+            QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In\t="))
         self.menuview_zoom_out = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/zoom_out32.png'), _("&Zoom Out\t-"))
+            QtGui.QIcon(self.app.resource_location + '/zoom_out32.png'), _("Zoom Out\t-"))
         self.menuview.addSeparator()
 
         # Replot all
@@ -476,23 +479,23 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tShift+E'))
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tAlt+F10"))
+            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("Toggle FullScreen\tAlt+F10"))
         self.menuview_toggle_parea = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCtrl+F10"))
+            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("Toggle Plot Area\tCtrl+F10"))
         self.menuview_toggle_notebook = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
+            QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Project/Sel/Tool\t`"))
 
         self.menuview.addSeparator()
         self.menuview_toggle_grid = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Snap\tG"))
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("Toggle Grid Snap\tG"))
         self.menuview_toggle_grid_lines = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'), _("&Toggle Grid Lines\tAlt+G"))
+            QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'), _("Toggle Grid Lines\tShift+G"))
         self.menuview_toggle_axis = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tShift+G"))
+            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("Toggle Axis\tShift+A"))
         self.menuview_toggle_workspace = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
         self.menuview_toggle_hud = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+H"))
+            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tShift+H"))
 
         # ########################################################################
         # ########################## Objects # ###################################
@@ -511,7 +514,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menutool = QtWidgets.QMenu(_('Tool'))
         self.menutoolaction = self.menu.addMenu(self.menutool)
         self.menutoolshell = self.menutool.addAction(
-            QtGui.QIcon(self.app.resource_location + '/shell16.png'), _('&Command Line\tS'))
+            QtGui.QIcon(self.app.resource_location + '/shell16.png'), _('Command Line\tS'))
 
         # ########################################################################
         # ########################## Help # ######################################
@@ -545,7 +548,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuhelp.addSeparator()
 
         self.menuhelp_readme = self.menuhelp.addAction(
-            QtGui.QIcon(self.app.resource_location + '/warning.png'), _('How To'))
+            QtGui.QIcon(self.app.resource_location + '/warning.png'), _("How To"))
 
         self.menuhelp_about = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/about32.png'), _('About FlatCAM'))
@@ -873,7 +876,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
         self.delete_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("&Delete"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
@@ -893,9 +896,9 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## View Toolbar# ###############################
         # ########################################################################
         self.replot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("&Clear plot"))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear plot"))
         self.zoom_in_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
         self.zoom_out_btn = self.toolbarview.addAction(
@@ -909,7 +912,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Shell Toolbar# ##############################
         # ########################################################################
         self.shell_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
+            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
         self.open_script_btn = self.toolbarshell.addAction(
@@ -1191,7 +1194,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # #######################################################################
         # ####################### TCL Shell DOCK ################################
         # #######################################################################
-        self.shell_dock = FCDock("TCL Shell", close_callback=self.toggle_shell_ui)
+        self.shell_dock = FCDock(_("TCL Shell"), close_callback=self.toggle_shell_ui)
         self.shell_dock.setObjectName('Shell_DockWidget')
         self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
@@ -1230,9 +1233,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.properties_tab_layout = QtWidgets.QVBoxLayout(self.properties_tab)
         self.properties_tab_layout.setContentsMargins(2, 2, 2, 2)
 
-        self.selected_scroll_area = VerticalScrollArea()
-        # self.selected_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.properties_tab_layout.addWidget(self.selected_scroll_area)
+        self.properties_scroll_area = VerticalScrollArea()
+        # self.properties_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.properties_tab_layout.addWidget(self.properties_scroll_area)
         self.notebook.addTab(self.properties_tab, _("Properties"))
 
         # ########################################################################
@@ -1595,18 +1598,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.infobar.addWidget(self.delta_coords_toolbar)
-        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_show"])
+        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
 
         self.infobar.addWidget(self.coords_toolbar)
-        self.coords_toolbar.setVisible(self.app.defaults["global_coords_show"])
+        self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
 
         self.grid_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.grid_toolbar)
-        self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
+        self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
-        self.status_toolbar.setVisible(self.app.defaults["global_status_show"])
+        self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
         self.units_label = QtWidgets.QLabel("[mm]")
         self.units_label.setToolTip(_("Application units"))
@@ -1754,6 +1757,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.y_pos = None
         self.width = None
         self.height = None
+        self.titlebar_height = None
 
         self.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.final_save.connect(self.app.final_save)
@@ -1887,7 +1891,7 @@ class MainGUI(QtWidgets.QMainWindow):
         delta_coords_action = QtWidgets.QAction(self)
         delta_coords_action.setCheckable(True)
         delta_coords_action.setText(delta_coords_action_name)
-        delta_coords_action.setChecked(self.app.defaults["global_delta_coords_show"])
+        delta_coords_action.setChecked(self.app.defaults["global_delta_coordsbar_show"])
         self.infobar.addAction(delta_coords_action)
         delta_coords_action.triggered.connect(self.toggle_delta_coords)
 
@@ -1895,7 +1899,7 @@ class MainGUI(QtWidgets.QMainWindow):
         coords_action = QtWidgets.QAction(self)
         coords_action.setCheckable(True)
         coords_action.setText(coords_action_name)
-        coords_action.setChecked(self.app.defaults["global_coords_show"])
+        coords_action.setChecked(self.app.defaults["global_coordsbar_show"])
         self.infobar.addAction(coords_action)
         coords_action.triggered.connect(self.toggle_coords)
 
@@ -1903,7 +1907,7 @@ class MainGUI(QtWidgets.QMainWindow):
         grid_action = QtWidgets.QAction(self)
         grid_action.setCheckable(True)
         grid_action.setText(grid_action_name)
-        grid_action.setChecked(self.app.defaults["global_grid_show"])
+        grid_action.setChecked(self.app.defaults["global_gridbar_show"])
         self.infobar.addAction(grid_action)
         grid_action.triggered.connect(self.toggle_gridbar)
 
@@ -1911,24 +1915,24 @@ class MainGUI(QtWidgets.QMainWindow):
         status_action = QtWidgets.QAction(self)
         status_action.setCheckable(True)
         status_action.setText(status_action_name)
-        status_action.setChecked(self.app.defaults["global_status_show"])
+        status_action.setChecked(self.app.defaults["global_statusbar_show"])
         self.infobar.addAction(status_action)
         status_action.triggered.connect(self.toggle_statusbar)
 
     def toggle_coords(self, checked):
-        self.app.defaults["global_coords_show"] = checked
+        self.app.defaults["global_coordsbar_show"] = checked
         self.coords_toolbar.setVisible(checked)
 
     def toggle_delta_coords(self, checked):
-        self.app.defaults["global_delta_coords_show"] = checked
+        self.app.defaults["global_delta_coordsbar_show"] = checked
         self.delta_coords_toolbar.setVisible(checked)
 
     def toggle_gridbar(self, checked):
-        self.app.defaults["global_grid_show"] = checked
+        self.app.defaults["global_gridbar_show"] = checked
         self.grid_toolbar.setVisible(checked)
 
     def toggle_statusbar(self, checked):
-        self.app.defaults["global_status_show"] = checked
+        self.app.defaults["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
 
     def eventFilter(self, obj, event):
@@ -2031,7 +2035,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
         self.delete_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("&Delete"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
@@ -2050,9 +2054,9 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## View Toolbar# ###############################
         # ########################################################################
         self.replot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("&Clear plot"))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear plot"))
         self.zoom_in_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
         self.zoom_out_btn = self.toolbarview.addAction(
@@ -2064,7 +2068,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Shell Toolbar# ##############################
         # ########################################################################
         self.shell_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
+            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
         self.open_script_btn = self.toolbarshell.addAction(
@@ -2083,7 +2087,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
 
         self.cutout_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("&Cutout Tool"))
+            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(
@@ -2321,7 +2325,7 @@ class MainGUI(QtWidgets.QMainWindow):
             # CTRL + SHIFT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_file_saveprojectas()
+                    self.app.f_handlers.on_file_saveprojectas()
                     return
             # CTRL
             elif modifiers == QtCore.Qt.ControlModifier:
@@ -2346,7 +2350,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key_E:
-                    self.app.on_fileopenexcellon(signal=None)
+                    self.app.f_handlers.on_fileopenexcellon(signal=None)
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key_G:
@@ -2354,7 +2358,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.on_fileopengerber(signal=None)
+                        self.app.f_handlers.on_fileopengerber(signal=None)
 
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:
@@ -2362,15 +2366,15 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Create New Project
                 if key == QtCore.Qt.Key_N:
-                    self.app.on_file_new_click()
+                    self.app.f_handlers.on_file_new_click()
 
                 # Open Project
                 if key == QtCore.Qt.Key_O:
-                    self.app.on_file_openproject(signal=None)
+                    self.app.f_handlers.on_file_openproject(signal=None)
 
                 # Open Project
                 if key == QtCore.Qt.Key_P:
-                    self.app.on_file_save_objects_pdf(use_thread=True)
+                    self.app.f_handlers.on_file_save_objects_pdf(use_thread=True)
 
                 # PDF Import
                 if key == QtCore.Qt.Key_Q:
@@ -2389,7 +2393,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_save_tools_db()
                         return
 
-                    self.app.on_file_saveproject()
+                    self.app.f_handlers.on_file_saveproject()
 
                 # Toggle Plot Area
                 if key == QtCore.Qt.Key_F10 or key == 'F10':
@@ -2399,6 +2403,10 @@ class MainGUI(QtWidgets.QMainWindow):
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
 
+                # Toggle axis
+                if key == QtCore.Qt.Key_A:
+                    self.app.plotcanvas.on_toggle_axis()
+
                 # Copy Object Name
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_name()
@@ -2407,9 +2415,10 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_E:
                     self.app.on_toggle_code_editor()
 
-                # Toggle axis
+                # Toggle Grid lines
                 if key == QtCore.Qt.Key_G:
-                    self.app.plotcanvas.on_toggle_axis()
+                    self.app.plotcanvas.on_toggle_grid_lines()
+                    return
 
                 # Toggle HUD (Heads-Up Display)
                 if key == QtCore.Qt.Key_H:
@@ -2435,7 +2444,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Run a Script
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_filerunscript()
+                    self.app.f_handlers.on_filerunscript()
                     return
 
                 # Toggle Workspace
@@ -2464,6 +2473,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Disable all other plots
                 if key == Qt.Key_3:
+                    self.app.enable_other_plots()
+
+                # Disable all other plots
+                if key == Qt.Key_4:
                     self.app.disable_other_plots()
 
                 # Align in Object Tool
@@ -2490,10 +2503,9 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.fiducial_tool.run(toggle=True)
                     return
 
-                # Toggle Grid lines
+                # Punch Gerber Tool
                 if key == QtCore.Qt.Key_G:
-                    self.app.plotcanvas.on_toggle_grid_lines()
-                    return
+                    self.app.invert_tool.run(toggle=True)
 
                 # Punch Gerber Tool
                 if key == QtCore.Qt.Key_H:
@@ -3677,31 +3689,31 @@ class MainGUI(QtWidgets.QMainWindow):
                     extension = self.filename.lower().rpartition('.')[-1]
 
                     if extension in self.app.grb_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gerber,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.exc_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_excellon,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.gcode_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gcode,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.svg_list:
                         object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_svg,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.dxf_list:
                         object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_dxf,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.pdf_list:
@@ -3711,10 +3723,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     if extension in self.app.prj_list:
                         # self.app.open_project() is not Thread Safe
-                        self.app.open_project(self.filename)
+                        self.app.f_handlers.open_project(self.filename)
 
                     if extension in self.app.conf_list:
-                        self.app.open_config_file(self.filename)
+                        self.app.f_handlers.open_config_file(self.filename)
                     else:
                         event.ignore()
         else:
@@ -3748,13 +3760,14 @@ class MainGUI(QtWidgets.QMainWindow):
             self.y_pos = a.y()
             self.width = a.width()
             self.height = a.height()
+            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight)
 
             # set new geometry to full desktop rect
             # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
             # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
             # everything else will not work without this hack. This happen in Windows.
             # https://bugreports.qt.io/browse/QTBUG-41309
-            desktop = QtWidgets.QApplication.desktop()
+            desktop = self.app.qapp.desktop()
             screen = desktop.screenNumber(QtGui.QCursor.pos())
 
             rec = desktop.screenGeometry(screen)
@@ -3762,6 +3775,7 @@ class MainGUI(QtWidgets.QMainWindow):
             y = rec.y() - 1
             h = rec.height() + 2
             w = rec.width() + 2
+
             self.setGeometry(x, y, w, h)
             self.show()
 
@@ -3769,13 +3783,17 @@ class MainGUI(QtWidgets.QMainWindow):
             for tb in self.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
 
-            self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
+            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
+            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
+            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
+            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
             self.splitter.setSizes([0, 1])
             self.toggle_fscreen = True
         elif self.toggle_fscreen is True or disable is True:
             self.setWindowFlags(flags & ~Qt.FramelessWindowHint)
-            self.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+            # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
+            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
             self.showNormal()
             self.restore_toolbar_view()
             self.toggle_fscreen = False
@@ -3788,13 +3806,13 @@ class MainGUI(QtWidgets.QMainWindow):
         try:
             name = self.plot_tab_area.widget(0).objectName()
         except AttributeError:
-            self.plot_tab_area.addTab(self.plot_tab, "Plot Area")
+            self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
             # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
             self.plot_tab_area.protectTab(0)
             return
 
         if name != 'plotarea_tab':
-            self.plot_tab_area.insertTab(0, self.plot_tab, "Plot Area")
+            self.plot_tab_area.insertTab(0, self.plot_tab, _("Plot Area"))
             # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
             self.plot_tab_area.protectTab(0)
         else:
@@ -4041,6 +4059,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Shift+A</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Shift+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -4050,6 +4072,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Shift+G</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Shift+H</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -4191,6 +4217,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Alt+4</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Alt+F10</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -4270,22 +4300,24 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project"), _("Toggle Plot Area"),
 
                     # SHIFT section
-                    _("Copy Obj_Name"),
-                    _("Toggle Code Editor"), _("Toggle the axis"), _("Locate in Object"), _("Distance Minimum Tool"),
+                    _("Toggle the axis"), _("Copy Obj_Name"),
+                    _("Toggle Code Editor"), _("Toggle Grid Lines"), _("Toggle HUD"), _("Locate in Object"),
+                    _("Distance Minimum Tool"),
                     _("Open Preferences Window"),
                     _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                     _("Skew on Y axis"),
 
                     # ALT section
                     _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Extract Drills Tool"),
-                    _("Fiducials Tool"), _("Toggle Grid Lines"),
+                    _("Fiducials Tool"), _("Invert Gerber Tool"),
                     _("Punch Gerber Tool"), _("Isolation Tool"), _("Copper Thieving Tool"),
                     _("Solder Paste Dispensing Tool"),
                     _("Film PCB Tool"), _("Corner Markers Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                     _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
                     _("View File Source"), _("Transformations Tool"),
                     _("Subtract Tool"), _("Cutout PCB Tool"), _("Panelize PCB"),
-                    _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
+                    _("Enable all Plots"), _("Disable all Plots"),
+                    _("Enable Non-selected Objects"), _("Disable Non-selected Objects"),
                     _("Toggle Full Screen"),
 
                     # CTRL + ALT section

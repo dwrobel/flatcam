@@ -172,6 +172,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+        self.multicolored_build_sig.connect(self.on_multicolored_build)
+
         self.ui.autoload_db_cb.stateChanged.connect(self.on_autoload_db_toggled)
 
         # Editor
@@ -182,6 +184,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
+        # FIXME will uncomment when Milling Tool is ready
         # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
 
         # UTILITIES
@@ -189,10 +192,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
+        # Toggle all Table rows
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
-        self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
 
-        self.multicolored_build_sig.connect(self.on_multicolored_build)
+        self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
 
         self.units_found = self.app.defaults['units']
 
@@ -560,10 +563,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         for idx in sel_indexes:
             sel_rows.add(idx.row())
 
-        if len(sel_rows) == self.ui.tools_table.rowCount():
+        # subtract the last 2 rows that show the total and are always displayed but not selected
+        if len(sel_rows) == self.ui.tools_table.rowCount() - 2:
             self.ui.tools_table.clearSelection()
         else:
             self.ui.tools_table.selectAll()
+
+        self.on_row_selection_change()
 
     def get_selected_tools_list(self):
         """

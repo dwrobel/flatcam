@@ -875,8 +875,9 @@ class CutOut(AppTool):
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
-                    exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
-                                                                filename=None, use_thread=False)
+                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                                                                           local_use=exc_obj,filename=None,
+                                                                           use_thread=False)
                     # calculate the bounds
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
                     exc_obj.options['xmin'] = xmin
@@ -1244,8 +1245,10 @@ class CutOut(AppTool):
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
-                    exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
-                                                                filename=None, use_thread=False)
+                    exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                                                                           local_use=exc_obj,
+                                                                           filename=None,
+                                                                           use_thread=False)
                     # calculate the bounds
                     e_xmin, e_ymin, e_xmax, e_ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
                     exc_obj.options['xmin'] = e_xmin
@@ -1600,9 +1603,10 @@ class CutOut(AppTool):
 
                             exc_obj.tools = tools
                             exc_obj.create_geometry()
-                            exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'],
-                                                                        local_use=exc_obj,
-                                                                        filename=None, use_thread=False)
+                            exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
+                                                                                   local_use=exc_obj,
+                                                                                   filename=None,
+                                                                                   use_thread=False)
                             # calculate the bounds
                             xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
                             exc_obj.options['xmin'] = xmin
@@ -2219,7 +2223,7 @@ class CutoutUI:
         # Mouse Bites Tool Diameter
         self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
         self.mb_dia_label.setToolTip(
-            _("The drill hole diameter when doing mpuse bites.")
+            _("The drill hole diameter when doing mouse bites.")
         )
         self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mb_dia_entry.set_precision(self.decimals)

@@ -360,8 +360,8 @@ class Panelize(AppTool):
                     obj_fin.zeros = panel_source_obj.zeros
                     obj_fin.units = panel_source_obj.units
                     app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
-                    obj_fin.source_file = self.app.export_excellon(obj_name=self.outname, filename=None,
-                                                                 local_use=obj_fin, use_thread=False)
+                    obj_fin.source_file = self.app.export.export_excellon(obj_name=self.outname, filename=None,
+                                                                          local_use=obj_fin, use_thread=False)
                     app_obj.proc_container.update_view_text('')
 
                 def job_init_geometry(obj_fin, app_obj):
@@ -583,11 +583,11 @@ class Panelize(AppTool):
 
                     app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
                     if panel_type == 'gerber':
-                        obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
-                                                                     local_use=obj_fin, use_thread=False)
+                        obj_fin.source_file = self.app.f_handlers.export_gerber(obj_name=self.outname, filename=None,
+                                                                                local_use=obj_fin, use_thread=False)
                     if panel_type == 'geometry':
-                        obj_fin.source_file = self.app.export_dxf(obj_name=self.outname, filename=None,
-                                                                     local_use=obj_fin, use_thread=False)
+                        obj_fin.source_file = self.app.f_handlers.export_dxf(obj_name=self.outname, filename=None,
+                                                                             local_use=obj_fin, use_thread=False)
 
                     # obj_fin.solid_geometry = unary_union(obj_fin.solid_geometry)
                     # app_obj.log.debug("Finished creating a unary_union for the panel.")
@@ -823,7 +823,7 @@ class PanelizeUI:
             _("Active only for Geometry panel type.\n"
               "When checked the application will find\n"
               "any two overlapping Line elements in the panel\n"
-              "and remove the overlapping parts, keeping only one of them.")
+              "and will remove the overlapping parts, keeping only one of them.")
         )
         form_layout.addRow(self.optimization_cb)
 

@@ -44,7 +44,7 @@ class ToolInvertGerber(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='ALT+G', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolInvertGerber()")
@@ -157,8 +157,8 @@ class ToolInvertGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
-            new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
-                                                         local_use=new_obj, use_thread=False)
+            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                    local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -253,9 +253,9 @@ class InvertUI:
               "- bevel -> the lines are joined by a third line")
         )
         self.join_radio = RadioSet([
-            {'label': 'Rounded', 'value': 'r'},
-            {'label': 'Square', 'value': 's'},
-            {'label': 'Bevel', 'value': 'b'}
+            {'label': _('Rounded'), 'value': 'r'},
+            {'label': _('Square'), 'value': 's'},
+            {'label': _('Bevel'), 'value': 'b'}
         ], orientation='vertical', stretch=False)
 
         grid0.addWidget(self.join_label, 7, 0, 1, 2)

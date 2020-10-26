@@ -35,9 +35,10 @@ class Properties(AppTool):
     def __init__(self, app):
         AppTool.__init__(self, app)
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
         self.decimals = self.app.decimals
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
         # this way I can hide/show the frame
         self.properties_frame = QtWidgets.QFrame()
@@ -48,27 +49,22 @@ class Properties(AppTool):
         self.properties_frame.setLayout(self.properties_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.properties_box.addWidget(title_label)
-
-        # self.layout.setMargin(0)  # PyQt4
-        self.properties_box.setContentsMargins(0, 0, 0, 0)  # PyQt5
-
-        self.vlay = QtWidgets.QVBoxLayout()
-
-        self.properties_box.addLayout(self.vlay)
+        # title_label = QtWidgets.QLabel("%s" % self.toolName)
+        # title_label.setStyleSheet("""
+        #                 QLabel
+        #                 {
+        #                     font-size: 16px;
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
+        # self.properties_box.addWidget(title_label)
 
         self.treeWidget = FCTree(columns=2)
+        self.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.treeWidget.setStyleSheet("QTreeWidget {border: 0px;}")
 
-        self.vlay.addWidget(self.treeWidget)
-        self.vlay.setStretch(0, 0)
+        self.properties_box.addWidget(self.treeWidget)
+        # self.properties_box.setStretch(0, 0)
 
         self.calculations_finished.connect(self.show_area_chull)
 

@@ -357,7 +357,7 @@ class RulesCheck(AppTool):
 
             name = elem['name']
             for tool in elem['tools']:
-                tool_dia = float('%.*f' % (4, float(elem['tools'][tool]['C'])))
+                tool_dia = float('%.*f' % (4, float(elem['tools'][tool]['tooldia'])))
                 if tool_dia < float(size):
                     dia_list.append(tool_dia)
             obj_violations['name'] = name
@@ -623,7 +623,8 @@ class RulesCheck(AppTool):
         log.debug("RuleCheck() executing")
 
         def worker_job(app_obj):
-            self.app.proc_container.new(_("Working..."))
+            # self.app.proc_container.new(_("Working..."))
+            self.app.proc_container.view.set_busy('%s' % _("Working..."))
 
             # RULE: Check Trace Size
             if self.ui.trace_size_cb.get_value():
@@ -1055,6 +1056,7 @@ class RulesCheck(AppTool):
                 output.append(p.get())
 
             self.tool_finished.emit(output)
+            self.app.proc_container.view.set_idle()
 
             log.debug("RuleCheck() finished")
 

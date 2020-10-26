@@ -314,8 +314,9 @@ class QRCode(AppTool):
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:
-        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'], filename=None,
-                                                             local_use=self.grb_object, use_thread=False)
+        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                        filename=None,
+                                                                        local_use=self.grb_object, use_thread=False)
 
         self.replot(obj=self.grb_object)
         self.app.inform.emit('[success] %s' % _("QRCode Tool done."))

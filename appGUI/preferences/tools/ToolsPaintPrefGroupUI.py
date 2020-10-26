@@ -33,9 +33,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paint_label = QtWidgets.QLabel(_('<b>Parameters:</b>'))
         self.paint_label.setToolTip(
             _("Creates tool paths to cover the\n"
-              "whole area of a polygon (remove\n"
-              "all copper). You will be asked\n"
-              "to click on the desired polygon.")
+              "whole area of a polygon.")
         )
         self.layout.addWidget(self.paint_label)
 

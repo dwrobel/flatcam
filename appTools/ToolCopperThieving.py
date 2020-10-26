@@ -282,10 +282,9 @@ class ToolCopperThieving(AppTool):
 
         self.app.proc_container.update_view_text(' %s' % _("Append source file"))
         # update the source file with the new geometry:
-        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                             filename=None,
-                                                             local_use=self.grb_object,
-                                                             use_thread=False)
+        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                        filename=None, local_use=self.grb_object,
+                                                                        use_thread=False)
         self.app.proc_container.update_view_text(' %s' % '')
         self.on_exit()
         self.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
@@ -519,9 +518,9 @@ class ToolCopperThieving(AppTool):
 
         ref_selected = self.ui.reference_radio.get_value()
         if c_val is None:
-            c_val = float(self.app.defaults["tools_copperfill_clearance"])
+            c_val = float(self.app.defaults["tools_copper_thieving_clearance"])
         if margin is None:
-            margin = float(self.app.defaults["tools_copperfill_margin"])
+            margin = float(self.app.defaults["tools_copper_thieving_margin"])
 
         fill_type = self.ui.fill_type_radio.get_value()
         dot_dia = self.ui.dot_dia_entry.get_value()
@@ -543,10 +542,8 @@ class ToolCopperThieving(AppTool):
             app_obj.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
 
             # variables to display the percentage of work done
-            geo_len = 0
             try:
-                for pol in app_obj.grb_object.solid_geometry:
-                    geo_len += 1
+                geo_len = len(app_obj.grb_object.solid_geometry)
             except TypeError:
                 geo_len = 1
 
@@ -613,10 +610,12 @@ class ToolCopperThieving(AppTool):
                         bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                     else:
                         if isinstance(geo_n, Polygon):
-                            bounding_box = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre).exterior
+                            bounding_box = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                         elif isinstance(geo_n, list):
-                            geo_n = unary_union(geo_n)
-                            bounding_box = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre).exterior
+                            geo_n = MultiPolygon(geo_n)
+                            x0, y0, x1, y1 = geo_n.bounds
+                            geo = box(x0, y0, x1, y1)
+                            bounding_box = geo.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                         elif isinstance(geo_n, MultiPolygon):
                             x0, y0, x1, y1 = geo_n.bounds
                             geo = box(x0, y0, x1, y1)
@@ -689,10 +688,16 @@ class ToolCopperThieving(AppTool):
             # bounding_box = box(x0, y0, x1, y1)
             app_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
 
-            bounding_box = thieving_obj.solid_geometry.envelope.buffer(
-                distance=margin,
-                join_style=base.JOIN_STYLE.mitre
-            )
+            try:
+                bounding_box = thieving_obj.solid_geometry.envelope.buffer(
+                    distance=margin,
+                    join_style=base.JOIN_STYLE.mitre
+                )
+            except AttributeError:
+                bounding_box = MultiPolygon(thieving_obj.solid_geometry).envelope.buffer(
+                    distance=margin,
+                    join_style=base.JOIN_STYLE.mitre
+                )
             x0, y0, x1, y1 = bounding_box.bounds
 
             if fill_type == 'dot' or fill_type == 'square':
@@ -870,10 +875,9 @@ class ToolCopperThieving(AppTool):
 
             app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            app_obj.grb_object.source_file = app_obj.app.export_gerber(obj_name=app_obj.grb_object.options['name'],
-                                                                       filename=None,
-                                                                       local_use=app_obj.grb_object,
-                                                                       use_thread=False)
+            app_obj.grb_object.source_file = app_obj.f_handlers.export_gerber(
+                obj_name=app_obj.grb_object.options['name'], filename=None, local_use=app_obj.grb_object,
+                use_thread=False)
             app_obj.app.proc_container.update_view_text(' %s' % '')
             app_obj.on_exit()
             app_obj.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
@@ -1015,10 +1019,8 @@ class ToolCopperThieving(AppTool):
 
             app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            grb_obj.source_file = app_obj.export_gerber(obj_name=name,
-                                                        filename=None,
-                                                        local_use=grb_obj,
-                                                        use_thread=False)
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=name, filename=None, local_use=grb_obj,
+                                                                   use_thread=False)
             app_obj.proc_container.update_view_text(' %s' % '')
 
         # Object name

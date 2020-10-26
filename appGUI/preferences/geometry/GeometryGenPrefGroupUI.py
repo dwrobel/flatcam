@@ -100,7 +100,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
               "- Basic -> Using Google OR-Tools Basic algorithm\n"
               "- TSA -> Using Travelling Salesman algorithm\n"
               "\n"
-              "Some options are disabled when FlatCAM works in 32bit mode.")
+              "Some options are disabled when the application works in 32bit mode.")
         )
 
         self.opt_algorithm_radio = RadioSet(
@@ -140,8 +140,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
         self.fuse_tools_cb.setToolTip(
-            _("When checked the joined (merged) object tools\n"
-              "will be merged also but only if they share some of their attributes.")
+            _("When checked, the tools will be merged\n"
+              "but only if they share some of their attributes.")
         )
         grid0.addWidget(self.fuse_tools_cb, 20, 0, 1, 2)
 

@@ -1737,8 +1737,8 @@ class GeometryObjectUI(ObjectUI):
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
-        self.generate_cnc_button.setToolTip('%s\n%s' % (
-            _("Generate CNCJob object."),
+        self.generate_cnc_button.setToolTip('%s.\n%s' % (
+            _("Generate CNCJob object"),
             _(
                 "Add / Select at least one tool in the tool-table.\n"
                 "Click the # header to select all, or Ctrl + LMB\n"
@@ -1783,13 +1783,10 @@ class GeometryObjectUI(ObjectUI):
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
         self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
         self.paint_tool_button.setToolTip(
-            _(
-                "Creates tool paths to cover the\n"
-                "whole area of a polygon (remove\n"
-                "all copper). You will be asked\n"
-                "to click on the desired polygon."
-            )
+            _("Creates tool paths to cover the\n"
+              "whole area of a polygon.")
         )
+
         # self.paint_tool_button.setStyleSheet("""
         #                 QPushButton
         #                 {
@@ -2050,11 +2047,23 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.snippets_cb)
 
         # Autolevelling
-        self.sal_cb = FCCheckBox(_("Autolevelling"))
-        self.sal_cb.setToolTip(
+        self.sal_btn = FCButton('%s' % _("Autolevelling"), checkable=True)
+        # self.sal_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.sal_btn.setToolTip(
             _("Enable the autolevelling feature.")
         )
-        self.custom_box.addWidget(self.sal_cb)
+        self.sal_btn.setStyleSheet("""
+                                  QPushButton
+                                  {
+                                      font-weight: bold;
+                                  }
+                                  """)
+        self.custom_box.addWidget(self.sal_btn)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
 
         self.al_frame = QtWidgets.QFrame()
         self.al_frame.setContentsMargins(0, 0, 0, 0)
@@ -2206,7 +2215,7 @@ class CNCObjectUI(ObjectUI):
 
         self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.al_rows_label.setToolTip(
-            _("The number of gird rows.")
+            _("The number of grid rows.")
         )
         grid0.addWidget(self.al_rows_label, 21, 0)
         grid0.addWidget(self.al_rows_entry, 21, 1)

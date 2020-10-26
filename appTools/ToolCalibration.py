@@ -671,8 +671,8 @@ class ToolCalibration(AppTool):
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
 
             try:
-                obj_init.source_file = self.export_gerber(obj_name=obj_name, filename=None, local_use=obj_init,
-                                                          use_thread=False)
+                obj_init.source_file = self.app.f_handlers.export_gerber(obj_name=obj_name, filename=None,
+                                                                         local_use=obj_init, use_thread=False)
             except (AttributeError, TypeError):
                 pass
 
@@ -689,8 +689,8 @@ class ToolCalibration(AppTool):
 
             obj_init.create_geometry()
 
-            obj_init.source_file = self.app.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
-                                                            use_thread=False)
+            obj_init.source_file = self.app.export.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
+                                                                   use_thread=False)
 
         obj = self.cal_object
         obj_name = obj_name

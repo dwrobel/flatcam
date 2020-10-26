@@ -26,9 +26,10 @@ from shapely.geometry import Point, MultiPoint, Polygon, LineString, box
 import shapely.affinity as affinity
 try:
     from shapely.ops import voronoi_diagram
+    VORONOI_ENABLED = True
     # from appCommon.Common import voronoi_diagram
 except Exception:
-    pass
+    VORONOI_ENABLED = False
 
 import os
 import sys
@@ -234,6 +235,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def build_ui(self):
         self.ui_disconnect()
 
+        # FIXME: until Shapely 1.8 comes this is disabled
+        self.ui.sal_btn.setChecked(False)
+        self.ui.sal_btn.setDisabled(True)
+        self.ui.sal_btn.setToolTip("DISABLED. Work in progress!")
+
         FlatCAMObj.build_ui(self)
         self.units = self.app.defaults['units'].upper()
 
@@ -248,7 +254,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
 
-        if self.ui.sal_cb.get_value():
+        if self.ui.sal_btn.isChecked():
             self.build_al_table()
 
         self.ui_connect()
@@ -573,7 +579,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
+        self.ui.review_gcode_button.clicked.connect(self.on_review_code_click)
 
         # Editor Signal
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
@@ -583,7 +589,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.calculations_finished.connect(self.update_area_chull)
 
         # autolevelling signals
-        self.ui.sal_cb.stateChanged.connect(self.on_toggle_autolevelling)
+        self.ui.sal_btn.toggled.connect(self.on_toggle_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
@@ -636,19 +642,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 '<span style="color:green;"><b>Basic</b></span>'
             ))
 
-            self.ui.sal_cb.hide()
-            self.ui.sal_cb.set_value(False)
+            self.ui.sal_btn.hide()
+            self.ui.sal_btn.setChecked(False)
         else:
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
             if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name or 'hpgl' in \
                     self.pp_geometry_name:
-                self.ui.sal_cb.hide()
-                self.ui.sal_cb.set_value(False)
+                self.ui.sal_btn.hide()
+                self.ui.sal_btn.setChecked(False)
             else:
-                self.ui.sal_cb.show()
-                self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
+                self.ui.sal_btn.show()
+                self.ui.sal_btn.setChecked(self.app.defaults["cncjob_al_status"])
 
         preamble = self.append_snippet
         postamble = self.prepend_snippet
@@ -771,9 +777,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
-                self.generate_voronoi_geometry(pts=vor_pts_list)
-                # generate Probing GCode
-                self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
+                if VORONOI_ENABLED is True:
+                    self.generate_voronoi_geometry(pts=vor_pts_list)
+                    # generate Probing GCode
+                    self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
+                                                                "Shapely >= 1.8 is required"))
             else:
                 self.generate_bilinear_geometry(pts=bl_pts_list)
                 # generate Probing GCode
@@ -1042,12 +1052,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
-                pts_list = []
-                for k in self.al_voronoi_geo_storage:
-                    pts_list.append(self.al_voronoi_geo_storage[k]['point'])
-                self.generate_voronoi_geometry(pts=pts_list)
+                if VORONOI_ENABLED is True:
+                    pts_list = []
+                    for k in self.al_voronoi_geo_storage:
+                        pts_list.append(self.al_voronoi_geo_storage[k]['point'])
+                    self.generate_voronoi_geometry(pts=pts_list)
 
-                self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
+                    self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
+                                                                "Shapely >= 1.8 is required"))
 
             # rebuild the al table
             self.build_al_table_sig.emit()
@@ -1689,7 +1703,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_viewer_tab.load_text(gco, move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
+            log.debug('FlatCAMCNCJob.on_edit_probing_gcode() -->%s' % str(e))
             return
 
         self.gcode_viewer_tab.t_frame.show()
@@ -1940,7 +1954,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
-    def on_edit_code_click(self, *args):
+    def on_review_code_click(self, *args):
         """
         Handler activated by a button clicked when reviewing GCode.
 
@@ -1980,7 +1994,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
+            log.debug('FlatCAMCNCJob.on_review_code_click() -->%s' % str(e))
             return
 
         self.gcode_editor_tab.t_frame.show()
@@ -1988,8 +2002,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.gcode_editor_tab.buttonSave.hide()
         self.gcode_editor_tab.buttonOpen.hide()
-        self.gcode_editor_tab.buttonPrint.hide()
-        self.gcode_editor_tab.buttonPreview.hide()
+        # self.gcode_editor_tab.buttonPrint.hide()
+        # self.gcode_editor_tab.buttonPreview.hide()
         self.gcode_editor_tab.buttonReplace.hide()
         self.gcode_editor_tab.sel_all_cb.hide()
         self.gcode_editor_tab.entryReplace.hide()
