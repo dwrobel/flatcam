@@ -2722,7 +2722,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2:
-                    self.app.on_select_tab('selected')
+                    self.app.on_select_tab('properties')
 
                 # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3:

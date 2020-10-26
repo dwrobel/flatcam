@@ -6148,7 +6148,7 @@ class App(QtCore.QObject):
 
         if name == 'project':
             self.ui.notebook.setCurrentWidget(self.ui.project_tab)
-        elif name == 'selected':
+        elif name == 'properties':
             self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
