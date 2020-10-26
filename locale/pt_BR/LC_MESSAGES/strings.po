@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-27 00:05+0200\n"
-"PO-Revision-Date: 2020-10-27 00:06+0200\n"
+"POT-Creation-Date: 2020-10-27 01:19+0200\n"
+"PO-Revision-Date: 2020-10-27 01:19+0200\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -1982,7 +1982,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:3908 appEditors/AppExcEditor.py:4030
 #: appEditors/AppExcEditor.py:4123 appEditors/AppGerberEditor.py:2820
-#: appGUI/GUIElements.py:3850 appGUI/MainGUI.py:475 appGUI/MainGUI.py:668
+#: appGUI/GUIElements.py:4130 appGUI/MainGUI.py:475 appGUI/MainGUI.py:668
 #: appGUI/MainGUI.py:4416 appGUI/MainGUI.py:4682
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:187
@@ -1995,7 +1995,7 @@ msgstr "X"
 
 #: appEditors/AppExcEditor.py:3909 appEditors/AppExcEditor.py:4031
 #: appEditors/AppExcEditor.py:4124 appEditors/AppGerberEditor.py:2821
-#: appGUI/GUIElements.py:3857 appGUI/MainGUI.py:478 appGUI/MainGUI.py:4417
+#: appGUI/GUIElements.py:4137 appGUI/MainGUI.py:478 appGUI/MainGUI.py:4417
 #: appGUI/MainGUI.py:4683
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:188
@@ -2399,7 +2399,7 @@ msgid "Buffer"
 msgstr "Buffer"
 
 #: appEditors/AppGeoEditor.py:643 appEditors/AppGerberEditor.py:5353
-#: appGUI/GUIElements.py:3283
+#: appGUI/GUIElements.py:3467
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
 #: appTools/ToolDblSided.py:683 appTools/ToolDblSided.py:857
@@ -3550,14 +3550,15 @@ msgid "Add a new aperture to the aperture list."
 msgstr "Adiciona uma nova abertura à lista de aberturas."
 
 #: appEditors/AppGerberEditor.py:2595 appEditors/AppGerberEditor.py:2743
-#: appGUI/GUIElements.py:568 appGUI/GUIElements.py:1514
-#: appGUI/GUIElements.py:1690 appGUI/MainGUI.py:420 appGUI/MainGUI.py:731
-#: appGUI/MainGUI.py:790 appGUI/MainGUI.py:869 appGUI/MainGUI.py:988
-#: appGUI/MainGUI.py:1205 appGUI/MainGUI.py:1689 appGUI/MainGUI.py:2147
-#: appGUI/MainGUI.py:2360 appGUI/MainGUI.py:4922 appGUI/ObjectUI.py:1132
-#: appObjects/FlatCAMGeometry.py:561 appTools/ToolIsolation.py:70
-#: appTools/ToolIsolation.py:3150 appTools/ToolNCC.py:69
-#: appTools/ToolNCC.py:4024 appTools/ToolPaint.py:143
+#: appGUI/GUIElements.py:568 appGUI/GUIElements.py:1006
+#: appGUI/GUIElements.py:1342 appGUI/GUIElements.py:1698
+#: appGUI/GUIElements.py:1874 appGUI/GUIElements.py:3769 appGUI/MainGUI.py:420
+#: appGUI/MainGUI.py:731 appGUI/MainGUI.py:790 appGUI/MainGUI.py:869
+#: appGUI/MainGUI.py:988 appGUI/MainGUI.py:1205 appGUI/MainGUI.py:1689
+#: appGUI/MainGUI.py:2147 appGUI/MainGUI.py:2360 appGUI/MainGUI.py:4922
+#: appGUI/ObjectUI.py:1132 appObjects/FlatCAMGeometry.py:561
+#: appTools/ToolIsolation.py:70 appTools/ToolIsolation.py:3150
+#: appTools/ToolNCC.py:69 appTools/ToolNCC.py:4024 appTools/ToolPaint.py:143
 #: appTools/ToolPaint.py:2926 appTools/ToolSolderPaste.py:163
 #: appTools/ToolSolderPaste.py:1209 app_Main.py:6063
 msgid "Delete"
@@ -3901,7 +3902,7 @@ msgstr "Substituirá o texto da caixa Localizar pelo texto da caixa Substituir."
 msgid "String to replace the one in the Find box throughout the text."
 msgstr "Texto para substituir o da caixa Localizar ao longo do texto."
 
-#: appEditors/AppTextEditor.py:106 appGUI/GUIElements.py:3878
+#: appEditors/AppTextEditor.py:106 appGUI/GUIElements.py:4158
 #: appGUI/ObjectUI.py:1864 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:61
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
@@ -4069,89 +4070,111 @@ msgstr "Inserir QRCode"
 msgid "Insert the code above at the cursor location."
 msgstr ""
 
-#: appGUI/GUIElements.py:533 appGUI/GUIElements.py:1479
-#: appGUI/GUIElements.py:1655
+#: appGUI/GUIElements.py:533 appGUI/GUIElements.py:971
+#: appGUI/GUIElements.py:1307 appGUI/GUIElements.py:1663
+#: appGUI/GUIElements.py:1839 appGUI/GUIElements.py:3734
 msgid "Undo"
 msgstr ""
 
-#: appGUI/GUIElements.py:533 appGUI/GUIElements.py:1479
-#: appGUI/GUIElements.py:1655
-#| msgid "Ctrl+C"
+#: appGUI/GUIElements.py:533 appGUI/GUIElements.py:971
+#: appGUI/GUIElements.py:1307 appGUI/GUIElements.py:1663
+#: appGUI/GUIElements.py:1839 appGUI/GUIElements.py:3734
 msgid "Ctrl+Z"
 msgstr "Ctrl+Z"
 
-#: appGUI/GUIElements.py:540 appGUI/GUIElements.py:1486
-#: appGUI/GUIElements.py:1662
+#: appGUI/GUIElements.py:540 appGUI/GUIElements.py:978
+#: appGUI/GUIElements.py:1314 appGUI/GUIElements.py:1670
+#: appGUI/GUIElements.py:1846 appGUI/GUIElements.py:3741
 msgid "Redo"
 msgstr ""
 
-#: appGUI/GUIElements.py:540 appGUI/GUIElements.py:1486
-#: appGUI/GUIElements.py:1662
-#| msgid "Ctrl+C"
+#: appGUI/GUIElements.py:540 appGUI/GUIElements.py:978
+#: appGUI/GUIElements.py:1314 appGUI/GUIElements.py:1670
+#: appGUI/GUIElements.py:1846 appGUI/GUIElements.py:3741
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: appGUI/GUIElements.py:549 appGUI/GUIElements.py:1495
-#: appGUI/GUIElements.py:1671 appGUI/MainGUI.py:1630 appGUI/ObjectUI.py:1866
-#: appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:63
+#: appGUI/GUIElements.py:549 appGUI/GUIElements.py:987
+#: appGUI/GUIElements.py:1323 appGUI/GUIElements.py:1679
+#: appGUI/GUIElements.py:1855 appGUI/GUIElements.py:3750 appGUI/MainGUI.py:1630
+#: appGUI/ObjectUI.py:1866 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:63
 msgid "Cut"
 msgstr "Cortar"
 
-#: appGUI/GUIElements.py:549 appGUI/GUIElements.py:1495
-#: appGUI/GUIElements.py:1671 appGUI/MainGUI.py:4692
+#: appGUI/GUIElements.py:549 appGUI/GUIElements.py:987
+#: appGUI/GUIElements.py:1323 appGUI/GUIElements.py:1679
+#: appGUI/GUIElements.py:1855 appGUI/GUIElements.py:3750 appGUI/MainGUI.py:4692
 msgid "Ctrl+X"
 msgstr "Ctrl+X"
 
-#: appGUI/GUIElements.py:556 appGUI/GUIElements.py:1502
-#: appGUI/GUIElements.py:1678 appGUI/GUIElements.py:3345 appGUI/MainGUI.py:414
-#: appGUI/MainGUI.py:728 appGUI/MainGUI.py:787 appGUI/MainGUI.py:867
-#: appGUI/MainGUI.py:986 appGUI/MainGUI.py:1203 appGUI/MainGUI.py:1687
-#: appGUI/MainGUI.py:2145 appGUI/MainGUI.py:2358 appGUI/MainGUI.py:4911
-#: appGUI/ObjectUI.py:1125 appObjects/FlatCAMGeometry.py:558
-#: appTools/ToolPanelize.py:325 appTools/ToolPanelize.py:351
-#: appTools/ToolPanelize.py:448 appTools/ToolPanelize.py:477
-#: appTools/ToolPanelize.py:538
+#: appGUI/GUIElements.py:556 appGUI/GUIElements.py:994
+#: appGUI/GUIElements.py:1330 appGUI/GUIElements.py:1686
+#: appGUI/GUIElements.py:1862 appGUI/GUIElements.py:3529
+#: appGUI/GUIElements.py:3757 appGUI/MainGUI.py:414 appGUI/MainGUI.py:728
+#: appGUI/MainGUI.py:787 appGUI/MainGUI.py:867 appGUI/MainGUI.py:986
+#: appGUI/MainGUI.py:1203 appGUI/MainGUI.py:1687 appGUI/MainGUI.py:2145
+#: appGUI/MainGUI.py:2358 appGUI/MainGUI.py:4911 appGUI/ObjectUI.py:1125
+#: appObjects/FlatCAMGeometry.py:558 appTools/ToolPanelize.py:325
+#: appTools/ToolPanelize.py:351 appTools/ToolPanelize.py:448
+#: appTools/ToolPanelize.py:477 appTools/ToolPanelize.py:538
 msgid "Copy"
 msgstr "Copiar"
 
-#: appGUI/GUIElements.py:556 appGUI/GUIElements.py:1502
-#: appGUI/GUIElements.py:1678 appGUI/GUIElements.py:3345 appGUI/MainGUI.py:414
-#: appGUI/MainGUI.py:4423
+#: appGUI/GUIElements.py:556 appGUI/GUIElements.py:994
+#: appGUI/GUIElements.py:1330 appGUI/GUIElements.py:1686
+#: appGUI/GUIElements.py:1862 appGUI/GUIElements.py:3529
+#: appGUI/GUIElements.py:3757 appGUI/MainGUI.py:414 appGUI/MainGUI.py:4423
 msgid "Ctrl+C"
 msgstr "Copiar"
 
-#: appGUI/GUIElements.py:563 appGUI/GUIElements.py:1509
-#: appGUI/GUIElements.py:1685
+#: appGUI/GUIElements.py:563 appGUI/GUIElements.py:1001
+#: appGUI/GUIElements.py:1337 appGUI/GUIElements.py:1693
+#: appGUI/GUIElements.py:1869 appGUI/GUIElements.py:3764
 msgid "Paste"
 msgstr ""
 
-#: appGUI/GUIElements.py:563 appGUI/GUIElements.py:1509
-#: appGUI/GUIElements.py:1685
-#| msgid "Ctrl+C"
+#: appGUI/GUIElements.py:563 appGUI/GUIElements.py:1001
+#: appGUI/GUIElements.py:1337 appGUI/GUIElements.py:1693
+#: appGUI/GUIElements.py:1869 appGUI/GUIElements.py:3764
 msgid "Ctrl+V"
 msgstr "Ctrl+V"
 
-#: appGUI/GUIElements.py:568 appGUI/GUIElements.py:1514
-#: appGUI/GUIElements.py:1690 appGUI/GUIElements.py:3363 appGUI/MainGUI.py:4491
-#: appGUI/MainGUI.py:4492 appGUI/MainGUI.py:4696 appGUI/MainGUI.py:4788
-#: appGUI/MainGUI.py:4789 appGUI/MainGUI.py:4922 appGUI/MainGUI.py:4923
+#: appGUI/GUIElements.py:568 appGUI/GUIElements.py:1006
+#: appGUI/GUIElements.py:1342 appGUI/GUIElements.py:1698
+#: appGUI/GUIElements.py:1874 appGUI/GUIElements.py:3547
+#: appGUI/GUIElements.py:3769 appGUI/MainGUI.py:4491 appGUI/MainGUI.py:4492
+#: appGUI/MainGUI.py:4696 appGUI/MainGUI.py:4788 appGUI/MainGUI.py:4789
+#: appGUI/MainGUI.py:4922 appGUI/MainGUI.py:4923
 msgid "Del"
 msgstr "Del"
 
-#: appGUI/GUIElements.py:575 appGUI/GUIElements.py:1521
-#: appGUI/GUIElements.py:1697 appGUI/GUIElements.py:3353 appGUI/MainGUI.py:445
-#: appGUI/MainGUI.py:565 appGUI/MainGUI.py:4422
-#: appObjects/ObjectCollection.py:1128 appObjects/ObjectCollection.py:1175
+#: appGUI/GUIElements.py:575 appGUI/GUIElements.py:1013
+#: appGUI/GUIElements.py:1349 appGUI/GUIElements.py:1705
+#: appGUI/GUIElements.py:1881 appGUI/GUIElements.py:3537
+#: appGUI/GUIElements.py:3776 appGUI/MainGUI.py:445 appGUI/MainGUI.py:565
+#: appGUI/MainGUI.py:4422 appObjects/ObjectCollection.py:1128
+#: appObjects/ObjectCollection.py:1175
 msgid "Select All"
 msgstr "Selecionar Todos"
 
-#: appGUI/GUIElements.py:575 appGUI/GUIElements.py:1521
-#: appGUI/GUIElements.py:1697 appGUI/GUIElements.py:3353 appGUI/MainGUI.py:445
-#: appGUI/MainGUI.py:4422
+#: appGUI/GUIElements.py:575 appGUI/GUIElements.py:1013
+#: appGUI/GUIElements.py:1349 appGUI/GUIElements.py:1705
+#: appGUI/GUIElements.py:1881 appGUI/GUIElements.py:3537
+#: appGUI/GUIElements.py:3776 appGUI/MainGUI.py:445 appGUI/MainGUI.py:4422
 msgid "Ctrl+A"
 msgstr "Ctrl+A"
 
-#: appGUI/GUIElements.py:3285
+#: appGUI/GUIElements.py:1020 appGUI/GUIElements.py:1356
+msgid "Step Up"
+msgstr ""
+
+#: appGUI/GUIElements.py:1025 appGUI/GUIElements.py:1361
+#, fuzzy
+#| msgid "Down"
+msgid "Step Down"
+msgstr "Abaixo"
+
+#: appGUI/GUIElements.py:3469
 msgid ""
 "The reference can be:\n"
 "- Absolute -> the reference point is point (0,0)\n"
@@ -4161,19 +4184,19 @@ msgstr ""
 "- Absoluto -> o ponto de referência é o ponto (0,0)\n"
 "- Relativo -> o ponto de referência é a posição do mouse antes de Jump"
 
-#: appGUI/GUIElements.py:3290
+#: appGUI/GUIElements.py:3474
 msgid "Abs"
 msgstr "Abs"
 
-#: appGUI/GUIElements.py:3291
+#: appGUI/GUIElements.py:3475
 msgid "Relative"
 msgstr "Relativo"
 
-#: appGUI/GUIElements.py:3301
+#: appGUI/GUIElements.py:3485
 msgid "Location"
 msgstr "Localização"
 
-#: appGUI/GUIElements.py:3303
+#: appGUI/GUIElements.py:3487
 msgid ""
 "The Location value is a tuple (x,y).\n"
 "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -4185,95 +4208,95 @@ msgstr ""
 "Se a referência for Relativa, o salto estará na distância (x, y)\n"
 "a partir do ponto de localização atual do mouse."
 
-#: appGUI/GUIElements.py:3358
+#: appGUI/GUIElements.py:3542
 msgid "Save Log"
 msgstr "Salvar Log"
 
-#: appGUI/GUIElements.py:3358 appGUI/MainGUI.py:161 appGUI/MainGUI.py:343
+#: appGUI/GUIElements.py:3542 appGUI/MainGUI.py:161 appGUI/MainGUI.py:343
 #: appGUI/MainGUI.py:4432 appGUI/MainGUI.py:4691 appGUI/MainGUI.py:4791
 #: appGUI/MainGUI.py:4927
 msgid "Ctrl+S"
 msgstr "Ctrl+S"
 
-#: appGUI/GUIElements.py:3363
+#: appGUI/GUIElements.py:3547
 #, fuzzy
 #| msgid "Clear plot"
 msgid "Clear All"
 msgstr "Limpar gráfico"
 
-#: appGUI/GUIElements.py:3406 appTools/ToolShell.py:296
+#: appGUI/GUIElements.py:3590 appTools/ToolShell.py:296
 msgid "Type >help< to get started"
 msgstr "Digite >help< para iniciar"
 
-#: appGUI/GUIElements.py:3773 appGUI/GUIElements.py:3790
+#: appGUI/GUIElements.py:4053 appGUI/GUIElements.py:4070
 #, fuzzy
 #| msgid "Toggle the axis"
 msgid "Jog the Y axis."
 msgstr "Alternar o Eixo"
 
-#: appGUI/GUIElements.py:3781
+#: appGUI/GUIElements.py:4061
 #, fuzzy
 #| msgid "Move to Origin"
 msgid "Move to Origin."
 msgstr "Mover para Origem"
 
-#: appGUI/GUIElements.py:3798 appGUI/GUIElements.py:3806
+#: appGUI/GUIElements.py:4078 appGUI/GUIElements.py:4086
 #, fuzzy
 #| msgid "Toggle the axis"
 msgid "Jog the X axis."
 msgstr "Alternar o Eixo"
 
-#: appGUI/GUIElements.py:3816 appGUI/GUIElements.py:3826
+#: appGUI/GUIElements.py:4096 appGUI/GUIElements.py:4106
 #, fuzzy
 #| msgid "Toggle the axis"
 msgid "Jog the Z axis."
 msgstr "Alternar o Eixo"
 
-#: appGUI/GUIElements.py:3852
+#: appGUI/GUIElements.py:4132
 msgid "Zero the CNC X axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3860
+#: appGUI/GUIElements.py:4140
 msgid "Zero the CNC Y axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3865
+#: appGUI/GUIElements.py:4145
 msgid "Z"
 msgstr "Z"
 
-#: appGUI/GUIElements.py:3868
+#: appGUI/GUIElements.py:4148
 msgid "Zero the CNC Z axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3872
+#: appGUI/GUIElements.py:4152
 msgid "Do Home"
 msgstr ""
 
-#: appGUI/GUIElements.py:3874
+#: appGUI/GUIElements.py:4154
 msgid "Perform a homing cycle on all axis."
 msgstr ""
 
-#: appGUI/GUIElements.py:3882
+#: appGUI/GUIElements.py:4162
 msgid "Zero all CNC axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:4037 appGUI/GUIElements.py:4046
+#: appGUI/GUIElements.py:4317 appGUI/GUIElements.py:4326
 msgid "Idle."
 msgstr "Ocioso."
 
-#: appGUI/GUIElements.py:4079
+#: appGUI/GUIElements.py:4359
 msgid "Application started ..."
 msgstr "Aplicativo iniciado ..."
 
-#: appGUI/GUIElements.py:4080
+#: appGUI/GUIElements.py:4360
 msgid "Hello!"
 msgstr "Olá!"
 
-#: appGUI/GUIElements.py:4127 appGUI/MainGUI.py:1030 appGUI/MainGUI.py:2186
+#: appGUI/GUIElements.py:4407 appGUI/MainGUI.py:1030 appGUI/MainGUI.py:2186
 msgid "Run Script ..."
 msgstr "Executar Script ..."
 
-#: appGUI/GUIElements.py:4129 appGUI/MainGUI.py:196
+#: appGUI/GUIElements.py:4409 appGUI/MainGUI.py:196
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
@@ -4283,28 +4306,28 @@ msgstr ""
 "ativando a automação de certas\n"
 "funções do FlatCAM."
 
-#: appGUI/GUIElements.py:4138 appGUI/MainGUI.py:118
+#: appGUI/GUIElements.py:4418 appGUI/MainGUI.py:118
 #: appTools/ToolPcbWizard.py:390 appTools/ToolPcbWizard.py:397
 msgid "Open"
 msgstr "Abrir"
 
-#: appGUI/GUIElements.py:4142
+#: appGUI/GUIElements.py:4422
 msgid "Open Project ..."
 msgstr "Abrir Projeto ..."
 
-#: appGUI/GUIElements.py:4148
+#: appGUI/GUIElements.py:4428
 msgid "Open &Gerber ...\tCtrl+G"
 msgstr "Abrir &Gerber ...\tCtrl+G"
 
-#: appGUI/GUIElements.py:4153
+#: appGUI/GUIElements.py:4433
 msgid "Open &Excellon ...\tCtrl+E"
 msgstr "Abrir &Excellon ...\tCtrl+E"
 
-#: appGUI/GUIElements.py:4158
+#: appGUI/GUIElements.py:4438
 msgid "Open G-&Code ..."
 msgstr "Abrir G-&Code ..."
 
-#: appGUI/GUIElements.py:4168 appGUI/MainGUI.py:327
+#: appGUI/GUIElements.py:4448 appGUI/MainGUI.py:327
 msgid "Exit"
 msgstr "Sair"
 

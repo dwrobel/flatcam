@@ -25,6 +25,9 @@ CHANGELOG for FlatCAM beta
 - overloaded the context menu in several classes from GUI Elements such that the menus are now translated
 - fixed a formatting issue in the MainGUI.py file
 - updated the translations for the new strings that were added
+- another GUI element for which I've overloaded the context menu to make it translatable: _ExpandableTextEdit
+- overloaded the context menu for FCSpinner and for FCDoubleSpinner
+- added new strings and therefore updated the translation strings
 
 25.10.2020
 

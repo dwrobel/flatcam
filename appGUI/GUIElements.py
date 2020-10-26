@@ -916,6 +916,8 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
+        self.menu = None
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
         self.setSizePolicy(sizePolicy)
 
@@ -960,6 +962,96 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.lineEdit().deselect()
             self.readyToEdit = True
             self.prev_readyToEdit = True
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        line_edit = self.lineEdit()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(line_edit.undo)
+        if line_edit.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(line_edit.redo)
+        if line_edit.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not line_edit.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not line_edit.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(line_edit.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(line_edit.selectAll)
+
+        self.menu.addSeparator()
+
+        # STEP UP
+        step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
+        self.menu.addAction(step_up_action)
+        step_up_action.triggered.connect(self.stepUp)
+
+        # STEP DOWN
+        step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
+        self.menu.addAction(step_down_action)
+        step_down_action.triggered.connect(self.stepDown)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        line_edit.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = clipboard.text()
+        line_edit.insert(txt)
 
     def valueFromText(self, text):
         txt = text.strip('%%')
@@ -1165,6 +1257,8 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
+        self.menu = None
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
         self.setSizePolicy(sizePolicy)
 
@@ -1204,6 +1298,96 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.lineEdit().deselect()
             self.readyToEdit = True
             self.prev_readyToEdit = True
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        line_edit = self.lineEdit()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(line_edit.undo)
+        if line_edit.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(line_edit.redo)
+        if line_edit.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not line_edit.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not line_edit.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(line_edit.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(line_edit.selectAll)
+
+        self.menu.addSeparator()
+
+        # STEP UP
+        step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
+        self.menu.addAction(step_up_action)
+        step_up_action.triggered.connect(self.stepUp)
+
+        # STEP DOWN
+        step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
+        self.menu.addAction(step_down_action)
+        step_down_action.triggered.connect(self.stepDown)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        line_edit.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = clipboard.text()
+        line_edit.insert(txt)
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')
@@ -3442,6 +3626,19 @@ class _ExpandableTextEdit(QTextEdit):
         self.completer.insertText.connect(self.insertCompletion)
         self.completer.popup().clicked.connect(self.insert_completion_click)
 
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
 
@@ -3527,6 +3724,89 @@ class _ExpandableTextEdit(QTextEdit):
             self.completer.complete(cr)
         else:
             self.completer.popup().hide()
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
 
     def sizeHint(self):
         """
