@@ -5648,35 +5648,30 @@ class App(QtCore.QObject):
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
             )
         elif source == 'ncc':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.ncclear_tool.on_ncc_tool_add_from_db_executed
             )
         elif source == 'paint':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.paint_tool.on_paint_tool_add_from_db_executed
             )
         elif source == 'iso':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.isolation_tool.on_iso_tool_add_from_db_executed
             )
         elif source == 'cutout':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.cutout_tool.on_cutout_tool_add_from_db_executed
             )
 
@@ -5701,23 +5696,6 @@ class App(QtCore.QObject):
 
         # detect changes in the Tools in Tools DB, connect signals from table widget in tab
         self.tools_db_tab.ui_connect()
-
-    def on_tools_db_edited(self):
-        """
-        Executed whenever a tool is edited in Tools Database.
-        Will color the text of the Tools Database tab to Red color.
-
-        :return:
-        """
-
-        self.inform[str, bool].emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."), False)
-
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
-                self.tools_db_tab.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
-
-        self.tools_db_changed_flag = True
 
     def on_geometry_tool_add_from_db_executed(self, tool):
         """

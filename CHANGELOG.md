@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - fixed a bug in conversion of any to Gerber in the section of Excellon conversion
 - some PEP8 fixes
 - fixed a bug due of recent chagnes in FileMenuHandlers class
+- fixed an issue in Tools Database (ToolsDB2 class) that did not made the Tab name in Red color when adding/deleting a tool by using the context menu
+- optimized the Tools Database
 
 26.10.2020
 
