@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:19+0200\n"
-"PO-Revision-Date: 2020-10-27 01:19+0200\n"
+"PO-Revision-Date: 2020-10-27 13:53-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -227,16 +227,12 @@ msgid "Tool Name"
 msgstr "Nome da Ferramenta"
 
 #: appDatabase.py:78
-#, fuzzy
-#| msgid "NCC Tool Options"
 msgid "Tool Description"
-msgstr "Opções Área Sem Cobre (NCC)"
+msgstr "Descrição da Ferramenta"
 
 #: appDatabase.py:91
-#, fuzzy
-#| msgid "Milling Diameter"
 msgid "Milling Parameters"
-msgstr "Diâmetro da Fresa"
+msgstr "Parâmetros da Fresa"
 
 #: appDatabase.py:104
 msgid "NCC Parameters"
@@ -251,16 +247,12 @@ msgid "Isolation Parameters"
 msgstr "Parâmetros de Isolação"
 
 #: appDatabase.py:143
-#, fuzzy
-#| msgid "Film Parameters"
 msgid "Drilling Parameters"
-msgstr "Parâmetros de Filme"
+msgstr "Parâmetros da Broca"
 
 #: appDatabase.py:156
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Cutout Parameters"
-msgstr "Parâmetros de Ranhura"
+msgstr "Parâmetros de Recorte"
 
 #: appDatabase.py:207 appEditors/AppGeoEditor.py:3287 appGUI/ObjectUI.py:219
 #: appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:894 appGUI/ObjectUI.py:1876
@@ -300,32 +292,33 @@ msgid "Tool Diameter."
 msgstr "Diâmetro."
 
 #: appDatabase.py:233
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "Diameter Tolerance"
-msgstr "Tolerância Geo"
+msgstr "Tolerância Diâmetro"
 
 #: appDatabase.py:235
 msgid ""
 "Tool tolerance. This tool will be used if the desired tool diameter\n"
 "is within the tolerance specified here."
 msgstr ""
+"Tolerância da ferramenta. Esta ferramenta será usada se o diâmetro de "
+"ferramenta desejado\n"
+"está dentro da tolerância especificada aqui."
 
 #: appDatabase.py:241
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: appDatabase.py:243
 msgid "Set the tool tolerance minimum."
-msgstr ""
+msgstr "Tolerância mínima"
 
 #: appDatabase.py:255
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: appDatabase.py:257
 msgid "Set the tool tolerance maximum."
-msgstr ""
+msgstr "Tolerância máxima"
 
 #: appDatabase.py:269 appDatabase.py:587
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:46
@@ -335,7 +328,7 @@ msgstr "Operação"
 
 #: appDatabase.py:271
 msgid "The kind of Application Tool where this tool is to be used."
-msgstr ""
+msgstr "O tipo de aplicação em que essa ferramenta deve ser usada."
 
 #: appDatabase.py:275 appDatabase.py:1778 appDatabase.py:1814
 #: appDatabase.py:1877 appDatabase.py:2162 appGUI/MainGUI.py:1411
@@ -1185,15 +1178,13 @@ msgstr ""
 
 #: appDatabase.py:1099 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:243
 #: appTools/ToolDrilling.py:2304
-#, fuzzy
-#| msgid "Mill Slots"
 msgid "Drill slots"
-msgstr "Fresa Ranhuras"
+msgstr "Fura Ranhura"
 
 #: appDatabase.py:1101 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:245
 #: appTools/ToolDrilling.py:2306
 msgid "If the selected tool has slots then they will be drilled."
-msgstr ""
+msgstr "Se a ferramenta selecionada tiver ranhuras, elas serão perfuradas."
 
 #: appDatabase.py:1112 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:252
 #: appTools/ToolDrilling.py:2314
@@ -1208,7 +1199,7 @@ msgstr ""
 #: appDatabase.py:1126 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:264
 #: appTools/ToolDrilling.py:2328
 msgid "Last drill"
-msgstr ""
+msgstr "Furar final"
 
 #: appDatabase.py:1128 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:266
 #: appTools/ToolDrilling.py:2330
@@ -1216,6 +1207,8 @@ msgid ""
 "If the slot length is not completely covered by drill holes,\n"
 "add a drill hole on the slot end point."
 msgstr ""
+"Se o comprimento da ranhura não estiver completamente coberto por furos,\n"
+"adiciona um furo no ponto final da ranhura."
 
 #: appDatabase.py:1156 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
 #: appTools/ToolCutOut.py:2163
@@ -1246,10 +1239,8 @@ msgstr ""
 
 #: appDatabase.py:1179 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
 #: appTools/ToolCutOut.py:2186
-#, fuzzy
-#| msgid "Image type"
 msgid "Gap type"
-msgstr "Tipo de imagem"
+msgstr "Tipo de lacuna"
 
 #: appDatabase.py:1181 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
 #: appTools/ToolCutOut.py:2188
@@ -1260,34 +1251,35 @@ msgid ""
 "gap\n"
 "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes"
 msgstr ""
+"O tipo de lacuna:\n"
+"- Ponte -> o recorte será interrompido por pontes\n"
+"- Fino -> mesmo que 'ponte', mas será mais fino fresando parcialmente a "
+"lacuna\n"
+"- M-Bites -> 'Mouse Bites' - o mesmo que 'bridge', mas coberto com furos"
 
 #: appDatabase.py:1189 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
 #: appTools/ToolCutOut.py:2196
 msgid "Bridge"
-msgstr ""
+msgstr "Ponte"
 
 #: appDatabase.py:1190 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:159
 #: appTools/ToolCutOut.py:2197
 msgid "Thin"
-msgstr ""
+msgstr "Fino"
 
 #: appDatabase.py:1201 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
 #: appTools/ToolCutOut.py:2207
-#, fuzzy
-#| msgid "MultiDepth"
 msgid "Depth"
-msgstr "Multi-Profundidade"
+msgstr "Profundidade"
 
 #: appDatabase.py:1203 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
 #: appTools/ToolCutOut.py:2209
-#, fuzzy
-#| msgid ""
-#| "The width of the travel lines to be\n"
-#| "rendered in the plot."
 msgid ""
 "The depth until the milling is done\n"
 "in order to thin the gaps."
-msgstr "Largura da linha a ser renderizada no gráfico."
+msgstr ""
+"Profundidade até que a fresagem esteja pronta\n"
+"para diminuir as lacunas."
 
 #: appDatabase.py:1220 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
@@ -1298,7 +1290,7 @@ msgstr "Diâmetro"
 #: appDatabase.py:1222 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
 #: appTools/ToolCutOut.py:2226
 msgid "The drill hole diameter when doing mouse bites."
-msgstr ""
+msgstr "O diâmetro do furo ao fazer M-bites (mordidas de rato)."
 
 #: appDatabase.py:1233
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:151
@@ -1313,7 +1305,7 @@ msgstr "Espaçamento"
 #: appDatabase.py:1235 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:200
 #: appTools/ToolCutOut.py:2238
 msgid "The spacing between drill holes when doing mouse bites."
-msgstr ""
+msgstr "O espaçamento entre os furos ao fazer M-bites (mordidas de rato)."
 
 #: appDatabase.py:1254 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
 #: appTools/ToolCutOut.py:2038
@@ -1582,6 +1574,8 @@ msgstr "BD de Ferramentas Salvo."
 msgid ""
 "To change tool properties select only one tool. Tools currently selected"
 msgstr ""
+"Para alterar as propriedades da ferramenta, selecione apenas uma ferramenta. "
+"Ferramentas atualmente selecionadas"
 
 #: appDatabase.py:2530
 msgid "No Tool/row selected in the Tools Database table"
@@ -1589,10 +1583,8 @@ msgstr ""
 "Nenhuma ferramenta selecionada na tabela de Banco de Dados de Ferramentas"
 
 #: appDatabase.py:2534 appTools/ToolDrilling.py:907
-#, fuzzy
-#| msgid "Tool Diameter."
 msgid "Tools DB empty."
-msgstr "Diâmetro."
+msgstr ""
 
 #: appDatabase.py:2551
 msgid "Cancelled adding tool from DB."
@@ -19236,7 +19228,7 @@ msgstr ""
 
 #: app_Main.py:7346
 msgid "Workspace size"
-msgstr "Área de trabalho desabilitada."
+msgstr "Tamanho da Área de trabalho"
 
 #: app_Main.py:7350
 msgid "Workspace orientation"
