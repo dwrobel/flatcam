@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
 - minor fix in ToolsDB2UI
 - updated the Turkuish translation strings (by Mehmet Kaya)
+- fixed a bug in conversion of any to Gerber in the section of Excellon conversion
+- some PEP8 fixes
+- fixed a bug due of recent chagnes in FileMenuHandlers class
 
 26.10.2020
 
