@@ -81,26 +81,26 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay = QtWidgets.QVBoxLayout()
 
         self.vlay.addWidget(self.tools_iso_group)
-        self.vlay.addWidget(self.tools_drill_group)
+        self.vlay.addWidget(self.tools_2sided_group)
+        self.vlay.addWidget(self.tools_cutout_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
-        self.vlay1.addWidget(self.tools_ncc_group)
-        self.vlay1.addWidget(self.tools_2sided_group)
-        self.vlay1.addWidget(self.tools_cutout_group)
-        self.vlay1.addWidget(self.tools_sub_group)
+        self.vlay1.addWidget(self.tools_drill_group)
+        self.vlay1.addWidget(self.tools_panelize_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
+        self.vlay2.addWidget(self.tools_ncc_group)
         self.vlay2.addWidget(self.tools_paint_group)
-        self.vlay2.addWidget(self.tools_transform_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_film_group)
-        self.vlay3.addWidget(self.tools_calculators_group)
+        self.vlay3.addWidget(self.tools_transform_group)
 
         self.vlay4 = QtWidgets.QVBoxLayout()
         self.vlay4.addWidget(self.tools_solderpaste_group)
         self.vlay4.addWidget(self.tools_corners_group)
-        self.vlay4.addWidget(self.tools_panelize_group)
+        self.vlay4.addWidget(self.tools_calculators_group)
+        self.vlay4.addWidget(self.tools_sub_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
