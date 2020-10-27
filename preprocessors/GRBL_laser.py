@@ -43,7 +43,7 @@ class GRBL_laser(PreProc):
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
-        gcode += '(Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + ')\n\n'
+        gcode += '(Laser Power - Spindle Speed: ' + str(p['spindlespeed']) + ')\n\n'
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'

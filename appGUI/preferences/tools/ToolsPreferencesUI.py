@@ -14,6 +14,7 @@ from appGUI.preferences.tools.ToolsCutoutPrefGroupUI import ToolsCutoutPrefGroup
 from appGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
 from appGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGroupUI
 from appGUI.preferences.tools.ToolsISOPrefGroupUI import ToolsISOPrefGroupUI
+from appGUI.preferences.tools.ToolsDrillPrefGroupUI import ToolsDrillPrefGroupUI
 
 import gettext
 import appTranslation as fcTranslate
@@ -40,6 +41,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.tools_iso_group = ToolsISOPrefGroupUI(decimals=self.decimals)
         self.tools_iso_group.setMinimumWidth(220)
+
+        self.tools_drill_group = ToolsDrillPrefGroupUI(decimals=self.decimals)
+        self.tools_drill_group.setMinimumWidth(220)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
         self.tools_ncc_group.setMinimumWidth(220)
@@ -75,26 +79,28 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_sub_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()
-        self.vlay.addWidget(self.tools_ncc_group)
+
+        self.vlay.addWidget(self.tools_iso_group)
+        self.vlay.addWidget(self.tools_2sided_group)
         self.vlay.addWidget(self.tools_cutout_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
-        self.vlay1.addWidget(self.tools_paint_group)
-        self.vlay1.addWidget(self.tools_iso_group)
+        self.vlay1.addWidget(self.tools_drill_group)
+        self.vlay1.addWidget(self.tools_panelize_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
-        self.vlay2.addWidget(self.tools_transform_group)
-        self.vlay2.addWidget(self.tools_2sided_group)
-        self.vlay2.addWidget(self.tools_sub_group)
+        self.vlay2.addWidget(self.tools_ncc_group)
+        self.vlay2.addWidget(self.tools_paint_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_film_group)
-        self.vlay3.addWidget(self.tools_calculators_group)
+        self.vlay3.addWidget(self.tools_transform_group)
 
         self.vlay4 = QtWidgets.QVBoxLayout()
         self.vlay4.addWidget(self.tools_solderpaste_group)
         self.vlay4.addWidget(self.tools_corners_group)
-        self.vlay4.addWidget(self.tools_panelize_group)
+        self.vlay4.addWidget(self.tools_calculators_group)
+        self.vlay4.addWidget(self.tools_sub_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)

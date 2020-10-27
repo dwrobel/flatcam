@@ -90,7 +90,7 @@ class AppTool(QtWidgets.QWidget):
         # Remove anything else in the appGUI
         self.app.ui.tool_scroll_area.takeWidget()
 
-        # Put ourself in the appGUI
+        # Put ourselves in the appGUI
         self.app.ui.tool_scroll_area.setWidget(self)
 
         # Switch notebook to tool page

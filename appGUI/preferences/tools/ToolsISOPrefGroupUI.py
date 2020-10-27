@@ -271,6 +271,16 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.except_cb.setObjectName("i_except")
         grid0.addWidget(self.except_cb, 17, 2)
 
+        # Check Tool validity
+        self.valid_cb = FCCheckBox(label=_('Check validity'))
+        self.valid_cb.setToolTip(
+            _("If checked then the tools diameters are verified\n"
+              "if they will provide a complete isolation.")
+        )
+        self.valid_cb.setObjectName("i_check")
+
+        grid0.addWidget(self.valid_cb, 18, 0, 1, 3)
+
         # Isolation Scope
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(

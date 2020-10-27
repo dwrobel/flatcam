@@ -192,10 +192,10 @@ class ToolMove(AppTool):
                                 for sel_obj in obj_list:
                                     out_name = sel_obj.options["name"]
                                     if sel_obj.kind == 'gerber':
-                                        sel_obj.source_file = self.app.export_gerber(
+                                        sel_obj.source_file = self.app.f_handlers.export_gerber(
                                             obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
                                     elif sel_obj.kind == 'excellon':
-                                        sel_obj.source_file = self.app.export_excellon(
+                                        sel_obj.source_file = self.app.f_handlers.export_excellon(
                                             obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
                             except Exception as err:
                                 log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(err)))

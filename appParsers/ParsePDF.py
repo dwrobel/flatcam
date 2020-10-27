@@ -7,7 +7,7 @@
 
 from PyQt5 import QtCore
 
-from Common import GracefulException as grace
+from appCommon.Common import GracefulException as grace
 
 from shapely.geometry import Polygon, LineString, MultiPolygon
 

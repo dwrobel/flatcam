@@ -91,7 +91,7 @@ class PreferencesUIManager:
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
             "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
-            # General GUI Settings
+            # General APP Settings
             "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
             "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
@@ -107,6 +107,7 @@ class PreferencesUIManager:
             "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
             "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
             "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
+            "global_allow_edit_in_project_tab": self.ui.general_defaults_form.general_app_set_group.allow_edit_cb,
             "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
             "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
@@ -118,6 +119,7 @@ class PreferencesUIManager:
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
+            "gerber_store_color_list": self.ui.gerber_defaults_form.gerber_gen_group.store_colors_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
             "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
             "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
@@ -170,6 +172,7 @@ class PreferencesUIManager:
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
             "excellon_multicolored": self.ui.excellon_defaults_form.excellon_gen_group.multicolored_cb,
+            "excellon_merge_fuse_tools": self.ui.excellon_defaults_form.excellon_gen_group.fuse_tools_cb,
             "excellon_format_upper_in":
                 self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
             "excellon_format_lower_in":
@@ -192,34 +195,12 @@ class PreferencesUIManager:
 
             "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
 
-            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
-            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
-
-            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
-            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
             "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
             "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
             # Excellon Advanced Options
-            "excellon_offset":          self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy":    self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz":          self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth":        self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir":      self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge":        self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract":       self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
+            "excellon_tools_table_display": self.ui.excellon_defaults_form.excellon_adv_opt_group.table_visibility_cb,
+            "excellon_autoload_db":         self.ui.excellon_defaults_form.excellon_adv_opt_group.autoload_db_cb,
 
             # Excellon Export
             "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
@@ -260,11 +241,14 @@ class PreferencesUIManager:
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
             # Geometry General
-            "geometry_plot":            self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_multicolored":    self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
-            "geometry_circle_steps":    self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia":      self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_plot_line":       self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
+            "geometry_plot":                self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
+            "geometry_multicolored":        self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
+            "geometry_circle_steps":        self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
+            "geometry_cnctooldia":          self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_merge_fuse_tools":    self.ui.geometry_defaults_form.geometry_gen_group.fuse_tools_cb,
+            "geometry_plot_line":           self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
+            "geometry_optimization_type":   self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio,
+            "geometry_search_time":         self.ui.geometry_defaults_form.geometry_gen_group.optimization_time_entry,
 
             # Geometry Options
             "geometry_cutz":            self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
@@ -305,8 +289,6 @@ class PreferencesUIManager:
 
             # CNCJob General
             "cncjob_plot":              self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind":         self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
 
             "cncjob_tooldia":           self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_type":       self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
@@ -320,14 +302,28 @@ class PreferencesUIManager:
             "cncjob_travel_fill":       self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
 
             # CNC Job Options
-            "cncjob_prepend":   self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append":    self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
+            "cncjob_plot_kind":         self.ui.cncjob_defaults_form.cncjob_opt_group.cncplot_method_radio,
+            "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_opt_group.annotation_cb,
 
             # CNC Job Advanced Options
-            "cncjob_toolchange_macro":          self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
-            "cncjob_annotation_fontsize":  self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
+            "cncjob_annotation_fontsize":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
+            # Autolevelling
+            "cncjob_al_mode":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_mode_radio,
+            "cncjob_al_method":             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_method_radio,
+            "cncjob_al_rows":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_rows_entry,
+            "cncjob_al_columns":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_columns_entry,
+            "cncjob_al_travelz":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.ptravelz_entry,
+            "cncjob_al_probe_depth":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.pdepth_entry,
+            "cncjob_al_probe_fr":           self.ui.cncjob_defaults_form.cncjob_adv_opt_group.feedrate_probe_entry,
+            "cncjob_al_controller":         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_controller_combo,
+            "cncjob_al_grbl_jog_step":      self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_step_entry,
+            "cncjob_al_grbl_jog_fr":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_fr_entry,
+            "cncjob_al_grbl_travelz":       self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_travelz_entry,
+
+            # CNC Job (GCode) Editor
+            "cncjob_prepend":               self.ui.cncjob_defaults_form.cncjob_editor_group.prepend_text,
+            "cncjob_append":                self.ui.cncjob_defaults_form.cncjob_editor_group.append_text,
 
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.tools_defaults_form.tools_iso_group.tool_dia_entry,
@@ -346,68 +342,114 @@ class PreferencesUIManager:
 
             "tools_iso_rest":           self.ui.tools_defaults_form.tools_iso_group.rest_cb,
             "tools_iso_combine_passes": self.ui.tools_defaults_form.tools_iso_group.combine_passes_cb,
+            "tools_iso_check_valid":    self.ui.tools_defaults_form.tools_iso_group.valid_cb,
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_poly_ints":      self.ui.tools_defaults_form.tools_iso_group.poly_int_cb,
-            "tools_iso_force":      self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
+            "tools_iso_force":          self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
             "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
             "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
 
+            # Drilling Tool
+            "tools_drill_tool_order":   self.ui.tools_defaults_form.tools_drill_group.order_radio,
+            "tools_drill_cutz":         self.ui.tools_defaults_form.tools_drill_group.cutz_entry,
+            "tools_drill_multidepth":   self.ui.tools_defaults_form.tools_drill_group.mpass_cb,
+            "tools_drill_depthperpass": self.ui.tools_defaults_form.tools_drill_group.maxdepth_entry,
+            "tools_drill_travelz":      self.ui.tools_defaults_form.tools_drill_group.travelz_entry,
+            "tools_drill_endz":         self.ui.tools_defaults_form.tools_drill_group.endz_entry,
+            "tools_drill_endxy":        self.ui.tools_defaults_form.tools_drill_group.endxy_entry,
+
+            "tools_drill_feedrate_z":   self.ui.tools_defaults_form.tools_drill_group.feedrate_z_entry,
+            "tools_drill_spindlespeed": self.ui.tools_defaults_form.tools_drill_group.spindlespeed_entry,
+            "tools_drill_dwell":        self.ui.tools_defaults_form.tools_drill_group.dwell_cb,
+            "tools_drill_dwelltime":    self.ui.tools_defaults_form.tools_drill_group.dwelltime_entry,
+            "tools_drill_toolchange":   self.ui.tools_defaults_form.tools_drill_group.toolchange_cb,
+            "tools_drill_toolchangez":  self.ui.tools_defaults_form.tools_drill_group.toolchangez_entry,
+            "tools_drill_ppname_e":     self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb,
+
+            "tools_drill_drill_slots":      self.ui.tools_defaults_form.tools_drill_group.drill_slots_cb,
+            "tools_drill_drill_overlap":    self.ui.tools_defaults_form.tools_drill_group.drill_overlap_entry,
+            "tools_drill_last_drill":       self.ui.tools_defaults_form.tools_drill_group.last_drill_cb,
+
+            # Advanced Options
+            "tools_drill_offset":           self.ui.tools_defaults_form.tools_drill_group.offset_entry,
+            "tools_drill_toolchangexy":     self.ui.tools_defaults_form.tools_drill_group.toolchangexy_entry,
+            "tools_drill_startz":           self.ui.tools_defaults_form.tools_drill_group.estartz_entry,
+            "tools_drill_feedrate_rapid":   self.ui.tools_defaults_form.tools_drill_group.feedrate_rapid_entry,
+            "tools_drill_z_pdepth":         self.ui.tools_defaults_form.tools_drill_group.pdepth_entry,
+            "tools_drill_feedrate_probe":   self.ui.tools_defaults_form.tools_drill_group.feedrate_probe_entry,
+            "tools_drill_spindledir":       self.ui.tools_defaults_form.tools_drill_group.spindledir_radio,
+            "tools_drill_f_plunge":         self.ui.tools_defaults_form.tools_drill_group.fplunge_cb,
+            "tools_drill_f_retract":        self.ui.tools_defaults_form.tools_drill_group.fretract_cb,
+
+            # Area Exclusion
+            "tools_drill_area_exclusion":   self.ui.tools_defaults_form.tools_drill_group.exclusion_cb,
+            "tools_drill_area_shape":       self.ui.tools_defaults_form.tools_drill_group.area_shape_radio,
+            "tools_drill_area_strategy":    self.ui.tools_defaults_form.tools_drill_group.strategy_radio,
+            "tools_drill_area_overz":       self.ui.tools_defaults_form.tools_drill_group.over_z_entry,
+
             # NCC Tool
-            "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_nccorder":           self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
-            "tools_nccoverlap":         self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
-            "tools_nccmargin":          self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
-            "tools_nccmethod":          self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
-            "tools_nccconnect":         self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
-            "tools_ncccontour":         self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
-            "tools_nccrest":            self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_ncc_tools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_ncc_order":           self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
+            "tools_ncc_overlap":         self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_ncc_margin":          self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
+            "tools_ncc_method":          self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
+            "tools_ncc_connect":         self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
+            "tools_ncc_contour":         self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
+            "tools_ncc_rest":            self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
             "tools_ncc_offset_choice":  self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
             "tools_ncc_offset_value":   self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
-            "tools_nccref":             self.ui.tools_defaults_form.tools_ncc_group.select_combo,
+            "tools_ncc_ref":             self.ui.tools_defaults_form.tools_ncc_group.select_combo,
             "tools_ncc_area_shape":     self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
-            "tools_nccmilling_type":    self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
-            "tools_ncctool_type":       self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
-            "tools_ncccutz":            self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
-            "tools_ncctipdia":          self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
-            "tools_ncctipangle":        self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
-            "tools_nccnewdia":          self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
+            "tools_ncc_milling_type":    self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
+            "tools_ncc_tool_type":       self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
+            "tools_ncc_cutz":            self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
+            "tools_ncc_tipdia":          self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
+            "tools_ncc_tipangle":        self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
+            "tools_ncc_newdia":          self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
             "tools_ncc_plotting":       self.ui.tools_defaults_form.tools_ncc_group.plotting_radio,
+            "tools_ncc_check_valid":    self.ui.tools_defaults_form.tools_ncc_group.valid_cb,
 
             # CutOut Tool
-            "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
-            "tools_cutoutkind": self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
-            "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
-            "tools_cutout_z": self.ui.tools_defaults_form.tools_cutout_group.cutz_entry,
-            "tools_cutout_depthperpass": self.ui.tools_defaults_form.tools_cutout_group.maxdepth_entry,
-            "tools_cutout_mdepth": self.ui.tools_defaults_form.tools_cutout_group.mpass_cb,
-            "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
-            "tools_cutout_convexshape": self.ui.tools_defaults_form.tools_cutout_group.convex_box,
+            "tools_cutout_tooldia":          self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutout_kind":             self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
+            "tools_cutout_margin":          self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutout_z":               self.ui.tools_defaults_form.tools_cutout_group.cutz_entry,
+            "tools_cutout_depthperpass":    self.ui.tools_defaults_form.tools_cutout_group.maxdepth_entry,
+            "tools_cutout_mdepth":          self.ui.tools_defaults_form.tools_cutout_group.mpass_cb,
+            "tools_cutout_gapsize":         self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
+            "tools_cutout_gaps_ff":         self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
+            "tools_cutout_convexshape":     self.ui.tools_defaults_form.tools_cutout_group.convex_box,
+            "tools_cutout_big_cursor":      self.ui.tools_defaults_form.tools_cutout_group.big_cursor_cb,
+
+            "tools_cutout_gap_type":        self.ui.tools_defaults_form.tools_cutout_group.gaptype_radio,
+            "tools_cutout_gap_depth":       self.ui.tools_defaults_form.tools_cutout_group.thin_depth_entry,
+            "tools_cutout_mb_dia":          self.ui.tools_defaults_form.tools_cutout_group.mb_dia_entry,
+            "tools_cutout_mb_spacing":      self.ui.tools_defaults_form.tools_cutout_group.mb_spacing_entry,
 
             # Paint Area Tool
-            "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
-            "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
-            "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
-            "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
-            "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
-            "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
-            "tools_paint_area_shape": self.ui.tools_defaults_form.tools_paint_group.area_shape_radio,
-            "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
-            "tools_paint_plotting": self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
+            "tools_paint_tooldia":       self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paint_order":         self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
+            "tools_paint_overlap":       self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
+            "tools_paint_offset":        self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
+            "tools_paint_method":        self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
+            "tools_paint_selectmethod":       self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
+            "tools_paint_area_shape":   self.ui.tools_defaults_form.tools_paint_group.area_shape_radio,
+            "tools_paint_connect":        self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
+            "tools_paint_contour":       self.ui.tools_defaults_form.tools_paint_group.contour_cb,
+            "tools_paint_plotting":     self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
 
-            "tools_paintrest": self.ui.tools_defaults_form.tools_paint_group.rest_cb,
-            "tools_painttool_type": self.ui.tools_defaults_form.tools_paint_group.tool_type_radio,
-            "tools_paintcutz": self.ui.tools_defaults_form.tools_paint_group.cutz_entry,
-            "tools_painttipdia": self.ui.tools_defaults_form.tools_paint_group.tipdia_entry,
-            "tools_painttipangle": self.ui.tools_defaults_form.tools_paint_group.tipangle_entry,
-            "tools_paintnewdia": self.ui.tools_defaults_form.tools_paint_group.newdia_entry,
+            "tools_paint_rest":          self.ui.tools_defaults_form.tools_paint_group.rest_cb,
+            "tools_paint_tool_type":     self.ui.tools_defaults_form.tools_paint_group.tool_type_radio,
+            "tools_paint_cutz":          self.ui.tools_defaults_form.tools_paint_group.cutz_entry,
+            "tools_paint_tipdia":        self.ui.tools_defaults_form.tools_paint_group.tipdia_entry,
+            "tools_paint_tipangle":      self.ui.tools_defaults_form.tools_paint_group.tipangle_entry,
+            "tools_paint_newdia":        self.ui.tools_defaults_form.tools_paint_group.newdia_entry,
 
             # 2-sided Tool
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
-            "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+            "tools_2sided_axis_loc":    self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia":    self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
             "tools_2sided_allign_axis": self.ui.tools_defaults_form.tools_2sided_group.align_axis_radio,
 
             # Film Tool
@@ -427,12 +469,14 @@ class PreferencesUIManager:
             "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
             "tools_film_orientation": self.ui.tools_defaults_form.tools_film_group.orientation_radio,
             "tools_film_pagesize": self.ui.tools_defaults_form.tools_film_group.pagesize_combo,
+            "tools_film_png_dpi": self.ui.tools_defaults_form.tools_film_group.png_dpi_spinner,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
             "tools_panelize_spacing_rows": self.ui.tools_defaults_form.tools_panelize_group.pspacing_rows,
             "tools_panelize_columns": self.ui.tools_defaults_form.tools_panelize_group.pcolumns,
             "tools_panelize_rows": self.ui.tools_defaults_form.tools_panelize_group.prows,
+            "tools_panelize_optimization": self.ui.tools_defaults_form.tools_panelize_group.poptimization_cb,
             "tools_panelize_constrain": self.ui.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.ui.tools_defaults_form.tools_panelize_group.px_width_entry,
             "tools_panelize_constrainy": self.ui.tools_defaults_form.tools_panelize_group.py_height_entry,
@@ -857,6 +901,7 @@ class PreferencesUIManager:
 
         # restore the default stylesheet by setting a blank one
         self.ui.pref_apply_button.setStyleSheet("")
+        self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply32.png'))
 
         self.inform.emit('%s' % _("Preferences applied."))
 
@@ -913,7 +958,7 @@ class PreferencesUIManager:
 
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
+            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
 
         settgs = QSettings("Open Source", "FlatCAM")
 
@@ -1081,6 +1126,7 @@ class PreferencesUIManager:
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
             self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+            self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply_red32.png'))
 
             self.preferences_changed_flag = True
 

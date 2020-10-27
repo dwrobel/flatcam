@@ -50,11 +50,10 @@ class KeySensitiveListView(QtWidgets.QTreeView):
     def __init__(self, app, parent=None):
         super(KeySensitiveListView, self).__init__(parent)
         self.setHeaderHidden(True)
-        # self.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)     # allow Edit on Tree
-        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
 
         # self.setRootIsDecorated(False)
         # self.setExpandsOnDoubleClick(False)
+        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)    # No edit in the Project Tab Tree
 
         # Enable dragging and dropping onto the appGUI
         self.setAcceptDrops(True)
@@ -127,36 +126,36 @@ class KeySensitiveListView(QtWidgets.QTreeView):
                         self.app.inform.emit(_("Cancelled."))
                     else:
                         if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
-                            self.app.worker_task.emit({'fcn': self.app.open_gerber,
+                            self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
                         if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
-                            self.app.worker_task.emit({'fcn': self.app.open_excellon,
+                            self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
                         if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
-                            self.app.worker_task.emit({'fcn': self.app.open_gcode,
+                            self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                        'params': [self.filename]})
                         else:
                             event.ignore()
 
                         if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
                             object_type = 'geometry'
-                            self.app.worker_task.emit({'fcn': self.app.import_svg,
+                            self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                        'params': [self.filename, object_type, None]})
 
                         if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
                             object_type = 'geometry'
-                            self.app.worker_task.emit({'fcn': self.app.import_dxf,
+                            self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                        'params': [self.filename, object_type, None]})
 
                         if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
                             # self.app.open_project() is not Thread Safe
-                            self.app.open_project(self.filename)
+                            self.app.f_handlers.open_project(self.filename)
                         else:
                             event.ignore()
                 else:
@@ -309,6 +308,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        if self.app.defaults["global_allow_edit_in_project_tab"] is True:
+            self.view.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)  # allow Edit on Tree
+        else:
+            self.view.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
+
         # self.view.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         # self.view.setDragEnabled(True)
         # self.view.setAcceptDrops(True)
@@ -565,6 +570,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         obj.options["name"] = name
 
         obj.set_ui(obj.ui_type(app=self.app))
+        # a way to signal that the object was fully loaded
+        obj.load_complete = True
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]
@@ -960,11 +967,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
-                self.app.ui.selected_scroll_area.takeWidget()
+                self.app.ui.properties_scroll_area.takeWidget()
             except Exception as e:
                 log.debug("Nothing to remove. %s" % str(e))
 
-            self.app.setup_component_editor()
+            self.app.setup_default_properties_tab()
             return
 
         if obj:
@@ -1006,7 +1013,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     def on_row_activated(self, index):
         if index.isValid():
             if index.internalPointer().parent_item != self.root_item:
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         self.on_item_activated(index)
 
     def on_row_selected(self, obj_name):

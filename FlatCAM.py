@@ -90,6 +90,6 @@ if __name__ == '__main__':
         style = settings.value('style', type=str)
         app.setStyle(style)
 
-    fc = App()
+    fc = App(qapp=app)
     sys.exit(app.exec_())
     # app.exec_()

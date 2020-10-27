@@ -29,11 +29,11 @@ languages_dict = {
     'en': 'English',
     'es': 'Spanish',
     'fr': 'French',
-    'hu': 'Hungarian',
     'it': 'Italian',
+    'pt_BR': 'Brazilian Portuguese',
     'ro': 'Romanian',
     'ru': 'Russian',
-    'pt_BR': 'Brazilian Portuguese',
+    'tr': 'Turkish',
 }
 
 translations = {}
@@ -135,7 +135,7 @@ def apply_language(domain, lang=None):
         if settings.contains("language"):
             name = settings.value('language')
         else:
-            name = settings.value('English')
+            name = 'English'
             # in case the 'language' parameter is not in QSettings add it to QSettings and it's value is
             # the default language, English
             settings.setValue('language', 'English')
@@ -218,7 +218,7 @@ def restart_program(app, ask=None):
         response = msgbox.clickedButton()
 
         if response == bt_yes:
-            app.on_file_saveprojectas(use_thread=True, quit_action=True)
+            app.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
 
     app.preferencesUiManager.save_defaults()
     python = sys.executable

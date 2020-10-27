@@ -1,5 +1,5 @@
 from shapely.geometry import LineString, Polygon
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import unary_union
 from matplotlib.pyplot import plot, subplot, show, axes
 from matplotlib.axes import *
 from camlib import *
