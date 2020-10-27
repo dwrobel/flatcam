@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 27.10.2020
 
 - created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
+- minor fix in ToolsDB2UI
 
 26.10.2020
 
