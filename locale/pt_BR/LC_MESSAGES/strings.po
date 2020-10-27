@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:19+0200\n"
-"PO-Revision-Date: 2020-10-27 15:49-0300\n"
+"PO-Revision-Date: 2020-10-27 16:45-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -310,7 +310,7 @@ msgstr "Min"
 
 #: appDatabase.py:243
 msgid "Set the tool tolerance minimum."
-msgstr "Tolerância mínima"
+msgstr "Tolerância mínima."
 
 #: appDatabase.py:255
 msgid "Max"
@@ -318,7 +318,7 @@ msgstr "Max"
 
 #: appDatabase.py:257
 msgid "Set the tool tolerance maximum."
-msgstr "Tolerância máxima"
+msgstr "Tolerância máxima."
 
 #: appDatabase.py:269 appDatabase.py:587
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:46
@@ -648,11 +648,6 @@ msgid "Dwell"
 msgstr "Esperar Velocidade"
 
 #: appDatabase.py:552 appDatabase.py:1069
-#, fuzzy
-#| msgid ""
-#| "Dwell.\n"
-#| "Check this if a delay is needed to allow\n"
-#| "the spindle motor to reach it's set speed."
 msgid ""
 "Dwell.\n"
 "Check this if a delay is needed to allow\n"
@@ -667,10 +662,6 @@ msgid "Dwelltime"
 msgstr "Tempo de Espera"
 
 #: appDatabase.py:565 appDatabase.py:1082
-#, fuzzy
-#| msgid ""
-#| "Dwell Time.\n"
-#| "A delay used to allow the motor spindle reach it's set speed."
 msgid ""
 "Dwell Time.\n"
 "A delay used to allow the motor spindle reach its set speed."
@@ -1188,8 +1179,6 @@ msgstr "Se a ferramenta selecionada tiver ranhuras, elas serão perfuradas."
 
 #: appDatabase.py:1112 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:252
 #: appTools/ToolDrilling.py:2314
-#, fuzzy
-#| msgid "How much (percentage) of the tool width to overlap each tool pass."
 msgid ""
 "How much (percentage) of the tool diameter to overlap previous drill hole."
 msgstr ""
@@ -6549,7 +6538,7 @@ msgstr "Mostra as Propriedades."
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:50
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:54
 msgid "Toggle the display of the Tools Table."
-msgstr "Alternar a exibição da Tabela de Ferramentas"
+msgstr "Alternar a exibição da Tabela de Ferramentas."
 
 #: appGUI/ObjectUI.py:300
 msgid "Mark All"
@@ -6712,7 +6701,7 @@ msgstr "Círculos preenchidos ou vazados."
 
 #: appGUI/ObjectUI.py:583
 msgid "Edit an Excellon object."
-msgstr "Edita um Objeto Excellon"
+msgstr "Editar um Objeto Excellon."
 
 #: appGUI/ObjectUI.py:671 appTools/ToolDrilling.py:2067
 #: appTools/ToolMilling.py:1672
@@ -6844,7 +6833,7 @@ msgstr "Objeto Geometria"
 
 #: appGUI/ObjectUI.py:905
 msgid "Edit an Geometry object."
-msgstr "Editar um Objeto Geometria"
+msgstr "Editar um Objeto Geometria."
 
 #: appGUI/ObjectUI.py:969
 msgid ""
@@ -7712,7 +7701,7 @@ msgstr "Mostrar"
 
 #: appGUI/ObjectUI.py:2085
 msgid "Toggle the display of the Probe Points table."
-msgstr "Alternar a exibição da Tabela de Pontos"
+msgstr "Alternar a exibição da Tabela de Pontos."
 
 #: appGUI/ObjectUI.py:2098
 msgid "X-Y Coordinates"
@@ -8071,7 +8060,7 @@ msgstr "Abre uma caixa de diálogo para salvar o arquivo G-Code."
 
 #: appGUI/ObjectUI.py:2622
 msgid "Review CNC Code."
-msgstr "Revisar Código CNC"
+msgstr "Revisar Código CNC."
 
 #: appGUI/ObjectUI.py:2683
 msgid "Script Object"
@@ -13179,85 +13168,72 @@ msgid ""
 "Voronoi function can not be loaded.\n"
 "Shapely >= 1.8 is required"
 msgstr ""
+"A função Voronoi não pode ser carregada.\n"
+"É necessário Shapely >= 1.8"
 
 #: appObjects/FlatCAMCNCJob.py:813
-#, fuzzy
-#| msgid "Click on Start point ..."
 msgid "Click on canvas to add a Probe Point..."
-msgstr "Clique no ponto inicial ..."
+msgstr "Clique na tela para adicionar um Ponto de Sondagem ..."
 
 #: appObjects/FlatCAMCNCJob.py:1009
 msgid "Point is not within the object area. Choose another point."
-msgstr ""
+msgstr "O ponto não está dentro da área do objeto. Escolha outro ponto."
 
 #: appObjects/FlatCAMCNCJob.py:1029
-#, fuzzy
-#| msgid ""
-#| "Zone added. Click to start adding next zone or right click to finish."
 msgid ""
 "Added a Probe Point... Click again to add another or right click to "
 "finish ..."
 msgstr ""
-"Zona adicionada. Clique para iniciar a adição da próxima zona ou clique com "
-"o botão direito para terminar."
+"Ponto de Sondagem adicionado ... Clique novamente para adicionar outro ou "
+"clique com o botão direito para terminar ..."
 
 #: appObjects/FlatCAMCNCJob.py:1051
-#, fuzzy
-#| msgid "Finished G-Code processing..."
 msgid "Finished adding Probe Points..."
-msgstr "Processamento do G-Code finalisado..."
+msgstr "Adição de pontos de sondagem concluída ..."
 
 #: appObjects/FlatCAMCNCJob.py:1265
-#, fuzzy
-#| msgid "Click to place ..."
 msgid "COM list updated ..."
-msgstr "Clique para colocar ..."
+msgstr "Lista COM atualizada ..."
 
 #: appObjects/FlatCAMCNCJob.py:1301
-#, fuzzy
-#| msgid "Connect"
 msgid "Connected"
-msgstr "Conectar"
+msgstr "Conectado"
 
 #: appObjects/FlatCAMCNCJob.py:1312
 msgid "Port connected"
-msgstr ""
+msgstr "Porta conectada"
 
 #: appObjects/FlatCAMCNCJob.py:1316
 msgid "Could not connect to GRBL on port"
-msgstr ""
+msgstr "Não foi possível conectar ao GRBL na porta"
 
 #: appObjects/FlatCAMCNCJob.py:1333
 msgid "Port is connected. Disconnecting"
-msgstr ""
+msgstr "A porta está conectada. Desconectando"
 
 #: appObjects/FlatCAMCNCJob.py:1335
-#, fuzzy
-#| msgid "Could not retrieve box object"
 msgid "Could not connect to port"
-msgstr "Não foi possível recuperar o objeto caixa"
+msgstr "Não foi possível conectar à porta"
 
 #: appObjects/FlatCAMCNCJob.py:1365 appObjects/FlatCAMCNCJob.py:1795
-#, fuzzy
-#| msgid "Opening G-Code."
 msgid "Sending GCode..."
-msgstr "Abrindo G-Code."
+msgstr "Enviando G-Code."
 
 #: appObjects/FlatCAMCNCJob.py:1494
 msgid "GRBL is doing a home cycle."
-msgstr ""
+msgstr "GRBL está fazendo um ciclo para casa."
 
 #: appObjects/FlatCAMCNCJob.py:1500
 msgid "GRBL software reset was sent."
-msgstr ""
+msgstr "A redefinição do software GRBL foi enviada."
 
 #: appObjects/FlatCAMCNCJob.py:1508
 msgid "GRBL resumed."
-msgstr ""
+msgstr "GRBL retomado."
 
 #: appObjects/FlatCAMCNCJob.py:1512
 msgid "GRBL paused."
-msgstr ""
+msgstr "GRBL pausado."
 
 #: appObjects/FlatCAMCNCJob.py:1654 appObjects/FlatCAMCNCJob.py:1844
 #: appObjects/FlatCAMCNCJob.py:1929 appTools/ToolSolderPaste.py:1066
@@ -13270,46 +13246,36 @@ msgid "Loading..."
 msgstr "Lendo..."
 
 #: appObjects/FlatCAMCNCJob.py:1682
-#, fuzzy
-#| msgid "There is no such parameter"
 msgid "There is nothing to view"
-msgstr "Não existe esse parâmetro"
+msgstr "Não há nada para ver"
 
 #: appObjects/FlatCAMCNCJob.py:1688
-#, fuzzy
-#| msgid "Gcode Viewer"
 msgid "Code Viewer"
-msgstr "G-Code Viewer"
+msgstr "Visualizador de Código"
 
 #: appObjects/FlatCAMCNCJob.py:1726
-#, fuzzy
-#| msgid "Loaded Machine Code into Code Editor"
 msgid "Loaded Machine Code into Code Viewer"
-msgstr "G-Code aberto no Editor de Códigos"
+msgstr "Código de máquina carregado no visualizador de código"
 
 #: appObjects/FlatCAMCNCJob.py:1771
-#, fuzzy
-#| msgid "Failed to open config file"
 msgid "Failed to open height map file"
-msgstr "Falha ao abrir o arquivo de configuração"
+msgstr "Falha ao abrir arquivo de mapa de altura"
 
 #: appObjects/FlatCAMCNCJob.py:1821
 msgid "Finished probing. Doing the autolevelling."
-msgstr ""
+msgstr "Sondagem concluída. Fazendo o autonivelamento."
 
 #: appObjects/FlatCAMCNCJob.py:1826
 msgid "Sending probing GCode to the GRBL controller."
-msgstr ""
+msgstr "Enviando G-Code de sondagem para o controlador GRBL."
 
 #: appObjects/FlatCAMCNCJob.py:1867
 msgid "Empty GRBL heightmap."
-msgstr ""
+msgstr "Mapa de altura GRBL vazio."
 
 #: appObjects/FlatCAMCNCJob.py:1871
-#, fuzzy
-#| msgid "Finished G-Code processing..."
 msgid "Finished autolevelling."
-msgstr "Processamento do G-Code finalisado..."
+msgstr "Autonivelamento concluído."
 
 #: appObjects/FlatCAMCNCJob.py:1885
 msgid "Plotting..."
@@ -13320,10 +13286,8 @@ msgid "File saved to"
 msgstr "Arquivo salvo em"
 
 #: appObjects/FlatCAMCNCJob.py:1979
-#, fuzzy
-#| msgid "Gcode Viewer"
 msgid "Code Review"
-msgstr "G-Code Viewer"
+msgstr "Revisão de código"
 
 #: appObjects/FlatCAMCNCJob.py:2162
 msgid "This CNCJob object can't be processed because it is a"
@@ -13338,6 +13302,8 @@ msgid ""
 "G-code does not have a G94 code.\n"
 "Append Code snippet will not be used.."
 msgstr ""
+"O G-Code não possui um código G94.\n"
+"O trecho de código anexado não será usado."
 
 #: appObjects/FlatCAMDocument.py:173
 msgid "Document Editor"
@@ -13927,7 +13893,7 @@ msgstr "Objeto a ser alinhado."
 
 #: appTools/ToolAlignObjects.py:423
 msgid "DESTINATION object"
-msgstr ""
+msgstr "Objeto DESTINO"
 
 #: appTools/ToolAlignObjects.py:425
 msgid ""
@@ -14719,10 +14685,10 @@ msgstr ""
 
 #: appTools/ToolCutOut.py:357 appTools/ToolIsolation.py:1130
 #: appTools/ToolNCC.py:1075 appTools/ToolPaint.py:767
-#, fuzzy
-#| msgid "Tools in Tools Database edited but not saved."
 msgid "Tool not in Tools Database. Adding a default tool."
-msgstr "Ferramenta editada, mas não salva."
+msgstr ""
+"A ferramenta não está no banco de dados de ferramentas. Adicionando uma "
+"ferramenta padrão."
 
 #: appTools/ToolCutOut.py:364 appTools/ToolDrilling.py:955
 #: appTools/ToolIsolation.py:1137 appTools/ToolNCC.py:1082
@@ -14731,29 +14697,26 @@ msgid ""
 "Cancelled.\n"
 "Multiple tools for one tool diameter found in Tools Database."
 msgstr ""
+"Cancelado.\n"
+"Várias ferramentas para um diâmetro de ferramenta encontradas no banco de "
+"dados de ferramentas."
 
 #: appTools/ToolCutOut.py:388
-#, fuzzy
-#| msgid "Add Tool from Tools DB"
 msgid "Updated tool from Tools Database."
-msgstr "Adiciona Ferramenta do BD de Ferramentas"
+msgstr "Ferramenta atualizada do banco de dados de ferramentas."
 
 #: appTools/ToolCutOut.py:457
-#, fuzzy
-#| msgid "Default Values"
 msgid "Default tool added."
-msgstr "Valores Padrão"
+msgstr "Ferramenta padrão adicionada."
 
 #: appTools/ToolCutOut.py:466 appTools/ToolIsolation.py:2577
 #: appTools/ToolNCC.py:3709 appTools/ToolPaint.py:2620
 msgid "Selected tool can't be used here. Pick another."
-msgstr ""
+msgstr "A ferramenta selecionada não pode ser usada aqui. Escolha outra."
 
 #: appTools/ToolCutOut.py:489
-#, fuzzy
-#| msgid "Tool copied from Tools DB."
 msgid "Tool updated from Tools Database."
-msgstr "A ferramenta foi copiada do BD."
+msgstr "Ferramenta atualizada do banco de dados de ferramentas."
 
 #: appTools/ToolCutOut.py:549
 msgid ""
@@ -14784,10 +14747,8 @@ msgstr ""
 
 #: appTools/ToolCutOut.py:892 appTools/ToolCutOut.py:1263
 #: appTools/ToolCutOut.py:1619
-#, fuzzy
-#| msgid "Open GCode file failed."
 msgid "Mouse bites failed."
-msgstr "Falha ao abrir o arquivo G-Code."
+msgstr "Mouse bites (mordidas de rato) falhou."
 
 #: appTools/ToolCutOut.py:900
 msgid "Any form CutOut operation finished."
@@ -14808,10 +14769,8 @@ msgid "Rectangular cutout with negative margin is not possible."
 msgstr "Recorte retangular com margem negativa não é possível."
 
 #: appTools/ToolCutOut.py:1271
-#, fuzzy
-#| msgid "Any form CutOut operation finished."
 msgid "Rectangular CutOut operation finished."
-msgstr "Recorte concluído."
+msgstr "Recorte retangular concluído."
 
 #: appTools/ToolCutOut.py:1287 appTools/ToolCutOut.py:1319
 msgid "Could not retrieve Geometry object"
@@ -14829,20 +14788,15 @@ msgstr ""
 "ponte ..."
 
 #: appTools/ToolCutOut.py:1383
-#, fuzzy
-#| msgid "Generate the Geometry object."
 msgid "No tool in the Geometry object."
-msgstr "Gera o objeto Geometria."
+msgstr "Nenhuma ferramenta no objeto Geometria."
 
 #: appTools/ToolCutOut.py:1404
-#, fuzzy
-#| msgid ""
-#| "Zone added. Click to start adding next zone or right click to finish."
 msgid ""
 "Added manual Bridge Gap. Left click to add another or right click to finish."
 msgstr ""
-"Zona adicionada. Clique para iniciar a adição da próxima zona ou clique com "
-"o botão direito para terminar."
+"Ponte no Recorte adicionada. Clique com o botão esquerdo para adicionar "
+"outra ou clique com o botão direito para terminar."
 
 #: appTools/ToolCutOut.py:1416
 msgid "Could not retrieve Gerber object"
@@ -14874,7 +14828,7 @@ msgstr "Fazendo ponte manual..."
 
 #: appTools/ToolCutOut.py:1623
 msgid "Finished manual adding of gaps."
-msgstr ""
+msgstr "Adição manual de lacunas concluída."
 
 #: appTools/ToolCutOut.py:1965
 msgid "Cutout PCB"
@@ -14914,6 +14868,11 @@ msgid ""
 "in the Tools Database. If nothing is found\n"
 "in the Tools DB then a default tool is added."
 msgstr ""
+"Adiciona uma nova ferramenta à Tabela de Ferramentas\n"
+"com o diâmetro especificado acima.\n"
+"Isso é feito por uma pesquisa em segundo plano\n"
+"no banco de dados de ferramentas. Se nada for encontrado\n"
+"no BD de ferramentas, uma ferramenta padrão é adicionada."
 
 #: appTools/ToolCutOut.py:2104
 msgid "Tool Parameters"
@@ -14925,11 +14884,11 @@ msgstr "Auto"
 
 #: appTools/ToolCutOut.py:2253 appTools/ToolCutOut.py:2328
 msgid "Bridge Gaps"
-msgstr ""
+msgstr "Pontes"
 
 #: appTools/ToolCutOut.py:2255
 msgid "This section handle creation of automatic bridge gaps."
-msgstr "Esta seção trata da criação de pontes automáticas."
+msgstr "Esta seção trata da criação de pontes automáticas nos recortes."
 
 #: appTools/ToolCutOut.py:2294
 msgid ""
@@ -14981,7 +14940,7 @@ msgstr ""
 
 #: appTools/ToolCutOut.py:2369
 msgid "Manual cutout Geometry"
-msgstr ""
+msgstr "Geometria de recorte manual"
 
 #: appTools/ToolCutOut.py:2371
 msgid "Geometry object used to create the manual cutout."
@@ -15043,11 +15002,11 @@ msgstr "Não há objeto Excellon carregado ..."
 
 #: appTools/ToolDblSided.py:238
 msgid "Click on canvas within the desired Excellon drill hole"
-msgstr ""
+msgstr "Clique na tela dentro do furo Excellon desejado"
 
 #: appTools/ToolDblSided.py:282
 msgid "Mirror reference point set."
-msgstr ""
+msgstr "Conjunto de ponto de referência de espelho."
 
 #: appTools/ToolDblSided.py:310
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
@@ -15084,6 +15043,7 @@ msgstr "Objetos a espelhar"
 #: appTools/ToolDblSided.py:523
 msgid "Select the type of application object to be processed in this tool."
 msgstr ""
+"Selecione o tipo de objeto de aplicativo a ser processado nesta ferramenta."
 
 #: appTools/ToolDblSided.py:557
 msgid "Bounds Values"
@@ -15160,14 +15120,6 @@ msgid "Parameters for the mirror operation"
 msgstr "Parâmetros para a operação de espelhamento"
 
 #: appTools/ToolDblSided.py:685
-#, fuzzy
-#| msgid ""
-#| "The coordinates used as reference for the mirror operation.\n"
-#| "Can be:\n"
-#| "- Point -> a set of coordinates (x,y) around which the object is "
-#| "mirrored\n"
-#| "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
-#| "bounding box of another object selected below"
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -15177,12 +15129,13 @@ msgid ""
 "- Hole Snap -> a point defined by the center of a drill hole in a Excellon "
 "object"
 msgstr ""
-"As coordenadas usadas como referência para a operação de espelho.\n"
-"Pode ser:\n"
+"Coordenadas usadas como referência para a operação de espelho.\n"
+"Podem ser:\n"
 "- Ponto -> um conjunto de coordenadas (x, y) em torno do qual o objeto é "
 "espelhado\n"
 "- Caixa -> um conjunto de coordenadas (x, y) obtidas do centro da\n"
-"caixa delimitadora de outro objeto selecionado abaixo"
+"caixa delimitadora de outro objeto selecionado abaixo\n"
+"- Hole Snap -> um ponto definido pelo centro de um furo em um objeto Excellon"
 
 #: appTools/ToolDblSided.py:705
 msgid "Point coordinates"
@@ -15205,16 +15158,20 @@ msgstr ""
 #: appTools/ToolDblSided.py:728
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr ""
+"Objeto que contém furos que podem ser escolhidos como referência para "
+"espelhamento."
 
 #: appTools/ToolDblSided.py:743
 msgid "Pick hole"
-msgstr ""
+msgstr "Escolha o furo"
 
 #: appTools/ToolDblSided.py:745
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
 msgstr ""
+"Clique dentro de um furo que pertence ao objeto Excellon selecionado,\n"
+"e as coordenadas do centro do furo serão copiadas para o campo Ponto."
 
 #: appTools/ToolDblSided.py:761
 msgid ""
@@ -15526,30 +15483,28 @@ msgid "Starting G-Code"
 msgstr "Iniciando o G-Code"
 
 #: appTools/ToolDrilling.py:1673 appTools/ToolMilling.py:1355
-#, fuzzy
-#| msgid "Generating panel ..."
 msgid "Generating Excellon CNCJob..."
-msgstr "Gerando painel ..."
+msgstr "Gerando Trabalho CNC Excellon ..."
 
 #: appTools/ToolDrilling.py:1791 camlib.py:3212 camlib.py:5350 camlib.py:5710
 msgid "The Toolchange X,Y format has to be (x, y)."
-msgstr ""
+msgstr "O formato X, Y da Troca de Ferramentas deve ser (x, y)."
 
 #: appTools/ToolDrilling.py:2034 appTools/ToolMilling.py:1639
-#, fuzzy
-#| msgid "Excellon object with alignment drills created..."
 msgid "Excellon object for drilling/milling operation."
-msgstr "Objeto Excellon com furos de alinhamento criado ..."
+msgstr "Objeto Excellon para operação de furação/fresagem."
 
 #: appTools/ToolDrilling.py:2098
 msgid "Search DB"
-msgstr ""
+msgstr "Pesquisar BD"
 
 #: appTools/ToolDrilling.py:2101
 msgid ""
 "Will search and try to replace the tools from Tools Table\n"
 "with tools from DB that have a close diameter value."
 msgstr ""
+"Pesquisará e tentará substituir as ferramentas da Tabela de Ferramentas\n"
+"com ferramentas do DB que possuem um valor de diâmetro próximo."
 
 #: appTools/ToolDrilling.py:2500 appTools/ToolMilling.py:2168
 msgid ""
@@ -15560,11 +15515,6 @@ msgstr ""
 "a saída G-Code para Objetos Excellon."
 
 #: appTools/ToolDrilling.py:2632 appTools/ToolMilling.py:2307
-#, fuzzy
-#| msgid ""
-#| "Add / Select at least one tool in the tool-table.\n"
-#| "Click the # header to select all, or Ctrl + LMB\n"
-#| "for custom selection of tools."
 msgid ""
 "Generate the CNC Job.\n"
 "If milling then an additional Geometry object will be created.\n"
@@ -15572,6 +15522,8 @@ msgid ""
 "Click the # header to select all, or Ctrl + LMB\n"
 "for custom selection of tools."
 msgstr ""
+"Gera o trabalho CNC.\n"
+"Se for fresagem, um objeto Geometria adicional será criado.\n"
 "Adicione / Selecione pelo menos uma ferramenta na tabela de ferramentas.\n"
 "Clique no cabeçalho # para selecionar todos ou Ctrl + Botão Esquerdo do "
 "Mouse\n"
@@ -16157,24 +16109,22 @@ msgstr ""
 "Não há distâncias entre os elementos geométricos a serem encontrados."
 
 #: appTools/ToolIsolation.py:988 appTools/ToolNCC.py:926
-#, fuzzy
-#| msgid "tooldia = tool diameter"
 msgid "Optimal tool diameter found"
-msgstr "tooldia = diâmetro da ferramenta"
+msgstr "Diâmetro ideal da ferramenta encontrado"
 
 #: appTools/ToolIsolation.py:1000 appTools/ToolIsolation.py:1508
 #: appTools/ToolIsolation.py:1710 appTools/ToolIsolation.py:1897
 #: appTools/ToolNCC.py:937 appTools/ToolNCC.py:1345 appTools/ToolPaint.py:1031
 #: appTools/ToolPaint.py:1744
-#, fuzzy
-#| msgid "Failed. No tool selected in the tool table ..."
 msgid "There are no tools selected in the Tool Table."
-msgstr "Falhou. Nenhuma ferramenta selecionada na tabela de ferramentas ..."
+msgstr "Não há ferramentas selecionadas na Tabela de Ferramentas."
 
 #: appTools/ToolIsolation.py:1008
 msgid ""
 "Incomplete isolation. At least one tool could not do a complete isolation."
 msgstr ""
+"Isolação incompleta. Pelo menos uma ferramenta não conseguiu fazer uma "
+"isolação completa."
 
 #: appTools/ToolIsolation.py:1057 appTools/ToolIsolation.py:1144
 #: appTools/ToolIsolation.py:1206 appTools/ToolIsolation.py:2626
@@ -16187,17 +16137,13 @@ msgstr "Cancelada. Ferramenta já está na Tabela de Ferramentas."
 
 #: appTools/ToolIsolation.py:1172 appTools/ToolNCC.py:1117
 #: appTools/ToolPaint.py:810
-#, fuzzy
-#| msgid "New tool added to Tool Table."
 msgid "New tool added to Tool Table from Tools Database."
 msgstr "Nova ferramenta adicionada à Tabela de Ferramentas."
 
 #: appTools/ToolIsolation.py:1236 appTools/ToolNCC.py:1181
 #: appTools/ToolPaint.py:873
-#, fuzzy
-#| msgid "New tool added to Tool Table."
 msgid "Default tool added to Tool Table."
-msgstr "Nova ferramenta adicionada à Tabela de Ferramentas."
+msgstr "Ferramenta padrão adicionada à Tabela de Ferramentas."
 
 #: appTools/ToolIsolation.py:1262 appTools/ToolNCC.py:1207
 #: appTools/ToolPaint.py:898
@@ -16389,16 +16335,16 @@ msgstr ""
 "Operação Isolação."
 
 #: appTools/ToolIsolation.py:3108 appTools/ToolNCC.py:3983
-#, fuzzy
-#| msgid "Optimal Tool"
 msgid "Optimal"
-msgstr "Ferramenta Ideal"
+msgstr "Ótima"
 
 #: appTools/ToolIsolation.py:3112 appTools/ToolNCC.py:3987
 msgid ""
 "Find a tool diameter that is guaranteed\n"
 "to do a complete isolation."
 msgstr ""
+"Busca um diâmetro de ferramenta que garanta\n"
+"fazer uma isolação completa."
 
 #: appTools/ToolIsolation.py:3153 appTools/ToolNCC.py:4027
 #: appTools/ToolPaint.py:2929 appTools/ToolSolderPaste.py:1211
@@ -16457,15 +16403,15 @@ msgstr ""
 
 #: appTools/ToolMilling.py:1064
 msgid "Generating drills milling geometry..."
-msgstr ""
+msgstr "Gerando geometria de fresamento de furos ..."
 
 #: appTools/ToolMilling.py:1169
 msgid "Generating slot milling geometry..."
-msgstr ""
+msgstr "Gerando geometria de fresamento de ranhuras ..."
 
 #: appTools/ToolMilling.py:1584
 msgid "Milling Holes Tool"
-msgstr ""
+msgstr "Ferramenta de Fresamento de Furos"
 
 #: appTools/ToolMilling.py:2166
 msgid "Preprocessor E"
@@ -16509,17 +16455,20 @@ msgstr "Erro ao clicar no botão esquerdo do mouse."
 
 #: appTools/ToolNCC.py:837
 msgid "NCC Tool. Checking tools for validity."
-msgstr ""
+msgstr "Ferramenta NCC. Validação das ferramentas."
 
 #: appTools/ToolNCC.py:949
 msgid ""
 "Incomplete isolation. None of the selected tools could do a complete "
 "isolation."
 msgstr ""
+"Isolação incompleta. Nenhuma das ferramentas selecionadas pode fazer uma "
+"isolação completa."
 
 #: appTools/ToolNCC.py:952
 msgid "At least one of the selected tools can do a complete isolation."
 msgstr ""
+"Pelo menos uma das ferramentas selecionadas pode fazer uma isolação completa."
 
 #: appTools/ToolNCC.py:1724 appTools/ToolNCC.py:2706
 msgid "NCC Tool. Preparing non-copper polygons."
@@ -16571,10 +16520,8 @@ msgid "Failed. Clearing the polygon with the method: standard."
 msgstr "Falhou. Limpando  o polígono com o método: padrão."
 
 #: appTools/ToolNCC.py:2035
-#, fuzzy
-#| msgid "Geometry could not be cleared completely"
 msgid "Polygon could not be cleared. Location:"
-msgstr "A geometria não pode ser limpa completamente"
+msgstr "Não foi possível limpar o polígono. Localização:"
 
 #: appTools/ToolNCC.py:2067 appTools/ToolNCC.py:2069 appTools/ToolNCC.py:2655
 #: appTools/ToolNCC.py:2657
@@ -16585,6 +16532,8 @@ msgstr "Retirando cobre da área..."
 msgid ""
 "There is no copper clearing tool in the selection and at least one is needed."
 msgstr ""
+"Não há ferramenta de limpeza de cobre na seleção e pelo menos uma é "
+"necessária."
 
 #: appTools/ToolNCC.py:2103 appTools/ToolNCC.py:2802
 msgid ""
@@ -16607,10 +16556,8 @@ msgid "started."
 msgstr "iniciada."
 
 #: appTools/ToolNCC.py:2279
-#, fuzzy
-#| msgid "Could not get the extent of the area to be non copper cleared."
 msgid "Could not use the tool for copper clear."
-msgstr "Não foi possível obter a extensão da área para retirada de cobre."
+msgstr "Não foi possível usar a ferramenta para retirar cobre."
 
 #: appTools/ToolNCC.py:2301 appTools/ToolNCC.py:3159
 msgid ""
@@ -16638,11 +16585,8 @@ msgid "tools"
 msgstr "ferramentas"
 
 #: appTools/ToolNCC.py:2343
-#, fuzzy
-#| msgid "Paint Tool. Rest machining painting area task started."
 msgid "NCC Tool. Rest machining copper clearing task started."
-msgstr ""
-"Ferramenta de Pintura. Iniciada a pintura de área com usinagem de descanso."
+msgstr "Ferramenta NCC. Iniciada a retirada de cobre com usinagem de descanso."
 
 #: appTools/ToolNCC.py:2566 appTools/ToolNCC.py:3552
 msgid "NCC Tool Rest Machining clear all done."
@@ -16946,8 +16890,6 @@ msgstr ""
 "Altere os parâmetros de pintura e tente novamente."
 
 #: appTools/ToolPaint.py:2176
-#, fuzzy
-#| msgid "Paint All failed."
 msgid "Paint failed."
 msgstr "Pintura falhou."
 
@@ -17076,7 +17018,7 @@ msgstr ""
 
 #: appTools/ToolPaint.py:3181
 msgid "Create a Geometry Object which paints the polygons."
-msgstr ""
+msgstr "Cria um objeto de geometria que pinta os polígonos."
 
 #: appTools/ToolPanelize.py:89
 msgid "Panel. Tool"
@@ -17092,17 +17034,15 @@ msgstr "Gerando painel … "
 
 #: appTools/ToolPanelize.py:362 appTools/ToolPanelize.py:584
 msgid "Generating panel ... Adding the source code."
-msgstr ""
+msgstr "Gerando painel ... Adicionando o código-fonte."
 
 #: appTools/ToolPanelize.py:550
 msgid "Optimizing the overlapping paths."
-msgstr ""
+msgstr "Otimizando os caminhos sobrepostos."
 
 #: appTools/ToolPanelize.py:582
-#, fuzzy
-#| msgid "Optimization Time"
 msgid "Optimization complete."
-msgstr "Tempo de Otimização"
+msgstr "Otimização completa."
 
 #: appTools/ToolPanelize.py:596
 msgid "Generating panel... Spawning copies"
@@ -19037,33 +18977,32 @@ msgstr "FlatCAM Evo"
 
 #: app_Main.py:7321
 msgid "Release date"
-msgstr ""
+msgstr "Data de lançamento"
 
 #: app_Main.py:7325
 msgid "Displayed"
-msgstr ""
+msgstr "Exibida"
 
 #: app_Main.py:7328
 #, fuzzy
-#| msgid "Snap Max"
 msgid "Snap"
-msgstr "Encaixe Max"
+msgstr "Encaixe"
 
 #: app_Main.py:7337
 msgid "Canvas"
-msgstr ""
+msgstr "Tela"
 
 #: app_Main.py:7342
 msgid "Workspace active"
-msgstr ""
+msgstr "Área de Trabalho ativa"
 
 #: app_Main.py:7346
 msgid "Workspace size"
-msgstr "Tamanho da Área de trabalho"
+msgstr "Tamanho da Área de Trabalho"
 
 #: app_Main.py:7350
 msgid "Workspace orientation"
-msgstr ""
+msgstr "Orientação da Área de Trabalho"
 
 #: app_Main.py:7413
 msgid "Failed checking for latest version. Could not connect."
@@ -19116,7 +19055,7 @@ msgstr "Todos os gráficos habilitados."
 
 #: app_Main.py:7564
 msgid "All non selected plots enabled."
-msgstr ""
+msgstr "Todos os gráficos não selecionados ativados."
 
 #: app_Main.py:7570
 msgid "Selected plots enabled..."
@@ -19582,11 +19521,11 @@ msgstr ""
 
 #: camlib.py:3109
 msgid "The Cut Z parameter is zero. There will be no cut, aborting"
-msgstr ""
+msgstr "O parâmetro Profundidade de Corte é zero. Não haverá corte, abortando"
 
 #: camlib.py:3237 camlib.py:5330
 msgid "The End X,Y format has to be (x, y)."
-msgstr ""
+msgstr "O formato X, Y final deve ser (x, y)."
 
 #: camlib.py:3313 camlib.py:3822 camlib.py:4055 camlib.py:5088 camlib.py:5421
 #: camlib.py:5859
@@ -19599,7 +19538,7 @@ msgstr "Coordenadas G91 não implementadas"
 
 #: camlib.py:3447
 msgid "Finished G-Code generation for tool:"
-msgstr ""
+msgstr "Geração de G-Code concluída para a ferramenta:"
 
 #: camlib.py:3497
 msgid ""
@@ -19732,15 +19671,17 @@ msgstr "Criando Geometria a partir do arquivo G-Code analisado. "
 
 #: camlib.py:6545
 msgid "Parsing GCode file for tool diameter"
-msgstr ""
+msgstr "Analisando o arquivo G-Code para o diâmetro da ferramenta"
 
 #: camlib.py:6546
 msgid "Number of lines"
-msgstr ""
+msgstr "Número de linhas"
 
 #: camlib.py:6635
 msgid "Creating Geometry from the parsed GCode file for tool diameter"
 msgstr ""
+"Criação de geometria a partir do arquivo G-Code analisado para o diâmetro da "
+"ferramenta"
 
 #: camlib.py:7069 camlib.py:7217 camlib.py:7386
 msgid "G91 coordinates not implemented ..."
