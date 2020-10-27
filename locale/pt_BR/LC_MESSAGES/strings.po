@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:19+0200\n"
-"PO-Revision-Date: 2020-10-27 14:14-0300\n"
+"PO-Revision-Date: 2020-10-27 15:11-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -6618,7 +6618,7 @@ msgstr "Utilitários"
 
 #: appGUI/ObjectUI.py:409 appGUI/ObjectUI.py:758
 msgid "Show the Utilties."
-msgstr ""
+msgstr "Mostre os Utilitários."
 
 #: appGUI/ObjectUI.py:433 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32
 msgid "Non-copper regions"
@@ -6711,10 +6711,8 @@ msgid "Solid circles."
 msgstr "Círculos preenchidos ou vazados."
 
 #: appGUI/ObjectUI.py:583
-#, fuzzy
-#| msgid "Excellon Object"
 msgid "Edit an Excellon object."
-msgstr "Objeto Excellon"
+msgstr "Edita um Objeto Excellon"
 
 #: appGUI/ObjectUI.py:671 appTools/ToolDrilling.py:2067
 #: appTools/ToolMilling.py:1672
@@ -6753,10 +6751,8 @@ msgid ""
 msgstr "Número de Ranhuras (Fendas). Serão criadas com fresas."
 
 #: appGUI/ObjectUI.py:685
-#, fuzzy
-#| msgid "Set the color of the shape when selected."
 msgid "Show the color of the drill holes when using multi-color."
-msgstr "Define a cor da forma quando selecionada."
+msgstr "Mostre a cor dos furos ao usar várias cores."
 
 #: appGUI/ObjectUI.py:687
 msgid ""
@@ -6768,10 +6764,8 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:696
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:55
-#, fuzzy
-#| msgid "Add from DB"
 msgid "Auto load from DB"
-msgstr "Adicionar do BD"
+msgstr "Carregamento automático do BD"
 
 #: appGUI/ObjectUI.py:698
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:57
@@ -6779,26 +6773,20 @@ msgid ""
 "Automatic replacement of the tools from related application tools\n"
 "with tools from DB that have a close diameter value."
 msgstr ""
+"Substituição automática das ferramentas da aplicação relacionadas\n"
+"com ferramentas do BD que possuam um valor de diâmetro próximo."
 
 #: appGUI/ObjectUI.py:724
-#, fuzzy
-#| msgid ""
-#| "Merge a selection of Excellon objects into a new combo Excellon object."
 msgid "Generate GCode out of drill holes in an Excellon object."
-msgstr "Mescla uma seleção de objetos Excellon em um novo objeto Excellon."
+msgstr "Gera G-Code a partir dos furos em um objeto Excellon."
 
 #: appGUI/ObjectUI.py:735 appGUI/ObjectUI.py:1767
-#, fuzzy
-#| msgid "Milling Type"
 msgid "Milling Tool"
-msgstr "Tipo de Fresamento"
+msgstr "Ferramenta de Fresamento"
 
 #: appGUI/ObjectUI.py:738
-#, fuzzy
-#| msgid ""
-#| "Merge a selection of Excellon objects into a new combo Excellon object."
 msgid "Generate a Geometry for milling drills or slots in an Excellon object."
-msgstr "Mescla uma seleção de objetos Excellon em um novo objeto Excellon."
+msgstr "Gera uma Geometria a partir dos furos em um objeto Excellon."
 
 #: appGUI/ObjectUI.py:782
 msgid "Milling Geometry"
@@ -6831,42 +6819,32 @@ msgid "Mill Drills"
 msgstr "Fresa Furos"
 
 #: appGUI/ObjectUI.py:804
-#, fuzzy
-#| msgid ""
-#| "Create the Geometry Object\n"
-#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
 "for milling drills."
 msgstr ""
-"Cria o Objeto Geometria com\n"
-"os caminhos da ferramenta de RANHURAS."
+"Crie um Objeto Geometria\n"
+"para fresagem."
 
 #: appGUI/ObjectUI.py:822
 msgid "Mill Slots"
 msgstr "Fresa Ranhuras"
 
 #: appGUI/ObjectUI.py:824
-#, fuzzy
-#| msgid ""
-#| "Create the Geometry Object\n"
-#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
 "for milling slots."
 msgstr ""
-"Cria o Objeto Geometria com\n"
-"os caminhos da ferramenta de RANHURAS."
+"Crie um Objeto Geometria\n"
+"para ranhuras."
 
 #: appGUI/ObjectUI.py:866
 msgid "Geometry Object"
 msgstr "Objeto Geometria"
 
 #: appGUI/ObjectUI.py:905
-#, fuzzy
-#| msgid "Geometry Object"
 msgid "Edit an Geometry object."
-msgstr "Objeto Geometria"
+msgstr "Editar um Objeto Geometria"
 
 #: appGUI/ObjectUI.py:969
 msgid ""
@@ -7024,7 +7002,7 @@ msgstr "Adicionar do BD"
 #: appTools/ToolIsolation.py:61 appTools/ToolIsolation.py:3122
 #: appTools/ToolNCC.py:3996 appTools/ToolPaint.py:2898
 msgid "Search and Add"
-msgstr ""
+msgstr "Pesquisar e Adicionar"
 
 #: appGUI/ObjectUI.py:1099
 msgid ""
@@ -7037,26 +7015,22 @@ msgstr ""
 #: appGUI/ObjectUI.py:1103 appTools/ToolCutOut.py:2087
 #: appTools/ToolIsolation.py:65 appTools/ToolIsolation.py:3133
 #: appTools/ToolNCC.py:4007 appTools/ToolPaint.py:2909
-#, fuzzy
-#| msgid "Add from DB"
 msgid "Pick from DB"
-msgstr "Adicionar do BD"
+msgstr "Escolher do BD"
 
 #: appGUI/ObjectUI.py:1106 appTools/ToolCutOut.py:2090
 #: appTools/ToolIsolation.py:3136 appTools/ToolNCC.py:4010
 #: appTools/ToolPaint.py:2912
-#, fuzzy
-#| msgid ""
-#| "Add a new tool to the Tool Table\n"
-#| "from the Tool DataBase."
 msgid ""
 "Add a new tool to the Tool Table\n"
 "from the Tools Database.\n"
 "Tools database administration in in:\n"
 "Menu: Options -> Tools Database"
 msgstr ""
-"Adiciona uma nova ferramenta à Tabela de Ferramentas\n"
-"do Banco de Dados de Ferramentas."
+"Adicionar uma nova ferramenta à Tabela de Ferramentas\n"
+"do banco de dados de ferramentas.\n"
+"Ferramentas de administração de banco de dados em:\n"
+"Menu: Opções -> Banco de dados de ferramentas"
 
 #: appGUI/ObjectUI.py:1128
 msgid ""
@@ -7536,46 +7510,40 @@ msgstr "Excluir todas as áreas de exclusão selecionadas na tabela."
 
 #: appGUI/ObjectUI.py:1642
 msgid "Add Polish"
-msgstr ""
+msgstr "Adicionar Polimento"
 
 #: appGUI/ObjectUI.py:1644
 msgid ""
 "Will add a Paint section at the end of the GCode.\n"
 "A metallic brush will clean the material after milling."
 msgstr ""
+"Adicionará uma seção de pintura no final do G-Code.\n"
+"Uma escova metálica limpará o material após o fresamento."
 
 #: appGUI/ObjectUI.py:1652
-#, fuzzy
-#| msgid "Diameter for the new tool."
 msgid "Diameter for the polishing tool."
-msgstr "Diâmetro para a nova ferramenta."
+msgstr "Diâmetro para a ferramenta de polimento."
 
 #: appGUI/ObjectUI.py:1663
-#, fuzzy
-#| msgid "Measure"
 msgid "Pressure"
-msgstr "Medir"
+msgstr "Pressão"
 
 #: appGUI/ObjectUI.py:1665
 msgid ""
 "Negative value. The higher the absolute value\n"
 "the stronger the pressure of the brush on the material."
 msgstr ""
+"Valor negativo. Quanto maior o valor absoluto\n"
+"mais forte é a pressão do pincel no material."
 
 #: appGUI/ObjectUI.py:1694
-#, fuzzy
-#| msgid ""
-#| "Algorithm for copper clearing:\n"
-#| "- Standard: Fixed step inwards.\n"
-#| "- Seed-based: Outwards from seed.\n"
-#| "- Line-based: Parallel lines."
 msgid ""
 "Algorithm for polishing:\n"
 "- Standard: Fixed step inwards.\n"
 "- Seed-based: Outwards from seed.\n"
 "- Line-based: Parallel lines."
 msgstr ""
-"Algoritmo para retirada de cobre:\n"
+"Algoritmo para polimento:\n"
 "- Padrão: Passo fixo para dentro.\n"
 "- Baseado em semente: Para fora a partir de uma semente.\n"
 "- Linhas retas: Linhas paralelas."
@@ -7601,25 +7569,16 @@ msgid "Launch Paint Tool in Tools Tab."
 msgstr "Inicia a ferramenta de pintura na guia Ferramentas."
 
 #: appGUI/ObjectUI.py:1770
-#, fuzzy
-#| msgid "Generating Solder Paste dispensing geometry..."
 msgid "Generate a CNCJob by milling a Geometry."
-msgstr "Gerando geometria dispensadora de Pasta de Solda ..."
+msgstr "Gera um Trabalho CNC fresando uma geometria."
 
 #: appGUI/ObjectUI.py:1786 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:35
-#, fuzzy
-#| msgid ""
-#| "Creates tool paths to cover the\n"
-#| "whole area of a polygon (remove\n"
-#| "all copper). You will be asked\n"
-#| "to click on the desired polygon."
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon."
 msgstr ""
-"Cria caminhos de ferramenta para cobrir a área\n"
-"inteira de um polígono (remove todo o cobre).\n"
-"Você será solicitado a clicar no polígono desejado."
+"Cria caminhos de ferramenta para\n"
+"cobrir toda a área de um polígono."
 
 #: appGUI/ObjectUI.py:1840
 msgid "CNC Job Object"
@@ -7641,10 +7600,8 @@ msgid "Travel"
 msgstr "Deslocamento"
 
 #: appGUI/ObjectUI.py:1888
-#, fuzzy
-#| msgid "Create the QRCode object."
 msgid "Edit an GCode object."
-msgstr "Cria o objeto QRCode."
+msgstr "Editar um objeto G-Code."
 
 #: appGUI/ObjectUI.py:1925 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:71
 msgid "Display Annotation"
@@ -7722,56 +7679,52 @@ msgstr "Atualiza o gráfico."
 
 #: appGUI/ObjectUI.py:2042
 msgid "Use CNC Code Snippets"
-msgstr ""
+msgstr "Usar Trechos de código CNC"
 
 #: appGUI/ObjectUI.py:2044
 msgid ""
 "When selected, it will include CNC Code snippets (append and prepend)\n"
 "defined in the Preferences."
 msgstr ""
+"Quando selecionado, incluirá trechos de código CNC (início e final)\n"
+"definido nas Preferências."
 
 #: appGUI/ObjectUI.py:2050
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:64
 msgid "Autolevelling"
-msgstr ""
+msgstr "Autonivelamento"
 
 #: appGUI/ObjectUI.py:2053
 msgid "Enable the autolevelling feature."
-msgstr ""
+msgstr "Ativa o recurso de autonivelamento."
 
 #: appGUI/ObjectUI.py:2081
 msgid "Probe Points Table"
-msgstr ""
+msgstr "Tabela de Pontos da Sonda"
 
 #: appGUI/ObjectUI.py:2082
 msgid "Generate GCode that will obtain the height map"
-msgstr ""
+msgstr "Gera o G-Code que irá obter o mapa de altura"
 
 #: appGUI/ObjectUI.py:2084
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
 #: appGUI/ObjectUI.py:2085
-#, fuzzy
-#| msgid "Toggle the display of axis on canvas"
 msgid "Toggle the display of the Probe Points table."
-msgstr "Alternar a exibição do eixo na tela"
+msgstr "Alternar a exibição da Tabela de Pontos"
 
 #: appGUI/ObjectUI.py:2098
 msgid "X-Y Coordinates"
 msgstr "Coordenadas X-Y"
 
 #: appGUI/ObjectUI.py:2098
-#, fuzzy
-#| msgid "Light"
 msgid "Height"
-msgstr "Claro"
+msgstr "Altura"
 
 #: appGUI/ObjectUI.py:2102
-#, fuzzy
-#| msgid "Plot Options"
 msgid "Plot probing points"
-msgstr "Opções de Gráfico"
+msgstr "Exibir os Pontos de Sondagem"
 
 #: appGUI/ObjectUI.py:2104
 msgid ""
@@ -7779,12 +7732,13 @@ msgid ""
 "If a Voronoi method is used then\n"
 "the Voronoi areas are also plotted."
 msgstr ""
+"Exibe os pontos de sondagem na tabela.\n"
+"Se for usado o método Voronoi, então\n"
+"as áreas de Voronoi também são mostradas."
 
 #: appGUI/ObjectUI.py:2119
-#, fuzzy
-#| msgid "Finished G-Code generation"
 msgid "Probe GCode Generation"
-msgstr "Geração de G-Code concluída"
+msgstr "Gerar G-Code de Sondagem"
 
 #: appGUI/ObjectUI.py:2121
 msgid ""
@@ -7792,20 +7746,20 @@ msgid ""
 "either through a file or directly, with the intent to get the height map\n"
 "that is to modify the original GCode to level the cutting height."
 msgstr ""
+"Criará um G-Code que será enviado ao controlador,\n"
+"por meio de um arquivo ou diretamente, com a intenção de obter o mapa de "
+"altura\n"
+"que modificará o G-Code original para nivelar a altura de corte."
 
 #: appGUI/ObjectUI.py:2128
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:119
-#, fuzzy
-#| msgid "Probe Z depth"
 msgid "Probe Z travel"
-msgstr "Profundidade Z da Sonda"
+msgstr "Altura Z da Sonda"
 
 #: appGUI/ObjectUI.py:2130
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:121
-#, fuzzy
-#| msgid "Height (Z) for travelling between the points."
 msgid "The safe Z for probe travelling between probe points."
-msgstr "Altura (Z) para deslocamento entre os pontos."
+msgstr "Altura (Z) segura para deslocamento entre os pontos."
 
 #: appGUI/ObjectUI.py:2153
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:144
@@ -7826,6 +7780,9 @@ msgid ""
 "- Manual: will pick a selection of probe points by clicking on canvas\n"
 "- Grid: will automatically generate a grid of probe points"
 msgstr ""
+"Escolha um modo para geração de mapa de altura.\n"
+"- Manual: os pontos de sondagem são escolhidos clicando na tela\n"
+"- Grade: gerará automaticamente uma grade de pontos de sondagem"
 
 #: appGUI/ObjectUI.py:2177
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:78
@@ -7836,10 +7793,8 @@ msgstr "Manual"
 
 #: appGUI/ObjectUI.py:2178
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:79 app_Main.py:7323
-#, fuzzy
-#| msgid "Grids"
 msgid "Grid"
-msgstr "Grades"
+msgstr "Grade"
 
 #: appGUI/ObjectUI.py:2185
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:86
@@ -7848,6 +7803,10 @@ msgid ""
 "- Voronoi: will generate a Voronoi diagram\n"
 "- Bilinear: will use bilinear interpolation. Usable only for grid mode."
 msgstr ""
+"Escolha um método de aproximação de alturas a partir de dados de "
+"autonivelamento.\n"
+"- Voronoi: gerará um diagrama de Voronoi\n"
+"- Bilinear: usará interpolação bilinear. Pode ser usado apenas no modo Grade."
 
 #: appGUI/ObjectUI.py:2191
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:92
@@ -7856,10 +7815,8 @@ msgstr "Voronoi"
 
 #: appGUI/ObjectUI.py:2192
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:93
-#, fuzzy
-#| msgid "Linear"
 msgid "Bilinear"
-msgstr "Linear"
+msgstr "Bilinear"
 
 #: appGUI/ObjectUI.py:2205
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:101
@@ -7871,7 +7828,7 @@ msgstr "Colunas"
 #: appGUI/ObjectUI.py:2207
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:103
 msgid "The number of grid columns."
-msgstr ""
+msgstr "Número de colunas da grade."
 
 #: appGUI/ObjectUI.py:2216
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:111
@@ -7883,20 +7840,16 @@ msgstr "Linhas"
 #: appGUI/ObjectUI.py:2218
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:113
 msgid "The number of grid rows."
-msgstr ""
+msgstr "Número de linhas da grade."
 
 #: appGUI/ObjectUI.py:2223
-#, fuzzy
-#| msgid "Get Points"
 msgid "Add Probe Points"
-msgstr "Obter Pontos"
+msgstr "Adicionar Pontos de Sondagem"
 
 #: appGUI/ObjectUI.py:2231
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:160
-#, fuzzy
-#| msgid "Contour"
 msgid "Controller"
-msgstr "Contorno"
+msgstr "Controlador"
 
 #: appGUI/ObjectUI.py:2233
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:162
@@ -7904,54 +7857,50 @@ msgid ""
 "The kind of controller for which to generate\n"
 "height map gcode."
 msgstr ""
+"O tipo de controlador para o qual gerar\n"
+"o G-Code com o mapa de altura."
 
 #: appGUI/ObjectUI.py:2279 appGUI/ObjectUI.py:2294
 #: appObjects/FlatCAMCNCJob.py:1307 appObjects/FlatCAMCNCJob.py:1329
-#, fuzzy
-#| msgid "Contour"
 msgid "Control"
-msgstr "Contorno"
+msgstr "Controle"
 
 #: appGUI/ObjectUI.py:2289 appGUI/ObjectUI.py:2296
 #: appObjects/FlatCAMCNCJob.py:1309 appObjects/FlatCAMCNCJob.py:1331
-#, fuzzy
-#| msgid "Rendered"
 msgid "Sender"
-msgstr "Processado"
+msgstr "Sender"
 
 #: appGUI/ObjectUI.py:2310
 msgid "COM list"
-msgstr ""
+msgstr "Lista de COM"
 
 #: appGUI/ObjectUI.py:2312 appGUI/ObjectUI.py:2327
 msgid "Lists the available serial ports."
-msgstr ""
+msgstr "Lista as portas seriais disponíveis."
 
 #: appGUI/ObjectUI.py:2316
 msgid "Search"
-msgstr ""
+msgstr "Procurar"
 
 #: appGUI/ObjectUI.py:2318
 msgid "Search for the available serial ports."
-msgstr ""
+msgstr "Procura as portas seriais disponíveis."
 
 #: appGUI/ObjectUI.py:2325
 msgid "Baud rates"
-msgstr ""
+msgstr "Baud rates"
 
 #: appGUI/ObjectUI.py:2344
 msgid "New, custom baudrate."
-msgstr ""
+msgstr "Nova taxa de transmissão (baudrate) personalizada."
 
 #: appGUI/ObjectUI.py:2352
 msgid "Add the specified custom baudrate to the list."
-msgstr ""
+msgstr "Adicione a taxa de transmissão personalizada especificada à lista."
 
 #: appGUI/ObjectUI.py:2358
-#, fuzzy
-#| msgid "Delete Selected"
 msgid "Delete selected baudrate"
-msgstr "Excluir Selecionado"
+msgstr "Excluir baudrate selecionado"
 
 #: appGUI/ObjectUI.py:2362
 msgid "Reset"
@@ -7959,47 +7908,37 @@ msgstr "Redefinir"
 
 #: appGUI/ObjectUI.py:2364
 msgid "Software reset of the controller."
-msgstr ""
+msgstr "Reinicialização do software do controlador."
 
 #: appGUI/ObjectUI.py:2370 appObjects/FlatCAMCNCJob.py:1323
-#, fuzzy
-#| msgid "Connect"
 msgid "Disconnected"
-msgstr "Conectar"
+msgstr "Desconectado"
 
 #: appGUI/ObjectUI.py:2372
-#, fuzzy
-#| msgid ""
-#| "Create a Gerber object from the selected object, within\n"
-#| "the specified box."
 msgid "Connect to the selected port with the selected baud rate."
-msgstr ""
-"Cria um objeto Gerber a partir do objeto selecionado, dentro\n"
-"da caixa especificada."
+msgstr "Conectar à porta selecionada com a taxa de transmissão selecionada."
 
 #: appGUI/ObjectUI.py:2397
 msgid "Jog"
-msgstr ""
+msgstr "Deslocar"
 
 #: appGUI/ObjectUI.py:2405
-#, fuzzy
-#| msgid "Zeros"
 msgid "Zero Axes"
-msgstr "Zeros"
+msgstr "Zero Eixos"
 
 #: appGUI/ObjectUI.py:2438
 msgid "Pause/Resume"
-msgstr ""
+msgstr "Pausar/Retomar"
 
 #: appGUI/ObjectUI.py:2460
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:172
 msgid "Step"
-msgstr ""
+msgstr "Passo"
 
 #: appGUI/ObjectUI.py:2462
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:174
 msgid "Each jog action will move the axes with this value."
-msgstr ""
+msgstr "Cada ação de deslocamento moverá os eixos com este valor."
 
 #: appGUI/ObjectUI.py:2474
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:185
@@ -8011,61 +7950,55 @@ msgstr "Taxa de Avanço"
 #: appGUI/ObjectUI.py:2476
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:187
 msgid "Feedrate when jogging."
-msgstr ""
+msgstr "Velocidade de Avanço ao Deslocar."
 
 #: appGUI/ObjectUI.py:2496
 msgid "Send Command"
-msgstr ""
+msgstr "Enviar Comando"
 
 #: appGUI/ObjectUI.py:2498 appGUI/ObjectUI.py:2508
 msgid "Send a custom command to GRBL."
-msgstr ""
+msgstr "Envia um comando personalizado para GRBL."
 
 #: appGUI/ObjectUI.py:2503
 msgid "Type GRBL command ..."
-msgstr ""
+msgstr "Digite o comando GRBL ..."
 
 #: appGUI/ObjectUI.py:2506
 msgid "Send"
-msgstr ""
+msgstr "Enviar"
 
 #: appGUI/ObjectUI.py:2514
-#, fuzzy
-#| msgid "Text to PDF parameters"
 msgid "Get Config parameter"
-msgstr "Parâmetros de texto para PDF"
+msgstr "Obter parâmetro de configuração"
 
 #: appGUI/ObjectUI.py:2516
 msgid "A GRBL configuration parameter."
-msgstr ""
+msgstr "Um parâmetro de configuração GRBL."
 
 #: appGUI/ObjectUI.py:2521
 msgid "Type GRBL parameter ..."
-msgstr ""
+msgstr "Digite o parâmetro GRBL ..."
 
 #: appGUI/ObjectUI.py:2524
-#, fuzzy
-#| msgid "Geo"
 msgid "Get"
-msgstr "Geo"
+msgstr "Obter"
 
 #: appGUI/ObjectUI.py:2526
 msgid "Get the value of a specified GRBL parameter."
-msgstr ""
+msgstr "Obter o valor de um parâmetro GRBL especificado."
 
 #: appGUI/ObjectUI.py:2534
-#, fuzzy
-#| msgid "Gerber Export"
 msgid "Get Report"
-msgstr "Exportar Gerber"
+msgstr "Obter relatório"
 
 #: appGUI/ObjectUI.py:2536
 msgid "Print in shell the GRBL report."
-msgstr ""
+msgstr "Imprima o relatório GRBL."
 
 #: appGUI/ObjectUI.py:2542
 msgid "Apply AutoLevelling"
-msgstr ""
+msgstr "Aplicar Autonivelamento"
 
 #: appGUI/ObjectUI.py:2544
 msgid ""
@@ -8073,33 +8006,32 @@ msgid ""
 "wait for the Z probing data and then apply this data\n"
 "over the original GCode therefore doing autolevelling."
 msgstr ""
+"Envia o G-Code de sondagem para o controlador GRBL, espera\n"
+"pelos dados de sondagem Z e, em seguida, aplica esses dados\n"
+"no G-Code original, portanto, fazendo autonivelamento."
 
 #: appGUI/ObjectUI.py:2553
 msgid "Will save the GRBL height map."
 msgstr ""
+"30/5000\n"
+"Salva o mapa de altura GRBL."
 
 #: appGUI/ObjectUI.py:2563
-#, fuzzy
-#| msgid "Starting G-Code"
 msgid "Save Probing GCode"
-msgstr "Iniciando o G-Code"
+msgstr "Salvar G-Code de sondagem"
 
 #: appGUI/ObjectUI.py:2565
-#, fuzzy
-#| msgid "Starting G-Code"
 msgid "Will save the probing GCode."
-msgstr "Iniciando o G-Code"
+msgstr "Salva o G-Code de sondagem."
 
 #: appGUI/ObjectUI.py:2574
 msgid "View/Edit the probing GCode."
-msgstr ""
+msgstr "Ver/Editar o G-Code de sondagem."
 
 #: appGUI/ObjectUI.py:2581 appObjects/FlatCAMCNCJob.py:1740
 #: appObjects/FlatCAMCNCJob.py:1744
-#, fuzzy
-#| msgid "Import List"
 msgid "Import Height Map"
-msgstr "Importar Lista"
+msgstr "Importar Mapa de Altura"
 
 #: appGUI/ObjectUI.py:2583
 msgid ""
@@ -8108,6 +8040,10 @@ msgid ""
 "over the original GCode therefore\n"
 "doing autolevelling."
 msgstr ""
+"Importa o arquivo que tem as alturas Z obtidos \n"
+"com sondagem e, em seguida, aplica esses dados\n"
+"sobre o G-Code original, portanto\n"
+"fazendo autonivelamento."
 
 #: appGUI/ObjectUI.py:2601
 msgid "Export CNC Code"
@@ -8134,10 +8070,8 @@ msgid ""
 msgstr "Abre uma caixa de diálogo para salvar o arquivo G-Code."
 
 #: appGUI/ObjectUI.py:2622
-#, fuzzy
-#| msgid "View CNC Code"
 msgid "Review CNC Code."
-msgstr "Ver Código CNC"
+msgstr "Revisar Código CNC"
 
 #: appGUI/ObjectUI.py:2683
 msgid "Script Object"
@@ -8343,14 +8277,12 @@ msgid "Set the font color for the annotation texts."
 msgstr "Define a cor da fonte para os textos de anotação."
 
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:66
-#, fuzzy
-#| msgid "Parameters for this tool"
 msgid "Parameters for the autolevelling."
-msgstr "Parâmetros usados para esta ferramenta"
+msgstr "Parâmetros para o autonivelamento."
 
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:200
 msgid "Safe height (Z) distance when jogging to origin."
-msgstr ""
+msgstr "Altura (Z) segura para deslocar para a origem."
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:27
 #, fuzzy
@@ -8360,10 +8292,8 @@ msgstr "Editor de Códigos"
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:33
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:33
-#, fuzzy
-#| msgid "A list of Gerber Editor parameters."
 msgid "A list of Editor parameters."
-msgstr "Uma lista de parâmetros do Editor Gerber."
+msgstr "Lista de parâmetros do Editor."
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:46
 msgid "Prepend to G-Code"
