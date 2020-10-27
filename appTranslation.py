@@ -218,7 +218,7 @@ def restart_program(app, ask=None):
         response = msgbox.clickedButton()
 
         if response == bt_yes:
-            app.on_file_saveprojectas(use_thread=True, quit_action=True)
+            app.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
 
     app.preferencesUiManager.save_defaults()
     python = sys.executable

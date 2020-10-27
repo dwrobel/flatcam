@@ -276,255 +276,12 @@ class FCTree(QtWidgets.QTreeWidget):
             header.resizeSection(column, width)
 
 
-class LengthEntry(QtWidgets.QLineEdit):
-    def __init__(self, output_units='IN', decimals=None, parent=None):
-        super(LengthEntry, self).__init__(parent)
+class FCLineEdit(QtWidgets.QLineEdit):
 
-        self.output_units = output_units
-        self.format_re = re.compile(r"^([^\s]+)(?:\s([a-zA-Z]+))?$")
-
-        # Unit conversion table OUTPUT-INPUT
-        self.scales = {
-            'IN': {'IN': 1.0,
-                   'MM': 1 / 25.4},
-            'MM': {'IN': 25.4,
-                   'MM': 1.0}
-        }
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-        self.decimals = decimals if decimals is not None else 4
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, Parent=None):
-        super(LengthEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.deselect()
-            self.readyToEdit = True
-
-    def returnPressed(self, *args, **kwargs):
-        val = self.get_value()
-        if val is not None:
-            self.set_text(str(val))
-        else:
-            log.warning("Could not interpret entry: %s" % self.get_text())
-
-    def get_value(self):
-        raw = str(self.text()).strip(' ')
-        # match = self.format_re.search(raw)
-
-        try:
-            units = raw[-2:]
-            units = self.scales[self.output_units][units.upper()]
-            value = raw[:-2]
-            return float(eval(value)) * units
-        except IndexError:
-            value = raw
-            return float(eval(value))
-        except KeyError:
-            value = raw
-            return float(eval(value))
-        except Exception:
-            log.warning("Could not parse value in entry: %s" % str(raw))
-            return None
-
-    def set_value(self, val, decimals=None):
-        dec_digits = decimals if decimals is not None else self.decimals
-        self.setText(str('%.*f' % (dec_digits, val)))
-
-    def sizeHint(self):
-        default_hint_size = super(LengthEntry, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class FloatEntry(QtWidgets.QLineEdit):
-    def __init__(self, decimals=None, parent=None):
-        super(FloatEntry, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-        self.decimals = decimals if decimals is not None else 4
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, Parent=None):
-        super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit is True:
-            self.selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.deselect()
-            self.readyToEdit = True
-
-    def returnPressed(self, *args, **kwargs):
-        val = self.get_value()
-        if val is not None:
-            self.set_text(str(val))
-        else:
-            log.warning("Could not interpret entry: %s" % self.text())
-
-    def get_value(self):
-        raw = str(self.text()).strip(' ')
-
-        try:
-            evaled = eval(raw)
-            return float(evaled)
-        except Exception as e:
-            if raw != '':
-                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
-            return None
-
-    def set_value(self, val, decimals=None):
-        dig_digits = decimals if decimals is not None else self.decimals
-        if val is not None:
-            self.setText("%.*f" % (dig_digits, float(val)))
-        else:
-            self.setText("")
-
-    def sizeHint(self):
-        default_hint_size = super(FloatEntry, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class FloatEntry2(QtWidgets.QLineEdit):
-    def __init__(self, decimals=None, parent=None):
-        super(FloatEntry2, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-        self.decimals = decimals if decimals is not None else 4
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, Parent=None):
-        super(FloatEntry2, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FloatEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-        raw = str(self.text()).strip(' ')
-
-        try:
-            evaled = eval(raw)
-            return float(evaled)
-        except Exception as e:
-            if raw != '':
-                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
-            return None
-
-    def set_value(self, val, decimals=None):
-        dig_digits = decimals if decimals is not None else self.decimals
-        self.setText("%.*f" % (dig_digits, val))
-
-    def sizeHint(self):
-        default_hint_size = super(FloatEntry2, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class IntEntry(QtWidgets.QLineEdit):
-
-    def __init__(self, parent=None, allow_empty=False, empty_val=None):
-        super(IntEntry, self).__init__(parent)
-        self.allow_empty = allow_empty
-        self.empty_val = empty_val
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, Parent=None):
-        super(IntEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-
-        if self.allow_empty:
-            if str(self.text()) == "":
-                return self.empty_val
-        # make the text() first a float and then int because if text is a float type,
-        # the int() can't convert directly a "text float" into a int type.
-        ret_val = float(self.text())
-        ret_val = int(ret_val)
-        return ret_val
-
-    def set_value(self, val):
-
-        if val == self.empty_val and self.allow_empty:
-            self.setText("")
-            return
-
-        self.setText(str(val))
-
-    def sizeHint(self):
-        default_hint_size = super(IntEntry, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class FCEntry(QtWidgets.QLineEdit):
-    def __init__(self, decimals=None, alignment=None, border_color=None, parent=None):
-        super(FCEntry, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-        self.decimals = decimals if decimals is not None else 4
-
-        if border_color:
-            self.setStyleSheet("QLineEdit {border: 1px solid %s;}" % border_color)
-
-        if alignment:
-            if alignment == 'center':
-                align_val = QtCore.Qt.AlignHCenter
-            elif alignment == 'right':
-                align_val = QtCore.Qt.AlignRight
-            else:
-                align_val = QtCore.Qt.AlignLeft
-            self.setAlignment(align_val)
+    def __init__(self, *args, **kwargs):
+        super(FCLineEdit, self).__init__(*args, **kwargs)
 
         self.menu = None
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, parent=None):
-        super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.deselect()
-            self.readyToEdit = True
 
     def contextMenuEvent(self, event):
         self.menu = QtWidgets.QMenu()
@@ -600,6 +357,255 @@ class FCEntry(QtWidgets.QLineEdit):
         txt = clipboard.text()
         self.insert(txt)
 
+
+class LengthEntry(FCLineEdit):
+    def __init__(self, output_units='IN', decimals=None, parent=None):
+        super(LengthEntry, self).__init__(parent)
+
+        self.output_units = output_units
+        self.format_re = re.compile(r"^([^\s]+)(?:\s([a-zA-Z]+))?$")
+
+        # Unit conversion table OUTPUT-INPUT
+        self.scales = {
+            'IN': {'IN': 1.0,
+                   'MM': 1 / 25.4},
+            'MM': {'IN': 25.4,
+                   'MM': 1.0}
+        }
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def mousePressEvent(self, e, Parent=None):
+        super(LengthEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
+
+    def returnPressed(self, *args, **kwargs):
+        val = self.get_value()
+        if val is not None:
+            self.set_text(str(val))
+        else:
+            log.warning("Could not interpret entry: %s" % self.get_text())
+
+    def get_value(self):
+        raw = str(self.text()).strip(' ')
+        # match = self.format_re.search(raw)
+
+        try:
+            units = raw[-2:]
+            units = self.scales[self.output_units][units.upper()]
+            value = raw[:-2]
+            return float(eval(value)) * units
+        except IndexError:
+            value = raw
+            return float(eval(value))
+        except KeyError:
+            value = raw
+            return float(eval(value))
+        except Exception:
+            log.warning("Could not parse value in entry: %s" % str(raw))
+            return None
+
+    def set_value(self, val, decimals=None):
+        dec_digits = decimals if decimals is not None else self.decimals
+        self.setText(str('%.*f' % (dec_digits, val)))
+
+    def sizeHint(self):
+        default_hint_size = super(LengthEntry, self).sizeHint()
+        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FloatEntry(FCLineEdit):
+    def __init__(self, decimals=None, parent=None):
+        super(FloatEntry, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def mousePressEvent(self, e, Parent=None):
+        super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit is True:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
+
+    def returnPressed(self, *args, **kwargs):
+        val = self.get_value()
+        if val is not None:
+            self.set_text(str(val))
+        else:
+            log.warning("Could not interpret entry: %s" % self.text())
+
+    def get_value(self):
+        raw = str(self.text()).strip(' ')
+
+        try:
+            evaled = eval(raw)
+            return float(evaled)
+        except Exception as e:
+            if raw != '':
+                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
+            return None
+
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
+        if val is not None:
+            self.setText("%.*f" % (dig_digits, float(val)))
+        else:
+            self.setText("")
+
+    def sizeHint(self):
+        default_hint_size = super(FloatEntry, self).sizeHint()
+        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FloatEntry2(FCLineEdit):
+    def __init__(self, decimals=None, parent=None):
+        super(FloatEntry2, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def mousePressEvent(self, e, Parent=None):
+        super(FloatEntry2, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FloatEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
+
+    def get_value(self):
+        raw = str(self.text()).strip(' ')
+
+        try:
+            evaled = eval(raw)
+            return float(evaled)
+        except Exception as e:
+            if raw != '':
+                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
+            return None
+
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
+        self.setText("%.*f" % (dig_digits, val))
+
+    def sizeHint(self):
+        default_hint_size = super(FloatEntry2, self).sizeHint()
+        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class IntEntry(FCLineEdit):
+
+    def __init__(self, parent=None, allow_empty=False, empty_val=None):
+        super(IntEntry, self).__init__(parent)
+        self.allow_empty = allow_empty
+        self.empty_val = empty_val
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def mousePressEvent(self, e, Parent=None):
+        super(IntEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
+
+    def get_value(self):
+
+        if self.allow_empty:
+            if str(self.text()) == "":
+                return self.empty_val
+        # make the text() first a float and then int because if text is a float type,
+        # the int() can't convert directly a "text float" into a int type.
+        ret_val = float(self.text())
+        ret_val = int(ret_val)
+        return ret_val
+
+    def set_value(self, val):
+
+        if val == self.empty_val and self.allow_empty:
+            self.setText("")
+            return
+
+        self.setText(str(val))
+
+    def sizeHint(self):
+        default_hint_size = super(IntEntry, self).sizeHint()
+        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FCEntry(FCLineEdit):
+    def __init__(self, decimals=None, alignment=None, border_color=None, parent=None):
+        super(FCEntry, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
+
+        if border_color:
+            self.setStyleSheet("QLineEdit {border: 1px solid %s;}" % border_color)
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def mousePressEvent(self, e, parent=None):
+        super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
+
     def get_value(self):
         return str(self.text())
 
@@ -650,7 +656,7 @@ class FCEntry3(FCEntry):
             return None
 
 
-class EvalEntry(QtWidgets.QLineEdit):
+class EvalEntry(FCLineEdit):
     def __init__(self, border_color=None, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
@@ -700,7 +706,7 @@ class EvalEntry(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class EvalEntry2(QtWidgets.QLineEdit):
+class EvalEntry2(FCLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry2, self).__init__(parent)
         self.readyToEdit = True
@@ -1485,7 +1491,109 @@ class FCTextArea(QtWidgets.QPlainTextEdit):
             return QtCore.QSize(custom_sizehint, default_hint_size.height())
 
 
-class FCTextAreaRich(QtWidgets.QTextEdit):
+class FCTextEdit(QtWidgets.QTextEdit):
+
+    def __init__(self, *args, **kwargs):
+        super(FCTextEdit, self).__init__(*args, **kwargs)
+
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
+
+
+class FCTextAreaRich(FCTextEdit):
     def __init__(self, parent=None):
         super(FCTextAreaRich, self).__init__(parent)
 
@@ -1500,7 +1608,7 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCTextAreaExtended(QtWidgets.QTextEdit):
+class FCTextAreaExtended(FCTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -1513,19 +1621,6 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         self.completer.popup().clicked.connect(self.insert_completion_click)
 
         self.completer_enable = False
-
-        self.menu = None
-        self.undo_flag = False
-        self.redo_flag = False
-
-        self.undoAvailable.connect(self.on_undo_available)
-        self.redoAvailable.connect(self.on_redo_available)
-
-    def on_undo_available(self, val):
-        self.undo_flag = val
-
-    def on_redo_available(self, val):
-        self.redo_flag = val
 
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
@@ -1653,89 +1748,6 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 self.completer.complete(cr)
             else:
                 self.completer.popup().hide()
-
-    def contextMenuEvent(self, event):
-        self.menu = QtWidgets.QMenu()
-        tcursor = self.textCursor()
-        txt = tcursor.selectedText()
-
-        # UNDO
-        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
-        self.menu.addAction(undo_action)
-        undo_action.triggered.connect(self.undo)
-        if self.undo_flag is False:
-            undo_action.setDisabled(True)
-
-        # REDO
-        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
-        self.menu.addAction(redo_action)
-        redo_action.triggered.connect(self.redo)
-        if self.redo_flag is False:
-            redo_action.setDisabled(True)
-
-        self.menu.addSeparator()
-
-        # CUT
-        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
-        self.menu.addAction(cut_action)
-        cut_action.triggered.connect(self.cut_text)
-        if txt == '':
-            cut_action.setDisabled(True)
-
-        # COPY
-        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
-        self.menu.addAction(copy_action)
-        copy_action.triggered.connect(self.copy_text)
-        if txt == '':
-            copy_action.setDisabled(True)
-
-        # PASTE
-        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
-        self.menu.addAction(paste_action)
-        paste_action.triggered.connect(self.paste_text)
-
-        # DELETE
-        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
-        self.menu.addAction(delete_action)
-        delete_action.triggered.connect(self.delete_text)
-
-        self.menu.addSeparator()
-
-        # SELECT ALL
-        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
-        self.menu.addAction(sel_all_action)
-        sel_all_action.triggered.connect(self.selectAll)
-
-        self.menu.exec_(event.globalPos())
-
-    def cut_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = tcursor.selectedText()
-        clipboard.clear()
-        clipboard.setText(txt)
-
-        tcursor.deleteChar()
-
-    def copy_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = tcursor.selectedText()
-        clipboard.clear()
-        clipboard.setText(txt)
-
-    def paste_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = clipboard.text()
-        tcursor.insertText(txt)
-
-    def delete_text(self):
-        tcursor = self.textCursor()
-        tcursor.deleteChar()
 
     def comment(self):
         """
@@ -3602,7 +3614,7 @@ class _BrowserTextEdit(QTextEdit):
         app.save_to_file(content_to_save=html_content, txt_content=txt_content)
 
 
-class _ExpandableTextEdit(QTextEdit):
+class _ExpandableTextEdit(FCTextEdit):
     """
     Class implements edit line, which expands themselves automatically
     """
@@ -3611,7 +3623,7 @@ class _ExpandableTextEdit(QTextEdit):
     historyPrev = QtCore.pyqtSignal()
 
     def __init__(self, termwidget, *args):
-        QTextEdit.__init__(self, *args)
+        FCTextEdit.__init__(self, *args)
         self.setStyleSheet("font: 9pt \"Courier\";")
         self._fittedHeight = 1
         self.textChanged.connect(self._fit_to_document)
@@ -3625,19 +3637,6 @@ class _ExpandableTextEdit(QTextEdit):
         self.set_model_data(keyword_list=[])
         self.completer.insertText.connect(self.insertCompletion)
         self.completer.popup().clicked.connect(self.insert_completion_click)
-
-        self.menu = None
-        self.undo_flag = False
-        self.redo_flag = False
-
-        self.undoAvailable.connect(self.on_undo_available)
-        self.redoAvailable.connect(self.on_redo_available)
-
-    def on_undo_available(self, val):
-        self.undo_flag = val
-
-    def on_redo_available(self, val):
-        self.redo_flag = val
 
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
@@ -3724,89 +3723,6 @@ class _ExpandableTextEdit(QTextEdit):
             self.completer.complete(cr)
         else:
             self.completer.popup().hide()
-
-    def contextMenuEvent(self, event):
-        self.menu = QtWidgets.QMenu()
-        tcursor = self.textCursor()
-        txt = tcursor.selectedText()
-
-        # UNDO
-        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
-        self.menu.addAction(undo_action)
-        undo_action.triggered.connect(self.undo)
-        if self.undo_flag is False:
-            undo_action.setDisabled(True)
-
-        # REDO
-        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
-        self.menu.addAction(redo_action)
-        redo_action.triggered.connect(self.redo)
-        if self.redo_flag is False:
-            redo_action.setDisabled(True)
-
-        self.menu.addSeparator()
-
-        # CUT
-        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
-        self.menu.addAction(cut_action)
-        cut_action.triggered.connect(self.cut_text)
-        if txt == '':
-            cut_action.setDisabled(True)
-
-        # COPY
-        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
-        self.menu.addAction(copy_action)
-        copy_action.triggered.connect(self.copy_text)
-        if txt == '':
-            copy_action.setDisabled(True)
-
-        # PASTE
-        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
-        self.menu.addAction(paste_action)
-        paste_action.triggered.connect(self.paste_text)
-
-        # DELETE
-        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
-        self.menu.addAction(delete_action)
-        delete_action.triggered.connect(self.delete_text)
-
-        self.menu.addSeparator()
-
-        # SELECT ALL
-        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
-        self.menu.addAction(sel_all_action)
-        sel_all_action.triggered.connect(self.selectAll)
-
-        self.menu.exec_(event.globalPos())
-
-    def cut_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = tcursor.selectedText()
-        clipboard.clear()
-        clipboard.setText(txt)
-
-        tcursor.deleteChar()
-
-    def copy_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = tcursor.selectedText()
-        clipboard.clear()
-        clipboard.setText(txt)
-
-    def paste_text(self):
-        tcursor = self.textCursor()
-        clipboard = QtWidgets.QApplication.clipboard()
-
-        txt = clipboard.text()
-        tcursor.insertText(txt)
-
-    def delete_text(self):
-        tcursor = self.textCursor()
-        tcursor.deleteChar()
 
     def sizeHint(self):
         """

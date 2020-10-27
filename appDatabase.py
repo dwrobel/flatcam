@@ -177,20 +177,19 @@ class ToolsDB2UI:
         descript_vlay.addLayout(tools_vlay)
         descript_vlay.addStretch()
 
-        milling_vlay = QtWidgets.QVBoxLayout()
-        milling_vlay.addWidget(self.milling_box)
-        milling_vlay.addStretch()
+        mill_vlay = QtWidgets.QVBoxLayout()
+        mill_vlay.addWidget(self.milling_box)
+        mill_vlay.addStretch()
 
         drilling_vlay = QtWidgets.QVBoxLayout()
         drilling_vlay.addWidget(self.drill_box)
 
         param_hlay.addLayout(descript_vlay)
-        param_hlay.addLayout(milling_vlay)
         param_hlay.addLayout(drilling_vlay)
         param_hlay.addLayout(tools_vlay)
 
         # always visible, always to be included last
-        param_hlay.addLayout(milling_vlay)
+        param_hlay.addLayout(mill_vlay)
 
         param_hlay.addStretch()
 

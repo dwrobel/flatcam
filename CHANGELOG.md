@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.10.2020
+
+- created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
+- minor fix in ToolsDB2UI
+
 26.10.2020
 
 - added a new menu entry and functionality in the View category: enable all non-selected (shortcut key ALT+3)
@@ -28,6 +33,7 @@ CHANGELOG for FlatCAM beta
 - another GUI element for which I've overloaded the context menu to make it translatable: _ExpandableTextEdit
 - overloaded the context menu for FCSpinner and for FCDoubleSpinner
 - added new strings and therefore updated the translation strings
+- fixed some minor issues when doing a project save
 
 25.10.2020
 
