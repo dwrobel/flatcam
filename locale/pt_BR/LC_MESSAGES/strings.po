@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:19+0200\n"
-"PO-Revision-Date: 2020-10-27 15:11-0300\n"
+"PO-Revision-Date: 2020-10-27 15:49-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -8926,10 +8926,8 @@ msgstr "Atualizar config. de exportação"
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:91
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:110
 #: appTools/ToolPanelize.py:821
-#, fuzzy
-#| msgid "Optimization Time"
 msgid "Path Optimization"
-msgstr "Tempo de Otimização"
+msgstr "Caminho de Otimização"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:213
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:94
@@ -8937,18 +8935,6 @@ msgid "Algorithm:"
 msgstr "Algoritmo:"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:215
-#, fuzzy
-#| msgid ""
-#| "This sets the optimization type for the Excellon drill path.\n"
-#| "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
-#| "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-#| "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
-#| "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
-#| "drill path optimization.\n"
-#| "\n"
-#| "If this control is disabled, then FlatCAM works in 32bit mode and it "
-#| "uses\n"
-#| "Travelling Salesman algorithm for path optimization."
 msgid ""
 "This sets the optimization type for the Excellon drill path.\n"
 "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
@@ -8963,14 +8949,12 @@ msgstr ""
 "Se <<MetaHeuristic>>estiver selecionado, será usado o algoritmo do Google OR-"
 "Tools com MetaHeuristic.\n"
 "O tempo de pesquisa padrão é de 3s.\n"
-"Usar o comando TCL set_sys excellon_search_time para definir outros "
-"valores.\n"
 "Se <<Básico>> estiver selecionado, será usado o algoritmo básico do Google "
 "OR-Tools.\n"
 "Se <<TSA>> estiver selecionado, será usado o algoritmo Travelling Salesman.\n"
 "\n"
-"Se este controle está desabilitado, FlatCAM está no modo de 32 bits e usa\n"
-"o algoritmo Travelling Salesman para otimização de caminhos."
+"Algumas opções são desativadas quando o aplicativo funciona no modo de 32 "
+"bits."
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:225
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:310
@@ -9019,17 +9003,13 @@ msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:255
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:138
-#, fuzzy
-#| msgid "Plot Options"
 msgid "Join Option"
-msgstr "Opções de Gráfico"
+msgstr "Opções de Deslocamento"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:258
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:141
-#, fuzzy
-#| msgid "Rules Tool"
 msgid "Fuse Tools"
-msgstr "Ferramenta de Regras"
+msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:260
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:143
@@ -9037,6 +9017,8 @@ msgid ""
 "When checked, the tools will be merged\n"
 "but only if they share some of their attributes."
 msgstr ""
+"Quando marcada, as ferramentas serão mescladas\n"
+"mas apenas se eles compartilharem alguns de seus atributos."
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:277
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:160
@@ -9353,16 +9335,16 @@ msgstr ""
 "atalho de menu ou atalho de tecla."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:387
-#, fuzzy
-#| msgid "Excellon Editor"
 msgid "Allow Edit"
-msgstr "Editor Excellon"
+msgstr "Permitir Edição"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:389
 msgid ""
 "When checked, the user can edit the object names in the Project Tab\n"
 "by clicking on the object name. Active after restart."
 msgstr ""
+"Quando marcada, o usuário pode editar os nomes dos objetos na Aba Projeto\n"
+"clicando no nome do objeto. Ativo após reiniciar."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:395
 msgid "\"Open\" behavior"
@@ -9864,7 +9846,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:127
 msgid "Hover Shape"
-msgstr ""
+msgstr "Forma Flutuante"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:129
 msgid ""
@@ -9878,7 +9860,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:136
 msgid "Selection Shape"
-msgstr ""
+msgstr "Seleção de Forma"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:138
 msgid ""
@@ -10112,7 +10094,7 @@ msgstr "Área de Exclusão"
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:402
 msgid "Area exclusion parameters."
-msgstr ""
+msgstr "Parâmetros de exclusão de área."
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:207
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
@@ -10532,34 +10514,28 @@ msgstr ""
 "Não carregue corretamente."
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:144
-#, fuzzy
-#| msgid "Set Color"
 msgid "Store colors"
-msgstr "Definir cor"
+msgstr "Guardar as Cores"
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:146
 msgid ""
 "It will store the set colors for Gerber objects.\n"
 "Those will be used each time the application is started."
 msgstr ""
+"Armazenar as cores definidas para os objetos Gerber.\n"
+"Elas serão usados sempre que o aplicativo for iniciado."
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:152
-#, fuzzy
-#| msgid "Clear Plot"
 msgid "Clear Colors"
-msgstr "Limpar Gráfico"
+msgstr "Limpar Cores"
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:155
-#, fuzzy
-#| msgid "Set the color for plotted objects."
 msgid "Reset the colors associated with Gerber objects."
-msgstr "Defina a cor dos objetos plotados."
+msgstr "Redefine as cores associadas aos objetos Gerber."
 
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:229
-#, fuzzy
-#| msgid "There is no Gerber object loaded ..."
 msgid "Stored colors for Gerber objects are deleted."
-msgstr "Não há objeto Gerber carregado ..."
+msgstr "As cores armazenadas para objetos Gerber são excluídas."
 
 #: appGUI/preferences/gerber/GerberOptPrefGroupUI.py:29
 msgid "Gerber Options"
@@ -11243,7 +11219,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:69
 #: appTools/ToolInvertGerber.py:258
 msgid "Bevel"
-msgstr ""
+msgstr "Chanfro"
 
 #: appGUI/preferences/tools/Tools2OptimalPrefGroupUI.py:27
 msgid "Optimal Tool Options"
@@ -11706,14 +11682,6 @@ msgid "Axis Ref"
 msgstr "Eixo de Ref"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:92
-#, fuzzy
-#| msgid ""
-#| "The coordinates used as reference for the mirror operation.\n"
-#| "Can be:\n"
-#| "- Point -> a set of coordinates (x,y) around which the object is "
-#| "mirrored\n"
-#| "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
-#| "bounding box of another object selected below"
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -11723,12 +11691,13 @@ msgid ""
 "- Hole Snap-> a point defined by the center of a drill hone in a Excellon "
 "object"
 msgstr ""
-"As coordenadas usadas como referência para a operação de espelho.\n"
-"Pode ser:\n"
+"Coordenadas usadas como referência para a operação de espelho.\n"
+"Podem ser:\n"
 "- Ponto -> um conjunto de coordenadas (x, y) em torno do qual o objeto é "
 "espelhado\n"
 "- Caixa -> um conjunto de coordenadas (x, y) obtidas do centro da\n"
-"caixa delimitadora de outro objeto selecionado abaixo"
+"caixa delimitadora de outro objeto selecionado abaixo\n"
+"- Hole Snap-> um ponto definido pelo centro de um furo em um objeto Excellon"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:27
 msgid "Calculators Tool Options"
@@ -11933,25 +11902,22 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:240
 #: appTools/ToolCutOut.py:2337
 msgid "Big cursor"
-msgstr ""
+msgstr "Cursor grande"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:242
 #: appTools/ToolCutOut.py:2339
 msgid "Use a big cursor when adding manual gaps."
-msgstr ""
+msgstr "Usar um cursor grande ao adicionar lacunas manualmente."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Film Tool Options"
 msgid "Drilling Tool Options"
-msgstr "Opções da Ferramenta de Filme"
+msgstr "Opções da Ferramenta de Perfuração"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:33
 #: appTools/ToolDrilling.py:2006 appTools/ToolMilling.py:1611
-#, fuzzy
-#| msgid "Create Geometry for milling holes."
 msgid "Create CNCJob with toolpaths for drilling or milling holes."
-msgstr "Cria geometria para furação."
+msgstr ""
+"Cria Trabalho CNC com caminhos de ferramenta para fazer furos ou fresar."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:41
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:54
@@ -12028,16 +11994,12 @@ msgstr ""
 "a saída G-Code."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:239
-#, fuzzy
-#| msgid "Mill Slots"
 msgid "Drilling Slots"
-msgstr "Fresa Ranhuras"
+msgstr ""
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:278
-#, fuzzy
-#| msgid "A list of Excellon Editor parameters."
 msgid "A list of advanced parameters."
-msgstr "Parâmetros do Editor Excellon."
+msgstr "Lista de parâmetros avançados."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:296
 msgid "Toolchange X,Y"
@@ -12296,6 +12258,7 @@ msgstr "Uma seleção de tamanhos de página padrão ISO 216."
 #: appTools/ToolFilm.py:1351
 msgid "Default value is 96 DPI. Change this value to scale the PNG file."
 msgstr ""
+"O valor padrão é 96 DPI. Altere este valor para dimensionar o arquivo PNG."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:26
 msgid "Isolation Tool Options"
@@ -12415,7 +12378,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:350
 #: appTools/ToolIsolation.py:3320 appTools/ToolNCC.py:4358
 msgid "Check validity"
-msgstr ""
+msgstr "Validar"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:352
@@ -12424,6 +12387,8 @@ msgid ""
 "If checked then the tools diameters are verified\n"
 "if they will provide a complete isolation."
 msgstr ""
+"Se marcado, será verificado se os diâmetros das ferramentas\n"
+"irão fornecer uma isolação completa."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:287
 #: appTools/ToolIsolation.py:3370
@@ -12708,6 +12673,10 @@ msgid ""
 "any two overlapping Line elements in the panel\n"
 "and will remove the overlapping parts, keeping only one of them."
 msgstr ""
+"Ativo apenas para o tipo de painel Geometria.\n"
+"Quando marcada, a aplicação encontrará\n"
+"quaisquer dois elementos de linha sobrepostos no painel\n"
+"e irá remover as partes sobrepostas, mantendo apenas uma delas."
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:120
 msgid "Constrain within"
