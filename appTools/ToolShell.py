@@ -74,6 +74,9 @@ class TermWidget(QWidget):
 
         self._delete_line.clicked.connect(self.on_delete_line_clicked)
 
+    def command_line(self):
+        return self._edit
+
     def on_delete_line_clicked(self):
         self._edit.clear()
 
