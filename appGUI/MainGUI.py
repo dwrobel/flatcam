@@ -625,7 +625,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## GEOMETRY EDITOR # ###########################
         # ########################################################################
-        self.geo_editor_menu = QtWidgets.QMenu(">Geo Editor<")
+        self.geo_editor_menu = QtWidgets.QMenu('>%s<' % _('Geo Editor'))
         self.menu.addMenu(self.geo_editor_menu)
 
         self.geo_add_circle_menuitem = self.geo_editor_menu.addAction(
@@ -700,7 +700,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## EXCELLON Editor # ###########################
         # ########################################################################
-        self.exc_editor_menu = QtWidgets.QMenu(_(">Excellon Editor<"))
+        self.exc_editor_menu = QtWidgets.QMenu('>%s<' % _('Excellon Editor'))
         self.menu.addMenu(self.exc_editor_menu)
 
         self.exc_add_array_drill_menuitem = self.exc_editor_menu.addAction(
@@ -739,7 +739,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## GERBER Editor # #############################
         # ########################################################################
-        self.grb_editor_menu = QtWidgets.QMenu(_(">Gerber Editor<"))
+        self.grb_editor_menu = QtWidgets.QMenu('>%s<' % _('Gerber Editor'))
         self.menu.addMenu(self.grb_editor_menu)
 
         self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
