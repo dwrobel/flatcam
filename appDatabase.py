@@ -271,7 +271,7 @@ class ToolsDB2UI:
 
         self.tool_op_combo = FCComboBox()
         self.tool_op_combo.addItems(
-            [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _("Cutout")])
+            [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _('Cutout')])
         self.tool_op_combo.setObjectName('gdb_tool_target')
 
         self.grid_tool.addWidget(self.tool_op_label, 8, 0)
@@ -1393,13 +1393,12 @@ class ToolsDB2(QtWidgets.QWidget):
 
     mark_tools_rows = QtCore.pyqtSignal()
 
-    def __init__(self, app, callback_on_edited, callback_on_tool_request, parent=None):
+    def __init__(self, app, callback_on_tool_request, parent=None):
         super(ToolsDB2, self).__init__(parent)
 
         self.app = app
         self.app_ui = self.app.ui
         self.decimals = self.app.decimals
-        self.callback_app = callback_on_edited
 
         self.on_tool_request = callback_on_tool_request
 
@@ -2028,7 +2027,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.ui.tree_widget.setCurrentItem(last_item)
             last_item.setSelected(True)
 
-        self.callback_app()
+        self.on_tools_db_edited()
         self.app.inform.emit('[success] %s' % _("Tool copied from Tools DB."))
 
     def on_tool_delete(self):
@@ -2169,7 +2168,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Drilling'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_drill'):
+                                if str(k).startswith('tools_drill') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2177,7 +2176,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Isolation'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_iso'):
+                                if str(k).startswith('tools_iso') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2185,7 +2184,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Paint'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_paint'):
+                                if str(k).startswith('tools_paint') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2193,7 +2192,15 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('NCC'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_ncc'):
+                                if str(k).startswith('tools_ncc') or str(k).startswith('tools_mill'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Cutout'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_cutout') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2354,10 +2361,23 @@ class ToolsDB2(QtWidgets.QWidget):
             if wdg is None:
                 return
 
+            if isinstance(wdg, FCButton) or isinstance(wdg, QtWidgets.QAction):
+                # this is called when adding a new tool; no need to run the update below since that section is for
+                # when editing a tool
+                self.on_tools_db_edited()
+                return
+
             wdg_name = wdg.objectName()
             val = wdg.get_value()
-        except AttributeError:
+        except AttributeError as err:
+            self.app.log.debug("ToolsDB2.update_storage() -> %s" % str(err))
             return
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # ################ EDITING PARAMETERS IN A TOOL SECTION
+        # #############################################################################################################
+        # #############################################################################################################
 
         # #############################################################################################################
         # this might change in the future; it makes sense to change values at once for all tools
@@ -2522,7 +2542,7 @@ class ToolsDB2(QtWidgets.QWidget):
             elif wdg_name == "gdb_ct_mb_spacing":
                 self.db_tool_dict[tool_id]['data']['tools_cutout_mb_spacing'] = val
 
-        self.callback_app()
+        self.on_tools_db_edited()
 
     def on_tool_requested_from_app(self):
         if not self.ui.tree_widget.selectedItems():
@@ -2540,6 +2560,25 @@ class ToolsDB2(QtWidgets.QWidget):
                 if str(key) == str(tool_uid):
                     selected_tool = self.db_tool_dict[key]
                     self.on_tool_request(tool=selected_tool)
+
+    def on_tools_db_edited(self, silent=None):
+        """
+        Executed whenever a tool is edited in Tools Database.
+        Will color the text of the Tools Database tab to Red color.
+
+        :return:
+        """
+
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
+        self.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
+
+        self.tools_db_changed_flag = True
+        if silent is None:
+            msg = '[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved.")
+            self.app.inform[str, bool].emit(msg, False)
 
     def on_cancel_tool(self):
         for idx in range(self.app_ui.plot_tab_area.count()):

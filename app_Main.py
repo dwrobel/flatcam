@@ -1984,7 +1984,7 @@ class App(QtCore.QObject):
 
         self.drilling_tool = ToolDrilling(self)
         self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), pos=self.ui.menutool,
-                                    before=self.sub_tool.menuAction, separator=True)
+                                   before=self.sub_tool.menuAction, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
@@ -3595,10 +3595,10 @@ class App(QtCore.QObject):
             root_path = winreg.HKEY_CURRENT_USER
 
         # create the keys
-        def set_reg(name, root_pth, new_reg_path, value):
+        def set_reg(name, root_pth, new_reg_path_par, value):
             try:
-                winreg.CreateKey(root_pth, new_reg_path)
-                with winreg.OpenKey(root_pth, new_reg_path, 0, winreg.KEY_WRITE) as registry_key:
+                winreg.CreateKey(root_pth, new_reg_path_par)
+                with winreg.OpenKey(root_pth, new_reg_path_par, 0, winreg.KEY_WRITE) as registry_key:
                     winreg.SetValueEx(registry_key, name, 0, winreg.REG_SZ, value)
                 return True
             except WindowsError:
@@ -3736,7 +3736,7 @@ class App(QtCore.QObject):
             self.autocomplete_kw_list = \
                 self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
-            self.shell._edit.set_model_data(self.myKeywords)
+            self.shell.command_line().set_model_data(self.myKeywords)
 
     def del_extension(self, ext_type):
         """
@@ -3794,7 +3794,7 @@ class App(QtCore.QObject):
             self.autocomplete_kw_list = \
                 self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
-            self.shell._edit.set_model_data(self.myKeywords)
+            self.shell.command_line().set_model_data(self.myKeywords)
 
     def restore_extensions(self, ext_type):
         """
@@ -3824,7 +3824,7 @@ class App(QtCore.QObject):
             # update the self.myKeywords so the model is updated
             self.autocomplete_kw_list = self.default_keywords
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
-            self.shell._edit.set_model_data(self.myKeywords)
+            self.shell.commnad_line().set_model_data(self.myKeywords)
 
     def delete_all_extensions(self, ext_type):
         """
@@ -3845,7 +3845,7 @@ class App(QtCore.QObject):
 
             # update the self.myKeywords so the model is updated
             self.myKeywords = self.tcl_commands_list + self.tcl_keywords
-            self.shell._edit.set_model_data(self.myKeywords)
+            self.shell.command_line().set_model_data(self.myKeywords)
 
     def on_edit_join(self, name=None):
         """
@@ -4193,7 +4193,7 @@ class App(QtCore.QObject):
             'tools_drill_cutz', 'tools_drill_depthperpass', 'tools_drill_travelz', 'tools_drill_endz',
             'tools_drill_endxy', 'tools_drill_feedrate_z', 'tools_drill_toolchangez', "tools_drill_drill_overlap",
             'tools_drill_offset', "tools_drill_toolchangexy", "tools_drill_startz", 'tools_drill_feedrate_rapid',
-             "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
+            "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
             
             # NCC Tool
             "tools_ncc_tools", "tools_ncc_margin", "tools_ncc_offset_value", "tools_ncc_cutz", "tools_ncc_tipdia",
@@ -5057,13 +5057,13 @@ class App(QtCore.QObject):
         """
         self.defaults.report_usage("on_copy_command()")
 
-        def initialize(obj_init, app):
+        def initialize(obj_init, app_obj):
             """
 
             :param obj_init:    the new object
             :type obj_init:     class
-            :param app:         An instance of the App class
-            :type app:          App
+            :param app_obj:     An instance of the App class
+            :type app_obj:      App
             :return:            None
             :rtype:
             """
@@ -5083,14 +5083,14 @@ class App(QtCore.QObject):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as err:
-                log.debug("App.on_copy_command() --> %s" % str(err))
+                app_obj.debug("App.on_copy_command() --> %s" % str(err))
 
             try:
                 obj_init.source_file = deepcopy(obj.source_file)
             except (AttributeError, TypeError):
                 pass
 
-        def initialize_excellon(obj_init, app):
+        def initialize_excellon(obj_init, app_obj):
             obj_init.source_file = deepcopy(obj.source_file)
 
             obj_init.tools = deepcopy(obj.tools)
@@ -5100,6 +5100,10 @@ class App(QtCore.QObject):
             # slots are offset, so they need to be deep copied
             obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
+
+            if not obj_init.tools:
+                app_obj.debug("on_copy_command() --> no excellon tools")
+                return 'fail'
 
         def initialize_script(obj_init, app_obj):
             obj_init.source_file = deepcopy(obj.source_file)
@@ -5126,7 +5130,7 @@ class App(QtCore.QObject):
 
     def on_copy_object2(self, custom_name):
 
-        def initialize_geometry(obj_init, app):
+        def initialize_geometry(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
@@ -5142,20 +5146,26 @@ class App(QtCore.QObject):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                log.debug("on_copy_object2() --> %s" % str(ee))
+                app_obj.debug("on_copy_object2() --> %s" % str(ee))
 
-        def initialize_gerber(obj_init, app):
+        def initialize_gerber(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.apertures = deepcopy(obj.apertures)
             obj_init.aperture_macros = deepcopy(obj.aperture_macros)
+            if not obj_init.apertures:
+                app_obj.debug("on_copy_object2() --> no gerber apertures")
+                return 'fail'
 
-        def initialize_excellon(obj_init, app):
+        def initialize_excellon(obj_init, app_obj):
             obj_init.tools = deepcopy(obj.tools)
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
             # slots are offset, so they need to be deep copied
             obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
+            if not obj_init.tools:
+                app_obj.debug("on_copy_object2() --> no excellon tools")
+                return 'fail'
 
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
@@ -5212,7 +5222,7 @@ class App(QtCore.QObject):
             except AttributeError:
                 pass
 
-        def initialize_excellon(obj_init, app):
+        def initialize_excellon(obj_init, app_obj):
             # objs = self.collection.get_selected()
             # GeometryObject.merge(objs, obj)
             solid_geo = []
@@ -5220,6 +5230,9 @@ class App(QtCore.QObject):
                 for geo in obj.tools[tool]['solid_geometry']:
                     solid_geo.append(geo)
             obj_init.solid_geometry = deepcopy(solid_geo)
+            if not obj_init.solid_geometry:
+                app_obj.log("convert_any2geo() failed")
+                return 'fail'
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2geo --> No object selected")
@@ -5245,7 +5258,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        def initialize_geometry(obj_init, app):
+        def initialize_geometry(obj_init, app_obj):
             apertures = {}
             apid = 0
 
@@ -5265,7 +5278,11 @@ class App(QtCore.QObject):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.apertures = deepcopy(apertures)
 
-        def initialize_excellon(obj_init, app):
+            if not obj_init.apertures:
+                app_obj.log("convert_any2gerber() failed")
+                return 'fail'
+
+        def initialize_excellon(obj_init, app_obj):
             apertures = {}
 
             apid = 10
@@ -5278,7 +5295,7 @@ class App(QtCore.QObject):
                     new_el['follow'] = geo.exterior
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
-                apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
+                apertures[str(apid)]['size'] = float(obj.tools[tool]['tooldia'])
                 apertures[str(apid)]['type'] = 'C'
                 apid += 1
 
@@ -5293,8 +5310,10 @@ class App(QtCore.QObject):
 
             obj_init.solid_geometry = deepcopy(solid_geometry)
             obj_init.apertures = deepcopy(apertures)
-            # clear the working objects (perhaps not necessary due of Python GC)
-            apertures.clear()
+
+            if not obj_init.apertures:
+                app_obj.log("convert_any2gerber() failed")
+                return 'fail'
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2gerber --> No object selected")
@@ -5324,7 +5343,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        def initialize_geometry(obj_init, app):
+        def initialize_geometry(obj_init, app_obj):
             tools = {}
             tooluid = 1
 
@@ -5347,9 +5366,9 @@ class App(QtCore.QObject):
                             current_tooldias.append(tools[tool]['tooldia'])
 
                 if new_dia in current_tooldias:
+                    digits = app_obj.decimals
                     for tool in tools:
-                        if float('%.*f' % (self.decimals, tools[tool]["tooldia"])) == float('%.*f' % (self.decimals,
-                                                                                            new_dia)):
+                        if app_obj.dec_format(tools[tool]["tooldia"], digits) == app_obj.dec_format(new_dia, digits):
                             tools[tool]['drills'].append(new_drill)
                             tools[tool]['solid_geometry'].append(deepcopy(new_drill_geo))
                 else:
@@ -5368,9 +5387,13 @@ class App(QtCore.QObject):
             obj_init.tools = deepcopy(tools)
             obj_init.solid_geometry = unary_union(obj_init.solid_geometry)
 
-        def initialize_gerber(obj_init, app):
+            if not obj_init.solid_geometry:
+                return 'fail'
+
+        def initialize_gerber(obj_init, app_obj):
             tools = {}
             tooluid = 1
+            digits = app_obj.decimals
 
             obj_init.solid_geometry = []
 
@@ -5391,13 +5414,13 @@ class App(QtCore.QObject):
                                     for tool in tools:
                                         if tools[tool] and 'tooldia' in tools[tool]:
                                             current_tooldias.append(
-                                                float('%.*f' % (self.decimals, tools[tool]['tooldia']))
+                                                app_obj.dec_format(tools[tool]['tooldia'], digits)
                                             )
 
-                                if float('%.*f' % (self.decimals, new_dia)) in current_tooldias:
+                                formatted_new_dia = app_obj.dec_format(new_dia, digits)
+                                if formatted_new_dia in current_tooldias:
                                     for tool in tools:
-                                        if float('%.*f' % (self.decimals, tools[tool]["tooldia"])) == float(
-                                                '%.*f' % (self.decimals, new_dia)):
+                                        if app_obj.dec_format(tools[tool]["tooldia"], digits) == formatted_new_dia:
                                             if new_drill not in tools[tool]['drills']:
                                                 tools[tool]['drills'].append(new_drill)
                                                 tools[tool]['solid_geometry'].append(deepcopy(new_drill_geo))
@@ -5459,6 +5482,9 @@ class App(QtCore.QObject):
 
             obj_init.tools = deepcopy(tools)
             obj_init.solid_geometry = unary_union(obj_init.solid_geometry)
+
+            if not obj_init.solid_geometry:
+                return 'fail'
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2excellon--> No object selected")
@@ -5622,35 +5648,30 @@ class App(QtCore.QObject):
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
             )
         elif source == 'ncc':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.ncclear_tool.on_ncc_tool_add_from_db_executed
             )
         elif source == 'paint':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.paint_tool.on_paint_tool_add_from_db_executed
             )
         elif source == 'iso':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.isolation_tool.on_iso_tool_add_from_db_executed
             )
         elif source == 'cutout':
             self.tools_db_tab = ToolsDB2(
                 app=self,
                 parent=self.ui,
-                callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.cutout_tool.on_cutout_tool_add_from_db_executed
             )
 
@@ -5675,23 +5696,6 @@ class App(QtCore.QObject):
 
         # detect changes in the Tools in Tools DB, connect signals from table widget in tab
         self.tools_db_tab.ui_connect()
-
-    def on_tools_db_edited(self):
-        """
-        Executed whenever a tool is edited in Tools Database.
-        Will color the text of the Tools Database tab to Red color.
-
-        :return:
-        """
-
-        self.inform[str, bool].emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."), False)
-
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
-                self.tools_db_tab.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
-
-        self.tools_db_changed_flag = True
 
     def on_geometry_tool_add_from_db_executed(self, tool):
         """
@@ -7787,8 +7791,9 @@ class App(QtCore.QObject):
             return
 
         if act_name == _("Opacity"):
-            # alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
-                # self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
+            # alpha_level, ok_button = QtWidgets.QInputDialog.getInt(self.ui, _("Set alpha level ..."),
+            #                                                        '%s:' % _("Value"),
+            #                                                        min=0, max=255, step=1, value=191)
 
             alpha_dialog = FCInputDialogSlider(
                 self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, init_val=191)
@@ -8319,7 +8324,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
-        date = self.app.date.replace(' ', '_')
+        date = date.replace(' ', '_')
 
         data = None
         if self.app.is_legacy is False:
@@ -9293,7 +9298,7 @@ class MenuFileHandlers(QtCore.QObject):
         except Exception:
             return 'fail'
 
-        with self.app.proc_container.new(_("Exporting SVG")) as proc:
+        with self.app.proc_container.new(_("Exporting SVG")):
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor)
 
             # Determine bounding area for svg export
@@ -9553,12 +9558,12 @@ class MenuFileHandlers(QtCore.QObject):
 
         if use_thread is True:
 
-            with self.app.proc_container.new(_("Exporting Excellon")) as proc:
+            with self.app.proc_container.new(_("Exporting Excellon")):
 
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
@@ -9687,12 +9692,12 @@ class MenuFileHandlers(QtCore.QObject):
                 return 'fail'
 
         if use_thread is True:
-            with self.app.proc_container.new(_("Exporting Gerber")) as proc:
+            with self.app.proc_container.new(_("Exporting Gerber")):
 
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
@@ -9754,7 +9759,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         if use_thread is True:
 
-            with self.app.proc_container.new(_("Exporting DXF")) as proc:
+            with self.app.proc_container.new(_("Exporting DXF")):
 
                 def job_thread_exc(app_obj):
                     ret_dxf_val = make_dxf()
@@ -9804,7 +9809,10 @@ class MenuFileHandlers(QtCore.QObject):
                 file_content = f.read()
             geo_obj.source_file = file_content
 
-        with self.app.proc_container.new(_("Importing SVG")) as proc:
+            # appGUI feedback
+            app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
+
+        with self.app.proc_container.new(_("Importing SVG")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -9817,9 +9825,6 @@ class MenuFileHandlers(QtCore.QObject):
 
             # Register recent file
             self.app.file_opened.emit("svg", filename)
-
-            # appGUI feedback
-            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def import_dxf(self, filename, geo_type='geometry', outname=None, plot=True):
         """
@@ -9859,6 +9864,9 @@ class MenuFileHandlers(QtCore.QObject):
                 file_content = f.read()
             geo_obj.source_file = file_content
 
+            # appGUI feedback
+            app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
+
         with self.app.proc_container.new(_("Importing DXF")):
 
             # Object name
@@ -9872,9 +9880,6 @@ class MenuFileHandlers(QtCore.QObject):
 
             # Register recent file
             self.app.file_opened.emit("dxf", filename)
-
-            # appGUI feedback
-            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_gerber(self, filename, outname=None, plot=True, from_tcl=False):
         """
@@ -10333,12 +10338,12 @@ class MenuFileHandlers(QtCore.QObject):
             def obj_init(obj_inst, app_inst):
                 try:
                     obj_inst.from_dict(obj)
-                except Exception as e:
-                    self.app.log('App.open_project() --> ' + str(e))
+                except Exception as erro:
+                    app_inst.log('MenuFileHandlers.open_project() --> ' + str(erro))
                     return 'fail'
 
-            self.app.log.debug("Recreating from opened project an %s object: %s" %
-                          (obj['kind'].capitalize(), obj['options']['name']))
+            self.app.log.debug(
+                "Recreating from opened project an %s object: %s" % (obj['kind'].capitalize(), obj['options']['name']))
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
@@ -10376,6 +10381,9 @@ class MenuFileHandlers(QtCore.QObject):
         """
         self.app.log.debug("save_project()")
         self.app.save_in_progress = True
+
+        if from_tcl:
+            log.debug("MenuFileHandlers.save_project() -> Project saved from TCL command.")
 
         with self.app.proc_container.new(_("Saving FlatCAM Project")):
             # Capture the latest changes
@@ -10452,13 +10460,12 @@ class MenuFileHandlers(QtCore.QObject):
             # t.start()
             self.app.start_delayed_quit(delay=500, filename=filename, should_quit=quit_action)
 
-    def save_source_file(self, obj_name, filename, use_thread=True):
+    def save_source_file(self, obj_name, filename):
         """
         Exports a FlatCAM Object to an Gerber/Excellon file.
 
         :param obj_name: the name of the FlatCAM object for which to save it's embedded source file
         :param filename: Path to the Gerber file to save to.
-        :param use_thread: if to be run in a separate thread
         :return:
         """
 
