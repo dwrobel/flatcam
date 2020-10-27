@@ -401,7 +401,6 @@ class AppObject(QtCore.QObject):
                 name=str(obj.options['name']), tx=_("created/selected"))
             )
 
-
         # ############################################################################################################
         # Set the colors for the objects that have geometry
         # ############################################################################################################
@@ -439,7 +438,7 @@ class AppObject(QtCore.QObject):
         # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object
         # #############################################################################################################
-        self.app.shell._edit.set_model_data(self.app.myKeywords)
+        self.app.shell.command_line().set_model_data(self.app.myKeywords)
 
         if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones
