@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-27 01:19+0200\n"
-"PO-Revision-Date: 2020-10-27 13:53-0300\n"
+"PO-Revision-Date: 2020-10-27 14:14-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -1584,7 +1584,7 @@ msgstr ""
 
 #: appDatabase.py:2534 appTools/ToolDrilling.py:907
 msgid "Tools DB empty."
-msgstr ""
+msgstr "BD Ferramentas vazio."
 
 #: appDatabase.py:2551
 msgid "Cancelled adding tool from DB."
@@ -1817,14 +1817,12 @@ msgstr ""
 "quando são usadas para perfuração."
 
 #: appEditors/AppExcEditor.py:3741
-#, fuzzy
-#| msgid "Total Slots"
 msgid "Convert Slots"
-msgstr "N° Ranhuras"
+msgstr "Converter Ranhuras"
 
 #: appEditors/AppExcEditor.py:3743
 msgid "Convert the slots in the selected tools to drills."
-msgstr ""
+msgstr "Converter as ranhuras (slots) nas ferramentas selecionadas em furos."
 
 #: appEditors/AppExcEditor.py:3753
 msgid "Add/Delete Tool"
@@ -2164,23 +2162,17 @@ msgstr "Especifique o número de ranhuras da matriz."
 
 #: appEditors/AppExcEditor.py:4198 appEditors/AppGeoEditor.py:3301
 #: appEditors/AppGerberEditor.py:2899 appEditors/appGCodeEditor.py:758
-#, fuzzy
-#| msgid "Exc Editor"
 msgid "Exit Editor"
-msgstr "Editor Exc"
+msgstr "Sair do Editor"
 
 #: appEditors/AppExcEditor.py:4201 appEditors/AppGeoEditor.py:3304
 #: appEditors/AppGerberEditor.py:2902 appEditors/appGCodeEditor.py:761
-#, fuzzy
-#| msgid "Exc Editor"
 msgid "Exit from Editor."
-msgstr "Editor Exc"
+msgstr "Sair do Editor."
 
 #: appEditors/AppGeoEditor.py:49
-#, fuzzy
-#| msgid "Area Selection"
 msgid "Buffer Selection"
-msgstr "Seleção de Área"
+msgstr "Seleção de Buffer"
 
 #: appEditors/AppGeoEditor.py:84
 msgid "Buffer distance:"
@@ -3871,7 +3863,7 @@ msgstr "Inclinação Y cancelada"
 
 #: appEditors/AppTextEditor.py:84
 msgid "Find"
-msgstr ""
+msgstr "Procurar"
 
 #: appEditors/AppTextEditor.py:86
 msgid "Will search and highlight in yellow the string in the Find box."
@@ -3914,10 +3906,8 @@ msgstr ""
 "serão substituídas pelo texto na caixa 'Substituir'."
 
 #: appEditors/AppTextEditor.py:120
-#, fuzzy
-#| msgid "Save changes"
 msgid "Save changes internally."
-msgstr "Salvar alterações"
+msgstr "Salvar alterações internamente."
 
 #: appEditors/AppTextEditor.py:127
 msgid "Open a OS standard Preview Print window."
@@ -3936,10 +3926,8 @@ msgid "Will save the text in the editor into a file."
 msgstr "Salvará o texto do editor em um arquivo."
 
 #: appEditors/AppTextEditor.py:149
-#, fuzzy
-#| msgid "Round"
 msgid "Run"
-msgstr "Redondo"
+msgstr "Executar"
 
 #: appEditors/AppTextEditor.py:150
 msgid "Will run the TCL commands found in the text file, one by one."
@@ -3972,22 +3960,16 @@ msgid "Code Editor"
 msgstr "Editor de Códigos"
 
 #: appEditors/appGCodeEditor.py:143 appEditors/appGCodeEditor.py:235
-#, fuzzy
-#| msgid "View GCode"
 msgid "All GCode"
-msgstr "Ver G-Code"
+msgstr "Tudo G-Code"
 
 #: appEditors/appGCodeEditor.py:149 appEditors/appGCodeEditor.py:241
-#, fuzzy
-#| msgid "Save GCode"
 msgid "Header GCode"
-msgstr "Salvar o G-Code"
+msgstr "Cabeçalho G-Code"
 
 #: appEditors/appGCodeEditor.py:155 appEditors/appGCodeEditor.py:247
-#, fuzzy
-#| msgid "Starting G-Code"
 msgid "Start GCode"
-msgstr "Iniciando o G-Code"
+msgstr "Iniciar G-Code"
 
 #: appEditors/appGCodeEditor.py:577 appObjects/FlatCAMCNCJob.py:2012
 #: appTools/ToolCalibration.py:447
@@ -3995,10 +3977,8 @@ msgid "Loaded Machine Code into Code Editor"
 msgstr "G-Code aberto no Editor de Códigos"
 
 #: appEditors/appGCodeEditor.py:667 appGUI/ObjectUI.py:1884
-#, fuzzy
-#| msgid "Code Editor"
 msgid "GCode Editor"
-msgstr "Editor de Códigos"
+msgstr "Editor de G-Code"
 
 #: appEditors/appGCodeEditor.py:692 appEditors/appGCodeEditor.py:703
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009 appGUI/ObjectUI.py:2019
@@ -4034,39 +4014,33 @@ msgstr "Ranhuras"
 
 #: appEditors/appGCodeEditor.py:712 appEditors/appGCodeEditor.py:734
 msgid "CNC Code Snippet"
-msgstr ""
+msgstr "Trecho de Código CNC"
 
 #: appEditors/appGCodeEditor.py:714 appEditors/appGCodeEditor.py:736
 msgid "Code snippet defined in Preferences."
-msgstr ""
+msgstr "Trecho de código definido em Preferências."
 
 #: appEditors/appGCodeEditor.py:720 appEditors/appGCodeEditor.py:742
-#, fuzzy
-#| msgid ""
-#| "Type here any G-Code commands you would\n"
-#| "like to add at the beginning of the G-Code file."
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to insert at the cursor location."
 msgstr ""
-"Digite aqui os comandos G-Code que você gostaria\n"
-"de adicionar ao início do arquivo G-Code gerado."
+"Digite aqui os comandos G-Code que você quer\n"
+"adicionar na posição do cursor."
 
 #: appEditors/appGCodeEditor.py:726 appEditors/appGCodeEditor.py:748
-#, fuzzy
-#| msgid "Insert QRCode"
 msgid "Insert Code"
-msgstr "Inserir QRCode"
+msgstr "Inserir Código"
 
 #: appEditors/appGCodeEditor.py:729 appEditors/appGCodeEditor.py:751
 msgid "Insert the code above at the cursor location."
-msgstr ""
+msgstr "Insere o código na posição do cursor."
 
 #: appGUI/GUIElements.py:533 appGUI/GUIElements.py:971
 #: appGUI/GUIElements.py:1307 appGUI/GUIElements.py:1663
 #: appGUI/GUIElements.py:1839 appGUI/GUIElements.py:3734
 msgid "Undo"
-msgstr ""
+msgstr "Desfazer"
 
 #: appGUI/GUIElements.py:533 appGUI/GUIElements.py:971
 #: appGUI/GUIElements.py:1307 appGUI/GUIElements.py:1663
@@ -4078,7 +4052,7 @@ msgstr "Ctrl+Z"
 #: appGUI/GUIElements.py:1314 appGUI/GUIElements.py:1670
 #: appGUI/GUIElements.py:1846 appGUI/GUIElements.py:3741
 msgid "Redo"
-msgstr ""
+msgstr "Refazer"
 
 #: appGUI/GUIElements.py:540 appGUI/GUIElements.py:978
 #: appGUI/GUIElements.py:1314 appGUI/GUIElements.py:1670
@@ -4123,7 +4097,7 @@ msgstr "Copiar"
 #: appGUI/GUIElements.py:1337 appGUI/GUIElements.py:1693
 #: appGUI/GUIElements.py:1869 appGUI/GUIElements.py:3764
 msgid "Paste"
-msgstr ""
+msgstr "Colar"
 
 #: appGUI/GUIElements.py:563 appGUI/GUIElements.py:1001
 #: appGUI/GUIElements.py:1337 appGUI/GUIElements.py:1693
@@ -4158,13 +4132,11 @@ msgstr "Ctrl+A"
 
 #: appGUI/GUIElements.py:1020 appGUI/GUIElements.py:1356
 msgid "Step Up"
-msgstr ""
+msgstr "Passo Acima"
 
 #: appGUI/GUIElements.py:1025 appGUI/GUIElements.py:1361
-#, fuzzy
-#| msgid "Down"
 msgid "Step Down"
-msgstr "Abaixo"
+msgstr "Passo Abaixo"
 
 #: appGUI/GUIElements.py:3469
 msgid ""
@@ -4211,46 +4183,36 @@ msgid "Ctrl+S"
 msgstr "Ctrl+S"
 
 #: appGUI/GUIElements.py:3547
-#, fuzzy
-#| msgid "Clear plot"
 msgid "Clear All"
-msgstr "Limpar gráfico"
+msgstr "Limpar Tudo"
 
 #: appGUI/GUIElements.py:3590 appTools/ToolShell.py:296
 msgid "Type >help< to get started"
 msgstr "Digite >help< para iniciar"
 
 #: appGUI/GUIElements.py:4053 appGUI/GUIElements.py:4070
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the Y axis."
-msgstr "Alternar o Eixo"
+msgstr "Desloca o Eixo Y."
 
 #: appGUI/GUIElements.py:4061
-#, fuzzy
-#| msgid "Move to Origin"
 msgid "Move to Origin."
-msgstr "Mover para Origem"
+msgstr "Mover para a Origem."
 
 #: appGUI/GUIElements.py:4078 appGUI/GUIElements.py:4086
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the X axis."
-msgstr "Alternar o Eixo"
+msgstr "Desloca o Eixo X."
 
 #: appGUI/GUIElements.py:4096 appGUI/GUIElements.py:4106
-#, fuzzy
-#| msgid "Toggle the axis"
 msgid "Jog the Z axis."
-msgstr "Alternar o Eixo"
+msgstr "Desloca o Eixo Z."
 
 #: appGUI/GUIElements.py:4132
 msgid "Zero the CNC X axes at current position."
-msgstr ""
+msgstr "Zera o eixo X CNC na posição atual."
 
 #: appGUI/GUIElements.py:4140
 msgid "Zero the CNC Y axes at current position."
-msgstr ""
+msgstr "Zera o eixo Y CNC na posição atual."
 
 #: appGUI/GUIElements.py:4145
 msgid "Z"
@@ -4258,19 +4220,19 @@ msgstr "Z"
 
 #: appGUI/GUIElements.py:4148
 msgid "Zero the CNC Z axes at current position."
-msgstr ""
+msgstr "Zera o eixo Z CNC na posição atual."
 
 #: appGUI/GUIElements.py:4152
 msgid "Do Home"
-msgstr ""
+msgstr "Vai para Casa"
 
 #: appGUI/GUIElements.py:4154
 msgid "Perform a homing cycle on all axis."
-msgstr ""
+msgstr "Executa um ciclo de voltar para casa em todos os eixos."
 
 #: appGUI/GUIElements.py:4162
 msgid "Zero all CNC axes at current position."
-msgstr ""
+msgstr "Zera todos os eixos CNC na posição atual."
 
 #: appGUI/GUIElements.py:4317 appGUI/GUIElements.py:4326
 msgid "Idle."
@@ -4337,7 +4299,7 @@ msgstr "Novo Projeto"
 
 #: appGUI/MainGUI.py:84 appGUI/MainGUI.py:4428
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+N"
 
 #: appGUI/MainGUI.py:86
 msgid "Will create a new, blank project"
@@ -4687,10 +4649,8 @@ msgid "Convert Any to Excellon"
 msgstr "Converter Qualquer para Excellon"
 
 #: appGUI/MainGUI.py:384
-#, fuzzy
-#| msgid "Align Objects"
 msgid "Join Objects"
-msgstr "Alinhar Objetos"
+msgstr "Unir Objetos"
 
 #: appGUI/MainGUI.py:387
 msgid "Join Geo/Gerber/Exc -> Geo"
@@ -4843,40 +4803,32 @@ msgid "View"
 msgstr "Ver"
 
 #: appGUI/MainGUI.py:497 appGUI/MainGUI.py:4473
-#, fuzzy
-#| msgid "Enable Dwell"
 msgid "Enable all"
-msgstr "Ativar Pausa"
+msgstr "Habilitar todos"
 
 #: appGUI/MainGUI.py:497 appGUI/MainGUI.py:4473
 msgid "Alt+1"
 msgstr "Alt+1"
 
 #: appGUI/MainGUI.py:500 appGUI/MainGUI.py:4474
-#, fuzzy
-#| msgid "Disable all Plots"
 msgid "Disable all"
-msgstr "Desabilitar todos os Gráficos"
+msgstr "Desabilitar todos"
 
 #: appGUI/MainGUI.py:500 appGUI/MainGUI.py:4474
 msgid "Alt+2"
 msgstr "Alt+2"
 
 #: appGUI/MainGUI.py:503
-#, fuzzy
-#| msgid "Disable non-selected\tAlt+3"
 msgid "Enable non-selected"
-msgstr "Desabilitar os não selecionados\tAlt+3"
+msgstr "Habilita os não selecionados"
 
 #: appGUI/MainGUI.py:503 appGUI/MainGUI.py:4475
 msgid "Alt+3"
 msgstr "Alt+3"
 
 #: appGUI/MainGUI.py:506
-#, fuzzy
-#| msgid "Disable non-selected\tAlt+3"
 msgid "Disable non-selected"
-msgstr "Desabilitar os não selecionados\tAlt+3"
+msgstr "Desabilita os não selecionados"
 
 #: appGUI/MainGUI.py:506 appGUI/MainGUI.py:4476
 msgid "Alt+4"
@@ -5355,26 +5307,20 @@ msgid "Gerber Editor Toolbar"
 msgstr "Barra de Ferramentas Editor Gerber"
 
 #: appGUI/MainGUI.py:939 appGUI/MainGUI.py:1999
-#, fuzzy
-#| msgid "Coordinates copied to clipboard."
 msgid "Delta Coordinates Toolbar"
-msgstr "Coordenadas copiadas para a área de transferência."
+msgstr "Barra de Coordenadas Delta"
 
 #: appGUI/MainGUI.py:942 appGUI/MainGUI.py:2007
-#, fuzzy
-#| msgid "Coordinates"
 msgid "Coordinates Toolbar"
-msgstr "Coordenadas"
+msgstr "Barra de Coordenadas"
 
 #: appGUI/MainGUI.py:945 appGUI/MainGUI.py:2015
 msgid "Grid Toolbar"
 msgstr "Barra de Ferramentas Grade"
 
 #: appGUI/MainGUI.py:954 appGUI/MainGUI.py:2023
-#, fuzzy
-#| msgid "Edit Toolbar"
 msgid "Status Toolbar"
-msgstr "Barra de Ferramentas Editar"
+msgstr "Barra de Status"
 
 #: appGUI/MainGUI.py:971 appGUI/MainGUI.py:2129
 msgid "Open project"
@@ -5449,10 +5395,8 @@ msgstr "Ferramenta de Isolação"
 #: appGUI/MainGUI.py:1051 appGUI/MainGUI.py:2207 appGUI/ObjectUI.py:721
 #: appTools/ToolDrilling.py:245 appTools/ToolDrilling.py:1979
 #: appTools/ToolMilling.py:169
-#, fuzzy
-#| msgid "Drilling"
 msgid "Drilling Tool"
-msgstr "Perfuração"
+msgstr "Ferramentas de Perfuração"
 
 #: appGUI/MainGUI.py:1055 appGUI/MainGUI.py:2211
 msgid "Panel Tool"
@@ -6225,16 +6169,12 @@ msgid "Panelize PCB"
 msgstr "Criar Painel com PCB"
 
 #: appGUI/MainGUI.py:4475
-#, fuzzy
-#| msgid "Disable Non-selected Plots"
 msgid "Enable Non-selected Objects"
-msgstr "Desabilitar os gráficos não selecionados"
+msgstr "Habilitar os objetos não selecionados"
 
 #: appGUI/MainGUI.py:4476
-#, fuzzy
-#| msgid "Disable Non-selected Plots"
 msgid "Disable Non-selected Objects"
-msgstr "Desabilitar os gráficos não selecionados"
+msgstr "Desabilitar os objetos não selecionados"
 
 #: appGUI/MainGUI.py:4477
 msgid "Toggle Full Screen"
@@ -6592,30 +6532,24 @@ msgid "Plot (show) this object."
 msgstr "Mostra o objeto no gráfico."
 
 #: appGUI/ObjectUI.py:244
-#, fuzzy
-#| msgid "Gerber Object"
 msgid "Edit an Gerber object."
-msgstr "Objeto Gerber"
+msgstr "Editar um Objeto Gerber."
 
 #: appGUI/ObjectUI.py:255 appGUI/ObjectUI.py:594 appGUI/ObjectUI.py:916
 #: appGUI/ObjectUI.py:1899
 msgid "PROPERTIES"
-msgstr ""
+msgstr "PROPRIEDADES"
 
 #: appGUI/ObjectUI.py:257 appGUI/ObjectUI.py:596 appGUI/ObjectUI.py:918
 #: appGUI/ObjectUI.py:1901
-#, fuzzy
-#| msgid "Properties"
 msgid "Show the Properties."
-msgstr "Propriedades"
+msgstr "Mostra as Propriedades."
 
 #: appGUI/ObjectUI.py:291 appGUI/ObjectUI.py:629
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:50
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:54
-#, fuzzy
-#| msgid "Toggle the display of axis on canvas"
 msgid "Toggle the display of the Tools Table."
-msgstr "Alternar a exibição do eixo na tela"
+msgstr "Alternar a exibição da Tabela de Ferramentas"
 
 #: appGUI/ObjectUI.py:300
 msgid "Mark All"
@@ -6683,10 +6617,8 @@ msgid "UTILTIES"
 msgstr "Utilitários"
 
 #: appGUI/ObjectUI.py:409 appGUI/ObjectUI.py:758
-#, fuzzy
-#| msgid "Properties"
 msgid "Show the Utilties."
-msgstr "Propriedades"
+msgstr ""
 
 #: appGUI/ObjectUI.py:433 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32
 msgid "Non-copper regions"
