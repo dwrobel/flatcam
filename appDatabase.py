@@ -2066,12 +2066,13 @@ class ToolsDB2(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Tools Database"),
-                                                           directory='{l_save}/FlatCAM_{n}_{date}'.format(
-                                                                l_save=str(self.app.get_last_save_folder()),
-                                                                n=_("Tools_Database"),
-                                                                date=date),
-                                                           ext_filter=filter__)
+
+        filename, _f = FCFileSaveDialog.get_saved_filename(
+            caption=_("Export Tools Database"),
+            directory='{l_save}/FlatCAM_{n}_{date}'.format(l_save=str(self.app.get_last_save_folder()),
+                                                           n=_("Tools_Database"),
+                                                           date=date),
+            ext_filter=filter__)
 
         filename = str(filename)
 

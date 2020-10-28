@@ -232,7 +232,9 @@ class Film(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 ext_filter=filter_ext)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export positive film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export positive film"),
+                ext_filter=filter_ext)
 
         filename = str(filename)
 
@@ -378,7 +380,9 @@ class Film(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 ext_filter=filter_ext)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export negative film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export negative film"),
+                ext_filter=filter_ext)
 
         filename = str(filename)
 

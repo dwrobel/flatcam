@@ -1060,7 +1060,8 @@ class SolderPaste(AppTool):
             )
         except TypeError:
             filename, _f = FCFileSaveDialog.get_saved_filename(
-                caption=_("Export Code ..."), ext_filter=_filter_)
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))

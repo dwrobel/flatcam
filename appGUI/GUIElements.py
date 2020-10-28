@@ -2131,7 +2131,10 @@ class FCComboBox(QtWidgets.QComboBox):
 
     def set_value(self, val):
         idx = self.findText(str(val))
-        self.setCurrentIndex(idx)
+        if idx == -1:
+            self.setCurrentIndex(0)
+        else:
+            self.setCurrentIndex(idx)
 
     @property
     def is_last(self):

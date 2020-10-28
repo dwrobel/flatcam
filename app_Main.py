@@ -2593,7 +2593,9 @@ class App(QtCore.QObject):
                 ext_filter=filter__
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), ext_filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save to file"),
+                ext_filter=filter__)
 
         filename = str(filename)
 
@@ -6866,8 +6868,9 @@ class App(QtCore.QObject):
                         ext_filter=_filter_
                     )
                 except TypeError:
-                    filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."),
-                                                                       ext_filter=_filter_)
+                    filename, _f = FCFileSaveDialog.get_saved_filename(
+                        caption=_("Export Code ..."),
+                        ext_filter=_filter_)
 
                 filename = filename.rpartition('/')[0]
 
@@ -8315,7 +8318,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export SVG"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -8351,7 +8356,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/png_' + date,
                 ext_filter=filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), ext_filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export PNG Image"),
+                ext_filter=filter_)
 
         filename = str(filename)
 
@@ -8395,7 +8402,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Gerber source file"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -8435,7 +8444,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Script source file"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -8475,8 +8486,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"),
-                                                               ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Document source file"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -8557,7 +8569,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Excellon"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -8600,7 +8614,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Gerber"),
+                ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -8659,7 +8675,9 @@ class MenuFileHandlers(QtCore.QObject):
                 directory=self.app.get_last_save_folder() + '/' + name,
                 ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export DXF"),
+                ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -9048,7 +9066,9 @@ class MenuFileHandlers(QtCore.QObject):
                 ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), ext_filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Project As ..."),
+                ext_filter=filter_)
 
         filename = str(filename)
 
@@ -9102,7 +9122,9 @@ class MenuFileHandlers(QtCore.QObject):
                 ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), ext_filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Object as PDF ..."),
+                ext_filter=filter_)
 
         filename = str(filename)
 

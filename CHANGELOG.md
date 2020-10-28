@@ -25,6 +25,7 @@ CHANGELOG for FlatCAM beta
 - fixed Tcl command Isolate to not print messages on message bar in case it is run headless
 - fixed Tcl command Copper Clear (NCC)
 - fixed Tcl command Paint
+- temporary fix for comboboxes not finding the the value in the items when setting themselves with a value by defaulting to the first item in the list
 
 27.10.2020
 
