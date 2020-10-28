@@ -4419,9 +4419,9 @@ class App(QtCore.QObject):
             if self.collection.get_active().kind == 'geometry':
                 # Tool add works for Geometry only if Advanced is True in Preferences
                 if self.defaults["global_app_level"] == 'a':
-                    tool_add_popup = FCInputDialog(title="New Tool ...",
-                                                   text='Enter a Tool Diameter:',
-                                                   min=0.0000, max=99.9999, decimals=4)
+                    tool_add_popup = FCInputSpinner(title='%s...' % _("New Tool"),
+                                                    text='%s:' % _('Enter a Tool Diameter'),
+                                                    min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
                     tool_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/letter_t_32.png'))
 
                     val, ok = tool_add_popup.get_value()
@@ -4448,7 +4448,10 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the Tools_Tab
         if notebook_widget_name == 'tool_tab':
-            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+            try:
+                tool_widget = self.ui.tool_scroll_area.widget().objectName()
+            except AttributeError:
+                return
 
             # and only if the tool is NCC Tool
             if tool_widget == self.ncclear_tool.toolName:
@@ -4462,6 +4465,10 @@ class App(QtCore.QObject):
             elif tool_widget == self.paste_tool.toolName:
                 self.paste_tool.on_add_tool_by_key()
 
+            # and only if the tool is Isolation Tool
+            elif tool_widget == self.isolation_tool.toolName:
+                self.isolation_tool.on_add_tool_by_key()
+
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description below.
     def on_delete_keypress(self):
@@ -4469,7 +4476,7 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the properties_tab and only if the object is Geometry
         if notebook_widget_name == 'properties_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.GeometryObject'>":
+            if self.collection.get_active().kind == 'geometry':
                 self.collection.get_active().on_tool_delete()
 
         # work only if the notebook tab on focus is the Tools_Tab

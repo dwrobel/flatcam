@@ -345,7 +345,9 @@ class FlatCAMDefaults:
         "geometry_polish": False,
         "geometry_polish_dia": 10.0,
         "geometry_polish_pressure": -1.0,
-        "geometry_polish_overlap": 1.0,
+        "geometry_polish_travelz": 2.0,
+        "geometry_polish_margin": 0.0,
+        "geometry_polish_overlap": 5,
         "geometry_polish_method": _("Standard"),
 
         # Geometry Editor

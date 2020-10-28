@@ -8,7 +8,7 @@
 from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
-    FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
+    FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, FCInputSpinner
 from app_Main import log
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
@@ -119,9 +119,9 @@ class SolderPaste(AppTool):
         AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
     def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup = FCInputSpinner(title='%s...' % _("New Tool"),
+                                        text='%s:' % _('Enter a Tool Diameter'),
+                                        min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()

@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel, NumericalEvalTupleEntry, \
-    NumericalEvalEntry
+    NumericalEvalEntry, FCComboBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -31,7 +31,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Advanced Options
         # ------------------------------
-        self.geo_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
+        self.geo_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.geo_label.setToolTip(
             _("A list of Geometry advanced parameters.\n"
               "Those parameters are available only for\n"
@@ -43,7 +43,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid1)
 
         # Toolchange X,Y
-        toolchange_xy_label = QtWidgets.QLabel('%s:' % _('Toolchange X-Y'))
+        toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
@@ -53,7 +53,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
 
         # Start move Z
-        startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
+        startzlabel = FCLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
             _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
@@ -64,7 +64,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.gstartz_entry, 2, 1)
 
         # Feedrate rapids
-        fr_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        fr_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         fr_rapid_label.setToolTip(
             _("Cutting speed in the XY plane\n"
               "(in units per minute).\n"
@@ -105,7 +105,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.e_cut_entry, 5, 1)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -120,7 +120,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.pdepth_entry, 6, 1)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
@@ -134,7 +134,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.feedrate_probe_entry, 7, 1)
 
         # Spindle direction
-        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle direction'))
+        spindle_dir_label = FCLabel('%s:' % _('Spindle direction'))
         spindle_dir_label.setToolTip(
             _("This sets the direction that the spindle is rotating.\n"
               "It can be either:\n"
@@ -158,7 +158,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.fplunge_cb, 9, 0, 1, 2)
 
         # Size of trace segment on X axis
-        segx_label = QtWidgets.QLabel('%s:' % _("Segment X size"))
+        segx_label = FCLabel('%s:' % _("Segment X size"))
         segx_label.setToolTip(
             _("The size of the trace segment on the X axis.\n"
               "Useful for auto-leveling.\n"
@@ -174,7 +174,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.segx_entry, 10, 1)
 
         # Size of trace segment on Y axis
-        segy_label = QtWidgets.QLabel('%s:' % _("Segment Y size"))
+        segy_label = FCLabel('%s:' % _("Segment Y size"))
         segy_label.setToolTip(
             _("The size of the trace segment on the Y axis.\n"
               "Useful for auto-leveling.\n"
@@ -197,7 +197,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         # -----------------------------
         # --- Area Exclusion ----------
         # -----------------------------
-        self.area_exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Area Exclusion'))
+        self.area_exc_label = FCLabel('<b>%s:</b>' % _('Area Exclusion'))
         self.area_exc_label.setToolTip(
             _("Area exclusion parameters.")
         )
@@ -215,7 +215,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.exclusion_cb, 14, 0, 1, 2)
 
         # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -248,5 +248,102 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
 
         grid1.addWidget(self.over_z_label, 18, 0)
         grid1.addWidget(self.over_z_entry, 18, 1)
+        
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 20, 0, 1, 2)
+        
+        # -----------------------------
+        # --- Area POLISH ----------
+        # -----------------------------
+        # Add Polish
+        self.polish_cb = FCCheckBox(label=_('Add Polish'))
+        self.polish_cb.setToolTip(_(
+            "Will add a Paint section at the end of the GCode.\n"
+            "A metallic brush will clean the material after milling."))
+        grid1.addWidget(self.polish_cb, 22, 0, 1, 2)
+
+        # Polish Tool Diameter
+        self.polish_dia_lbl = FCLabel('%s:' % _('Tool Dia'))
+        self.polish_dia_lbl.setToolTip(
+            _("Diameter for the polishing tool.")
+        )
+        self.polish_dia_entry = FCDoubleSpinner()
+        self.polish_dia_entry.set_precision(self.decimals)
+        self.polish_dia_entry.set_range(0.000, 9999.9999)
+
+        grid1.addWidget(self.polish_dia_lbl, 24, 0)
+        grid1.addWidget(self.polish_dia_entry, 24, 1)
+
+        # Polish Travel Z
+        self.polish_travelz_lbl = FCLabel('%s:' % _('Travel Z'))
+        self.polish_travelz_lbl.setToolTip(
+            _("Height of the tool when\n"
+              "moving without cutting.")
+        )
+        self.polish_travelz_entry = FCDoubleSpinner()
+        self.polish_travelz_entry.set_precision(self.decimals)
+        self.polish_travelz_entry.set_range(0.00000, 10000.00000)
+        self.polish_travelz_entry.setSingleStep(0.1)
+
+        grid1.addWidget(self.polish_travelz_lbl, 26, 0)
+        grid1.addWidget(self.polish_travelz_entry, 26, 1)
+
+        # Polish Pressure
+        self.polish_pressure_lbl = FCLabel('%s:' % _('Pressure'))
+        self.polish_pressure_lbl.setToolTip(
+            _("Negative value. The higher the absolute value\n"
+              "the stronger the pressure of the brush on the material.")
+        )
+        self.polish_pressure_entry = FCDoubleSpinner()
+        self.polish_pressure_entry.set_precision(self.decimals)
+        self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
+
+        grid1.addWidget(self.polish_pressure_lbl, 28, 0)
+        grid1.addWidget(self.polish_pressure_entry, 28, 1)
+
+        # Polish Margin
+        self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
+        self.polish_margin_lbl.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.polish_margin_entry = FCDoubleSpinner()
+        self.polish_margin_entry.set_precision(self.decimals)
+        self.polish_margin_entry.set_range(-9999.9999, 9999.9999)
+
+        grid1.addWidget(self.polish_margin_lbl, 30, 0)
+        grid1.addWidget(self.polish_margin_entry, 30, 1)
+
+        # Polish Overlap
+        self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
+        self.polish_over_lbl.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.")
+        )
+        self.polish_over_entry = FCDoubleSpinner(suffix='%')
+        self.polish_over_entry.set_precision(self.decimals)
+        self.polish_over_entry.setWrapping(True)
+        self.polish_over_entry.set_range(0.0000, 99.9999)
+        self.polish_over_entry.setSingleStep(0.1)
+
+        grid1.addWidget(self.polish_over_lbl, 32, 0)
+        grid1.addWidget(self.polish_over_entry, 32, 1)
+
+        # Polish Method
+        self.polish_method_lbl = FCLabel('%s:' % _('Method'))
+        self.polish_method_lbl.setToolTip(
+            _("Algorithm for polishing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
+        )
+
+        self.polish_method_combo = FCComboBox()
+        self.polish_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
+
+        grid1.addWidget(self.polish_method_lbl, 34, 0)
+        grid1.addWidget(self.polish_method_combo, 34, 1)
 
         self.layout.addStretch()

@@ -282,6 +282,14 @@ class PreferencesUIManager:
             "geometry_area_shape":      self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
             "geometry_area_strategy":   self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
             "geometry_area_overz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
+            # Polish
+            "geometry_polish":          self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_cb,
+            "geometry_polish_dia":      self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_dia_entry,
+            "geometry_polish_pressure": self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_pressure_entry,
+            "geometry_polish_travelz":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_travelz_entry,
+            "geometry_polish_margin":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_margin_entry,
+            "geometry_polish_overlap":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_over_entry,
+            "geometry_polish_method":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_method_combo,
 
             # Geometry Editor
             "geometry_editor_sel_limit":        self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
