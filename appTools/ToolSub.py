@@ -205,7 +205,7 @@ class ToolSub(AppTool):
 
             app_obj.inform.emit("%s" % _("Subtraction aperture processing finished."))
 
-            outname = self.target_gerber_combo.currentText() + '_sub'
+            outname = self.ui.target_gerber_combo.currentText() + '_sub'
             self.aperture_processing_finished.emit(outname, output)
 
         self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
