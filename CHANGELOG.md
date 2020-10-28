@@ -21,6 +21,10 @@ CHANGELOG for FlatCAM beta
 - added a new string to the translatable strings
 - fixed an error that sometime showed in Legacy Mode when moving the mouse outside canvas
 - reactivated the shortcut key 'S' in TCL Shell, to close the shell dock when it was open (of course the focus has to be not on the command line)
+- brought up-to-date and fixed the Tcl Command Drillcncjob and Cncjob
+- fixed Tcl command Isolate to not print messages on message bar in case it is run headless
+- fixed Tcl command Copper Clear (NCC)
+- fixed Tcl command Paint
 
 27.10.2020
 

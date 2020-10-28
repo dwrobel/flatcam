@@ -2836,10 +2836,10 @@ class NonCopperClear(AppTool, Gerber):
             # Generate area for each tool
             offset_a = sum(sorted_tools)
             current_uid = int(1)
-            try:
-                tool = eval(self.app.defaults["tools_ncc_tools"])[0]
-            except TypeError:
-                tool = eval(self.app.defaults["tools_ncc_tools"])
+            # try:
+            #     tool = eval(self.app.defaults["tools_ncc_tools"])[0]
+            # except TypeError:
+            #     tool = eval(self.app.defaults["tools_ncc_tools"])
 
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
@@ -2854,6 +2854,8 @@ class NonCopperClear(AppTool, Gerber):
                     sol_geo = ncc_obj.solid_geometry.buffer(0)
                 else:
                     sol_geo = ncc_obj.solid_geometry
+                    if isinstance(sol_geo, list):
+                        sol_geo = unary_union(sol_geo)
 
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
