@@ -212,7 +212,7 @@ class GerberObject(FlatCAMObj, Gerber):
             self.apertures_row = 0
             aper_no = self.apertures_row + 1
             sort = []
-            for k, v in list(self.apertures.items()):
+            for k in list(self.apertures.keys()):
                 sort.append(int(k))
             sorted_apertures = sorted(sort)
 

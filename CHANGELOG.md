@@ -27,12 +27,14 @@ CHANGELOG for FlatCAM beta
 - fixed Tcl command Paint
 - temporary fix for comboboxes not finding the the value in the items when setting themselves with a value by defaulting to the first item in the list
 - fix in Tool Subtract where there was a typo
+- upgraded the punch Gerber Tool
+- updated the Turkish translation strings (by Mehmet Kaya)
 
 27.10.2020
 
 - created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
 - minor fix in ToolsDB2UI
-- updated the Turkuish translation strings (by Mehmet Kaya)
+- updated the Turkish translation strings (by Mehmet Kaya)
 - fixed a bug in conversion of any to Gerber in the section of Excellon conversion
 - some PEP8 fixes
 - fixed a bug due of recent chagnes in FileMenuHandlers class
