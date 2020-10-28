@@ -33,6 +33,7 @@ CHANGELOG for FlatCAM beta
 - fixed Paint, Isolation and NCC Tools such the translated comboboxes values are now stored as indexes instead of translated words as before
 - in Geometry Object made sure that the widgets in the Tool Table gets populated regardless of encountering non-recognizable translated values
 - in Paint Tool found a small bug and fixed it
+- fixed the Tool Subtractor algorithms
 
 27.10.2020
 

@@ -87,8 +87,8 @@ class ToolSub(AppTool):
         self.results = []
 
         # Signals
-        self.ui.intersect_btn.clicked.connect(self.on_grb_intersection_click)
-        self.ui.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
+        self.ui.intersect_btn.clicked.connect(self.on_subtract_gerber_click)
+        self.ui.intersect_geo_btn.clicked.connect(self.on_subtract_geo_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # Custom Signals
@@ -134,7 +134,7 @@ class ToolSub(AppTool):
         self.ui.tools_frame.show()
         self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 
-    def on_grb_intersection_click(self):
+    def on_subtract_gerber_click(self):
         # reset previous values
         self.new_apertures.clear()
         self.new_solid_geometry = []
@@ -142,6 +142,9 @@ class ToolSub(AppTool):
 
         self.sub_type = "gerber"
 
+        # --------------------------------
+        # Get TARGET name
+        # --------------------------------
         self.target_grb_obj_name = self.ui.target_gerber_combo.currentText()
         if self.target_grb_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Target object loaded."))
@@ -149,28 +152,38 @@ class ToolSub(AppTool):
 
         self.app.inform.emit('%s' % _("Loading geometry from Gerber objects."))
 
-        # Get target object.
+        # --------------------------------
+        # Get TARGET object.
+        # --------------------------------
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
+            log.debug("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
+        # --------------------------------
+        # Get SUBTRACTOR name
+        # --------------------------------
         self.sub_grb_obj_name = self.ui.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Subtractor object loaded."))
             return
 
-        # Get substractor object.
+        # --------------------------------
+        # Get SUBTRACTOR object.
+        # --------------------------------
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
+            log.debug("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
-        # crate the new_apertures dict structure
+        # --------------------------------
+        # crate the new_apertures
+        # dict structure from TARGET apertures
+        # --------------------------------
         for apid in self.target_grb_obj.apertures:
             self.new_apertures[apid] = {}
             for key in self.target_grb_obj.apertures[apid]:
@@ -180,35 +193,39 @@ class ToolSub(AppTool):
                     self.new_apertures[apid][key] = self.target_grb_obj.apertures[apid][key]
 
         def worker_job(app_obj):
-            for apid in self.target_grb_obj.apertures:
-                target_geo = self.target_grb_obj.apertures[apid]['geometry']
+            # SUBTRACTOR geometry (always the same)
+            sub_geometry = {}
+            sub_geometry['solid'] = []
+            sub_geometry['clear'] = []
+            # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
+            for s_apid in app_obj.sub_grb_obj.apertures:
+                for s_el in app_obj.sub_grb_obj.apertures[s_apid]['geometry']:
+                    if "solid" in s_el:
+                        sub_geometry['solid'].append(s_el["solid"])
+                    if "clear" in s_el:
+                        sub_geometry['clear'].append(s_el["clear"])
 
-                sub_geometry = {}
-                sub_geometry['solid'] = []
-                sub_geometry['clear'] = []
-                for s_apid in self.sub_grb_obj.apertures:
-                    for s_el in self.sub_grb_obj.apertures[s_apid]['geometry']:
-                        if "solid" in s_el:
-                            sub_geometry['solid'].append(s_el["solid"])
-                        if "clear" in s_el:
-                            sub_geometry['clear'].append(s_el["clear"])
+            for apid in app_obj.target_grb_obj.apertures:
+                # TARGET geometry
+                target_geo = [geo for geo in app_obj.target_grb_obj.apertures[apid]['geometry']]
 
-                self.results.append(
-                    self.pool.apply_async(self.aperture_intersection, args=(apid, target_geo, sub_geometry))
+                # send the job to the multiprocessing JOB
+                app_obj.results.append(
+                    app_obj.pool.apply_async(app_obj.aperture_intersection, args=(apid, target_geo, sub_geometry))
                 )
 
             output = []
-            for p in self.results:
+            for p in app_obj.results:
                 res = p.get()
                 output.append(res)
-                app_obj.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(res[0])))
+                app_obj.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(res[0])))
 
-            app_obj.inform.emit("%s" % _("Subtraction aperture processing finished."))
+            app_obj.app.inform.emit("%s" % _("Subtraction aperture processing finished."))
 
-            outname = self.ui.target_gerber_combo.currentText() + '_sub'
-            self.aperture_processing_finished.emit(outname, output)
+            outname = app_obj.ui.target_gerber_combo.currentText() + '_sub'
+            app_obj.aperture_processing_finished.emit(outname, output)
 
-        self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
 
     @staticmethod
     def aperture_intersection(apid, target_geo, sub_geometry):
@@ -227,33 +244,38 @@ class ToolSub(AppTool):
         unafected_geo = []
         affected_geo = []
 
-        is_modified = False
-        for geo_el in target_geo:
-            new_geo_el = {}
-            if "solid" in geo_el:
+        for target_geo_obj in target_geo:
+            solid_is_modified = False
+            destination_geo_obj = {}
+            if "solid" in target_geo_obj:
+                diff = []
                 for sub_solid_geo in sub_geometry["solid"]:
-                    if geo_el["solid"].intersects(sub_solid_geo):
-                        new_geo = geo_el["solid"].difference(sub_solid_geo)
+                    if target_geo_obj["solid"].intersects(sub_solid_geo):
+                        new_geo = target_geo_obj["solid"].difference(sub_solid_geo)
                         if not new_geo.is_empty:
-                            geo_el["solid"] = new_geo
-                            is_modified = True
+                            diff.append(new_geo)
+                            solid_is_modified = True
+                if solid_is_modified:
+                    target_geo_obj["solid"] = unary_union(diff)
+                destination_geo_obj["solid"] = deepcopy(target_geo_obj["solid"])
 
-                new_geo_el["solid"] = deepcopy(geo_el["solid"])
-
-            if "clear" in geo_el:
-                for sub_solid_geo in sub_geometry["clear"]:
-                    if geo_el["clear"].intersects(sub_solid_geo):
-                        new_geo = geo_el["clear"].difference(sub_solid_geo)
+            clear_is_modified = False
+            if "clear" in target_geo_obj:
+                clear_diff = []
+                for sub_clear_geo in sub_geometry["clear"]:
+                    if target_geo_obj["clear"].intersects(sub_clear_geo):
+                        new_geo = target_geo_obj["clear"].difference(sub_clear_geo)
                         if not new_geo.is_empty:
-                            geo_el["clear"] = new_geo
-                            is_modified = True
+                            clear_diff.append(new_geo)
+                            clear_is_modified = True
+                if clear_is_modified:
+                    target_geo_obj["clear"] = unary_union(clear_diff)
+                destination_geo_obj["clear"] = deepcopy(target_geo_obj["clear"])
 
-                new_geo_el["clear"] = deepcopy(geo_el["clear"])
-
-            if is_modified:
-                affected_geo.append(new_geo_el)
+            if solid_is_modified or clear_is_modified:
+                affected_geo.append(deepcopy(destination_geo_obj))
             else:
-                unafected_geo.append(geo_el)
+                unafected_geo.append(deepcopy(destination_geo_obj))
 
         return apid, unafected_geo, affected_geo
 
@@ -279,19 +301,24 @@ class ToolSub(AppTool):
                 grb_obj.apertures['0']['size'] = 0.0
                 grb_obj.apertures['0']['geometry'] = []
 
-            for apid, apid_val in list(grb_obj.apertures.items()):
+            for apid in list(grb_obj.apertures.keys()):
+                # output is a tuple in the format (apid, surviving_geo, modified_geo)
+                # apid is the aperture id (key in the obj.apertures and string)
+                # unaffected_geo and affected_geo are lists
                 for t in output:
                     new_apid = t[0]
                     if apid == new_apid:
                         surving_geo = t[1]
                         modified_geo = t[2]
                         if surving_geo:
-                            apid_val['geometry'] = deepcopy(surving_geo)
-                        else:
-                            grb_obj.apertures.pop(apid, None)
+                            grb_obj.apertures[apid]['geometry'] += deepcopy(surving_geo)
 
                         if modified_geo:
                             grb_obj.apertures['0']['geometry'] += modified_geo
+
+                # if the current aperture does not have geometry then get rid of it
+                if not grb_obj.apertures[apid]['geometry']:
+                    grb_obj.apertures.pop(apid, None)
 
             # delete the '0' aperture if it has no geometry
             if not grb_obj.apertures['0']['geometry']:
@@ -337,7 +364,7 @@ class ToolSub(AppTool):
             self.new_solid_geometry[:] = []
             self.results = []
 
-    def on_geo_intersection_click(self):
+    def on_subtract_geo_click(self):
         # reset previous values
         self.new_tools.clear()
         self.target_options.clear()
@@ -355,7 +382,7 @@ class ToolSub(AppTool):
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
+            log.debug("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_geo_obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -368,7 +395,7 @@ class ToolSub(AppTool):
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
+            log.debug("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.sub_geo_obj_name))
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
