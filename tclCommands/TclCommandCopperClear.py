@@ -123,20 +123,14 @@ class TclCommandCopperClear(TclCommand):
         if 'method' in args:
             method = args['method']
             if method == "standard":
-                method_data = _("Standard")
+                method_data = 0
             elif method == "seed":
-                method_data = _("Seed")
+                method_data = 1
             else:
-                method_data = _("Lines")
+                method_data = 2
         else:
             method = str(self.app.defaults["tools_ncc_method"])
             method_data = method
-            if method == _("Standard"):
-                method = "standard"
-            elif method == _("Seed"):
-                method = "seed"
-            else:
-                method = "lines"
 
         if 'connect' in args:
             try:
@@ -187,9 +181,9 @@ class TclCommandCopperClear(TclCommand):
 
         # used only to have correct information's in the obj.tools[tool]['data'] dict
         if "all" in args:
-            select = _("Itself")
+            select = 0  # 'ITSELF
         else:
-            select = _("Reference Object")
+            select = 2  # 'REFERENCE Object'
 
         # store here the default data for Geometry Data
         default_data = {}
@@ -258,7 +252,7 @@ class TclCommandCopperClear(TclCommand):
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args:
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
-                                                   select_method='itself',
+                                                   select_method=0, # ITSELF
                                                    ncctooldia=tooldia,
                                                    overlap=overlap,
                                                    order=order,
@@ -276,7 +270,7 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
-        if 'box' in args:
+        if 'box' in args:   # Reference Object
             box_name = args['box']
 
             # Get box source object.
@@ -289,7 +283,7 @@ class TclCommandCopperClear(TclCommand):
 
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
                                                    sel_obj=box_obj,
-                                                   select_method='box',
+                                                   select_method=2, # REFERENCE OBJECT
                                                    ncctooldia=tooldia,
                                                    overlap=overlap,
                                                    order=order,

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -225,7 +225,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
         # ], orientation='vertical', stretch=False)
-        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
@@ -304,7 +304,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #                                  {'label': _('Reference Object'), 'value': 'box'}],
         #                                 orientation='vertical',
         #                                 stretch=None)
-        self.select_combo = FCComboBox()
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
         )

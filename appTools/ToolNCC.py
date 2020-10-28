@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
-    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton
+    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton, FCComboBox2
 from appParsers.ParseGerber import Gerber
 
 from camlib import grace
@@ -815,9 +815,7 @@ class NonCopperClear(AppTool, Gerber):
         obj_type = self.ui.reference_combo_type.currentIndex()
         self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.reference_combo.setCurrentIndex(0)
-        self.ui.reference_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ui.reference_combo_type.get_value()]
+        self.ui.reference_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -1362,7 +1360,7 @@ class NonCopperClear(AppTool, Gerber):
         self.o_name = '%s_ncc' % self.obj_name
 
         self.select_method = self.ui.select_combo.get_value()
-        if self.select_method == _('Itself'):
+        if self.select_method == 0:   # Itself
             self.bound_obj_name = self.ui.object_combo.currentText()
             # Get source object.
             try:
@@ -1376,7 +1374,7 @@ class NonCopperClear(AppTool, Gerber):
                               isotooldia=self.iso_dia_list,
                               outname=self.o_name,
                               tools_storage=self.ncc_tools)
-        elif self.select_method == _("Area Selection"):
+        elif self.select_method == 1: # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.is_legacy is False:
@@ -1395,7 +1393,7 @@ class NonCopperClear(AppTool, Gerber):
             # disconnect flags
             self.area_sel_disconnect_flag = True
 
-        elif self.select_method == _("Reference Object"):
+        elif self.select_method == 2:   # Reference Object
             self.bound_obj_name = self.ui.reference_combo.currentText()
             # Get source object.
             try:
@@ -1976,7 +1974,7 @@ class NonCopperClear(AppTool, Gerber):
 
         cp = None
 
-        if ncc_method == _("Standard"):
+        if ncc_method == 0: # standard
             try:
                 cp = self.clear_polygon(pol, tooldia,
                                         steps_per_circle=self.circle_steps,
@@ -1987,7 +1985,7 @@ class NonCopperClear(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("NonCopperClear.clear_polygon_worker() Standard --> %s" % str(ee))
-        elif ncc_method == _("Seed"):
+        elif ncc_method == 1:   # seed
             try:
                 cp = self.clear_polygon2(pol, tooldia,
                                          steps_per_circle=self.circle_steps,
@@ -1998,7 +1996,7 @@ class NonCopperClear(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("NonCopperClear.clear_polygon_worker() Seed --> %s" % str(ee))
-        elif ncc_method == _("Lines"):
+        elif ncc_method == 2:   # Lines
             try:
                 cp = self.clear_polygon3(pol, tooldia,
                                          steps_per_circle=self.circle_steps,
@@ -2009,7 +2007,7 @@ class NonCopperClear(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("NonCopperClear.clear_polygon_worker() Lines --> %s" % str(ee))
-        elif ncc_method == _("Combo"):
+        elif ncc_method == 3:   # Combo
             try:
                 self.app.inform.emit(_("Clearing the polygon with the method: lines."))
                 cp = self.clear_polygon3(pol, tooldia,
@@ -2135,7 +2133,7 @@ class NonCopperClear(AppTool, Gerber):
 
             app_obj.poly_not_cleared = False    # flag for polygons not cleared
 
-            if ncc_select == _("Reference Object"):
+            if ncc_select == 2: # Reference Object
                 bbox_geo, bbox_kind = self.calculate_bounding_box(
                     ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
@@ -2263,11 +2261,11 @@ class NonCopperClear(AppTool, Gerber):
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
+                            formatted_tool = self.app.dec_format(tool, self.decimals)
                             # find the tooluid associated with the current tool_dia so we know where to add the tool
                             # solid_geometry
                             for k, v in tools_storage.items():
-                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
-                                                                                                    tool)):
+                                if self.app.dec_format(v['tooldia'], self.decimals) == formatted_tool:
                                     current_uid = int(k)
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary
@@ -2369,7 +2367,7 @@ class NonCopperClear(AppTool, Gerber):
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
 
-            if ncc_select == _("Reference Object"):
+            if ncc_select == 2: # Reference Object
                 env_obj, box_obj_kind = self.calculate_bounding_box(
                     ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
@@ -2720,7 +2718,7 @@ class NonCopperClear(AppTool, Gerber):
         self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
 
         try:
-            if sel_obj is None or sel_obj == _('Itself'):
+            if sel_obj is None or sel_obj == 0: # sel_obj == 'itself'
                 ncc_sel_obj = ncc_obj
             else:
                 ncc_sel_obj = sel_obj
@@ -2729,7 +2727,7 @@ class NonCopperClear(AppTool, Gerber):
             return 'fail'
 
         bounding_box = None
-        if ncc_select == _('Itself'):
+        if ncc_select == 0: # itself
             geo_n = ncc_sel_obj.solid_geometry
 
             try:
@@ -2748,7 +2746,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
 
-        elif ncc_select == 'area':
+        elif ncc_select == 1:   # area
             geo_n = unary_union(self.sel_rect)
             try:
                 __ = iter(geo_n)
@@ -2765,7 +2763,7 @@ class NonCopperClear(AppTool, Gerber):
 
             bounding_box = unary_union(geo_buff_list)
 
-        elif ncc_select == _("Reference Object"):
+        elif ncc_select == 2:   # Reference Object
             geo_n = ncc_sel_obj.solid_geometry
             if ncc_sel_obj.kind == 'geometry':
                 try:
@@ -3056,13 +3054,13 @@ class NonCopperClear(AppTool, Gerber):
                                 try:
                                     for pol in p:
                                         if pol is not None and isinstance(pol, Polygon):
-                                            if ncc_method == 'standard':
+                                            if ncc_method == 0:    # standard
                                                 cp = self.clear_polygon(pol, tool,
                                                                         self.circle_steps,
                                                                         overlap=overlap, contour=contour,
                                                                         connect=connect,
                                                                         prog_plot=False)
-                                            elif ncc_method == 'seed':
+                                            elif ncc_method == 1:  # seed
                                                 cp = self.clear_polygon2(pol, tool,
                                                                          self.circle_steps,
                                                                          overlap=overlap, contour=contour,
@@ -3085,11 +3083,11 @@ class NonCopperClear(AppTool, Gerber):
                                                         "It is: %s" % str(type(pol)))
                                 except TypeError:
                                     if isinstance(p, Polygon):
-                                        if ncc_method == 'standard':
+                                        if ncc_method == 0:    # standard
                                             cp = self.clear_polygon(p, tool, self.circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=False)
-                                        elif ncc_method == 'seed':
+                                        elif ncc_method == 1:   # seed
                                             cp = self.clear_polygon2(p, tool, self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
@@ -3452,12 +3450,12 @@ class NonCopperClear(AppTool, Gerber):
 
                                 if isinstance(p, Polygon):
                                     try:
-                                        if ncc_method == 'standard':
+                                        if ncc_method == 0: # standard
                                             cp = self.clear_polygon(p, tool_used,
                                                                     self.circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=False)
-                                        elif ncc_method == 'seed':
+                                        elif ncc_method == 1:   # seed
                                             cp = self.clear_polygon2(p, tool_used,
                                                                      self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
@@ -3481,13 +3479,13 @@ class NonCopperClear(AppTool, Gerber):
                                             QtWidgets.QApplication.processEvents()
 
                                             try:
-                                                if ncc_method == 'standard':
+                                                if ncc_method == 0: # 'standard'
                                                     cp = self.clear_polygon(poly_p, tool_used,
                                                                             self.circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=False)
-                                                elif ncc_method == 'seed':
+                                                elif ncc_method == 1:   # 'seed'
                                                     cp = self.clear_polygon2(poly_p, tool_used,
                                                                              self.circle_steps,
                                                                              overlap=overlap, contour=contour,
@@ -4138,7 +4136,7 @@ class NccUI:
         #     {"label": _("Straight lines"), "value": "lines"}
         # ], orientation='vertical', stretch=False)
 
-        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
@@ -4305,13 +4303,8 @@ class NccUI:
 
         self.rest_ois_ncc_offset = OptionalInputSection(self.rest_ncc_choice_offset_cb, [self.rest_ncc_offset_spinner])
 
-        # ## Reference
-        # self.select_radio = RadioSet([
-        #     {'label': _('Itself'), 'value': 'itself'},
-        #     {"label": _("Area Selection"), "value": "area"},
-        #     {'label': _("Reference Object"), 'value': 'box'}
-        # ], orientation='vertical', stretch=False)
-        self.select_combo = FCComboBox()
+        # Reference Selection Combo
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
         )
@@ -4335,7 +4328,7 @@ class NccUI:
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.reference_combo_type = FCComboBox()
+        self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
         form1.addRow(self.reference_combo_type_label, self.reference_combo_type)
@@ -4449,7 +4442,7 @@ class NccUI:
     def on_toggle_reference(self):
         sel_combo = self.select_combo.get_value()
 
-        if sel_combo == _("Itself"):
+        if sel_combo == 0:  # itself
             self.reference_combo.hide()
             self.reference_combo_label.hide()
             self.reference_combo_type.hide()
@@ -4459,7 +4452,7 @@ class NccUI:
 
             # disable rest-machining for area painting
             self.ncc_rest_cb.setDisabled(False)
-        elif sel_combo == _("Area Selection"):
+        elif sel_combo == 1:    # area selection
             self.reference_combo.hide()
             self.reference_combo_label.hide()
             self.reference_combo_type.hide()

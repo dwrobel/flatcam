@@ -2160,6 +2160,17 @@ class FCComboBox(QtWidgets.QComboBox):
             self.setCurrentIndex(first)
 
 
+class FCComboBox2(FCComboBox):
+    def __init__(self, parent=None, callback=None):
+        super(FCComboBox2, self).__init__(parent=parent, callback=callback)
+
+    def get_value(self):
+        return int(self.currentIndex())
+
+    def set_value(self, val):
+        self.setCurrentIndex(val)
+
+
 class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
                  init_val=None):

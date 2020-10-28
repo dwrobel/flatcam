@@ -1714,7 +1714,7 @@ class GeometryObjectUI(ObjectUI):
               "- Line-based: Parallel lines.")
         )
 
-        self.polish_method_combo = FCComboBox()
+        self.polish_method_combo = FCComboBox2()
         self.polish_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines")]
         )

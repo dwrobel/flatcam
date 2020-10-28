@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-28 10:57+0200\n"
-"PO-Revision-Date: 2020-10-28 10:57+0200\n"
+"PO-Revision-Date: 2020-10-28 21:42+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -400,7 +400,7 @@ msgstr ""
 "Forma uneltei.\n"
 "Poate fi:\n"
 "C1 ... C4 = unealtă circulară cu x dinti\n"
-"B = instrument de frezare cu vârf formal bila\n"
+"B = instrument de frezare cu vârf formal bilă\n"
 "V = instrument de frezare în formă V"
 
 #: appDatabase.py:306
@@ -623,7 +623,7 @@ msgstr ""
 
 #: appDatabase.py:513
 msgid "FR Rapids"
-msgstr "Feedrate rapizi"
+msgstr "Feedrate Rapid"
 
 #: appDatabase.py:515
 msgid ""
@@ -633,9 +633,9 @@ msgid ""
 "the G0 g-code command. Mostly 3D printers."
 msgstr ""
 "FR Rapid. Feedrate Rapids. Avans Rapid.\n"
-"Viteza folosită în timpul deplasarii pe cât mai repede posibil.\n"
-"Acesta este folosit doar de unele dispozitive in care nu poate fi utilizata\n"
-"comanda G-cod G0. În mare parte este vorda de imprimante 3D."
+"Viteza folosită în timpul deplasării cât mai repede posibil.\n"
+"Acesta este folosit doar de unele dispozitive in care nu poate fi utilizată\n"
+"comanda G-cod G0. În mare parte este vorba de imprimante 3D."
 
 #: appDatabase.py:534 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:186
 msgid "Spindle Speed"
@@ -1162,17 +1162,17 @@ msgid ""
 "So called 'Plunge' feedrate.\n"
 "This is for linear move G01."
 msgstr ""
-"Viteza uneltei când se face găuriea\n"
-"(in unitati pe minut).\n"
-"Asa numita viteza unealta tip \"plunge\".\n"
-"Aceasta este mișcarea lineara G01."
+"Viteza uneltei când se face găurirea\n"
+"(in unităti pe minut).\n"
+"Asa numita viteză unealtă tip \"plunge\".\n"
+"Aceasta este mișcarea lineară G01."
 
 #: appDatabase.py:1028 appGUI/ObjectUI.py:1297
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:317
 #: appTools/ToolDrilling.py:2227 appTools/ToolMilling.py:1892
 msgid "Feedrate Rapids"
-msgstr "Feedrate rapizi"
+msgstr "Feedrate Rapid"
 
 #: appDatabase.py:1030 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:319
 #: appTools/ToolDrilling.py:2229 appTools/ToolMilling.py:1894
@@ -1183,10 +1183,10 @@ msgid ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 msgstr ""
-"Viteza de găurire, in unitati pe minut.\n"
-"Corespunde comenzii G0 și este utila doar pentru\n"
+"Viteza de găurire, in unităti pe minut.\n"
+"Corespunde comenzii G0 și este utilă doar pentru\n"
 "printerul 3D Marlin, implicit când se foloseşte fişierul\n"
-"postprocesor: Marlin. Ignora aceasta parametru in rest."
+"postprocesor: Marlin. Ignoră acest parametru in rest."
 
 #: appDatabase.py:1051 appGUI/ObjectUI.py:1340
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:217
@@ -1204,8 +1204,8 @@ msgid ""
 msgstr ""
 "Viteza cu care se roteste motorul ('Spindle').\n"
 "In RPM (rotatii pe minut).\n"
-"Acest parametru este optional și se poate lasa gol\n"
-"daca nu se foloseşte."
+"Acest parametru este optional și se poate lăsa gol\n"
+"dacă nu se foloseşte."
 
 #: appDatabase.py:1098 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:243
 #: appTools/ToolDrilling.py:2304
@@ -1228,7 +1228,7 @@ msgstr ""
 #: appDatabase.py:1125 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:264
 #: appTools/ToolDrilling.py:2328
 msgid "Last drill"
-msgstr "Ultima gaura"
+msgstr "Ultima gaură"
 
 #: appDatabase.py:1127 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:266
 #: appTools/ToolDrilling.py:2330
@@ -1340,7 +1340,7 @@ msgstr "Distanța dintre găuri atunci când faceți Mouse Bites."
 #: appDatabase.py:1253 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
 #: appTools/ToolCutOut.py:2038
 msgid "Convex Shape"
-msgstr "Forma convexă"
+msgstr "Formă convexă"
 
 #: appDatabase.py:1256 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:235
 #: appTools/ToolCutOut.py:2040 appTools/ToolCutOut.py:2045
@@ -1349,8 +1349,8 @@ msgid ""
 "Used only if the source object type is Gerber."
 msgstr ""
 "Generează un obiect tip Geometrie care va inconjura\n"
-"tot PCB-ul. Forma sa este convexa.\n"
-"Se foloseste doar daca obiectul sursă este de tip Gerber."
+"tot PCB-ul. Forma sa este convexă.\n"
+"Se foloseste doar dacă obiectul sursă este de tip Gerber."
 
 #: appDatabase.py:1264 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:209
 #: appTools/ToolCutOut.py:2267
@@ -2112,7 +2112,7 @@ msgstr "Orar"
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:172
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:367
 msgid "CCW"
-msgstr "Antiorar"
+msgstr "AntiOrar"
 
 #: appEditors/AppExcEditor.py:3962 appEditors/AppExcEditor.py:4178
 #: appEditors/AppGerberEditor.py:2877
@@ -2371,7 +2371,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:3022 appEditors/AppGeoEditor.py:4400
 #: appEditors/AppGerberEditor.py:5781
 msgid "Cancelled. No shape selected."
-msgstr "Anulat. Nici-o forma geometrică nu este selectată."
+msgstr "Anulat. Nici-o formă geometrică nu este selectată."
 
 #: appEditors/AppGeoEditor.py:595 appEditors/AppGeoEditor.py:2984
 #: appEditors/AppGeoEditor.py:3012 appEditors/AppGeoEditor.py:3040
@@ -2730,7 +2730,7 @@ msgstr ""
 "Dacă este bifat, atunci bufferul va înconjura forma tamponată,\n"
 "fiecare colț va fi rotunjit.\n"
 "Dacă nu este bifat, bufferul va urma geometria exactă\n"
-"de forma tamponată."
+"a formei tamponată."
 
 #: appEditors/AppGeoEditor.py:930 appEditors/AppGerberEditor.py:5640
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:226
@@ -3272,7 +3272,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:4925 appEditors/AppGeoEditor.py:4978
 #: appEditors/AppGeoEditor.py:5028
 msgid "Nothing selected for buffering."
-msgstr "Nici-o forma geometrică nu este selectată pentru a face Bufer."
+msgstr "Nici-o formă geometrică nu este selectată pentru a face Bufer."
 
 #: appEditors/AppGeoEditor.py:4930 appEditors/AppGeoEditor.py:4982
 #: appEditors/AppGeoEditor.py:5033
@@ -3312,7 +3312,7 @@ msgstr ""
 
 #: appEditors/AppGeoEditor.py:5076
 msgid "Nothing selected for painting."
-msgstr "Nici-o forma geometrică nu este selectată pentru Paint."
+msgstr "Nici-o formă geometrică nu este selectată pentru Paint."
 
 #: appEditors/AppGeoEditor.py:5082
 msgid "Invalid value for"
@@ -5555,7 +5555,7 @@ msgstr "Adaugă Bufer"
 
 #: appGUI/MainGUI.py:1140 appGUI/MainGUI.py:2296
 msgid "Paint Shape"
-msgstr "Paint o forma"
+msgstr "Pictează o formă"
 
 #: appGUI/MainGUI.py:1148 appGUI/MainGUI.py:2304
 msgid "Polygon Explode"
@@ -5686,7 +5686,7 @@ msgstr "CNCJob"
 #: appGUI/MainGUI.py:1465 appGUI/ObjectUI.py:353 appGUI/ObjectUI.py:717
 #: appGUI/ObjectUI.py:1785
 msgid "TOOLS"
-msgstr "Unelte"
+msgstr "UNELTE"
 
 #: appGUI/MainGUI.py:1474
 msgid "TOOLS 2"
@@ -5863,9 +5863,9 @@ msgid ""
 "out of the first item. In the end press ~X~ key or\n"
 "the toolbar button."
 msgstr ""
-"Mai intai selectează o forma geometrică care trebuie tăiată\n"
+"Mai intai selectează o formă geometrică care trebuie tăiată\n"
 "apoi selectează forma geo. tăietoare. La final apasă tasta ~X~ sau\n"
-"butonul corespunzator din Toolbar."
+"butonul corespunzător din Toolbar."
 
 #: appGUI/MainGUI.py:2924 appGUI/MainGUI.py:3088 appGUI/MainGUI.py:3135
 #: appGUI/MainGUI.py:3157
@@ -5878,7 +5878,7 @@ msgid ""
 "on which to perform Intersection Tool."
 msgstr ""
 "Selectează forma geometrică asupra căreia să se\n"
-"aplice Unealta Intersecţie."
+"aplice Unealta de Intersecţie."
 
 #: appGUI/MainGUI.py:3130
 msgid ""
@@ -5886,7 +5886,7 @@ msgid ""
 "on which to perform Substraction Tool."
 msgstr ""
 "Selectează forma geometrică asupra căreia să se\n"
-"aplice Unealta Substracţie."
+"aplice Unealta de Substracţie."
 
 #: appGUI/MainGUI.py:3152
 msgid ""
@@ -5894,7 +5894,7 @@ msgid ""
 "on which to perform union."
 msgstr ""
 "Selectează forma geometrică asupra căreia să se\n"
-"aplice Unealta Uniune."
+"aplice Unealta de Uniune."
 
 #: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3452
 msgid "Cancelled. Nothing selected to delete."
@@ -6732,7 +6732,7 @@ msgid ""
 "Square shape."
 msgstr ""
 "Generează un obiect tip Geometrie care va inconjura\n"
-"obiectul Gerber. Forma patratica (rectangulara)."
+"obiectul Gerber. Formă pătratică (rectangulară)."
 
 #: appGUI/ObjectUI.py:488 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:81
 msgid ""
@@ -6749,7 +6749,7 @@ msgid ""
 "their radius is equal to\n"
 "the margin."
 msgstr ""
-"Daca forma înconjurătoare să aibă colțuri rotunjite.\n"
+"Dacă forma înconjurătoare să aibă colțuri rotunjite.\n"
 "Raza acesor colțuri va fi egală cu parametrul Margine."
 
 #: appGUI/ObjectUI.py:510
@@ -6778,9 +6778,9 @@ msgid ""
 "Here the tools are selected for G-code generation."
 msgstr ""
 "Acesta este numărul uneltei.\n"
-"Când se foloseşte optiunea de pauza pt schimb unealtă,\n"
-"la evenim. de schimb unealtă, va aparea sub forma T1, T2, etc\n"
-"in codul masina CNC.\n"
+"Când se foloseşte optiunea de pauză pt schimb unealtă,\n"
+"la evenim. de schimb unealtă, va apărea sub forma T1, T2, etc\n"
+"in codul masină CNC.\n"
 "Aici se selectează uneltele pt generarea de G-Code."
 
 #: appGUI/ObjectUI.py:676 appGUI/ObjectUI.py:1012 appTools/ToolDrilling.py:2072
@@ -6949,9 +6949,9 @@ msgid ""
 "will be showed as a T1, T2 ... Tn"
 msgstr ""
 "Acesta este numărul uneltei.\n"
-"Când se foloseşte optiunea de pauza pt schimb unealtă,\n"
+"Când se foloseşte optiunea de pauză pt schimb unealtă,\n"
 "la evenim. de schimb unealtă, va aparea sub forma T1, T2, etc\n"
-"in codul masina CNC"
+"in codul masină CNC"
 
 #: appGUI/ObjectUI.py:1017
 msgid ""
@@ -7019,7 +7019,7 @@ msgstr ""
 "afisati in UI, cat și din\n"
 "lăţimea de tăiere in material care este de fapt valoarea diametrului "
 "uneltei.\n"
-"Alegerea tipului V-Shape (forma in V) va selecta automat Tipul de Operaţie "
+"Alegerea tipului V-Shape (formă in V) va selecta automat Tipul de Operaţie "
 "ca Izolare."
 
 #: appGUI/ObjectUI.py:1045
@@ -7149,7 +7149,7 @@ msgstr "V-dia"
 msgid "The tip diameter for V-Shape Tool"
 msgstr ""
 "Diametrul la vârf al uneltei tip V-Shape.\n"
-"Forma in V"
+"Formă in V"
 
 #: appGUI/ObjectUI.py:1186 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:101
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:84
@@ -7215,8 +7215,8 @@ msgid ""
 "It is called also Plunge."
 msgstr ""
 "Viteza de tăiere in planul Z\n"
-"in unitati pe minut.\n"
-"Mai este numita și viteza de plonjare."
+"in unităti pe minut.\n"
+"Mai este numită și viteza de plonjare."
 
 #: appGUI/ObjectUI.py:1299
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:69
@@ -7227,10 +7227,10 @@ msgid ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 msgstr ""
-"Viteza de tăiere in planul X-Y, in unitati pe minut,\n"
-"in legatura cu comanda G00.\n"
-"Este utila doar când se foloseşte cu un printer 3D Marlin,\n"
-"pentru toate celelalte cazuri ignora acest parametru."
+"Viteza de tăiere in planul X-Y, in unităti pe minut,\n"
+"in legatură cu comanda G00.\n"
+"Este utilă doar când se foloseşte cu un printer 3D Marlin,\n"
+"pentru toate celelalte cazuri ignoră acest parametru."
 
 #: appGUI/ObjectUI.py:1317
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:85
@@ -7261,8 +7261,8 @@ msgid ""
 "this value is the power of laser."
 msgstr ""
 "Viteza motorului in RPM (optional).\n"
-"Daca postprocesorul Laser este folosit,\n"
-"valoarea să este puterea laserului."
+"Dacă postprocesorul Laser este folosit,\n"
+"valoarea sa este puterea laserului."
 
 #: appGUI/ObjectUI.py:1359
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:235
@@ -7288,7 +7288,7 @@ msgstr "Timpul (ori secunde ori milisec) cat se stă in pauză."
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:333
 #: appTools/ToolDrilling.py:2461 appTools/ToolMilling.py:2129
 msgid "Probe Z depth"
-msgstr "Z sonda"
+msgstr "Z sondă"
 
 #: appGUI/ObjectUI.py:1379 appGUI/ObjectUI.py:2167
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:133
@@ -7315,7 +7315,7 @@ msgstr "Feedrate sonda"
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:348
 #: appTools/ToolDrilling.py:2482 appTools/ToolMilling.py:2150
 msgid "The feedrate used while the probe is probing."
-msgstr "Viteza sondei când aceasta coboara."
+msgstr "Viteza sondei când aceasta coboară."
 
 #: appGUI/ObjectUI.py:1423 appTools/ToolDrilling.py:2364
 #: appTools/ToolIsolation.py:3280 appTools/ToolMilling.py:2042
@@ -7550,7 +7550,7 @@ msgstr "Adăugați o zonă de excludere."
 #: appTools/ToolMilling.py:2267 appTools/ToolNCC.py:4359
 #: appTools/ToolPaint.py:3165
 msgid "The kind of selection shape used for area selection."
-msgstr "Selectează forma de selectie folosita pentru selectia zonală."
+msgstr "Selectează forma de selectie folosită pentru selectia zonală."
 
 #: appGUI/ObjectUI.py:1616
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:32
@@ -7742,7 +7742,7 @@ msgstr ""
 "- 'Tipul' -> este doar informativ și poate fi: Grosier, Finisaj, Izolaţie\n"
 "- 'Tipul uneltei' -> poate fi circular cu 1 ... 4 dinti, tip bila sau V-"
 "Shape\n"
-"(cu forma in V)."
+"(cu formă in V)."
 
 #: appGUI/ObjectUI.py:2055
 msgid "Update Plot"
@@ -8594,7 +8594,7 @@ msgid ""
 "Advanced App. Level."
 msgstr ""
 "O lista de parametri Excellon avansati.\n"
-"Acesti parametri sunt disponibili doar\n"
+"Acești parametri sunt disponibili doar\n"
 "când este selectat Nivelul Avansat pentru\n"
 "aplicaţie in Preferințe - > General."
 
@@ -8706,8 +8706,8 @@ msgid ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Excellon menu entry."
 msgstr ""
-"Acesti parametri listati aici sunt folositi atunci când\n"
-"se exporta un fişier Excellon folosind:\n"
+"Acești parametri listați aici sunt folosiți atunci când\n"
+"se exporta un fişier Excellon:\n"
 "File -> Exporta -> Exporta Excellon."
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:41
@@ -8794,7 +8794,7 @@ msgid ""
 "Also it will have to be specified if LZ = leading zeros are kept\n"
 "or TZ = trailing zeros are kept."
 msgstr ""
-"Selectati tipul formatului de coordonate folosit.\n"
+"Selectați tipul formatului de coordonate folosit.\n"
 "Coordonatele se pot salva cu punct zecimal sau fără.\n"
 "Când nu se foloseşte punctul zecimal ca separator între\n"
 "partea intreaga și partea zecimala, este necesar să se\n"
@@ -9512,7 +9512,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:440
 msgid "Activity Icon"
-msgstr "Icon activitare"
+msgstr "Icon Activitate"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:442
 msgid "Select the GIF that show activity when FlatCAM is active."
@@ -9745,11 +9745,11 @@ msgid ""
 "After change, it will be applied at next App start."
 msgstr ""
 "Număarul de QThread-uri care sunt disponibile pt aplicatie.\n"
-"Un număr mai mare va permite terminarea operatiilor mai rapida\n"
+"Un număr mai mare va permite terminarea operatiilor mai rapidă\n"
 "dar in functie de cat de rapid este calculatorul, poate face ca aplicatia\n"
 "sa devina temporar blocată. Poate lua o valoare intre 2 si 16.\n"
 "Valoarea standard este 2.\n"
-"Dupa schimbarea valoarii, se va aplica la următoarea pornire a aplicatiei."
+"Dupa schimbarea valorii, se va aplica la următoarea pornire a aplicatiei."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:230
 msgid "Geo Tolerance"
@@ -10103,7 +10103,7 @@ msgid ""
 "Advanced App. Level."
 msgstr ""
 "O lista de parametri Geometrie avansati.\n"
-"Acesti parametri sunt disponibili doar\n"
+"Acești parametri sunt disponibili doar\n"
 "când este selectat Nivelul Avansat pentru\n"
 "aplicaţie in Preferințe - > General."
 
@@ -10136,7 +10136,7 @@ msgstr ""
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:137
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:358
 msgid "Spindle direction"
-msgstr "Directie rotatie Motor"
+msgstr "Direcție Motor"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:139
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:360
@@ -10166,13 +10166,13 @@ msgid ""
 msgstr ""
 "Prin bifarea de aici, mișcarea de la Înălţimea unde se face schimbarea "
 "uneltei\n"
-"pana la Înălţimea unde se face deplasarea între taieri, se va face cu "
+"pană la Înălţimea unde se face deplasarea între taieri, se va face cu "
 "comanda G0.\n"
-"Aceasta inseamna că se va folosi viteza maxima disponibila.\n"
+"Aceasta inseamnă că se va folosi viteza maximă disponibilă.\n"
 "\n"
-"ATENTIE: mișcarea aceasta pe verticala se face la coordonatele X, Y unde se "
-"schimba\n"
-"unealta. Daca aveti ceva plasat sub unealtă ceva se va strica."
+"ATENTIE: mișcarea aceasta pe verticală se face la coordonatele X, Y unde se "
+"schimbă\n"
+"unealta. Dacă aveti ceva plasat sub unealtă ceva se va strica."
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:161
 msgid "Segment X size"
@@ -10367,13 +10367,13 @@ msgid ""
 "Advanced App. Level."
 msgstr ""
 "O lista de parametri Gerber avansati.\n"
-"Acesti parametri sunt disponibili doar\n"
+"Acești parametri sunt disponibili doar\n"
 "când este selectat Nivelul Avansat pentru\n"
 "aplicaţie in Preferințe - > General."
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:43
 msgid "\"Follow\""
-msgstr "\"Urmareste\""
+msgstr "\"Urmăreste\""
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:64
 #: appObjects/FlatCAMGerber.py:370 appTools/ToolCopperThieving.py:578
@@ -10474,14 +10474,14 @@ msgstr "Dim. pentru noua apertură"
 
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:82
 msgid "New Aperture type"
-msgstr "Tip pt noua apaertura"
+msgstr "Tip nou Apertura"
 
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:84
 msgid ""
 "Type for the new aperture.\n"
 "Can be 'C', 'R' or 'O'."
 msgstr ""
-"Tipul noii aperture.\n"
+"Tipul noii aperturi.\n"
 "Poate fi „C”, „R” sau „O”."
 
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:106
@@ -10533,7 +10533,7 @@ msgid ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Gerber menu entry."
 msgstr ""
-"Acesti parametri listati aici sunt folositi atunci când\n"
+"Acești parametri listați aici sunt folositi atunci când\n"
 "se exporta un fişier Gerber folosind:\n"
 "File -> Exportă -> Exportă Gerber."
 
@@ -10670,7 +10670,7 @@ msgstr "Opțiuni Gerber"
 #: appGUI/preferences/gerber/GerberOptPrefGroupUI.py:61
 #: appGUI/preferences/gerber/GerberOptPrefGroupUI.py:92
 msgid "Rounded Geo"
-msgstr "Geo rotunjita"
+msgstr "Geo rotunjită"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:27
 msgid "Copper Thieving Tool Options"
@@ -10787,7 +10787,7 @@ msgid ""
 "- 'Minimal' - the bounding box will be the convex hull shape."
 msgstr ""
 "- „Dreptunghiular” - caseta de delimitare va avea o formă dreptunghiulară.\n"
-"- „Minimal” - caseta de delimitare va fi forma arie convexă."
+"- „Minimal” - caseta de delimitare va fi in formă de suprafată convexă."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:120
 #: appTools/ToolCopperThieving.py:1287
@@ -11804,12 +11804,12 @@ msgstr "Axe oglindire:"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:86
 #: appTools/ToolDblSided.py:695
 msgid "Box"
-msgstr "Forma"
+msgstr "Cutie"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:87
 #: appTools/ToolDblSided.py:696
 msgid "Hole Snap"
-msgstr "Gaură de referinta"
+msgstr "Gaură Ref."
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:90
 msgid "Axis Ref"
@@ -12162,7 +12162,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:380
 msgid "Fast Retract"
-msgstr "Retragere rapida"
+msgstr "Retragere Rapidă"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:382
 msgid ""
@@ -12176,12 +12176,12 @@ msgstr ""
 "Strategia de evacuare a găurii tocmai găurite.\n"
 "- când nu este bifat, burghiul va ieși din gaura cu viteza feedrate "
 "setată, \n"
-"G1, pana ajunge la nivelul zero, ulterior ridicându-se pana la Înălţimea de "
+"G1, pană ajunge la nivelul zero, ulterior ridicându-se pana la Înălţimea de "
 "deplasare\n"
-"cu viteza maxima G0\n"
-"- când este bifat, burghiul se va deplasa de la adâncimea de tăiere pana la "
+"cu viteza maximă G0\n"
+"- când este bifat, burghiul se va deplasa de la adâncimea de tăiere pană la "
 "adâncimea\n"
-"de deplasare cu viteza maxima G0, intr-o singură mișcare."
+"de deplasare cu viteza maximă G0, intr-o singură mișcare."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:27
 msgid "Film Tool Options"
@@ -12241,8 +12241,8 @@ msgid ""
 msgstr ""
 "Specifică o bordură de jur imprejurul obiectului.\n"
 "Doar pt filmele negative.\n"
-"Ajută dacă folosim in Obiect Forma aceluiasi obiect ca in Obiect Film.\n"
-"Va crea o bara solidă neagră in jurul printului efectiv permitand o\n"
+"Ajută dacă folosim in Obiect Formă aceluiasi obiect ca in Obiect Film.\n"
+"Va crea o bară solidă neagră in jurul printului efectiv permitand o\n"
 "delimitare exactă."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:90
@@ -12272,7 +12272,7 @@ msgid ""
 "types.\n"
 "This section provide the tools to compensate for the print distortions."
 msgstr ""
-"Unori imprimantele vor denatura forma de imprimare, în special tipurile "
+"Uneori imprimantele vor denatura forma de imprimare, în special tipurile "
 "Laser.\n"
 "Această secțiune oferă instrumentele pentru a compensa distorsiunile de "
 "tipărire."
@@ -12427,14 +12427,14 @@ msgid ""
 "- Circular"
 msgstr ""
 "Tipul de unealtă default:\n"
-"- 'Forma-V'\n"
+"- 'Formă-V'\n"
 "- Circular"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:77
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:60
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:67
 msgid "V-shape"
-msgstr "Forma-V"
+msgstr "Formă-V"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:103
 msgid ""
@@ -12974,7 +12974,7 @@ msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
 msgstr ""
-"Viteza de deplasare a uneltei când se misca in plan vertical (planul Z)."
+"Viteza de deplasare a uneltei când se miscă in plan vertical (planul Z)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:175
 #: appTools/ToolSolderPaste.py:1350
@@ -12986,7 +12986,7 @@ msgid ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
 msgstr ""
-"Viteza de deplasare la mișcarea pe verticala spre\n"
+"Viteza de deplasare la mișcarea pe vertical spre\n"
 "poziţia de dispensare (in planul Z)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:188
@@ -15082,8 +15082,8 @@ msgid ""
 "Useful when the PCB has a non-rectangular shape."
 msgstr ""
 "Decupează obiectul selectat.\n"
-"Forma decupajului poate avea orice forma.\n"
-"Folositor când PCB-ul are o forma neregulata."
+"Decupajul poate avea orice formă.\n"
+"Folositor când PCB-ul are o formă neregulată."
 
 #: appTools/ToolCutOut.py:2309
 msgid ""
@@ -15093,7 +15093,7 @@ msgid ""
 "the bounding box of the Object."
 msgstr ""
 "Decupează obiectul selectat.\n"
-"Forma decupajului este tot timpul dreptunghiulara.."
+"Forma decupajului este tot timpul dreptunghiulară."
 
 #: appTools/ToolCutOut.py:2330
 msgid ""
@@ -15119,7 +15119,7 @@ msgid ""
 "Select the source Gerber file in the top object combobox."
 msgstr ""
 "Daca obiectul care se decupează este un obiect Gerber,\n"
-"atunci mai intai crează un obiect Geometrie care il inconjoara\n"
+"atunci mai intai crează un obiect Geometrie care il inconjoară\n"
 "urmărindu-i forma.\n"
 "Selectează obiectul sursa Gerber in combobox-ul de mai sus,\n"
 "numit >Obiect<."
@@ -15240,7 +15240,7 @@ msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
 msgstr ""
-"Selectati pe suprafata de afisare obiectul(e)\n"
+"Selectați pe suprafata de afisare obiectul(e)\n"
 "pentru care se calculează valorile limitelor."
 
 #: appTools/ToolDblSided.py:569
@@ -17291,14 +17291,14 @@ msgid ""
 msgstr ""
 "Alege referinta pt panelizare:\n"
 "- Obiect = forma inconjurătoare a unui alt obiect\n"
-"- Forma inconjurătoare = forma inconjurătoare a obiectului care tb "
+"- Forma inconjurătoare = forma inconjurătoare a obiectului care trebuie "
 "panelizat\n"
 "\n"
-"Referinta este utila cand se face panelizarea pt mai mult de un obiect. "
+"Referinta este utilă cand se face panelizarea pt mai mult de un obiect. "
 "Spatierile\n"
-"(mai degraba ofsetări) vor fi aplicate avand ca referintă acest obiect de "
+"(mai degrabă ofsetări) vor fi aplicate avand ca referintă acest obiect de "
 "referintă,\n"
-"prin urmare mentinand obiectele paenlizate in sincronizare unul cu altul."
+"prin urmare mentinand obiectele panelizate in sincronizare unul cu altul."
 
 #: appTools/ToolPanelize.py:722
 msgid "Box Type"
@@ -18103,7 +18103,7 @@ msgid ""
 "Feedrate (speed) while moving up vertically\n"
 " to Dispense position (on Z plane)."
 msgstr ""
-"Viteza de deplasare la mișcarea pe verticala spre\n"
+"Viteza de deplasare la mișcarea pe verticală spre\n"
 "poziţia de dispensare (in planul Z)."
 
 #: appTools/ToolSolderPaste.py:1422
@@ -19136,7 +19136,7 @@ msgstr "Numele a fost copiat pe Clipboard ..."
 
 #: app_Main.py:6939 app_Main.py:6943
 msgid "Select an Gerber or Excellon file to view it's source file."
-msgstr "Selectati un obiect Gerber sau Excellon pentru a-i vedea codul sursa."
+msgstr "Selectați un obiect Gerber sau Excellon pentru a-i vedea codul sursa."
 
 #: app_Main.py:6946
 msgid "Viewing the source code of the selected object."

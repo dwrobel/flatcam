@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel, NumericalEvalTupleEntry, \
-    NumericalEvalEntry, FCComboBox
+    NumericalEvalEntry, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -338,7 +338,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "- Line-based: Parallel lines.")
         )
 
-        self.polish_method_combo = FCComboBox()
+        self.polish_method_combo = FCComboBox2()
         self.polish_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines")]
         )

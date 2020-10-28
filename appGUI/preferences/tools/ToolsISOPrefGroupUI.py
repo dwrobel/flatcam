@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -290,7 +290,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "- 'Polygon Selection' -> Isolate a selection of polygons.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
-        self.select_combo = FCComboBox()
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )

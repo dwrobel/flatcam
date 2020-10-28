@@ -8,8 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
+    FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton, FCComboBox2
 from appParsers.ParseGerber import Gerber
 from camlib import grace
 
@@ -813,14 +813,12 @@ class ToolIsolation(AppTool, Gerber):
         obj_type = self.ui.reference_combo_type.currentIndex()
         self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.reference_combo.setCurrentIndex(0)
-        self.ui.reference_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ui.reference_combo_type.get_value()]
+        self.ui.reference_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
 
     def on_toggle_reference(self):
         val = self.ui.select_combo.get_value()
 
-        if val == _("All"):
+        if val == 0:    # ALl
             self.ui.reference_combo.hide()
             self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
@@ -831,7 +829,7 @@ class ToolIsolation(AppTool, Gerber):
 
             # disable rest-machining for area painting
             self.ui.rest_cb.setDisabled(False)
-        elif val == _("Area Selection"):
+        elif val == 1:  # Area Selection
             self.ui.reference_combo.hide()
             self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
@@ -843,7 +841,7 @@ class ToolIsolation(AppTool, Gerber):
             # disable rest-machining for area isolation
             self.ui.rest_cb.set_value(False)
             self.ui.rest_cb.setDisabled(True)
-        elif val == _("Polygon Selection"):
+        elif val == 2:  # Polygon Selection
             self.ui.reference_combo.hide()
             self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
@@ -851,7 +849,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.area_shape_label.hide()
             self.ui.area_shape_radio.hide()
             self.ui.poly_int_cb.show()
-        else:
+        else:   # Reference Object
             self.ui.reference_combo.show()
             self.ui.reference_combo_label.show()
             self.ui.reference_combo_type.show()
@@ -1445,9 +1443,9 @@ class ToolIsolation(AppTool, Gerber):
         """
         selection = self.ui.select_combo.get_value()
 
-        if selection == _("All"):
+        if selection == 0:  # ALL
             self.isolate(isolated_obj=isolated_obj)
-        elif selection == _("Area Selection"):
+        elif selection == 1:    # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.is_legacy is False:
@@ -1466,7 +1464,7 @@ class ToolIsolation(AppTool, Gerber):
             # disconnect flags
             self.area_sel_disconnect_flag = True
 
-        elif selection == _("Polygon Selection"):
+        elif selection == 2:    # Polygon Selection
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
@@ -1487,7 +1485,7 @@ class ToolIsolation(AppTool, Gerber):
             # disconnect flags
             self.poly_sel_disconnect_flag = True
 
-        elif selection == _("Reference Object"):
+        elif selection == 3:    # Reference Object
             ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
             ref_geo = unary_union(ref_obj.solid_geometry)
             use_geo = unary_union(isolated_obj.solid_geometry).difference(ref_geo)
@@ -3388,7 +3386,7 @@ class IsoUI:
               "- 'Polygon Selection' -> Isolate a selection of polygons.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
-        self.select_combo = FCComboBox()
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
@@ -3402,7 +3400,7 @@ class IsoUI:
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.reference_combo_type = FCComboBox()
+        self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
         self.grid3.addWidget(self.reference_combo_type_label, 36, 0)
