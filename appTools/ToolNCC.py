@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
-    FCComboBox, OptionalInputSection, FCLabel
+    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton
 from appParsers.ParseGerber import Gerber
 
 from camlib import grace
@@ -451,20 +451,34 @@ class NonCopperClear(AppTool, Gerber):
         self.blockSignals(False)
 
     def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0001, max=9999.9999, decimals=self.decimals)
+        # tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+        #                                text='%s:' % _('Enter a Tool Diameter'),
+        #                                min=0.0001, max=9999.9999, decimals=self.decimals)
+        btn_icon = QtGui.QIcon(self.app.resource_location + '/open_excellon32.png')
+
+        tool_add_popup = FCInputDialogSpinnerButton(title='%s...' % _("New Tool"),
+                                                    text='%s:' % _('Enter a Tool Diameter'),
+                                                    min=0.0001, max=9999.9999, decimals=self.decimals,
+                                                    button_icon=btn_icon,
+                                                    callback=self.on_find_optimal_tooldia)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
-        val, ok = tool_add_popup.get_value()
+        def find_optimal(val):
+            tool_add_popup.set_value(float(val))
+
+        self.optimal_found_sig.connect(find_optimal)
+
+        val, ok = tool_add_popup.get_results()
         if ok:
             if float(val) == 0:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Please enter a tool diameter with non-zero value, in Float format."))
+                self.optimal_found_sig.disconnect(find_optimal)
                 return
             self.on_tool_add(custom_dia=float(val))
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+        self.optimal_found_sig.disconnect(find_optimal)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

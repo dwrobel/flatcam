@@ -1224,6 +1224,55 @@ class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_value(slider_value)
 
 
+class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=100, step=1, decimals=4, button_text='', button_icon=None, callback=None, **kwargs):
+        super().__init__(**kwargs)
+
+        self.button = QtWidgets.QToolButton()
+        if button_text != '':
+            self.button.setText(button_text)
+        if button_icon:
+            self.button.setIcon(button_icon)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_step(step)
+        self.spinner.set_precision(decimals)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.spinner)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
+        self.valueChanged = self.spinner.valueChanged
+
+        self._callback = callback
+        self.button.clicked.connect(self._callback)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def set_callback(self, callback):
+        self._callback = callback
+
+    def set_text(self, txt: str):
+        if txt:
+            self.button.setText(txt)
+
+    def set_icon(self, icon: QtGui.QIcon):
+        self.button.setIcon(icon)
+
+
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
@@ -2112,6 +2161,7 @@ class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
                  init_val=None):
         super(FCInputDialog, self).__init__(parent)
+
         self.allow_empty = ok
         self.empty_val = val
 
@@ -2149,6 +2199,70 @@ class FCInputDialog(QtWidgets.QInputDialog):
     # "Transform", "Enter the Angle value:"
     def set_value(self, val):
         pass
+
+
+class FCInputSpinner(QtWidgets.QDialog):
+    def __init__(self, parent=None, title=None, text=None, min=None, max=None, decimals=4, step=1, init_val=None):
+        super().__init__(parent)
+
+        self.val = 0.0
+        self.ok = ''
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min if min else 0
+        self.max = max if max else 255
+        self.step = step if step else 1
+
+        self.lbl = FCLabel(self.text)
+
+        self.wdg = FCDoubleSpinner()
+        self.wdg.set_value(self.init_value)
+        self.wdg.set_range(self.min, self.max)
+        self.wdg.set_step(self.step)
+        self.wdg.set_precision(decimals)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.wdg.setSizePolicy(sizePolicy)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_min(self, val):
+        self.wdg.spinner.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.spinner.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.spinner.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.spinner.set_step(val)
+
+    def get_value(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return [self.wdg.get_value(), True]
+        else:
+            return [None, False]
 
 
 class FCInputDialogSlider(QtWidgets.QDialog):
@@ -2201,6 +2315,70 @@ class FCInputDialogSlider(QtWidgets.QDialog):
 
     def set_step(self, val):
         self.wdg.spinner.set_step(val)
+
+    def get_results(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return self.wdg.get_value(), True
+        else:
+            return None, False
+
+
+class FCInputDialogSpinnerButton(QtWidgets.QDialog):
+
+    def __init__(self, parent=None, title=None, text=None, min=None, max=None, step=1, decimals=4, init_val=None,
+                 button_text='', button_icon=None, callback=None):
+        super().__init__(parent)
+
+        self.val = 0.0
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min if min else 0
+        self.max = max if max else 255
+        self.step = step if step else 1
+        self.decimals = decimals if decimals else 4
+
+        self.lbl = FCLabel(self.text)
+
+        self.wdg = FCButtonWithDoubleSpinner(min=self.min, max=self.max, step=self.step, decimals=decimals,
+                                             button_text=button_text, button_icon=button_icon, callback=callback)
+        self.wdg.set_value(self.init_value)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_min(self, val):
+        self.wdg.spinner.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.spinner.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.spinner.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.spinner.set_step(val)
+
+    def set_value(self, val):
+        self.wdg.spinner.set_value(val)
 
     def get_results(self):
         if self.exec_() == QtWidgets.QDialog.Accepted:

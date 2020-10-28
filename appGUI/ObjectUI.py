@@ -1122,13 +1122,6 @@ class GeometryObjectUI(ObjectUI):
         grid2 = QtWidgets.QGridLayout()
         self.geo_table_box.addLayout(grid2)
 
-        self.copytool_btn = QtWidgets.QPushButton(_('Copy'))
-        self.copytool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/copy16.png'))
-        self.copytool_btn.setToolTip(
-            _("Copy a selection of tools in the Tool Table\n"
-              "by first selecting a row in the Tool Table.")
-        )
-
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
@@ -1136,15 +1129,11 @@ class GeometryObjectUI(ObjectUI):
               "by first selecting a row in the Tool Table.")
         )
 
-        grid2.addWidget(self.copytool_btn, 0, 0)
-        grid2.addWidget(self.deltool_btn, 0, 1)
-
-        self.geo_table_box.addWidget(QtWidgets.QLabel(''))
+        grid2.addWidget(self.deltool_btn, 0, 0, 1, 2)
 
         # ###########################################################
         # ############# Create CNC Job ##############################
         # ###########################################################
-
         self.geo_param_frame = QtWidgets.QFrame()
         self.geo_param_frame.setContentsMargins(0, 0, 0, 0)
         self.geo_tools_box.addWidget(self.geo_param_frame)
@@ -1659,6 +1648,21 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.addWidget(self.polish_dia_lbl, 16, 0)
         self.grid4.addWidget(self.polish_dia_entry, 16, 1)
 
+        # Polish Travel Z
+        self.polish_travelz_lbl = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.polish_travelz_lbl.setToolTip(
+            _("Height of the tool when\n"
+              "moving without cutting.")
+        )
+        self.polish_travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_travelz_entry.set_precision(self.decimals)
+        self.polish_travelz_entry.set_range(0.00000, 10000.00000)
+        self.polish_travelz_entry.setSingleStep(0.1)
+        self.polish_travelz_entry.setObjectName("g_polish_travelz")
+
+        self.grid4.addWidget(self.polish_travelz_lbl, 17, 0)
+        self.grid4.addWidget(self.polish_travelz_entry, 17, 1)
+
         # Polish Pressure
         self.polish_pressure_lbl = QtWidgets.QLabel('%s:' % _('Pressure'))
         self.polish_pressure_lbl.setToolTip(
@@ -1670,8 +1674,21 @@ class GeometryObjectUI(ObjectUI):
         self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
         self.polish_pressure_entry.setObjectName("g_polish_pressure")
 
-        self.grid4.addWidget(self.polish_pressure_lbl, 17, 0)
-        self.grid4.addWidget(self.polish_pressure_entry, 17, 1)
+        self.grid4.addWidget(self.polish_pressure_lbl, 18, 0)
+        self.grid4.addWidget(self.polish_pressure_entry, 18, 1)
+
+        # Polish Margin
+        self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
+        self.polish_margin_lbl.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.polish_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_margin_entry.set_precision(self.decimals)
+        self.polish_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_margin_entry.setObjectName("g_polish_margin")
+
+        self.grid4.addWidget(self.polish_margin_lbl, 20, 0)
+        self.grid4.addWidget(self.polish_margin_entry, 20, 1)
 
         # Polish Overlap
         self.polish_over_lbl = QtWidgets.QLabel('%s:' % _('Overlap'))
@@ -1685,8 +1702,8 @@ class GeometryObjectUI(ObjectUI):
         self.polish_over_entry.setSingleStep(0.1)
         self.polish_over_entry.setObjectName("g_polish_overlap")
 
-        self.grid4.addWidget(self.polish_over_lbl, 18, 0)
-        self.grid4.addWidget(self.polish_over_entry, 18, 1)
+        self.grid4.addWidget(self.polish_over_lbl, 22, 0)
+        self.grid4.addWidget(self.polish_over_entry, 22, 1)
 
         # Polish Method
         self.polish_method_lbl = QtWidgets.QLabel('%s:' % _('Method'))
@@ -1703,13 +1720,17 @@ class GeometryObjectUI(ObjectUI):
         )
         self.polish_method_combo.setObjectName('g_polish_method')
 
-        self.grid4.addWidget(self.polish_method_lbl, 20, 0)
-        self.grid4.addWidget(self.polish_method_combo, 20, 1)
+        self.grid4.addWidget(self.polish_method_lbl, 24, 0)
+        self.grid4.addWidget(self.polish_method_combo, 24, 1)
 
         self.polish_dia_lbl.hide()
         self.polish_dia_entry.hide()
         self.polish_pressure_lbl.hide()
         self.polish_pressure_entry.hide()
+        self.polish_travelz_lbl.hide()
+        self.polish_travelz_entry.hide()
+        self.polish_margin_lbl.hide()
+        self.polish_margin_entry.hide()
         self.polish_over_lbl.hide()
         self.polish_over_entry.hide()
         self.polish_method_lbl.hide()
@@ -1722,6 +1743,10 @@ class GeometryObjectUI(ObjectUI):
                 self.polish_dia_entry,
                 self.polish_pressure_lbl,
                 self.polish_pressure_entry,
+                self.polish_travelz_lbl,
+                self.polish_travelz_entry,
+                self.polish_margin_lbl,
+                self.polish_margin_entry,
                 self.polish_over_lbl,
                 self.polish_over_entry,
                 self.polish_method_lbl,
@@ -1732,7 +1757,7 @@ class GeometryObjectUI(ObjectUI):
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid4.addWidget(separator_line2, 22, 0, 1, 2)
+        self.grid4.addWidget(separator_line2, 26, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -1750,9 +1775,9 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.generate_cnc_button, 24, 0, 1, 2)
+        self.grid4.addWidget(self.generate_cnc_button, 28, 0, 1, 2)
 
-        self.grid4.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
+        self.grid4.addWidget(QtWidgets.QLabel(''), 30, 0, 1, 2)
 
         # ##############
         # Paint area ##
@@ -1761,7 +1786,7 @@ class GeometryObjectUI(ObjectUI):
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
-        self.grid4.addWidget(self.tools_label, 28, 0, 1, 2)
+        self.grid4.addWidget(self.tools_label, 32, 0, 1, 2)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = QtWidgets.QPushButton(_('Milling Tool'))
@@ -1775,7 +1800,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.milling_button, 30, 0, 1, 2)
+        self.grid4.addWidget(self.milling_button, 34, 0, 1, 2)
         # FIXME: until the Milling Tool is ready, this get disabled
         self.milling_button.setDisabled(True)
 
@@ -1793,7 +1818,7 @@ class GeometryObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.grid4.addWidget(self.paint_tool_button, 32, 0, 1, 2)
+        self.grid4.addWidget(self.paint_tool_button, 36, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -1808,7 +1833,7 @@ class GeometryObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.grid4.addWidget(self.generate_ncc_button, 34, 0, 1, 2)
+        self.grid4.addWidget(self.generate_ncc_button, 38, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):

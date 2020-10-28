@@ -7,6 +7,17 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.10.2020
+
+- a series of PEP8 corrections in the FlatCAMGeometry.py
+- in Geometry UI finished a very basic way for the Polish feature (this will be upgraded in the future, for now is very rough)
+- added some new GUI elements by subclassing some widgets for the dialog pop-ups
+- in NCC Tool and Isolation Tool, pressing the shortcut key 'T' will bring the add new tool pop up in which now it is included the button to get the optimal diameter
+- in Geometry UI and for Solderpaste Tool replaced the pop up window that is launched when using shortcut key with one that has the context menu translated
+- some UI cleanup in the Geometry UI
+- updated the translation strings except Russian which could be in the works
+- fixed an error that did not allowed for the older preferences to be deleted when installing a different version of the software
+
 27.10.2020
 
 - created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
