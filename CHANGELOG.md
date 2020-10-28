@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry UI and for Solderpaste Tool replaced the pop up window that is launched when using shortcut key with one that has the context menu translated
 - some UI cleanup in the Geometry UI
 - updated the translation strings except Russian which could be in the works
+- fixed an error that did not allowed for the older preferences to be deleted when installing a different version of the software
 
 27.10.2020
 

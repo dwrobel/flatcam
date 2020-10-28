@@ -778,14 +778,14 @@ class FlatCAMDefaults:
             with open(file_path, "r") as file:
                 f_defaults = simplejson.loads(file.read())
 
-                # if the file is not empty
-                if f_defaults:
-                    # if it has the same version do nothing
-                    if str(f_defaults['version']) == str(version):
-                        return
-                    # if the versions differ then remove the file
-                    os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-                    os.remove(file_path)
+            # if the file is not empty
+            if f_defaults:
+                # if it has the same version do nothing
+                if str(f_defaults['version']) == str(version):
+                    return
+                # if the versions differ then remove the file
+                os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                os.remove(file_path)
 
         cls.factory_defaults['version'] = version
 
