@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-28 03:21+0200\n"
-"PO-Revision-Date: 2020-10-28 03:25+0200\n"
+"POT-Creation-Date: 2020-10-28 10:56+0200\n"
+"PO-Revision-Date: 2020-10-28 10:57+0200\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -83,6 +83,10 @@ msgstr "O título ou o link da Web já está na tabela."
 #: Bookmark.py:227
 msgid "Bookmark added."
 msgstr "Favorito adicionado."
+
+#: Bookmark.py:243 app_Main.py:3207 app_Main.py:3249
+msgid "Backup Site"
+msgstr "Site de backup"
 
 #: Bookmark.py:244
 msgid "This bookmark can not be removed"

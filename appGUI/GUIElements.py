@@ -3757,14 +3757,18 @@ class _BrowserTextEdit(QTextEdit):
             # Copy Text
             elif key == QtCore.Qt.Key_C:
                 self.copy_text()
-                # Copy Text
+            # Save Log
             elif key == QtCore.Qt.Key_S:
                 if self.app:
                     self.save_log(app=self.app)
 
         elif modifiers == QtCore.Qt.NoModifier:
+            # Clear all
             if key == QtCore.Qt.Key_Delete:
                 self.clear()
+            # Shell toggle
+            if key == QtCore.Qt.Key_S:
+                self.app.ui.toggle_shell_ui()
 
     def copy_text(self):
         tcursor = self.textCursor()

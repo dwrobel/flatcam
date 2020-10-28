@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-28 03:25+0200\n"
-"PO-Revision-Date: 2020-10-28 03:26+0200\n"
+"POT-Creation-Date: 2020-10-28 10:57+0200\n"
+"PO-Revision-Date: 2020-10-28 10:57+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -88,6 +88,10 @@ msgstr "Fie Titlul, fie Weblink-ul deja sunt in tabel."
 #: Bookmark.py:227
 msgid "Bookmark added."
 msgstr "Bookmark adăugat."
+
+#: Bookmark.py:243 app_Main.py:3207 app_Main.py:3249
+msgid "Backup Site"
+msgstr "Site de Backup"
 
 #: Bookmark.py:244
 msgid "This bookmark can not be removed"
@@ -5026,7 +5030,7 @@ msgstr "F1"
 
 #: appGUI/MainGUI.py:592 app_Main.py:3263 app_Main.py:3272
 msgid "Bookmarks Manager"
-msgstr "Bookmarks Manager"
+msgstr "Manager Bookmark-uri"
 
 #: appGUI/MainGUI.py:597
 msgid "Report a bug"
