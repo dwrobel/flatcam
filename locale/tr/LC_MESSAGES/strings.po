@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-28 03:26+0200\n"
-"PO-Revision-Date: 2020-10-28 03:26+0200\n"
+"POT-Creation-Date: 2020-10-28 10:58+0200\n"
+"PO-Revision-Date: 2020-10-28 10:58+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -87,6 +87,12 @@ msgstr "Başlık veya Web Bağlantısı zaten tabloda."
 #: Bookmark.py:227
 msgid "Bookmark added."
 msgstr "Yer işareti eklendi."
+
+#: Bookmark.py:243 app_Main.py:3207 app_Main.py:3249
+#, fuzzy
+#| msgid "Backup"
+msgid "Backup Site"
+msgstr "Yedekleme"
 
 #: Bookmark.py:244
 msgid "This bookmark can not be removed"
@@ -4980,7 +4986,7 @@ msgstr "Gerber Özellikleri"
 
 #: appGUI/MainGUI.py:610
 msgid "Shortcuts List"
-msgstr "Shortcuts List"
+msgstr ""
 
 #: appGUI/MainGUI.py:610 appGUI/MainGUI.py:4398
 msgid "F3"

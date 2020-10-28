@@ -3204,7 +3204,7 @@ class App(QtCore.QObject):
             self.defaults["global_bookmarks"].update(
                 {
                     '1': ['FlatCAM', "http://flatcam.org"],
-                    '2': ['Backup Site', ""]
+                    '2': [_('Backup Site'), ""]
                 }
             )
         else:
@@ -3246,7 +3246,7 @@ class App(QtCore.QObject):
 
                 act.setIcon(QtGui.QIcon(self.resource_location + '/link16.png'))
                 # from here: https://stackoverflow.com/questions/20390323/pyqt-dynamic-generate-qmenu-action-and-connect
-                if title == 'Backup Site' and weblink == "":
+                if title == _('Backup Site') and weblink == "":
                     act.triggered.connect(self.on_backup_site)
                 else:
                     act.triggered.connect(lambda sig, link=weblink: webbrowser.open(link))
@@ -6377,7 +6377,10 @@ class App(QtCore.QObject):
 
         pos_canvas = self.plotcanvas.translate_coords(event_pos)
         if self.grid_status():
-            pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            try:
+                pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            except TypeError:
+                return
         else:
             pos = (pos_canvas[0], pos_canvas[1])
 

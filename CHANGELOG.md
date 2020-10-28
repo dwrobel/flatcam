@@ -17,6 +17,14 @@ CHANGELOG for FlatCAM beta
 - some UI cleanup in the Geometry UI
 - updated the translation strings except Russian which could be in the works
 - fixed an error that did not allowed for the older preferences to be deleted when installing a different version of the software
+- in Legacy Mode fixed a small issue: the status bar icon for the Grid axis was not colored on app start
+- added a new string to the translatable strings
+- fixed an error that sometime showed in Legacy Mode when moving the mouse outside canvas
+- reactivated the shortcut key 'S' in TCL Shell, to close the shell dock when it was open (of course the focus has to be not on the command line)
+- brought up-to-date and fixed the Tcl Command Drillcncjob and Cncjob
+- fixed Tcl command Isolate to not print messages on message bar in case it is run headless
+- fixed Tcl command Copper Clear (NCC)
+- fixed Tcl command Paint
 
 27.10.2020
 

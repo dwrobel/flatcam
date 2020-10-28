@@ -191,13 +191,13 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # enable the HUD if it is activated in FlatCAM Preferences
         if self.fcapp.defaults['global_hud'] is True:
-            self.on_toggle_hud(state=True)
+            self.on_toggle_hud(state=True, silent=True)
 
         # Axis Display
         self.axis_enabled = True
 
         # enable Axis
-        self.on_toggle_axis(state=True)
+        self.on_toggle_axis(state=True, silent=True)
 
         # enable Grid lines
         self.grid_lines_enabled = True
@@ -218,8 +218,8 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
-    def on_toggle_axis(self, signal=None, state=None):
-        if state is None:
+    def on_toggle_axis(self, signal=None, state=None, silent=None):
+        if not state:
             state = not self.axis_enabled
 
         if state:
@@ -234,16 +234,18 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                                                               background-color: orange;
                                                           }
                                                           """)
-            self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
             self.fcapp.defaults['global_axis'] = False
             self.v_line.parent = None
             self.h_line.parent = None
             self.fcapp.ui.axis_status_label.setStyleSheet("")
-            self.fcapp.inform[str, bool].emit(_("Axis disabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("Axis disabled."), False)
 
-    def on_toggle_hud(self, signal=None, state=None):
+    def on_toggle_hud(self, signal=None, state=None, silent=None):
         if state is None:
             state = not self.hud_enabled
 
@@ -259,7 +261,8 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                                                       background-color: mediumpurple;
                                                   }
                                                   """)
-            self.fcapp.inform[str, bool].emit(_("HUD enabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("HUD enabled."), False)
 
         else:
             self.hud_enabled = False
@@ -267,21 +270,24 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.text_hud.parent = None
             self.fcapp.defaults['global_hud'] = False
             self.fcapp.ui.hud_label.setStyleSheet("")
-            self.fcapp.inform[str, bool].emit(_("HUD disabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("HUD disabled."), False)
 
-    def on_toggle_grid_lines(self):
+    def on_toggle_grid_lines(self, signal=None, silent=None):
         state = not self.grid_lines_enabled
 
         if state:
             self.fcapp.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
             self.grid.parent = self.view.scene
-            self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
         else:
             self.fcapp.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
             self.grid.parent = None
-            self.fcapp.inform[str, bool].emit(_("Grid disabled."), False)
+            if silent is None:
+                self.fcapp.inform[str, bool].emit(_("Grid disabled."), False)
 
         # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
         # - perhaps is a bug in VisPy implementation

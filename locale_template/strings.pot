@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-28 03:27+0200\n"
+"POT-Creation-Date: 2020-10-28 10:53+0200\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -82,6 +82,10 @@ msgstr ""
 
 #: Bookmark.py:227
 msgid "Bookmark added."
+msgstr ""
+
+#: Bookmark.py:243 app_Main.py:3207 app_Main.py:3249
+msgid "Backup Site"
 msgstr ""
 
 #: Bookmark.py:244

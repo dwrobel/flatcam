@@ -240,7 +240,7 @@ class BookmarkManager(QtWidgets.QWidget):
             index_list.append(index)
             title_to_remove = self.table_widget.item(model_index.row(), 1).text()
 
-            if title_to_remove == 'FlatCAM' or title_to_remove == 'Backup Site':
+            if title_to_remove == 'FlatCAM' or title_to_remove == _('Backup Site'):
                 self.app.inform.emit('[WARNING_NOTCL] %s.' % _("This bookmark can not be removed"))
                 self.build_bm_ui()
                 return

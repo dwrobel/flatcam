@@ -372,7 +372,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
-            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset']) + self.z_cut))
+            try:
+                offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
+            except KeyError:
+                offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
+
+            cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
 
             t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)

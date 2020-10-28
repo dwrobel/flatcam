@@ -493,7 +493,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 geo_obj.solid_geometry = []
 
-                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                # transfer the Cut Z and Vtip and Vangle values in case that we use the V-Shape tool in Gerber UI
                 if geo_obj.tool_type.lower() == 'v':
                     new_cutz = self.app.defaults["tools_iso_tool_cutz"]
                     new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
@@ -555,7 +555,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                   follow=follow, nr_passes=nr_pass)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        if plot:
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
@@ -580,7 +581,9 @@ class GerberObject(FlatCAMObj, Gerber):
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
                 else:
-                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+                    if plot:
+                        app_obj.inform.emit('[success] %s: %s' %
+                                            (_("Isolation geometry created"), geo_obj.options["name"]))
 
                 # even if combine is checked, one pass is still single-geo
                 geo_obj.multigeo = True if passes > 1 else False
@@ -629,7 +632,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                   follow=follow, nr_passes=i)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        if plot:
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
@@ -706,8 +710,9 @@ class GerberObject(FlatCAMObj, Gerber):
                     if empty_cnt == len(geo_obj.solid_geometry):
                         raise ValidationError("Empty Geometry", None)
                     else:
-                        app_obj.inform.emit('[success] %s: %s' %
-                                            (_("Isolation geometry created"), geo_obj.options["name"]))
+                        if plot:
+                            app_obj.inform.emit('[success] %s: %s' %
+                                                (_("Isolation geometry created"), geo_obj.options["name"]))
                     geo_obj.multigeo = False
 
                     # ############################################################

@@ -2234,7 +2234,9 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
 
         if inside_pt and poly_list is None:
-            polygon_list = [self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)]
+            polygon_list = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
+            if polygon_list:
+                polygon_list = [polygon_list]
         elif (inside_pt is None and poly_list) or (inside_pt and poly_list):
             polygon_list = poly_list
         else:
@@ -2244,7 +2246,7 @@ class ToolPaint(AppTool, Gerber):
         if polygon_list is None:
             self.app.log.warning('No polygon found.')
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
-            return
+            return "fail"
 
         self.paint_geo(obj, polygon_list, tooldia=tooldia, order=order, method=method, outname=outname,
                        tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)

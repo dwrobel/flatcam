@@ -103,7 +103,7 @@ class TclCommandCopperClear(TclCommand):
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
-            tooldia = self.app.defaults["tools_ncc_tools"]
+            tooldia = str(self.app.defaults["tools_ncc_tools"])
 
         if 'overlap' in args:
             overlap = float(args['overlap']) / 100.0
@@ -223,8 +223,8 @@ class TclCommandCopperClear(TclCommand):
             "area_strategy":    self.app.defaults["geometry_area_strategy"],
             "area_overz":       float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia":              self.app.defaults["tools_paint_tooldia"],
-            "tools_ncc_operation":   self.app.defaults["tools_ncc_operation"],
+            "tooldia":                  tooldia,
+            "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
 
             "tools_ncc_margin":  margin,
             "tools_ncc_method":  method_data,
@@ -253,7 +253,7 @@ class TclCommandCopperClear(TclCommand):
                     'solid_geometry':   []
                 }
             })
-            ncc_tools[int(tooluid)]['data']['tooldia'] = float('%.*f' % (obj.decimals, tool))
+            ncc_tools[int(tooluid)]['data']['tooldia'] = self.app.dec_format(tool, obj.decimals)
 
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args:

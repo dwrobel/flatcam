@@ -169,7 +169,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["endxy"] = args["endxy"]
         else:
             if self.app.defaults["geometry_endxy"]:
-                args["endxy"] = self.app.defaults["geometry_endxy"]
+                args["endxy"] = str(self.app.defaults["geometry_endxy"])
             else:
                 args["endxy"] = '0, 0'
         if len(eval(args["endxy"])) != 2:
@@ -204,7 +204,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["toolchangexy"] = args["toolchangexy"]
         else:
             if self.app.defaults["geometry_toolchangexy"]:
-                args["toolchangexy"] = self.app.defaults["geometry_toolchangexy"]
+                args["toolchangexy"] = str(self.app.defaults["geometry_toolchangexy"])
             else:
                 args["toolchangexy"] = '0, 0'
         if len(eval(args["toolchangexy"])) != 2:

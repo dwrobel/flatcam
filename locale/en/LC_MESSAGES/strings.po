@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-28 03:19+0200\n"
-"PO-Revision-Date: 2020-10-28 03:19+0200\n"
+"POT-Creation-Date: 2020-10-28 10:53+0200\n"
+"PO-Revision-Date: 2020-10-28 10:53+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -87,6 +87,11 @@ msgstr "Either the Title or the Weblink already in the table."
 #: Bookmark.py:227
 msgid "Bookmark added."
 msgstr "Bookmark added."
+
+#: Bookmark.py:243 app_Main.py:3207 app_Main.py:3249
+#| msgid "Backup"
+msgid "Backup Site"
+msgstr "Backup Site"
 
 #: Bookmark.py:244
 msgid "This bookmark can not be removed"
@@ -13466,7 +13471,6 @@ msgid "Working..."
 msgstr "Working..."
 
 #: appObjects/FlatCAMGeometry.py:2425
-#| msgid "Add Polish"
 msgid "Polish"
 msgstr "Polish"
 

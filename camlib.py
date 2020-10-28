@@ -3596,6 +3596,7 @@ class CNCjob(Geometry):
                     for k, v in list(self.options.items()):
                         default_data[k] = deepcopy(v)
 
+                    # it[1] is the tool diameter
                     self.exc_cnc_tools[it[1]] = {}
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
@@ -6349,10 +6350,11 @@ class CNCjob(Geometry):
         # Current path: temporary storage until tool is
         # lifted or lowered.
         if self.toolchange_xy_type == "excellon":
-            if self.app.defaults["excellon_toolchangexy"] == '' or self.app.defaults["excellon_toolchangexy"] is None:
+            if self.app.defaults["tools_drill_toolchangexy"] == '' or \
+                    self.app.defaults["tools_drill_toolchangexy"] is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = self.app.defaults["excellon_toolchangexy"]
+                pos_xy = self.app.defaults["tools_drill_toolchangexy"]
                 try:
                     pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
                 except Exception:
