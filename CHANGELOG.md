@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in NCC Tool and Isolation Tool, pressing the shortcut key 'T' will bring the add new tool pop up in which now it is included the button to get the optimal diameter
 - in Geometry UI and for Solderpaste Tool replaced the pop up window that is launched when using shortcut key with one that has the context menu translated
 - some UI cleanup in the Geometry UI
+- updated the translation strings except Russian which could be in the works
 
 27.10.2020
 
