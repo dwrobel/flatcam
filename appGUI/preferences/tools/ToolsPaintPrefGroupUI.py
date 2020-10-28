@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -210,7 +210,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
         # ], orientation='vertical', stretch=False)
-        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo = FCComboBox2()
         self.paintmethod_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
@@ -273,9 +273,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #     orientation='vertical',
         #     stretch=None
         # )
-        self.selectmethod_combo = FCComboBox()
+        self.selectmethod_combo = FCComboBox2()
         self.selectmethod_combo.addItems(
-            [_("Polygon Selection"), _("Area Selection"), _("All"), _("Reference Object")]
+            [_("All"), _("Polygon Selection"), _("Area Selection"), _("Reference Object")]
         )
 
         grid0.addWidget(selectlabel, 15, 0)

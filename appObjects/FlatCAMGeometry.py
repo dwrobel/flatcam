@@ -205,7 +205,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             for item in self.offset_item_options:
                 offset_item.addItem(item)
             idx = offset_item.findText(tooluid_value['offset'])
-            offset_item.setCurrentIndex(idx)
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                offset_item.setCurrentIndex(0)
+            else:
+                offset_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
             # -------------------- TYPE     ------------------------------------- #
@@ -213,7 +217,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             for item in self.type_item_options:
                 type_item.addItem(item)
             idx = type_item.findText(tooluid_value['type'])
-            type_item.setCurrentIndex(idx)
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                type_item.setCurrentIndex(0)
+            else:
+                type_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
 
             # -------------------- TOOL TYPE ------------------------------------- #
@@ -221,7 +229,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
             idx = tool_type_item.findText(tooluid_value['tool_type'])
-            tool_type_item.setCurrentIndex(idx)
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                tool_type_item.setCurrentIndex(0)
+            else:
+                tool_type_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
 
             # -------------------- TOOL UID   ------------------------------------- #
@@ -574,7 +586,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.addtool_entry_lbl.hide()
             self.ui.addtool_entry.hide()
             self.ui.addtool_btn.hide()
-            self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
             # self.ui.endz_label.hide()
             # self.ui.endz_entry.hide()
@@ -2446,7 +2457,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
                     # Type(cpoly) == FlatCAMRTreeStorage | None
                     cpoly = None
-                    if paint_method == _("Standard"):
+                    if paint_method == 0:   # Standard
                         cpoly = self.clear_polygon(bbox,
                                                    tooldia=tooldia,
                                                    steps_per_circle=obj.circle_steps,
@@ -2454,7 +2465,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                    contour=True,
                                                    connect=True,
                                                    prog_plot=False)
-                    elif paint_method == _("Seed"):
+                    elif paint_method == 1: # Seed
                         cpoly = self.clear_polygon2(bbox,
                                                     tooldia=tooldia,
                                                     steps_per_circle=obj.circle_steps,
@@ -2462,7 +2473,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                     contour=True,
                                                     connect=True,
                                                     prog_plot=False)
-                    elif paint_method == _("Lines"):
+                    elif paint_method == 2: # Lines
                         cpoly = self.clear_polygon3(bbox,
                                                     tooldia=tooldia,
                                                     steps_per_circle=obj.circle_steps,
