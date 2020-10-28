@@ -519,7 +519,9 @@ class QRCode(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_png',
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export PNG"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -566,7 +568,9 @@ class QRCode(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export SVG"),
+                ext_filter=_filter)
 
         filename = str(filename)
 

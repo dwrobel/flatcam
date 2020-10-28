@@ -1653,7 +1653,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
@@ -1843,7 +1845,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     ext_filter=_filter_
                 )
             except TypeError:
-                filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+                filename, _f = FCFileSaveDialog.get_saved_filename(
+                    caption=_("Export Code ..."),
+                    ext_filter=_filter_)
 
             if filename == '':
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
@@ -1921,7 +1925,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         self.export_gcode_handler(filename, is_gcode=save_gcode)
 
