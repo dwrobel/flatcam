@@ -188,8 +188,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.mm = None
         self.mr = None
 
-        self.append_snippet = ''
         self.prepend_snippet = ''
+        self.append_snippet = ''
         self.gc_header = self.gcode_header()
         self.gc_start = ''
         self.gc_end = ''
@@ -532,7 +532,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.append_snippet = self.app.defaults['cncjob_append']
         self.prepend_snippet = self.app.defaults['cncjob_prepend']
 
-        if self.append_snippet != '' or self.prepend_snippet:
+        if self.append_snippet != '' or self.prepend_snippet != '':
             self.ui.snippets_cb.set_value(True)
 
         # Fill form fields only on object create
@@ -661,8 +661,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.ui.sal_btn.show()
                 self.ui.sal_btn.setChecked(self.app.defaults["cncjob_al_status"])
 
-        preamble = self.append_snippet
-        postamble = self.prepend_snippet
+        preamble = self.prepend_snippet
+        postamble = self.append_snippet
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         self.source_file = gc.getvalue()
 
@@ -1950,8 +1950,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         try:
             if self.ui.snippets_cb.get_value():
-                preamble = self.append_snippet
-                postamble = self.prepend_snippet
+                preamble = self.prepend_snippet
+                postamble = self.append_snippet
             gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
         except Exception as err:
             log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
@@ -1965,18 +1965,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
-    def on_review_code_click(self, *args):
+    def on_review_code_click(self):
         """
         Handler activated by a button clicked when reviewing GCode.
 
-        :param args:
         :return:
         """
 
         self.app.proc_container.view.set_busy(_("Loading..."))
 
-        preamble = self.append_snippet
-        postamble = self.prepend_snippet
+        preamble = self.prepend_snippet
+        postamble = self.append_snippet
 
         gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         if gco == 'fail':

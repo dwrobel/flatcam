@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - added a protection on opening the tools database UI if the tools DB file is not loaded
 - fixed NCC Tool not working with the new changes; the check for not having complete isolation is just a Warning
 - fixed the sizePolicy for the FCComboBox widgets in the Preferences that holds the preprocessors
+- fixed issue with how the preamble / postamble GCode were inserted into the final GCode
 
 28.10.2020
 
