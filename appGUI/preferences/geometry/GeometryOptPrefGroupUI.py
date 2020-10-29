@@ -259,6 +259,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
+        self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
         grid1.addWidget(pp_label, 13, 0)
         grid1.addWidget(self.pp_geometry_name_cb, 13, 1)
