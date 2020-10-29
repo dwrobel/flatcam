@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet, FCFileSaveDialog, FCLabel
+    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2
 from camlib import to_dict
 
 import sys
@@ -24,6 +24,10 @@ class ToolsDB2UI:
     def __init__(self, app, grid_layout):
         self.app = app
         self.decimals = self.app.decimals
+
+        self.offset_item_options = ["Path", "In", "Out", "Custom"]
+        self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         settings = QtCore.QSettings("Open Source", "FlatCAM")
         if settings.contains("machinist"):
@@ -269,7 +273,7 @@ class ToolsDB2UI:
         self.tool_op_label.setToolTip(
             _("The kind of Application Tool where this tool is to be used."))
 
-        self.tool_op_combo = FCComboBox()
+        self.tool_op_combo = FCComboBox2()
         self.tool_op_combo.addItems(
             [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _('Cutout')])
         self.tool_op_combo.setObjectName('gdb_tool_target')
@@ -296,7 +300,7 @@ class ToolsDB2UI:
               "V = v-shape milling tool"))
 
         self.mill_shape_combo = FCComboBox()
-        self.mill_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.mill_shape_combo.addItems(self.tool_type_item_options)
         self.mill_shape_combo.setObjectName('gdb_shape')
 
         self.grid0.addWidget(self.shape_label, 2, 0)
@@ -345,7 +349,7 @@ class ToolsDB2UI:
               "Finish = finishing cut, high feedrate"))
 
         self.mill_type_combo = FCComboBox()
-        self.mill_type_combo.addItems(["Iso", "Rough", "Finish"])
+        self.mill_type_combo.addItems(self.type_item_options)
         self.mill_type_combo.setObjectName('gdb_type')
 
         self.grid0.addWidget(self.type_label, 10, 0)
@@ -362,7 +366,7 @@ class ToolsDB2UI:
               "Custom = custom offset using the Custom Offset value"))
 
         self.mill_tooloffset_combo = FCComboBox()
-        self.mill_tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
+        self.mill_tooloffset_combo.addItems(self.offset_item_options)
         self.mill_tooloffset_combo.setObjectName('gdb_tool_offset')
 
         self.grid0.addWidget(self.tooloffset_label, 12, 0)
@@ -663,7 +667,7 @@ class ToolsDB2UI:
               "- Line-based: Parallel lines.")
         )
 
-        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
@@ -778,7 +782,7 @@ class ToolsDB2UI:
               "in the order specified.")
         )
 
-        self.paint_method_combo = FCComboBox()
+        self.paint_method_combo = FCComboBox2()
         self.paint_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
@@ -876,8 +880,8 @@ class ToolsDB2UI:
 
         self.iso_follow_cb = FCCheckBox()
         self.iso_follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                    "This means that it will cut through\n"
-                                    "the middle of the trace."))
+                                        "This means that it will cut through\n"
+                                        "the middle of the trace."))
         self.iso_follow_cb.setObjectName("gdb_i_follow")
 
         self.grid4.addWidget(self.follow_label, 6, 0)
@@ -1402,9 +1406,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.on_tool_request = callback_on_tool_request
 
-        self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = ["Iso", "Rough", "Finish"]
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tools_db_changed_flag = False
 
         '''
         dict to hold all the tools in the Tools DB
@@ -1717,7 +1719,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_connect()
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
         # load the database tools from the file
         try:
@@ -1809,7 +1811,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui.tool_description_box.setEnabled(True)
         if self.db_tool_dict:
-            if tool_target == _("General"):
+            if tool_target == 0:    # _("General")
                 self.ui.milling_box.setEnabled(True)
                 self.ui.ncc_box.setEnabled(True)
                 self.ui.paint_box.setEnabled(True)
@@ -1831,33 +1833,33 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.drill_box.hide()
                 self.ui.cutout_box.hide()
 
-                if tool_target == _("Milling"):
+                if tool_target == 1:    # _("Milling")
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Drilling"):
+                if tool_target == 2:    # _("Drilling")
                     self.ui.drill_box.setEnabled(True)
                     self.ui.drill_box.show()
 
-                if tool_target == _("Isolation"):
+                if tool_target == 3:    # _("Isolation")
                     self.ui.iso_box.setEnabled(True)
                     self.ui.iso_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Paint"):
+                if tool_target == 4:    # _("Paint")
                     self.ui.paint_box.setEnabled(True)
                     self.ui.paint_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("NCC"):
+                if tool_target == 5:    # _("NCC")
                     self.ui.ncc_box.setEnabled(True)
                     self.ui.ncc_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Cutout"):
+                if tool_target == 6:    # _("Cutout")
                     self.ui.cutout_box.setEnabled(True)
                     self.ui.cutout_box.show()
                     self.ui.milling_box.setEnabled(True)
@@ -1872,7 +1874,7 @@ class ToolsDB2(QtWidgets.QWidget):
         default_data = {}
         default_data.update({
             "plot":             True,
-            "tool_target": _("General"),
+            "tool_target": 0,   # _("General")
             "tol_min": 0.0,
             "tol_max": 0.0,
 
@@ -2148,7 +2150,7 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 
-        filename = self.app.data_path + "/tools_db.FlatDB"
+        filename = self.app.tools_database_path()
 
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app_ui.plot_tab_area.count()):
@@ -2884,7 +2886,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #               "A position on Z plane to move immediately after job stop."))
 #
 #     def setup_db_ui(self):
-#         filename = self.app.data_path + '/tools_db.FlatDB'
+#         filename = self.app.tools_database_path()
 #
 #         # load the database tools from the file
 #         try:
@@ -3321,7 +3323,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #     def on_save_tools_db(self, silent=False):
 #         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 #
-#         filename = self.app.data_path + "/tools_db.FlatDB"
+#         filename = self.app.tools_database_path()
 #
 #         # Preferences save, update the color of the Tools DB Tab text
 #         for idx in range(self.app_ui.plot_tab_area.count()):

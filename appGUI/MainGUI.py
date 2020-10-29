@@ -1885,6 +1885,17 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.build_infobar_context_menu()
 
+    def set_ui_title(self, name):
+        """
+        Sets the title of the main window.
+
+        :param name: String that store the project path and project name
+        :return: None
+        """
+        title = 'FlatCAM %s %s - %s - [%s]    %s' % (
+            self.app.version, ('BETA' if self.app.beta else ''), platform.architecture()[0], self.app.engine, name)
+        self.setWindowTitle(title)
+
     def save_geometry(self, x, y, width, height, notebook_width):
         """
         Will save the application geometry and positions in the defaults dicitionary to be restored at the next
@@ -2089,6 +2100,7 @@ class MainGUI(QtWidgets.QMainWindow):
         resource_loc = self.app.resource_location
 
         response = None
+        bt_yes = None
         if forced_clear is False:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
@@ -4449,32 +4461,32 @@ class ShortcutsTab(QtWidgets.QWidget):
 
                     # ALT section
                     _('Alt+A'), _("Align Objects Tool"),
-                    _('Alt+C'),_("Calculators Tool"),
-                    _('Alt+D'),_("2-Sided PCB Tool"),
-                    _('Alt+E'),_("Extract Drills Tool"),
-                    _('Alt+F'),_("Fiducials Tool"),
-                    _('Alt+G'),_("Invert Gerber Tool"),
-                    _('Alt+H'),_("Punch Gerber Tool"),
-                    _('Alt+I'),_("Isolation Tool"),
-                    _('Alt+J'),_("Copper Thieving Tool"),
-                    _('Alt+K'),_("Solder Paste Dispensing Tool"),
-                    _('Alt+L'),_("Film PCB Tool"),
-                    _('Alt+M'),_("Corner Markers Tool"),
-                    _('Alt+N'),_("Non-Copper Clearing Tool"),
-                    _('Alt+O'),_("Optimal Tool"),
-                    _('Alt+P'),_("Paint Area Tool"),
-                    _('Alt+Q'),_("QRCode Tool"),
-                    _('Alt+R'),_("Rules Check Tool"),
-                    _('Alt+S'),_("View File Source"),
-                    _('Alt+T'),_("Transformations Tool"),
-                    _('Alt+W'),_("Subtract Tool"),
-                    _('Alt+X'),_("Cutout PCB Tool"),
-                    _('Alt+Z'),_("Panelize PCB"),
-                    _('Alt+1'),_("Enable all"),
-                    _('Alt+2'),_("Disable all"),
-                    _('Alt+3'),_("Enable Non-selected Objects"),
-                    _('Alt+4'),_("Disable Non-selected Objects"),
-                    _('Alt+F10'),_("Toggle Full Screen"),
+                    _('Alt+C'), _("Calculators Tool"),
+                    _('Alt+D'), _("2-Sided PCB Tool"),
+                    _('Alt+E'), _("Extract Drills Tool"),
+                    _('Alt+F'), _("Fiducials Tool"),
+                    _('Alt+G'), _("Invert Gerber Tool"),
+                    _('Alt+H'), _("Punch Gerber Tool"),
+                    _('Alt+I'), _("Isolation Tool"),
+                    _('Alt+J'), _("Copper Thieving Tool"),
+                    _('Alt+K'), _("Solder Paste Dispensing Tool"),
+                    _('Alt+L'), _("Film PCB Tool"),
+                    _('Alt+M'), _("Corner Markers Tool"),
+                    _('Alt+N'), _("Non-Copper Clearing Tool"),
+                    _('Alt+O'), _("Optimal Tool"),
+                    _('Alt+P'), _("Paint Area Tool"),
+                    _('Alt+Q'), _("QRCode Tool"),
+                    _('Alt+R'), _("Rules Check Tool"),
+                    _('Alt+S'), _("View File Source"),
+                    _('Alt+T'), _("Transformations Tool"),
+                    _('Alt+W'), _("Subtract Tool"),
+                    _('Alt+X'), _("Cutout PCB Tool"),
+                    _('Alt+Z'), _("Panelize PCB"),
+                    _('Alt+1'), _("Enable all"),
+                    _('Alt+2'), _("Disable all"),
+                    _('Alt+3'), _("Enable Non-selected Objects"),
+                    _('Alt+4'), _("Disable Non-selected Objects"),
+                    _('Alt+F10'), _("Toggle Full Screen"),
 
                     # CTRL + ALT section
                     _('Ctrl+Alt+X'), _("Abort current task (gracefully)"),

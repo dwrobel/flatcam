@@ -980,7 +980,7 @@ class ToolMilling(AppTool, Excellon):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else "Rough"
+            typ = 'Iso' if tt == 'V' else _("Rough")
 
             self.iso_tools[current_uid].update({
                 'type': typ,

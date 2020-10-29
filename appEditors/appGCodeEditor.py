@@ -45,6 +45,14 @@ class AppGCodeEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
+
+        # #################################################################################
+        # ################### SIGNALS #####################################################
+        # #################################################################################
+        self.ui.name_entry.returnPressed.connect(self.on_name_activate)
+        self.ui.update_gcode_button.clicked.connect(self.insert_gcode)
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
         log.debug("Initialization of the GCode Editor is finished ...")
 
     def set_ui(self):
@@ -102,13 +110,6 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         self.activate()
-
-        # #################################################################################
-        # ################### SIGNALS #####################################################
-        # #################################################################################
-        self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.ui.update_gcode_button.clicked.connect(self.insert_gcode)
-        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
     def build_ui(self):
         """

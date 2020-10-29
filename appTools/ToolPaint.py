@@ -411,7 +411,7 @@ class ToolPaint(AppTool, Gerber):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else "Rough"
+            typ = 'Iso' if tt == 'V' else _("Rough")
 
             self.paint_tools[current_uid].update({
                 'type': typ,
@@ -666,7 +666,7 @@ class ToolPaint(AppTool, Gerber):
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
         new_tools_dict = deepcopy(self.default_data)
         updated_tooldia = None
@@ -729,7 +729,7 @@ class ToolPaint(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = "Rough"
+        typ = _("Rough")
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -2626,7 +2626,12 @@ class ToolPaint(AppTool, Gerber):
         """
         tool_from_db = deepcopy(tool)
 
-        if tool['data']['tool_target'] != _("Paint"):
+        if tool['data']['tool_target'] not in [0, 4]:   # [General, Paint]
+            for idx in range(self.app.ui.plot_tab_area.count()):
+                if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.app.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.app.ui.plot_tab_area.removeTab(idx)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
             return
 

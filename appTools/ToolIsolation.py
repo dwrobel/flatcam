@@ -208,7 +208,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
 
         # adding Tools
-        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
+        self.ui.search_and_add_btn.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
@@ -899,7 +899,7 @@ class ToolIsolation(AppTool, Gerber):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else "Rough"
+            typ = 'Iso' if tt == 'V' else _("Rough")
 
             self.iso_tools[currenuid].update({
                 'type': typ,
@@ -1034,29 +1034,26 @@ class ToolIsolation(AppTool, Gerber):
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
-        new_tools_dict = deepcopy(self.default_data)
-        updated_tooldia = None
-
+        tool_dia = custom_dia if custom_dia is not None else self.ui.new_tooldia_entry.get_value()
         # construct a list of all 'tooluid' in the self.iso_tools
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.iso_tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
         max_uid = 0 if not tool_uid_list else max(tool_uid_list)
-        tooluid = int(max_uid + 1)
+        tooluid = int(max_uid) + 1
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
 
         tool_dias = []
         for k, v in self.iso_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
+                    tool_dias.append(self.app.dec_format(v['tooldia'], self.decimals))
 
         # determine the new tool diameter
-        if custom_dia is None:
-            tool_dia = self.ui.new_tooldia_entry.get_value()
-        else:
-            tool_dia = custom_dia
         if tool_dia is None or tool_dia == 0:
             self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
@@ -1097,7 +1094,7 @@ class ToolIsolation(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = "Rough"
+        typ = _("Rough")
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -1111,7 +1108,7 @@ class ToolIsolation(AppTool, Gerber):
             high_limit = float(db_tool_val['data']['tol_max'])
 
             # we need only tool marked for Isolation Tool
-            if db_tool_val['data']['tool_target'] != _('Isolation'):
+            if db_tool_val['data']['tool_target'] != 3:     # _('Isolation')
                 continue
 
             # if we find a tool with the same diameter in the Tools DB just update it's data
@@ -1186,12 +1183,8 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_tool_default_add(self, dia=None, muted=None):
         self.blockSignals(True)
-        self.units = self.app.defaults['units'].upper()
 
-        if dia:
-            tool_dia = dia
-        else:
-            tool_dia = self.ui.new_tooldia_entry.get_value()
+        tool_dia = dia if dia is not None else self.ui.new_tooldia_entry.get_value()
 
         if tool_dia is None or tool_dia == 0:
             self.build_ui()
@@ -2586,7 +2579,12 @@ class ToolIsolation(AppTool, Gerber):
         """
         tool_from_db = deepcopy(tool)
 
-        if tool['data']['tool_target'] != _("Isolation"):
+        if tool['data']['tool_target'] not in [0, 3]:   # [General, Isolation]
+            for idx in range(self.app.ui.plot_tab_area.count()):
+                if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.app.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.app.ui.plot_tab_area.removeTab(idx)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
             return
 
@@ -3134,16 +3132,16 @@ class IsoUI:
 
         bhlay = QtWidgets.QHBoxLayout()
 
-        self.add_newtool_button = FCButton(_('Search and Add'))
-        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.add_newtool_button.setToolTip(
+        self.search_and_add_btn = FCButton(_('Search and Add'))
+        self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.search_and_add_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "with the diameter specified above.\n"
               "This is done by a background search\n"
               "in the Tools Database. If nothing is found\n"
               "in the Tools DB then a default tool is added.")
         )
-        bhlay.addWidget(self.add_newtool_button)
+        bhlay.addWidget(self.search_and_add_btn)
 
         self.addtool_from_db_btn = FCButton(_('Pick from DB'))
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
