@@ -27,6 +27,7 @@ from shapely.geometry.polygon import orient
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm
+import logging
 
 from rtree import index as rtindex
 
@@ -39,6 +40,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class BufferSelectionTool(AppTool):

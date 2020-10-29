@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton,\
     FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton, FCComboBox2
 from appParsers.ParseGerber import Gerber
 
@@ -463,8 +463,8 @@ class NonCopperClear(AppTool, Gerber):
                                                     callback=self.on_find_optimal_tooldia)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
-        def find_optimal(val):
-            tool_add_popup.set_value(float(val))
+        def find_optimal(valor):
+            tool_add_popup.set_value(float(valor))
 
         self.optimal_found_sig.connect(find_optimal)
 
@@ -629,7 +629,7 @@ class NonCopperClear(AppTool, Gerber):
         # read the table tools uid
         current_uid_list = []
         for row in range(self.ui.tools_table.rowCount()):
-            uid = int(self.ui.tools_table.item(row,3).text())
+            uid = int(self.ui.tools_table.item(row, 3).text())
             current_uid_list.append(uid)
 
         new_tools = {}
@@ -675,7 +675,8 @@ class NonCopperClear(AppTool, Gerber):
                     tool_id += 1
 
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    flags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
+                    id_.setFlags(flags)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_)  # Tool name/id
 
@@ -696,8 +697,8 @@ class NonCopperClear(AppTool, Gerber):
 
         # make the diameter column editable
         for row in range(tool_id):
-            self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
+            self.ui.tools_table.item(row, 1).setFlags(flags)
 
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
@@ -862,113 +863,113 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        proc = self.app.proc_container.new(_("Working..."))
-
         def job_thread(app_obj, is_display):
-            try:
-                old_disp_number = 0
-                pol_nr = 0
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = []
+            with self.app.proc_container.new(_("Working...")):
+                try:
+                    old_disp_number = 0
+                    pol_nr = 0
+                    app_obj.proc_container.update_view_text(' %d%%' % 0)
+                    total_geo = []
 
-                for ap in list(fcobj.apertures.keys()):
-                    if 'geometry' in fcobj.apertures[ap]:
-                        for geo_el in fcobj.apertures[ap]['geometry']:
+                    for ap in list(fcobj.apertures.keys()):
+                        if 'geometry' in fcobj.apertures[ap]:
+                            for geo_el in fcobj.apertures[ap]['geometry']:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise grace
+
+                                if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                                    total_geo.append(geo_el['solid'])
+
+                    total_geo = MultiPolygon(total_geo)
+                    total_geo = total_geo.buffer(0)
+
+                    try:
+                        __ = iter(total_geo)
+                        geo_len = len(total_geo)
+                        geo_len = (geo_len * (geo_len - 1)) / 2
+                    except TypeError:
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                            _("The Gerber object has one Polygon as geometry.\n"
+                                              "There are no distances between geometry elements to be found."))
+                        return 'fail'
+
+                    min_dict = {}
+                    idx = 1
+                    for geo in total_geo:
+                        for s_geo in total_geo[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
 
-                            if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
-                                total_geo.append(geo_el['solid'])
+                            # minimize the number of distances by not taking into considerations
+                            # those that are too small
+                            dist = geo.distance(s_geo)
+                            dist = float('%.*f' % (self.decimals, dist))
+                            loc_1, loc_2 = nearest_points(geo, s_geo)
 
-                total_geo = MultiPolygon(total_geo)
-                total_geo = total_geo.buffer(0)
+                            proc_loc = (
+                                (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                                (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                            )
 
-                try:
-                    __ = iter(total_geo)
-                    geo_len = len(total_geo)
-                    geo_len = (geo_len * (geo_len - 1)) / 2
-                except TypeError:
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _("The Gerber object has one Polygon as geometry.\n"
-                                          "There are no distances between geometry elements to be found."))
-                    return 'fail'
+                            if dist in min_dict:
+                                min_dict[dist].append(proc_loc)
+                            else:
+                                min_dict[dist] = [proc_loc]
 
-                min_dict = {}
-                idx = 1
-                for geo in total_geo:
-                    for s_geo in total_geo[idx:]:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
+                            pol_nr += 1
+                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                        # minimize the number of distances by not taking into considerations those that are too small
-                        dist = geo.distance(s_geo)
-                        dist = float('%.*f' % (self.decimals, dist))
-                        loc_1, loc_2 = nearest_points(geo, s_geo)
+                            if old_disp_number < disp_number <= 100:
+                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                                old_disp_number = disp_number
+                        idx += 1
 
-                        proc_loc = (
-                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
-                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
-                        )
+                    min_list = list(min_dict.keys())
+                    min_dist = min(min_list)
 
-                        if dist in min_dict:
-                            min_dict[dist].append(proc_loc)
-                        else:
-                            min_dict[dist] = [proc_loc]
+                    min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                    self.safe_tooldia = min_dist_truncated
 
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                    if is_display:
+                        self.optimal_found_sig.emit(min_dist_truncated)
 
-                        if old_disp_number < disp_number <= 100:
-                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                            old_disp_number = disp_number
-                    idx += 1
-
-                min_list = list(min_dict.keys())
-                min_dist = min(min_list)
-
-                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
-                self.safe_tooldia = min_dist_truncated
-
-                if is_display:
-                    self.optimal_found_sig.emit(min_dist_truncated)
-
-                    app_obj.inform.emit('[success] %s: %s %s' %
-                                        (_("Optimal tool diameter found"), str(min_dist_truncated),
-                                         self.units.lower()))
-                else:
-                    # find the selected tool ID's
-                    sorted_tools = []
-                    table_items = self.ui.tools_table.selectedItems()
-                    sel_rows = {t.row() for t in table_items}
-                    for row in sel_rows:
-                        tid = int(self.ui.tools_table.item(row, 3).text())
-                        sorted_tools.append(tid)
-                    if not sorted_tools:
-                        msg = _("There are no tools selected in the Tool Table.")
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
-                        return 'fail'
-
-                    # check if the tools diameters are less then the safe tool diameter
-                    suitable_tools = []
-                    for tool in sorted_tools:
-                        tool_dia = float(self.ncc_tools[tool]['tooldia'])
-                        if tool_dia <= self.safe_tooldia:
-                            suitable_tools.append(tool_dia)
-
-                    if not suitable_tools:
-                        msg = _("Incomplete isolation. None of the selected tools could do a complete isolation.")
-                        self.app.inform.emit('[WARNING] %s' % msg)
+                        app_obj.inform.emit('[success] %s: %s %s' %
+                                            (_("Optimal tool diameter found"), str(min_dist_truncated),
+                                             self.units.lower()))
                     else:
-                        msg = _("At least one of the selected tools can do a complete isolation.")
-                        self.app.inform.emit('[success] %s' % msg)
+                        # find the selected tool ID's
+                        sorted_tools = []
+                        table_items = self.ui.tools_table.selectedItems()
+                        sel_rows = {t.row() for t in table_items}
+                        for row in sel_rows:
+                            tid = int(self.ui.tools_table.item(row, 3).text())
+                            sorted_tools.append(tid)
+                        if not sorted_tools:
+                            msg = _("There are no tools selected in the Tool Table.")
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
+                            return 'fail'
 
-                    # reset the value to prepare for another isolation
-                    self.safe_tooldia = None
-            except Exception as ee:
-                log.debug(str(ee))
-                return
+                        # check if the tools diameters are less then the safe tool diameter
+                        suitable_tools = []
+                        for tool in sorted_tools:
+                            tool_dia = float(self.ncc_tools[tool]['tooldia'])
+                            if tool_dia <= self.safe_tooldia:
+                                suitable_tools.append(tool_dia)
+
+                        if not suitable_tools:
+                            msg = _("Incomplete isolation. None of the selected tools could do a complete isolation.")
+                            self.app.inform.emit('[WARNING] %s' % msg)
+                        else:
+                            msg = _("At least one of the selected tools can do a complete isolation.")
+                            self.app.inform.emit('[success] %s' % msg)
+
+                        # reset the value to prepare for another isolation
+                        self.safe_tooldia = None
+                except Exception as ee:
+                    log.debug(str(ee))
+                    return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, is_displayed]})
 
@@ -1374,7 +1375,7 @@ class NonCopperClear(AppTool, Gerber):
                               isotooldia=self.iso_dia_list,
                               outname=self.o_name,
                               tools_storage=self.ncc_tools)
-        elif self.select_method == 1: # Area Selection
+        elif self.select_method == 1:   # Area Selection
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.is_legacy is False:
@@ -1676,7 +1677,7 @@ class NonCopperClear(AppTool, Gerber):
         box_kind = box_obj.kind if box_obj is not None else None
 
         env_obj = None
-        if ncc_select == _('Itself'):
+        if ncc_select == 0:     # _('Itself')
             geo_n = ncc_obj.solid_geometry
 
             try:
@@ -1692,13 +1693,13 @@ class NonCopperClear(AppTool, Gerber):
                 log.debug("NonCopperClear.calculate_bounding_box() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return None
-        elif ncc_select == _("Area Selection"):
+        elif ncc_select == 1:   # _("Area Selection")
             env_obj = unary_union(self.sel_rect)
             try:
                 __ = iter(env_obj)
             except Exception:
                 env_obj = [env_obj]
-        elif ncc_select == _("Reference Object"):
+        elif ncc_select == 2:   # _("Reference Object")
             if box_obj is None:
                 return None, None
 
@@ -1740,14 +1741,14 @@ class NonCopperClear(AppTool, Gerber):
             return 'fail'
 
         new_bounding_box = None
-        if ncc_select == _('Itself'):
+        if ncc_select == 0:     # _('Itself')
             try:
                 new_bounding_box = bbox.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
                 log.debug("NonCopperClear.apply_margin_to_bounding_box() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
-        elif ncc_select == _("Area Selection"):
+        elif ncc_select == 1:   # _("Area Selection")
             geo_buff_list = []
             for poly in bbox:
                 if self.app.abort_flag:
@@ -1755,7 +1756,7 @@ class NonCopperClear(AppTool, Gerber):
                     raise grace
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
             new_bounding_box = unary_union(geo_buff_list)
-        elif ncc_select == _("Reference Object"):
+        elif ncc_select == 2:   # _("Reference Object")
             if box_kind == 'geometry':
                 geo_buff_list = []
                 for poly in bbox:
@@ -1974,7 +1975,7 @@ class NonCopperClear(AppTool, Gerber):
 
         cp = None
 
-        if ncc_method == 0: # standard
+        if ncc_method == 0:     # standard
             try:
                 cp = self.clear_polygon(pol, tooldia,
                                         steps_per_circle=self.circle_steps,
@@ -2133,7 +2134,7 @@ class NonCopperClear(AppTool, Gerber):
 
             app_obj.poly_not_cleared = False    # flag for polygons not cleared
 
-            if ncc_select == 2: # Reference Object
+            if ncc_select == 2:     # Reference Object
                 bbox_geo, bbox_kind = self.calculate_bounding_box(
                     ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
@@ -2360,14 +2361,10 @@ class NonCopperClear(AppTool, Gerber):
 
             sorted_clear_tools.sort(reverse=True)
 
-            cleared_by_last_tool = []
-            rest_geo = []
-            current_uid = 1
-
-            # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
+            # re purposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
 
-            if ncc_select == 2: # Reference Object
+            if ncc_select == 2:     # Reference Object
                 env_obj, box_obj_kind = self.calculate_bounding_box(
                     ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
@@ -2718,7 +2715,7 @@ class NonCopperClear(AppTool, Gerber):
         self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
 
         try:
-            if sel_obj is None or sel_obj == 0: # sel_obj == 'itself'
+            if sel_obj is None or sel_obj == 0:     # sel_obj == 'itself'
                 ncc_sel_obj = ncc_obj
             else:
                 ncc_sel_obj = sel_obj
@@ -2727,7 +2724,7 @@ class NonCopperClear(AppTool, Gerber):
             return 'fail'
 
         bounding_box = None
-        if ncc_select == 0: # itself
+        if ncc_select == 0:     # itself
             geo_n = ncc_sel_obj.solid_geometry
 
             try:
@@ -2998,6 +2995,7 @@ class NonCopperClear(AppTool, Gerber):
             log.debug("NCC Tool. Finished calculation of 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
+            tool = 1
             # COPPER CLEARING #
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
@@ -3450,7 +3448,7 @@ class NonCopperClear(AppTool, Gerber):
 
                                 if isinstance(p, Polygon):
                                     try:
-                                        if ncc_method == 0: # standard
+                                        if ncc_method == 0:     # standard
                                             cp = self.clear_polygon(p, tool_used,
                                                                     self.circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
@@ -3479,7 +3477,7 @@ class NonCopperClear(AppTool, Gerber):
                                             QtWidgets.QApplication.processEvents()
 
                                             try:
-                                                if ncc_method == 0: # 'standard'
+                                                if ncc_method == 0:     # 'standard'
                                                     cp = self.clear_polygon(poly_p, tool_used,
                                                                             self.circle_steps,
                                                                             overlap=overlap, contour=contour,
@@ -3636,6 +3634,10 @@ class NonCopperClear(AppTool, Gerber):
             geo_len = 1
         else:
             geo_len = len(target)
+
+        if isinstance(target, list):
+            target = MultiPolygon(target)
+
         pol_nr = 0
         old_disp_number = 0
 
