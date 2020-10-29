@@ -25,6 +25,8 @@ import traceback
 from collections import defaultdict
 from functools import reduce
 
+import simplejson as json
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -585,7 +587,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # self.ui.geo_tools_table.setColumnHidden(4, True)
             self.ui.addtool_entry_lbl.hide()
             self.ui.addtool_entry.hide()
-            self.ui.addtool_btn.hide()
+            self.ui.search_and_add_btn.hide()
             self.ui.deltool_btn.hide()
             # self.ui.endz_label.hide()
             # self.ui.endz_entry.hide()
@@ -745,10 +747,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.connect(
                     self.on_tooltable_cellwidget_change)
 
-        # I use lambda's because the connected functions have parameters that could be used in certain scenarios
-        self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
+        self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
 
-        self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
+        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
         self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
@@ -808,7 +809,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     pass
 
         try:
-            self.ui.addtool_btn.clicked.disconnect()
+            self.ui.search_and_add_btn.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -1015,18 +1016,150 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_connect()
 
     def on_tool_add(self, dia=None, new_geo=None):
+        log.debug("GeometryObject.on_add_tool()")
+
         self.ui_disconnect()
 
-        self.units = self.app.defaults['units'].upper()
+        filename = self.app.tools_database_path()
 
-        tooldia = dia if dia is not None else float(self.ui.addtool_entry.get_value())
+        tool_dia = dia if dia is not None else self.ui.addtool_entry.get_value()
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
+        tooluid = int(max_uid) + 1
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        # determine the new tool diameter
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.ui_connect()
+            return
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.ui_connect()
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.ui_connect()
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        tool_found = 0
+
+        offset = 'Path'
+        offset_val = 0.0
+        typ = _("Rough")
+        tool_type = 'C1'
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Milling Tool (Geometry Object)
+            if db_tool_val['data']['tool_target'] != 1:     # _('Milling')
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_mill_') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_mill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_iso') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add(dia=tool_dia, new_geo=new_geo)
+            self.ui_connect()
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.ui_connect()
+            return
+
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
+        self.tools.update({
+            tooluid: {
+                'tooldia': new_tdia,
+                'offset': deepcopy(offset),
+                'offset_value': deepcopy(offset_val),
+                'type': deepcopy(typ),
+                'tool_type': deepcopy(tool_type),
+                'data': deepcopy(new_tools_dict),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+        self.ui_connect()
+        self.build_ui()
+
+        # select the tool just added
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            if int(self.ui.geo_tools_table.item(row, 5).text()) == tooluid:
+                self.ui.geo_tools_table.selectRow(row)
+                break
+
+        # update the UI form
+        self.update_ui()
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, new_geo=None, muted=None):
+        self.ui_disconnect()
+
+        tooldia = dia if dia is not None else self.ui.addtool_entry.get_value()
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
         max_uid = max(tool_uid_list) if tool_uid_list else 0
-        self.tooluid = max_uid + 1
+        self.tooluid = int(max_uid) + 1
 
-        tooldia = float('%.*f' % (self.decimals, tooldia))
+        tooldia = self.app.dec_format(tooldia, self.decimals)
 
         # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
         # otherwise we add a tool with data copied from last tool
@@ -1080,7 +1213,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
-        self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
         self.ui_connect()
         self.build_ui()
 
@@ -2782,7 +2916,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)
-        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_default_add)
 
         return factor
 

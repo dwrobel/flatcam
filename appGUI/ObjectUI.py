@@ -1093,9 +1093,9 @@ class GeometryObjectUI(ObjectUI):
 
         bhlay = QtWidgets.QHBoxLayout()
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Search and Add'))
-        self.addtool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.addtool_btn.setToolTip(
+        self.search_and_add_btn = QtWidgets.QPushButton(_('Search and Add'))
+        self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.search_and_add_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "with the diameter specified above.")
         )
@@ -1109,7 +1109,7 @@ class GeometryObjectUI(ObjectUI):
               "Menu: Options -> Tools Database")
         )
 
-        bhlay.addWidget(self.addtool_btn)
+        bhlay.addWidget(self.search_and_add_btn)
         bhlay.addWidget(self.addtool_from_db_btn)
 
         grid1.addLayout(bhlay, 5, 0, 1, 2)

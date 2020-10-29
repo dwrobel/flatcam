@@ -18,6 +18,11 @@ CHANGELOG for FlatCAM beta
 - fixed the sizePolicy for the FCComboBox widgets in the Preferences that holds the preprocessors
 - fixed issue with how the preamble / postamble GCode were inserted into the final GCode
 - fixed a small issue in GCode Editor where the signals for the buttons were attached again at each launch of the GCode Editor
+- fixed issues in the Tools Database due of recent changes in how the data structure is created
+- made sure that the right tools go only to the intended use, in Tools Database otherwise an error status message is created and Tools DB is closed on adding a wrong tool
+- fixed the usage for Tools Database in Unix-like OS's
+- done some modest refactoring
+- fixed the Search and Add feature in Geometry Object UI
 
 28.10.2020
 

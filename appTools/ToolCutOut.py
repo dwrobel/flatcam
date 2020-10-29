@@ -266,7 +266,7 @@ class CutOut(AppTool):
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
         new_tools_dict = deepcopy(self.default_data)
         updated_tooldia = None
@@ -311,7 +311,7 @@ class CutOut(AppTool):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = "Rough"
+        typ = _("Rough")
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -462,7 +462,12 @@ class CutOut(AppTool):
         :return:
         """
 
-        if tool['data']['tool_target'] != _("Cutout"):
+        if tool['data']['tool_target'] not in [0, 6]:   # [General, Cutout Tool]
+            for idx in range(self.app.ui.plot_tab_area.count()):
+                if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.app.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.app.ui.plot_tab_area.removeTab(idx)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
             return
         tool_from_db = deepcopy(self.default_data)

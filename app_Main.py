@@ -359,54 +359,59 @@ class App(QtCore.QObject):
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
             self.log.debug('Created data folder: ' + self.data_path)
+
             os.makedirs(os.path.join(self.data_path, 'preprocessors'))
             self.log.debug('Created data preprocessors folder: ' + os.path.join(self.data_path, 'preprocessors'))
 
-        self.preprocessorpaths = os.path.join(self.data_path, 'preprocessors')
+        self.preprocessorpaths = self.preprocessors_path()
         if not os.path.exists(self.preprocessorpaths):
             os.makedirs(self.preprocessorpaths)
             self.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
         # create tools_db.FlatDB file if there is none
+        db_path = self.tools_database_path()
         try:
-            f = open(self.data_path + '/tools_db.FlatDB')
+            f = open(db_path)
             f.close()
         except IOError:
             self.log.debug('Creating empty tools_db.FlatDB')
-            f = open(self.data_path + '/tools_db.FlatDB', 'w')
+            f = open(db_path, 'w')
             json.dump({}, f)
             f.close()
 
         # create current_defaults.FlatConfig file if there is none
+        def_path = self.defaults_path()
         try:
-            f = open(self.data_path + '/current_defaults.FlatConfig')
+            f = open(def_path)
             f.close()
         except IOError:
             self.log.debug('Creating empty current_defaults.FlatConfig')
-            f = open(self.data_path + '/current_defaults.FlatConfig', 'w')
+            f = open(def_path, 'w')
             json.dump({}, f)
             f.close()
 
         # the factory defaults are written only once at the first launch of the application after installation
-        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"), self.version)
+        FlatCAMDefaults.save_factory_defaults(self.factory_defaults_path(), self.version)
 
         # create a recent files json file if there is none
+        rec_f_path = self.recent_files_path()
         try:
-            f = open(self.data_path + '/recent.json')
+            f = open(rec_f_path)
             f.close()
         except IOError:
             self.log.debug('Creating empty recent.json')
-            f = open(self.data_path + '/recent.json', 'w')
+            f = open(rec_f_path, 'w')
             json.dump([], f)
             f.close()
 
         # create a recent projects json file if there is none
+        rec_proj_path = self.recent_projects_path()
         try:
-            fp = open(self.data_path + '/recent_projects.json')
+            fp = open(rec_proj_path)
             fp.close()
         except IOError:
             self.log.debug('Creating empty recent_projects.json')
-            fp = open(self.data_path + '/recent_projects.json', 'w')
+            fp = open(rec_proj_path, 'w')
             json.dump([], fp)
             fp.close()
 
@@ -1275,7 +1280,7 @@ class App(QtCore.QObject):
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
-        self.set_ui_title(name=_("New Project - Not saved"))
+        self.ui.set_ui_title(name=_("New Project - Not saved"))
 
         current_platform = platform.architecture()[0]
         if current_platform != '64bit':
@@ -1865,20 +1870,23 @@ class App(QtCore.QObject):
         #     else:
         #         sys.exit(2)
 
-    def set_ui_title(self, name):
-        """
-        Sets the title of the main window.
+    def tools_database_path(self):
+        return os.path.join(self.data_path, 'tools_db.FlatDB')
 
-        :param name: String that store the project path and project name
-        :return: None
-        """
-        self.ui.setWindowTitle('FlatCAM %s %s - %s - [%s]    %s' %
-                               (self.version,
-                                ('BETA' if self.beta else ''),
-                                platform.architecture()[0],
-                                self.engine,
-                                name)
-                               )
+    def defaults_path(self):
+        return os.path.join(self.data_path, 'current_defaults.FlatConfig')
+
+    def factory_defaults_path(self):
+        return os.path.join(self.data_path, 'factory_defaults.FlatConfig')
+
+    def recent_files_path(self):
+        return os.path.join(self.data_path, 'recent.json')
+
+    def recent_projects_path(self):
+        return os.path.join(self.data_path, 'recent_projects.json')
+
+    def preprocessors_path(self):
+        return os.path.join(self.data_path, 'preprocessors')
 
     def on_app_restart(self):
 
@@ -5651,7 +5659,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        filename = self.data_path + '\\tools_db.FlatDB'
+        filename = self.tools_database_path()
 
         # load the database tools from the file
         try:
@@ -5731,9 +5739,18 @@ class App(QtCore.QObject):
         :return:
         """
         tool_from_db = deepcopy(tool)
-
         obj = self.collection.get_active()
         if obj.kind == 'geometry':
+            if tool['data']['tool_target'] not in [0, 1]:    # General, Milling Type
+                # close the tab and delete it
+                for idx in range(self.ui.plot_tab_area.count()):
+                    if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                        wdg = self.ui.plot_tab_area.widget(idx)
+                        wdg.deleteLater()
+                        self.ui.plot_tab_area.removeTab(idx)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+                return
+
             obj.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
@@ -5744,6 +5761,15 @@ class App(QtCore.QObject):
                     self.ui.plot_tab_area.removeTab(idx)
             self.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
         elif obj.kind == 'gerber':
+            if tool['data']['tool_target'] not in [0, 3]:    # General, Isolation Type
+                # close the tab and delete it
+                for idx in range(self.ui.plot_tab_area.count()):
+                    if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                        wdg = self.ui.plot_tab_area.widget(idx)
+                        wdg.deleteLater()
+                        self.ui.plot_tab_area.removeTab(idx)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+                return
             self.isolation_tool.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
@@ -8894,7 +8920,7 @@ class MenuFileHandlers(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
-        self.app.set_ui_title(name=_("New Project - Not saved"))
+        self.app.ui.set_ui_title(name=_("New Project - Not saved"))
 
     def on_filenewscript(self, silent=False):
         """
@@ -9055,7 +9081,7 @@ class MenuFileHandlers(QtCore.QObject):
                 self.app.file_opened.emit("project", self.project_filename)
             self.app.file_saved.emit("project", self.project_filename)
 
-        self.app.set_ui_title(name=self.app.project_filename)
+        self.app.ui.set_ui_title(name=self.app.project_filename)
 
         self.app.should_we_save = False
 
@@ -9107,7 +9133,7 @@ class MenuFileHandlers(QtCore.QObject):
         if not make_copy:
             self.app.project_filename = filename
 
-        self.app.set_ui_title(name=self.app.project_filename)
+        self.app.ui.set_ui_title(name=self.app.project_filename)
         self.app.should_we_save = False
 
     def on_file_save_objects_pdf(self, use_thread=True):
@@ -10316,7 +10342,7 @@ class MenuFileHandlers(QtCore.QObject):
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
-            self.app.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+            self.app.ui.set_ui_title(name=_("Loading Project ... Please Wait ..."))
 
         if run_from_arg:
             self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
@@ -10398,7 +10424,7 @@ class MenuFileHandlers(QtCore.QObject):
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
             if cli is None:
-                self.app.set_ui_title(name="{} {}: {}".format(
+                self.app.ui.set_ui_title(name="{} {}: {}".format(
                     _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
 
             self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
@@ -10414,7 +10440,7 @@ class MenuFileHandlers(QtCore.QObject):
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
-            self.app.set_ui_title(name=self.app.project_filename)
+            self.app.ui.set_ui_title(name=self.app.project_filename)
 
         self.app.log.debug(" **************** Finished PROJECT loading... **************** ")
 
