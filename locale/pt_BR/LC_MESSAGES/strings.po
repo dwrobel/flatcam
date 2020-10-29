@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-28 10:56+0200\n"
-"PO-Revision-Date: 2020-10-28 10:57+0200\n"
+"PO-Revision-Date: 2020-10-29 17:30-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -4520,7 +4520,7 @@ msgstr "DXF como Objeto Gerber"
 
 #: appGUI/MainGUI.py:233
 msgid "HPGL2 as Geometry Object"
-msgstr "HPGL2 como objeto de geometria"
+msgstr "HPGL2 como Objeto de Geometria"
 
 #: appGUI/MainGUI.py:239
 msgid "Export"
@@ -4583,7 +4583,7 @@ msgstr "Backup"
 
 #: appGUI/MainGUI.py:295
 msgid "Import Preferences from file"
-msgstr "Importar preferências de um arquivo"
+msgstr "Importar Preferências de um arquivo"
 
 #: appGUI/MainGUI.py:302
 msgid "Export Preferences to file"
@@ -4913,7 +4913,7 @@ msgstr "`"
 
 #: appGUI/MainGUI.py:544
 msgid "Toggle Grid Snap"
-msgstr "Alternar snap à grade"
+msgstr "Alternar encaixar na grade"
 
 #: appGUI/MainGUI.py:544 appGUI/MainGUI.py:4404
 msgid "G"
@@ -5000,7 +5000,7 @@ msgstr "Especificação Gerber"
 
 #: appGUI/MainGUI.py:610
 msgid "Shortcuts List"
-msgstr "Lista de Atalhos"
+msgstr "Lista de Teclas de Atalho"
 
 #: appGUI/MainGUI.py:610 appGUI/MainGUI.py:4398
 msgid "F3"
@@ -5016,7 +5016,7 @@ msgstr "F4"
 
 #: appGUI/MainGUI.py:619 app_Main.py:3041
 msgid "How To"
-msgstr "Como"
+msgstr "Como posso..."
 
 #: appGUI/MainGUI.py:623 app_Main.py:2713
 msgid "About"
@@ -8540,7 +8540,7 @@ msgstr "Parâmetros do Editor Excellon."
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:41
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:172
 msgid "Selection limit"
-msgstr "Lim. de seleção"
+msgstr "Limite da seleção"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:42
 msgid ""
@@ -9177,7 +9177,7 @@ msgstr "Paisagem"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:193
 msgid "Notebook"
-msgstr "Caderno"
+msgstr "Bloco de Notas"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:195
 msgid ""
@@ -9738,7 +9738,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:321
 msgid "Top Margin"
-msgstr "Margem superiorMargem"
+msgstr "Margem Superior"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:323
 msgid "Distance between text body and the top of the PDF file."
@@ -9746,7 +9746,7 @@ msgstr "Distância entre o corpo do texto e a parte superior do arquivo PDF."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:334
 msgid "Bottom Margin"
-msgstr "Margem inferior"
+msgstr "Margem Inferior"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:336
 msgid "Distance between text body and the bottom of the PDF file."
@@ -9754,7 +9754,7 @@ msgstr "Distância entre o corpo do texto e a parte inferior do arquivo PDF."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:347
 msgid "Left Margin"
-msgstr "Margem esquerdaMargem"
+msgstr "Margem Esquerda"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:349
 msgid "Distance between text body and the left of the PDF file."
@@ -9762,7 +9762,7 @@ msgstr "Distância entre o corpo do texto e a esquerda do arquivo PDF."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:360
 msgid "Right Margin"
-msgstr "Margem direita"
+msgstr "Margem Direita"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:362
 msgid "Distance between text body and the right of the PDF file."
@@ -10141,7 +10141,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:46
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:42
 msgid "Tools Dia"
-msgstr "Diâ. da Ferramenta"
+msgstr "Diâmetros"
 
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:77
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:108
@@ -18538,11 +18538,12 @@ msgstr "Correções"
 #, python-format
 msgid "This program is %s and free in a very wide meaning of the word."
 msgstr ""
-"Este programa é %s e gratuito, com um significado muito amplo da palavra."
+"Este programa é %s e gratuito, com um significado muito\n"
+"amplo da palavra."
 
 #: app_Main.py:3094
 msgid "Yet it cannot evolve without <b>contributions</b>."
-msgstr "No entanto, não pode evoluir sem <b> contribuições </b>."
+msgstr "No entanto, não pode evoluir sem <b>contribuições</b>."
 
 #: app_Main.py:3095
 msgid "If you want to see this application grow and become better and better"
@@ -18550,16 +18551,18 @@ msgstr "Se você quiser ver esse aplicativo crescer e se tornar cada vez melhor"
 
 #: app_Main.py:3096
 msgid "you can <b>contribute</b> to the development yourself by:"
-msgstr "você pode <b> contribuir </b> para o desenvolvimento por:"
+msgstr "você pode <b>contribuir</b> para o desenvolvimento por:"
 
 #: app_Main.py:3097
 msgid "Pull Requests on the Bitbucket repository, if you are a developer"
-msgstr "Solicitações Pull no repositório Bitbucket, se você é um desenvolvedor"
+msgstr ""
+"Se você é um desenvolvedor: <i>Pull Requests</i>, no repositório Bitbucket"
 
 #: app_Main.py:3099
 msgid "Bug Reports by providing the steps required to reproduce the bug"
 msgstr ""
-"Relatórios de erros, fornecendo as etapas necessárias para reproduzir o erro"
+"Relatórios de erros, fornecendo as etapas necessárias\n"
+"para reproduzir o erro"
 
 #: app_Main.py:3101
 msgid "If you like what you have seen so far ..."
@@ -18571,7 +18574,7 @@ msgstr "As doações NÃO são necessárias."
 
 #: app_Main.py:3102
 msgid "But they are welcomed"
-msgstr "Mas eles são bem vindos"
+msgstr "Mas elas são bem-vindas"
 
 #: app_Main.py:3133
 msgid "Contribute"
@@ -18586,8 +18589,9 @@ msgid "Soon ..."
 msgstr "Em breve ..."
 
 #: app_Main.py:3175
+#, fuzzy
 msgid "How To's"
-msgstr "How To's"
+msgstr "Como..."
 
 #: app_Main.py:3287
 msgid ""
@@ -20733,7 +20737,6 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "If you like or use this program you can make a donation"
 #~ msgstr "Se você gosta ou usa este programa, pode fazer uma doação"
 
-#, python-format
 #~ msgid ""
 #~ "You don't have to make a donation %s, and it is totally optional but:"
 #~ msgstr "Você não precisa fazer uma doação %s, e é totalmente opcional, mas:"
@@ -21679,7 +21682,6 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "G-code does not have a units code: either G20 or G21"
 #~ msgstr "O G-Code não possui um código de unidade: G20 ou G21"
 
-#, python-brace-format
 #~ msgid ""
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
@@ -21687,15 +21689,12 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ "[selected] {kind} criado/selecionado: <span style =\"color:{color};"
 #~ "\">{name}</span>"
 
-#, python-brace-format
 #~ msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 #~ msgstr "[selected]<span style=\"color:{color};\">{name}</span> selecionado"
 
-#, python-brace-format
 #~ msgid "{l_save}/Project_{date}"
 #~ msgstr "{l_save}/Project_{date}"
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
@@ -21772,7 +21771,6 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "Axis Ref:"
 #~ msgstr "Eixo de Referência:"
 
-#, python-brace-format
 #~ msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 #~ msgstr "MEDIÇÃO: Resultado D(x) = {d_x} | D(y) = {d_y} | Distância = {d_z}"
 
@@ -21852,7 +21850,6 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "PROJ. OPTIONS "
 #~ msgstr "OPÇÕES PROJ."
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
