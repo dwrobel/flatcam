@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - minor change for the FCComboBox UI element by setting its size policy as ignored so it will not expand the notebook when the name of one of its items is very long
 - added a protection on opening the tools database UI if the tools DB file is not loaded
 - fixed NCC Tool not working with the new changes; the check for not having complete isolation is just a Warning
+- fixed the sizePolicy for the FCComboBox widgets in the Preferences that holds the preprocessors
 
 28.10.2020
 
