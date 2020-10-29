@@ -1601,6 +1601,7 @@ class RulesUI:
 
         # hlay_2.addStretch()
         self.run_button = FCButton(_("Run Rules Check"))
+        self.run_button.setIcon(QtGui.QIcon(self.app.resource_location + '/rules32.png'))
         self.run_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
               "In other words it creates multiple copies of the source object,\n"

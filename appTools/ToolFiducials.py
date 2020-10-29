@@ -882,6 +882,7 @@ class FidoUI:
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = QtWidgets.QPushButton(_("Add Fiducial"))
+        self.add_cfid_button.setIcon(QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'))
         self.add_cfid_button.setToolTip(
             _("Will add a polygon on the copper layer to serve as fiducial.")
         )

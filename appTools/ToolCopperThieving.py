@@ -1420,6 +1420,7 @@ class ThievingUI:
 
         # ## Insert Copper Thieving
         self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
+        self.fill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/copperfill32.png'))
         self.fill_button.setToolTip(
             _("Will add a polygon (may be split in multiple parts)\n"
               "that will surround the actual Gerber traces at a certain distance.")
@@ -1481,6 +1482,7 @@ class ThievingUI:
 
         # ## Insert Robber Bar
         self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
+        self.rb_button.setIcon(QtGui.QIcon(self.app.resource_location + '/robber32.png'))
         self.rb_button.setToolTip(
             _("Will add a polygon with a defined thickness\n"
               "that will surround the actual Gerber object\n"
@@ -1560,6 +1562,7 @@ class ThievingUI:
 
         # ## Pattern Plating Mask
         self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
+        self.ppm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/pattern32.png'))
         self.ppm_button.setToolTip(
             _("Will add to the soldermask gerber geometry\n"
               "the geometries of the copper thieving and/or\n"

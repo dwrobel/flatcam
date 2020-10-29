@@ -13,6 +13,7 @@ from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 from copy import deepcopy
 import logging
 from shapely.geometry import MultiPolygon, Point
+from shapely.ops import unary_union
 
 import gettext
 import appTranslation as fcTranslate
@@ -74,6 +75,12 @@ class ToolPunchGerber(AppTool):
             self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
         )
 
+        self.ui.circular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.oblong_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.square_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
+
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
 
@@ -131,6 +138,10 @@ class ToolPunchGerber(AppTool):
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_punch_hole_prop_factor"]))
 
     def build_tool_ui(self):
+        # reset table
+        self.ui.apertures_table.clear()
+        self.ui.apertures_table.setRowCount(0)
+
         # get the Gerber file who is the source of the punched Gerber
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
@@ -144,17 +155,54 @@ class ToolPunchGerber(AppTool):
             # no object loaded
             sorted_apertures = []
 
-        n = len(sorted_apertures)
+        # n = len(sorted_apertures)
+        # calculate how many rows to add
+        n = 0
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
+            ap_type = obj.apertures[ap_code]['type']
+
+            if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
+                n += 1
+            if ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    n += 1
+                elif self.ui.rectangular_cb.get_value() is True:
+                    n += 1
+            if ap_type == 'O' and self.ui.oblong_cb.get_value() is True:
+                n += 1
+            if ap_type not in ['C', 'R', 'O'] and self.ui.other_cb.get_value() is True:
+                n += 1
+
         self.ui.apertures_table.setRowCount(n)
 
         row = 0
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
 
+            ap_type = obj.apertures[ap_code]['type']
+            if ap_type == 'C':
+                if self.ui.circular_cb.get_value() is False:
+                    continue
+            elif ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    pass
+                elif self.ui.rectangular_cb.get_value() is True:
+                    pass
+                else:
+                    continue
+            elif ap_type == 'O':
+                if self.ui.oblong_cb.get_value() is False:
+                    continue
+            elif self.ui.other_cb.get_value() is True:
+                pass
+            else:
+                continue
+
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-            ap_type_item = QtWidgets.QTableWidgetItem(str(obj.apertures[ap_code]['type']))
+            ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
             ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
@@ -174,6 +222,7 @@ class ToolPunchGerber(AppTool):
             # increment row
             row += 1
 
+        self.ui.apertures_table.selectColumn(0)
         self.ui.apertures_table.resizeColumnsToContents()
         self.ui.apertures_table.resizeRowsToContents()
 
@@ -283,15 +332,45 @@ class ToolPunchGerber(AppTool):
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
+        # selected codes in thre apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
         # this is the punching geometry
         exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
-        if isinstance(grb_obj.solid_geometry, list):
-            grb_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
-        else:
-            grb_solid_geometry = grb_obj.solid_geometry
 
-            # create the punched Gerber solid_geometry
-        punched_solid_geometry = grb_solid_geometry.difference(exc_solid_geometry)
+        # this is the target geometry
+        # if isinstance(grb_obj.solid_geometry, list):
+        #     grb_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
+        # else:
+        #     grb_solid_geometry = grb_obj.solid_geometry
+        grb_solid_geometry = []
+        target_geometry = []
+        for apid in grb_obj.apertures:
+            if 'geometry' in grb_obj.apertures[apid]:
+                for el_geo in grb_obj.apertures[apid]['geometry']:
+                    if 'solid' in el_geo:
+                        if apid in sel_apid:
+                            target_geometry.append(el_geo['solid'])
+                        else:
+                            grb_solid_geometry.append(el_geo['solid'])
+
+        target_geometry = MultiPolygon(target_geometry)
+
+        # create the punched Gerber solid_geometry
+        punched_target_geometry = target_geometry.difference(exc_solid_geometry)
+
+        # add together the punched geometry and the not affected geometry
+        punched_solid_geometry = []
+        try:
+            for geo in punched_target_geometry.geoms:
+                punched_solid_geometry.append(geo)
+        except AttributeError:
+            punched_solid_geometry.append(punched_target_geometry)
+        for geo in grb_solid_geometry:
+            punched_solid_geometry.append(geo)
+        punched_solid_geometry = unary_union(punched_solid_geometry)
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
         new_apertures = deepcopy(grb_obj.apertures)
@@ -304,27 +383,28 @@ class ToolPunchGerber(AppTool):
         holes_apertures = {}
 
         for apid, val in new_apertures_items:
-            for elem in val['geometry']:
-                # make it work only for Gerber Flashes who are Points in 'follow'
-                if 'solid' in elem and isinstance(elem['follow'], Point):
-                    for tool in exc_obj.tools:
-                        clear_apid_size = exc_obj.tools[tool]['tooldia']
+            if apid in sel_apid:
+                for elem in val['geometry']:
+                    # make it work only for Gerber Flashes who are Points in 'follow'
+                    if 'solid' in elem and isinstance(elem['follow'], Point):
+                        for tool in exc_obj.tools:
+                            clear_apid_size = exc_obj.tools[tool]['tooldia']
 
-                        if 'drills' in exc_obj.tools[tool]['drills']:
-                            for drill_pt in exc_obj.tools[tool]['drills']:
-                                # since there may be drills that do not drill into a pad we test only for
-                                # drills in a pad
-                                if drill_pt.within(elem['solid']):
-                                    geo_elem = {}
-                                    geo_elem['clear'] = drill_pt
+                            if 'drills' in exc_obj.tools[tool]:
+                                for drill_pt in exc_obj.tools[tool]['drills']:
+                                    # since there may be drills that do not drill into a pad we test only for
+                                    # drills in a pad
+                                    if drill_pt.within(elem['solid']):
+                                        geo_elem = {}
+                                        geo_elem['clear'] = drill_pt
 
-                                    if clear_apid_size not in holes_apertures:
-                                        holes_apertures[clear_apid_size] = {}
-                                        holes_apertures[clear_apid_size]['type'] = 'C'
-                                        holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                        holes_apertures[clear_apid_size]['geometry'] = []
+                                        if clear_apid_size not in holes_apertures:
+                                            holes_apertures[clear_apid_size] = {}
+                                            holes_apertures[clear_apid_size]['type'] = 'C'
+                                            holes_apertures[clear_apid_size]['size'] = clear_apid_size
+                                            holes_apertures[clear_apid_size]['geometry'] = []
 
-                                    holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+                                        holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
         # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
         # size and add there the clear geometry
@@ -932,8 +1012,8 @@ class PunchUI:
             [
                 {'label': _('Excellon'), 'value': 'exc'},
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
-                {'label': _("Fixed Annular Ring"), 'value': 'ring'},
-                {'label': _("Proportional"), 'value': 'prop'}
+                {'label': _("Proportional"), 'value': 'prop'},
+                {'label': _("Fixed Annular Ring"), 'value': 'ring'}
             ],
             orientation='vertical',
             stretch=False)
@@ -1094,6 +1174,7 @@ class PunchUI:
 
         # Buttons
         self.punch_object_button = QtWidgets.QPushButton(_("Punch Gerber"))
+        self.punch_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/punch32.png'))
         self.punch_object_button.setToolTip(
             _("Create a Gerber object from the selected object, within\n"
               "the specified box.")

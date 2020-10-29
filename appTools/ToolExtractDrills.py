@@ -686,6 +686,7 @@ class ExtractDrillsUI:
 
         # Extract drills from Gerber apertures flashes (pads)
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
+        self.e_drills_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
         self.e_drills_button.setToolTip(
             _("Extract drills from a given Gerber file.")
         )

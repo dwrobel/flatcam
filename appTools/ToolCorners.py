@@ -428,6 +428,7 @@ class CornersUI:
 
         # ## Insert Corner Marker
         self.add_marker_button = FCButton(_("Add Marker"))
+        self.add_marker_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
         self.add_marker_button.setToolTip(
             _("Will add corner markers to the selected Gerber file.")
         )
