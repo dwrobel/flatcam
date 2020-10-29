@@ -277,9 +277,12 @@ class App(QtCore.QObject):
 
         super().__init__()
 
-        App.log.info("FlatCAM Starting...")
+        log.info("FlatCAM Starting...")
 
         self.qapp = qapp
+
+        # declare it here so there is a reference
+        self.f_handlers = lambda: None
 
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
@@ -302,9 +305,9 @@ class App(QtCore.QObject):
         # Folder for user settings.
         if sys.platform == 'win32':
             if platform.architecture()[0] == '32bit':
-                App.log.debug("Win32!")
+                self.log.debug("Win32!")
             else:
-                App.log.debug("Win64!")
+                self.log.debug("Win64!")
 
             # #######################################################################################################
             # ####### CONFIG FILE WITH PARAMETERS REGARDING PORTABILITY #############################################
@@ -333,10 +336,10 @@ class App(QtCore.QObject):
                                 else:
                                     self.cmd_line_headless = None
                     except Exception as e:
-                        log.debug('App.__init__() -->%s' % str(e))
+                        self.log.debug('App.__init__() -->%s' % str(e))
                         return
             except FileNotFoundError as e:
-                log.debug(str(e))
+                self.log.debug(str(e))
                 pass
 
             if portable is False:
@@ -355,21 +358,21 @@ class App(QtCore.QObject):
 
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
-            App.log.debug('Created data folder: ' + self.data_path)
+            self.log.debug('Created data folder: ' + self.data_path)
             os.makedirs(os.path.join(self.data_path, 'preprocessors'))
-            App.log.debug('Created data preprocessors folder: ' + os.path.join(self.data_path, 'preprocessors'))
+            self.log.debug('Created data preprocessors folder: ' + os.path.join(self.data_path, 'preprocessors'))
 
         self.preprocessorpaths = os.path.join(self.data_path, 'preprocessors')
         if not os.path.exists(self.preprocessorpaths):
             os.makedirs(self.preprocessorpaths)
-            App.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
+            self.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
         # create tools_db.FlatDB file if there is none
         try:
             f = open(self.data_path + '/tools_db.FlatDB')
             f.close()
         except IOError:
-            App.log.debug('Creating empty tools_db.FlatDB')
+            self.log.debug('Creating empty tools_db.FlatDB')
             f = open(self.data_path + '/tools_db.FlatDB', 'w')
             json.dump({}, f)
             f.close()
@@ -379,7 +382,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/current_defaults.FlatConfig')
             f.close()
         except IOError:
-            App.log.debug('Creating empty current_defaults.FlatConfig')
+            self.log.debug('Creating empty current_defaults.FlatConfig')
             f = open(self.data_path + '/current_defaults.FlatConfig', 'w')
             json.dump({}, f)
             f.close()
@@ -392,7 +395,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json')
             f.close()
         except IOError:
-            App.log.debug('Creating empty recent.json')
+            self.log.debug('Creating empty recent.json')
             f = open(self.data_path + '/recent.json', 'w')
             json.dump([], f)
             f.close()
@@ -402,7 +405,7 @@ class App(QtCore.QObject):
             fp = open(self.data_path + '/recent_projects.json')
             fp.close()
         except IOError:
-            App.log.debug('Creating empty recent_projects.json')
+            self.log.debug('Creating empty recent_projects.json')
             fp = open(self.data_path + '/recent_projects.json', 'w')
             json.dump([], fp)
             fp.close()
@@ -411,8 +414,8 @@ class App(QtCore.QObject):
         # This will fail under cx_freeze ...
         self.app_home = os.path.dirname(os.path.realpath(__file__))
 
-        log.debug("Application path is " + self.app_home)
-        log.debug("Started in " + os.getcwd())
+        self.log.debug("Application path is " + self.app_home)
+        self.log.debug("Started in " + os.getcwd())
 
         # cx_freeze workaround
         if os.path.isfile(self.app_home):
@@ -649,11 +652,11 @@ class App(QtCore.QObject):
 
         if ret_val == "no language":
             self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
-            log.debug("Could not find the Language files. The App strings are missing.")
+            self.log.debug("Could not find the Language files. The App strings are missing.")
         else:
             # make the current language the current selection on the language combobox
             self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
-            log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
+            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
         # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
@@ -1060,7 +1063,7 @@ class App(QtCore.QObject):
         try:
             self.install_tools()
         except AttributeError as e:
-            log.debug("App.__init__() install_tools() --> %s" % str(e))
+            self.log.debug("App.__init__() install_tools() --> %s" % str(e))
 
         # ###########################################################################################################
         # ######################################### BookMarks Manager ###############################################
@@ -1253,22 +1256,22 @@ class App(QtCore.QObject):
         try:
             self.geo_editor = AppGeoEditor(self)
         except Exception as es:
-            log.debug("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
+            self.log.debug("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
 
         try:
             self.exc_editor = AppExcEditor(self)
         except Exception as es:
-            log.debug("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
+            self.log.debug("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
 
         try:
             self.grb_editor = AppGerberEditor(self)
         except Exception as es:
-            log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
+            self.log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
 
         try:
             self.gcode_editor = AppGCodeEditor(self)
         except Exception as es:
-            log.debug("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
+            self.log.debug("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
@@ -1628,7 +1631,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ##################################### Finished the CONSTRUCTOR ############################################
         # ###########################################################################################################
-        App.log.debug("END of constructor. Releasing control.")
+        self.log.debug("END of constructor. Releasing control.")
 
         # ###########################################################################################################
         # ########################################## SHOW GUI #######################################################
@@ -1756,7 +1759,7 @@ class App(QtCore.QObject):
         else:
             args_to_process = App.args
 
-        log.debug("Application was started with arguments: %s. Processing ..." % str(args_to_process))
+        self.log.debug("Application was started with arguments: %s. Processing ..." % str(args_to_process))
         for argument in args_to_process:
             if '.FlatPrj'.lower() in argument.lower():
                 try:
@@ -1772,7 +1775,7 @@ class App(QtCore.QObject):
                         #                        'params': [project_name, run_from_arg]})
                         self.open_project(filename=project_name, run_from_arg=run_from_arg)
                 except Exception as e:
-                    log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
+                    self.log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
             elif '.FlatConfig'.lower() in argument.lower():
                 try:
@@ -1787,7 +1790,7 @@ class App(QtCore.QObject):
                         #                        'params': [file_name, run_from_arg]})
                         self.open_config_file(file_name, run_from_arg=run_from_arg)
                 except Exception as e:
-                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
+                    self.log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
             elif '.FlatScript'.lower() in argument.lower() or '.TCL'.lower() in argument.lower():
                 try:
@@ -1802,14 +1805,14 @@ class App(QtCore.QObject):
                             self.ui.plot_tab_area.setCurrentWidget(self.ui.plot_tab)
                         self.on_filerunscript(name=file_name)
                 except Exception as e:
-                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+                    self.log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
             elif 'quit'.lower() in argument.lower() or 'exit'.lower() in argument.lower():
-                log.debug("App.on_startup_args() --> Quit event.")
+                self.log.debug("App.on_startup_args() --> Quit event.")
                 sys.exit()
 
             elif 'save'.lower() in argument.lower():
-                log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
+                self.log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
                 self.preferencesUiManager.save_defaults()
             else:
                 exc_list = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
@@ -2052,7 +2055,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        log.debug("init_tools()")
+        self.log.debug("init_tools()")
 
         # delete the data currently in the Tools Tab and the Tab itself
         widget = QtWidgets.QTabWidget.widget(self.ui.notebook, 2)
@@ -2166,7 +2169,7 @@ class App(QtCore.QObject):
         try:
             self.connect_tools_signals_to_toolbar(ui=ui)
         except Exception as err:
-            log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
+            self.log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
 
     def object2editor(self):
         """
@@ -2217,10 +2220,10 @@ class App(QtCore.QObject):
                     if edited_object.tools[tool]['tooldia'] == selected_tooldia:
                         multi_tool = tool
                         break
-                log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
+                self.log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:
-                log.debug("Editing SingleGeo Geometry with tool diameter.")
+                self.log.debug("Editing SingleGeo Geometry with tool diameter.")
                 self.geo_editor.edit_fcgeometry(edited_object)
 
             # set call source to the Editor we go into
@@ -2343,7 +2346,7 @@ class App(QtCore.QObject):
                             edited_obj.options['ymax'] = ymax
                         except AttributeError as e:
                             self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
-                            log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+                            self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 
                         edited_obj.build_ui()
                         edited_obj.plot()
@@ -2577,7 +2580,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("save_to_file")
-        App.log.debug("save_to_file()")
+        self.log.debug("save_to_file()")
 
         self.date = str(datetime.today()).rpartition('.')[0]
         self.date = ''.join(c for c in self.date if c not in ':-')
@@ -2612,7 +2615,7 @@ class App(QtCore.QObject):
                                    "Most likely another app is holding the file open and not accessible."))
                 return
             except IOError:
-                App.log.debug('Creating a new file ...')
+                self.log.debug('Creating a new file ...')
                 f = open(filename, 'w')
                 f.close()
             except Exception:
@@ -3367,7 +3370,7 @@ class App(QtCore.QObject):
                 self.geo_editor.disconnect()
             except TypeError:
                 pass
-            log.debug("App.quit_application() --> Geo Editor deactivated.")
+            self.log.debug("App.quit_application() --> Geo Editor deactivated.")
 
         if self.exc_editor.editor_active is True:
             self.exc_editor.deactivate()
@@ -3375,7 +3378,7 @@ class App(QtCore.QObject):
                 self.grb_editor.disconnect()
             except TypeError:
                 pass
-            log.debug("App.quit_application() --> Excellon Editor deactivated.")
+            self.log.debug("App.quit_application() --> Excellon Editor deactivated.")
 
         if self.grb_editor.editor_active is True:
             self.grb_editor.deactivate_grb_editor()
@@ -3383,7 +3386,7 @@ class App(QtCore.QObject):
                 self.exc_editor.disconnect()
             except TypeError:
                 pass
-            log.debug("App.quit_application() --> Gerber Editor deactivated.")
+            self.log.debug("App.quit_application() --> Gerber Editor deactivated.")
 
         # disconnect the mouse events
         if self.is_legacy:
@@ -3402,7 +3405,7 @@ class App(QtCore.QObject):
             self.kp = self.plotcanvas.graph_event_disconnect('key_press', self.ui.keyPressEvent)
 
         self.preferencesUiManager.save_defaults(silent=True)
-        log.debug("App.quit_application() --> App Defaults saved.")
+        self.log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
             # save app state to file
@@ -3439,7 +3442,7 @@ class App(QtCore.QObject):
             # This will write the setting to the platform specific storage.
             del stgs
 
-        log.debug("App.quit_application() --> App UI state saved.")
+        self.log.debug("App.quit_application() --> App UI state saved.")
 
         # try to quit the Socket opened by ArgsThread class
         try:
@@ -3447,14 +3450,14 @@ class App(QtCore.QObject):
             # self.new_launch.listener.close()
             self.new_launch.stop.emit()
         except Exception as err:
-            log.debug("App.quit_application() --> %s" % str(err))
+            self.log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
             # del self.new_launch
             self.listen_th.quit()
         except Exception as e:
-            log.debug("App.quit_application() --> %s" % str(e))
+            self.log.debug("App.quit_application() --> %s" % str(e))
 
         # terminate workers
         # self.workers.__del__()
@@ -3510,7 +3513,7 @@ class App(QtCore.QObject):
                 try:
                     data = f.readlines()
                 except Exception as e:
-                    log.debug('App.__init__() -->%s' % str(e))
+                    self.log.debug('App.__init__() -->%s' % str(e))
                     return
         except FileNotFoundError:
             pass
@@ -3530,7 +3533,7 @@ class App(QtCore.QObject):
                 f = open(current_data_path + '/current_defaults.FlatConfig')
                 f.close()
             except IOError:
-                App.log.debug('Creating empty current_defaults.FlatConfig')
+                self.log.debug('Creating empty current_defaults.FlatConfig')
                 f = open(current_data_path + '/current_defaults.FlatConfig', 'w')
                 json.dump({}, f)
                 f.close()
@@ -3540,7 +3543,7 @@ class App(QtCore.QObject):
                 f = open(current_data_path + '/factory_defaults.FlatConfig')
                 f.close()
             except IOError:
-                App.log.debug('Creating empty factory_defaults.FlatConfig')
+                self.log.debug('Creating empty factory_defaults.FlatConfig')
                 f = open(current_data_path + '/factory_defaults.FlatConfig', 'w')
                 json.dump({}, f)
                 f.close()
@@ -3549,7 +3552,7 @@ class App(QtCore.QObject):
                 f = open(current_data_path + '/recent.json')
                 f.close()
             except IOError:
-                App.log.debug('Creating empty recent.json')
+                self.log.debug('Creating empty recent.json')
                 f = open(current_data_path + '/recent.json', 'w')
                 json.dump([], f)
                 f.close()
@@ -3558,7 +3561,7 @@ class App(QtCore.QObject):
                 fp = open(current_data_path + '/recent_projects.json')
                 fp.close()
             except IOError:
-                App.log.debug('Creating empty recent_projects.json')
+                self.log.debug('Creating empty recent_projects.json')
                 fp = open(current_data_path + '/recent_projects.json', 'w')
                 json.dump([], fp)
                 fp.close()
@@ -3582,7 +3585,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        log.debug("Manufacturing files extensions are registered with FlatCAM.")
+        self.log.debug("Manufacturing files extensions are registered with FlatCAM.")
 
         new_reg_path = 'Software\\Classes\\'
         # find if the current user is admin
@@ -4093,7 +4096,7 @@ class App(QtCore.QObject):
                     try:
                         tools_diameters = eval(self.defaults[dim])
                     except Exception as e:
-                        log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
+                        self.log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
                         continue
                 elif isinstance(self.defaults[dim], (float, int)):
                     tools_diameters = [self.defaults[dim]]
@@ -4118,7 +4121,7 @@ class App(QtCore.QObject):
                 try:
                     val = float(self.defaults[dim]) * sfactor
                 except Exception as e:
-                    log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
+                    self.log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
                     continue
 
                 self.defaults[dim] = self.dec_format(val, self.decimals)
@@ -4128,7 +4131,7 @@ class App(QtCore.QObject):
                     try:
                         val = float(self.defaults[dim]) * sfactor
                     except Exception as e:
-                        log.debug(
+                        self.log.debug(
                             'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
                         )
                         continue
@@ -4561,7 +4564,7 @@ class App(QtCore.QObject):
                                 del obj_active.annotation
                                 obj_active.probing_shapes.clear(update=True)
                             except AttributeError as e:
-                                log.debug(
+                                self.log.debug(
                                     "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
                                 )
 
@@ -4597,7 +4600,7 @@ class App(QtCore.QObject):
                     # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
                     self.plotcanvas.figure.delaxes(self.collection.get_active().shapes.axes)
                 except Exception as e:
-                    log.debug("App.delete_first_selected() --> %s" % str(e))
+                    self.log.debug("App.delete_first_selected() --> %s" % str(e))
 
             self.plotcanvas.auto_adjust_axes()
 
@@ -5655,7 +5658,7 @@ class App(QtCore.QObject):
             with open(filename) as f:
                 __ = f.read()
         except Exception as eros:
-            log.debug("The tools DB file is not loaded: %s" % str(eros))
+            self.log.debug("The tools DB file is not loaded: %s" % str(eros))
             log.error("Could not access tools DB file. The file may be locked,\n"
                       "not existing or doesn't have the read permissions.\n"
                       "Check to see if exists, it should be here: %s\n"
@@ -5704,7 +5707,7 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
             self.tools_db_tab.setObjectName("database_tab")
         except Exception as e:
-            log.debug("App.on_tools_database() --> %s" % str(e))
+            self.log.debug("App.on_tools_database() --> %s" % str(e))
             return
 
         # delete the absolute and relative position and messages in the infobar
@@ -6056,7 +6059,7 @@ class App(QtCore.QObject):
             else:
                 self.on_zoom_fit()
         except AttributeError as e:
-            log.debug("on_toolbar_replot() -> %s" % str(e))
+            self.log.debug("on_toolbar_replot() -> %s" % str(e))
             pass
 
         self.plot_all()
@@ -6188,7 +6191,7 @@ class App(QtCore.QObject):
         try:
             name = obj.options["name"]
         except AttributeError:
-            log.debug("on_copy_name() --> No object selected to copy it's name")
+            self.log.debug("on_copy_name() --> No object selected to copy it's name")
             self.inform.emit('[WARNING_NOTCL] %s' %
                              _(" No object selected to copy it's name"))
             return
@@ -6236,7 +6239,7 @@ class App(QtCore.QObject):
 
             self.on_mouse_move_over_plot(event, origin_click=True)
         except Exception as e:
-            App.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
+            self.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
 
     def on_mouse_double_click_over_plot(self, event):
         if event.button == 1:
@@ -6371,7 +6374,7 @@ class App(QtCore.QObject):
                             pass
 
             except Exception as e:
-                log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
+                self.log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
                 self.ui.position_label.setText("")
                 self.ui.rel_position_label.setText("")
                 self.mouse = None
@@ -6530,7 +6533,7 @@ class App(QtCore.QObject):
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
                 # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
                 # In this case poly_obj creation (see above) will fail
-                log.debug("App.selection_area_handler() --> %s" % str(e))
+                self.log.debug("App.selection_area_handler() --> %s" % str(e))
 
     def select_objects(self, key=None):
         """
@@ -6956,7 +6959,7 @@ class App(QtCore.QObject):
         try:
             obj = self.collection.get_active()
         except Exception as e:
-            log.debug("App.on_view_source() --> %s" % str(e))
+            self.log.debug("App.on_view_source() --> %s" % str(e))
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
 
@@ -7028,7 +7031,7 @@ class App(QtCore.QObject):
         try:
             self.source_editor_tab.load_text(file.getvalue(), clear_text=True, move_to_start=True)
         except Exception as e:
-            log.debug('App.on_view_source() -->%s' % str(e))
+            self.log.debug('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))
             return
 
@@ -7435,7 +7438,7 @@ class App(QtCore.QObject):
             full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version)
             full_url += "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
-        App.log.debug("Checking for updates @ %s" % full_url)
+        self.log.debug("Checking for updates @ %s" % full_url)
         # ## Get the data
         try:
             f = urllib.request.urlopen(full_url)
@@ -7450,7 +7453,7 @@ class App(QtCore.QObject):
         except Exception as e:
             App.log.error("Could not parse information about latest version.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Could not parse information about latest version."))
-            App.log.debug("json.load(): %s" % str(e))
+            self.log.debug("json.load(): %s" % str(e))
             f.close()
             return
 
@@ -7458,11 +7461,11 @@ class App(QtCore.QObject):
 
         # ## Latest version?
         if self.version >= data["version"]:
-            App.log.debug("FlatCAM is up to date!")
+            self.log.debug("FlatCAM is up to date!")
             self.inform.emit('[success] %s' % _("FlatCAM is up to date!"))
             return
 
-        App.log.debug("Newer version available.")
+        self.log.debug("Newer version available.")
         self.message.emit(
             _("Newer Version Available"),
             '%s<br><br>><b>%s</b><br>%s' % (
@@ -7495,8 +7498,8 @@ class App(QtCore.QObject):
                 self.plotcanvas = PlotCanvas(plot_container, self)
             except Exception as er:
                 msg_txt = traceback.format_exc()
-                log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
-                log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+                self.log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
+                self.log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
                 msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
                 msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
                          "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
@@ -7596,13 +7599,13 @@ class App(QtCore.QObject):
         self.inform.emit('[success] %s' % _("All non selected plots enabled."))
 
     def on_enable_sel_plots(self):
-        log.debug("App.on_enable_sel_plot()")
+        self.log.debug("App.on_enable_sel_plot()")
         object_list = self.collection.get_selected()
         self.enable_plots(objects=object_list)
         self.inform.emit('[success] %s' % _("Selected plots enabled..."))
 
     def on_disable_sel_plots(self):
-        log.debug("App.on_disable_sel_plot()")
+        self.log.debug("App.on_disable_sel_plot()")
 
         # self.inform.emit(_("Disabling plots ..."))
         object_list = self.collection.get_selected()
@@ -7616,7 +7619,7 @@ class App(QtCore.QObject):
         :param objects: list of Objects to be enabled
         :return:
         """
-        log.debug("Enabling plots ...")
+        self.log.debug("Enabling plots ...")
         # self.inform.emit(_("Working ..."))
 
         for obj in objects:
@@ -7659,7 +7662,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        log.debug("Disabling plots ...")
+        self.log.debug("Disabling plots ...")
         # self.inform.emit(_("Working ..."))
 
         for obj in objects:
@@ -7683,7 +7686,7 @@ class App(QtCore.QObject):
         try:
             self.delete_selection_shape()
         except Exception as e:
-            log.debug("App.disable_plots() --> %s" % str(e))
+            self.log.debug("App.disable_plots() --> %s" % str(e))
 
         self.collection.update_view()
 
@@ -7710,7 +7713,7 @@ class App(QtCore.QObject):
         if not self.collection.get_selected():
             return
 
-        log.debug("Toggling plots ...")
+        self.log.debug("Toggling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
             if obj.options['plot'] is False:
@@ -7761,7 +7764,7 @@ class App(QtCore.QObject):
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:
-                log.debug(
+                self.log.debug(
                     "App.on_set_color_action_triggered() --> Default alpfa for this object type not supported yet")
                 continue
             sel_obj.alpha_level = alpha_level
@@ -7806,7 +7809,7 @@ class App(QtCore.QObject):
                     new_color = self.defaults['geometry_plot_line']
                     new_line_color = self.defaults['geometry_plot_line']
                 else:
-                    log.debug(
+                    self.log.debug(
                         "App.on_set_color_action_triggered() --> Default color for this object type not supported yet")
                     continue
 
@@ -7924,7 +7927,7 @@ class App(QtCore.QObject):
         Update the auto save time interval value.
         :return:
         """
-        log.debug("App.save_project_auto_update() --> updated the interval timeout.")
+        self.log.debug("App.save_project_auto_update() --> updated the interval timeout.")
         try:
             if self.autosave_timer.isActive():
                 self.autosave_timer.stop()
@@ -7976,7 +7979,7 @@ class App(QtCore.QObject):
             else:
                 self.shell.append_output(msg + end)
         except AttributeError:
-            log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
+            self.log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
     def dec_format(self, val, dec=None):
         """
