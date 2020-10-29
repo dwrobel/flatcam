@@ -226,7 +226,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
         grid0.addWidget(pp_excellon_label, 14, 0)
         grid0.addWidget(self.pp_excellon_name_cb, 14, 1, 1, 2)
