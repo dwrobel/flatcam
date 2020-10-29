@@ -5648,6 +5648,21 @@ class App(QtCore.QObject):
 
         :return:
         """
+        filename = self.data_path + '\\tools_db.FlatDB'
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                __ = f.read()
+        except Exception as eros:
+            log.debug("The tools DB file is not loaded: %s" % str(eros))
+            log.error("Could not access tools DB file. The file may be locked,\n"
+                      "not existing or doesn't have the read permissions.\n"
+                      "Check to see if exists, it should be here: %s\n"
+                      "It may help to reboot the app, it will try to recreate it if it's missing." % self.data_path)
+            self.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            return 'fail'
+
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 # there can be only one instance of Tools Database at one time
