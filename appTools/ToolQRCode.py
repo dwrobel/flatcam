@@ -892,6 +892,7 @@ class QRcodeUI:
 
         # ## Insert QRCode
         self.qrcode_button = QtWidgets.QPushButton(_("Insert QRCode"))
+        self.qrcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/qrcode32.png'))
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )

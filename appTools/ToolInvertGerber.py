@@ -267,6 +267,7 @@ class InvertUI:
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.invert_btn = FCButton(_('Invert Gerber'))
+        self.invert_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/invert32.png'))
         self.invert_btn.setToolTip(
             _("Will invert the Gerber object: areas that have copper\n"
               "will be empty of copper and previous empty area will be\n"

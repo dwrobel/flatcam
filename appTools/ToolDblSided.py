@@ -785,6 +785,7 @@ class DsidedUI:
         grid_lay3.addWidget(self.box_combo, 3, 0, 1, 2)
 
         self.mirror_button = QtWidgets.QPushButton(_("Mirror"))
+        self.mirror_button.setIcon(QtGui.QIcon(self.app.resource_location + '/doubleside16.png'))
         self.mirror_button.setToolTip(
             _("Mirrors (flips) the specified object around \n"
               "the specified axis. Does not create a new \n"
@@ -921,6 +922,7 @@ class DsidedUI:
 
         # ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
+        self.create_alignment_hole_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
         self.create_alignment_hole_button.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"

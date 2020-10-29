@@ -573,6 +573,7 @@ class OptimalUI:
 
         # GO button
         self.calculate_button = FCButton(_("Find Minimum"))
+        self.calculate_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
               "this will allow the determination of the right tool to\n"

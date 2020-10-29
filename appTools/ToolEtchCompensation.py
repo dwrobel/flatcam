@@ -441,6 +441,7 @@ class EtchUI:
         grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         self.compensate_btn = FCButton(_('Compensate'))
+        self.compensate_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/etch_32.png'))
         self.compensate_btn.setToolTip(
             _("Will increase the copper features thickness to compensate the lateral etch.")
         )

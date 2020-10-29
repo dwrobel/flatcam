@@ -74,6 +74,12 @@ class ToolPunchGerber(AppTool):
             self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
         )
 
+        self.ui.circular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.oblong_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.square_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
+
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
 
@@ -131,6 +137,10 @@ class ToolPunchGerber(AppTool):
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_punch_hole_prop_factor"]))
 
     def build_tool_ui(self):
+        # reset table
+        self.ui.apertures_table.clear()
+        self.ui.apertures_table.setRowCount(0)
+
         # get the Gerber file who is the source of the punched Gerber
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
@@ -144,17 +154,54 @@ class ToolPunchGerber(AppTool):
             # no object loaded
             sorted_apertures = []
 
-        n = len(sorted_apertures)
+        # n = len(sorted_apertures)
+        # calculate how many rows to add
+        n = 0
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
+            ap_type = obj.apertures[ap_code]['type']
+
+            if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
+                n += 1
+            if ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    n += 1
+                elif self.ui.rectangular_cb.get_value() is True:
+                    n += 1
+            if ap_type == 'O' and self.ui.oblong_cb.get_value() is True:
+                n += 1
+            if ap_type not in ['C', 'R', 'O'] and self.ui.other_cb.get_value() is True:
+                n += 1
+
         self.ui.apertures_table.setRowCount(n)
 
         row = 0
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
 
+            ap_type = obj.apertures[ap_code]['type']
+            if ap_type == 'C':
+                if self.ui.circular_cb.get_value() is False:
+                    continue
+            elif ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    pass
+                elif self.ui.rectangular_cb.get_value() is True:
+                    pass
+                else:
+                    continue
+            elif ap_type == 'O':
+                if self.ui.oblong_cb.get_value() is False:
+                    continue
+            elif self.ui.other_cb.get_value() is True:
+                pass
+            else:
+                continue
+
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-            ap_type_item = QtWidgets.QTableWidgetItem(str(obj.apertures[ap_code]['type']))
+            ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
             ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
@@ -174,6 +221,7 @@ class ToolPunchGerber(AppTool):
             # increment row
             row += 1
 
+        self.ui.apertures_table.selectColumn(0)
         self.ui.apertures_table.resizeColumnsToContents()
         self.ui.apertures_table.resizeRowsToContents()
 
@@ -932,8 +980,8 @@ class PunchUI:
             [
                 {'label': _('Excellon'), 'value': 'exc'},
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
-                {'label': _("Fixed Annular Ring"), 'value': 'ring'},
-                {'label': _("Proportional"), 'value': 'prop'}
+                {'label': _("Proportional"), 'value': 'prop'},
+                {'label': _("Fixed Annular Ring"), 'value': 'ring'}
             ],
             orientation='vertical',
             stretch=False)
@@ -1094,6 +1142,7 @@ class PunchUI:
 
         # Buttons
         self.punch_object_button = QtWidgets.QPushButton(_("Punch Gerber"))
+        self.punch_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/punch32.png'))
         self.punch_object_button.setToolTip(
             _("Create a Gerber object from the selected object, within\n"
               "the specified box.")

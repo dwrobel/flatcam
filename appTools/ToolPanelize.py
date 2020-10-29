@@ -8,7 +8,8 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox, \
+    FCButton, FCLabel
 from camlib import grace
 
 from copy import deepcopy
@@ -639,7 +640,7 @@ class PanelizeUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -649,7 +650,7 @@ class PanelizeUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
+        self.object_label = FCLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip(
             _("Specify the type of object to be panelized\n"
               "It can be of type: Gerber, Excellon or Geometry.\n"
@@ -673,7 +674,7 @@ class PanelizeUI:
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.type_object_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+        self.type_object_label = FCLabel('%s:' % _("Object Type"))
 
         form_layout_0.addRow(self.type_object_label, self.type_obj_combo)
 
@@ -696,7 +697,7 @@ class PanelizeUI:
         # Type of box Panel object
         self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
                                          {'label': _('Bounding Box'), 'value': 'bbox'}])
-        self.box_label = QtWidgets.QLabel("<b>%s:</b>" % _("Penelization Reference"))
+        self.box_label = FCLabel("<b>%s:</b>" % _("Penelization Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"
@@ -719,7 +720,7 @@ class PanelizeUI:
         self.type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.type_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Type"))
+        self.type_box_combo_label = FCLabel('%s:' % _("Box Type"))
         self.type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
               "panelization. It can be: Gerber or Geometry type.\n"
@@ -745,7 +746,7 @@ class PanelizeUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         form_layout.addRow(separator_line)
 
-        panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
+        panel_data_label = FCLabel("<b>%s:</b>" % _("Panel Data"))
         panel_data_label.setToolTip(
             _("This informations will shape the resulting panel.\n"
               "The number of rows and columns will set how many\n"
@@ -761,7 +762,7 @@ class PanelizeUI:
         self.spacing_columns.set_range(0, 9999)
         self.spacing_columns.set_precision(4)
 
-        self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
+        self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
               "In current units.")
@@ -773,7 +774,7 @@ class PanelizeUI:
         self.spacing_rows.set_range(0, 9999)
         self.spacing_rows.set_precision(4)
 
-        self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
+        self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
               "In current units.")
@@ -784,7 +785,7 @@ class PanelizeUI:
         self.columns = FCSpinner(callback=self.confirmation_message_int)
         self.columns.set_range(0, 9999)
 
-        self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
+        self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
         )
@@ -794,7 +795,7 @@ class PanelizeUI:
         self.rows = FCSpinner(callback=self.confirmation_message_int)
         self.rows.set_range(0, 9999)
 
-        self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
+        self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
         )
@@ -808,7 +809,7 @@ class PanelizeUI:
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
                                           {'label': _('Geo'), 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Type"))
+        self.panel_type_label = FCLabel("<b>%s:</b>" % _("Panel Type"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
               "- Geometry\n"
@@ -842,7 +843,7 @@ class PanelizeUI:
         self.x_width_entry.set_precision(4)
         self.x_width_entry.set_range(0, 9999)
 
-        self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
+        self.x_width_lbl = FCLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
@@ -853,7 +854,7 @@ class PanelizeUI:
         self.y_height_entry.set_range(0, 9999)
         self.y_height_entry.set_precision(4)
 
-        self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
+        self.y_height_lbl = FCLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")
@@ -869,7 +870,8 @@ class PanelizeUI:
         form_layout.addRow(separator_line)
 
         # Buttons
-        self.panelize_object_button = QtWidgets.QPushButton(_("Panelize Object"))
+        self.panelize_object_button = FCButton(_("Panelize Object"))
+        self.panelize_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/panelize16.png'))
         self.panelize_object_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
               "In other words it creates multiple copies of the source object,\n"
@@ -886,7 +888,7 @@ class PanelizeUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.10.2020
+
+- added icons in most application Tools
+- updated Punch Gerber Tool such that the aperture table is updated upon clicking of the checboxes in Processed Pads Type
+
 28.10.2020
 
 - a series of PEP8 corrections in the FlatCAMGeometry.py
