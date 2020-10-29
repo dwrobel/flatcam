@@ -2111,6 +2111,9 @@ class FCComboBox(QtWidgets.QComboBox):
         self._set_last = False
         self._obj_type = None
 
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+        self.setSizePolicy(sizePolicy)
+
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position
         # self = is the combobox object itself

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - added icons in most application Tools
 - updated Punch Gerber Tool such that the aperture table is updated upon clicking of the checboxes in Processed Pads Type
 - updated Punch Gerber Tool: the Excellon method now takes into consideration the pads choice 
+- minor change for the FCComboBox UI element by setting its size policy as ignored so it will not expand the notebook when the name of one of its items is very long
 
 28.10.2020
 
