@@ -433,7 +433,7 @@ class ToolPunchGerber(AppTool):
                         else:
                             grb_solid_geometry.append(el_geo['solid'])
 
-        target_geometry = MultiPolygon(target_geometry)
+        target_geometry = MultiPolygon(target_geometry).buffer(0)
 
         # create the punched Gerber solid_geometry
         punched_target_geometry = target_geometry.difference(exc_solid_geometry)

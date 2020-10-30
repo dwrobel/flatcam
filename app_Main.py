@@ -281,6 +281,11 @@ class App(QtCore.QObject):
 
         self.qapp = qapp
 
+        # App Editors will be instantiated further below
+        self.exc_editor = None
+        self.grb_editor = None
+        self.geo_editor = None
+
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
@@ -3554,7 +3559,7 @@ class App(QtCore.QObject):
         """
 
         # close editors before quiting the app, if they are open
-        if self.geo_editor.editor_active is True:
+        if self.call_source == 'geo_editor':
             self.geo_editor.deactivate()
             try:
                 self.geo_editor.disconnect()
@@ -3562,7 +3567,7 @@ class App(QtCore.QObject):
                 pass
             self.log.debug("App.quit_application() --> Geo Editor deactivated.")
 
-        if self.exc_editor.editor_active is True:
+        if self.call_source == 'exc_editor':
             self.exc_editor.deactivate()
             try:
                 self.grb_editor.disconnect()
@@ -3570,7 +3575,7 @@ class App(QtCore.QObject):
                 pass
             self.log.debug("App.quit_application() --> Excellon Editor deactivated.")
 
-        if self.grb_editor.editor_active is True:
+        if self.call_source == 'grb_editor':
             self.grb_editor.deactivate_grb_editor()
             try:
                 self.exc_editor.disconnect()
@@ -4705,8 +4710,7 @@ class App(QtCore.QObject):
 
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
-        if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
-                and self.grb_editor.editor_active is False and self.gcode_editor.editor_active is False:
+        if self.call_source == 'app':
             if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
