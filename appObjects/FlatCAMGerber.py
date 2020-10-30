@@ -995,9 +995,8 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             visibility = kwargs['visible']
 
-        with self.app.proc_container.new(_("Plotting Apertures")):
-
-            def job_thread(app_obj):
+        def job_thread(app_obj):
+            with self.app.proc_container.new(_("Plotting Apertures")):
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         for elem in app_obj.apertures[aperture_to_plot_mark]['geometry']:
@@ -1022,10 +1021,10 @@ class GerberObject(FlatCAMObj, Gerber):
                 except Exception as e:
                     log.debug("GerberObject.plot_aperture() --> %s" % str(e))
 
-            if run_thread:
-                self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
-            else:
-                job_thread(self)
+        if run_thread:
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+        else:
+            job_thread(self)
 
     def clear_plot_apertures(self, aperture='all'):
         """

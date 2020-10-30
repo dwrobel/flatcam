@@ -26,6 +26,9 @@ CHANGELOG for FlatCAM beta
 - fixed issue with preamble not being inserted when used alone
 - modified the way that the start GCode is stored such that now the bug in GCode Editor that did not allowed selection of the first tool is now solved
 - in Punch Gerber Tool added a column in the apertures table that allow marking of the selected aperture so the user can see what apertures are selected
+- improvements in the Punch Gerber Tool aperture markings
+- improved the Geometry Object functionality in regards of Tools DB, deleting a tool and adding a tool
+- when using the 'T' shortcut key with Properties Tab in focus and populated with the properties of a Geometry Object made the popped up spinner to have the value autoselected
 
 28.10.2020
 

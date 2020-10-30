@@ -1015,7 +1015,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui_connect()
 
-    def on_tool_add(self, dia=None, new_geo=None):
+    def on_tool_add(self, clicked_state, dia=None, new_geo=None):
         log.debug("GeometryObject.on_add_tool()")
 
         self.ui_disconnect()
@@ -1023,6 +1023,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         filename = self.app.tools_database_path()
 
         tool_dia = dia if dia is not None else self.ui.addtool_entry.get_value()
+
         # construct a list of all 'tooluid' in the self.iso_tools
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
@@ -1146,6 +1147,10 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # update the UI form
         self.update_ui()
+
+        # if there is at least one tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.geo_param_frame.setDisabled(False)
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
 
@@ -1397,7 +1402,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_connect()
         self.builduiSig.emit()
 
-    def on_tool_delete(self, all_tools=None):
+    def on_tool_delete(self, clicked_signal, all_tools=None):
+        """
+        It's important to keep the not clicked_signal parameter otherwise the signal will go to the all_tools
+        parameter and I might get all the tool deleted
+        """
         self.ui_disconnect()
 
         if all_tools is None:

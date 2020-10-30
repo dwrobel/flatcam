@@ -35,6 +35,9 @@ class ToolPunchGerber(AppTool):
         self.decimals = self.app.decimals
         self.units = self.app.defaults['units']
 
+        # store here the old object name
+        self.old_name = ''
+
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
@@ -93,12 +96,19 @@ class ToolPunchGerber(AppTool):
         except Exception:
             return
 
+        if self.old_name != '':
+            old_obj = self.app.collection.get_by_name(self.old_name)
+            old_obj.clear_plot_apertures()
+            old_obj.mark_shapes.enabled = False
+
         # enable mark shapes
         grb_obj.mark_shapes.enabled = True
 
         # create storage for shapes
         for ap_code in grb_obj.apertures:
             grb_obj.mark_shapes_storage[ap_code] = []
+
+        self.old_name = grb_obj.options['name']
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
@@ -275,7 +285,7 @@ class ToolPunchGerber(AppTool):
 
         self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
-        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
         self.ui_connect()
@@ -294,6 +304,18 @@ class ToolPunchGerber(AppTool):
             self.ui.square_cb.setChecked(False)
             self.ui.rectangular_cb.setChecked(False)
             self.ui.other_cb.setChecked(False)
+
+            # get the Gerber file who is the source of the punched Gerber
+            selection_index = self.ui.gerber_object_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+            try:
+                grb_obj = model_index.internalPointer().obj
+            except Exception:
+                return
+
+            grb_obj.clear_plot_apertures()
+
         self.ui_connect()
 
     def on_method(self, val):
