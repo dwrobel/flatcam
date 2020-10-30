@@ -2128,6 +2128,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         :return: None
         """
+        self.app.log.debug(" -> Add actions to new Toolbars")
 
         # ########################################################################
         # ## File Toolbar # ##
