@@ -479,6 +479,7 @@ class AlignUI:
 
         # Buttons
         self.align_object_button =FCButton(_("Align Object"))
+        self.align_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/align16.png'))
         self.align_object_button.setToolTip(
             _("Align the specified object to the aligner object.\n"
               "If only one point is used then it assumes translation.\n"

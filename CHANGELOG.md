@@ -7,6 +7,16 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.10.2020
+
+- fixed the Punch Gerber Tool bug that did not allowed the projects to be loaded or to create a new project. Fixed issue #456
+- in Tool Subtract added an option to delete the source objects after a successful operation. Fixed issue #455
+- when entering into an Editor now the Project tab is disabled and the Properties tab where the Editor is installed change the text to 'Editor' and the color is set in Red. After exiting the Tab text is reverted to previous state.
+- fixed and issue where the Tab color that was changed in various states of the app was reverted back to a default color 'black'. Now it reverts to whatever color had before therefore being compatible with an usage of black theme
+- fixed bug that did not allow joining of any object to a Geometry object
+- working on solving the lost triggered signals for the Editor Toolbars buttons after changing the layout
+- fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
+
 29.10.2020
 
 - added icons in most application Tools
@@ -20,7 +30,7 @@ CHANGELOG for FlatCAM beta
 - fixed a small issue in GCode Editor where the signals for the buttons were attached again at each launch of the GCode Editor
 - fixed issues in the Tools Database due of recent changes in how the data structure is created
 - made sure that the right tools go only to the intended use, in Tools Database otherwise an error status message is created and Tools DB is closed on adding a wrong tool
-- fixed the usage for Tools Database in Unix-like OS's
+- fixed the usage for Tools Database in Unix-like OS's; fixed issue #453
 - done some modest refactoring
 - fixed the Search and Add feature in Geometry Object UI
 - fixed issue with preamble not being inserted when used alone
@@ -29,6 +39,8 @@ CHANGELOG for FlatCAM beta
 - improvements in the Punch Gerber Tool aperture markings
 - improved the Geometry Object functionality in regards of Tools DB, deleting a tool and adding a tool
 - when using the 'T' shortcut key with Properties Tab in focus and populated with the properties of a Geometry Object made the popped up spinner to have the value autoselected
+- optimized the UI in Extract Drills Tool
+- added some more icons for buttons
 
 28.10.2020
 

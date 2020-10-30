@@ -230,6 +230,7 @@ class ExclusionAreas(QtCore.QObject):
 
         self.app = app
 
+        self.app.log.debug("+ Adding Exclusion Areas")
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
         if self.app.is_legacy is False:

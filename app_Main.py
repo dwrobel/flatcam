@@ -281,9 +281,6 @@ class App(QtCore.QObject):
 
         self.qapp = qapp
 
-        # declare it here so there is a reference
-        self.f_handlers = lambda: None
-
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
@@ -609,23 +606,6 @@ class App(QtCore.QObject):
 
         # When the self.defaults dictionary changes will update the Preferences GUI forms
         self.defaults.set_change_callback(self.on_defaults_dict_change)
-
-        # ###########################################################################################################
-        # ##################################### FIRST RUN SECTION ###################################################
-        # ################################ It's done only once after install   #####################################
-        # ###########################################################################################################
-        if self.defaults["first_run"] is True:
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
-            initial_lay = 'minimal'
-            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
-
-            # after the first run, this object should be False
-            self.defaults["first_run"] = False
-            self.preferencesUiManager.save_defaults(silent=True)
 
         # ###########################################################################################################
         # ############################################ Data #########################################################
@@ -1184,6 +1164,9 @@ class App(QtCore.QObject):
 
         self.text_editor_tab = None
 
+        # here store the color of a Tab text before it is changed so it can be restored in the future
+        self.old_tab_text_color = None
+
         # reference for the self.ui.code_editor
         self.reference_code_editor = None
         self.script_code = ''
@@ -1281,7 +1264,10 @@ class App(QtCore.QObject):
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.ui.set_ui_title(name=_("New Project - Not saved"))
-
+        
+        # ###########################################################################################################
+        # ########################################## Install OPTIMIZATIONS for GCode generation #####################
+        # ###########################################################################################################
         current_platform = platform.architecture()[0]
         if current_platform != '64bit':
             # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
@@ -1307,6 +1293,25 @@ class App(QtCore.QObject):
 
         # this is calculated in the class above (somehow?)
         self.defaults["root_folder_path"] = self.app_home
+
+        # ###########################################################################################################
+        # ##################################### FIRST RUN SECTION ###################################################
+        # ################################ It's done only once after install   #####################################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
+            self.log.debug("-> First Run: Setting up the first Layout" )
+            initial_lay = 'minimal'
+            self.on_layout(lay=initial_lay)
+
+            # Set the combobox in Preferences to the current layout
+            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+
+            # after the first run, this object should be False
+            self.defaults["first_run"] = False
+            self.log.debug("-> First Run: Updating the Defaults file with Factory Defaults")
+            self.preferencesUiManager.save_defaults(silent=True)
 
         # ###########################################################################################################
         # ############################################### SYS TRAY ##################################################
@@ -1494,7 +1499,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
         # ToolBar signals
-        self.connect_toolbar_signals(ui=self.ui)
+        self.connect_toolbar_signals()
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -2100,84 +2105,245 @@ class App(QtCore.QObject):
     #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
     #                            'params': []})
 
-    def connect_tools_signals_to_toolbar(self, ui):
-        ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
-        ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
-        ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
-        ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+    def connect_tools_signals_to_toolbar(self):
+        self.log.debug(" -> Connecting Tools Toolbar Signals")
 
-        ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
-        ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
-        ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
-        ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
-        ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
+        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
+        self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
 
-        ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
-        ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
-        ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
-        ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
-        ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
+        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
+        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
+        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
+        self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
+        self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
 
-        ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
-        ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
-        ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
-        ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
-        ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
-        ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
-        ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
-        ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
-        ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
+        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
+        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
+        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
+        self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+        self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
+        self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
 
-    def connect_toolbar_signals(self, ui):
+        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
+        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
+        self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
+        self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
+        self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
+        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
+        self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
+        self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
+        self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
+
+    def connect_editors_toolbar_signals(self):
+        self.log.debug(" -> Connecting Editors Toolbar Signals")
+
+        # Geometry Editor Toolbar Signals
+        self.geo_editor.connect_geo_toolbar_signals()
+
+        # Gerber Editor Toolbar Signals
+        self.grb_editor.connect_grb_toolbar_signals()
+
+        # Excellon Editor Toolbar Signals
+        self.exc_editor.connect_exc_toolbar_signals()
+
+    def connect_toolbar_signals(self):
         """
         Reconnect the signals to the actions in the toolbar.
         This has to be done each time after the FlatCAM tools are removed/installed.
 
         :return: None
         """
-
+        self.log.debug(" -> Connecting Toolbar Signals")
         # Toolbar
 
         # File Toolbar Signals
         # ui.file_new_btn.triggered.connect(self.on_file_new)
-        ui.file_open_btn.triggered.connect(self.f_handlers.on_file_openproject)
-        ui.file_save_btn.triggered.connect(self.f_handlers.on_file_saveproject)
-        ui.file_open_gerber_btn.triggered.connect(self.f_handlers.on_fileopengerber)
-        ui.file_open_excellon_btn.triggered.connect(self.f_handlers.on_fileopenexcellon)
+        self.ui.file_open_btn.triggered.connect(self.f_handlers.on_file_openproject)
+        self.ui.file_save_btn.triggered.connect(self.f_handlers.on_file_saveproject)
+        self.ui.file_open_gerber_btn.triggered.connect(self.f_handlers.on_fileopengerber)
+        self.ui.file_open_excellon_btn.triggered.connect(self.f_handlers.on_fileopenexcellon)
 
         # View Toolbar Signals
-        ui.clear_plot_btn.triggered.connect(self.clear_plots)
-        ui.replot_btn.triggered.connect(self.plot_all)
-        ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
-        ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
-        ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
+        self.ui.replot_btn.triggered.connect(self.plot_all)
+        self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
+        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
+        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        ui.editgeo_btn.triggered.connect(self.object2editor)
-        ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
-        ui.copy_btn.triggered.connect(self.on_copy_command)
-        ui.delete_btn.triggered.connect(self.on_delete)
+        self.ui.editgeo_btn.triggered.connect(self.object2editor)
+        self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
+        self.ui.copy_btn.triggered.connect(self.on_copy_command)
+        self.ui.delete_btn.triggered.connect(self.on_delete)
 
-        ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
-        ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
-        ui.origin_btn.triggered.connect(self.on_set_origin)
-        ui.move2origin_btn.triggered.connect(self.on_move2origin)
+        self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
+        self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
+        self.ui.origin_btn.triggered.connect(self.on_set_origin)
+        self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
 
-        ui.jmp_btn.triggered.connect(self.on_jump_to)
-        ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
+        self.ui.jmp_btn.triggered.connect(self.on_jump_to)
+        self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         # Scripting Toolbar Signals
-        ui.shell_btn.triggered.connect(ui.toggle_shell_ui)
-        ui.new_script_btn.triggered.connect(self.f_handlers.on_filenewscript)
-        ui.open_script_btn.triggered.connect(self.f_handlers.on_fileopenscript)
-        ui.run_script_btn.triggered.connect(self.f_handlers.on_filerunscript)
+        self.ui.shell_btn.triggered.connect(self.ui.toggle_shell_ui)
+        self.ui.new_script_btn.triggered.connect(self.f_handlers.on_filenewscript)
+        self.ui.open_script_btn.triggered.connect(self.f_handlers.on_fileopenscript)
+        self.ui.run_script_btn.triggered.connect(self.f_handlers.on_filerunscript)
 
         # Tools Toolbar Signals
         try:
-            self.connect_tools_signals_to_toolbar(ui=ui)
+            self.connect_tools_signals_to_toolbar()
         except Exception as err:
             self.log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
+
+    def on_layout(self, index=None, lay=None):
+        """
+        Set the toolbars layout (location)
+
+        :param index:
+        :param lay:     Type of layout to be set on the toolbard
+        :return:        None
+        """
+
+        self.defaults.report_usage("on_layout()")
+        self.log.debug(" ---> New Layout")
+
+        if lay:
+            current_layout = lay
+        else:
+            current_layout = self.ui.general_defaults_form.general_gui_group.layout_combo.get_value()
+
+        lay_settings = QSettings("Open Source", "FlatCAM")
+        lay_settings.setValue('layout', current_layout)
+
+        # This will write the setting to the platform specific storage.
+        del lay_settings
+
+        # first remove the toolbars:
+        self.log.debug(" -> Remove Toolbars")
+        try:
+            self.ui.removeToolBar(self.ui.toolbarfile)
+            self.ui.removeToolBar(self.ui.toolbaredit)
+            self.ui.removeToolBar(self.ui.toolbarview)
+            self.ui.removeToolBar(self.ui.toolbarshell)
+            self.ui.removeToolBar(self.ui.toolbartools)
+            self.ui.removeToolBar(self.ui.exc_edit_toolbar)
+            self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+            self.ui.removeToolBar(self.ui.grb_edit_toolbar)
+            self.ui.removeToolBar(self.ui.toolbarshell)
+        except Exception:
+            pass
+
+        self.log.debug(" -> Add New Toolbars")
+        if current_layout == 'compact':
+            # ## TOOLBAR INSTALLATION # ##
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+
+            self.ui.toolbaredit = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbaredit.setObjectName('Edit_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbaredit)
+
+            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.ui.toolbarshell.setObjectName('Shell_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
+
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
+
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
+
+            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
+
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
+
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.exc_edit_toolbar)
+        else:
+            # ## TOOLBAR INSTALLATION # ##
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(self.ui.toolbarfile)
+
+            self.ui.toolbaredit = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbaredit.setObjectName('Edit_TB')
+            self.ui.addToolBar(self.ui.toolbaredit)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(self.ui.toolbarview)
+
+            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.ui.toolbarshell.setObjectName('Shell_TB')
+            self.ui.addToolBar(self.ui.toolbarshell)
+
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(self.ui.toolbartools)
+
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            # self.ui.exc_edit_toolbar.setVisible(False)
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(self.ui.exc_edit_toolbar)
+
+            self.ui.addToolBarBreak()
+
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            # self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(self.ui.geo_edit_toolbar)
+
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(self.ui.grb_edit_toolbar)
+
+        if current_layout == 'minimal':
+            self.ui.toolbarview.setVisible(False)
+            self.ui.toolbarshell.setVisible(False)
+            self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.exc_edit_toolbar.setVisible(False)
+            self.ui.lock_toolbar(lock=True)
+
+        # add all the actions to the toolbars
+        self.ui.populate_toolbars()
+
+        try:
+            # reconnect all the signals to the toolbar actions
+            self.connect_toolbar_signals()
+        except Exception as e:
+            self.log.debug(
+                "App.on_layout() - connect toolbar signals -> %s" % str(e))
+
+        # Editor Toolbars Signals
+        try:
+            self.connect_editors_toolbar_signals()
+        except Exception as err:
+            self.log.debug("App.on_layout() - connect editor signals -> %s" % str(err))
+
+        self.ui.grid_snap_btn.setChecked(True)
+
+        self.ui.corner_snap_btn.setVisible(False)
+        self.ui.snap_magnet.setVisible(False)
+
+        self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
+        self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
+        self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
+        self.ui.grid_gap_link_cb.setChecked(True)
 
     def object2editor(self):
         """
@@ -2186,7 +2352,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("object2editor()")
-
+        self.log.debug("######################### Starting the EDITOR ################################")
         # disable the objects menu as it may interfere with the appEditors
         self.ui.menuobjects.setDisabled(True)
 
@@ -2236,7 +2402,6 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
-
         elif isinstance(edited_object, ExcellonObject):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
@@ -2248,7 +2413,6 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
-
         elif isinstance(edited_object, GerberObject):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
@@ -2263,7 +2427,6 @@ class App(QtCore.QObject):
 
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
-
         elif isinstance(edited_object, CNCJobObject):
 
             if self.ui.splitter.sizes()[0] == 0:
@@ -2275,8 +2438,18 @@ class App(QtCore.QObject):
             self.gcode_editor.edit_fcgcode(edited_object)
 
         # make sure that we can't select another object while in Editor Mode:
-        # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
+
+        for idx in range(self.ui.notebook.count()):
+            # store the Properties Tab text color here and change the color and text
+            if self.ui.notebook.tabText(idx) == _("Properties"):
+                self.old_tab_text_color = self.ui.notebook.tabBar.tabTextColor(idx)
+                self.ui.notebook.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+                self.ui.notebook.tabBar.setTabText(idx, _("Editor"))
+
+            # disable the Project Tab
+            if self.ui.notebook.tabText(idx) == _("Project"):
+                self.ui.notebook.tabBar.setTabEnabled(idx, False)
 
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
@@ -2302,6 +2475,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("editor2object()")
+        self.log.debug("######################### Closing the EDITOR ################################")
 
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
@@ -2431,7 +2605,6 @@ class App(QtCore.QObject):
                         return
 
                     self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
-
                 elif response == bt_no:
                     # show the Tools Toolbar
                     tools_tb = self.ui.toolbartools
@@ -2498,6 +2671,16 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
+            for idx in range(self.ui.notebook.count()):
+                # restore the Properties Tab text and color
+                if self.ui.notebook.tabText(idx) == _("Editor"):
+                    self.ui.notebook.tabBar.setTabTextColor(idx, self.old_tab_text_color)
+                    self.ui.notebook.tabBar.setTabText(idx, _("Properties"))
+
+                # enable the Project Tab
+                if self.ui.notebook.tabText(idx) == _("Project"):
+                    self.ui.notebook.tabBar.setTabEnabled(idx, True)
+
             # restore the call_source to app
             self.call_source = 'app'
 
@@ -2506,7 +2689,6 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-            # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
             self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
@@ -3634,12 +3816,12 @@ class App(QtCore.QObject):
             # register all keys in the Preferences window
             for ext in exc_list:
                 new_k = new_reg_path + '.%s' % ext
-                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+                set_reg('', root_pth=root_path, new_reg_path_par=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_excellon"].replace(' ', '').split(','):
                 if ext not in exc_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
+                    delete_reg(root_pth=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
             # now write the updated extensions to the self.defaults
             # new_ext = ''
@@ -3655,18 +3837,13 @@ class App(QtCore.QObject):
             # register all keys in the Preferences window
             for ext in gco_list:
                 new_k = new_reg_path + '.%s' % ext
-                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+                set_reg('', root_pth=root_path, new_reg_path_par=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_gcode"].replace(' ', '').split(','):
                 if ext not in gco_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
+                    delete_reg(root_pth=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
-            # now write the updated extensions to the self.defaults
-            # new_ext = ''
-            # for ext in gco_list:
-            #     new_ext = new_ext + ext + ', '
-            # self.defaults["fa_gcode"] = new_ext
             self.inform.emit('[success] %s' %
                              _("Selected GCode file extensions registered with FlatCAM."))
 
@@ -3677,20 +3854,14 @@ class App(QtCore.QObject):
             # register all keys in the Preferences window
             for ext in grb_list:
                 new_k = new_reg_path + '.%s' % ext
-                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+                set_reg('', root_pth=root_path, new_reg_path_par=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_gerber"].replace(' ', '').split(','):
                 if ext not in grb_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
+                    delete_reg(root_pth=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
-            # now write the updated extensions to the self.defaults
-            # new_ext = ''
-            # for ext in grb_list:
-            #     new_ext = new_ext + ext + ', '
-            # self.defaults["fa_gerber"] = new_ext
-            self.inform.emit('[success] %s' %
-                             _("Selected Gerber file extensions registered with FlatCAM."))
+            self.inform.emit('[success] %s' % _("Selected Gerber file extensions registered with FlatCAM."))
 
     def add_extension(self, ext_type):
         """
@@ -3900,7 +4071,7 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=True, fuse_tools=fuse_tools)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=True, fuse_tools=fuse_tools)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -3910,7 +4081,7 @@ class App(QtCore.QObject):
             self.app_obj.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=False, fuse_tools=fuse_tools)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multi_geo=False, fuse_tools=fuse_tools)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -5598,12 +5769,12 @@ class App(QtCore.QObject):
         # self.ui.show()
 
         self.ui.pref_status_label.setStyleSheet("""
-                                                            QLabel
-                                                            {
-                                                                color: black;
-                                                                background-color: lightseagreen;
-                                                            }
-                                                            """
+                                                QLabel
+                                                {
+                                                    color: black;
+                                                    background-color: lightseagreen;
+                                                }
+                                                """
                                                 )
 
         # detect changes in the preferences

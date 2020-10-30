@@ -1530,7 +1530,13 @@ class AppExcEditor(QtCore.QObject):
 
         self.e_ui = AppExcEditorUI(app=self.app)
         
-        # SIGNALS
+        # #############################################################################################################
+        # ######################### Excellon Editor Signals ###########################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_exc_toolbar_signals()
+
         self.e_ui.convert_slots_btn.clicked.connect(self.on_slots_conversion)
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.e_ui.name_entry.returnPressed.connect(self.on_name_activate)
@@ -1564,16 +1570,7 @@ class AppExcEditor(QtCore.QObject):
         self.exc_obj = None
 
         # ## Toolbar events and properties
-        self.tools_exc = {
-            "drill_select":     {"button": self.app.ui.select_drill_btn, "constructor": FCDrillSelect},
-            "drill_add":        {"button": self.app.ui.add_drill_btn, "constructor": FCDrillAdd},
-            "drill_array":      {"button": self.app.ui.add_drill_array_btn, "constructor": FCDrillArray},
-            "slot_add":         {"button": self.app.ui.add_slot_btn, "constructor": FCSlot},
-            "slot_array":       {"button": self.app.ui.add_slot_array_btn, "constructor": FCSlotArray},
-            "drill_resize":     {"button": self.app.ui.resize_drill_btn, "constructor": FCDrillResize},
-            "drill_copy":       {"button": self.app.ui.copy_drill_btn, "constructor": FCDrillCopy},
-            "drill_move":       {"button": self.app.ui.move_drill_btn, "constructor": FCDrillMove},
-        }
+        self.tools_exc = {}
 
         # ## Data
         self.active_tool = None
@@ -1650,15 +1647,6 @@ class AppExcEditor(QtCore.QObject):
 
         self.complete = False
 
-        def make_callback(thetool):
-            def f():
-                self.on_tool_select(thetool)
-            return f
-
-        for tool in self.tools_exc:
-            self.tools_exc[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools_exc[tool]["button"].setCheckable(True)  # Checkable
-
         self.options = {
             "global_gridx":     0.1,
             "global_gridy":     0.1,
@@ -1705,6 +1693,28 @@ class AppExcEditor(QtCore.QObject):
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
         log.debug("Initialization of the Excellon Editor is finished ...")
+
+    def make_callback(self, thetool):
+        def f():
+            self.on_tool_select(thetool)
+
+        return f
+
+    def connect_exc_toolbar_signals(self):
+        self.tools_exc.update({
+            "drill_select":     {"button": self.app.ui.select_drill_btn,    "constructor": FCDrillSelect},
+            "drill_add":        {"button": self.app.ui.add_drill_btn,       "constructor": FCDrillAdd},
+            "drill_array":      {"button": self.app.ui.add_drill_array_btn, "constructor": FCDrillArray},
+            "slot_add":         {"button": self.app.ui.add_slot_btn,        "constructor": FCSlot},
+            "slot_array":       {"button": self.app.ui.add_slot_array_btn,  "constructor": FCSlotArray},
+            "drill_resize":     {"button": self.app.ui.resize_drill_btn,    "constructor": FCDrillResize},
+            "drill_copy":       {"button": self.app.ui.copy_drill_btn,      "constructor": FCDrillCopy},
+            "drill_move":       {"button": self.app.ui.move_drill_btn,      "constructor": FCDrillMove},
+        })
+
+        for tool in self.tools_exc:
+            self.tools_exc[tool]["button"].triggered.connect(self.make_callback(tool))  # Events
+            self.tools_exc[tool]["button"].setCheckable(True)  # Checkable
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool

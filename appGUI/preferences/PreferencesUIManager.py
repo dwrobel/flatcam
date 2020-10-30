@@ -42,6 +42,8 @@ class PreferencesUIManager:
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 
+        self.old_color = QtGui.QColor('black')
+
         # when adding entries here read the comments in the  method found below named:
         # def app_obj.new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
@@ -538,7 +540,10 @@ class PreferencesUIManager:
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
+
+            # Subtractor Tool
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
+            "tools_sub_delete_sources":  self.ui.tools_defaults_form.tools_sub_group.delete_sources_cb,
 
             # Corner Markers Tool
 
@@ -905,7 +910,7 @@ class PreferencesUIManager:
         # Preferences save, update the color of the Preferences Tab text
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
 
         # restore the default stylesheet by setting a blank one
         self.ui.pref_apply_button.setStyleSheet("")
@@ -998,7 +1003,7 @@ class PreferencesUIManager:
             # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                     self.ui.plot_tab_area.closeTab(idx)
                     break
 
@@ -1026,7 +1031,7 @@ class PreferencesUIManager:
         # Preferences save, update the color of the Preferences Tab text
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                 self.ui.plot_tab_area.closeTab(idx)
                 break
 
@@ -1131,6 +1136,7 @@ class PreferencesUIManager:
 
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.old_color = self.ui.plot_tab_area.tabBar.tabTextColor(idx)
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
             self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")

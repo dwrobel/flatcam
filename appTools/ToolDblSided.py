@@ -706,6 +706,7 @@ class DsidedUI:
 
         # Add a reference
         self.add_point_button = QtWidgets.QPushButton(_("Add"))
+        self.add_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.add_point_button.setToolTip(
             _("Add the coordinates in format <b>(x, y)</b> through which the mirroring axis\n "
               "selected in 'MIRROR AXIS' pass.\n"
@@ -893,6 +894,7 @@ class DsidedUI:
         grid5.addWidget(self.alignment_holes, 1, 0, 1, 2)
 
         self.add_drill_point_button = FCButton(_("Add"))
+        self.add_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.add_drill_point_button.setToolTip(
             _("Add alignment drill holes coordinates in the format: (x1, y1), (x2, y2), ... \n"
               "on one side of the alignment axis.\n\n"
@@ -910,6 +912,7 @@ class DsidedUI:
         #                 """)
 
         self.delete_drill_point_button = FCButton(_("Delete Last"))
+        self.delete_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delete_drill_point_button.setToolTip(
             _("Delete the last coordinates tuple in the list.")
         )

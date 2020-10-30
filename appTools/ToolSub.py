@@ -133,6 +133,7 @@ class ToolSub(AppTool):
 
         self.ui.tools_frame.show()
         self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
+        self.ui.delete_sources_cb.setChecked(self.app.defaults["tools_sub_delete_sources"])
 
     def on_subtract_gerber_click(self):
         # reset previous values
@@ -359,6 +360,11 @@ class ToolSub(AppTool):
             # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Created"), outname))
 
+            # Delete source objects if it was selected
+            if self.ui.delete_sources_cb.get_value():
+                self.app.collection.delete_by_name(self.target_grb_obj_name)
+                self.app.collection.delete_by_name(self.sub_grb_obj_name)
+
             # cleanup
             self.new_apertures.clear()
             self.new_solid_geometry[:] = []
@@ -549,6 +555,11 @@ class ToolSub(AppTool):
             # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Created"), outname))
 
+            # Delete source objects if it was selected
+            if self.ui.delete_sources_cb.get_value():
+                self.app.collection.delete_by_name(self.target_geo_obj_name)
+                self.app.collection.delete_by_name(self.sub_geo_obj_name)
+
             # cleanup
             self.new_tools.clear()
             self.new_solid_geometry[:] = []
@@ -667,8 +678,22 @@ class SubUI:
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
+        self.delete_sources_cb = FCCheckBox(_("Delete source"))
+        self.delete_sources_cb.setToolTip(
+            _("When checked will delete the source objects\n"
+              "after a successful operation.")
+        )
+        grid0.addWidget(self.delete_sources_cb, 0, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 3)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 4, 0, 1, 2)
+
         self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
-        grid0.addWidget(self.gerber_title, 0, 0, 1, 2)
+        grid0.addWidget(self.gerber_title, 6, 0, 1, 2)
 
         # Target Gerber Object
         self.target_gerber_combo = FCComboBox()
@@ -684,8 +709,8 @@ class SubUI:
               "the subtractor Gerber object.")
         )
 
-        grid0.addWidget(self.target_gerber_label, 2, 0)
-        grid0.addWidget(self.target_gerber_combo, 2, 1)
+        grid0.addWidget(self.target_gerber_label, 8, 0)
+        grid0.addWidget(self.target_gerber_combo, 8, 1)
 
         # Substractor Gerber Object
         self.sub_gerber_combo = FCComboBox()
@@ -700,8 +725,8 @@ class SubUI:
               "from the target Gerber object.")
         )
 
-        grid0.addWidget(self.sub_gerber_label, 4, 0)
-        grid0.addWidget(self.sub_gerber_combo, 4, 1)
+        grid0.addWidget(self.sub_gerber_label, 10, 0)
+        grid0.addWidget(self.sub_gerber_combo, 10, 1)
 
         self.intersect_btn = FCButton(_('Subtract Gerber'))
         self.intersect_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/subtract_btn32.png'))
@@ -717,11 +742,11 @@ class SubUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.intersect_btn, 6, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 8, 0, 1, 2)
+        grid0.addWidget(self.intersect_btn, 12, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 14, 0, 1, 2)
 
         self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
-        grid0.addWidget(self.geo_title, 10, 0, 1, 2)
+        grid0.addWidget(self.geo_title, 16, 0, 1, 2)
 
         # Target Geometry Object
         self.target_geo_combo = FCComboBox()
@@ -737,8 +762,8 @@ class SubUI:
               "the subtractor Geometry object.")
         )
 
-        grid0.addWidget(self.target_geo_label, 12, 0)
-        grid0.addWidget(self.target_geo_combo, 12, 1)
+        grid0.addWidget(self.target_geo_label, 18, 0)
+        grid0.addWidget(self.target_geo_combo, 18, 1)
 
         # Substractor Geometry Object
         self.sub_geo_combo = FCComboBox()
@@ -753,13 +778,13 @@ class SubUI:
               "from the target Geometry object.")
         )
 
-        grid0.addWidget(self.sub_geo_label, 14, 0)
-        grid0.addWidget(self.sub_geo_combo, 14, 1)
+        grid0.addWidget(self.sub_geo_label, 20, 0)
+        grid0.addWidget(self.sub_geo_combo, 20, 1)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))
         self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
 
-        grid0.addWidget(self.close_paths_cb, 16, 0, 1, 2)
+        grid0.addWidget(self.close_paths_cb, 22, 0, 1, 2)
 
         self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
         self.intersect_geo_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/subtract_btn32.png'))
@@ -774,8 +799,8 @@ class SubUI:
                                 }
                                 """)
 
-        grid0.addWidget(self.intersect_geo_btn, 18, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 20, 0, 1, 2)
+        grid0.addWidget(self.intersect_geo_btn, 24, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
 
         self.tools_box.addStretch()
 

@@ -98,17 +98,19 @@ class ToolPunchGerber(AppTool):
 
         if self.old_name != '':
             old_obj = self.app.collection.get_by_name(self.old_name)
-            old_obj.clear_plot_apertures()
-            old_obj.mark_shapes.enabled = False
+            if old_obj:
+                old_obj.clear_plot_apertures()
+                old_obj.mark_shapes.enabled = False
 
         # enable mark shapes
-        grb_obj.mark_shapes.enabled = True
+        if grb_obj:
+            grb_obj.mark_shapes.enabled = True
 
-        # create storage for shapes
-        for ap_code in grb_obj.apertures:
-            grb_obj.mark_shapes_storage[ap_code] = []
+            # create storage for shapes
+            for ap_code in grb_obj.apertures:
+                grb_obj.mark_shapes_storage[ap_code] = []
 
-        self.old_name = grb_obj.options['name']
+            self.old_name = grb_obj.options['name']
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
