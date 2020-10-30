@@ -2164,7 +2164,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if preamble == '':
             preamble = self.app.defaults["cncjob_prepend"]
         if postamble == '':
-            preamble = self.app.defaults["cncjob_append"]
+            postamble = self.app.defaults["cncjob_append"]
 
         try:
             if self.special_group:
@@ -2190,7 +2190,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         gcode = ''
         if include_header is False:
-            g = preamble
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
                 for tooluid_key in self.cnc_tools:
@@ -2201,7 +2200,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             else:
                 gcode += self.gcode
 
-            g = g + gcode + postamble
+            g = preamble + '\n' + gcode + '\n' + postamble
         else:
             # search for the GCode beginning which is usually a G20 or G21
             # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
@@ -2251,39 +2250,51 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             break
 
             if hpgl:
-                processed_gcode = ''
+                processed_body_gcode = ''
                 pa_re = re.compile(r"^PA\s*(-?\d+\.\d*),?\s*(-?\d+\.\d*)*;?$")
+
+                # process body gcode
                 for gline in gcode.splitlines():
                     match = pa_re.search(gline)
                     if match:
                         x_int = int(float(match.group(1)))
                         y_int = int(float(match.group(2)))
                         new_line = 'PA%d,%d;\n' % (x_int, y_int)
-                        processed_gcode += new_line
+                        processed_body_gcode += new_line
                     else:
-                        processed_gcode += gline + '\n'
+                        processed_body_gcode += gline + '\n'
 
-                gcode = processed_gcode
-                g = self.gc_header + '\n' + preamble + '\n' + gcode + postamble + end_gcode
+                gcode = processed_body_gcode
+                g = self.gc_header + '\n' + self.gc_start + '\n'  + preamble + '\n' + \
+                    gcode + '\n' + postamble + end_gcode
             else:
-                try:
-                    g_idx = gcode.index('G94')
-                    if preamble != '' and postamble != '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                            gcode[(g_idx + 3):] + postamble + end_gcode
-                    elif preamble == '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
-                            gcode[(g_idx + 3):] + postamble + end_gcode
-                    elif postamble == '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                            gcode[(g_idx + 3):] + end_gcode
-                    else:
-                        g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("G-code does not have a G94 code.\n"
-                                           "Append Code snippet will not be used.."))
-                    g = self.gc_header + '\n' + gcode + postamble + end_gcode
+                # try:
+                #     g_idx = gcode.index('G94')
+                #     if preamble != '' and postamble != '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                #             gcode[(g_idx + 3):] + postamble + end_gcode
+                #     elif preamble == '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
+                #             gcode[(g_idx + 3):] + postamble + end_gcode
+                #     elif postamble == '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                #             gcode[(g_idx + 3):] + end_gcode
+                #     else:
+                #         g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
+                # except ValueError:
+                #     self.app.inform.emit('[ERROR_NOTCL] %s' %
+                #                          _("G-code does not have a G94 code.\n"
+                #                            "Append Code snippet will not be used.."))
+                #     g = self.gc_header + '\n' + gcode + postamble + end_gcode
+                if preamble != '' and postamble != '':
+                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + \
+                        postamble + '\n' + end_gcode
+                if preamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+                if postamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
+                if preamble == '' and postamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + end_gcode
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         # if self.ui.toolchange_cb.get_value() is True:

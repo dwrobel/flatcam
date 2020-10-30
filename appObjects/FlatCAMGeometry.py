@@ -2172,10 +2172,13 @@ class GeometryObject(FlatCAMObj, Geometry):
                 job_obj.options['type'] = 'Geometry'
                 job_obj.options['tool_dia'] = tooldia_val
 
+                tool_lst = list(tools_dict.keys())
+                is_first = True if tooluid_key == tool_lst[0] else False
+
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
                 tol = float(self.app.defaults['global_tolerance']) / 20
-                res = job_obj.generate_from_geometry_2(
+                res, start_gcode = job_obj.generate_from_geometry_2(
                     self, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
@@ -2184,13 +2187,15 @@ class GeometryObject(FlatCAMObj, Geometry):
                     extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
-                    tool_no=tool_cnt)
+                    tool_no=tool_cnt, is_first=is_first)
 
                 if res == 'fail':
                     log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
-                else:
-                    dia_cnc_dict['gcode'] = res
+
+                dia_cnc_dict['gcode'] = res
+                if start_gcode != '':
+                    job_obj.gc_start = start_gcode
 
                 total_gcode += res
 
@@ -2216,7 +2221,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 })
                 dia_cnc_dict.clear()
 
-            job_obj.source_file = total_gcode
+            job_obj.source_file = job_obj.gc_start + total_gcode
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -2513,18 +2518,17 @@ class GeometryObject(FlatCAMObj, Geometry):
             # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
             # to a value of 0.0005 which is 20 times less than 0.01
             tol = float(self.app.defaults['global_tolerance']) / 20
-            res = job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
-                                                   z_cut=z_cut, z_move=z_move, feedrate=feedrate,
-                                                   feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                                                   spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
-                                                   multidepth=multidepth, depthpercut=depthperpass,
-                                                   toolchange=toolchange, toolchangez=toolchangez,
-                                                   toolchangexy=toolchangexy,
-                                                   extracut=extracut, extracut_length=extracut_length,
-                                                   startz=startz, endz=endz, endxy=endxy,
-                                                   pp_geometry_name=ppname_g)
+            res, start_gcode = job_obj.generate_from_geometry_2(
+                self, tooldia=tooldia, offset=offset, tolerance=tol, z_cut=z_cut, z_move=z_move, feedrate=feedrate,
+                feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid, spindlespeed=spindlespeed, dwell=dwell,
+                dwelltime=dwelltime, multidepth=multidepth, depthpercut=depthperpass, toolchange=toolchange,
+                toolchangez=toolchangez, toolchangexy=toolchangexy, extracut=extracut, extracut_length=extracut_length,
+                startz=startz, endz=endz, endxy=endxy, pp_geometry_name=ppname_g, is_first=True)
 
-            job_obj.source_file = res
+            if start_gcode != '':
+                job_obj.gc_start = start_gcode
+
+            job_obj.source_file = start_gcode + res
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"

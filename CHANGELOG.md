@@ -23,6 +23,8 @@ CHANGELOG for FlatCAM beta
 - fixed the usage for Tools Database in Unix-like OS's
 - done some modest refactoring
 - fixed the Search and Add feature in Geometry Object UI
+- fixed issue with preamble not being inserted when used alone
+- modified the way that the start GCode is stored such that now the bug in GCode Editor that did not allowed selection of the first tool is now solved
 
 28.10.2020
 

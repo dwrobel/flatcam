@@ -337,6 +337,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             if ret_val == 'fail':
                 return 'fail'
+            job_obj.gc_start = ret_val[1]
 
             for t_item in job_obj.exc_cnc_tools:
                 job_obj.exc_cnc_tools[t_item]['data']['tools_drill_offset'] = \
