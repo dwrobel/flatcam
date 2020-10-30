@@ -209,6 +209,10 @@ class FCPad(FCShapeTool):
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Pad first select a aperture in Aperture Table"))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
             self.draw_app.in_action = False
             self.complete = True
             return

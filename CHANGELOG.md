@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.10.2020
+
+- adapted HPGL importer to work within the new app
+- in Gerber Editor fixed an error when using the Distance Tool with "Snap to center" option active: if clicking not on a pad Distance Tool was not working
+- updated the Turkish translation strings (by Mehmet Kaya)
+
 30.10.2020
 
 - fixed the Punch Gerber Tool bug that did not allowed the projects to be loaded or to create a new project. Fixed issue #456

@@ -364,7 +364,8 @@ class Distance(AppTool):
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Pads overlapped. Aborting."))
                         return
 
-                    pos = (clicked_pads[0].x, clicked_pads[0].y)
+                    if clicked_pads:
+                        pos = (clicked_pads[0].x, clicked_pads[0].y)
 
                 self.app.on_jump_to(custom_location=pos, fit_center=False)
                 # Update cursor

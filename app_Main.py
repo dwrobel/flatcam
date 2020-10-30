@@ -10344,7 +10344,7 @@ class MenuFileHandlers(QtCore.QObject):
                 "Expected to initialize a GeometryObject but got %s" % type(geo_obj)
 
             # Opening the file happens here
-            obj = HPGL2(self)
+            obj = HPGL2(self.app)
             try:
                 HPGL2.parse_file(obj, filename)
             except IOError:
