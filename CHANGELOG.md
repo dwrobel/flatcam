@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - adapted HPGL importer to work within the new app
 - in Gerber Editor fixed an error when using the Distance Tool with "Snap to center" option active: if clicking not on a pad Distance Tool was not working
 - updated the Turkish translation strings (by Mehmet Kaya)
+- typo fixed in Copper Thieving Tool (due of recent changes)
 
 30.10.2020
 
