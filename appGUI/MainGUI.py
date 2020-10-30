@@ -2131,7 +2131,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.app.log.debug(" -> Add actions to new Toolbars")
 
         # ########################################################################
-        # ## File Toolbar # ##
+        # ##################### File Toolbar #####################################
         # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
@@ -2144,7 +2144,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
         # ########################################################################
-        # ## Edit Toolbar # ##
+        # ######################### Edit Toolbar #################################
         # ########################################################################
         self.editgeo_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Editor"))
@@ -2258,7 +2258,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation Tool"))
 
         # ########################################################################
-        # ## Excellon Editor Toolbar # ##
+        # ################### Excellon Editor Toolbar ############################
         # ########################################################################
         self.select_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
@@ -2284,7 +2284,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
 
         # ########################################################################
-        # ## Geometry Editor Toolbar # ##
+        # ################### Geometry Editor Toolbar ############################
         # ########################################################################
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select 'Esc'"))
@@ -2336,7 +2336,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
         # ########################################################################
-        # ## Gerber Editor Toolbar # ##
+        # ################### Gerber Editor Toolbar ##############################
         # ########################################################################
         self.grb_select_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))

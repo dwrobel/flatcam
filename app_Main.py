@@ -2136,23 +2136,17 @@ class App(QtCore.QObject):
         self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
         self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
 
-    def connect_editors_signals_to_toolbar(self):
+    def connect_editors_toolbar_signals(self):
         self.log.debug(" -> Connecting Editors Toolbar Signals")
 
         # Geometry Editor Toolbar Signals
-        for tool in self.geo_editor.tools:
-            self.geo_editor.tools[tool]["button"].triggered.connect(lambda: self.geo_editor.on_tool_select(tool))
-            self.geo_editor.tools[tool]["button"].setCheckable(True)
+        self.geo_editor.connect_geo_toolbar_signals()
 
         # Gerber Editor Toolbar Signals
-        for tool in self.grb_editor.tools_gerber:
-            self.grb_editor.tools_gerber[tool]["button"].triggered.connect(lambda: self.grb_editor.on_tool_select(tool))
-            self.grb_editor.tools_gerber[tool]["button"].setCheckable(True)
+        self.grb_editor.connect_grb_toolbar_signals()
 
         # Excellon Editor Toolbar Signals
-        for tool in self.exc_editor.tools_exc:
-            self.exc_editor.tools_exc[tool]["button"].triggered.connect(lambda: self.exc_editor.on_tool_select(tool))
-            self.exc_editor.tools_exc[tool]["button"].setCheckable(True)
+        self.exc_editor.connect_exc_toolbar_signals()
 
     def connect_toolbar_signals(self):
         """
@@ -2203,12 +2197,6 @@ class App(QtCore.QObject):
             self.connect_tools_signals_to_toolbar()
         except Exception as err:
             self.log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
-
-        # Editor Toolbars Signals
-        try:
-            self.connect_editors_signals_to_toolbar()
-        except Exception as err:
-            self.log.debug("App.connect_toolbar_signals() editor signals -> %s" % str(err))
 
     def on_layout(self, index=None, lay=None):
         """
@@ -2268,7 +2256,6 @@ class App(QtCore.QObject):
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
 
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
 
@@ -2279,7 +2266,6 @@ class App(QtCore.QObject):
             self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.ui.grb_edit_toolbar.setVisible(False)
             self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
 
@@ -2342,6 +2328,12 @@ class App(QtCore.QObject):
         except Exception as e:
             self.log.debug(
                 "App.on_layout() - connect toolbar signals -> %s" % str(e))
+
+        # Editor Toolbars Signals
+        try:
+            self.connect_editors_toolbar_signals()
+        except Exception as err:
+            self.log.debug("App.on_layout() - connect editor signals -> %s" % str(err))
 
         self.ui.grid_snap_btn.setChecked(True)
 

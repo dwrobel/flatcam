@@ -3317,22 +3317,7 @@ class AppGeoEditor(QtCore.QObject):
         self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # ## Toolbar events and properties
-        self.tools = {
-            "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
-            "arc": {"button": self.app.ui.geo_add_arc_btn, "constructor": FCArc},
-            "circle": {"button": self.app.ui.geo_add_circle_btn, "constructor": FCCircle},
-            "path": {"button": self.app.ui.geo_add_path_btn, "constructor": FCPath},
-            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn, "constructor": FCRectangle},
-            "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
-            "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
-            "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
-            "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
-            "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
-            "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
-            "transform": {"button": self.app.ui.geo_transform_btn, "constructor": FCTransform},
-            "copy": {"button": self.app.ui.geo_copy_btn, "constructor": FCCopy},
-            "explode": {"button": self.app.ui.geo_explode_btn, "constructor": FCExplode}
-        }
+        self.tools = {}
 
         # # ## Data
         self.active_tool = None
@@ -3388,15 +3373,6 @@ class AppGeoEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        def make_callback(thetool):
-            def f():
-                self.on_tool_select(thetool)
-            return f
-
-        for tool in self.tools:
-            self.tools[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools[tool]["button"].setCheckable(True)  # Checkable
-
         self.app.ui.grid_snap_btn.triggered.connect(self.on_grid_toggled)
         self.app.ui.corner_snap_btn.setCheckable(True)
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
@@ -3438,6 +3414,14 @@ class AppGeoEditor(QtCore.QObject):
         self.paint_tool = PaintOptionsTool(self.app, self)
         self.transform_tool = TransformEditorTool(self.app, self)
 
+        # #############################################################################################################
+        # ####################### GEOMETRY Editor Signals #############################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_geo_toolbar_signals()
+
+        # connect Geometry Editor Menu signals
         self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
         self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
         self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
@@ -3474,6 +3458,34 @@ class AppGeoEditor(QtCore.QObject):
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
         log.debug("Initialization of the Geometry Editor is finished ...")
+
+    def make_callback(self, thetool):
+        def f():
+            self.on_tool_select(thetool)
+
+        return f
+
+    def connect_geo_toolbar_signals(self):
+        self.tools.update({
+            "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
+            "arc": {"button": self.app.ui.geo_add_arc_btn, "constructor": FCArc},
+            "circle": {"button": self.app.ui.geo_add_circle_btn, "constructor": FCCircle},
+            "path": {"button": self.app.ui.geo_add_path_btn, "constructor": FCPath},
+            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn, "constructor": FCRectangle},
+            "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
+            "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
+            "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
+            "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
+            "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
+            "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
+            "transform": {"button": self.app.ui.geo_transform_btn, "constructor": FCTransform},
+            "copy": {"button": self.app.ui.geo_copy_btn, "constructor": FCCopy},
+            "explode": {"button": self.app.ui.geo_explode_btn, "constructor": FCExplode}
+        })
+
+        for tool in self.tools:
+            self.tools[tool]["button"].triggered.connect(self.make_callback(tool))  # Events
+            self.tools[tool]["button"].setCheckable(True)  # Checkable
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool

@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed and issue where the Tab color that was changed in various states of the app was reverted back to a default color 'black'. Now it reverts to whatever color had before therefore being compatible with an usage of black theme
 - fixed bug that did not allow joining of any object to a Geometry object
 - working on solving the lost triggered signals for the Editor Toolbars buttons after changing the layout
+- fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
 
 29.10.2020
 

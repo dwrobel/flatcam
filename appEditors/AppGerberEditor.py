@@ -2912,38 +2912,7 @@ class AppGerberEditor(QtCore.QObject):
         self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # Toolbar events and properties
-        self.tools_gerber = {
-            "select": {"button": self.app.ui.grb_select_btn,
-                       "constructor": FCApertureSelect},
-            "pad": {"button": self.app.ui.grb_add_pad_btn,
-                    "constructor": FCPad},
-            "array": {"button": self.app.ui.add_pad_ar_btn,
-                      "constructor": FCPadArray},
-            "track": {"button": self.app.ui.grb_add_track_btn,
-                      "constructor": FCTrack},
-            "region": {"button": self.app.ui.grb_add_region_btn,
-                       "constructor": FCRegion},
-            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,
-                           "constructor": FCPoligonize},
-            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,
-                         "constructor": FCSemiDisc},
-            "disc": {"button": self.app.ui.grb_add_disc_btn,
-                     "constructor": FCDisc},
-            "buffer": {"button": self.app.ui.aperture_buffer_btn,
-                       "constructor": FCBuffer},
-            "scale": {"button": self.app.ui.aperture_scale_btn,
-                      "constructor": FCScale},
-            "markarea": {"button": self.app.ui.aperture_markarea_btn,
-                         "constructor": FCMarkArea},
-            "eraser": {"button": self.app.ui.aperture_eraser_btn,
-                       "constructor": FCEraser},
-            "copy": {"button": self.app.ui.aperture_copy_btn,
-                     "constructor": FCApertureCopy},
-            "transform": {"button": self.app.ui.grb_transform_btn,
-                          "constructor": FCTransform},
-            "move": {"button": self.app.ui.aperture_move_btn,
-                     "constructor": FCApertureMove},
-        }
+        self.tools_gerber = {}
 
         # # ## Data
         self.active_tool = None
@@ -3034,15 +3003,6 @@ class AppGerberEditor(QtCore.QObject):
         def_tol_val = float(self.app.defaults["global_tolerance"])
         self.tolerance = def_tol_val if self.units == 'MM'else def_tol_val / 20
 
-        def make_callback(the_tool):
-            def f():
-                self.on_tool_select(the_tool)
-            return f
-
-        for tool in self.tools_gerber:
-            self.tools_gerber[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools_gerber[tool]["button"].setCheckable(True)
-
         self.options = {
             "global_gridx": 0.1,
             "global_gridy": 0.1,
@@ -3082,7 +3042,13 @@ class AppGerberEditor(QtCore.QObject):
 
         self.transform_tool = TransformEditorTool(self.app, self)
 
-        # Signals
+        # #############################################################################################################
+        # ######################### Gerber Editor Signals #############################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_grb_toolbar_signals()
+
         self.buffer_button.clicked.connect(self.on_buffer)
         self.scale_button.clicked.connect(self.on_scale)
 
@@ -3135,6 +3101,35 @@ class AppGerberEditor(QtCore.QObject):
 
         self.set_ui()
         log.debug("Initialization of the Gerber Editor is finished ...")
+
+    def make_callback(self, the_tool):
+        def f():
+            self.on_tool_select(the_tool)
+
+        return f
+
+    def connect_grb_toolbar_signals(self):
+        self.tools_gerber.update({
+            "select": {"button": self.app.ui.grb_select_btn,            "constructor": FCApertureSelect},
+            "pad": {"button": self.app.ui.grb_add_pad_btn,              "constructor": FCPad},
+            "array": {"button": self.app.ui.add_pad_ar_btn,             "constructor": FCPadArray},
+            "track": {"button": self.app.ui.grb_add_track_btn,          "constructor": FCTrack},
+            "region": {"button": self.app.ui.grb_add_region_btn,        "constructor": FCRegion},
+            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,  "constructor": FCPoligonize},
+            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,    "constructor": FCSemiDisc},
+            "disc": {"button": self.app.ui.grb_add_disc_btn,            "constructor": FCDisc},
+            "buffer": {"button": self.app.ui.aperture_buffer_btn,       "constructor": FCBuffer},
+            "scale": {"button": self.app.ui.aperture_scale_btn,         "constructor": FCScale},
+            "markarea": {"button": self.app.ui.aperture_markarea_btn,   "constructor": FCMarkArea},
+            "eraser": {"button": self.app.ui.aperture_eraser_btn,       "constructor": FCEraser},
+            "copy": {"button": self.app.ui.aperture_copy_btn,           "constructor": FCApertureCopy},
+            "transform": {"button": self.app.ui.grb_transform_btn,      "constructor": FCTransform},
+            "move": {"button": self.app.ui.aperture_move_btn,           "constructor": FCApertureMove},
+        })
+
+        for tool in self.tools_gerber:
+            self.tools_gerber[tool]["button"].triggered.connect(self.make_callback(tool))  # Events
+            self.tools_gerber[tool]["button"].setCheckable(True)
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
