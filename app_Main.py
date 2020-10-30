@@ -4436,6 +4436,7 @@ class App(QtCore.QObject):
                                                     text='%s:' % _('Enter a Tool Diameter'),
                                                     min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
                     tool_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/letter_t_32.png'))
+                    tool_add_popup.wdg.selectAll()
 
                     val, ok = tool_add_popup.get_value()
                     if ok:
@@ -4443,7 +4444,7 @@ class App(QtCore.QObject):
                             self.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Please enter a tool diameter with non-zero value, in Float format."))
                             return
-                        self.collection.get_active().on_tool_add(dia=float(val))
+                        self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
