@@ -3034,9 +3034,6 @@ class AppGerberEditor(QtCore.QObject):
         # a QThread for the edit process
         self.thread = QtCore.QThread()
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
-
         # def entry2option(option, entry):
         #     self.options[option] = float(entry.text())
 
@@ -3089,9 +3086,6 @@ class AppGerberEditor(QtCore.QObject):
         self.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
         self.mp_finished.connect(self.on_multiprocessing_finished)
-
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
 
         self.conversion_factor = 1
 
@@ -3730,9 +3724,6 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.popmenu_properties.setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(True)
 
-        # Tell the App that the editor is active
-        self.editor_active = True
-
     def deactivate_grb_editor(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3762,9 +3753,6 @@ class AppGerberEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
         # self.app.app_cursor.enabled = False
-
-        # Tell the app that the editor is no longer active
-        self.editor_active = False
 
         self.app.ui.grb_editor_menu.setDisabled(True)
         self.app.ui.grb_editor_menu.menuAction().setVisible(False)

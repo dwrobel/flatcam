@@ -3455,8 +3455,6 @@ class AppGeoEditor(QtCore.QObject):
         self.mm = None
         self.mr = None
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
         log.debug("Initialization of the Geometry Editor is finished ...")
 
     def make_callback(self, thetool):
@@ -3661,9 +3659,6 @@ class AppGeoEditor(QtCore.QObject):
         # for w in sel_tab_widget_list:
         #     w.setEnabled(False)
 
-        # Tell the App that the editor is active
-        self.editor_active = True
-
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
@@ -3712,9 +3707,6 @@ class AppGeoEditor(QtCore.QObject):
 
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
-
-        # Tell the app that the editor is no longer active
-        self.editor_active = False
 
         self.app.ui.popmenu_disable.setVisible(True)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(True)

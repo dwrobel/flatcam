@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - working on solving the lost triggered signals for the Editor Toolbars buttons after changing the layout
 - fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
 - updated the translation strings
+- more bugs that were introduced by recent changes done to solve other bugs and so on: fixed issues with the Editors and Delete shortcut
 
 29.10.2020
 

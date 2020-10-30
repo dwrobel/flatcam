@@ -43,9 +43,6 @@ class AppGCodeEditor(QtCore.QObject):
         self.gcode_obj = None
         self.code_edited = ''
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
-
         # #################################################################################
         # ################### SIGNALS #####################################################
         # #################################################################################
@@ -611,11 +608,9 @@ class AppGCodeEditor(QtCore.QObject):
                 file.close()
 
     def activate(self):
-        self.editor_active = True
         self.app.call_source = 'gcode_editor'
 
     def deactivate(self):
-        self.editor_active = False
         self.app.call_source = 'app'
 
     def on_name_activate(self):

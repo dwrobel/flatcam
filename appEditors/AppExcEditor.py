@@ -1529,43 +1529,6 @@ class AppExcEditor(QtCore.QObject):
         self.decimals = self.app.decimals
 
         self.e_ui = AppExcEditorUI(app=self.app)
-        
-        # #############################################################################################################
-        # ######################### Excellon Editor Signals ###########################################################
-        # #############################################################################################################
-
-        # connect the toolbar signals
-        self.connect_exc_toolbar_signals()
-
-        self.e_ui.convert_slots_btn.clicked.connect(self.on_slots_conversion)
-        self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
-        self.e_ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.e_ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.e_ui.addtool_entry.editingFinished.connect(self.on_tool_add)
-        self.e_ui.deltool_btn.clicked.connect(self.on_tool_delete)
-        # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
-        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-
-        self.e_ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
-        self.e_ui.slot_array_type_combo.currentIndexChanged.connect(self.on_slot_array_type_combo)
-
-        self.e_ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
-        self.e_ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
-
-        self.e_ui.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
-
-        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
-        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
-
-        self.app.ui.exc_add_array_slot_menuitem.triggered.connect(self.exc_add_slot_array)
-        self.app.ui.exc_add_slot_menuitem.triggered.connect(self.exc_add_slot)
-
-        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
-        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
-        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
-
-        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
-        self.e_ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         self.exc_obj = None
 
@@ -1679,9 +1642,6 @@ class AppExcEditor(QtCore.QObject):
 
         self.tool_row = 0
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
-
         # def entry2option(option, entry):
         #     self.options[option] = float(entry.text())
 
@@ -1690,8 +1650,43 @@ class AppExcEditor(QtCore.QObject):
         self.mm = None
         self.mr = None
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
+        # #############################################################################################################
+        # ######################### Excellon Editor Signals ###########################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_exc_toolbar_signals()
+
+        self.e_ui.convert_slots_btn.clicked.connect(self.on_slots_conversion)
+        self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
+        self.e_ui.name_entry.returnPressed.connect(self.on_name_activate)
+        self.e_ui.addtool_btn.clicked.connect(self.on_tool_add)
+        self.e_ui.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.e_ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
+        self.e_ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
+        self.e_ui.slot_array_type_combo.currentIndexChanged.connect(self.on_slot_array_type_combo)
+
+        self.e_ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.e_ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
+
+        self.e_ui.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
+
+        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
+        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
+
+        self.app.ui.exc_add_array_slot_menuitem.triggered.connect(self.exc_add_slot_array)
+        self.app.ui.exc_add_slot_menuitem.triggered.connect(self.exc_add_slot)
+
+        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
+        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
+
+        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
+        self.e_ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
         log.debug("Initialization of the Excellon Editor is finished ...")
 
     def make_callback(self, thetool):
@@ -2295,9 +2290,6 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
-        # Tell the App that the editor is active
-        self.editor_active = True
-
         # show the UI
         self.e_ui.drills_frame.show()
 
@@ -2329,9 +2321,6 @@ class AppExcEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
         # self.app.app_cursor.enabled = False
-
-        # Tell the app that the editor is no longer active
-        self.editor_active = False
 
         self.app.ui.exc_editor_menu.setDisabled(True)
         self.app.ui.exc_editor_menu.menuAction().setVisible(False)
