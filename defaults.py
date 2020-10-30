@@ -608,6 +608,7 @@ class FlatCAMDefaults:
 
         # Subtract Tool
         "tools_sub_close_paths": True,
+        "tools_sub_delete_sources": False,
 
         # Distance Tool
         "tools_dist_snap_center": False,

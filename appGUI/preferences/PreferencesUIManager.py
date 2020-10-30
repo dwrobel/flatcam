@@ -538,7 +538,10 @@ class PreferencesUIManager:
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
+
+            # Subtractor Tool
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
+            "tools_sub_delete_sources":  self.ui.tools_defaults_form.tools_sub_group.delete_sources_cb,
 
             # Corner Markers Tool
 

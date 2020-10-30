@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.10.2020
+
+- fixed the Punch Gerber Tool bug that did not allowed the projects to be loaded or to create a new project. Fixed issue #456
+- in Tool Subtract added an option to delete the source objects after a successful operation. Fixed issue #455
+
 29.10.2020
 
 - added icons in most application Tools
