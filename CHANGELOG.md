@@ -29,6 +29,8 @@ CHANGELOG for FlatCAM beta
 - improvements in the Punch Gerber Tool aperture markings
 - improved the Geometry Object functionality in regards of Tools DB, deleting a tool and adding a tool
 - when using the 'T' shortcut key with Properties Tab in focus and populated with the properties of a Geometry Object made the popped up spinner to have the value autoselected
+- optimized the UI in Extract Drills Tool
+- added some more icons for buttons
 
 28.10.2020
 
