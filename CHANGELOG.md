@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - fixed bug that did not allow joining of any object to a Geometry object
 - working on solving the lost triggered signals for the Editor Toolbars buttons after changing the layout
 - fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
+- updated the translation strings
 
 29.10.2020
 
