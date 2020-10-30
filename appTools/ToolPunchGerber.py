@@ -81,6 +81,25 @@ class ToolPunchGerber(AppTool):
         self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
         self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
 
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
+
+    def on_object_combo_changed(self):
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            return
+
+        # enable mark shapes
+        grb_obj.mark_shapes.enabled = True
+
+        # create storage for shapes
+        for ap_code in grb_obj.apertures:
+            grb_obj.mark_shapes_storage[ap_code] = []
+
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPunchGerber()")
 
@@ -138,8 +157,10 @@ class ToolPunchGerber(AppTool):
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_punch_hole_prop_factor"]))
 
     def build_tool_ui(self):
+        self.ui_disconnect()
+
         # reset table
-        self.ui.apertures_table.clear()
+        # self.ui.apertures_table.clear()   # this deletes the headers/tooltips too ... not nice!
         self.ui.apertures_table.setRowCount(0)
 
         # get the Gerber file who is the source of the punched Gerber
@@ -199,12 +220,15 @@ class ToolPunchGerber(AppTool):
             else:
                 continue
 
+            # Aperture CODE
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
+            # Aperture TYPE
             ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
             ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+            # Aperture SIZE
             try:
                 if obj.apertures[ap_code]['size'] is not None:
                     size_val = self.app.dec_format(float(obj.apertures[ap_code]['size']), self.decimals)
@@ -215,10 +239,19 @@ class ToolPunchGerber(AppTool):
                 ap_size_item = QtWidgets.QTableWidgetItem('')
             ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+            # Aperture MARK Item
+            mark_item = FCCheckBox()
+            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            # Empty PLOT ITEM
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
             self.ui.apertures_table.setItem(row, 0, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(row, 1, ap_type_item)  # Aperture Type
             self.ui.apertures_table.setItem(row, 2, ap_size_item)  # Aperture Dimensions
-
+            self.ui.apertures_table.setItem(row, 3, empty_plot_item)
+            self.ui.apertures_table.setCellWidget(row, 3, mark_item)
             # increment row
             row += 1
 
@@ -236,11 +269,16 @@ class ToolPunchGerber(AppTool):
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(3, 17)
+        self.ui.apertures_table.setColumnWidth(3, 17)
 
         self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
-        # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
+
+        self.ui_connect()
 
     def on_select_all(self, state):
         self.ui_disconnect()
@@ -286,11 +324,26 @@ class ToolPunchGerber(AppTool):
     def ui_connect(self):
         self.ui.select_all_cb.stateChanged.connect(self.on_select_all)
 
+        # Mark Checkboxes
+        for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+            except (TypeError, AttributeError):
+                pass
+            self.ui.apertures_table.cellWidget(row, 3).clicked.connect(self.on_mark_cb_click_table)
+
     def ui_disconnect(self):
         try:
             self.ui.select_all_cb.stateChanged.disconnect()
         except (AttributeError, TypeError):
             pass
+
+        # Mark Checkboxes
+        for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+            except (TypeError, AttributeError):
+                pass
 
     def on_generate_object(self):
 
@@ -852,6 +905,42 @@ class ToolPunchGerber(AppTool):
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
+    def on_mark_cb_click_table(self):
+        """
+        Will mark aperture geometries on canvas or delete the markings depending on the checkbox state
+        :return:
+        """
+
+        try:
+            cw = self.sender()
+            cw_index = self.ui.apertures_table.indexAt(cw.pos())
+            cw_row = cw_index.row()
+        except AttributeError:
+            cw_row = 0
+        except TypeError:
+            return
+
+        try:
+            aperture = self.ui.apertures_table.item(cw_row, 0).text()
+        except AttributeError:
+            return
+
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            return
+
+        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+            # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
+            grb_obj.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AA',
+                                  marked_aperture=aperture, visible=True, run_thread=True)
+        else:
+            grb_obj.clear_plot_apertures(aperture=aperture)
+
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
@@ -971,8 +1060,8 @@ class PunchUI:
         self.apertures_table = FCTable()
         pad_all_grid.addWidget(self.apertures_table, 0, 1)
 
-        self.apertures_table.setColumnCount(3)
-        self.apertures_table.setHorizontalHeaderLabels([_('Code'), _('Type'), _('Size')])
+        self.apertures_table.setColumnCount(4)
+        self.apertures_table.setHorizontalHeaderLabels([_('Code'), _('Type'), _('Size'), 'M'])
         self.apertures_table.setSortingEnabled(False)
         self.apertures_table.setRowCount(0)
         self.apertures_table.resizeColumnsToContents()
@@ -984,6 +1073,8 @@ class PunchUI:
             _("Type of aperture: circular, rectangle, macros etc"))
         self.apertures_table.horizontalHeaderItem(2).setToolTip(
             _("Aperture Size:"))
+        self.apertures_table.horizontalHeaderItem(3).setToolTip(
+            _("Mark the aperture instances on canvas."))
 
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)

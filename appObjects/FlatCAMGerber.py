@@ -961,11 +961,12 @@ class GerberObject(FlatCAMObj, Gerber):
             log.debug("GerberObject.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, run_thread=False, **kwargs):
+    def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
 
-        :param run_thread: if True run the aperture plot as a thread in a worker
-        :param kwargs: color and face_color
+        :param only_flashes:    plot only flashed
+        :param run_thread:      if True run the aperture plot as a thread in a worker
+        :param kwargs:          color and face_color
         :return:
         """
 
@@ -999,23 +1000,25 @@ class GerberObject(FlatCAMObj, Gerber):
             def job_thread(app_obj):
                 try:
                     if aperture_to_plot_mark in self.apertures:
-                        for elem in self.apertures[aperture_to_plot_mark]['geometry']:
+                        for elem in app_obj.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
+                                if only_flashes and not isinstance(elem['follow'], Point):
+                                    continue
                                 geo = elem['solid']
                                 try:
                                     for el in geo:
-                                        shape_key = self.add_mark_shape(shape=el, color=color, face_color=color,
-                                                                        visible=visibility)
-                                        self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                        shape_key = app_obj.add_mark_shape(shape=el, color=color, face_color=color,
+                                                                           visible=visibility)
+                                        app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
                                 except TypeError:
-                                    shape_key = self.add_mark_shape(shape=geo, color=color, face_color=color,
-                                                                    visible=visibility)
-                                    self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                    shape_key = app_obj.add_mark_shape(shape=geo, color=color, face_color=color,
+                                                                       visible=visibility)
+                                    app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
 
-                    self.mark_shapes.redraw()
+                    app_obj.mark_shapes.redraw()
 
                 except (ObjectDeleted, AttributeError):
-                    self.clear_plot_apertures()
+                    app_obj.clear_plot_apertures()
                 except Exception as e:
                     log.debug("GerberObject.plot_aperture() --> %s" % str(e))
 
