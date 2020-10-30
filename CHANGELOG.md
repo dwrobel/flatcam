@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
 - updated the translation strings
 - more bugs that were introduced by recent changes done to solve other bugs and so on: fixed issues with the Editors and Delete shortcut
+- fixed an error in the Gerber Editor
 
 29.10.2020
 

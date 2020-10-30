@@ -4081,7 +4081,7 @@ class AppGerberEditor(QtCore.QObject):
                     log.warning("Found %d clear polygons." % len(global_clear_geo))
 
                     if global_clear_geo:
-                        global_clear_geo = MultiPolygon(global_clear_geo)
+                        global_clear_geo = unary_union(global_clear_geo)
                         if isinstance(global_clear_geo, Polygon):
                             global_clear_geo = [global_clear_geo]
 
