@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - fixed the Punch Gerber Tool bug that did not allowed the projects to be loaded or to create a new project. Fixed issue #456
 - in Tool Subtract added an option to delete the source objects after a successful operation. Fixed issue #455
+- when entering into an Editor now the Project tab is disabled and the Properties tab where the Editor is installed change the text to 'Editor' and the color is set in Red. After exiting the Tab text is reverted to previous state.
+- fixed and issue where the Tab color that was changed in various states of the app was reverted back to a default color 'black'. Now it reverts to whatever color had before therefore being compatible with an usage of black theme
 
 29.10.2020
 

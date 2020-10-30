@@ -1184,6 +1184,9 @@ class App(QtCore.QObject):
 
         self.text_editor_tab = None
 
+        # here store the color of a Tab text before it is changed so it can be restored in the future
+        self.old_tab_text_color = None
+
         # reference for the self.ui.code_editor
         self.reference_code_editor = None
         self.script_code = ''
@@ -2186,7 +2189,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("object2editor()")
-
+        self.log.debug("######################### Starting the EDITOR ################################")
         # disable the objects menu as it may interfere with the appEditors
         self.ui.menuobjects.setDisabled(True)
 
@@ -2236,7 +2239,6 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
-
         elif isinstance(edited_object, ExcellonObject):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
@@ -2248,7 +2250,6 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
-
         elif isinstance(edited_object, GerberObject):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
@@ -2263,7 +2264,6 @@ class App(QtCore.QObject):
 
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
-
         elif isinstance(edited_object, CNCJobObject):
 
             if self.ui.splitter.sizes()[0] == 0:
@@ -2275,8 +2275,18 @@ class App(QtCore.QObject):
             self.gcode_editor.edit_fcgcode(edited_object)
 
         # make sure that we can't select another object while in Editor Mode:
-        # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
+
+        for idx in range(self.ui.notebook.count()):
+            # store the Properties Tab text color here and change the color and text
+            if self.ui.notebook.tabText(idx) == _("Properties"):
+                self.old_tab_text_color = self.ui.notebook.tabBar.tabTextColor(idx)
+                self.ui.notebook.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+                self.ui.notebook.tabBar.setTabText(idx, _("Editor"))
+
+            # disable the Project Tab
+            if self.ui.notebook.tabText(idx) == _("Project"):
+                self.ui.notebook.tabBar.setTabEnabled(idx, False)
 
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
@@ -2302,6 +2312,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("editor2object()")
+        self.log.debug("######################### Closing the EDITOR ################################")
 
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
@@ -2431,7 +2442,6 @@ class App(QtCore.QObject):
                         return
 
                     self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
-
                 elif response == bt_no:
                     # show the Tools Toolbar
                     tools_tb = self.ui.toolbartools
@@ -2498,6 +2508,16 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
+            for idx in range(self.ui.notebook.count()):
+                # restore the Properties Tab text and color
+                if self.ui.notebook.tabText(idx) == _("Editor"):
+                    self.ui.notebook.tabBar.setTabTextColor(idx, self.old_tab_text_color)
+                    self.ui.notebook.tabBar.setTabText(idx, _("Properties"))
+
+                # enable the Project Tab
+                if self.ui.notebook.tabText(idx) == _("Project"):
+                    self.ui.notebook.tabBar.setTabEnabled(idx, True)
+
             # restore the call_source to app
             self.call_source = 'app'
 
@@ -2506,7 +2526,6 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-            # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
             self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
@@ -5598,12 +5617,12 @@ class App(QtCore.QObject):
         # self.ui.show()
 
         self.ui.pref_status_label.setStyleSheet("""
-                                                            QLabel
-                                                            {
-                                                                color: black;
-                                                                background-color: lightseagreen;
-                                                            }
-                                                            """
+                                                QLabel
+                                                {
+                                                    color: black;
+                                                    background-color: lightseagreen;
+                                                }
+                                                """
                                                 )
 
         # detect changes in the preferences

@@ -1425,6 +1425,8 @@ class ToolsDB2(QtWidgets.QWidget):
         '''
         self.db_tool_dict = {}
 
+        self.old_color = QtGui.QColor('black')
+
         # ##############################################################################
         # ##############################################################################
         # TOOLS DATABASE UI
@@ -1719,6 +1721,12 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_connect()
 
     def setup_db_ui(self):
+
+        # set the old color for the Tools Database Tab
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.old_color = self.app.ui.plot_tab_area.tabBar.tabTextColor(idx)
+
         filename = self.app.tools_database_path()
 
         # load the database tools from the file
@@ -2155,7 +2163,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app_ui.plot_tab_area.count()):
             if self.app_ui.plot_tab_area.tabText(idx) == _("Tools Database"):
-                self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                 self.ui.save_db_btn.setStyleSheet("")
 
                 # clean the dictionary and leave only keys of interest
