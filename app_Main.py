@@ -9254,8 +9254,8 @@ class MenuFileHandlers(QtCore.QObject):
         else:
             self.worker_task.emit({'fcn': self.save_project, 'params': [self.app.project_filename, silent]})
             if self.defaults["global_open_style"] is False:
-                self.app.file_opened.emit("project", self.project_filename)
-            self.app.file_saved.emit("project", self.project_filename)
+                self.app.file_opened.emit("project", self.app.project_filename)
+            self.app.file_saved.emit("project", self.app.project_filename)
 
         self.app.ui.set_ui_title(name=self.app.project_filename)
 
@@ -10344,7 +10344,7 @@ class MenuFileHandlers(QtCore.QObject):
                 "Expected to initialize a GeometryObject but got %s" % type(geo_obj)
 
             # Opening the file happens here
-            obj = HPGL2(self)
+            obj = HPGL2(self.app)
             try:
                 HPGL2.parse_file(obj, filename)
             except IOError:

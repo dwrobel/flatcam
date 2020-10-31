@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-30 19:21+0200\n"
-"PO-Revision-Date: 2020-10-30 19:22+0200\n"
+"PO-Revision-Date: 2020-10-30 23:45+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -146,7 +146,7 @@ msgstr "Yer işaretleri dosyası yüklenemedi."
 
 #: Bookmark.py:329
 msgid "Failed to write bookmarks to file."
-msgstr "Yer imleri dosyaya yazılamadı."
+msgstr "Yer işaretleri dosyaya yazılamadı."
 
 #: Bookmark.py:331
 msgid "Exported bookmarks to"
@@ -611,7 +611,7 @@ msgid ""
 "Feedrate X-Y. Feedrate\n"
 "The speed on XY plane used while cutting into material."
 msgstr ""
-"X-Y. İlerleme hızı.\n"
+"X-Y İlerleme hızı.\n"
 "Malzeme kesilirken kullanılan X-Y düzlemindeki hız."
 
 #: appDatabase.py:503 appDatabase.py:1015 appGUI/ObjectUI.py:1282
@@ -1401,7 +1401,7 @@ msgstr "Veri Tabanını Dışa Aktar"
 
 #: appDatabase.py:1334
 msgid "Save the Tools Database to a custom text file."
-msgstr "Araçlar Veri tabanını özel bir metin dosyasına kaydeder."
+msgstr "Araçlar Veri Tabanını özel bir metin dosyasına kaydeder."
 
 #: appDatabase.py:1338
 msgid "Import DB"
@@ -1708,11 +1708,11 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:1112
 msgid "Done. Drill/Slot Resize completed."
-msgstr "Bitti. Delik / Yuva yeniden boyutlandırma işlemi tamamlandı."
+msgstr "Bitti. Delik/Yuva yeniden boyutlandırma işlemi tamamlandı."
 
 #: appEditors/AppExcEditor.py:1115
 msgid "Cancelled. No drills/slots selected for resize ..."
-msgstr "İptal edildi. Yeniden boyutlandırma için delik / yuva seçilmedi ..."
+msgstr "İptal edildi. Yeniden boyutlandırma için delik/yuva seçilmedi ..."
 
 #: appEditors/AppExcEditor.py:1153 appEditors/AppGerberEditor.py:1946
 msgid "Click on reference location ..."
@@ -2559,7 +2559,7 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected objects."
 msgstr ""
-"Seçilen nesneleri eğriltir / kaydırır.\n"
+"Seçilen nesneleri eğriltir/kaydırır.\n"
 "Referans noktası, seçilen tüm nesneler için\n"
 "sınırlayıcı kutunun ortasıdır."
 
@@ -3806,7 +3806,7 @@ msgstr "Koordinatlar panoya kopyalandı."
 
 #: appEditors/AppGerberEditor.py:4997
 msgid "Failed. No aperture geometry is selected."
-msgstr "Başarısız oldu. Geometri şekli seçilmedi."
+msgstr "Başarısız oldu. Şekil seçilmedi."
 
 #: appEditors/AppGerberEditor.py:5006 appEditors/AppGerberEditor.py:5277
 msgid "Done. Apertures geometry deleted."
@@ -3975,24 +3975,24 @@ msgstr "Kod Düzenleyici"
 
 #: appEditors/appGCodeEditor.py:144 appEditors/appGCodeEditor.py:236
 msgid "All GCode"
-msgstr "Tüm G Kod"
+msgstr "G Kodunun Tamamı"
 
 #: appEditors/appGCodeEditor.py:150 appEditors/appGCodeEditor.py:242
 msgid "Header GCode"
-msgstr "G Kodu Üstbilgi"
+msgstr "G Kodu Üstbilgisi"
 
 #: appEditors/appGCodeEditor.py:156 appEditors/appGCodeEditor.py:248
 msgid "Start GCode"
-msgstr "G Kod'u Başlat"
+msgstr "G Kodu Başlatma"
 
 #: appEditors/appGCodeEditor.py:578 appObjects/FlatCAMCNCJob.py:2022
 #: appTools/ToolCalibration.py:447
 msgid "Loaded Machine Code into Code Editor"
-msgstr "Kod düzenleyiciye makine kodu yüklendi"
+msgstr "Kod Düzenleyici'ye CNC kodu yüklendi"
 
 #: appEditors/appGCodeEditor.py:668 appGUI/ObjectUI.py:1909
 msgid "GCode Editor"
-msgstr "G Kod Düzenleyicisi"
+msgstr "G Kodu Düzenleyicisi"
 
 #: appEditors/appGCodeEditor.py:693 appEditors/appGCodeEditor.py:704
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034 appGUI/ObjectUI.py:2044
@@ -4032,7 +4032,10 @@ msgstr "CNC Kod Eklentisi"
 
 #: appEditors/appGCodeEditor.py:715 appEditors/appGCodeEditor.py:737
 msgid "Code snippet defined in Preferences."
-msgstr "Ayarlar'da tanımlanan kod eklentisi."
+msgstr ""
+"Ayarlar'da tanımlanan kod eklentisi.\n"
+"Düzenle/Ayarlar/NCC-İŞ/CNC İş Düzenleyicisi başlığı altında bulunan\n"
+"CNC Kod eklentileri (başa ekleme ve sona ekleme) içerecektir."
 
 #: appEditors/appGCodeEditor.py:721 appEditors/appGCodeEditor.py:743
 msgid ""
@@ -4876,7 +4879,7 @@ msgstr "F5"
 
 #: appGUI/MainGUI.py:529 appGUI/MainGUI.py:4451
 msgid "Toggle Code Editor"
-msgstr "Kod Düzenleyiciyi Aç/Kapat"
+msgstr "Kod Düzenleyici'yi Aç/Kapat"
 
 #: appGUI/MainGUI.py:529 appGUI/MainGUI.py:4451
 msgid "Shift+E"
@@ -7272,7 +7275,7 @@ msgid ""
 "Include tool-change sequence\n"
 "in the Machine Code (Pause for tool change)."
 msgstr ""
-"G-Kod'a uç değiştirme sırasını dahil edin\n"
+"G-Koda uç değiştirme sırasını dahil edin\n"
 "(uç değiştirme için duraklat)."
 
 #: appGUI/ObjectUI.py:1455
@@ -7505,7 +7508,7 @@ msgid ""
 "Will add a Paint section at the end of the GCode.\n"
 "A metallic brush will clean the material after milling."
 msgstr ""
-"G-Kod'un sonuna bir Çizim bölümü ekleyecektir.\n"
+"G-Kodun sonuna bir Çizim bölümü ekleyecektir.\n"
 "Bir tel fırça, freze işleminden sonra malzemeyi temizleyecektir."
 
 #: appGUI/ObjectUI.py:1641
@@ -7590,7 +7593,7 @@ msgstr "Hareket"
 
 #: appGUI/ObjectUI.py:1913
 msgid "Edit an GCode object."
-msgstr "Bir GCode nesnesini düzenleyin."
+msgstr "Bir G Kod nesnesini düzenleyin."
 
 #: appGUI/ObjectUI.py:1950 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:71
 msgid "Display Annotation"
@@ -7675,8 +7678,9 @@ msgid ""
 "When selected, it will include CNC Code snippets (append and prepend)\n"
 "defined in the Preferences."
 msgstr ""
-"Seçildiğinde, Ayarlarda tanımlanan CNC Kodu eklentileri\n"
-"(başa ekleme ve sona ekleme) içerecektir."
+"Seçildiğinde, Düzenle/Ayarlar/NCC-İŞ/CNC İş Düzenleyicisi başlığı altında "
+"bulunan\n"
+"CNC Kod eklentileri (başa ekleme ve sona ekleme) içerecektir."
 
 #: appGUI/ObjectUI.py:2075
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:64
@@ -7726,7 +7730,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:2144
 msgid "Probe GCode Generation"
-msgstr "Prob G-Kod'u Oluştur"
+msgstr "Prob G-Kodu Oluştur"
 
 #: appGUI/ObjectUI.py:2146
 msgid ""
@@ -7734,7 +7738,7 @@ msgid ""
 "either through a file or directly, with the intent to get the height map\n"
 "that is to modify the original GCode to level the cutting height."
 msgstr ""
-"Kesme yüksekliğini dengelemek için orijinal G-Kod'u değiştirmek \n"
+"Kesme yüksekliğini dengelemek için orijinal G-Kodu değiştirmek \n"
 "için yükseklik haritasını elde etmek amacıyla, bir dosya aracılığıyla\n"
 "veya doğrudan denetleyiciye gönderilecek bir G-Kodu oluşturur."
 
@@ -7992,7 +7996,7 @@ msgid ""
 "wait for the Z probing data and then apply this data\n"
 "over the original GCode therefore doing autolevelling."
 msgstr ""
-"Prob (algılayıcı) G-Kod'unu GRBL kontrol cihazına gönderecek, \n"
+"Prob (algılayıcı) G-Kodunu GRBL kontrol cihazına gönderecek, \n"
 "Z prob (algılayıcı) verilerini bekleyecek ve ardından bu verileri \n"
 "orijinal G-Kod üzerine uygulayacak ve böylece \n"
 "otomatik dengeleme yapacak."
@@ -8003,15 +8007,15 @@ msgstr "GRBL yükseklik haritasını kaydeder."
 
 #: appGUI/ObjectUI.py:2588
 msgid "Save Probing GCode"
-msgstr "Dengeleme G-Kod'unu Kaydet"
+msgstr "Dengeleme G-Kodunu Kaydet"
 
 #: appGUI/ObjectUI.py:2590
 msgid "Will save the probing GCode."
-msgstr "Prob (algılayıcı) G-Kod'unu kaydeder."
+msgstr "Prob (algılayıcı) G-Kodunu kaydeder."
 
 #: appGUI/ObjectUI.py:2599
 msgid "View/Edit the probing GCode."
-msgstr "Dengeleme G-Kod'unu görüntüleyin/düzenleyin."
+msgstr "Dengeleme G-Kodunu görüntüleyin/düzenleyin."
 
 #: appGUI/ObjectUI.py:2606 appObjects/FlatCAMCNCJob.py:1747
 #: appObjects/FlatCAMCNCJob.py:1751
@@ -8041,7 +8045,7 @@ msgid ""
 "make this object to a file."
 msgstr ""
 "Bu nesneyi bir dosyaya kaydetmek \n"
-"için G-Kod'u dışa aktarın."
+"için G-Kodunu dışa aktarın."
 
 #: appGUI/ObjectUI.py:2637
 msgid "Save CNC Code"
@@ -8057,7 +8061,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:2647
 msgid "Review CNC Code."
-msgstr "CNC kodunu kontrol edin."
+msgstr "CNC koduna göz atın."
 
 #: appGUI/ObjectUI.py:2708
 msgid "Script Object"
@@ -8080,8 +8084,8 @@ msgstr "Belge Nesnesi"
 #: appGUI/ObjectUI.py:2804
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
-"Bu seçenek, Belge Düzenleyici'de otomatik tamamlamanın\n"
-"etkin olup olmadığını seçer."
+"Bu seçenek, Belge Düzenleyici'de otomatik\n"
+"tamamlamanın etkin olup olmadığını seçer."
 
 #: appGUI/ObjectUI.py:2822
 msgid "Font Type"
@@ -8292,7 +8296,7 @@ msgid ""
 "Type here any G-Code commands you would\n"
 "like to add at the beginning of the G-Code file."
 msgstr ""
-"G-Kod'u dosyasının başına eklemek istediğiniz tüm G-Kod komutlarını buraya "
+"G-Kodu dosyasının başına eklemek istediğiniz tüm G-Kod komutlarını buraya "
 "girin."
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:55
@@ -8300,12 +8304,12 @@ msgid ""
 "Type here any G-Code commands you would like to add at the beginning of the "
 "G-Code file."
 msgstr ""
-"G-Kod'u dosyasının başına eklemek istediğiniz tüm G-Kod komutlarını buraya "
+"G-Kodu dosyasının başına eklemek istediğiniz tüm G-Kod komutlarını buraya "
 "girin."
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:62
 msgid "Append to G-Code"
-msgstr "CNC Kodunun Sonuna Ekle"
+msgstr "G-Kodunun Sonuna Ekle"
 
 #: appGUI/preferences/cncjob/CNCJobEditorPrefGroupUI.py:64
 msgid ""
@@ -8343,7 +8347,7 @@ msgid ""
 "The number of circle steps for <b>GCode</b> \n"
 "circle and arc shapes linear approximation."
 msgstr ""
-"<b> G-Kod'u </b> için daire adımı sayısı\n"
+"<b> G-Kodu </b> için daire adımı sayısı\n"
 "daire ve yay şekilleri doğrusal yaklaşımı."
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:58
@@ -8358,7 +8362,7 @@ msgstr "Şekilde oluşturulacak hareket hattı çizgilerinin genişliği."
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:73
 msgid "G-code Decimals"
-msgstr "G-Kod'u Ondalık Sayıları"
+msgstr "G-Kodu Ondalık Sayıları"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:76
 #: appTools/ToolFiducials.py:684
@@ -8392,7 +8396,7 @@ msgid ""
 "- Absolute G90 -> the reference is the origin x=0, y=0\n"
 "- Incremental G91 -> the reference is the previous position"
 msgstr ""
-"G Kod'da kullanılacak koordinatların türü.\n"
+"G Kodda kullanılacak koordinatların türü.\n"
 "Şunlar olabilir:\n"
 "- Kesin G90 -> Referans başlangıç noktası x = 0, y = 0\n"
 "- Eklemeli G91 -> Referans bir önceki konumdur"
@@ -9484,11 +9488,11 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:85
 msgid "Legacy(2D)"
-msgstr "Legacy(2D)"
+msgstr "Legacy (2D)"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:86
 msgid "OpenGL(3D)"
-msgstr "OpenGL(3D)"
+msgstr "OpenGL (3D)"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:98
 msgid "APPLICATION LEVEL"
@@ -9598,7 +9602,7 @@ msgid ""
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
-"Proje / Özellikler / Araçlar sekmesi alanının başlangıçta otomatik \n"
+"Proje/Özellikler/Araçlar sekmesi alanının başlangıçta otomatik \n"
 "olarak gösterilmesini istiyorsanız bu kutuyu işaretleyin."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:189
@@ -11979,7 +11983,7 @@ msgid ""
 "Include tool-change sequence\n"
 "in G-Code (Pause for tool change)."
 msgstr ""
-"G-Kod'a uç değiştirme sırasını dahil edin\n"
+"G-Koda uç değiştirme sırasını dahil edin\n"
 "(uç değiştirme için duraklat)."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:223
@@ -12731,7 +12735,7 @@ msgid ""
 "solder paste onto a PCB."
 msgstr ""
 "Lehim pastasını PCB'ye dağıtmak için\n"
-"kullanılan G-Kod'unu oluşturmaya yarayan araç."
+"kullanılan G-Kodunu oluşturmaya yarayan araç."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:54
 msgid "New Nozzle Dia"
@@ -12885,7 +12889,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:239
 #: appTools/ToolSolderPaste.py:1410
 msgid "Files that control the GCode generation."
-msgstr "G-Kod'u oluşumunu kontrol eden dosyalar."
+msgstr "G-Kodu oluşumunu kontrol eden dosyalar."
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:27
 msgid "Substractor Tool Options"
@@ -13120,7 +13124,7 @@ msgstr ""
 
 #: appGUI/preferences/utilities/FAGcoPrefGroupUI.py:27
 msgid "GCode File associations"
-msgstr "G-Kod'u Dosyası Uzantıları"
+msgstr "G-Kodu Dosyası Uzantıları"
 
 #: appGUI/preferences/utilities/FAGrbPrefGroupUI.py:27
 msgid "Gerber File associations"
@@ -13263,7 +13267,7 @@ msgstr "Görüntülenecek hiçbir şey yok"
 
 #: appObjects/FlatCAMCNCJob.py:1695
 msgid "Code Viewer"
-msgstr "Kod Görüntüleyici"
+msgstr "CNC Kodu İnceleme Sayfası"
 
 #: appObjects/FlatCAMCNCJob.py:1733
 msgid "Loaded Machine Code into Code Viewer"
@@ -13279,7 +13283,7 @@ msgstr "İnceleme tamamlandı. Otomatik dengeleme yapılıyor."
 
 #: appObjects/FlatCAMCNCJob.py:1833
 msgid "Sending probing GCode to the GRBL controller."
-msgstr "Denetleyici, G-Kod'unu GRBL kontrol cihazına gönderiyor."
+msgstr "Denetleyici, G-Kodunu GRBL kontrol cihazına gönderiyor."
 
 #: appObjects/FlatCAMCNCJob.py:1876
 msgid "Empty GRBL heightmap."
@@ -14144,7 +14148,7 @@ msgstr "Bitti. Dört noktanın tamamı alındı."
 
 #: appTools/ToolCalibration.py:325
 msgid "Verification GCode for FlatCAM Calibration Tool"
-msgstr "FlatCAM Kalibrasyon için Doğrulama G-Kod'u"
+msgstr "FlatCAM Kalibrasyon için Doğrulama G-Kodu"
 
 #: appTools/ToolCalibration.py:337 appTools/ToolCalibration.py:423
 msgid "Gcode Viewer"
@@ -14259,7 +14263,7 @@ msgstr ""
 
 #: appTools/ToolCalibration.py:1085
 msgid "STEP 2: Verification GCode"
-msgstr "ADIM 2: Doğrulama G-Kod'u"
+msgstr "ADIM 2: Doğrulama G-Kodu"
 
 #: appTools/ToolCalibration.py:1087 appTools/ToolCalibration.py:1100
 msgid ""
@@ -14281,7 +14285,7 @@ msgstr ""
 
 #: appTools/ToolCalibration.py:1098 appTools/ToolSolderPaste.py:1421
 msgid "Generate GCode"
-msgstr "G-Kod'u Oluştur"
+msgstr "G-Kodu Oluştur"
 
 #: appTools/ToolCalibration.py:1124
 msgid "STEP 3: Adjustments"
@@ -14303,7 +14307,7 @@ msgstr "Değerleri Hesapla"
 
 #: appTools/ToolCalibration.py:1155
 msgid "STEP 4: Adjusted GCode"
-msgstr "ADIM 4: Ayarlanmış G-Kod'u"
+msgstr "ADIM 4: Ayarlanmış G-Kodu"
 
 #: appTools/ToolCalibration.py:1157
 msgid ""
@@ -14355,7 +14359,7 @@ msgstr "Kalibrasyon noktaları için eğim değerlerini uygular."
 
 #: appTools/ToolCalibration.py:1295
 msgid "Generate Adjusted GCode"
-msgstr "Ayarlanmış G-Kod'u Oluştur"
+msgstr "Ayarlanmış G-Kodu Oluştur"
 
 #: appTools/ToolCalibration.py:1297
 msgid ""
@@ -16989,7 +16993,7 @@ msgstr "Panel oluşturuluyor … "
 
 #: appTools/ToolPanelize.py:363 appTools/ToolPanelize.py:585
 msgid "Generating panel ... Adding the source code."
-msgstr "Panel oluşturuluyor ... Kaynak kodu ekleniyor."
+msgstr "Panel oluşturuluyor ... CNC kodu ekleniyor."
 
 #: appTools/ToolPanelize.py:551
 msgid "Optimizing the overlapping paths."
@@ -17758,7 +17762,7 @@ msgstr "Bu nesnede G Kod yok"
 
 #: appTools/ToolSolderPaste.py:1057
 msgid "Export GCode ..."
-msgstr "G Kod'u Dışa Aktar ..."
+msgstr "G Kodu Dışa Aktar ..."
 
 #: appTools/ToolSolderPaste.py:1105
 msgid "Solder paste dispenser GCode file saved to"
@@ -18276,7 +18280,7 @@ msgstr "Nesne düzenlendikten sonra boş."
 
 #: app_Main.py:2535 app_Main.py:2553 app_Main.py:2584 app_Main.py:2600
 msgid "Editor exited. Editor content saved."
-msgstr "Düzenleyiciden çıkıldı. Düzenleyici içeriği kaydedildi."
+msgstr "Düzenleyiciden çıkıldı ve düzenleyici içeriği kaydedildi."
 
 #: app_Main.py:2604 app_Main.py:2644
 msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
@@ -18289,7 +18293,7 @@ msgstr "güncellendi, Uygulamaya dönülüyor ..."
 
 #: app_Main.py:2619
 msgid "Editor exited. Editor content was not saved."
-msgstr "Düzenleyiciden çıkıldı. Düzenleyici içeriği kaydedilmedi."
+msgstr "Düzenleyiciden çıkıldı. Ancak düzenleyici içeriği kaydedilmedi."
 
 #: app_Main.py:2667
 msgid "Select a Gerber, Geometry or Excellon Object to update."
@@ -18527,11 +18531,12 @@ msgstr ""
 "Bu giriş, aşağıdaki durumlarda başka bir web sayfasına yönlendirecektir:\n"
 "\n"
 "1. FlatCAM.org sayfası kapandığında\n"
-"2. Birisi FlatCAM projesini kopyaladığında ve sizi kendi web sayfasına \n"
-"yönlendirmek istediğinde\n"
 "\n"
-"Uygulama hakkında bilgi alamazsanız, Yardım menüsünden \n"
-"\"YouTube Kanalı\" bağlantısını kullanın."
+"2. Birisi FlatCAM projesini kopyaladığında ve sizi kendi \n"
+"web sayfasına yönlendirmek istediğinde\n"
+"\n"
+"Uygulama hakkında bilgi alamazsanız, Yardım\n"
+"menüsünden \"YouTube Kanalı\" bağlantısını kullanın."
 
 #: app_Main.py:3489
 msgid "Alternative website"
@@ -18840,24 +18845,23 @@ msgstr "İsim panoya kopyalandı ..."
 
 #: app_Main.py:7161 app_Main.py:7165
 msgid "Select an Gerber or Excellon file to view it's source file."
-msgstr ""
-"Kaynak kodunu görüntülemek için bir Gerber veya Excellon dosyası seçin."
+msgstr "CNC kodunu görüntülemek için bir Gerber veya Excellon dosyası seçin."
 
 #: app_Main.py:7168
 msgid "Viewing the source code of the selected object."
-msgstr "Seçilen nesnenin kaynak kodunu görüntüle."
+msgstr "Seçilen nesnenin CNC kodunu görüntüle."
 
 #: app_Main.py:7182
 msgid "Source Editor"
-msgstr "Kaynak kodu düzenleyicisi"
+msgstr "Kod Düzenleyici"
 
 #: app_Main.py:7218 app_Main.py:7225
 msgid "There is no selected object for which to see it's source file code."
-msgstr "Kaynak dosyalarını görebileceğiniz seçili bir nesne yok."
+msgstr "CNC kodunun gösterileceği seçili hiçbir nesne yok."
 
 #: app_Main.py:7233
 msgid "Failed to load the source code for the selected object"
-msgstr "Seçilen nesnenin kaynak kodu yüklenemedi"
+msgstr "Seçilen nesnenin CNC kodu yüklenemedi"
 
 #: app_Main.py:7266
 msgid "Go to Line ..."
@@ -19116,7 +19120,7 @@ msgstr "Yeni proje oluşturuldu"
 
 #: app_Main.py:9105
 msgid "New TCL script file created in Code Editor."
-msgstr "Kod düzenleyicide yeni TLC komut dosyası oluşturuldu."
+msgstr "Kod Düzenleyici'de yeni TLC komut dosyası oluşturuldu."
 
 #: app_Main.py:9132 app_Main.py:9134 app_Main.py:9169 app_Main.py:9171
 msgid "Open TCL script"
@@ -19132,7 +19136,7 @@ msgstr "TCL komut dosyasını çalıştır"
 
 #: app_Main.py:9233
 msgid "TCL script file opened in Code Editor and executed."
-msgstr "TCL komut dosyası kod düzenleyicisinde açıldı ve yürütüldü."
+msgstr "TCL komut dosyası Kod Düzenleyici'de açıldı ve yürütüldü."
 
 #: app_Main.py:9279 app_Main.py:9286
 msgid "Save Project As ..."
@@ -19302,7 +19306,7 @@ msgstr " HPGL2 açılamadı. Muhtemelen bir HPGL2 dosyası değil."
 
 #: app_Main.py:10407
 msgid "TCL script file opened in Code Editor."
-msgstr "TCL komut dosyası kod düzenleyicide açıldı."
+msgstr "TCL komut dosyası Kod Düzenleyici'de açıldı."
 
 #: app_Main.py:10427
 msgid "Opening TCL Script..."
@@ -19465,7 +19469,7 @@ msgstr "G91 koordinatları uygulanmadı"
 
 #: camlib.py:3447
 msgid "Finished G-Code generation for tool:"
-msgstr "Uç için G-Kod'u oluşturma işlemi tamamlandı:"
+msgstr "Uç için G-Kodu oluşturma işlemi tamamlandı:"
 
 #: camlib.py:3536 camlib.py:5340 camlib.py:5735
 msgid ""
@@ -19542,7 +19546,7 @@ msgstr ""
 
 #: camlib.py:5209
 msgid "Finished G-Code generation..."
-msgstr "G-Kod'u oluşturma işlemi tamamlandı ..."
+msgstr "G-Kodu oluşturma işlemi tamamlandı ..."
 
 #: camlib.py:5326
 msgid ""

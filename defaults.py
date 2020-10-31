@@ -477,7 +477,7 @@ class FlatCAMDefaults:
         "tools_ncc_rest": False,
         "tools_ncc_offset_choice": False,
         "tools_ncc_offset_value": 0.0000,
-        "tools_ncc_ref": 0, # ITSELF
+        "tools_ncc_ref": 0,     # ITSELF
         "tools_ncc_area_shape": "square",
         "tools_ncc_milling_type": 'cl',
         "tools_ncc_tool_type": 'C1',

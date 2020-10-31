@@ -209,6 +209,10 @@ class FCPad(FCShapeTool):
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Pad first select a aperture in Aperture Table"))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
             self.draw_app.in_action = False
             self.complete = True
             return
@@ -4081,7 +4085,7 @@ class AppGerberEditor(QtCore.QObject):
                     log.warning("Found %d clear polygons." % len(global_clear_geo))
 
                     if global_clear_geo:
-                        global_clear_geo = MultiPolygon(global_clear_geo)
+                        global_clear_geo = unary_union(global_clear_geo)
                         if isinstance(global_clear_geo, Polygon):
                             global_clear_geo = [global_clear_geo]
 
