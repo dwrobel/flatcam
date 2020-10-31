@@ -383,7 +383,8 @@ class ToolPaint(AppTool, Gerber):
     def on_add_tool_by_key(self):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
                                        text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4)
+                                       min=0.0000, max=99.9999, decimals=4,
+                                       parent=self.app.ui)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()

@@ -6119,7 +6119,8 @@ class App(QtCore.QObject):
             if silent is False:
                 rotatebox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                           min=-360, max=360, decimals=4,
-                                          init_val=float(self.defaults['tools_transform_rotate']))
+                                          init_val=float(self.defaults['tools_transform_rotate']),
+                                          parent=self.ui)
                 num, ok = rotatebox.get_value()
             else:
                 num = preset
@@ -6170,7 +6171,8 @@ class App(QtCore.QObject):
         else:
             skewxbox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
-                                     init_val=float(self.defaults['tools_transform_skew_x']))
+                                     init_val=float(self.defaults['tools_transform_skew_x']),
+                                     parent=self.ui)
             num, ok = skewxbox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -6207,7 +6209,8 @@ class App(QtCore.QObject):
         else:
             skewybox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
-                                     init_val=float(self.defaults['tools_transform_skew_y']))
+                                     init_val=float(self.defaults['tools_transform_skew_y']),
+                                     parent=self.ui)
             num, ok = skewybox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -6308,7 +6311,8 @@ class App(QtCore.QObject):
 
         grid_add_popup = FCInputDialog(title=_("New Grid ..."),
                                        text=_('Enter a Grid Value:'),
-                                       min=0.0000, max=99.9999, decimals=4)
+                                       min=0.0000, max=99.9999, decimals=4,
+                                       parent=self.ui)
         grid_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/plus32.png'))
 
         val, ok = grid_add_popup.get_value()
@@ -6332,7 +6336,8 @@ class App(QtCore.QObject):
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
-                                       min=0.0000, max=99.9999, decimals=4)
+                                       min=0.0000, max=99.9999, decimals=4,
+                                       parent=self.ui)
         grid_del_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/delete32.png'))
 
         val, ok = grid_del_popup.get_value()

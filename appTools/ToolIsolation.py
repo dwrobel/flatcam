@@ -789,7 +789,8 @@ class ToolIsolation(AppTool, Gerber):
                                                     text='%s:' % _('Enter a Tool Diameter'),
                                                     min=0.0001, max=9999.9999, decimals=self.decimals,
                                                     button_icon=btn_icon,
-                                                    callback=self.on_find_optimal_tooldia)
+                                                    callback=self.on_find_optimal_tooldia,
+                                                    parent=self.app.ui)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         def find_optimal(val):

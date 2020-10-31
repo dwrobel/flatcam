@@ -18,6 +18,8 @@ CHANGELOG for FlatCAM beta
 - fixed issue in Excellon Editor when using the menu links to Move or Copy Drills/Slots
 - updated the strings 
 - updated the Turkish translation strings (by Mehmet Kaya)
+- added a parent to some of the FCInputDialog widgets used in the app such that those pop-up windows will b displayed in the center of the app main window as opposed to the center of the screen
+- finished the Google-translation of not translated strings in Russian language
 
 30.10.2020
 
