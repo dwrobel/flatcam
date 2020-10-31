@@ -2046,7 +2046,8 @@ class AppExcEditor(QtCore.QObject):
 
         try:
             if dia is None or dia is False:
-                # deleted_tool_dia = float(self.e_ui.tools_table_exc.item(self.e_ui.tools_table_exc.currentRow(), 1).text())
+                # deleted_tool_dia = float(
+                #     self.e_ui.tools_table_exc.item(self.e_ui.tools_table_exc.currentRow(), 1).text())
                 for index in self.e_ui.tools_table_exc.selectionModel().selectedRows():
                     row = index.row()
                     deleted_tool_dia_list.append(float(self.e_ui.tools_table_exc.item(row, 1).text()))
@@ -2803,11 +2804,7 @@ class AppExcEditor(QtCore.QObject):
     def update_options(obj):
         try:
             if not obj.options:
-                obj.options = {}
-                obj.options['xmin'] = 0
-                obj.options['ymin'] = 0
-                obj.options['xmax'] = 0
-                obj.options['ymax'] = 0
+                obj.options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
                 return True
             else:
                 return False
@@ -3229,7 +3226,8 @@ class AppExcEditor(QtCore.QObject):
 
                             # if the row to be selected is not already in the selected rows then select it
                             # otherwise don't do it as it seems that we have a toggle effect
-                            if row_to_sel not in set(index.row() for index in self.e_ui.tools_table_exc.selectedIndexes()):
+                            if row_to_sel not in set(
+                                    index.row() for index in self.e_ui.tools_table_exc.selectedIndexes()):
                                 self.e_ui.tools_table_exc.selectRow(row_to_sel)
                             self.last_tool_selected = int(key_tool_nr)
 

@@ -1305,7 +1305,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
-            self.log.debug("-> First Run: Setting up the first Layout" )
+            self.log.debug("-> First Run: Setting up the first Layout")
             initial_lay = 'minimal'
             self.on_layout(lay=initial_lay)
 
@@ -5461,8 +5461,7 @@ class App(QtCore.QObject):
             apertures[str(apid)] = {}
             apertures[str(apid)]['geometry'] = []
             for obj_orig in obj.solid_geometry:
-                new_elem = {}
-                new_elem['solid'] = obj_orig
+                new_elem = {'solid': obj_orig}
                 try:
                     new_elem['follow'] = obj_orig.exterior
                 except AttributeError:
@@ -5486,9 +5485,7 @@ class App(QtCore.QObject):
                 apertures[str(apid)] = {}
                 apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = {}
-                    new_el['solid'] = geo
-                    new_el['follow'] = geo.exterior
+                    new_el = {'solid': geo, 'follow': geo.exterior}
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
                 apertures[str(apid)]['size'] = float(obj.tools[tool]['tooldia'])
@@ -7635,8 +7632,7 @@ class App(QtCore.QObject):
             #            urllib.parse.urlencode(self.defaults["global_stats"])
         else:
             # no_stats dict; just so it won't break things on website
-            no_ststs_dict = {}
-            no_ststs_dict["global_ststs"] = {}
+            no_ststs_dict = {"global_ststs": {}}
             full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version)
             full_url += "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
@@ -8157,6 +8153,7 @@ class App(QtCore.QObject):
         """
         Shows a message on the FlatCAM Shell
 
+        :param new_line:
         :param msg:         Message to display.
         :param show:        Opens the shell.
         :param error:       Shows the message as an error.

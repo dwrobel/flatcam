@@ -1266,7 +1266,7 @@ class TransformEditorTool(AppTool):
         """
         Rotate geometry
 
-        :param num:     Rotate with a known angle value, val
+        :param val:     Rotate with a known angle value, val
         :param point:   Reference point for rotation: tuple
         :return:
         """
@@ -1326,6 +1326,7 @@ class TransformEditorTool(AppTool):
         """
         Skew geometry
 
+        :param point:
         :param axis:    Axis on which to deform, skew
         :param xval:    Skew value on X axis
         :param yval:    Skew value on Y axis
@@ -1888,7 +1889,8 @@ class DrawTool(object):
     def utility_geometry(self, data=None):
         return None
 
-    def bounds(self, obj):
+    @staticmethod
+    def bounds(obj):
         def bounds_rec(o):
             if type(o) is list:
                 minx = np.Inf
@@ -3688,7 +3690,6 @@ class AppGeoEditor(QtCore.QObject):
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         self.app.ui.corner_snap_btn.setVisible(False)
         self.app.ui.snap_magnet.setVisible(False)
 

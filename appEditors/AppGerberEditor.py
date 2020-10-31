@@ -815,9 +815,7 @@ class FCPoligonize(FCShapeTool):
                     except KeyError:
                         self.draw_app.on_aperture_add(apcode='0')
                         current_storage = self.draw_app.storage_dict['0']['geometry']
-                new_el = {}
-                new_el['solid'] = geo
-                new_el['follow'] = geo.exterior
+                new_el = {'solid': geo, 'follow': geo.exterior}
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
         else:
             # clean-up the geo
@@ -830,9 +828,7 @@ class FCPoligonize(FCShapeTool):
                     self.draw_app.on_aperture_add(apcode='0')
                     current_storage = self.draw_app.storage_dict['0']['geometry']
 
-            new_el = {}
-            new_el['solid'] = fused_geo
-            new_el['follow'] = fused_geo.exterior
+            new_el = {'solid': fused_geo, 'follow': fused_geo.exterior}
             self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
 
         self.draw_app.delete_selected()
@@ -840,8 +836,7 @@ class FCPoligonize(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Poligonize completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Poligonize completed."))
 
         # MS: always return to the Select Tool if modifier key is not pressed
         # else return to the current tool
@@ -1052,12 +1047,11 @@ class FCRegion(FCShapeTool):
 
                         self.temp_points.append(self.inter_point)
             self.temp_points.append(data)
-            new_geo_el = {}
-
-            new_geo_el['solid'] = LinearRing(self.temp_points).buffer(self.buf_val,
-                                                                      resolution=int(self.steps_per_circle / 4),
-                                                                      join_style=1)
-            new_geo_el['follow'] = LinearRing(self.temp_points)
+            new_geo_el = {
+                'solid': LinearRing(self.temp_points).buffer(self.buf_val,
+                                                             resolution=int(self.steps_per_circle / 4),
+                                                             join_style=1),
+                'follow': LinearRing(self.temp_points)}
 
             return DrawToolUtilityShape(new_geo_el)
 
@@ -1073,12 +1067,11 @@ class FCRegion(FCShapeTool):
             else:
                 self.draw_app.last_aperture_selected = '0'
 
-            new_geo_el = {}
-
-            new_geo_el['solid'] = Polygon(self.points).buffer(self.buf_val,
-                                                              resolution=int(self.steps_per_circle / 4),
-                                                              join_style=2)
-            new_geo_el['follow'] = Polygon(self.points).exterior
+            new_geo_el = {
+                'solid': Polygon(self.points).buffer(self.buf_val,
+                                                     resolution=int(self.steps_per_circle / 4),
+                                                     join_style=2), 'follow': Polygon(self.points).exterior
+            }
 
             self.geometry = DrawToolShape(new_geo_el)
         self.draw_app.in_action = False
@@ -2106,8 +2099,7 @@ class FCApertureMove(FCShapeTool):
                 geo_list.append(deepcopy(new_geo_el))
             return DrawToolUtilityShape(geo_list)
         else:
-            ss_el = {}
-            ss_el['solid'] = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+            ss_el = {'solid': affinity.translate(self.selection_shape, xoff=dx, yoff=dy)}
             return DrawToolUtilityShape(ss_el)
 
 
@@ -3971,7 +3963,6 @@ class AppGerberEditor(QtCore.QObject):
             else:
                 self.conversion_factor = 0.0393700787401575
 
-
         # Hide original geometry
         orig_grb_obj.visible = False
 
@@ -4237,11 +4228,7 @@ class AppGerberEditor(QtCore.QObject):
     def update_options(obj):
         try:
             if not obj.options:
-                obj.options = {}
-                obj.options['xmin'] = 0
-                obj.options['ymin'] = 0
-                obj.options['xmax'] = 0
-                obj.options['ymax'] = 0
+                obj.options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
                 return True
             else:
                 return False
@@ -5960,7 +5947,7 @@ class TransformEditorTool(AppTool):
         """
         Rotate geometry
 
-        :param num:     Rotate with a known angle value, val
+        :param val:     Rotate with a known angle value, val
         :param point:   Reference point for rotation: tuple
         :return:
         """
@@ -5969,7 +5956,7 @@ class TransformEditorTool(AppTool):
         px, py = point
 
         if not elem_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %_("No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
         with self.app.proc_container.new(_("Appying Rotate")):
@@ -6296,6 +6283,7 @@ class TransformEditorTool(AppTool):
                 return lst.bounds
 
         return bounds_rec(shapelist)
+
 
 def get_shapely_list_bounds(geometry_list):
     xmin = np.Inf
