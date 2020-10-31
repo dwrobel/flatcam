@@ -36,6 +36,187 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
+class FCDrillSelect(FCShapeTool):
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'drill_select'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+
+        self.draw_app = draw_app
+        self.storage = self.draw_app.storage_dict
+        # self.selected = self.draw_app.selected
+
+        # here we store the selected tools
+        self.sel_tools = set()
+
+        # here we store all shapes that were selected so we can search for the nearest to our click location
+        self.sel_storage = AppExcEditor.make_storage()
+
+        self.draw_app.e_ui.resize_frame.hide()
+        self.draw_app.e_ui.array_frame.hide()
+        self.draw_app.e_ui.slot_frame.hide()
+        self.draw_app.e_ui.slot_array_frame.hide()
+
+    def click(self, point):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            pass
+        else:
+            self.draw_app.selected = []
+
+    def click_release(self, pos):
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        xmin, ymin, xmax, ymax = 0, 0, 0, 0
+
+        try:
+            for storage in self.draw_app.storage_dict:
+                # for sh in self.draw_app.storage_dict[storage].get_objects():
+                #     self.sel_storage.insert(sh)
+                _, st_closest_shape = self.draw_app.storage_dict[storage].nearest(pos)
+                self.sel_storage.insert(st_closest_shape)
+
+            _, closest_shape = self.sel_storage.nearest(pos)
+
+            # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
+            if isinstance(closest_shape.geo, MultiLineString):
+                x_coord, y_coord = closest_shape.geo[0].xy
+                delta = (x_coord[1] - x_coord[0])
+                # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
+                xmin = x_coord[0] - (0.7 * delta)
+                xmax = x_coord[0] + (1.7 * delta)
+                ymin = y_coord[0] - (0.7 * delta)
+                ymax = y_coord[0] + (1.7 * delta)
+            elif isinstance(closest_shape.geo, Polygon):
+                xmin, ymin, xmax, ymax = closest_shape.geo.bounds
+                dx = xmax - xmin
+                dy = ymax - ymin
+                delta = dx if dx > dy else dy
+                xmin -= 0.7 * delta
+                xmax += 0.7 * delta
+                ymin -= 0.7 * delta
+                ymax += 0.7 * delta
+        except StopIteration:
+            return ""
+
+        if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
+            self.draw_app.selected = []
+        else:
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+            if modifiers == QtCore.Qt.ShiftModifier:
+                mod_key = 'Shift'
+            elif modifiers == QtCore.Qt.ControlModifier:
+                mod_key = 'Control'
+            else:
+                mod_key = None
+
+            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                if closest_shape in self.draw_app.selected:
+                    self.draw_app.selected.remove(closest_shape)
+                else:
+                    self.draw_app.selected.append(closest_shape)
+            else:
+                self.draw_app.selected = []
+                self.draw_app.selected.append(closest_shape)
+
+            # select the diameter of the selected shape in the tool table
+            try:
+                self.draw_app.e_ui.tools_table_exc.cellPressed.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+            # if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            #     self.draw_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.sel_tools.clear()
+
+            for shape_s in self.draw_app.selected:
+                for storage in self.draw_app.storage_dict:
+                    if shape_s in self.draw_app.storage_dict[storage].get_objects():
+                        self.sel_tools.add(storage)
+
+            self.draw_app.e_ui.tools_table_exc.clearSelection()
+            for storage in self.sel_tools:
+                for k, v in self.draw_app.tool2tooldia.items():
+                    if v == storage:
+                        self.draw_app.e_ui.tools_table_exc.selectRow(int(k) - 1)
+                        self.draw_app.last_tool_selected = int(k)
+                        break
+
+            # self.draw_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+            self.draw_app.e_ui.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+
+        # delete whatever is in selection storage, there is no longer need for those shapes
+        self.sel_storage = AppExcEditor.make_storage()
+
+        return ""
+
+        # pos[0] and pos[1] are the mouse click coordinates (x, y)
+        # for storage in self.draw_app.storage_dict:
+        #     for obj_shape in self.draw_app.storage_dict[storage].get_objects():
+        #         minx, miny, maxx, maxy = obj_shape.geo.bounds
+        #         if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
+        #             over_shape_list.append(obj_shape)
+        #
+        # try:
+        #     # if there is no shape under our click then deselect all shapes
+        #     if not over_shape_list:
+        #         self.draw_app.selected = []
+        #         AppExcEditor.draw_shape_idx = -1
+        #         self.draw_app.e_ui.tools_table_exc.clearSelection()
+        #     else:
+        #         # if there are shapes under our click then advance through the list of them, one at the time in a
+        #         # circular way
+        #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
+        #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
+        #
+        #         if self.draw_app.app.defaults["global_mselect_key"] == 'Shift':
+        #             if self.draw_app.modifiers == Qt.ShiftModifier:
+        #                 if obj_to_add in self.draw_app.selected:
+        #                     self.draw_app.selected.remove(obj_to_add)
+        #                 else:
+        #                     self.draw_app.selected.append(obj_to_add)
+        #             else:
+        #                 self.draw_app.selected = []
+        #                 self.draw_app.selected.append(obj_to_add)
+        #         else:
+        #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
+        #             # in the selected list, we removed it. Therefore first click selects, second deselects.
+        #             if self.draw_app.modifiers == Qt.ControlModifier:
+        #                 if obj_to_add in self.draw_app.selected:
+        #                     self.draw_app.selected.remove(obj_to_add)
+        #                 else:
+        #                     self.draw_app.selected.append(obj_to_add)
+        #             else:
+        #                 self.draw_app.selected = []
+        #                 self.draw_app.selected.append(obj_to_add)
+        #
+        #     for storage in self.draw_app.storage_dict:
+        #         for shape in self.draw_app.selected:
+        #             if shape in self.draw_app.storage_dict[storage].get_objects():
+        #                 for key in self.draw_app.tool2tooldia:
+        #                     if self.draw_app.tool2tooldia[key] == storage:
+        #                         item = self.draw_app.e_ui.tools_table_exc.item((key - 1), 1)
+        #                         item.setSelected(True)
+        #                         # self.draw_app.e_ui.tools_table_exc.selectItem(key - 1)
+        #
+        # except Exception as e:
+        #     log.error("[ERROR] Something went bad. %s" % str(e))
+        #     raise
+
+
 class FCDrillAdd(FCShapeTool):
     """
     Resulting type: MultiLineString
@@ -120,7 +301,7 @@ class FCDrillAdd(FCShapeTool):
         self.geometry = DrawToolShape(self.util_shape(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
@@ -352,7 +533,7 @@ class FCDrillArray(FCShapeTool):
                 geo = self.util_shape((x, y))
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
         self.draw_app.e_ui.array_frame.hide()
 
@@ -556,7 +737,7 @@ class FCSlot(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Slot completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.e_ui.slot_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
 
@@ -879,7 +1060,7 @@ class FCSlotArray(FCShapeTool):
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Slot Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
         self.draw_app.e_ui.slot_frame.hide()
         self.draw_app.e_ui.slot_array_frame.hide()
@@ -913,8 +1094,8 @@ class FCDrillResize(FCShapeTool):
         self.geometry = []
         self.destination_storage = None
 
-        self.draw_app.resize_btn.clicked.connect(self.make)
-        self.draw_app.resdrill_entry.editingFinished.connect(self.make)
+        self.draw_app.e_ui.resize_btn.clicked.connect(self.make)
+        self.draw_app.e_ui.resdrill_entry.editingFinished.connect(self.make)
 
         # Switch notebook to Properties page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
@@ -1108,11 +1289,9 @@ class FCDrillResize(FCShapeTool):
             # we reactivate the signals after the after the tool editing
             self.draw_app.e_ui.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
 
-            self.draw_app.app.inform.emit('[success] %s' %
-                                          _("Done. Drill/Slot Resize completed."))
+            self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         else:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("Cancelled. No drills/slots selected for resize ..."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
 
         # init this set() for another use perhaps
         self.selected_dia_set = set()
@@ -1146,11 +1325,6 @@ class FCDrillMove(FCShapeTool):
         self.selection_shape = self.selection_bbox()
         self.selected_dia_list = []
 
-        if self.draw_app.launched_from_shortcuts is True:
-            self.draw_app.launched_from_shortcuts = False
-            self.draw_app.app.inform.emit(_("Click on target location ..."))
-        else:
-            self.draw_app.app.inform.emit(_("Click on reference location ..."))
         self.current_storage = None
         self.geometry = []
 
@@ -1166,11 +1340,22 @@ class FCDrillMove(FCShapeTool):
         # Switch notebook to Properties page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
+        if self.draw_app.launched_from_shortcuts is True:
+            self.draw_app.launched_from_shortcuts = False
+        else:
+            if not self.draw_app.get_selected():
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
+                self.draw_app.app.ui.select_drill_btn.setChecked(True)
+                self.draw_app.on_tool_select('drill_select')
+            else:
+                self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
     def set_origin(self, origin):
         self.origin = origin
 
     def click(self, point):
-        if len(self.draw_app.get_selected()) == 0:
+        if not self.draw_app.get_selected():
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
             return "Nothing to move."
 
         if self.origin is None:
@@ -1207,8 +1392,11 @@ class FCDrillMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) Move completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except TypeError:
+            pass
 
     def selection_bbox(self):
         geo_list = []
@@ -1315,7 +1503,7 @@ class FCDrillCopy(FCDrillMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
@@ -1327,187 +1515,6 @@ class FCDrillCopy(FCDrillMove):
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
-
-
-class FCDrillSelect(DrawTool):
-    def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
-        self.name = 'drill_select'
-
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception:
-            pass
-
-        self.exc_editor_app = draw_app
-        self.storage = self.exc_editor_app.storage_dict
-        # self.selected = self.exc_editor_app.selected
-
-        # here we store the selected tools
-        self.sel_tools = set()
-
-        # here we store all shapes that were selected so we can search for the nearest to our click location
-        self.sel_storage = AppExcEditor.make_storage()
-
-        self.exc_editor_app.e_ui.resize_frame.hide()
-        self.exc_editor_app.e_ui.array_frame.hide()
-        self.exc_editor_app.e_ui.slot_frame.hide()
-        self.exc_editor_app.e_ui.slot_array_frame.hide()
-
-    def click(self, point):
-        key_modifier = QtWidgets.QApplication.keyboardModifiers()
-
-        if key_modifier == QtCore.Qt.ShiftModifier:
-            mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
-            mod_key = 'Control'
-        else:
-            mod_key = None
-
-        if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-            pass
-        else:
-            self.exc_editor_app.selected = []
-
-    def click_release(self, pos):
-        self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-        xmin, ymin, xmax, ymax = 0, 0, 0, 0
-
-        try:
-            for storage in self.exc_editor_app.storage_dict:
-                # for sh in self.exc_editor_app.storage_dict[storage].get_objects():
-                #     self.sel_storage.insert(sh)
-                _, st_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
-                self.sel_storage.insert(st_closest_shape)
-
-            _, closest_shape = self.sel_storage.nearest(pos)
-
-            # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
-            if isinstance(closest_shape.geo, MultiLineString):
-                x_coord, y_coord = closest_shape.geo[0].xy
-                delta = (x_coord[1] - x_coord[0])
-                # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
-                xmin = x_coord[0] - (0.7 * delta)
-                xmax = x_coord[0] + (1.7 * delta)
-                ymin = y_coord[0] - (0.7 * delta)
-                ymax = y_coord[0] + (1.7 * delta)
-            elif isinstance(closest_shape.geo, Polygon):
-                xmin, ymin, xmax, ymax = closest_shape.geo.bounds
-                dx = xmax - xmin
-                dy = ymax - ymin
-                delta = dx if dx > dy else dy
-                xmin -= 0.7 * delta
-                xmax += 0.7 * delta
-                ymin -= 0.7 * delta
-                ymax += 0.7 * delta
-        except StopIteration:
-            return ""
-
-        if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-            self.exc_editor_app.selected = []
-        else:
-            modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-            if modifiers == QtCore.Qt.ShiftModifier:
-                mod_key = 'Shift'
-            elif modifiers == QtCore.Qt.ControlModifier:
-                mod_key = 'Control'
-            else:
-                mod_key = None
-
-            if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-                if closest_shape in self.exc_editor_app.selected:
-                    self.exc_editor_app.selected.remove(closest_shape)
-                else:
-                    self.exc_editor_app.selected.append(closest_shape)
-            else:
-                self.exc_editor_app.selected = []
-                self.exc_editor_app.selected.append(closest_shape)
-
-            # select the diameter of the selected shape in the tool table
-            try:
-                self.exc_editor_app.e_ui.tools_table_exc.cellPressed.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-            # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-            #     self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-            self.sel_tools.clear()
-
-            for shape_s in self.exc_editor_app.selected:
-                for storage in self.exc_editor_app.storage_dict:
-                    if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
-                        self.sel_tools.add(storage)
-
-            self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-            for storage in self.sel_tools:
-                for k, v in self.exc_editor_app.tool2tooldia.items():
-                    if v == storage:
-                        self.exc_editor_app.e_ui.tools_table_exc.selectRow(int(k) - 1)
-                        self.exc_editor_app.last_tool_selected = int(k)
-                        break
-
-            # self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-            self.exc_editor_app.e_ui.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
-
-        # delete whatever is in selection storage, there is no longer need for those shapes
-        self.sel_storage = AppExcEditor.make_storage()
-
-        return ""
-
-        # pos[0] and pos[1] are the mouse click coordinates (x, y)
-        # for storage in self.exc_editor_app.storage_dict:
-        #     for obj_shape in self.exc_editor_app.storage_dict[storage].get_objects():
-        #         minx, miny, maxx, maxy = obj_shape.geo.bounds
-        #         if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
-        #             over_shape_list.append(obj_shape)
-        #
-        # try:
-        #     # if there is no shape under our click then deselect all shapes
-        #     if not over_shape_list:
-        #         self.exc_editor_app.selected = []
-        #         AppExcEditor.draw_shape_idx = -1
-        #         self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-        #     else:
-        #         # if there are shapes under our click then advance through the list of them, one at the time in a
-        #         # circular way
-        #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
-        #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
-        #
-        #         if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Shift':
-        #             if self.exc_editor_app.modifiers == Qt.ShiftModifier:
-        #                 if obj_to_add in self.exc_editor_app.selected:
-        #                     self.exc_editor_app.selected.remove(obj_to_add)
-        #                 else:
-        #                     self.exc_editor_app.selected.append(obj_to_add)
-        #             else:
-        #                 self.exc_editor_app.selected = []
-        #                 self.exc_editor_app.selected.append(obj_to_add)
-        #         else:
-        #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
-        #             # in the selected list, we removed it. Therefore first click selects, second deselects.
-        #             if self.exc_editor_app.modifiers == Qt.ControlModifier:
-        #                 if obj_to_add in self.exc_editor_app.selected:
-        #                     self.exc_editor_app.selected.remove(obj_to_add)
-        #                 else:
-        #                     self.exc_editor_app.selected.append(obj_to_add)
-        #             else:
-        #                 self.exc_editor_app.selected = []
-        #                 self.exc_editor_app.selected.append(obj_to_add)
-        #
-        #     for storage in self.exc_editor_app.storage_dict:
-        #         for shape in self.exc_editor_app.selected:
-        #             if shape in self.exc_editor_app.storage_dict[storage].get_objects():
-        #                 for key in self.exc_editor_app.tool2tooldia:
-        #                     if self.exc_editor_app.tool2tooldia[key] == storage:
-        #                         item = self.exc_editor_app.e_ui.tools_table_exc.item((key - 1), 1)
-        #                         item.setSelected(True)
-        #                         # self.exc_editor_app.e_ui.tools_table_exc.selectItem(key - 1)
-        #
-        # except Exception as e:
-        #     log.error("[ERROR] Something went bad. %s" % str(e))
-        #     raise
 
 
 class AppExcEditor(QtCore.QObject):
@@ -3822,6 +3829,8 @@ class AppExcEditorUI:
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.resdrill_entry = FCDoubleSpinner()
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.resdrill_entry.setSizePolicy(sizePolicy)
         self.resdrill_entry.set_precision(self.decimals)
         self.resdrill_entry.set_range(0.0000, 9999.9999)
 
