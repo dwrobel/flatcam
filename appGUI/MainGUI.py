@@ -3601,13 +3601,13 @@ class MainGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key_M or key == 'M':
                         self.app.exc_editor.launched_from_shortcuts = True
                         if self.app.exc_editor.selected:
-                            self.app.inform.emit(_("Click on target point."))
+                            self.app.inform.emit(_("Click on target location ..."))
                             self.app.ui.move_drill_btn.setChecked(True)
                             self.app.exc_editor.on_tool_select('drill_move')
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
 
                     # Add Array of Slots Hole Tool

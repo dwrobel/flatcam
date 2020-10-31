@@ -14,6 +14,10 @@ CHANGELOG for FlatCAM beta
 - updated the Turkish translation strings (by Mehmet Kaya)
 - typo fixed in Copper Thieving Tool (due of recent changes)
 - fixed issue #457; wrong reference when saving a project
+- fixed issue in Excellon Editor that crashed the app if using the Resize Drill feature by clicking in menu/toolbar
+- fixed issue in Excellon Editor when using the menu links to Move or Copy Drills/Slots
+- updated the strings 
+- updated the Turkish translation strings (by Mehmet Kaya)
 
 30.10.2020
 
