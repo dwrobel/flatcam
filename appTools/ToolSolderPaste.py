@@ -7,8 +7,8 @@
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
-from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
-    FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, FCInputSpinner
+from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
+    FCInputSpinner
 from app_Main import log
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor

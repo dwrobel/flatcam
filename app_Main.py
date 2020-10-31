@@ -1305,7 +1305,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
-            self.log.debug("-> First Run: Setting up the first Layout" )
+            self.log.debug("-> First Run: Setting up the first Layout")
             initial_lay = 'minimal'
             self.on_layout(lay=initial_lay)
 
@@ -5461,8 +5461,7 @@ class App(QtCore.QObject):
             apertures[str(apid)] = {}
             apertures[str(apid)]['geometry'] = []
             for obj_orig in obj.solid_geometry:
-                new_elem = {}
-                new_elem['solid'] = obj_orig
+                new_elem = {'solid': obj_orig}
                 try:
                     new_elem['follow'] = obj_orig.exterior
                 except AttributeError:
@@ -5486,9 +5485,7 @@ class App(QtCore.QObject):
                 apertures[str(apid)] = {}
                 apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = {}
-                    new_el['solid'] = geo
-                    new_el['follow'] = geo.exterior
+                    new_el = {'solid': geo, 'follow': geo.exterior}
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
                 apertures[str(apid)]['size'] = float(obj.tools[tool]['tooldia'])
@@ -6122,7 +6119,8 @@ class App(QtCore.QObject):
             if silent is False:
                 rotatebox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                           min=-360, max=360, decimals=4,
-                                          init_val=float(self.defaults['tools_transform_rotate']))
+                                          init_val=float(self.defaults['tools_transform_rotate']),
+                                          parent=self.ui)
                 num, ok = rotatebox.get_value()
             else:
                 num = preset
@@ -6173,7 +6171,8 @@ class App(QtCore.QObject):
         else:
             skewxbox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
-                                     init_val=float(self.defaults['tools_transform_skew_x']))
+                                     init_val=float(self.defaults['tools_transform_skew_x']),
+                                     parent=self.ui)
             num, ok = skewxbox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -6210,7 +6209,8 @@ class App(QtCore.QObject):
         else:
             skewybox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
-                                     init_val=float(self.defaults['tools_transform_skew_y']))
+                                     init_val=float(self.defaults['tools_transform_skew_y']),
+                                     parent=self.ui)
             num, ok = skewybox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -6311,7 +6311,8 @@ class App(QtCore.QObject):
 
         grid_add_popup = FCInputDialog(title=_("New Grid ..."),
                                        text=_('Enter a Grid Value:'),
-                                       min=0.0000, max=99.9999, decimals=4)
+                                       min=0.0000, max=99.9999, decimals=4,
+                                       parent=self.ui)
         grid_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/plus32.png'))
 
         val, ok = grid_add_popup.get_value()
@@ -6335,7 +6336,8 @@ class App(QtCore.QObject):
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
-                                       min=0.0000, max=99.9999, decimals=4)
+                                       min=0.0000, max=99.9999, decimals=4,
+                                       parent=self.ui)
         grid_del_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/delete32.png'))
 
         val, ok = grid_del_popup.get_value()
@@ -7635,8 +7637,7 @@ class App(QtCore.QObject):
             #            urllib.parse.urlencode(self.defaults["global_stats"])
         else:
             # no_stats dict; just so it won't break things on website
-            no_ststs_dict = {}
-            no_ststs_dict["global_ststs"] = {}
+            no_ststs_dict = {"global_ststs": {}}
             full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version)
             full_url += "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
@@ -8157,6 +8158,7 @@ class App(QtCore.QObject):
         """
         Shows a message on the FlatCAM Shell
 
+        :param new_line:
         :param msg:         Message to display.
         :param show:        Opens the shell.
         :param error:       Shows the message as an error.

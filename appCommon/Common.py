@@ -12,7 +12,7 @@
 # ##########################################################
 from PyQt5 import QtCore
 
-from shapely.geometry import Polygon, Point, LineString, MultiPoint
+from shapely.geometry import Polygon, Point, LineString
 from shapely.ops import unary_union
 
 from appGUI.VisPyVisuals import ShapeCollection
@@ -20,7 +20,6 @@ from appTool import AppTool
 
 from copy import deepcopy
 import collections
-import traceback
 
 import numpy as np
 # from voronoi import Voronoi
@@ -39,6 +38,7 @@ class GracefulException(Exception):
     """
     Graceful Exception raised when the user is requesting to cancel the current threaded task
     """
+
     def __init__(self):
         super().__init__()
 
@@ -95,7 +95,7 @@ class LoudUniqueList(list, collections.MutableSequence):
         super().__init__()
         self.callback = lambda x: None
 
-        if not arg is None:
+        if arg is not None:
             if isinstance(arg, list):
                 self.extend(arg)
             else:
@@ -110,32 +110,32 @@ class LoudUniqueList(list, collections.MutableSequence):
     def append(self, v):
         if v in self:
             raise ValueError("One of the added items is already in the list.")
-        l = len(self)
-        self.callback(l)
+        le = len(self)
+        self.callback(le)
         return super().append(v)
 
     def extend(self, t):
         for v in t:
             if v in self:
                 raise ValueError("One of the added items is already in the list.")
-        l = len(self)
-        self.callback(l)
+        le = len(self)
+        self.callback(le)
         return super().extend(t)
 
     def __add__(self, t):  # This is for something like `LoudUniqueList([1, 2, 3]) + list([4, 5, 6])`...
         for v in t:
             if v in self:
                 raise ValueError("One of the added items is already in the list.")
-        l = len(self)
-        self.callback(l)
+        le = len(self)
+        self.callback(le)
         return super().__add__(t)
 
     def __iadd__(self, t):  # This is for something like `l = LoudUniqueList(); l += [1, 2, 3]`
         for v in t:
             if v in self:
                 raise ValueError("One of the added items is already in the list.")
-        l = len(self)
-        self.callback(l)
+        le = len(self)
+        self.callback(le)
         return super().__iadd__(t)
 
     def __setitem__(self, i, v):
@@ -146,7 +146,7 @@ class LoudUniqueList(list, collections.MutableSequence):
         except TypeError:
             if v in self:
                 raise ValueError("One of the modified items is already in the list.")
-        if not v is None:
+        if v is not None:
             self.callback(i)
         return super().__setitem__(i, v)
 
@@ -374,10 +374,10 @@ class ExclusionAreas(QtCore.QObject):
                     #     "overz":      float < - self.over_z_button
                     # }
                     new_el = {
-                        "obj_type":     self.obj_type,
-                        "shape":        new_rectangle,
-                        "strategy":     self.strategy_button.get_value(),
-                        "overz":        self.over_z_button.get_value()
+                        "obj_type": self.obj_type,
+                        "shape": new_rectangle,
+                        "strategy": self.strategy_button.get_value(),
+                        "overz": self.over_z_button.get_value()
                     }
                     self.exclusion_areas_storage.append(new_el)
 

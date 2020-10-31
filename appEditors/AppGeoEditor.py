@@ -1266,7 +1266,7 @@ class TransformEditorTool(AppTool):
         """
         Rotate geometry
 
-        :param num:     Rotate with a known angle value, val
+        :param val:     Rotate with a known angle value, val
         :param point:   Reference point for rotation: tuple
         :return:
         """
@@ -1326,6 +1326,7 @@ class TransformEditorTool(AppTool):
         """
         Skew geometry
 
+        :param point:
         :param axis:    Axis on which to deform, skew
         :param xval:    Skew value on X axis
         :param yval:    Skew value on Y axis
@@ -1447,7 +1448,8 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDialog(title=_("Rotate ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_rotate']))
+                                init_val=float(self.app.defaults['tools_transform_rotate']),
+                                parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
         val, ok = val_box.get_value()
@@ -1464,7 +1466,8 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_x']))
+                                init_val=float(self.app.defaults['tools_transform_offset_x']),
+                                parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
         val, ok = val_box.get_value()
@@ -1481,7 +1484,8 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_y']))
+                                init_val=float(self.app.defaults['tools_transform_offset_y']),
+                                parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
         val, ok = val_box.get_value()
@@ -1496,7 +1500,8 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_x']))
+                                init_val=float(self.app.defaults['tools_transform_skew_x']),
+                                parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
         val, ok = val_box.get_value()
@@ -1511,7 +1516,8 @@ class TransformEditorTool(AppTool):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_y']))
+                                init_val=float(self.app.defaults['tools_transform_skew_y']),
+                                parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
         val, ok = val_box.get_value()
@@ -1888,7 +1894,8 @@ class DrawTool(object):
     def utility_geometry(self, data=None):
         return None
 
-    def bounds(self, obj):
+    @staticmethod
+    def bounds(obj):
         def bounds_rec(o):
             if type(o) is list:
                 minx = np.Inf
@@ -3688,7 +3695,6 @@ class AppGeoEditor(QtCore.QObject):
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         self.app.ui.corner_snap_btn.setVisible(False)
         self.app.ui.snap_magnet.setVisible(False)
 
