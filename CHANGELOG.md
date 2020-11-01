@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - updated the French Translation (by Olivier Cornet)
 - fixed issue in Corner Markers Tool that crashed the app if only one corner was checked
 - fixed issue in Isolation Tool where Area Isolation selection was not working 
+- added to the translatable strings the category labels in the Project Tab and also updated the translations
 
 31.10.2020
 

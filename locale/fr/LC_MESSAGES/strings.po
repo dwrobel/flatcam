@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-01 15:25+0200\n"
-"PO-Revision-Date: 2020-11-01 15:25+0200\n"
+"POT-Creation-Date: 2020-11-01 15:39+0200\n"
+"PO-Revision-Date: 2020-11-01 15:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -4346,14 +4346,15 @@ msgstr "Nouveau"
 
 #: appGUI/MainGUI.py:95 appGUI/MainGUI.py:1575
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
-#: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:1326
-#: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
-#: appTools/ToolCutOut.py:2021 appTools/ToolDblSided.py:528
-#: appTools/ToolDblSided.py:770 appTools/ToolFilm.py:932
-#: appTools/ToolFilm.py:955 appTools/ToolImage.py:136 appTools/ToolImage.py:191
-#: appTools/ToolIsolation.py:3352 appTools/ToolIsolation.py:3405
-#: appTools/ToolNCC.py:3872 appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
+#: appObjects/ObjectCollection.py:234 appTools/ToolCalibration.py:171
+#: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
+#: appTools/ToolCopperThieving.py:1253 appTools/ToolCutOut.py:2021
+#: appTools/ToolDblSided.py:528 appTools/ToolDblSided.py:770
+#: appTools/ToolFilm.py:932 appTools/ToolFilm.py:955 appTools/ToolImage.py:136
+#: appTools/ToolImage.py:191 appTools/ToolIsolation.py:3352
+#: appTools/ToolIsolation.py:3405 appTools/ToolNCC.py:3872
+#: appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
 #: appTools/ToolPanelize.py:148 appTools/ToolPanelize.py:168
 #: appTools/ToolPanelize.py:716 appTools/ToolTransform.py:126
 #: appTools/ToolTransform.py:587
@@ -4372,17 +4373,17 @@ msgstr "Crée un nouvel objet de géométrie vide."
 #: appGUI/MainGUI.py:100
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:97
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:76
-#: appTools/ToolAlignObjects.py:398 appTools/ToolAlignObjects.py:434
-#: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
-#: appTools/ToolCalibration.py:891 appTools/ToolCalibration.py:1326
-#: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
-#: appTools/ToolCutOut.py:2020 appTools/ToolDblSided.py:527
-#: appTools/ToolDblSided.py:768 appTools/ToolFilm.py:931
-#: appTools/ToolFilm.py:954 appTools/ToolImage.py:117 appTools/ToolImage.py:138
-#: appTools/ToolImage.py:191 appTools/ToolIsolation.py:3353
-#: appTools/ToolIsolation.py:3405 appTools/ToolNCC.py:3873
-#: appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
+#: appObjects/ObjectCollection.py:232 appTools/ToolAlignObjects.py:398
+#: appTools/ToolAlignObjects.py:434 appTools/ToolCalibration.py:163
+#: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:891
+#: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
+#: appTools/ToolCopperThieving.py:1253 appTools/ToolCutOut.py:2020
+#: appTools/ToolDblSided.py:527 appTools/ToolDblSided.py:768
+#: appTools/ToolFilm.py:931 appTools/ToolFilm.py:954 appTools/ToolImage.py:117
+#: appTools/ToolImage.py:138 appTools/ToolImage.py:191
+#: appTools/ToolIsolation.py:3353 appTools/ToolIsolation.py:3405
+#: appTools/ToolNCC.py:3873 appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
 #: appTools/ToolPanelize.py:148 appTools/ToolPanelize.py:168
 #: appTools/ToolPanelize.py:716 appTools/ToolPanelize.py:810
 #: appTools/ToolTransform.py:126 appTools/ToolTransform.py:585 defaults.py:572
@@ -4401,17 +4402,18 @@ msgstr "Crée un nouvel objet Gerber vide."
 #: appGUI/MainGUI.py:105 appGUI/MainGUI.py:1579
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:77
-#: appTools/ToolAlignObjects.py:399 appTools/ToolAlignObjects.py:435
-#: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
-#: appTools/ToolCalibration.py:892 appTools/ToolCalibration.py:1326
-#: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
-#: appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:727
-#: appTools/ToolDblSided.py:769 appTools/ToolFilm.py:1210
-#: appTools/ToolIsolation.py:3405 appTools/ToolNCC.py:4342
-#: appTools/ToolPaint.py:3132 appTools/ToolPanelize.py:148
-#: appTools/ToolPunchGerber.py:1128 appTools/ToolPunchGerber.py:1143
-#: appTools/ToolTransform.py:126 appTools/ToolTransform.py:586
+#: appObjects/ObjectCollection.py:233 appTools/ToolAlignObjects.py:399
+#: appTools/ToolAlignObjects.py:435 appTools/ToolCalibration.py:163
+#: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:892
+#: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
+#: appTools/ToolCopperThieving.py:1253 appTools/ToolDblSided.py:529
+#: appTools/ToolDblSided.py:727 appTools/ToolDblSided.py:769
+#: appTools/ToolFilm.py:1210 appTools/ToolIsolation.py:3405
+#: appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
+#: appTools/ToolPanelize.py:148 appTools/ToolPunchGerber.py:1128
+#: appTools/ToolPunchGerber.py:1143 appTools/ToolTransform.py:126
+#: appTools/ToolTransform.py:586
 msgid "Excellon"
 msgstr "Excellon"
 
@@ -4423,7 +4425,7 @@ msgstr "L"
 msgid "Will create a new, empty Excellon Object."
 msgstr "Va créer un nouvel objet vide vide."
 
-#: appGUI/MainGUI.py:112
+#: appGUI/MainGUI.py:112 appObjects/ObjectCollection.py:237
 msgid "Document"
 msgstr "Document"
 
@@ -13833,6 +13835,10 @@ msgstr "Zone de cuivre"
 #: appObjects/FlatCAMScript.py:160
 msgid "Script Editor"
 msgstr "Éditeur de script"
+
+#: appObjects/ObjectCollection.py:236
+msgid "Script"
+msgstr "Script"
 
 #: appObjects/ObjectCollection.py:519
 #, python-brace-format
