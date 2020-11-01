@@ -2322,6 +2322,8 @@ class ToolIsolation(AppTool, Gerber):
 
     # To be called after clicking on the plot.
     def on_mouse_release(self, event):
+        shape_type = self.ui.area_shape_radio.get_value()
+
         if self.app.is_legacy is False:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
@@ -2338,8 +2340,6 @@ class ToolIsolation(AppTool, Gerber):
             curr_pos = (event_pos[0], event_pos[1])
 
         x1, y1 = curr_pos[0], curr_pos[1]
-
-        shape_type = self.area_shape_radio.get_value()
 
         # do clear area only for left mouse clicks
         if event.button == 1:
