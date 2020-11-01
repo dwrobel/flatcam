@@ -546,7 +546,7 @@ class PreferencesUIManager:
             "tools_sub_delete_sources":  self.ui.tools_defaults_form.tools_sub_group.delete_sources_cb,
 
             # Corner Markers Tool
-
+            "tools_corners_type": self.ui.tools_defaults_form.tools_corners_group.type_radio,
             "tools_corners_thickness": self.ui.tools_defaults_form.tools_corners_group.thick_entry,
             "tools_corners_length": self.ui.tools_defaults_form.tools_corners_group.l_entry,
             "tools_corners_margin": self.ui.tools_defaults_form.tools_corners_group.margin_entry,
