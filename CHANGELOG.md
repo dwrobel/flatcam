@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.11.2020
+
+- updated the French Translation (by Olivier Cornet)
+- fixed issue in Corner Markers Tool that crashed the app if only one corner was checked
+- fixed issue in Isolation Tool where Area Isolation selection was not working 
+
 31.10.2020
 
 - adapted HPGL importer to work within the new app

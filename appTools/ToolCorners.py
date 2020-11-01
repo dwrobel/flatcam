@@ -255,8 +255,12 @@ class ToolCorners(AppTool):
 
         geo_buff_list = MultiPolygon(geo_buff_list)
         geo_buff_list = geo_buff_list.buffer(0)
-        for poly in geo_buff_list:
-            s_list.append(poly)
+        try:
+            for poly in geo_buff_list:
+                s_list.append(poly)
+        except TypeError:
+            s_list.append(geo_buff_list)
+
         g_obj.solid_geometry = MultiPolygon(s_list)
 
     def replot(self, obj, run_thread=True):
