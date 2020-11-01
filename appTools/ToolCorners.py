@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel
 
 from shapely.geometry import MultiPolygon, LineString
 
@@ -95,6 +95,7 @@ class ToolCorners(AppTool):
         self.ui.l_entry.set_value(float(self.app.defaults["tools_corners_length"]))
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_corners_margin"]))
         self.ui.toggle_all_cb.set_value(False)
+        self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
 
     def on_toggle_all(self, val):
         self.ui.bl_cb.set_value(val)
@@ -118,6 +119,7 @@ class ToolCorners(AppTool):
         except Exception as e:
             log.debug("ToolCorners.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.call_source = "app"
             return
 
         xmin, ymin, xmax, ymax = self.grb_object.bounds()
@@ -131,7 +133,10 @@ class ToolCorners(AppTool):
         if br_state:
             points['br'] = (xmax, ymin)
 
-        self.add_corners_geo(points, g_obj=self.grb_object)
+        ret_val = self.add_corners_geo(points, g_obj=self.grb_object)
+        self.app.call_source = "app"
+        if ret_val == 'fail':
+            return
 
         self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
                                                                         filename=None,
@@ -148,6 +153,7 @@ class ToolCorners(AppTool):
         :return:                None
         """
 
+        marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
         line_length = self.ui.l_entry.get_value()
         margin = self.ui.margin_entry.get_value()
@@ -156,55 +162,87 @@ class ToolCorners(AppTool):
 
         if not points_storage:
             self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
-            return
+            return 'fail'
 
         for key in points_storage:
             if key == 'tl':
                 pt = points_storage[key]
                 x = pt[0] - margin - line_thickness / 2.0
                 y = pt[1] + margin + line_thickness / 2.0
-                line_geo_hor = LineString([
-                    (x, y), (x + line_length, y)
-                ])
-                line_geo_vert = LineString([
-                    (x, y), (x, y - line_length)
-                ])
+                if type == 's':
+                    line_geo_hor = LineString([
+                        (x, y), (x + line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y), (x, y - line_length)
+                    ])
+                else:
+                    line_geo_hor = LineString([
+                        (x - line_length, y), (x + line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y + line_length), (x, y - line_length)
+                    ])
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
             if key == 'tr':
                 pt = points_storage[key]
                 x = pt[0] + margin + line_thickness / 2.0
                 y = pt[1] + margin + line_thickness / 2.0
-                line_geo_hor = LineString([
-                    (x, y), (x - line_length, y)
-                ])
-                line_geo_vert = LineString([
-                    (x, y), (x, y - line_length)
-                ])
+                if type == 's':
+                    line_geo_hor = LineString([
+                        (x, y), (x - line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y), (x, y - line_length)
+                    ])
+                else:
+                    line_geo_hor = LineString([
+                        (x + line_length, y), (x - line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y + line_length), (x, y - line_length)
+                    ])
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
             if key == 'bl':
                 pt = points_storage[key]
                 x = pt[0] - margin - line_thickness / 2.0
                 y = pt[1] - margin - line_thickness / 2.0
-                line_geo_hor = LineString([
-                    (x, y), (x + line_length, y)
-                ])
-                line_geo_vert = LineString([
-                    (x, y), (x, y + line_length)
-                ])
+                if type == 's':
+                    line_geo_hor = LineString([
+                        (x, y), (x + line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y), (x, y + line_length)
+                    ])
+                else:
+                    line_geo_hor = LineString([
+                        (x - line_length, y), (x + line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y - line_length), (x, y + line_length)
+                    ])
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
             if key == 'br':
                 pt = points_storage[key]
                 x = pt[0] + margin + line_thickness / 2.0
                 y = pt[1] - margin - line_thickness / 2.0
-                line_geo_hor = LineString([
-                    (x, y), (x - line_length, y)
-                ])
-                line_geo_vert = LineString([
-                    (x, y), (x, y + line_length)
-                ])
+                if type == 's':
+                    line_geo_hor = LineString([
+                        (x, y), (x - line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y), (x, y + line_length)
+                    ])
+                else:
+                    line_geo_hor = LineString([
+                        (x + line_length, y), (x - line_length, y)
+                    ])
+                    line_geo_vert = LineString([
+                        (x, y - line_length), (x, y + line_length)
+                    ])
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
 
@@ -307,7 +345,7 @@ class CornersUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -316,10 +354,10 @@ class CornersUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # Gerber object #
-        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
+        self.object_label = FCLabel('<b>%s:</b>' % _("GERBER"))
         self.object_label.setToolTip(
             _("The Gerber object to which will be added corner markers.")
         )
@@ -337,7 +375,7 @@ class CornersUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(separator_line)
 
-        self.points_label = QtWidgets.QLabel('<b>%s:</b>' % _('Locations'))
+        self.points_label = FCLabel('<b>%s:</b>' % _('Locations'))
         self.points_label.setToolTip(
             _("Locations where to place corner markers.")
         )
@@ -379,14 +417,28 @@ class CornersUI:
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
+        # Type of Marker
+        self.type_label = FCLabel('%s:' % _("Type"))
+        self.type_label.setToolTip(
+            _("Shape of the marker.")
+        )
+
+        self.type_radio = RadioSet([
+            {"label": _("Semi-Cross"), "value": "s"},
+            {"label": _("Cross"), "value": "c"},
+        ])
+
+        grid_lay.addWidget(self.type_label, 2, 0)
+        grid_lay.addWidget(self.type_radio, 2, 1)
+
         # Thickness #
-        self.thick_label = QtWidgets.QLabel('%s:' % _("Thickness"))
+        self.thick_label = FCLabel('%s:' % _("Thickness"))
         self.thick_label.setToolTip(
             _("The thickness of the line that makes the corner marker.")
         )
@@ -396,11 +448,11 @@ class CornersUI:
         self.thick_entry.setWrapping(True)
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_lay.addWidget(self.thick_label, 1, 0)
-        grid_lay.addWidget(self.thick_entry, 1, 1)
+        grid_lay.addWidget(self.thick_label, 4, 0)
+        grid_lay.addWidget(self.thick_entry, 4, 1)
 
         # Length #
-        self.l_label = QtWidgets.QLabel('%s:' % _("Length"))
+        self.l_label = FCLabel('%s:' % _("Length"))
         self.l_label.setToolTip(
             _("The length of the line that makes the corner marker.")
         )
@@ -409,11 +461,11 @@ class CornersUI:
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_lay.addWidget(self.l_label, 2, 0)
-        grid_lay.addWidget(self.l_entry, 2, 1)
+        grid_lay.addWidget(self.l_label, 6, 0)
+        grid_lay.addWidget(self.l_entry, 6, 1)
 
         # Margin #
-        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label = FCLabel('%s:' % _("Margin"))
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
@@ -422,13 +474,13 @@ class CornersUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.margin_label, 3, 0)
-        grid_lay.addWidget(self.margin_entry, 3, 1)
+        grid_lay.addWidget(self.margin_label, 8, 0)
+        grid_lay.addWidget(self.margin_entry, 8, 1)
 
         separator_line_2 = QtWidgets.QFrame()
         separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line_2, 4, 0, 1, 2)
+        grid_lay.addWidget(separator_line_2, 10, 0, 1, 2)
 
         # ## Insert Corner Marker
         self.add_marker_button = FCButton(_("Add Marker"))
@@ -442,7 +494,7 @@ class CornersUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay.addWidget(self.add_marker_button, 11, 0, 1, 2)
+        grid_lay.addWidget(self.add_marker_button, 12, 0, 1, 2)
 
         self.layout.addStretch()
 

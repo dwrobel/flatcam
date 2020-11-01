@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-01 15:39+0200\n"
-"PO-Revision-Date: 2020-11-01 15:39+0200\n"
+"POT-Creation-Date: 2020-11-01 18:40+0200\n"
+"PO-Revision-Date: 2020-11-01 18:40+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -798,12 +798,12 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:59
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:53
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:66
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:181
 #: appTools/ToolCopperThieving.py:1206 appTools/ToolCopperThieving.py:1458
-#: appTools/ToolCorners.py:416 appTools/ToolCutOut.py:2168
+#: appTools/ToolCorners.py:468 appTools/ToolCutOut.py:2168
 #: appTools/ToolFiducials.py:788 appTools/ToolInvertGerber.py:234
 #: appTools/ToolInvertGerber.py:242 appTools/ToolNCC.py:4159
 #: appTools/ToolNCC.py:4262
@@ -815,9 +815,9 @@ msgstr "Marge"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:74
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:61
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:125
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:68
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:204
-#: appTools/ToolCopperThieving.py:1208 appTools/ToolCorners.py:418
+#: appTools/ToolCopperThieving.py:1208 appTools/ToolCorners.py:470
 #: appTools/ToolFiducials.py:790 appTools/ToolNCC.py:4161
 #: appTools/ToolNCC.py:4264
 msgid "Bounding box margin."
@@ -1464,7 +1464,7 @@ msgstr "Annuler"
 #: appTools/ToolCalculators.py:390 appTools/ToolCalculators.py:401
 #: appTools/ToolCalibration.py:1395 appTools/ToolCalibration.py:1406
 #: appTools/ToolCopperThieving.py:1600 appTools/ToolCopperThieving.py:1611
-#: appTools/ToolCorners.py:468 appTools/ToolCorners.py:479
+#: appTools/ToolCorners.py:520 appTools/ToolCorners.py:531
 #: appTools/ToolCutOut.py:2448 appTools/ToolCutOut.py:2459
 #: appTools/ToolDblSided.py:963 appTools/ToolDblSided.py:974
 #: appTools/ToolDistance.py:660 appTools/ToolDistance.py:671
@@ -1500,7 +1500,7 @@ msgstr "La valeur modifiée est hors limites"
 #: appTools/ToolCalculators.py:396 appTools/ToolCalculators.py:403
 #: appTools/ToolCalibration.py:1401 appTools/ToolCalibration.py:1408
 #: appTools/ToolCopperThieving.py:1606 appTools/ToolCopperThieving.py:1613
-#: appTools/ToolCorners.py:474 appTools/ToolCorners.py:481
+#: appTools/ToolCorners.py:526 appTools/ToolCorners.py:533
 #: appTools/ToolCutOut.py:2454 appTools/ToolCutOut.py:2461
 #: appTools/ToolDblSided.py:969 appTools/ToolDblSided.py:976
 #: appTools/ToolDistance.py:666 appTools/ToolDistance.py:673
@@ -2121,8 +2121,8 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4013
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
-#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:403
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:83
+#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:455
 #: appTools/ToolProperties.py:571
 msgid "Length"
 msgstr "Longueur"
@@ -3181,8 +3181,10 @@ msgstr "Éditeur de Géométrie"
 #: appEditors/AppGeoEditor.py:3297 appEditors/AppGerberEditor.py:2491
 #: appEditors/AppGerberEditor.py:3947 appEditors/appGCodeEditor.py:688
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034
-#: appTools/ToolCutOut.py:2024 appTools/ToolDblSided.py:521
-#: appTools/ToolPunchGerber.py:1088 appTools/ToolTransform.py:579
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
+#: appTools/ToolCorners.py:427 appTools/ToolCutOut.py:2024
+#: appTools/ToolDblSided.py:521 appTools/ToolPunchGerber.py:1088
+#: appTools/ToolTransform.py:579
 msgid "Type"
 msgstr "Type"
 
@@ -5493,7 +5495,7 @@ msgid "Invert Gerber Tool"
 msgstr "Inverser Gerber"
 
 #: appGUI/MainGUI.py:1087 appGUI/MainGUI.py:2256 appGUI/MainGUI.py:4475
-#: appTools/ToolCorners.py:302
+#: appTools/ToolCorners.py:340
 msgid "Corner Markers Tool"
 msgstr "Outil de Marqueurs de Coin"
 
@@ -5644,7 +5646,7 @@ msgid "Plot Area"
 msgstr "Zone de Dessin"
 
 #: appGUI/MainGUI.py:1426 appTools/ToolCopperThieving.py:1165
-#: appTools/ToolCorners.py:322 appTools/ToolEtchCompensation.py:291
+#: appTools/ToolCorners.py:360 appTools/ToolEtchCompensation.py:291
 #: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:875
 #: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:3000
 #: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:1010
@@ -8315,7 +8317,7 @@ msgstr "Options avancées CNCjob"
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:31
 #: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1184
-#: appTools/ToolCorners.py:382 appTools/ToolEtchCompensation.py:356
+#: appTools/ToolCorners.py:420 appTools/ToolEtchCompensation.py:356
 #: appTools/ToolFiducials.py:765 appTools/ToolInvertGerber.py:228
 #: appTools/ToolQRCode.py:700
 msgid "Parameters"
@@ -10847,8 +10849,8 @@ msgid "Bounding box margin for robber bar."
 msgstr "Marge de la zone de délimitation pour la Robber Bar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appTools/ToolCopperThieving.py:1471 appTools/ToolCorners.py:389
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
+#: appTools/ToolCopperThieving.py:1471 appTools/ToolCorners.py:441
 #: appTools/ToolEtchCompensation.py:370
 msgid "Thickness"
 msgstr "Épaisseur"
@@ -10886,7 +10888,7 @@ msgstr "Options de l'outil d'Étalonnage"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:38
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:37
-#: appTools/ToolCopperThieving.py:1186 appTools/ToolCorners.py:384
+#: appTools/ToolCopperThieving.py:1186 appTools/ToolCorners.py:422
 #: appTools/ToolFiducials.py:767
 msgid "Parameters used for this tool."
 msgstr "Paramètres utilisés pour cet outil."
@@ -11230,7 +11232,8 @@ msgstr ""
 "gauche, en haut à droite."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:108
-#: appTools/ToolFiducials.py:837
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:49
+#: appTools/ToolCorners.py:434 appTools/ToolFiducials.py:837
 msgid "Cross"
 msgstr "Croix"
 
@@ -11912,12 +11915,26 @@ msgid "Corner Markers Options"
 msgstr "Options des Marqueurs de Coin"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
-#: appTools/ToolCorners.py:391
+#: appTools/ToolCorners.py:429
+#, fuzzy
+#| msgid "Show the Properties."
+msgid "Shape of the marker."
+msgstr "Afficher les propriétés."
+
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:48
+#: appTools/ToolCorners.py:433
+#, fuzzy
+#| msgid "Cross"
+msgid "Semi-Cross"
+msgstr "Croix"
+
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
+#: appTools/ToolCorners.py:443
 msgid "The thickness of the line that makes the corner marker."
 msgstr "L'épaisseur de la ligne qui fait le marqueur de coin."
 
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
-#: appTools/ToolCorners.py:405
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:85
+#: appTools/ToolCorners.py:457
 msgid "The length of the line that makes the corner marker."
 msgstr "La longueur de la ligne qui fait le marqueur de coin."
 
@@ -12274,18 +12291,18 @@ msgstr ""
 "Ce peut être l'un des quatre points de la boîte englobante de la géométrie."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:174
-#: appTools/ToolCorners.py:347 appTools/ToolFiducials.py:696
+#: appTools/ToolCorners.py:385 appTools/ToolFiducials.py:696
 #: appTools/ToolFilm.py:1068
 msgid "Bottom Left"
 msgstr "En bas à gauche"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:175
-#: appTools/ToolCorners.py:355 appTools/ToolFilm.py:1069
+#: appTools/ToolCorners.py:393 appTools/ToolFilm.py:1069
 msgid "Top Left"
 msgstr "En haut à gauche"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:176
-#: appTools/ToolCorners.py:351 appTools/ToolFilm.py:1070
+#: appTools/ToolCorners.py:389 appTools/ToolFilm.py:1070
 msgid "Bottom Right"
 msgstr "En bas à droite"
 
@@ -12567,7 +12584,7 @@ msgstr "Progressif"
 #: appObjects/AppObject.py:452 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1040
-#: appTools/ToolCorners.py:268 appTools/ToolFiducials.py:532
+#: appTools/ToolCorners.py:306 appTools/ToolFiducials.py:532
 #: appTools/ToolMove.py:229 appTools/ToolQRCode.py:464 app_Main.py:4813
 msgid "Plotting"
 msgstr "Traçage"
@@ -14118,7 +14135,7 @@ msgstr ""
 
 #: appTools/ToolAlignObjects.py:499 appTools/ToolCalculators.py:372
 #: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1582
-#: appTools/ToolCorners.py:450 appTools/ToolCutOut.py:2405
+#: appTools/ToolCorners.py:502 appTools/ToolCutOut.py:2405
 #: appTools/ToolDblSided.py:945 appTools/ToolDrilling.py:2649
 #: appTools/ToolEtchCompensation.py:459 appTools/ToolExtractDrills.py:699
 #: appTools/ToolFiducials.py:935 appTools/ToolFilm.py:1386
@@ -14134,7 +14151,7 @@ msgstr "Réinitialiser l'outil"
 
 #: appTools/ToolAlignObjects.py:502 appTools/ToolCalculators.py:375
 #: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1585
-#: appTools/ToolCorners.py:453 appTools/ToolCutOut.py:2408
+#: appTools/ToolCorners.py:505 appTools/ToolCutOut.py:2408
 #: appTools/ToolDblSided.py:948 appTools/ToolDrilling.py:2652
 #: appTools/ToolEtchCompensation.py:462 appTools/ToolExtractDrills.py:702
 #: appTools/ToolFiducials.py:938 appTools/ToolFilm.py:1389
@@ -14562,7 +14579,7 @@ msgid "Squares grid fill selected."
 msgstr "Remplissage de la grille des carrés sélectionné."
 
 #: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:307
-#: appTools/ToolCopperThieving.py:914 appTools/ToolCorners.py:120
+#: appTools/ToolCopperThieving.py:914 appTools/ToolCorners.py:121
 #: appTools/ToolDblSided.py:306 appTools/ToolExtractDrills.py:141
 #: appTools/ToolFiducials.py:187 appTools/ToolFiducials.py:464
 #: appTools/ToolOptimal.py:138 appTools/ToolPunchGerber.py:381
@@ -14803,39 +14820,39 @@ msgstr ""
 msgid "Corners Tool"
 msgstr "Outil de Coins"
 
-#: appTools/ToolCorners.py:158
+#: appTools/ToolCorners.py:164
 msgid "Please select at least a location"
 msgstr "Veuillez sélectionner au moins un emplacement"
 
-#: appTools/ToolCorners.py:297
+#: appTools/ToolCorners.py:335
 msgid "Corners Tool exit."
 msgstr "Sortie d'outil de Coins."
 
-#: appTools/ToolCorners.py:324
+#: appTools/ToolCorners.py:362
 msgid "The Gerber object to which will be added corner markers."
 msgstr "L'objet Gerber auquel seront ajoutés des marqueurs de coin."
 
-#: appTools/ToolCorners.py:340
+#: appTools/ToolCorners.py:378
 msgid "Locations"
 msgstr "Locations"
 
-#: appTools/ToolCorners.py:342
+#: appTools/ToolCorners.py:380
 msgid "Locations where to place corner markers."
 msgstr "Emplacements où placer les marqueurs de coin."
 
-#: appTools/ToolCorners.py:359 appTools/ToolFiducials.py:708
+#: appTools/ToolCorners.py:397 appTools/ToolFiducials.py:708
 msgid "Top Right"
 msgstr "En haut à droite"
 
-#: appTools/ToolCorners.py:368
+#: appTools/ToolCorners.py:406
 msgid "Toggle ALL"
 msgstr "Tout basculer"
 
-#: appTools/ToolCorners.py:434
+#: appTools/ToolCorners.py:486
 msgid "Add Marker"
 msgstr "Ajouter un marqueur"
 
-#: appTools/ToolCorners.py:437
+#: appTools/ToolCorners.py:489
 msgid "Will add corner markers to the selected Gerber file."
 msgstr "Ajoutera des marqueurs de coin au fichier Gerber sélectionné."
 
@@ -19856,11 +19873,11 @@ msgstr ""
 msgid "G91 coordinates not implemented ..."
 msgstr "Coordonnées G91 non implémentées ..."
 
-#: defaults.py:865
+#: defaults.py:866
 msgid "Could not load defaults file."
 msgstr "Impossible de charger le fichier par défaut."
 
-#: defaults.py:878
+#: defaults.py:879
 msgid "Failed to parse defaults file."
 msgstr "Échec de l'analyse du fichier par défaut."
 

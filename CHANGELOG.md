@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - fixed issue in Corner Markers Tool that crashed the app if only one corner was checked
 - fixed issue in Isolation Tool where Area Isolation selection was not working 
 - added to the translatable strings the category labels in the Project Tab and also updated the translations
+- fixed a small issue (messages) in Corner Markers Tool
+- in Corners Markers Tool added a new feature: possibility to use cross shape markers
 
 31.10.2020
 
