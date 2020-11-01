@@ -229,12 +229,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     """
 
     groups = [
-        ("gerber", "Gerber"),
-        ("excellon", "Excellon"),
-        ("geometry", "Geometry"),
+        ("gerber", _("Gerber")),
+        ("excellon", _("Excellon")),
+        ("geometry", _("Geometry")),
         ("cncjob", "CNC Job"),
-        ("script", "Scripts"),
-        ("document", "Document"),
+        ("script", _("Script")),
+        ("document", _("Document")),
     ]
 
     classdict = {
