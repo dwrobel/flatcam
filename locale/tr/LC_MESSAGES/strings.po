@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-11-01 18:40+0200\n"
-"PO-Revision-Date: 2020-11-01 18:40+0200\n"
+"PO-Revision-Date: 2020-11-01 20:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -7452,7 +7452,7 @@ msgstr "Bir dışlama alanı ekleyin."
 #: appTools/ToolMilling.py:2267 appTools/ToolNCC.py:4364
 #: appTools/ToolPaint.py:3154
 msgid "The kind of selection shape used for area selection."
-msgstr "Dışlama alanı seçmek için kullanılan seçim şeklinin görünümü."
+msgstr "Alan seçimi için kullanılan seçim şeklinin görünümü."
 
 #: appGUI/ObjectUI.py:1616
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:32
@@ -10775,7 +10775,7 @@ msgstr "Kalibrasyon Seçenekleri"
 #: appTools/ToolCopperThieving.py:1186 appTools/ToolCorners.py:422
 #: appTools/ToolFiducials.py:767
 msgid "Parameters used for this tool."
-msgstr "Referans işareti için kullanılan seçenekler."
+msgstr "Bu araç için kullanılan seçenekler."
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:43
 #: appTools/ToolCalibration.py:876
@@ -11802,31 +11802,27 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:27
 msgid "Corner Markers Options"
-msgstr "Köşe İşaretleyici Seçenekleri"
+msgstr "Köşe İşareti Seçenekleri"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
 #: appTools/ToolCorners.py:429
-#, fuzzy
-#| msgid "Show the Properties."
 msgid "Shape of the marker."
-msgstr "Özellikleri göster."
+msgstr "Köşe işaretinin şekli."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:48
 #: appTools/ToolCorners.py:433
-#, fuzzy
-#| msgid "Cross"
 msgid "Semi-Cross"
-msgstr "Çapraz"
+msgstr "Yarı Çapraz"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
 #: appTools/ToolCorners.py:443
 msgid "The thickness of the line that makes the corner marker."
-msgstr "Köşe işaretleyici çizgisinin kalınlığı."
+msgstr "Köşe işaretinin çizgi kalınlığı."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:85
 #: appTools/ToolCorners.py:457
 msgid "The length of the line that makes the corner marker."
-msgstr "Köşe işaretleyici çizgisinin uzunluğu."
+msgstr "Köşe işaretinin çizgi uzunluğu."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:28
 msgid "Cutout Tool Options"
@@ -11945,12 +11941,14 @@ msgid ""
 "WARNING: using rest machining will automatically set the order\n"
 "in reverse and disable this control."
 msgstr ""
-"Bu, uçların Araçlar Tablosundaki sırayı belirler.\n"
-"'Hayır' -> Kullanılan ucun araç tablosunda belirtildiği anlamına gelir.\n"
+"Bu, Araçlar Tablosundaki uçların kullanılma şeklini belirler.\n"
+"'Hayır' -> Kullanılan uç sıranın Araçlar Tablosundaki sıra olduğu anlamına "
+"gelir.\n"
 "'İleri' -> Uçların küçükten büyüğe doğru kullanılacağı anlamına gelir.\n"
 "Geri -> Uçların büyükten küçüğe doğru kullanılacağı anlamına gelir.\n"
 "\n"
-"UYARI: Kalan işlemeyi kullanmak, sırayı otomatik olarak tersine çevirir \n"
+"UYARI: Kalan parça işlemeyi kullanmak, sırayı otomatik olarak tersine "
+"çevirir \n"
 "ve bu kontrolü devre dışı bırakır."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:50
@@ -12325,7 +12323,7 @@ msgstr ""
 #: appTools/ToolIsolation.py:3300 appTools/ToolNCC.py:4246
 #: appTools/ToolPaint.py:3076
 msgid "Rest"
-msgstr "Kalan İşleme"
+msgstr "Kalan Parça İşleme"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:246
 #: appTools/ToolIsolation.py:3303
@@ -12338,7 +12336,7 @@ msgid ""
 "no more copper features to isolate or there are no more tools.\n"
 "If not checked, use the standard algorithm."
 msgstr ""
-"Bu onay kutusu işaretlenirse, 'Kalan İşleme' kullanılır.\n"
+"Bu onay kutusu işaretlenirse, 'Kalan Parça İşleme' kullanılır.\n"
 "Bu, en büyük ucu kullanarak PCB'nin ana bakırını \n"
 "temizler ve temizlenecek daha fazla bakır kalmayana veya \n"
 "daha fazla uç kalmayana kadar önceki uçla temizlenemeyen\n"
@@ -12437,7 +12435,7 @@ msgid ""
 msgstr ""
 "Onay kutusu işaretlendiğinde, çokgenin iç kısımları \n"
 "(çokgendeki delikler) yalıtılamasa bile, yalıtım mevcut \n"
-"uçla yapılacaktır. \"Kalan İşleme\" kullanıldığında çalışır."
+"uçla yapılacaktır. \"Kalan Parça İşleme\" kullanıldığında çalışır."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:337
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:339
@@ -12512,7 +12510,7 @@ msgid ""
 "no more copper to clear or there are no more tools.\n"
 "If not checked, use the standard algorithm."
 msgstr ""
-"Bu onay kutusu işaretlenirse, 'Kalan İşleme' kullanılır.\n"
+"Bu onay kutusu işaretlenirse, 'Kalan Parça İşleme' kullanılır.\n"
 "Bu, en büyük ucu kullanarak PCB'nin ana bakırını \n"
 "temizler ve temizlenecek daha fazla bakır kalmayana veya \n"
 "daha fazla uç kalmayana kadar önceki uçla temizlenemeyen\n"
@@ -12560,7 +12558,7 @@ msgid ""
 "\n"
 "If not checked, use the standard algorithm."
 msgstr ""
-"Bu onay kutusu işaretlenirse, 'Kalan İşleme' kullanılır.\n"
+"Bu onay kutusu işaretlenirse, 'Kalan Parça İşleme' kullanılır.\n"
 "Bu, en büyük ucu kullanarak PCB'nin ana bakırını \n"
 "temizler ve temizlenecek daha fazla bakır kalmayana veya \n"
 "daha fazla uç kalmayana kadar önceki uçla temizlenemeyen\n"
@@ -14670,11 +14668,11 @@ msgstr "Lütfen en az bir konum seçin"
 
 #: appTools/ToolCorners.py:335
 msgid "Corners Tool exit."
-msgstr "Köşe işaretleyicisi çıkış."
+msgstr "Köşe işaretleme işlemi tamamlandı."
 
 #: appTools/ToolCorners.py:362
 msgid "The Gerber object to which will be added corner markers."
-msgstr "Köşe işaretleyicileri eklenecek Gerber nesnesi."
+msgstr "Köşe işaretleri eklenecek Gerber nesnesi."
 
 #: appTools/ToolCorners.py:378
 msgid "Locations"
@@ -14682,7 +14680,7 @@ msgstr "Konumlar"
 
 #: appTools/ToolCorners.py:380
 msgid "Locations where to place corner markers."
-msgstr "Köşe işaretleyicilerinin yerleştirileceği yerler."
+msgstr "Köşe işaretlerinin yerleştirileceği yerler."
 
 #: appTools/ToolCorners.py:397 appTools/ToolFiducials.py:708
 msgid "Top Right"
@@ -14698,7 +14696,7 @@ msgstr "Köşe İşareti Ekle"
 
 #: appTools/ToolCorners.py:489
 msgid "Will add corner markers to the selected Gerber file."
-msgstr "Seçilen Gerber dosyasına köşe işaretleyicileri ekler."
+msgstr "Seçilen Gerber dosyasına köşe işaretleri ekler."
 
 #: appTools/ToolCutOut.py:388
 msgid "Updated tool from Tools Database."
@@ -16562,19 +16560,19 @@ msgstr "araçlar"
 
 #: appTools/ToolNCC.py:2357
 msgid "NCC Tool. Rest machining copper clearing task started."
-msgstr "Bakır temizleme \"Kalan İşleme\" yöntemiyle başlatılmıştır."
+msgstr "Bakır temizleme \"Kalan Parça İşleme\" yöntemiyle başlatılmıştır."
 
 #: appTools/ToolNCC.py:2576 appTools/ToolNCC.py:3565
 msgid "NCC Tool Rest Machining clear all done."
-msgstr "Bakır temizleme \"Kalan İşleme\" ile tamamlanmıştır."
+msgstr "Bakır temizleme \"Kalan Parça İşleme\" ile tamamlanmıştır."
 
 #: appTools/ToolNCC.py:2579 appTools/ToolNCC.py:3568
 msgid ""
 "NCC Tool Rest Machining clear all done but the copper features isolation is "
 "broken for"
 msgstr ""
-"Bakır temizleme \"Kalan İşleme\" ile tamamlandı; ancak yollarda kırılmalar "
-"oldu"
+"Bakır temizleme \"Kalan Parça İşleme\" ile tamamlandı; ancak yollarda "
+"kırılmalar oldu"
 
 #: appTools/ToolNCC.py:2677
 msgid "NCC Tool started. Reading parameters."

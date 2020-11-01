@@ -968,18 +968,20 @@ class ToolCopperThieving(AppTool):
                         geo_list.append(poly_b)
 
                         # append into the '0' aperture
-                        geo_elem = {}
-                        geo_elem['solid'] = poly_b
-                        geo_elem['follow'] = poly_b.exterior
+                        geo_elem = {
+                            'solid': poly_b,
+                            'follow': poly_b.exterior
+                        }
                         grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
                 except TypeError:
                     # append to the new solid geometry
                     geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
                     # append into the '0' aperture
-                    geo_elem = {}
-                    geo_elem['solid'] = thieving_solid_geo.buffer(ppm_clearance)
-                    geo_elem['follow'] = thieving_solid_geo.buffer(ppm_clearance).exterior
+                    geo_elem = {
+                        'solid': thieving_solid_geo.buffer(ppm_clearance),
+                        'follow': thieving_solid_geo.buffer(ppm_clearance).exterior
+                    }
                     grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
 
             # if we have robber bar geometry, add it
@@ -1008,9 +1010,10 @@ class ToolCopperThieving(AppTool):
                     grb_obj.apertures[new_apid]['size'] = rb_thickness + ppm_clearance
                     grb_obj.apertures[new_apid]['geometry'] = []
 
-                    geo_elem = {}
-                    geo_elem['solid'] = robber_solid_geo.buffer(ppm_clearance)
-                    geo_elem['follow'] = Polygon(robber_line).buffer(ppm_clearance / 2.0).exterior
+                    geo_elem = {
+                        'solid': robber_solid_geo.buffer(ppm_clearance),
+                        'follow': Polygon(robber_line).buffer(ppm_clearance / 2.0).exterior
+                    }
                     grb_obj.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
                 geo_list.append(robber_solid_geo.buffer(ppm_clearance))

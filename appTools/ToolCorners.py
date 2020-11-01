@@ -10,7 +10,8 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel
 
-from shapely.geometry import MultiPolygon, LineString
+from shapely.geometry import MultiPolygon, LineString, Point
+from shapely.ops import unary_union
 
 from copy import deepcopy
 import logging
@@ -37,6 +38,9 @@ class ToolCorners(AppTool):
         self.decimals = self.app.decimals
         self.units = ''
 
+        # here we store the locations of the selected corners
+        self.points = {}
+
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
@@ -57,6 +61,7 @@ class ToolCorners(AppTool):
         # SIGNALS
         self.ui.add_marker_button.clicked.connect(self.add_markers)
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
+        self.ui.drill_button.clicked.connect(self.on_create_drill_object)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -96,6 +101,7 @@ class ToolCorners(AppTool):
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_corners_margin"]))
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
+        self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
 
     def on_toggle_all(self, val):
         self.ui.bl_cb.set_value(val)
@@ -123,26 +129,24 @@ class ToolCorners(AppTool):
             return
 
         xmin, ymin, xmax, ymax = self.grb_object.bounds()
-        points = {}
+        self.points = {}
         if tl_state:
-            points['tl'] = (xmin, ymax)
+            self.points['tl'] = (xmin, ymax)
         if tr_state:
-            points['tr'] = (xmax, ymax)
+            self.points['tr'] = (xmax, ymax)
         if bl_state:
-            points['bl'] = (xmin, ymin)
+            self.points['bl'] = (xmin, ymin)
         if br_state:
-            points['br'] = (xmax, ymin)
+            self.points['br'] = (xmax, ymin)
 
-        ret_val = self.add_corners_geo(points, g_obj=self.grb_object)
+        ret_val = self.add_corners_geo(self.points, g_obj=self.grb_object)
         self.app.call_source = "app"
         if ret_val == 'fail':
+            self.app.call_source = "app"
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
 
-        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                        filename=None,
-                                                                        local_use=self.grb_object,
-                                                                        use_thread=False)
-        self.on_exit()
+        self.on_exit(ret_val)
 
     def add_corners_geo(self, points_storage, g_obj):
         """
@@ -155,8 +159,8 @@ class ToolCorners(AppTool):
 
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
-        line_length = self.ui.l_entry.get_value()
         margin = self.ui.margin_entry.get_value()
+        line_length = self.ui.l_entry.get_value()
 
         geo_list = []
 
@@ -169,7 +173,7 @@ class ToolCorners(AppTool):
                 pt = points_storage[key]
                 x = pt[0] - margin - line_thickness / 2.0
                 y = pt[1] + margin + line_thickness / 2.0
-                if type == 's':
+                if marker_type == 's':
                     line_geo_hor = LineString([
                         (x, y), (x + line_length, y)
                     ])
@@ -189,7 +193,7 @@ class ToolCorners(AppTool):
                 pt = points_storage[key]
                 x = pt[0] + margin + line_thickness / 2.0
                 y = pt[1] + margin + line_thickness / 2.0
-                if type == 's':
+                if marker_type == 's':
                     line_geo_hor = LineString([
                         (x, y), (x - line_length, y)
                     ])
@@ -209,7 +213,7 @@ class ToolCorners(AppTool):
                 pt = points_storage[key]
                 x = pt[0] - margin - line_thickness / 2.0
                 y = pt[1] - margin - line_thickness / 2.0
-                if type == 's':
+                if marker_type == 's':
                     line_geo_hor = LineString([
                         (x, y), (x + line_length, y)
                     ])
@@ -229,7 +233,7 @@ class ToolCorners(AppTool):
                 pt = points_storage[key]
                 x = pt[0] + margin + line_thickness / 2.0
                 y = pt[1] - margin - line_thickness / 2.0
-                if type == 's':
+                if marker_type == 's':
                     line_geo_hor = LineString([
                         (x, y), (x - line_length, y)
                     ])
@@ -246,8 +250,10 @@ class ToolCorners(AppTool):
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
 
+        new_apertures = deepcopy(g_obj.apertures)
+
         aperture_found = None
-        for ap_id, ap_val in g_obj.apertures.items():
+        for ap_id, ap_val in new_apertures.items():
             if ap_val['type'] == 'C' and ap_val['size'] == line_thickness:
                 aperture_found = ap_id
                 break
@@ -261,27 +267,25 @@ class ToolCorners(AppTool):
                 dict_el = {}
                 dict_el['follow'] = geo
                 dict_el['solid'] = geo_buff
-                g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
         else:
-            ap_keys = list(g_obj.apertures.keys())
+            ap_keys = list(new_apertures.keys())
             if ap_keys:
                 new_apid = str(int(max(ap_keys)) + 1)
             else:
                 new_apid = '10'
 
-            g_obj.apertures[new_apid] = {}
-            g_obj.apertures[new_apid]['type'] = 'C'
-            g_obj.apertures[new_apid]['size'] = line_thickness
-            g_obj.apertures[new_apid]['geometry'] = []
+            new_apertures[new_apid] = {}
+            new_apertures[new_apid]['type'] = 'C'
+            new_apertures[new_apid]['size'] = line_thickness
+            new_apertures[new_apid]['geometry'] = []
 
             for geo in geo_list:
                 geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=3)
                 geo_buff_list.append(geo_buff)
 
-                dict_el = {}
-                dict_el['follow'] = geo
-                dict_el['solid'] = geo_buff
-                g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                dict_el = {'follow': geo, 'solid': geo_buff}
+                new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
         s_list = []
         if g_obj.solid_geometry:
@@ -299,22 +303,125 @@ class ToolCorners(AppTool):
         except TypeError:
             s_list.append(geo_buff_list)
 
-        g_obj.solid_geometry = MultiPolygon(s_list)
+        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
+
+        def initialize(grb_obj, app_obj):
+            grb_obj.multitool = False
+            grb_obj.multigeo = False
+            grb_obj.follow = False
+            grb_obj.apertures = new_apertures
+            grb_obj.solid_geometry = unary_union(s_list)
+
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
+                                                                   use_thread=False)
+
+        ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
+
+        return ret
+
+    def on_create_drill_object(self):
+        self.app.call_source = "corners_tool"
+
+        tooldia = self.ui.drill_dia_entry.get_value()
+
+        if tooldia == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("The tool diameter is zero.")))
+            return
+
+        line_thickness = self.ui.thick_entry.get_value()
+        margin = self.ui.margin_entry.get_value()
+        tl_state = self.ui.tl_cb.get_value()
+        tr_state = self.ui.tr_cb.get_value()
+        bl_state = self.ui.bl_cb.get_value()
+        br_state = self.ui.br_cb.get_value()
+
+        if not tl_state and not tr_state and not bl_state and not br_state:
+            self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
+
+        # get the Gerber object on which the corner marker will be inserted
+        selection_index = self.ui.object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("ToolCorners.add_markers() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.call_source = "app"
+            return
+
+        xmin, ymin, xmax, ymax = self.grb_object.bounds()
+
+        # list of (x,y) tuples. Store here the drill coordinates
+        drill_list = []
+
+        if tl_state:
+            x = xmin - margin - line_thickness / 2.0
+            y = ymax + margin + line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if tr_state:
+            x = xmax + margin + line_thickness / 2.0
+            y = ymax + margin + line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if bl_state:
+            x = xmin - margin - line_thickness / 2.0
+            y = ymin - margin - line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if br_state:
+            x = xmax + margin + line_thickness / 2.0
+            y = ymin - margin - line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        tools = {1: {}}
+        tools[1]["tooldia"] = tooldia
+        tools[1]['drills'] = drill_list
+        tools[1]['solid_geometry'] = []
+
+        def obj_init(obj_inst, app_inst):
+            obj_inst.tools = deepcopy(tools)
+            obj_inst.create_geometry()
+            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
+                                                                       local_use=obj_inst,
+                                                                       filename=None,
+                                                                       use_thread=False)
+
+        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
+
+        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
+
+        self.app.call_source = "app"
+
+        if not ret_val == 'fail':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+        else:
+            self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))
 
     def replot(self, obj, run_thread=True):
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 obj.plot()
+                self.app.app_obj.object_plotted.emit(obj)
 
         if run_thread:
             self.app.worker_task.emit({'fcn': worker_task, 'params': []})
         else:
             worker_task()
 
-    def on_exit(self):
+    def on_exit(self, corner_gerber_obj):
         # plot the object
         try:
-            self.replot(obj=self.grb_object)
+            self.replot(obj=corner_gerber_obj)
         except (AttributeError, TypeError):
             return
 
@@ -328,11 +435,8 @@ class ToolCorners(AppTool):
         except Exception as e:
             log.debug("ToolCorners.on_exit() copper_obj bounds error --> %s" % str(e))
 
-        # reset the variables
-        self.grb_object = None
-
         self.app.call_source = "app"
-        self.app.inform.emit('[success] %s' % _("Corners Tool exit."))
+        self.app.inform.emit('[success] %s' % _("A Gerber object with corner markers was created."))
 
 
 class CornersUI:
@@ -381,21 +485,25 @@ class CornersUI:
         )
         self.layout.addWidget(self.points_label)
 
-        # BOTTOM LEFT
-        self.bl_cb = FCCheckBox(_("Bottom Left"))
-        self.layout.addWidget(self.bl_cb)
-
-        # BOTTOM RIGHT
-        self.br_cb = FCCheckBox(_("Bottom Right"))
-        self.layout.addWidget(self.br_cb)
+        # ## Grid Layout
+        grid_loc = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_loc)
 
         # TOP LEFT
         self.tl_cb = FCCheckBox(_("Top Left"))
-        self.layout.addWidget(self.tl_cb)
+        grid_loc.addWidget(self.tl_cb, 0, 0)
 
         # TOP RIGHT
         self.tr_cb = FCCheckBox(_("Top Right"))
-        self.layout.addWidget(self.tr_cb)
+        grid_loc.addWidget(self.tr_cb, 0, 1)
+
+        # BOTTOM LEFT
+        self.bl_cb = FCCheckBox(_("Bottom Left"))
+        grid_loc.addWidget(self.bl_cb, 1, 0)
+
+        # BOTTOM RIGHT
+        self.br_cb = FCCheckBox(_("Bottom Right"))
+        grid_loc.addWidget(self.br_cb, 1, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -443,7 +551,7 @@ class CornersUI:
             _("The thickness of the line that makes the corner marker.")
         )
         self.thick_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.thick_entry.set_range(0.0000, 9.9999)
+        self.thick_entry.set_range(0.0000, 10.0000)
         self.thick_entry.set_precision(self.decimals)
         self.thick_entry.setWrapping(True)
         self.thick_entry.setSingleStep(10 ** -self.decimals)
@@ -457,7 +565,7 @@ class CornersUI:
             _("The length of the line that makes the corner marker.")
         )
         self.l_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.l_entry.set_range(-9999.9999, 9999.9999)
+        self.l_entry.set_range(-10000.0000, 10000.0000)
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
@@ -470,17 +578,17 @@ class CornersUI:
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin_entry.set_range(-9999.9999, 9999.9999)
+        self.margin_entry.set_range(-10000.0000, 10000.0000)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
         grid_lay.addWidget(self.margin_label, 8, 0)
         grid_lay.addWidget(self.margin_entry, 8, 1)
 
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line_2, 10, 0, 1, 2)
+        # separator_line_2 = QtWidgets.QFrame()
+        # separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        # separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # grid_lay.addWidget(separator_line_2, 10, 0, 1, 2)
 
         # ## Insert Corner Marker
         self.add_marker_button = FCButton(_("Add Marker"))
@@ -495,6 +603,42 @@ class CornersUI:
                                 }
                                 """)
         grid_lay.addWidget(self.add_marker_button, 12, 0, 1, 2)
+
+        separator_line_2 = QtWidgets.QFrame()
+        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line_2, 14, 0, 1, 2)
+
+        # Drill is corners
+        self.drills_label = FCLabel('<b>%s:</b>' % _('Drills in Corners'))
+        grid_lay.addWidget(self.drills_label, 16, 0, 1, 2)
+
+        # Drill Tooldia #
+        self.drill_dia_label = FCLabel('%s:' % _("Tool Dia"))
+        self.drill_dia_label.setToolTip(
+            '%s.' % _("Drill Diameter")
+        )
+        self.drill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_dia_entry.set_range(0.0000, 100.0000)
+        self.drill_dia_entry.set_precision(self.decimals)
+        self.drill_dia_entry.setWrapping(True)
+
+        grid_lay.addWidget(self.drill_dia_label, 18, 0)
+        grid_lay.addWidget(self.drill_dia_entry, 18, 1)
+
+        # ## Create an Excellon object
+        self.drill_button = FCButton(_("Create Excellon Object"))
+        self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
+        self.drill_button.setToolTip(
+            _("Will add drill holes in the center of the markers.")
+        )
+        self.drill_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        grid_lay.addWidget(self.drill_button, 20, 0, 1, 2)
 
         self.layout.addStretch()
 
