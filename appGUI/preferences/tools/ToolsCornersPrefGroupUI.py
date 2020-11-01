@@ -92,4 +92,17 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.l_label, 8, 0)
         grid0.addWidget(self.l_entry, 8, 1)
 
+        # Drill Tool Diameter
+        self.drill_dia_label = FCLabel('%s:' % _("Tool Dia"))
+        self.drill_dia_label.setToolTip(
+            '%s.' % _("Drill Diameter")
+        )
+        self.drill_dia_entry = FCDoubleSpinner()
+        self.drill_dia_entry.set_range(0.0000, 100.0000)
+        self.drill_dia_entry.set_precision(self.decimals)
+        self.drill_dia_entry.setWrapping(True)
+
+        grid0.addWidget(self.drill_dia_label, 10, 0)
+        grid0.addWidget(self.drill_dia_entry, 10, 1)
+
         self.layout.addStretch()

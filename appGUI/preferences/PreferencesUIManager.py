@@ -550,6 +550,7 @@ class PreferencesUIManager:
             "tools_corners_thickness": self.ui.tools_defaults_form.tools_corners_group.thick_entry,
             "tools_corners_length": self.ui.tools_defaults_form.tools_corners_group.l_entry,
             "tools_corners_margin": self.ui.tools_defaults_form.tools_corners_group.margin_entry,
+            "tools_corners_drill_dia": self.ui.tools_defaults_form.tools_corners_group.drill_dia_entry,
 
             # #######################################################################################################
             # ########################################## TOOLS 2 ####################################################

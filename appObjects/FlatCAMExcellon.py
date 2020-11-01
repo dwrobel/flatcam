@@ -1278,21 +1278,21 @@ class ExcellonObject(FlatCAMObj, Excellon):
             for option in exc.options:
                 if option != 'name':
                     try:
-                        exc_final.options[option] = exc.options[option]
+                        exc_final.options[option] = deepcopy(exc.options[option])
                     except Exception:
                         exc.app.log.warning("Failed to copy option.", option)
 
             for tool in exc.tools:
                 toolid += 1
-                new_tools[toolid] = exc.tools[tool]
+                new_tools[toolid] = deepcopy(exc.tools[tool])
 
             exc_final.tools = deepcopy(new_tools)
             # add the zeros and units to the exc_final object
-            exc_final.zeros = exc.zeros
-            exc_final.units = exc.units
+            exc_final.zeros = deepcopy(exc.zeros)
+            exc_final.units = deepcopy(exc.units)
             total_geo += exc.solid_geometry
 
-        exc_final.solid_geometry = total_geo
+        exc_final.solid_geometry = deepcopy(total_geo)
 
         fused_tools_dict = {}
         if exc_final.tools and fuse_tools:

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-01 15:41+0200\n"
+"POT-Creation-Date: 2020-11-01 23:01+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -111,17 +111,17 @@ msgstr "Закладки"
 #: appEditors/AppTextEditor.py:259 appGUI/MainGUI.py:3012
 #: appGUI/MainGUI.py:3234 appGUI/MainGUI.py:3449
 #: appObjects/FlatCAMCNCJob.py:1757 appObjects/ObjectCollection.py:126
-#: appTools/ToolFilm.py:242 appTools/ToolFilm.py:390 appTools/ToolImage.py:112
-#: appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
-#: appTools/ToolPcbWizard.py:212 appTools/ToolQRCode.py:529
-#: appTools/ToolQRCode.py:578 app_Main.py:1785 app_Main.py:2801
-#: app_Main.py:4534 app_Main.py:8320 app_Main.py:8359 app_Main.py:8403
-#: app_Main.py:8429 app_Main.py:8469 app_Main.py:8494 app_Main.py:8550
-#: app_Main.py:8588 app_Main.py:8634 app_Main.py:8676 app_Main.py:8718
-#: app_Main.py:8759 app_Main.py:8801 app_Main.py:8846 app_Main.py:8907
-#: app_Main.py:8939 app_Main.py:8969 app_Main.py:9144 app_Main.py:9181
-#: app_Main.py:9224 app_Main.py:9298 app_Main.py:9354 app_Main.py:9621
-#: app_Main.py:9656
+#: appTools/ToolCorners.py:328 appTools/ToolFilm.py:242
+#: appTools/ToolFilm.py:390 appTools/ToolImage.py:112 appTools/ToolMove.py:269
+#: appTools/ToolPcbWizard.py:189 appTools/ToolPcbWizard.py:212
+#: appTools/ToolQRCode.py:529 appTools/ToolQRCode.py:578 app_Main.py:1785
+#: app_Main.py:2801 app_Main.py:4534 app_Main.py:8320 app_Main.py:8359
+#: app_Main.py:8403 app_Main.py:8429 app_Main.py:8469 app_Main.py:8494
+#: app_Main.py:8550 app_Main.py:8588 app_Main.py:8634 app_Main.py:8676
+#: app_Main.py:8718 app_Main.py:8759 app_Main.py:8801 app_Main.py:8846
+#: app_Main.py:8907 app_Main.py:8939 app_Main.py:8969 app_Main.py:9144
+#: app_Main.py:9181 app_Main.py:9224 app_Main.py:9298 app_Main.py:9354
+#: app_Main.py:9621 app_Main.py:9656
 msgid "Cancelled."
 msgstr "Отменено."
 
@@ -796,12 +796,12 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:59
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:53
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:66
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:70
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:181
-#: appTools/ToolCopperThieving.py:1206 appTools/ToolCopperThieving.py:1458
-#: appTools/ToolCorners.py:416 appTools/ToolCutOut.py:2168
+#: appTools/ToolCopperThieving.py:1209 appTools/ToolCopperThieving.py:1461
+#: appTools/ToolCorners.py:576 appTools/ToolCutOut.py:2168
 #: appTools/ToolFiducials.py:788 appTools/ToolInvertGerber.py:234
 #: appTools/ToolInvertGerber.py:242 appTools/ToolNCC.py:4159
 #: appTools/ToolNCC.py:4262
@@ -813,9 +813,9 @@ msgstr "Отступ"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:74
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:61
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:125
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:68
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:204
-#: appTools/ToolCopperThieving.py:1208 appTools/ToolCorners.py:418
+#: appTools/ToolCopperThieving.py:1211 appTools/ToolCorners.py:578
 #: appTools/ToolFiducials.py:790 appTools/ToolNCC.py:4161
 #: appTools/ToolNCC.py:4264
 msgid "Bounding box margin."
@@ -1327,8 +1327,8 @@ msgstr "Диаметр сверлильного отверстия при зап
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1329 appTools/ToolCopperThieving.py:1369
-#: appTools/ToolCopperThieving.py:1409 appTools/ToolCutOut.py:2243
+#: appTools/ToolCopperThieving.py:1332 appTools/ToolCopperThieving.py:1372
+#: appTools/ToolCopperThieving.py:1412 appTools/ToolCutOut.py:2243
 msgid "Spacing"
 msgstr "Промежуток"
 
@@ -1443,7 +1443,7 @@ msgstr ""
 "в базе данных."
 
 #: appDatabase.py:1367 appGUI/MainGUI.py:1550
-#: appGUI/preferences/PreferencesUIManager.py:945 app_Main.py:2501
+#: appGUI/preferences/PreferencesUIManager.py:946 app_Main.py:2501
 #: app_Main.py:3527 app_Main.py:4471 app_Main.py:4724 app_Main.py:8995
 msgid "Cancel"
 msgstr "Отмена"
@@ -1455,10 +1455,10 @@ msgstr "Отмена"
 #: appTools/ToolAlignObjects.py:517 appTools/ToolAlignObjects.py:528
 #: appTools/ToolCalculators.py:390 appTools/ToolCalculators.py:401
 #: appTools/ToolCalibration.py:1395 appTools/ToolCalibration.py:1406
-#: appTools/ToolCopperThieving.py:1600 appTools/ToolCopperThieving.py:1611
-#: appTools/ToolCorners.py:468 appTools/ToolCorners.py:479
+#: appTools/ToolCopperThieving.py:1603 appTools/ToolCopperThieving.py:1614
+#: appTools/ToolCorners.py:664 appTools/ToolCorners.py:675
 #: appTools/ToolCutOut.py:2448 appTools/ToolCutOut.py:2459
-#: appTools/ToolDblSided.py:963 appTools/ToolDblSided.py:974
+#: appTools/ToolDblSided.py:964 appTools/ToolDblSided.py:975
 #: appTools/ToolDistance.py:660 appTools/ToolDistance.py:671
 #: appTools/ToolDistanceMin.py:324 appTools/ToolDistanceMin.py:335
 #: appTools/ToolDrilling.py:2666 appTools/ToolDrilling.py:2677
@@ -1491,10 +1491,10 @@ msgstr "Отредактированное значение находится �
 #: appTools/ToolAlignObjects.py:523 appTools/ToolAlignObjects.py:530
 #: appTools/ToolCalculators.py:396 appTools/ToolCalculators.py:403
 #: appTools/ToolCalibration.py:1401 appTools/ToolCalibration.py:1408
-#: appTools/ToolCopperThieving.py:1606 appTools/ToolCopperThieving.py:1613
-#: appTools/ToolCorners.py:474 appTools/ToolCorners.py:481
+#: appTools/ToolCopperThieving.py:1609 appTools/ToolCopperThieving.py:1616
+#: appTools/ToolCorners.py:670 appTools/ToolCorners.py:677
 #: appTools/ToolCutOut.py:2454 appTools/ToolCutOut.py:2461
-#: appTools/ToolDblSided.py:969 appTools/ToolDblSided.py:976
+#: appTools/ToolDblSided.py:970 appTools/ToolDblSided.py:977
 #: appTools/ToolDistance.py:666 appTools/ToolDistance.py:673
 #: appTools/ToolDistanceMin.py:330 appTools/ToolDistanceMin.py:337
 #: appTools/ToolDrilling.py:2672 appTools/ToolDrilling.py:2679
@@ -1854,9 +1854,11 @@ msgstr ""
 #: appEditors/AppExcEditor.py:3769 appGUI/ObjectUI.py:1082
 #: appGUI/ObjectUI.py:1639
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:268
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:96
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:130
-#: appTools/ToolCutOut.py:2071 appTools/ToolIsolation.py:3105
-#: appTools/ToolNCC.py:3990 appTools/ToolNCC.py:4001 appTools/ToolPaint.py:2900
+#: appTools/ToolCorners.py:617 appTools/ToolCutOut.py:2071
+#: appTools/ToolIsolation.py:3105 appTools/ToolNCC.py:3990
+#: appTools/ToolNCC.py:4001 appTools/ToolPaint.py:2900
 msgid "Tool Dia"
 msgstr "Диаметр инструмента"
 
@@ -2115,8 +2117,8 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4013
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
-#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:403
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:83
+#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:563
 #: appTools/ToolProperties.py:571
 msgid "Length"
 msgstr "Длина"
@@ -2283,7 +2285,7 @@ msgstr "Шрифт"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:167
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:196
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:43
-#: appTools/ToolCopperThieving.py:1356 appTools/ToolCopperThieving.py:1396
+#: appTools/ToolCopperThieving.py:1359 appTools/ToolCopperThieving.py:1399
 #: appTools/ToolFiducials.py:772 appTools/ToolPunchGerber.py:1088
 msgid "Size"
 msgstr "Размер"
@@ -2400,7 +2402,7 @@ msgstr "Буфер"
 #: appGUI/GUIElements.py:3674
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
-#: appTools/ToolDblSided.py:683 appTools/ToolDblSided.py:859
+#: appTools/ToolDblSided.py:684 appTools/ToolDblSided.py:860
 #: appTools/ToolFilm.py:1063 appTools/ToolTransform.py:547
 msgid "Reference"
 msgstr "Ссылка"
@@ -2445,7 +2447,7 @@ msgstr "Выбор"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:60
-#: appTools/ToolDblSided.py:694 appTools/ToolTransform.py:557
+#: appTools/ToolDblSided.py:695 appTools/ToolTransform.py:557
 msgid "Point"
 msgstr "Точка"
 
@@ -2472,7 +2474,7 @@ msgstr "Точка привязки в формате X,Y."
 
 #: appEditors/AppGeoEditor.py:671 appEditors/AppGerberEditor.py:2586
 #: appEditors/AppGerberEditor.py:5352 appGUI/ObjectUI.py:2375
-#: appTools/ToolDblSided.py:708 appTools/ToolDblSided.py:896
+#: appTools/ToolDblSided.py:709 appTools/ToolDblSided.py:897
 #: appTools/ToolNCC.py:63 appTools/ToolPaint.py:137
 #: appTools/ToolSolderPaste.py:160 appTools/ToolSolderPaste.py:1204
 #: appTools/ToolTransform.py:572 app_Main.py:6294
@@ -3167,8 +3169,10 @@ msgstr "Редактор Geometry"
 #: appEditors/AppGeoEditor.py:3297 appEditors/AppGerberEditor.py:2491
 #: appEditors/AppGerberEditor.py:3947 appEditors/appGCodeEditor.py:688
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034
-#: appTools/ToolCutOut.py:2024 appTools/ToolDblSided.py:521
-#: appTools/ToolPunchGerber.py:1088 appTools/ToolTransform.py:579
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
+#: appTools/ToolCorners.py:535 appTools/ToolCutOut.py:2024
+#: appTools/ToolDblSided.py:522 appTools/ToolPunchGerber.py:1088
+#: appTools/ToolTransform.py:579
 msgid "Type"
 msgstr "Тип"
 
@@ -3812,7 +3816,8 @@ msgstr ""
 "Нет отверстий для создания буфера. Выберите хотя бы одно отверстие и "
 "повторите попытку."
 
-#: appEditors/AppGerberEditor.py:5140 appTools/ToolCutOut.py:779
+#: appEditors/AppGerberEditor.py:5140 appTools/ToolCorners.py:146
+#: appTools/ToolCorners.py:406 appTools/ToolCutOut.py:779
 #: appTools/ToolCutOut.py:903 appTools/ToolCutOut.py:1126
 #: appTools/ToolCutOut.py:1274 camlib.py:5279 camlib.py:5675
 msgid "Failed."
@@ -3995,7 +4000,7 @@ msgstr "Редактор G Код"
 #: appEditors/appGCodeEditor.py:688 appEditors/appGCodeEditor.py:699
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034 appGUI/ObjectUI.py:2044
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:138
-#: appTools/ToolCopperThieving.py:1316
+#: appTools/ToolCopperThieving.py:1319
 msgid "Dia"
 msgstr "Диаметр"
 
@@ -4322,9 +4327,9 @@ msgstr "Создать"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
 #: appObjects/ObjectCollection.py:234 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
-#: appTools/ToolCopperThieving.py:1253 appTools/ToolCutOut.py:2021
-#: appTools/ToolDblSided.py:528 appTools/ToolDblSided.py:770
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1242
+#: appTools/ToolCopperThieving.py:1256 appTools/ToolCutOut.py:2021
+#: appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:771
 #: appTools/ToolFilm.py:932 appTools/ToolFilm.py:955 appTools/ToolImage.py:136
 #: appTools/ToolImage.py:191 appTools/ToolIsolation.py:3352
 #: appTools/ToolIsolation.py:3405 appTools/ToolNCC.py:3872
@@ -4351,9 +4356,9 @@ msgstr "Создаёт новый объект Geometry."
 #: appTools/ToolAlignObjects.py:434 appTools/ToolCalibration.py:163
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:891
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
-#: appTools/ToolCopperThieving.py:1253 appTools/ToolCutOut.py:2020
-#: appTools/ToolDblSided.py:527 appTools/ToolDblSided.py:768
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1242
+#: appTools/ToolCopperThieving.py:1256 appTools/ToolCutOut.py:2020
+#: appTools/ToolDblSided.py:528 appTools/ToolDblSided.py:769
 #: appTools/ToolFilm.py:931 appTools/ToolFilm.py:954 appTools/ToolImage.py:117
 #: appTools/ToolImage.py:138 appTools/ToolImage.py:191
 #: appTools/ToolIsolation.py:3353 appTools/ToolIsolation.py:3405
@@ -4380,9 +4385,9 @@ msgstr "Создаёт новый объект Gerber."
 #: appTools/ToolAlignObjects.py:435 appTools/ToolCalibration.py:163
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:892
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1239
-#: appTools/ToolCopperThieving.py:1253 appTools/ToolDblSided.py:529
-#: appTools/ToolDblSided.py:727 appTools/ToolDblSided.py:769
+#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1242
+#: appTools/ToolCopperThieving.py:1256 appTools/ToolDblSided.py:530
+#: appTools/ToolDblSided.py:728 appTools/ToolDblSided.py:770
 #: appTools/ToolFilm.py:1210 appTools/ToolIsolation.py:3405
 #: appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
 #: appTools/ToolPanelize.py:148 appTools/ToolPunchGerber.py:1128
@@ -4587,7 +4592,7 @@ msgstr "Импортировать настройки из файла"
 msgid "Export Preferences to file"
 msgstr "Экспортировать настройки в файл"
 
-#: appGUI/MainGUI.py:311 appGUI/preferences/PreferencesUIManager.py:1187
+#: appGUI/MainGUI.py:311 appGUI/preferences/PreferencesUIManager.py:1188
 msgid "Save Preferences"
 msgstr "Сохранить настройки"
 
@@ -4748,10 +4753,10 @@ msgid "Q"
 msgstr "Q"
 
 #: appGUI/MainGUI.py:451 appGUI/MainGUI.py:1260
-#: appGUI/preferences/PreferencesUIManager.py:912
-#: appGUI/preferences/PreferencesUIManager.py:1005
-#: appGUI/preferences/PreferencesUIManager.py:1033
-#: appGUI/preferences/PreferencesUIManager.py:1138 app_Main.py:5739
+#: appGUI/preferences/PreferencesUIManager.py:913
+#: appGUI/preferences/PreferencesUIManager.py:1006
+#: appGUI/preferences/PreferencesUIManager.py:1034
+#: appGUI/preferences/PreferencesUIManager.py:1139 app_Main.py:5739
 #: app_Main.py:5744 app_Main.py:5759
 msgid "Preferences"
 msgstr "Настройки"
@@ -5443,7 +5448,7 @@ msgid "QRCode Tool"
 msgstr "QR код"
 
 #: appGUI/MainGUI.py:1076 appGUI/MainGUI.py:2245 appGUI/MainGUI.py:4472
-#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1133
+#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1136
 msgid "Copper Thieving Tool"
 msgstr "Copper Thieving"
 
@@ -5467,7 +5472,7 @@ msgid "Invert Gerber Tool"
 msgstr "Инверсия Gerber"
 
 #: appGUI/MainGUI.py:1087 appGUI/MainGUI.py:2256 appGUI/MainGUI.py:4475
-#: appTools/ToolCorners.py:302
+#: appTools/ToolCorners.py:444
 msgid "Corner Markers Tool"
 msgstr "Угловые маркеры"
 
@@ -5617,8 +5622,8 @@ msgstr "Проект"
 msgid "Plot Area"
 msgstr "Рабочая область"
 
-#: appGUI/MainGUI.py:1426 appTools/ToolCopperThieving.py:1165
-#: appTools/ToolCorners.py:322 appTools/ToolEtchCompensation.py:291
+#: appGUI/MainGUI.py:1426 appTools/ToolCopperThieving.py:1168
+#: appTools/ToolCorners.py:464 appTools/ToolEtchCompensation.py:291
 #: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:875
 #: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:3000
 #: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:1010
@@ -5782,14 +5787,14 @@ msgstr "Папка настроек FlatCAM открыта."
 msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "Вы уверены, что хотите сбросить настройки интерфейса?\n"
 
-#: appGUI/MainGUI.py:2111 appGUI/preferences/PreferencesUIManager.py:944
-#: appGUI/preferences/PreferencesUIManager.py:1191 appTranslation.py:111
+#: appGUI/MainGUI.py:2111 appGUI/preferences/PreferencesUIManager.py:945
+#: appGUI/preferences/PreferencesUIManager.py:1192 appTranslation.py:111
 #: appTranslation.py:213 app_Main.py:2499 app_Main.py:3525 app_Main.py:5980
 #: app_Main.py:8993
 msgid "Yes"
 msgstr "Да"
 
-#: appGUI/MainGUI.py:2112 appGUI/preferences/PreferencesUIManager.py:1192
+#: appGUI/MainGUI.py:2112 appGUI/preferences/PreferencesUIManager.py:1193
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:49
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:164
@@ -6505,7 +6510,7 @@ msgstr "Отрисовка"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:47
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:119
-#: appTools/ToolCopperThieving.py:1286
+#: appTools/ToolCopperThieving.py:1289
 msgid "Solid"
 msgstr "Сплошной"
 
@@ -8213,41 +8218,41 @@ msgstr ""
 "Не удалось создать примечания из-за разницы между количеством текстовых "
 "элементов и количеством текстовых позиций."
 
-#: appGUI/preferences/PreferencesUIManager.py:919
+#: appGUI/preferences/PreferencesUIManager.py:920
 msgid "Preferences applied."
 msgstr "Настройки применяются."
 
-#: appGUI/preferences/PreferencesUIManager.py:939
+#: appGUI/preferences/PreferencesUIManager.py:940
 msgid "Are you sure you want to continue?"
 msgstr "Вы уверены что хотите продолжить?"
 
-#: appGUI/preferences/PreferencesUIManager.py:940
+#: appGUI/preferences/PreferencesUIManager.py:941
 msgid "Application will restart"
 msgstr "Приложение будет перезапущено"
 
-#: appGUI/preferences/PreferencesUIManager.py:1038
+#: appGUI/preferences/PreferencesUIManager.py:1039
 msgid "Preferences closed without saving."
 msgstr "Настройки закрыты без сохранения."
 
-#: appGUI/preferences/PreferencesUIManager.py:1050
+#: appGUI/preferences/PreferencesUIManager.py:1051
 msgid "Preferences default values are restored."
 msgstr "Настройки по умолчанию восстановлены."
 
-#: appGUI/preferences/PreferencesUIManager.py:1081 app_Main.py:2833
+#: appGUI/preferences/PreferencesUIManager.py:1082 app_Main.py:2833
 #: app_Main.py:9667
 msgid "Failed to write defaults to file."
 msgstr "Не удалось записать значения по умолчанию в файл."
 
-#: appGUI/preferences/PreferencesUIManager.py:1085
-#: appGUI/preferences/PreferencesUIManager.py:1200
+#: appGUI/preferences/PreferencesUIManager.py:1086
+#: appGUI/preferences/PreferencesUIManager.py:1201
 msgid "Preferences saved."
 msgstr "Настройки сохранены."
 
-#: appGUI/preferences/PreferencesUIManager.py:1135
+#: appGUI/preferences/PreferencesUIManager.py:1136
 msgid "Preferences edited but not saved."
 msgstr "Настройки отредактированы, но не сохранены."
 
-#: appGUI/preferences/PreferencesUIManager.py:1185
+#: appGUI/preferences/PreferencesUIManager.py:1186
 msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
@@ -8285,8 +8290,8 @@ msgstr "CNC Job дополнительные"
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:31
-#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1184
-#: appTools/ToolCorners.py:382 appTools/ToolEtchCompensation.py:356
+#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1187
+#: appTools/ToolCorners.py:528 appTools/ToolEtchCompensation.py:356
 #: appTools/ToolFiducials.py:765 appTools/ToolInvertGerber.py:228
 #: appTools/ToolQRCode.py:700
 msgid "Parameters"
@@ -9230,7 +9235,7 @@ msgstr ""
 "которая включает вкладки Проект, Выбранное и Инструменты."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:214
-#: appTools/ToolDblSided.py:668 appTools/ToolDblSided.py:842 app_Main.py:7578
+#: appTools/ToolDblSided.py:669 appTools/ToolDblSided.py:843 app_Main.py:7578
 msgid "Axis"
 msgstr "Оси"
 
@@ -10606,7 +10611,7 @@ msgstr "Количество шагов (линий), используемых �
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:57
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:261
-#: appTools/ToolCopperThieving.py:1191 appTools/ToolCopperThieving.py:1528
+#: appTools/ToolCopperThieving.py:1194 appTools/ToolCopperThieving.py:1531
 msgid "Clearance"
 msgstr "Зазор"
 
@@ -10622,7 +10627,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:86
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
-#: appTools/ToolCopperThieving.py:1220 appTools/ToolNCC.py:4319
+#: appTools/ToolCopperThieving.py:1223 appTools/ToolNCC.py:4319
 msgid "Itself"
 msgstr "Как есть"
 
@@ -10630,7 +10635,7 @@ msgstr "Как есть"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1221 appTools/ToolIsolation.py:3392
+#: appTools/ToolCopperThieving.py:1224 appTools/ToolIsolation.py:3392
 #: appTools/ToolNCC.py:4319 appTools/ToolPaint.py:3116
 msgid "Area Selection"
 msgstr "Выбор области"
@@ -10639,14 +10644,14 @@ msgstr "Выбор области"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1222 appTools/ToolDblSided.py:760
+#: appTools/ToolCopperThieving.py:1225 appTools/ToolDblSided.py:761
 #: appTools/ToolIsolation.py:3392 appTools/ToolNCC.py:4319
 #: appTools/ToolPaint.py:3116 tclCommands/TclCommandPaint.py:166
 msgid "Reference Object"
 msgstr "Ссылочный объект"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:90
-#: appTools/ToolCopperThieving.py:1224
+#: appTools/ToolCopperThieving.py:1227
 msgid "Reference:"
 msgstr "Ссылка:"
 
@@ -10670,24 +10675,24 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:188
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:190
-#: appTools/ToolCopperThieving.py:1266 appTools/ToolExtractDrills.py:495
+#: appTools/ToolCopperThieving.py:1269 appTools/ToolExtractDrills.py:495
 #: appTools/ToolExtractDrills.py:628 appTools/ToolPunchGerber.py:1068
 #: appTools/ToolPunchGerber.py:1240
 msgid "Rectangular"
 msgstr "Прямоугольник"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:102
-#: appTools/ToolCopperThieving.py:1267
+#: appTools/ToolCopperThieving.py:1270
 msgid "Minimal"
 msgstr "Минимальная"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:104
-#: appTools/ToolCopperThieving.py:1269 appTools/ToolFilm.py:957
+#: appTools/ToolCopperThieving.py:1272 appTools/ToolFilm.py:957
 msgid "Box Type:"
 msgstr "Тип рамки:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:106
-#: appTools/ToolCopperThieving.py:1271
+#: appTools/ToolCopperThieving.py:1274
 msgid ""
 "- 'Rectangular' - the bounding box will be of rectangular shape.\n"
 "- 'Minimal' - the bounding box will be the convex hull shape."
@@ -10696,27 +10701,27 @@ msgstr ""
 "- 'Минимальная' - ограничительная рамка будет повторять форму корпуса."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:120
-#: appTools/ToolCopperThieving.py:1287
+#: appTools/ToolCopperThieving.py:1290
 msgid "Dots Grid"
 msgstr "Сетка точек"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:121
-#: appTools/ToolCopperThieving.py:1288
+#: appTools/ToolCopperThieving.py:1291
 msgid "Squares Grid"
 msgstr "Сетка квадратов"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:122
-#: appTools/ToolCopperThieving.py:1289
+#: appTools/ToolCopperThieving.py:1292
 msgid "Lines Grid"
 msgstr "Сетка линий"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:124
-#: appTools/ToolCopperThieving.py:1291
+#: appTools/ToolCopperThieving.py:1294
 msgid "Fill Type:"
 msgstr "Тип заполнения:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:126
-#: appTools/ToolCopperThieving.py:1293
+#: appTools/ToolCopperThieving.py:1296
 msgid ""
 "- 'Solid' - copper thieving will be a solid polygon.\n"
 "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
@@ -10729,57 +10734,57 @@ msgstr ""
 "- 'Сетка линий' - пустая область будет заполнена сеткой линий."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:134
-#: appTools/ToolCopperThieving.py:1312
+#: appTools/ToolCopperThieving.py:1315
 msgid "Dots Grid Parameters"
 msgstr "Параметры точки сетки"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:140
-#: appTools/ToolCopperThieving.py:1318
+#: appTools/ToolCopperThieving.py:1321
 msgid "Dot diameter in Dots Grid."
 msgstr "Диаметр точки в сетке точек."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:153
-#: appTools/ToolCopperThieving.py:1331
+#: appTools/ToolCopperThieving.py:1334
 msgid "Distance between each two dots in Dots Grid."
 msgstr "Расстояние между каждыми двумя точками в сетке точек."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:163
-#: appTools/ToolCopperThieving.py:1352
+#: appTools/ToolCopperThieving.py:1355
 msgid "Squares Grid Parameters"
 msgstr "Параметры квадратной сетки"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:169
-#: appTools/ToolCopperThieving.py:1358
+#: appTools/ToolCopperThieving.py:1361
 msgid "Square side size in Squares Grid."
 msgstr "Размер стороны квадрата в сетке квадратов."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:182
-#: appTools/ToolCopperThieving.py:1371
+#: appTools/ToolCopperThieving.py:1374
 msgid "Distance between each two squares in Squares Grid."
 msgstr "Расстояние между каждыми двумя квадратами в сетке квадратов ."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:192
-#: appTools/ToolCopperThieving.py:1392
+#: appTools/ToolCopperThieving.py:1395
 msgid "Lines Grid Parameters"
 msgstr "Параметры линий сетки"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1398
+#: appTools/ToolCopperThieving.py:1401
 msgid "Line thickness size in Lines Grid."
 msgstr "Размеры линий по толщине в сетке линий."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:211
-#: appTools/ToolCopperThieving.py:1411
+#: appTools/ToolCopperThieving.py:1414
 msgid "Distance between each two lines in Lines Grid."
 msgstr "Расстояние между двумя линиями в сетке линий."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:221
-#: appTools/ToolCopperThieving.py:1450
+#: appTools/ToolCopperThieving.py:1453
 msgid "Robber Bar Parameters"
 msgstr "Параметры Robber Bar"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:223
-#: appTools/ToolCopperThieving.py:1452
+#: appTools/ToolCopperThieving.py:1455
 msgid ""
 "Parameters used for the robber bar.\n"
 "Robber bar = copper border to help in pattern hole plating."
@@ -10788,34 +10793,34 @@ msgstr ""
 "Robber ba = медная рамка для облегчения нанесения покрытия на отверстия."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:231
-#: appTools/ToolCopperThieving.py:1460
+#: appTools/ToolCopperThieving.py:1463
 msgid "Bounding box margin for robber bar."
 msgstr "Граница рамки."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appTools/ToolCopperThieving.py:1471 appTools/ToolCorners.py:389
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
+#: appTools/ToolCopperThieving.py:1474 appTools/ToolCorners.py:549
 #: appTools/ToolEtchCompensation.py:370
 msgid "Thickness"
 msgstr "Толщина"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:244
-#: appTools/ToolCopperThieving.py:1473
+#: appTools/ToolCopperThieving.py:1476
 msgid "The robber bar thickness."
 msgstr "Толщина robber bar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:254
-#: appTools/ToolCopperThieving.py:1505
+#: appTools/ToolCopperThieving.py:1508
 msgid "Pattern Plating Mask"
 msgstr "Рисунок гальванической маски"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:256
-#: appTools/ToolCopperThieving.py:1507
+#: appTools/ToolCopperThieving.py:1510
 msgid "Generate a mask for pattern plating."
 msgstr "Создание рисунка гальванической маски."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:263
-#: appTools/ToolCopperThieving.py:1530
+#: appTools/ToolCopperThieving.py:1533
 msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
@@ -10832,7 +10837,7 @@ msgstr "Параметры калибровки"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:38
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:37
-#: appTools/ToolCopperThieving.py:1186 appTools/ToolCorners.py:384
+#: appTools/ToolCopperThieving.py:1189 appTools/ToolCorners.py:530
 #: appTools/ToolFiducials.py:767
 msgid "Parameters used for this tool."
 msgstr "Параметры, используемые для этого инструмента."
@@ -11176,7 +11181,8 @@ msgstr ""
 "сверху справа."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:108
-#: appTools/ToolFiducials.py:837
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:49
+#: appTools/ToolCorners.py:542 appTools/ToolFiducials.py:837
 msgid "Cross"
 msgstr "Крест"
 
@@ -11679,7 +11685,7 @@ msgid "Drill dia"
 msgstr "Диаметр сверла"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49
-#: appTools/ToolDblSided.py:828 appTools/ToolDblSided.py:833
+#: appTools/ToolDblSided.py:829 appTools/ToolDblSided.py:834
 msgid "Diameter of the drill for the alignment holes."
 msgstr "Диаметр сверла для контрольных отверстий."
 
@@ -11689,7 +11695,7 @@ msgstr "Выровнять ось"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:71
-#: appTools/ToolDblSided.py:669 appTools/ToolDblSided.py:844
+#: appTools/ToolDblSided.py:670 appTools/ToolDblSided.py:845
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "Отразить по вертикали (X) или горизонтали (Y)."
 
@@ -11698,12 +11704,12 @@ msgid "Mirror Axis:"
 msgstr "Зеркальное отражение:"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:86
-#: appTools/ToolDblSided.py:695
+#: appTools/ToolDblSided.py:696
 msgid "Box"
 msgstr "Рамка"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:87
-#: appTools/ToolDblSided.py:696
+#: appTools/ToolDblSided.py:697
 msgid "Hole Snap"
 msgstr "Отверстие для защелки"
 
@@ -11853,14 +11859,29 @@ msgid "Corner Markers Options"
 msgstr "Параметры угловых маркеров"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
-#: appTools/ToolCorners.py:391
+#: appTools/ToolCorners.py:537
+msgid "Shape of the marker."
+msgstr "Форма маркера."
+
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:48
+#: appTools/ToolCorners.py:541
+msgid "Semi-Cross"
+msgstr "Полукрест"
+
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
+#: appTools/ToolCorners.py:551
 msgid "The thickness of the line that makes the corner marker."
 msgstr "Толщина линии, обозначающей угол."
 
-#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
-#: appTools/ToolCorners.py:405
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:85
+#: appTools/ToolCorners.py:565
 msgid "The length of the line that makes the corner marker."
 msgstr "Длина линии, которая делает угловой маркер."
+
+#: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:98
+#: appTools/ToolCorners.py:619 appTools/ToolDblSided.py:827
+msgid "Drill Diameter"
+msgstr "Диаметр сверла"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:28
 msgid "Cutout Tool Options"
@@ -12212,18 +12233,18 @@ msgstr ""
 "Это может быть одна из четырех точек геометрии ограничительной рамки."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:174
-#: appTools/ToolCorners.py:347 appTools/ToolFiducials.py:696
+#: appTools/ToolCorners.py:501 appTools/ToolFiducials.py:696
 #: appTools/ToolFilm.py:1068
 msgid "Bottom Left"
 msgstr "Нижний левый"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:175
-#: appTools/ToolCorners.py:355 appTools/ToolFilm.py:1069
+#: appTools/ToolCorners.py:493 appTools/ToolFilm.py:1069
 msgid "Top Left"
 msgstr "Верхний левый"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:176
-#: appTools/ToolCorners.py:351 appTools/ToolFilm.py:1070
+#: appTools/ToolCorners.py:505 appTools/ToolFilm.py:1070
 msgid "Bottom Right"
 msgstr "Нижний правый"
 
@@ -12505,8 +12526,8 @@ msgstr "Последовательный"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 #: appObjects/AppObject.py:452 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
-#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1040
-#: appTools/ToolCorners.py:268 appTools/ToolFiducials.py:532
+#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1043
+#: appTools/ToolCorners.py:412 appTools/ToolFiducials.py:532
 #: appTools/ToolMove.py:229 appTools/ToolQRCode.py:464 app_Main.py:4813
 msgid "Plotting"
 msgstr "Прорисовка"
@@ -13968,7 +13989,7 @@ msgid "Click on the START point."
 msgstr "Нажмите на начальную точку."
 
 #: appTools/ToolAlignObjects.py:240 appTools/ToolCalibration.py:276
-#: appTools/ToolDblSided.py:287
+#: appTools/ToolDblSided.py:288
 msgid "Cancelled by user request."
 msgstr "Отменено по запросу пользователя."
 
@@ -14067,9 +14088,9 @@ msgstr ""
 "Если используются две точки, то предполагается их трансляция и вращение."
 
 #: appTools/ToolAlignObjects.py:499 appTools/ToolCalculators.py:372
-#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1582
-#: appTools/ToolCorners.py:450 appTools/ToolCutOut.py:2405
-#: appTools/ToolDblSided.py:945 appTools/ToolDrilling.py:2649
+#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1585
+#: appTools/ToolCorners.py:646 appTools/ToolCutOut.py:2405
+#: appTools/ToolDblSided.py:946 appTools/ToolDrilling.py:2649
 #: appTools/ToolEtchCompensation.py:459 appTools/ToolExtractDrills.py:699
 #: appTools/ToolFiducials.py:935 appTools/ToolFilm.py:1386
 #: appTools/ToolInvertGerber.py:287 appTools/ToolIsolation.py:3491
@@ -14083,9 +14104,9 @@ msgid "Reset Tool"
 msgstr "Сбросить настройки инструмента"
 
 #: appTools/ToolAlignObjects.py:502 appTools/ToolCalculators.py:375
-#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1585
-#: appTools/ToolCorners.py:453 appTools/ToolCutOut.py:2408
-#: appTools/ToolDblSided.py:948 appTools/ToolDrilling.py:2652
+#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1588
+#: appTools/ToolCorners.py:649 appTools/ToolCutOut.py:2408
+#: appTools/ToolDblSided.py:949 appTools/ToolDrilling.py:2652
 #: appTools/ToolEtchCompensation.py:462 appTools/ToolExtractDrills.py:702
 #: appTools/ToolFiducials.py:938 appTools/ToolFilm.py:1389
 #: appTools/ToolInvertGerber.py:290 appTools/ToolIsolation.py:3494
@@ -14506,11 +14527,11 @@ msgid "Squares grid fill selected."
 msgstr "Выбрано заполнение сеткой квадратов."
 
 #: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:307
-#: appTools/ToolCopperThieving.py:914 appTools/ToolCorners.py:120
-#: appTools/ToolDblSided.py:306 appTools/ToolExtractDrills.py:141
-#: appTools/ToolFiducials.py:187 appTools/ToolFiducials.py:464
-#: appTools/ToolOptimal.py:138 appTools/ToolPunchGerber.py:381
-#: appTools/ToolQRCode.py:158
+#: appTools/ToolCopperThieving.py:914 appTools/ToolCorners.py:127
+#: appTools/ToolCorners.py:349 appTools/ToolDblSided.py:307
+#: appTools/ToolExtractDrills.py:141 appTools/ToolFiducials.py:187
+#: appTools/ToolFiducials.py:464 appTools/ToolOptimal.py:138
+#: appTools/ToolPunchGerber.py:381 appTools/ToolQRCode.py:158
 msgid "There is no Gerber object loaded ..."
 msgstr "Нет загруженного Gerber объекта ..."
 
@@ -14519,7 +14540,7 @@ msgid "Append geometry"
 msgstr "Добавить геометрию"
 
 #: appTools/ToolCopperThieving.py:283 appTools/ToolCopperThieving.py:876
-#: appTools/ToolCopperThieving.py:1020
+#: appTools/ToolCopperThieving.py:1023
 msgid "Append source file"
 msgstr "Добавить исходный файл"
 
@@ -14594,19 +14615,19 @@ msgstr "Рисунок гальванической маски"
 msgid "Append PP-M geometry"
 msgstr "Добавить PP-M геометрию"
 
-#: appTools/ToolCopperThieving.py:1036
+#: appTools/ToolCopperThieving.py:1039
 msgid "Generating Pattern Plating Mask done."
 msgstr "Создание рисунка гальванической маски выполнено."
 
-#: appTools/ToolCopperThieving.py:1108
+#: appTools/ToolCopperThieving.py:1111
 msgid "Copper Thieving Tool exit."
 msgstr "Выход из Copper Thieving."
 
-#: appTools/ToolCopperThieving.py:1167 appTools/ToolFiducials.py:877
+#: appTools/ToolCopperThieving.py:1170 appTools/ToolFiducials.py:877
 msgid "Gerber Object to which will be added a copper thieving."
 msgstr "Gerber объект, к которому будет добавлен copper thieving."
 
-#: appTools/ToolCopperThieving.py:1193
+#: appTools/ToolCopperThieving.py:1196
 msgid ""
 "This set the distance between the copper thieving components\n"
 "(the polygon fill may be split in multiple polygons)\n"
@@ -14616,7 +14637,7 @@ msgstr ""
 "(заливка полигона может быть разделена на несколько полигонов)\n"
 "и медными трассами в Gerber файле."
 
-#: appTools/ToolCopperThieving.py:1226
+#: appTools/ToolCopperThieving.py:1229
 msgid ""
 "- 'Itself' - the copper thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
@@ -14631,12 +14652,12 @@ msgstr ""
 "- 'Референсный объект' - будет выполнять Copper Thieving в области указанной "
 "другим объектом."
 
-#: appTools/ToolCopperThieving.py:1233 appTools/ToolIsolation.py:3399
+#: appTools/ToolCopperThieving.py:1236 appTools/ToolIsolation.py:3399
 #: appTools/ToolNCC.py:4336 appTools/ToolPaint.py:3126
 msgid "Ref. Type"
 msgstr "Тип ссылки"
 
-#: appTools/ToolCopperThieving.py:1235
+#: appTools/ToolCopperThieving.py:1238
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
@@ -14645,22 +14666,22 @@ msgstr ""
 "Copper Thieving.\n"
 "Это может быть Gerber, Excellon или Geometry."
 
-#: appTools/ToolCopperThieving.py:1244 appTools/ToolIsolation.py:3410
+#: appTools/ToolCopperThieving.py:1247 appTools/ToolIsolation.py:3410
 #: appTools/ToolNCC.py:4346 appTools/ToolPaint.py:3136
 msgid "Ref. Object"
 msgstr "Указатель объекта"
 
-#: appTools/ToolCopperThieving.py:1246 appTools/ToolIsolation.py:3412
+#: appTools/ToolCopperThieving.py:1249 appTools/ToolIsolation.py:3412
 #: appTools/ToolNCC.py:4348 appTools/ToolPaint.py:3138
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
 "Объект FlatCAM, который будет использоваться как ссылка на очистку от меди."
 
-#: appTools/ToolCopperThieving.py:1422
+#: appTools/ToolCopperThieving.py:1425
 msgid "Insert Copper thieving"
 msgstr "Вставить Copper thieving"
 
-#: appTools/ToolCopperThieving.py:1425
+#: appTools/ToolCopperThieving.py:1428
 msgid ""
 "Will add a polygon (may be split in multiple parts)\n"
 "that will surround the actual Gerber traces at a certain distance."
@@ -14668,11 +14689,11 @@ msgstr ""
 "Добавит полигон (может быть разбит на несколько частей)\n"
 "который будет окружать фактические трассы Gerber на определенном расстоянии."
 
-#: appTools/ToolCopperThieving.py:1484
+#: appTools/ToolCopperThieving.py:1487
 msgid "Insert Robber Bar"
 msgstr "Вставить Robber Bar"
 
-#: appTools/ToolCopperThieving.py:1487
+#: appTools/ToolCopperThieving.py:1490
 msgid ""
 "Will add a polygon with a defined thickness\n"
 "that will surround the actual Gerber object\n"
@@ -14684,11 +14705,11 @@ msgstr ""
 "на определенном расстоянии.\n"
 "Требуется при нанесении рисунка отверстий."
 
-#: appTools/ToolCopperThieving.py:1511
+#: appTools/ToolCopperThieving.py:1514
 msgid "Select Soldermask object"
 msgstr "Выберите объект паяльной маски"
 
-#: appTools/ToolCopperThieving.py:1513
+#: appTools/ToolCopperThieving.py:1516
 msgid ""
 "Gerber Object with the soldermask.\n"
 "It will be used as a base for\n"
@@ -14698,11 +14719,11 @@ msgstr ""
 "Он будет использоваться в качестве базы для\n"
 "рисунка гальванической маски."
 
-#: appTools/ToolCopperThieving.py:1542
+#: appTools/ToolCopperThieving.py:1545
 msgid "Plated area"
 msgstr "Зоны покрытия"
 
-#: appTools/ToolCopperThieving.py:1544
+#: appTools/ToolCopperThieving.py:1547
 msgid ""
 "The area to be plated by pattern plating.\n"
 "Basically is made from the openings in the plating mask.\n"
@@ -14720,19 +14741,19 @@ msgstr ""
 "чуть больше, чем медные площадки, и эта область \n"
 "рассчитывается по отверстиям паяльной маски."
 
-#: appTools/ToolCopperThieving.py:1555
+#: appTools/ToolCopperThieving.py:1558
 msgid "mm"
 msgstr "мм"
 
-#: appTools/ToolCopperThieving.py:1557
+#: appTools/ToolCopperThieving.py:1560
 msgid "in"
 msgstr "дюймы"
 
-#: appTools/ToolCopperThieving.py:1564
+#: appTools/ToolCopperThieving.py:1567
 msgid "Generate pattern plating mask"
 msgstr "Создать рисунок гальванической маски"
 
-#: appTools/ToolCopperThieving.py:1567
+#: appTools/ToolCopperThieving.py:1570
 msgid ""
 "Will add to the soldermask gerber geometry\n"
 "the geometries of the copper thieving and/or\n"
@@ -14742,45 +14763,65 @@ msgstr ""
 "copper thieving и/или\n"
 "robber bar, если они были созданы."
 
-#: appTools/ToolCorners.py:87
+#: appTools/ToolCorners.py:92
 msgid "Corners Tool"
 msgstr "Углы"
 
-#: appTools/ToolCorners.py:158
+#: appTools/ToolCorners.py:168 appTools/ToolCorners.py:339
 msgid "Please select at least a location"
 msgstr "Пожалуйста, выберите хотя бы место"
 
-#: appTools/ToolCorners.py:297
-msgid "Corners Tool exit."
-msgstr "Выход из инструмента углов."
+#: appTools/ToolCorners.py:328
+msgid "The tool diameter is zero."
+msgstr "Диаметр инструмента равен нулю."
 
-#: appTools/ToolCorners.py:324
+#: appTools/ToolCorners.py:408
+msgid "Excellon object with corner drills created."
+msgstr "Был создан объект Excellon с угловыми сверлами."
+
+#: appTools/ToolCorners.py:439
+msgid "A Gerber object with corner markers was created."
+msgstr "Был создан объект Gerber с угловыми маркерами."
+
+#: appTools/ToolCorners.py:466
 msgid "The Gerber object to which will be added corner markers."
 msgstr "Объект Gerber, к которому будут добавлены угловые маркеры."
 
-#: appTools/ToolCorners.py:340
+#: appTools/ToolCorners.py:482
 msgid "Locations"
 msgstr "Местоположение"
 
-#: appTools/ToolCorners.py:342
+#: appTools/ToolCorners.py:484
 msgid "Locations where to place corner markers."
 msgstr "Места расположения угловых маркеров."
 
-#: appTools/ToolCorners.py:359 appTools/ToolFiducials.py:708
+#: appTools/ToolCorners.py:497 appTools/ToolFiducials.py:708
 msgid "Top Right"
 msgstr "Верхний правый"
 
-#: appTools/ToolCorners.py:368
+#: appTools/ToolCorners.py:514
 msgid "Toggle ALL"
 msgstr "Переключить всё"
 
-#: appTools/ToolCorners.py:434
+#: appTools/ToolCorners.py:594
 msgid "Add Marker"
 msgstr "Добавить маркер"
 
-#: appTools/ToolCorners.py:437
+#: appTools/ToolCorners.py:597
 msgid "Will add corner markers to the selected Gerber file."
 msgstr "Добавит угловые маркеры к выбранному файлу Gerber."
+
+#: appTools/ToolCorners.py:613
+msgid "Drills in Corners"
+msgstr "Сверла по углам"
+
+#: appTools/ToolCorners.py:630 appTools/ToolDblSided.py:928
+msgid "Create Excellon Object"
+msgstr "Создать объект Excellon"
+
+#: appTools/ToolCorners.py:633
+msgid "Will add drill holes in the center of the markers."
+msgstr "Добавим просверленные отверстия в центре маркеров."
 
 #: appTools/ToolCutOut.py:388
 msgid "Updated tool from Tools Database."
@@ -14918,7 +14959,7 @@ msgstr "Завершено ручное добавление пробелов."
 msgid "Cutout PCB"
 msgstr "Обрезка платы"
 
-#: appTools/ToolCutOut.py:1998 appTools/ToolDblSided.py:515
+#: appTools/ToolCutOut.py:1998 appTools/ToolDblSided.py:516
 #: appTools/ToolPanelize.py:653
 msgid "Source Object"
 msgstr "Исходный объект"
@@ -15075,66 +15116,70 @@ msgid "There are no Alignment Drill Coordinates to use. Add them and retry."
 msgstr ""
 "Нет координат выравнивающих отверстий. Добавьте их и повторите попытку."
 
-#: appTools/ToolDblSided.py:215
+#: appTools/ToolDblSided.py:212
+msgid "Alignment Drills"
+msgstr "Центровочные Cверла"
+
+#: appTools/ToolDblSided.py:216
 msgid "Excellon object with alignment drills created..."
 msgstr "Объект Excellon с выравнивающими отверстиями создан..."
 
-#: appTools/ToolDblSided.py:226 appTools/ToolPunchGerber.py:405
+#: appTools/ToolDblSided.py:227 appTools/ToolPunchGerber.py:405
 msgid "There is no Excellon object loaded ..."
 msgstr "Не загружен объект Excellon ..."
 
-#: appTools/ToolDblSided.py:238
+#: appTools/ToolDblSided.py:239
 msgid "Click on canvas within the desired Excellon drill hole"
 msgstr "Щелкните полотно внутри желаемого отверстия Excellon."
 
-#: appTools/ToolDblSided.py:282
+#: appTools/ToolDblSided.py:283
 msgid "Mirror reference point set."
 msgstr "Отразить контрольную точку."
 
-#: appTools/ToolDblSided.py:310
+#: appTools/ToolDblSided.py:311
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr ""
 "Зеркальное отображение доступно только для объектов Gerber, Excellon и "
 "Geometry."
 
-#: appTools/ToolDblSided.py:322
+#: appTools/ToolDblSided.py:323
 msgid "There is no Box object loaded ..."
 msgstr "Там нет загруженного объекта Box ..."
 
-#: appTools/ToolDblSided.py:332
+#: appTools/ToolDblSided.py:333
 msgid ""
 "There are no Point coordinates in the Point field. Add coords and try "
 "again ..."
 msgstr ""
 "В поле Точка нет координат точки. Добавьте координаты и попробуйте снова ..."
 
-#: appTools/ToolDblSided.py:339 camlib.py:2401
+#: appTools/ToolDblSided.py:340 camlib.py:2401
 msgid "Object was mirrored"
 msgstr "Объект отзеркалирован"
 
-#: appTools/ToolDblSided.py:405 app_Main.py:4766 app_Main.py:4921
+#: appTools/ToolDblSided.py:406 app_Main.py:4766 app_Main.py:4921
 msgid "Failed. No object(s) selected..."
 msgstr "Нудача. Объекты не выбраны ..."
 
-#: appTools/ToolDblSided.py:489
+#: appTools/ToolDblSided.py:490
 msgid "2-Sided PCB"
 msgstr "2-х сторонняя плата"
 
-#: appTools/ToolDblSided.py:516
+#: appTools/ToolDblSided.py:517
 msgid "Objects to be mirrored"
 msgstr "Объекты для зеркального отображения"
 
-#: appTools/ToolDblSided.py:523
+#: appTools/ToolDblSided.py:524
 msgid "Select the type of application object to be processed in this tool."
 msgstr ""
 "Выберите тип объекта приложения, который будет обрабатываться в этом "
 "инструменте."
 
-#: appTools/ToolDblSided.py:557
+#: appTools/ToolDblSided.py:558
 msgid "Bounds Values"
 msgstr "Значения границ"
 
-#: appTools/ToolDblSided.py:559
+#: appTools/ToolDblSided.py:560
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
@@ -15142,39 +15187,39 @@ msgstr ""
 "Выбор объектов\n"
 "для которых вычислять граничные значения."
 
-#: appTools/ToolDblSided.py:569
+#: appTools/ToolDblSided.py:570
 msgid "X min"
 msgstr "X min"
 
-#: appTools/ToolDblSided.py:571 appTools/ToolDblSided.py:585
+#: appTools/ToolDblSided.py:572 appTools/ToolDblSided.py:586
 msgid "Minimum location."
 msgstr "Минимальное местоположение."
 
-#: appTools/ToolDblSided.py:583
+#: appTools/ToolDblSided.py:584
 msgid "Y min"
 msgstr "Y min"
 
-#: appTools/ToolDblSided.py:597
+#: appTools/ToolDblSided.py:598
 msgid "X max"
 msgstr "X max"
 
-#: appTools/ToolDblSided.py:599 appTools/ToolDblSided.py:613
+#: appTools/ToolDblSided.py:600 appTools/ToolDblSided.py:614
 msgid "Maximum location."
 msgstr "Максимальное местоположение."
 
-#: appTools/ToolDblSided.py:611
+#: appTools/ToolDblSided.py:612
 msgid "Y max"
 msgstr "Y max"
 
-#: appTools/ToolDblSided.py:622
+#: appTools/ToolDblSided.py:623
 msgid "Center point coordinates"
 msgstr "Координаты центральной точки"
 
-#: appTools/ToolDblSided.py:624
+#: appTools/ToolDblSided.py:625
 msgid "Centroid"
 msgstr "Центр"
 
-#: appTools/ToolDblSided.py:626
+#: appTools/ToolDblSided.py:627
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
@@ -15182,11 +15227,11 @@ msgstr ""
 "Расположение центральной точки для прямоугольной \n"
 "ограничивающей фигуры. Центроид. Формат (х, у)."
 
-#: appTools/ToolDblSided.py:635
+#: appTools/ToolDblSided.py:636
 msgid "Calculate Bounds Values"
 msgstr "Рассчитать значения границ"
 
-#: appTools/ToolDblSided.py:637
+#: appTools/ToolDblSided.py:638
 msgid ""
 "Calculate the enveloping rectangular shape coordinates,\n"
 "for the selection of objects.\n"
@@ -15196,15 +15241,15 @@ msgstr ""
 "для выбранных объектов.\n"
 "Форма огибающей параллельна осям X, Y."
 
-#: appTools/ToolDblSided.py:662
+#: appTools/ToolDblSided.py:663
 msgid "Mirror Operation"
 msgstr "Операция зеркалирования"
 
-#: appTools/ToolDblSided.py:663
+#: appTools/ToolDblSided.py:664
 msgid "Parameters for the mirror operation"
 msgstr "Параметры для зеркальной операции"
 
-#: appTools/ToolDblSided.py:685
+#: appTools/ToolDblSided.py:686
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -15222,11 +15267,11 @@ msgstr ""
 "- Hole Snap -> точка, определяемая центром просверленного отверстия в "
 "объекте Excellon"
 
-#: appTools/ToolDblSided.py:705
+#: appTools/ToolDblSided.py:706
 msgid "Point coordinates"
 msgstr "Координаты точек"
 
-#: appTools/ToolDblSided.py:711
+#: appTools/ToolDblSided.py:712
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
 "axis\n"
@@ -15241,17 +15286,17 @@ msgstr ""
 "Координаты (x, y) фиксируются нажатием клавиши SHIFT\n"
 "и щелчком ЛКМ на холсте или вы можете ввести координаты вручную."
 
-#: appTools/ToolDblSided.py:729
+#: appTools/ToolDblSided.py:730
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr ""
 "Объект, содержащий отверстия, которые можно выбрать в качестве эталона для "
 "зеркального отображения."
 
-#: appTools/ToolDblSided.py:744
+#: appTools/ToolDblSided.py:745
 msgid "Pick hole"
 msgstr "Выбрать отверстие"
 
-#: appTools/ToolDblSided.py:746
+#: appTools/ToolDblSided.py:747
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
@@ -15260,7 +15305,7 @@ msgstr ""
 "Excellon,\n"
 "и координаты центра отверстия будут скопированы в поле Точка."
 
-#: appTools/ToolDblSided.py:762
+#: appTools/ToolDblSided.py:763
 msgid ""
 "It can be of type: Gerber or Excellon or Geometry.\n"
 "The coordinates of the center of the bounding box are used\n"
@@ -15270,11 +15315,11 @@ msgstr ""
 "Используются координаты центра ограничительной рамки.\n"
 "в качестве ориентира для работы с зеркалированием."
 
-#: appTools/ToolDblSided.py:788
+#: appTools/ToolDblSided.py:789
 msgid "Mirror"
 msgstr "Отразить"
 
-#: appTools/ToolDblSided.py:791
+#: appTools/ToolDblSided.py:792
 msgid ""
 "Mirrors (flips) the specified object around \n"
 "the specified axis. Does not create a new \n"
@@ -15284,11 +15329,11 @@ msgstr ""
 "вокруг заданной оси. Не создаёт новый объект,\n"
 "но изменяет его."
 
-#: appTools/ToolDblSided.py:817
+#: appTools/ToolDblSided.py:818
 msgid "PCB Alignment"
 msgstr "Выравнивание"
 
-#: appTools/ToolDblSided.py:819 appTools/ToolDblSided.py:930
+#: appTools/ToolDblSided.py:820 appTools/ToolDblSided.py:931
 msgid ""
 "Creates an Excellon Object containing the\n"
 "specified alignment holes and their mirror\n"
@@ -15298,11 +15343,7 @@ msgstr ""
 "контрольные отверстия и их\n"
 "зеркальные изображения."
 
-#: appTools/ToolDblSided.py:826
-msgid "Drill Diameter"
-msgstr "Диаметр сверла"
-
-#: appTools/ToolDblSided.py:861 appTools/ToolDblSided.py:868
+#: appTools/ToolDblSided.py:862 appTools/ToolDblSided.py:869
 msgid ""
 "The reference point used to create the second alignment drill\n"
 "from the first alignment drill, by doing mirror.\n"
@@ -15312,11 +15353,11 @@ msgstr ""
 "первого выравнивающего отверстия путем выполнения зеркалирования.\n"
 "Это можно изменить в разделе Параметры зеркалирования -> Опорная точка"
 
-#: appTools/ToolDblSided.py:881
+#: appTools/ToolDblSided.py:882
 msgid "Alignment Drill Coordinates"
 msgstr "Координаты выравнивающего отверстия"
 
-#: appTools/ToolDblSided.py:883
+#: appTools/ToolDblSided.py:884
 msgid ""
 "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
 "each set of (x, y) coordinates\n"
@@ -15334,11 +15375,11 @@ msgstr ""
 "- одно сверление в положении зеркала над осью, выбранной выше в «Оси "
 "зеркала»."
 
-#: appTools/ToolDblSided.py:891
+#: appTools/ToolDblSided.py:892
 msgid "Drill coordinates"
 msgstr "Координаты отверстия"
 
-#: appTools/ToolDblSided.py:899
+#: appTools/ToolDblSided.py:900
 msgid ""
 "Add alignment drill holes coordinates in the format: (x1, y1), (x2, "
 "y2), ... \n"
@@ -15362,17 +15403,13 @@ msgstr ""
 "нажмите Вставить.\n"
 "- путем ввода координат вручную в формате: (x1, y1), (x2, y2), ..."
 
-#: appTools/ToolDblSided.py:914
+#: appTools/ToolDblSided.py:915
 msgid "Delete Last"
 msgstr "Удалить последний"
 
-#: appTools/ToolDblSided.py:917
+#: appTools/ToolDblSided.py:918
 msgid "Delete the last coordinates tuple in the list."
 msgstr "Удаляет последний кортеж координат в списке."
-
-#: appTools/ToolDblSided.py:927
-msgid "Create Excellon Object"
-msgstr "Создать объект Excellon"
 
 #: appTools/ToolDistance.py:177
 msgid "Working"
@@ -19748,11 +19785,11 @@ msgstr ""
 msgid "G91 coordinates not implemented ..."
 msgstr "Координаты G91 не реализованы ..."
 
-#: defaults.py:865
+#: defaults.py:867
 msgid "Could not load defaults file."
 msgstr "Не удалось загрузить файл значений по умолчанию."
 
-#: defaults.py:878
+#: defaults.py:880
 msgid "Failed to parse defaults file."
 msgstr "Не удалось прочитать файл значений по умолчанию."
 
@@ -19852,6 +19889,9 @@ msgstr ""
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
+
+#~ msgid "Corners Tool exit."
+#~ msgstr "Выход из инструмента углов."
 
 #~ msgid "Done. Drill added."
 #~ msgstr "Готово. Сверло добавлено."
@@ -21618,9 +21658,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ "ось зеркального отражения проходит.\n"
 #~ "Если 'коробка ' является объектом flatCAM (Gerber, Exc или Geo).\n"
 #~ "Через центр зеркальной оси, выбранной выше."
-
-#~ msgid "Alignment Drill Diameter"
-#~ msgstr "Диаметр выравнивающего отверстия"
 
 #~ msgid ""
 #~ "'Point' coordinates missing. Using Origin (0, 0) as mirroring reference."

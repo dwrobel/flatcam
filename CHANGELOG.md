@@ -15,6 +15,11 @@ CHANGELOG for FlatCAM beta
 - added to the translatable strings the category labels in the Project Tab and also updated the translations
 - fixed a small issue (messages) in Corner Markers Tool
 - in Corners Markers Tool added a new feature: possibility to use cross shape markers
+- in Corner Marker Tool add new feature: ability to create an Excellon object with drill holes in the corner markes
+- in Corner Marker Tool, will no longer update the current object with the marker geometry but create a new Gerber object
+- in Join Excellon functionality made sure that the new Combo Exellon object will have copied the data from source objects and not just references, therefore will survive the delete of its parents
+- updated Turkish translation (by Mehmet Kaya)
+- updated all the languages except Turkish
 
 31.10.2020
 
