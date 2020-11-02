@@ -2357,7 +2357,6 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("object2editor()")
-        self.log.debug("######################### Starting the EDITOR ################################")
         # disable the objects menu as it may interfere with the appEditors
         self.ui.menuobjects.setDisabled(True)
 
@@ -2469,6 +2468,7 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, _("EDITOR Area"))
         self.ui.plot_tab_area.protectTab(0)
+        self.log.debug("######################### Starting the EDITOR ################################")
         self.inform.emit('[WARNING_NOTCL] %s' % _("Editor is activated ..."))
 
         self.should_we_save = True
@@ -2480,7 +2480,6 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("editor2object()")
-        self.log.debug("######################### Closing the EDITOR ################################")
 
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
@@ -2492,7 +2491,7 @@ class App(QtCore.QObject):
             if cleanup is None:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setText(_("Do you want to save the edited object?"))
-                msgbox.setWindowTitle(_("Close Editor"))
+                msgbox.setWindowTitle(_("Exit Editor"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
                 msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
@@ -2688,6 +2687,7 @@ class App(QtCore.QObject):
 
             # restore the call_source to app
             self.call_source = 'app'
+            self.log.debug("######################### Closing the EDITOR ################################")
 
             # edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
@@ -6634,6 +6634,10 @@ class App(QtCore.QObject):
                 self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
                 return
 
+            # the object selection on canvas does not work for App Tools or for Editors
+            if self.call_source != 'app':
+                return
+
             if self.doubleclick is True:
                 self.doubleclick = False
                 if self.collection.get_selected():
@@ -6662,7 +6666,6 @@ class App(QtCore.QObject):
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
                         return
                 else:
-
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
                     if key_modifier == QtCore.Qt.ShiftModifier:
                         mod_key = 'Shift'

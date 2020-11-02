@@ -342,8 +342,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/edit16.png'),
             '%s\t%s' % (_('Edit Object'), _('E')))
         self.menueditok = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'),
-            '%s\t%s' % (_('Close Editor'), _('Ctrl+S')))
+            QtGui.QIcon(self.app.resource_location + '/power16.png'),
+            '%s\t%s' % (_('Exit Editor'), _('Ctrl+S')))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -1693,7 +1693,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.popmenu_edit = self.popMenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Edit"))
         self.popmenu_save = self.popMenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy32.png'), _("Close Editor"))
+            QtGui.QIcon(self.app.resource_location + '/power16.png'), _("Exit Editor"))
         self.popmenu_save.setVisible(False)
         self.popMenu.addSeparator()
 
