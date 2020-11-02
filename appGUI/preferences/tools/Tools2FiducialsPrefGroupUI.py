@@ -61,7 +61,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner()
-        self.margin_entry.set_range(-9999.9999, 9999.9999)
+        self.margin_entry.set_range(-10000.0000, 10000.0000)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
@@ -125,7 +125,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             _("Bounding box margin.")
         )
         self.line_thickness_entry = FCDoubleSpinner()
-        self.line_thickness_entry.set_range(0.00001, 9999.9999)
+        self.line_thickness_entry.set_range(0.00001, 10000.0000)
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 

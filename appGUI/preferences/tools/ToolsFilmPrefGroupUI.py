@@ -65,7 +65,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # Film Border
         self.film_boundary_entry = FCDoubleSpinner()
         self.film_boundary_entry.set_precision(self.decimals)
-        self.film_boundary_entry.set_range(0, 9999.9999)
+        self.film_boundary_entry.set_range(0, 10000.0000)
         self.film_boundary_entry.setSingleStep(0.1)
 
         self.film_boundary_label = FCLabel('%s:' % _("Border"))
@@ -84,7 +84,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.film_scale_stroke_entry = FCDoubleSpinner()
         self.film_scale_stroke_entry.set_precision(self.decimals)
-        self.film_scale_stroke_entry.set_range(0, 9999.9999)
+        self.film_scale_stroke_entry.set_range(0, 10000.0000)
         self.film_scale_stroke_entry.setSingleStep(0.1)
 
         self.film_scale_stroke_label = FCLabel('%s:' % _("Scale Stroke"))

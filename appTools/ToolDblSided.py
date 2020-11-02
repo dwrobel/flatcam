@@ -565,7 +565,7 @@ class DsidedUI:
         # Xmin value
         self.xmin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmin_entry.set_precision(self.decimals)
-        self.xmin_entry.set_range(-9999.9999, 9999.9999)
+        self.xmin_entry.set_range(-10000.0000, 10000.0000)
 
         self.xmin_btn = FCButton('%s:' % _("X min"))
         self.xmin_btn.setToolTip(
@@ -579,7 +579,7 @@ class DsidedUI:
         # Ymin value
         self.ymin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymin_entry.set_precision(self.decimals)
-        self.ymin_entry.set_range(-9999.9999, 9999.9999)
+        self.ymin_entry.set_range(-10000.0000, 10000.0000)
 
         self.ymin_btn = FCButton('%s:' % _("Y min"))
         self.ymin_btn.setToolTip(
@@ -593,7 +593,7 @@ class DsidedUI:
         # Xmax value
         self.xmax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmax_entry.set_precision(self.decimals)
-        self.xmax_entry.set_range(-9999.9999, 9999.9999)
+        self.xmax_entry.set_range(-10000.0000, 10000.0000)
 
         self.xmax_btn = FCButton('%s:' % _("X max"))
         self.xmax_btn.setToolTip(
@@ -607,7 +607,7 @@ class DsidedUI:
         # Ymax value
         self.ymax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymax_entry.set_precision(self.decimals)
-        self.ymax_entry.set_range(-9999.9999, 9999.9999)
+        self.ymax_entry.set_range(-10000.0000, 10000.0000)
 
         self.ymax_btn = FCButton('%s:' % _("Y max"))
         self.ymax_btn.setToolTip(
@@ -834,7 +834,7 @@ class DsidedUI:
             _("Diameter of the drill for the alignment holes.")
         )
         self.drill_dia.set_precision(self.decimals)
-        self.drill_dia.set_range(0.0000, 9999.9999)
+        self.drill_dia.set_range(0.0000, 10000.0000)
 
         grid4.addWidget(self.dt_label, 2, 0)
         grid4.addWidget(self.drill_dia, 2, 1)

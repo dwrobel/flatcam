@@ -2150,9 +2150,9 @@ class DrillingUI:
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("e_cutz")
@@ -2174,7 +2174,7 @@ class DrillingUI:
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.set_range(0, 9999.9999)
+        self.maxdepth_entry.set_range(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -2196,9 +2196,9 @@ class DrillingUI:
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.travelz_entry.set_range(0.00001, 9999.9999)
+            self.travelz_entry.set_range(0.00001, 10000.0000)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("e_travelz")
@@ -2216,7 +2216,7 @@ class DrillingUI:
         )
         self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_z_entry.set_precision(self.decimals)
-        self.feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.feedrate_z_entry.set_range(0.0, 910000.0000)
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("e_feedratez")
 
@@ -2234,7 +2234,7 @@ class DrillingUI:
         )
         self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0.0, 99999.9999)
+        self.feedrate_rapid_entry.set_range(0.0, 910000.0000)
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("e_fr_rapid")
 
@@ -2271,7 +2271,7 @@ class DrillingUI:
         # Dwelltime
         self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.set_range(0.0, 9999.9999)
+        self.dwelltime_entry.set_range(0.0, 10000.0000)
         self.dwelltime_entry.setSingleStep(0.1)
 
         self.dwelltime_entry.setToolTip(
@@ -2294,7 +2294,7 @@ class DrillingUI:
 
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName("e_offset")
 
         self.grid1.addWidget(self.tool_offset_label, 25, 0)
@@ -2402,9 +2402,9 @@ class DrillingUI:
         self.toolchangez_entry.setObjectName("e_toolchangez")
 
         if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0, 9999.9999)
+            self.toolchangez_entry.set_range(0.0, 10000.0000)
         else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -2434,9 +2434,9 @@ class DrillingUI:
         self.endz_entry.setObjectName("e_endz")
 
         if machinist_setting == 0:
-            self.endz_entry.set_range(0.0, 9999.9999)
+            self.endz_entry.set_range(0.0, 10000.0000)
         else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.setSingleStep(0.1)
 
@@ -2466,7 +2466,7 @@ class DrillingUI:
 
         self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-9999.9999, 9999.9999)
+        self.pdepth_entry.set_range(-10000.0000, 10000.0000)
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setObjectName("e_depth_probe")
 
@@ -2484,7 +2484,7 @@ class DrillingUI:
 
         self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0.0, 9999.9999)
+        self.feedrate_probe_entry.set_range(0.0, 10000.0000)
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setObjectName("e_fr_probe")
 
@@ -2573,7 +2573,7 @@ class DrillingUI:
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_range(0.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
         self.over_z_entry.setObjectName("e_area_overz")
 

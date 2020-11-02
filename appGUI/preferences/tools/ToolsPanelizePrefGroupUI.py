@@ -43,7 +43,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         # ## Spacing Columns
         self.pspacing_columns = FCDoubleSpinner()
-        self.pspacing_columns.set_range(0.000001, 9999.9999)
+        self.pspacing_columns.set_range(0.000001, 10000.0000)
         self.pspacing_columns.set_precision(self.decimals)
         self.pspacing_columns.setSingleStep(0.1)
 
@@ -57,7 +57,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         # ## Spacing Rows
         self.pspacing_rows = FCDoubleSpinner()
-        self.pspacing_rows.set_range(0.000001, 9999.9999)
+        self.pspacing_rows.set_range(0.000001, 10000.0000)
         self.pspacing_rows.set_precision(self.decimals)
         self.pspacing_rows.setSingleStep(0.1)
 
@@ -128,7 +128,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pconstrain_cb, 10, 0, 1, 2)
 
         self.px_width_entry = FCDoubleSpinner()
-        self.px_width_entry.set_range(0.000001, 9999.9999)
+        self.px_width_entry.set_range(0.000001, 10000.0000)
         self.px_width_entry.set_precision(self.decimals)
         self.px_width_entry.setSingleStep(0.1)
 
@@ -141,7 +141,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.px_width_entry, 12, 1)
 
         self.py_height_entry = FCDoubleSpinner()
-        self.py_height_entry.set_range(0.000001, 9999.9999)
+        self.py_height_entry.set_range(0.000001, 10000.0000)
         self.py_height_entry.set_precision(self.decimals)
         self.py_height_entry.setSingleStep(0.1)
 

@@ -40,7 +40,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
 
         # ## Drill diameter for alignment holes
         self.drill_dia_entry = FCDoubleSpinner()
-        self.drill_dia_entry.set_range(0.000001, 9999.9999)
+        self.drill_dia_entry.set_range(0.000001, 10000.0000)
         self.drill_dia_entry.set_precision(self.decimals)
         self.drill_dia_entry.setSingleStep(0.1)
 

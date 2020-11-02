@@ -83,7 +83,7 @@ class BufferSelectionTool(AppTool):
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(0.0000, 999999.9999)
+        self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
         form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
         self.buffer_corner_lbl = FCLabel(_("Buffer corner:"))
         self.buffer_corner_lbl.setToolTip(
@@ -445,7 +445,7 @@ class PaintOptionsTool(AppTool):
         grid.addWidget(ptdlabel, 0, 0)
 
         self.painttooldia_entry = FCDoubleSpinner()
-        self.painttooldia_entry.set_range(-9999.9999, 9999.9999)
+        self.painttooldia_entry.set_range(-10000.0000, 10000.0000)
         self.painttooldia_entry.set_precision(self.decimals)
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
@@ -477,7 +477,7 @@ class PaintOptionsTool(AppTool):
              "be painted.")
         )
         self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
         self.paintmargin_entry.set_precision(self.decimals)
 
         grid.addWidget(marginlabel, 2, 0)
@@ -942,7 +942,7 @@ class TransformEditorTool(AppTool):
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(
@@ -1465,7 +1465,7 @@ class TransformEditorTool(AppTool):
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
+                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']),
                                 parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
@@ -1483,7 +1483,7 @@ class TransformEditorTool(AppTool):
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
+                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']),
                                 parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))

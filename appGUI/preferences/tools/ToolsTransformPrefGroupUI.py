@@ -155,7 +155,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.scale_link_cb, 12, 1)
 
         self.scalex_entry = FCDoubleSpinner()
-        self.scalex_entry.set_range(0, 9999.9999)
+        self.scalex_entry.set_range(0, 10000.0000)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
@@ -168,7 +168,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Scale factor on X axis
         self.scaley_entry = FCDoubleSpinner()
-        self.scaley_entry.set_range(0, 9999.9999)
+        self.scaley_entry.set_range(0, 10000.0000)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
@@ -184,7 +184,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(offset_title_lbl, 20, 0, 1, 2)
 
         self.offx_entry = FCDoubleSpinner()
-        self.offx_entry.set_range(-9999.9999, 9999.9999)
+        self.offx_entry.set_range(-10000.0000, 10000.0000)
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setSingleStep(0.1)
 
@@ -197,7 +197,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Offset distance on Y axis
         self.offy_entry = FCDoubleSpinner()
-        self.offy_entry.set_range(-9999.9999, 9999.9999)
+        self.offy_entry.set_range(-10000.0000, 10000.0000)
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setSingleStep(0.1)
 
@@ -235,7 +235,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(self.buffer_label, 28, 0)
         grid0.addWidget(self.buffer_entry, 28, 1)

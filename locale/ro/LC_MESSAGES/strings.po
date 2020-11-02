@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-02 13:45+0200\n"
-"PO-Revision-Date: 2020-11-02 13:45+0200\n"
+"POT-Creation-Date: 2020-11-02 17:58+0200\n"
+"PO-Revision-Date: 2020-11-02 18:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -165,7 +165,7 @@ msgstr "Bookmark-uri au fost importate din"
 msgid "The user requested a graceful exit of the current task."
 msgstr "Utilizatorul a solicitat o inchidere grațioasă a taskului curent."
 
-#: appCommon/Common.py:293 appTools/ToolCopperThieving.py:344
+#: appCommon/Common.py:293 appTools/ToolCopperThieving.py:347
 #: appTools/ToolIsolation.py:1443 appTools/ToolNCC.py:1380
 msgid "Click the start point of the area."
 msgstr "Faceți clic pe punctul de pornire al zonei."
@@ -175,7 +175,7 @@ msgid "Click the end point of the area."
 msgstr "Faceți clic pe punctul final al zonei."
 
 #: appCommon/Common.py:358 appCommon/Common.py:460
-#: appTools/ToolCopperThieving.py:388 appTools/ToolIsolation.py:2354
+#: appTools/ToolCopperThieving.py:391 appTools/ToolIsolation.py:2354
 #: appTools/ToolIsolation.py:2406 appTools/ToolNCC.py:1445
 #: appTools/ToolNCC.py:1497 appTools/ToolPaint.py:1225
 #: appTools/ToolPaint.py:1276
@@ -509,7 +509,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:98
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:103
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:111
-#: appTools/ToolCalculators.py:240 appTools/ToolCutOut.py:2121
+#: appTools/ToolCalculators.py:280 appTools/ToolCutOut.py:2121
 #: appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
 msgid "Cut Z"
 msgstr "Z tăiere"
@@ -794,7 +794,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:1681
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:307
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:72
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:229
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:59
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:53
@@ -802,8 +802,8 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:181
-#: appTools/ToolCopperThieving.py:1241 appTools/ToolCopperThieving.py:1493
-#: appTools/ToolCorners.py:584 appTools/ToolCutOut.py:2174
+#: appTools/ToolCopperThieving.py:1284 appTools/ToolCopperThieving.py:1560
+#: appTools/ToolCorners.py:587 appTools/ToolCutOut.py:2174
 #: appTools/ToolFiducials.py:815 appTools/ToolInvertGerber.py:231
 #: appTools/ToolInvertGerber.py:239 appTools/ToolNCC.py:4159
 #: appTools/ToolNCC.py:4262
@@ -817,7 +817,7 @@ msgstr "Margine"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:125
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:204
-#: appTools/ToolCopperThieving.py:1243 appTools/ToolCorners.py:586
+#: appTools/ToolCopperThieving.py:1286 appTools/ToolCorners.py:589
 #: appTools/ToolFiducials.py:817 appTools/ToolNCC.py:4161
 #: appTools/ToolNCC.py:4264
 msgid "Bounding box margin."
@@ -1324,7 +1324,7 @@ msgstr ""
 
 #: appDatabase.py:1223 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
-#: appTools/ToolCalculators.py:249 appTools/ToolCutOut.py:2237
+#: appTools/ToolCalculators.py:289 appTools/ToolCutOut.py:2237
 msgid "Tool Diameter"
 msgstr "Dia unealtă"
 
@@ -1334,12 +1334,12 @@ msgid "The drill hole diameter when doing mouse bites."
 msgstr "Diametrul găurilor atunci când faceți Mouse Bites."
 
 #: appDatabase.py:1236
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:151
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:164
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:193
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:222
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1364 appTools/ToolCopperThieving.py:1404
-#: appTools/ToolCopperThieving.py:1444 appTools/ToolCutOut.py:2249
+#: appTools/ToolCopperThieving.py:1431 appTools/ToolCopperThieving.py:1471
+#: appTools/ToolCopperThieving.py:1511 appTools/ToolCutOut.py:2249
 msgid "Spacing"
 msgstr "Spaţiere"
 
@@ -1452,7 +1452,7 @@ msgstr ""
 "aplicației după selectarea unei  unelte în baza de date a Uneltelor."
 
 #: appDatabase.py:1367 appGUI/MainGUI.py:1553
-#: appGUI/preferences/PreferencesUIManager.py:946 app_Main.py:2500
+#: appGUI/preferences/PreferencesUIManager.py:949 app_Main.py:2500
 #: app_Main.py:3527 app_Main.py:4471 app_Main.py:4724 app_Main.py:8998
 msgid "Cancel"
 msgstr "Anuleaza"
@@ -1462,10 +1462,10 @@ msgstr "Anuleaza"
 #: appEditors/appGCodeEditor.py:781 appGUI/ObjectUI.py:163
 #: appGUI/ObjectUI.py:174 appTool.py:280 appTool.py:291
 #: appTools/ToolAlignObjects.py:517 appTools/ToolAlignObjects.py:528
-#: appTools/ToolCalculators.py:390 appTools/ToolCalculators.py:401
+#: appTools/ToolCalculators.py:519 appTools/ToolCalculators.py:530
 #: appTools/ToolCalibration.py:1395 appTools/ToolCalibration.py:1406
-#: appTools/ToolCopperThieving.py:1635 appTools/ToolCopperThieving.py:1646
-#: appTools/ToolCorners.py:672 appTools/ToolCorners.py:683
+#: appTools/ToolCopperThieving.py:1716 appTools/ToolCopperThieving.py:1727
+#: appTools/ToolCorners.py:675 appTools/ToolCorners.py:686
 #: appTools/ToolCutOut.py:2454 appTools/ToolCutOut.py:2465
 #: appTools/ToolDblSided.py:964 appTools/ToolDblSided.py:975
 #: appTools/ToolDistance.py:660 appTools/ToolDistance.py:671
@@ -1498,10 +1498,10 @@ msgstr "Valoarea editată este in afara limitelor"
 #: appEditors/appGCodeEditor.py:783 appGUI/ObjectUI.py:169
 #: appGUI/ObjectUI.py:176 appTool.py:286 appTool.py:293
 #: appTools/ToolAlignObjects.py:523 appTools/ToolAlignObjects.py:530
-#: appTools/ToolCalculators.py:396 appTools/ToolCalculators.py:403
+#: appTools/ToolCalculators.py:525 appTools/ToolCalculators.py:532
 #: appTools/ToolCalibration.py:1401 appTools/ToolCalibration.py:1408
-#: appTools/ToolCopperThieving.py:1641 appTools/ToolCopperThieving.py:1648
-#: appTools/ToolCorners.py:678 appTools/ToolCorners.py:685
+#: appTools/ToolCopperThieving.py:1722 appTools/ToolCopperThieving.py:1729
+#: appTools/ToolCorners.py:681 appTools/ToolCorners.py:688
 #: appTools/ToolCutOut.py:2460 appTools/ToolCutOut.py:2467
 #: appTools/ToolDblSided.py:970 appTools/ToolDblSided.py:977
 #: appTools/ToolDistance.py:666 appTools/ToolDistance.py:673
@@ -2132,7 +2132,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:4012
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:83
-#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:571
+#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:574
 #: appTools/ToolProperties.py:571
 msgid "Length"
 msgstr "Lungime"
@@ -2298,10 +2298,10 @@ msgstr "Font"
 #: appEditors/AppGeoEditor.py:316 appEditors/AppGerberEditor.py:2491
 #: appEditors/AppGerberEditor.py:3947 appGUI/ObjectUI.py:316
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:103
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:167
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:196
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:43
-#: appTools/ToolCopperThieving.py:1391 appTools/ToolCopperThieving.py:1431
+#: appTools/ToolCopperThieving.py:1458 appTools/ToolCopperThieving.py:1498
 #: appTools/ToolFiducials.py:799 appTools/ToolPunchGerber.py:1088
 msgid "Size"
 msgstr "Dimensiune"
@@ -2455,7 +2455,7 @@ msgstr "Originea"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:256
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appTools/ToolIsolation.py:3381 appTools/ToolNCC.py:4323
-#: appTools/ToolPaint.py:3104 appTools/ToolTransform.py:557 defaults.py:571
+#: appTools/ToolPaint.py:3104 appTools/ToolTransform.py:557 defaults.py:572
 msgid "Selection"
 msgstr "Selecţie"
 
@@ -2490,10 +2490,12 @@ msgstr "Un punct de referință în format X, Y."
 
 #: appEditors/AppGeoEditor.py:671 appEditors/AppGerberEditor.py:2586
 #: appEditors/AppGerberEditor.py:5352 appGUI/ObjectUI.py:2375
-#: appTools/ToolDblSided.py:709 appTools/ToolDblSided.py:897
-#: appTools/ToolNCC.py:63 appTools/ToolPaint.py:137
-#: appTools/ToolSolderPaste.py:160 appTools/ToolSolderPaste.py:1204
-#: appTools/ToolTransform.py:572 app_Main.py:6294
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:288
+#: appTools/ToolCopperThieving.py:1666 appTools/ToolDblSided.py:709
+#: appTools/ToolDblSided.py:897 appTools/ToolNCC.py:63
+#: appTools/ToolPaint.py:137 appTools/ToolSolderPaste.py:160
+#: appTools/ToolSolderPaste.py:1204 appTools/ToolTransform.py:572
+#: app_Main.py:6294
 msgid "Add"
 msgstr "Adaugă"
 
@@ -3187,7 +3189,7 @@ msgstr "Editor Geometrii"
 #: appEditors/AppGerberEditor.py:3947 appEditors/appGCodeEditor.py:687
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appTools/ToolCorners.py:543 appTools/ToolCutOut.py:2030
+#: appTools/ToolCorners.py:546 appTools/ToolCutOut.py:2030
 #: appTools/ToolDblSided.py:522 appTools/ToolPunchGerber.py:1088
 #: appTools/ToolTransform.py:579
 msgid "Type"
@@ -3662,7 +3664,7 @@ msgstr "Pragul de sus pt. arie"
 #: appEditors/AppGerberEditor.py:2710
 msgid ""
 "The threshold value, all areas less than this are marked.\n"
-"Can have a value between 0.0000 and 9999.9999"
+"Can have a value between 0.0000 and 10000.0000"
 msgstr ""
 "Valoare de prag, toate poligoanele cu arii mai mici vor fi marcate.\n"
 "Poate lua valori intre: 0.000 si 999.9999"
@@ -3674,7 +3676,7 @@ msgstr "Pragul de jos pt. arie"
 #: appEditors/AppGerberEditor.py:2719
 msgid ""
 "The threshold value, all areas more than this are marked.\n"
-"Can have a value between 0.0000 and 9999.9999"
+"Can have a value between 0.0000 and 10000.0000"
 msgstr ""
 "Valoare de prag, toate poligoanele cu arii mai mari vor fi marcate.\n"
 "Poate lua valori intre: 0.000 si 999.9999"
@@ -3843,9 +3845,9 @@ msgstr ""
 "Nici-o apertură sel. pt a face bufer. Selectează cel puțin o apertură și "
 "încearcă din nou."
 
-#: appEditors/AppGerberEditor.py:5140 appTools/ToolCopperThieving.py:303
-#: appTools/ToolCopperThieving.py:898 appTools/ToolCopperThieving.py:1061
-#: appTools/ToolCorners.py:146 appTools/ToolCorners.py:410
+#: appEditors/AppGerberEditor.py:5140 appTools/ToolCopperThieving.py:306
+#: appTools/ToolCopperThieving.py:907 appTools/ToolCopperThieving.py:1104
+#: appTools/ToolCorners.py:146 appTools/ToolCorners.py:413
 #: appTools/ToolCutOut.py:779 appTools/ToolCutOut.py:905
 #: appTools/ToolCutOut.py:1128 appTools/ToolCutOut.py:1278
 #: appTools/ToolFiducials.py:240 appTools/ToolFiducials.py:492
@@ -4036,8 +4038,8 @@ msgstr "Editor Cod"
 
 #: appEditors/appGCodeEditor.py:687 appEditors/appGCodeEditor.py:698
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034 appGUI/ObjectUI.py:2044
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:138
-#: appTools/ToolCopperThieving.py:1351
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:151
+#: appTools/ToolCopperThieving.py:1418
 msgid "Dia"
 msgstr "Dia"
 
@@ -4364,8 +4366,8 @@ msgstr "Nou"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
 #: appObjects/ObjectCollection.py:234 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1274
-#: appTools/ToolCopperThieving.py:1288 appTools/ToolCutOut.py:2027
+#: appTools/ToolCopperThieving.py:165 appTools/ToolCopperThieving.py:1340
+#: appTools/ToolCopperThieving.py:1354 appTools/ToolCutOut.py:2027
 #: appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:771
 #: appTools/ToolFilm.py:933 appTools/ToolFilm.py:956 appTools/ToolImage.py:135
 #: appTools/ToolImage.py:190 appTools/ToolIsolation.py:3351
@@ -4393,8 +4395,8 @@ msgstr "Va crea un obiect nou de tip Geometrie, fără continut."
 #: appTools/ToolAlignObjects.py:434 appTools/ToolCalibration.py:163
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:891
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1274
-#: appTools/ToolCopperThieving.py:1288 appTools/ToolCutOut.py:2026
+#: appTools/ToolCopperThieving.py:165 appTools/ToolCopperThieving.py:1340
+#: appTools/ToolCopperThieving.py:1354 appTools/ToolCutOut.py:2026
 #: appTools/ToolDblSided.py:528 appTools/ToolDblSided.py:769
 #: appTools/ToolFilm.py:932 appTools/ToolFilm.py:955 appTools/ToolImage.py:116
 #: appTools/ToolImage.py:137 appTools/ToolImage.py:190
@@ -4402,7 +4404,7 @@ msgstr "Va crea un obiect nou de tip Geometrie, fără continut."
 #: appTools/ToolNCC.py:3873 appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
 #: appTools/ToolPanelize.py:148 appTools/ToolPanelize.py:168
 #: appTools/ToolPanelize.py:716 appTools/ToolPanelize.py:810
-#: appTools/ToolTransform.py:126 appTools/ToolTransform.py:585 defaults.py:572
+#: appTools/ToolTransform.py:126 appTools/ToolTransform.py:585 defaults.py:573
 msgid "Gerber"
 msgstr "Gerber"
 
@@ -4422,8 +4424,8 @@ msgstr "Va crea un obiect nou de tip Gerber, fără continut."
 #: appTools/ToolAlignObjects.py:435 appTools/ToolCalibration.py:163
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:892
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
-#: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1274
-#: appTools/ToolCopperThieving.py:1288 appTools/ToolDblSided.py:530
+#: appTools/ToolCopperThieving.py:165 appTools/ToolCopperThieving.py:1340
+#: appTools/ToolCopperThieving.py:1354 appTools/ToolDblSided.py:530
 #: appTools/ToolDblSided.py:728 appTools/ToolDblSided.py:770
 #: appTools/ToolFilm.py:1211 appTools/ToolIsolation.py:3404
 #: appTools/ToolNCC.py:4342 appTools/ToolPaint.py:3132
@@ -4629,7 +4631,7 @@ msgstr "Importați Preferințele din fișier"
 msgid "Export Preferences to file"
 msgstr "Exportați Preferințele într-un fișier"
 
-#: appGUI/MainGUI.py:314 appGUI/preferences/PreferencesUIManager.py:1188
+#: appGUI/MainGUI.py:314 appGUI/preferences/PreferencesUIManager.py:1191
 msgid "Save Preferences"
 msgstr "Salvează Pref"
 
@@ -4786,10 +4788,10 @@ msgid "Q"
 msgstr "Q"
 
 #: appGUI/MainGUI.py:454 appGUI/MainGUI.py:1263
-#: appGUI/preferences/PreferencesUIManager.py:913
-#: appGUI/preferences/PreferencesUIManager.py:1006
-#: appGUI/preferences/PreferencesUIManager.py:1034
-#: appGUI/preferences/PreferencesUIManager.py:1139 app_Main.py:5739
+#: appGUI/preferences/PreferencesUIManager.py:916
+#: appGUI/preferences/PreferencesUIManager.py:1009
+#: appGUI/preferences/PreferencesUIManager.py:1037
+#: appGUI/preferences/PreferencesUIManager.py:1142 app_Main.py:5739
 #: app_Main.py:5744 app_Main.py:5759
 msgid "Preferences"
 msgstr "Preferințe"
@@ -5481,7 +5483,7 @@ msgid "QRCode Tool"
 msgstr "Unealta QRCode"
 
 #: appGUI/MainGUI.py:1079 appGUI/MainGUI.py:2248 appGUI/MainGUI.py:4475
-#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1168
+#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1211
 msgid "Copper Thieving Tool"
 msgstr "Unealta Copper Thieving"
 
@@ -5505,7 +5507,7 @@ msgid "Invert Gerber Tool"
 msgstr "Unealta Inversare Gerber"
 
 #: appGUI/MainGUI.py:1090 appGUI/MainGUI.py:2259 appGUI/MainGUI.py:4478
-#: appTools/ToolCorners.py:452
+#: appTools/ToolCorners.py:455
 msgid "Corner Markers Tool"
 msgstr "Unealta pentru Semne la Colț"
 
@@ -5655,8 +5657,8 @@ msgstr "Proiect"
 msgid "Plot Area"
 msgstr "Arie Afișare"
 
-#: appGUI/MainGUI.py:1429 appTools/ToolCopperThieving.py:1200
-#: appTools/ToolCorners.py:472 appTools/ToolEtchCompensation.py:291
+#: appGUI/MainGUI.py:1429 appTools/ToolCopperThieving.py:1243
+#: appTools/ToolCorners.py:475 appTools/ToolEtchCompensation.py:291
 #: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:902
 #: appTools/ToolInvertGerber.py:212 appTools/ToolIsolation.py:2999
 #: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:1010
@@ -5820,14 +5822,14 @@ msgstr "Folderul de preferințe FlatCAM a fost deschis."
 msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "Esti sigur că dorești să ștergi setările GUI?\n"
 
-#: appGUI/MainGUI.py:2114 appGUI/preferences/PreferencesUIManager.py:945
-#: appGUI/preferences/PreferencesUIManager.py:1192 appTranslation.py:111
+#: appGUI/MainGUI.py:2114 appGUI/preferences/PreferencesUIManager.py:948
+#: appGUI/preferences/PreferencesUIManager.py:1195 appTranslation.py:111
 #: appTranslation.py:213 app_Main.py:2498 app_Main.py:3525 app_Main.py:5980
 #: app_Main.py:8996
 msgid "Yes"
 msgstr "Da"
 
-#: appGUI/MainGUI.py:2115 appGUI/preferences/PreferencesUIManager.py:1193
+#: appGUI/MainGUI.py:2115 appGUI/preferences/PreferencesUIManager.py:1196
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:49
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:164
@@ -6542,8 +6544,8 @@ msgstr "Opțiuni afișare"
 #: appGUI/ObjectUI.py:202 appGUI/ObjectUI.py:552
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:47
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:45
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:119
-#: appTools/ToolCopperThieving.py:1321
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:132
+#: appTools/ToolCopperThieving.py:1388
 msgid "Solid"
 msgstr "Solid"
 
@@ -8248,41 +8250,41 @@ msgstr ""
 "Nu s-a putut adnota datorită unei diferențe între numărul de elemente de "
 "text și numărul de locații de text."
 
-#: appGUI/preferences/PreferencesUIManager.py:920
+#: appGUI/preferences/PreferencesUIManager.py:923
 msgid "Preferences applied."
 msgstr "Preferințele au fost aplicate."
 
-#: appGUI/preferences/PreferencesUIManager.py:940
+#: appGUI/preferences/PreferencesUIManager.py:943
 msgid "Are you sure you want to continue?"
 msgstr "Ești sigur că vrei să continui?"
 
-#: appGUI/preferences/PreferencesUIManager.py:941
+#: appGUI/preferences/PreferencesUIManager.py:944
 msgid "Application will restart"
 msgstr "Aplicaţia va reporni"
 
-#: appGUI/preferences/PreferencesUIManager.py:1039
+#: appGUI/preferences/PreferencesUIManager.py:1042
 msgid "Preferences closed without saving."
 msgstr "Tab-ul Preferințe a fost închis fără a salva."
 
-#: appGUI/preferences/PreferencesUIManager.py:1051
+#: appGUI/preferences/PreferencesUIManager.py:1054
 msgid "Preferences default values are restored."
 msgstr "Valorile implicite pt preferințe sunt restabilite."
 
-#: appGUI/preferences/PreferencesUIManager.py:1082 app_Main.py:2833
+#: appGUI/preferences/PreferencesUIManager.py:1085 app_Main.py:2833
 #: app_Main.py:9670
 msgid "Failed to write defaults to file."
 msgstr "Salvarea valorilor default intr-un fişier a eșuat."
 
-#: appGUI/preferences/PreferencesUIManager.py:1086
-#: appGUI/preferences/PreferencesUIManager.py:1201
+#: appGUI/preferences/PreferencesUIManager.py:1089
+#: appGUI/preferences/PreferencesUIManager.py:1204
 msgid "Preferences saved."
 msgstr "Preferințele au fost salvate."
 
-#: appGUI/preferences/PreferencesUIManager.py:1136
+#: appGUI/preferences/PreferencesUIManager.py:1139
 msgid "Preferences edited but not saved."
 msgstr "Preferințele au fost editate dar nu au fost salvate."
 
-#: appGUI/preferences/PreferencesUIManager.py:1186
+#: appGUI/preferences/PreferencesUIManager.py:1189
 msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
@@ -8320,8 +8322,8 @@ msgstr "Opțiuni Avans. CNCJob"
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:31
-#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1219
-#: appTools/ToolCorners.py:536 appTools/ToolEtchCompensation.py:356
+#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1262
+#: appTools/ToolCorners.py:539 appTools/ToolEtchCompensation.py:356
 #: appTools/ToolFiducials.py:792 appTools/ToolInvertGerber.py:225
 #: appTools/ToolQRCode.py:702
 msgid "Parameters"
@@ -8725,7 +8727,7 @@ msgstr "Unitatile de masura folosite in fişierul Excellon."
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:182
 #: appGUI/preferences/gerber/GerberExpPrefGroupUI.py:47
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:87
-#: appTools/ToolCalculators.py:187 appTools/ToolPcbWizard.py:453
+#: appTools/ToolCalculators.py:227 appTools/ToolPcbWizard.py:453
 msgid "INCH"
 msgstr "Inch"
 
@@ -8734,7 +8736,7 @@ msgstr "Inch"
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:43
 #: appGUI/preferences/gerber/GerberExpPrefGroupUI.py:48
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:88
-#: appTools/ToolCalculators.py:188 appTools/ToolPcbWizard.py:454
+#: appTools/ToolCalculators.py:228 appTools/ToolPcbWizard.py:454
 msgid "MM"
 msgstr "MM"
 
@@ -9163,8 +9165,10 @@ msgstr ""
 "disponibile"
 
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:73
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:293
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:199
-#: appTools/ToolFilm.py:1109 appTools/ToolMilling.py:1771
+#: appTools/ToolCopperThieving.py:1671 appTools/ToolFilm.py:1109
+#: appTools/ToolMilling.py:1771
 msgid "Both"
 msgstr "Ambele"
 
@@ -10371,8 +10375,8 @@ msgid "\"Follow\""
 msgstr "\"Urmăreste\""
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:64
-#: appObjects/FlatCAMGerber.py:368 appTools/ToolCopperThieving.py:568
-#: appTools/ToolCopperThieving.py:774 appTools/ToolCopperThieving.py:787
+#: appObjects/FlatCAMGerber.py:368 appTools/ToolCopperThieving.py:575
+#: appTools/ToolCopperThieving.py:778 appTools/ToolCopperThieving.py:791
 #: appTools/ToolIsolation.py:1360 appTools/ToolNCC.py:1807
 #: appTools/ToolNCC.py:1834 appTools/ToolNCC.py:1942 appTools/ToolNCC.py:1955
 #: appTools/ToolNCC.py:2857 appTools/ToolNCC.py:2962 appTools/ToolNCC.py:2977
@@ -10396,15 +10400,17 @@ msgstr ""
 "<<ATENTIE>>: Nu schimba această valoare decat dacă stii ce faci !!!"
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:71
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:296
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:88
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:196
 #: appObjects/FlatCAMObj.py:755 appObjects/FlatCAMObj.py:758
 #: appObjects/FlatCAMObj.py:761 appObjects/FlatCAMObj.py:789
 #: appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799
-#: appTools/ToolFiducials.py:844 appTools/ToolFilm.py:1106
-#: appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
-#: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
-#: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
+#: appTools/ToolCopperThieving.py:1674 appTools/ToolFiducials.py:844
+#: appTools/ToolFilm.py:1106 appTools/ToolProperties.py:449
+#: appTools/ToolProperties.py:452 appTools/ToolProperties.py:455
+#: appTools/ToolProperties.py:483 appTools/ToolProperties.py:490
+#: appTools/ToolProperties.py:493
 msgid "None"
 msgstr "Nimic"
 
@@ -10684,8 +10690,8 @@ msgid "Number of steps (lines) used to interpolate circles."
 msgstr "Numărul de pași (linii) utilizate pentru interpolarea cercurilor."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:57
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:261
-#: appTools/ToolCopperThieving.py:1226 appTools/ToolCopperThieving.py:1563
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:274
+#: appTools/ToolCopperThieving.py:1269 appTools/ToolCopperThieving.py:1630
 msgid "Clearance"
 msgstr "Degajare"
 
@@ -10699,37 +10705,51 @@ msgstr ""
 "(umplutura poligonului poate fi împărțită în mai multe poligoane)\n"
 "si traseele de cupru din fisierul Gerber."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:86
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:85
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:119
+#: appTools/ToolCalculators.py:342 appTools/ToolCalculators.py:385
+#: appTools/ToolCopperThieving.py:1298
+msgid "Area"
+msgstr "Aria"
+
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:87
+#: appTools/ToolCopperThieving.py:1300
+msgid "Thieving areas with area less then this value will not be added."
+msgstr ""
+"Zonele de Thieving cu suprafață mai mică decât această valoare nu vor fi "
+"adăugate."
+
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
-#: appTools/ToolCopperThieving.py:1255 appTools/ToolNCC.py:4319
+#: appTools/ToolCopperThieving.py:1321 appTools/ToolNCC.py:4319
 msgid "Itself"
 msgstr "Însuşi"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:87
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:100
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1256 appTools/ToolIsolation.py:3391
+#: appTools/ToolCopperThieving.py:1322 appTools/ToolIsolation.py:3391
 #: appTools/ToolNCC.py:4319 appTools/ToolPaint.py:3116
 msgid "Area Selection"
 msgstr "Selecţie zonă"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:88
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:101
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1257 appTools/ToolDblSided.py:761
+#: appTools/ToolCopperThieving.py:1323 appTools/ToolDblSided.py:761
 #: appTools/ToolIsolation.py:3391 appTools/ToolNCC.py:4319
 #: appTools/ToolPaint.py:3116 tclCommands/TclCommandPaint.py:166
 msgid "Reference Object"
 msgstr "Obiect Ref"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:90
-#: appTools/ToolCopperThieving.py:1259
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:103
+#: appTools/ToolCopperThieving.py:1325
 msgid "Reference:"
 msgstr "Referinţă:"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:92
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:105
 msgid ""
 "- 'Itself' - the copper Thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
@@ -10744,29 +10764,29 @@ msgstr ""
 "- „Obiect de referință” - va face Copper Thieving în zona specificată de un "
 "alt obiect."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:101
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:114
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:188
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:190
-#: appTools/ToolCopperThieving.py:1301 appTools/ToolExtractDrills.py:495
+#: appTools/ToolCopperThieving.py:1372 appTools/ToolExtractDrills.py:495
 #: appTools/ToolExtractDrills.py:628 appTools/ToolPunchGerber.py:1068
 #: appTools/ToolPunchGerber.py:1240
 msgid "Rectangular"
 msgstr "Patrulater"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:102
-#: appTools/ToolCopperThieving.py:1302
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:115
+#: appTools/ToolCopperThieving.py:1373
 msgid "Minimal"
 msgstr "Minimal"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:104
-#: appTools/ToolCopperThieving.py:1304 appTools/ToolFilm.py:958
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:117
+#: appTools/ToolCopperThieving.py:1366 appTools/ToolFilm.py:958
 msgid "Box Type:"
 msgstr "Tip container:"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:106
-#: appTools/ToolCopperThieving.py:1306
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:119
+#: appTools/ToolCopperThieving.py:1368
 msgid ""
 "- 'Rectangular' - the bounding box will be of rectangular shape.\n"
 "- 'Minimal' - the bounding box will be the convex hull shape."
@@ -10774,28 +10794,28 @@ msgstr ""
 "- „Dreptunghiular” - caseta de delimitare va avea o formă dreptunghiulară.\n"
 "- „Minimal” - caseta de delimitare va fi in formă de suprafată convexă."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:120
-#: appTools/ToolCopperThieving.py:1322
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:133
+#: appTools/ToolCopperThieving.py:1389
 msgid "Dots Grid"
 msgstr "Grilă de puncte"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:121
-#: appTools/ToolCopperThieving.py:1323
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:134
+#: appTools/ToolCopperThieving.py:1390
 msgid "Squares Grid"
 msgstr "Grilă de pătrate"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:122
-#: appTools/ToolCopperThieving.py:1324
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:135
+#: appTools/ToolCopperThieving.py:1391
 msgid "Lines Grid"
 msgstr "Grilă de linii"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:124
-#: appTools/ToolCopperThieving.py:1326
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:137
+#: appTools/ToolCopperThieving.py:1393
 msgid "Fill Type:"
 msgstr "Tip de umplere:"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:126
-#: appTools/ToolCopperThieving.py:1328
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:139
+#: appTools/ToolCopperThieving.py:1395
 msgid ""
 "- 'Solid' - copper thieving will be a solid polygon.\n"
 "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
@@ -10807,58 +10827,58 @@ msgstr ""
 "- „Grilă de pătrate” - zona goală va fi umplută cu un model de pătrate.\n"
 "- „Grilă de linii” - zona goală va fi umplută cu un model de linii."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:134
-#: appTools/ToolCopperThieving.py:1347
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:147
+#: appTools/ToolCopperThieving.py:1414
 msgid "Dots Grid Parameters"
 msgstr "Parametri grilă puncte"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:140
-#: appTools/ToolCopperThieving.py:1353
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:153
+#: appTools/ToolCopperThieving.py:1420
 msgid "Dot diameter in Dots Grid."
 msgstr "Diametrul punctului în Grila de Puncte."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:153
-#: appTools/ToolCopperThieving.py:1366
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:166
+#: appTools/ToolCopperThieving.py:1433
 msgid "Distance between each two dots in Dots Grid."
 msgstr "Distanța dintre fiecare două puncte din Grila de Puncte."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:163
-#: appTools/ToolCopperThieving.py:1387
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:176
+#: appTools/ToolCopperThieving.py:1454
 msgid "Squares Grid Parameters"
 msgstr "Parametri grilă de patrate"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:169
-#: appTools/ToolCopperThieving.py:1393
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:182
+#: appTools/ToolCopperThieving.py:1460
 msgid "Square side size in Squares Grid."
 msgstr "Dimensiunea pătratului în Grila de Pătrate."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:182
-#: appTools/ToolCopperThieving.py:1406
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:195
+#: appTools/ToolCopperThieving.py:1473
 msgid "Distance between each two squares in Squares Grid."
 msgstr "Distanța dintre fiecare două pătrate din Grila Pătrate."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:192
-#: appTools/ToolCopperThieving.py:1427
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:205
+#: appTools/ToolCopperThieving.py:1494
 msgid "Lines Grid Parameters"
 msgstr "Parametri grilă de linii"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1433
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:211
+#: appTools/ToolCopperThieving.py:1500
 msgid "Line thickness size in Lines Grid."
 msgstr "Mărimea grosimii liniei în Grila de linii."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:211
-#: appTools/ToolCopperThieving.py:1446
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:224
+#: appTools/ToolCopperThieving.py:1513
 msgid "Distance between each two lines in Lines Grid."
 msgstr "Distanța dintre fiecare două linii în Grial de linii."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:221
-#: appTools/ToolCopperThieving.py:1485
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:234
+#: appTools/ToolCopperThieving.py:1552
 msgid "Robber Bar Parameters"
 msgstr "Parametri pentru Robber Bar"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:223
-#: appTools/ToolCopperThieving.py:1487
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:236
+#: appTools/ToolCopperThieving.py:1554
 msgid ""
 "Parameters used for the robber bar.\n"
 "Robber bar = copper border to help in pattern hole plating."
@@ -10866,43 +10886,59 @@ msgstr ""
 "Parametrii folosiți pentru Robber Bar.\n"
 "Robber Bar = bordura de cupru pentru a ajuta la placarea de găuri, cu model."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:231
-#: appTools/ToolCopperThieving.py:1495
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:244
+#: appTools/ToolCopperThieving.py:1562
 msgid "Bounding box margin for robber bar."
 msgstr ""
 "Marginea pentru forma înconjurătoare\n"
 "a Robber Bar."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:255
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
-#: appTools/ToolCopperThieving.py:1506 appTools/ToolCorners.py:557
+#: appTools/ToolCopperThieving.py:1573 appTools/ToolCorners.py:560
 #: appTools/ToolEtchCompensation.py:370
 msgid "Thickness"
 msgstr "Grosime"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:244
-#: appTools/ToolCopperThieving.py:1508
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:257
+#: appTools/ToolCopperThieving.py:1575
 msgid "The robber bar thickness."
 msgstr "Grosimea Robber Bar."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:254
-#: appTools/ToolCopperThieving.py:1540
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:267
+#: appTools/ToolCopperThieving.py:1607
 msgid "Pattern Plating Mask"
 msgstr "Masca de placare cu model"
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:256
-#: appTools/ToolCopperThieving.py:1542
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:269
+#: appTools/ToolCopperThieving.py:1609
 msgid "Generate a mask for pattern plating."
 msgstr "Generați o mască pentru placarea cu model."
 
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:263
-#: appTools/ToolCopperThieving.py:1565
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:276
+#: appTools/ToolCopperThieving.py:1632
 msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
 msgstr ""
 "Distanța dintre posibilele elemente Copper Thieving\n"
 "și / sau Robber Bar și deschiderile efective ale măștii."
+
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:290
+#: appTools/ToolCopperThieving.py:1668
+msgid "Choose which additional geometry to include, if available."
+msgstr "Alegeți ce geometrie suplimentară să includeți, dacă este disponibilă."
+
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:294
+#: appTools/ToolCopperThieving.py:499 appTools/ToolCopperThieving.py:503
+#: appTools/ToolCopperThieving.py:565 appTools/ToolCopperThieving.py:1672
+msgid "Thieving"
+msgstr "Thieving"
+
+#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:295
+#: appTools/ToolCopperThieving.py:1673
+msgid "Robber bar"
+msgstr "Rober Bar"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:27
 msgid "Calibration Tool Options"
@@ -10913,7 +10949,7 @@ msgstr "Opțiuni Unealta Calibrare"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:38
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:37
-#: appTools/ToolCopperThieving.py:1221 appTools/ToolCorners.py:538
+#: appTools/ToolCopperThieving.py:1264 appTools/ToolCorners.py:541
 #: appTools/ToolFiducials.py:794
 msgid "Parameters used for this tool."
 msgstr "Parametrii folosiți pentru aceasta unealta."
@@ -11259,7 +11295,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:108
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:49
-#: appTools/ToolCorners.py:550 appTools/ToolFiducials.py:864
+#: appTools/ToolCorners.py:553 appTools/ToolFiducials.py:864
 msgid "Cross"
 msgstr "Cruce"
 
@@ -11824,7 +11860,7 @@ msgid "Calculators Tool Options"
 msgstr "Opțiuni Unealta Calculatoare"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:31
-#: appTools/ToolCalculators.py:152
+#: appTools/ToolCalculators.py:191
 msgid "V-Shape Tool Calculator"
 msgstr "Calculator Unealta V-Shape"
 
@@ -11839,12 +11875,12 @@ msgstr ""
 "adâncimea de tăiere, ca parametri."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:50
-#: appTools/ToolCalculators.py:220
+#: appTools/ToolCalculators.py:260
 msgid "Tip Diameter"
 msgstr "Dia vârf"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:52
-#: appTools/ToolCalculators.py:228
+#: appTools/ToolCalculators.py:268
 msgid ""
 "This is the tool tip diameter.\n"
 "It is specified by manufacturer."
@@ -11853,7 +11889,7 @@ msgstr ""
 "Este specificat de producator."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:64
-#: appTools/ToolCalculators.py:231
+#: appTools/ToolCalculators.py:271
 msgid "Tip Angle"
 msgstr "V-Unghi"
 
@@ -11874,12 +11910,12 @@ msgstr ""
 "In obiectul CNCJob este parametrul >Z tăiere<."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:87
-#: appTools/ToolCalculators.py:154
+#: appTools/ToolCalculators.py:193
 msgid "ElectroPlating Calculator"
 msgstr "Calculator ElectroPlacare"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:89
-#: appTools/ToolCalculators.py:284
+#: appTools/ToolCalculators.py:324
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
 "using a method like graphite ink or calcium hypophosphite ink or palladium "
@@ -11892,36 +11928,41 @@ msgstr ""
 "- hipofosfit de calciu."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:100
-#: appTools/ToolCalculators.py:293
+#: appTools/ToolCalculators.py:349
 msgid "Board Length"
 msgstr "Lung. plăcii"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:102
-#: appTools/ToolCalculators.py:299
+#: appTools/ToolCalculators.py:350
 msgid "This is the board length. In centimeters."
 msgstr ""
 "Aceasta este lungimea PCB-ului.\n"
 "In centimetri."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:112
-#: appTools/ToolCalculators.py:301
+#: appTools/ToolCalculators.py:367
 msgid "Board Width"
 msgstr "Lăt. plăcii"
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:114
-#: appTools/ToolCalculators.py:307
+#: appTools/ToolCalculators.py:368
 msgid "This is the board width.In centimeters."
 msgstr ""
 "Aceasta este lăţimea PCB-ului.\n"
 "In centimetri."
 
-#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:119
-#: appTools/ToolCalculators.py:309
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:120
+#: appTools/ToolCalculators.py:386
+msgid "This is the board area."
+msgstr "Aceasta este aria PCB-ului."
+
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:130
+#: appTools/ToolCalculators.py:408
 msgid "Current Density"
 msgstr "Densitate I"
 
-#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:125
-#: appTools/ToolCalculators.py:316
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:136
+#: appTools/ToolCalculators.py:409
 msgid ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
@@ -11929,13 +11970,13 @@ msgstr ""
 "Densitatea de curent care să treaca prin placa.\n"
 "In ASF (amperi pe picior la patrat)."
 
-#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:131
-#: appTools/ToolCalculators.py:319
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:142
+#: appTools/ToolCalculators.py:428
 msgid "Copper Growth"
 msgstr "Grosime Cu"
 
-#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:137
-#: appTools/ToolCalculators.py:326
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:148
+#: appTools/ToolCalculators.py:429
 msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
@@ -11948,32 +11989,32 @@ msgid "Corner Markers Options"
 msgstr "Opțiuni Marcaje Colțuri"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
-#: appTools/ToolCorners.py:545
+#: appTools/ToolCorners.py:548
 msgid "Shape of the marker."
 msgstr "Forma marcatorului."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:48
-#: appTools/ToolCorners.py:549
+#: appTools/ToolCorners.py:552
 msgid "Semi-Cross"
 msgstr "Semi-Cruce"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
-#: appTools/ToolCorners.py:559
+#: appTools/ToolCorners.py:562
 msgid "The thickness of the line that makes the corner marker."
 msgstr "Grosimea liniei care face marcajul de colț."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:85
-#: appTools/ToolCorners.py:573
+#: appTools/ToolCorners.py:576
 msgid "The length of the line that makes the corner marker."
 msgstr "Lungimea liniei care face marcajul de colț."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:96
-#: appTools/ToolCorners.py:625 appTools/ToolDblSided.py:827
+#: appTools/ToolCorners.py:628 appTools/ToolDblSided.py:827
 msgid "Drill Dia"
 msgstr "Dia Gaură"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:98
-#: appTools/ToolCorners.py:627
+#: appTools/ToolCorners.py:630
 msgid "Drill Diameter"
 msgstr "Dia Găurire"
 
@@ -12322,18 +12363,18 @@ msgstr ""
 "geometriei."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:174
-#: appTools/ToolCorners.py:509 appTools/ToolFiducials.py:723
+#: appTools/ToolCorners.py:512 appTools/ToolFiducials.py:723
 #: appTools/ToolFilm.py:1069
 msgid "Bottom Left"
 msgstr "Stânga jos"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:175
-#: appTools/ToolCorners.py:501 appTools/ToolFilm.py:1070
+#: appTools/ToolCorners.py:504 appTools/ToolFilm.py:1070
 msgid "Top Left"
 msgstr "Stânga sus"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:176
-#: appTools/ToolCorners.py:513 appTools/ToolFilm.py:1071
+#: appTools/ToolCorners.py:516 appTools/ToolFilm.py:1071
 msgid "Bottom Right"
 msgstr "Dreapta-jos"
 
@@ -12613,8 +12654,8 @@ msgstr "Progresiv"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 #: appObjects/AppObject.py:452 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
-#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1072
-#: appTools/ToolCorners.py:416 appTools/ToolFiducials.py:563
+#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1115
+#: appTools/ToolCorners.py:419 appTools/ToolFiducials.py:563
 #: appTools/ToolMove.py:229 appTools/ToolQRCode.py:466 app_Main.py:4813
 msgid "Plotting"
 msgstr "Se afișeaz"
@@ -13672,7 +13713,7 @@ msgstr "CNC Code in curs de generare"
 msgid "CNCjob created"
 msgstr "CNCjob creat"
 
-#: appObjects/FlatCAMGeometry.py:2564 appTools/ToolCopperThieving.py:586
+#: appObjects/FlatCAMGeometry.py:2564 appTools/ToolCopperThieving.py:593
 #: appTools/ToolFilm.py:639 appTools/ToolFilm.py:883
 #: appTools/ToolIsolation.py:930 appTools/ToolNCC.py:868
 #: appTools/ToolOptimal.py:145 appTools/ToolPanelize.py:613
@@ -13794,7 +13835,8 @@ msgstr "Scalare..."
 msgid "Skewing..."
 msgstr "Deformare..."
 
-#: appObjects/FlatCAMObj.py:487 appTools/ToolProperties.py:152
+#: appObjects/FlatCAMObj.py:487 appTools/ToolCalculators.py:341
+#: appTools/ToolProperties.py:152
 msgid "Dimensions"
 msgstr "Dimensiuni"
 
@@ -14166,9 +14208,9 @@ msgstr ""
 "Daca se folosesc două puncte atunci va fi o translatie urmată de o posibilă "
 "rotatie."
 
-#: appTools/ToolAlignObjects.py:499 appTools/ToolCalculators.py:372
-#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1617
-#: appTools/ToolCorners.py:654 appTools/ToolCutOut.py:2411
+#: appTools/ToolAlignObjects.py:499 appTools/ToolCalculators.py:501
+#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1698
+#: appTools/ToolCorners.py:657 appTools/ToolCutOut.py:2411
 #: appTools/ToolDblSided.py:946 appTools/ToolDrilling.py:2649
 #: appTools/ToolEtchCompensation.py:459 appTools/ToolExtractDrills.py:699
 #: appTools/ToolFiducials.py:962 appTools/ToolFilm.py:1387
@@ -14182,9 +14224,9 @@ msgstr ""
 msgid "Reset Tool"
 msgstr "Resetați Unealta"
 
-#: appTools/ToolAlignObjects.py:502 appTools/ToolCalculators.py:375
-#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1620
-#: appTools/ToolCorners.py:657 appTools/ToolCutOut.py:2414
+#: appTools/ToolAlignObjects.py:502 appTools/ToolCalculators.py:504
+#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1701
+#: appTools/ToolCorners.py:660 appTools/ToolCutOut.py:2414
 #: appTools/ToolDblSided.py:949 appTools/ToolDrilling.py:2652
 #: appTools/ToolEtchCompensation.py:462 appTools/ToolExtractDrills.py:702
 #: appTools/ToolFiducials.py:965 appTools/ToolFilm.py:1390
@@ -14198,27 +14240,27 @@ msgstr "Resetați Unealta"
 msgid "Will reset the tool parameters."
 msgstr "Va reseta parametrii uneltei."
 
-#: appTools/ToolCalculators.py:77
+#: appTools/ToolCalculators.py:79
 msgid "Calc. Tool"
 msgstr "Unealta Calc"
 
-#: appTools/ToolCalculators.py:151
+#: appTools/ToolCalculators.py:190
 msgid "Calculators"
 msgstr "Calculatoare"
 
-#: appTools/ToolCalculators.py:153
+#: appTools/ToolCalculators.py:192
 msgid "Units Calculator"
 msgstr "Calculator Unitati"
 
-#: appTools/ToolCalculators.py:196
+#: appTools/ToolCalculators.py:236
 msgid "Here you enter the value to be converted from INCH to MM"
 msgstr "Valorile pentru conversie din INCH in MM"
 
-#: appTools/ToolCalculators.py:201
+#: appTools/ToolCalculators.py:241
 msgid "Here you enter the value to be converted from MM to INCH"
 msgstr "Valorile pentru conversie din MM in INCH"
 
-#: appTools/ToolCalculators.py:237
+#: appTools/ToolCalculators.py:277
 msgid ""
 "This is the angle of the tip of the tool.\n"
 "It is specified by manufacturer."
@@ -14226,7 +14268,7 @@ msgstr ""
 "Acesta este unghiul uneltei la vârf.\n"
 "Producatorul il specifica in foaia de catalog."
 
-#: appTools/ToolCalculators.py:246
+#: appTools/ToolCalculators.py:286
 msgid ""
 "This is the depth to cut into the material.\n"
 "In the CNCJob is the CutZ parameter."
@@ -14234,7 +14276,7 @@ msgstr ""
 "Acest param. este adâncimea de tăiere in material.\n"
 "In obiectul CNCJob este parametrul >Z tăiere<."
 
-#: appTools/ToolCalculators.py:254
+#: appTools/ToolCalculators.py:294
 msgid ""
 "This is the tool diameter to be entered into\n"
 "FlatCAM Gerber section.\n"
@@ -14244,11 +14286,11 @@ msgstr ""
 "sectiunea FlatCAM Gerber.\n"
 "In sectiunea CNCJob este numit >Dia unealtă<."
 
-#: appTools/ToolCalculators.py:265 appTools/ToolCalculators.py:361
+#: appTools/ToolCalculators.py:305 appTools/ToolCalculators.py:490
 msgid "Calculate"
 msgstr "Calculează"
 
-#: appTools/ToolCalculators.py:268
+#: appTools/ToolCalculators.py:309
 msgid ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
@@ -14257,11 +14299,28 @@ msgstr ""
 "uneltei,\n"
 "depinzand de care dintre acestea este cunoscuta. "
 
-#: appTools/ToolCalculators.py:331
+#: appTools/ToolCalculators.py:336
+msgid "Area Calculation"
+msgstr "Calculul suprafeței"
+
+#: appTools/ToolCalculators.py:338
+msgid "Choose how to calculate the board area."
+msgstr "Alege cum să calculezi suprafața plăcii."
+
+#: appTools/ToolCalculators.py:356 appTools/ToolCalculators.py:374
+#: appTools/ToolCalculators.py:392
+msgid "cm"
+msgstr "cm"
+
+#: appTools/ToolCalculators.py:437
+msgid "um"
+msgstr "um"
+
+#: appTools/ToolCalculators.py:448
 msgid "Current Value"
 msgstr "Intensitate"
 
-#: appTools/ToolCalculators.py:338
+#: appTools/ToolCalculators.py:449
 msgid ""
 "This is the current intensity value\n"
 "to be set on the Power Supply. In Amps."
@@ -14269,11 +14328,11 @@ msgstr ""
 "Intensitatea curentului electric care se va seta\n"
 "in sursa de alimentare. In Amperi."
 
-#: appTools/ToolCalculators.py:342
+#: appTools/ToolCalculators.py:469
 msgid "Time"
 msgstr "Durată"
 
-#: appTools/ToolCalculators.py:349
+#: appTools/ToolCalculators.py:470
 msgid ""
 "This is the calculated time required for the procedure.\n"
 "In minutes."
@@ -14281,7 +14340,7 @@ msgstr ""
 "TImpul necesar (calculat) pentru\n"
 "efectuarea procedurii. In minute."
 
-#: appTools/ToolCalculators.py:364
+#: appTools/ToolCalculators.py:493
 msgid ""
 "Calculate the current intensity value and the procedure time,\n"
 "depending on the parameters above"
@@ -14590,45 +14649,45 @@ msgstr ""
 "Reglați (Scalați și / sau Deformați) obiectele\n"
 "cu factorii determinați mai sus."
 
-#: appTools/ToolCopperThieving.py:184 appTools/ToolCopperThieving.py:209
+#: appTools/ToolCopperThieving.py:186 appTools/ToolCopperThieving.py:211
 msgid "Lines Grid works only for 'itself' reference ..."
 msgstr "Gridul de Linii funcționează numai pentru referința „în sine” ..."
 
-#: appTools/ToolCopperThieving.py:195
+#: appTools/ToolCopperThieving.py:197
 msgid "Solid fill selected."
 msgstr "Umplere solidă selectată."
 
-#: appTools/ToolCopperThieving.py:200
+#: appTools/ToolCopperThieving.py:202
 msgid "Dots grid fill selected."
 msgstr "Umplere Grila de Puncte selectată."
 
-#: appTools/ToolCopperThieving.py:205
+#: appTools/ToolCopperThieving.py:207
 msgid "Squares grid fill selected."
 msgstr "Umplere Grila de Pătrate selectată."
 
-#: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:324
-#: appTools/ToolCopperThieving.py:936 appTools/ToolCorners.py:127
-#: appTools/ToolCorners.py:353 appTools/ToolDblSided.py:307
+#: appTools/ToolCopperThieving.py:229 appTools/ToolCopperThieving.py:327
+#: appTools/ToolCopperThieving.py:946 appTools/ToolCorners.py:127
+#: appTools/ToolCorners.py:350 appTools/ToolDblSided.py:307
 #: appTools/ToolExtractDrills.py:141 appTools/ToolFiducials.py:191
 #: appTools/ToolFiducials.py:482 appTools/ToolOptimal.py:138
 #: appTools/ToolPunchGerber.py:381 appTools/ToolQRCode.py:158
 msgid "There is no Gerber object loaded ..."
 msgstr "Nu este nici-un obiect Gerber incărcat ..."
 
-#: appTools/ToolCopperThieving.py:239 appTools/ToolCopperThieving.py:843
+#: appTools/ToolCopperThieving.py:242 appTools/ToolCopperThieving.py:847
 msgid "Append geometry"
 msgstr "Adăugați geometria"
 
-#: appTools/ToolCopperThieving.py:294 appTools/ToolCopperThieving.py:889
-#: appTools/ToolCopperThieving.py:1048
+#: appTools/ToolCopperThieving.py:297 appTools/ToolCopperThieving.py:898
+#: appTools/ToolCopperThieving.py:1091
 msgid "Append source file"
 msgstr "Adăugați fișierul sursă"
 
-#: appTools/ToolCopperThieving.py:307 appTools/ToolCopperThieving.py:902
+#: appTools/ToolCopperThieving.py:310 appTools/ToolCopperThieving.py:911
 msgid "Copper Thieving Tool done."
 msgstr "Unealta Copper Thieving efectuata."
 
-#: appTools/ToolCopperThieving.py:334 appTools/ToolCopperThieving.py:354
+#: appTools/ToolCopperThieving.py:337 appTools/ToolCopperThieving.py:357
 #: appTools/ToolCutOut.py:551 appTools/ToolCutOut.py:927
 #: appTools/ToolDrilling.py:726 appTools/ToolDrilling.py:1582
 #: appTools/ToolEtchCompensation.py:152 appTools/ToolInvertGerber.py:99
@@ -14644,71 +14703,66 @@ msgstr "Unealta Copper Thieving efectuata."
 msgid "Could not retrieve object"
 msgstr "Nu s-a putut incărca obiectul"
 
-#: appTools/ToolCopperThieving.py:382
+#: appTools/ToolCopperThieving.py:385
 msgid "Click the end point of the filling area."
 msgstr "Faceți clic pe punctul final al zonei de umplere."
 
-#: appTools/ToolCopperThieving.py:496 appTools/ToolCopperThieving.py:500
-#: appTools/ToolCopperThieving.py:558
-msgid "Thieving"
-msgstr "Thieving"
-
-#: appTools/ToolCopperThieving.py:507
+#: appTools/ToolCopperThieving.py:510
 msgid "Copper Thieving Tool started. Reading parameters."
 msgstr "Unealta Thieving Tool a pornit. Se citesc parametrii."
 
-#: appTools/ToolCopperThieving.py:532
+#: appTools/ToolCopperThieving.py:536
 msgid "Copper Thieving Tool. Preparing isolation polygons."
 msgstr "Unealta Thieving Tool. Se pregătesc poligoanele de isolare."
 
-#: appTools/ToolCopperThieving.py:575
+#: appTools/ToolCopperThieving.py:582
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
 msgstr "Unealta Thieving Tool. Se pregătesc zonele de umplut cu cupru."
 
-#: appTools/ToolCopperThieving.py:619
+#: appTools/ToolCopperThieving.py:626
 msgid "Geometry not supported for bounding box"
 msgstr "Geometria nu este acceptată pentru caseta de delimitare"
 
-#: appTools/ToolCopperThieving.py:625 appTools/ToolNCC.py:1695
+#: appTools/ToolCopperThieving.py:632 appTools/ToolNCC.py:1695
 #: appTools/ToolNCC.py:1750 appTools/ToolNCC.py:2744 appTools/ToolPaint.py:2468
 msgid "No object available."
 msgstr "Nici-un obiect disponibil."
 
-#: appTools/ToolCopperThieving.py:662 appTools/ToolNCC.py:1720
+#: appTools/ToolCopperThieving.py:669 appTools/ToolNCC.py:1720
 #: appTools/ToolNCC.py:1773 appTools/ToolNCC.py:2786
 msgid "The reference object type is not supported."
 msgstr "Tipul de obiect de referintă nu este acceptat."
 
-#: appTools/ToolCopperThieving.py:667
+#: appTools/ToolCopperThieving.py:674
 msgid "Copper Thieving Tool. Appending new geometry and buffering."
 msgstr ""
 "Unealta Copper Thieving. Se adauga o noua geometrie si se fuzioneaza acestea."
 
-#: appTools/ToolCopperThieving.py:683
+#: appTools/ToolCopperThieving.py:710
 msgid "Create geometry"
 msgstr "Creați geometrie"
 
-#: appTools/ToolCopperThieving.py:913 appTools/ToolCopperThieving.py:917
+#: appTools/ToolCopperThieving.py:922 appTools/ToolCopperThieving.py:926
 msgid "P-Plating Mask"
 msgstr "Mască M-Placare"
 
-#: appTools/ToolCopperThieving.py:939
+#: appTools/ToolCopperThieving.py:949
 msgid "Append PP-M geometry"
 msgstr "Adaugă geometrie mască PM"
 
-#: appTools/ToolCopperThieving.py:1068
+#: appTools/ToolCopperThieving.py:1111
 msgid "Generating Pattern Plating Mask done."
 msgstr "Generarea măștii de placare cu model efectuată."
 
-#: appTools/ToolCopperThieving.py:1111
+#: appTools/ToolCopperThieving.py:1154
 msgid "Copper Thieving Tool exit."
 msgstr "Unealta Copper Thieving terminata."
 
-#: appTools/ToolCopperThieving.py:1202 appTools/ToolFiducials.py:904
+#: appTools/ToolCopperThieving.py:1245 appTools/ToolFiducials.py:904
 msgid "Gerber Object to which will be added a copper thieving."
 msgstr "Obiect Gerber căruia i se va adăuga Copper Thieving."
 
-#: appTools/ToolCopperThieving.py:1228
+#: appTools/ToolCopperThieving.py:1271
 msgid ""
 "This set the distance between the copper thieving components\n"
 "(the polygon fill may be split in multiple polygons)\n"
@@ -14718,7 +14772,15 @@ msgstr ""
 "(umplutura poligonului poate fi împărțită în mai multe poligoane)\n"
 "si traseele de cupru din fisierul Gerber."
 
-#: appTools/ToolCopperThieving.py:1261
+#: appTools/ToolCopperThieving.py:1309 appTools/ToolCopperThieving.py:1657
+msgid "mm"
+msgstr "mm"
+
+#: appTools/ToolCopperThieving.py:1311 appTools/ToolCopperThieving.py:1659
+msgid "in"
+msgstr "in"
+
+#: appTools/ToolCopperThieving.py:1327
 msgid ""
 "- 'Itself' - the copper thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
@@ -14732,12 +14794,12 @@ msgstr ""
 "- „Obiect de referință” - va face Copper Thieving în zona specificată de un "
 "alt obiect."
 
-#: appTools/ToolCopperThieving.py:1268 appTools/ToolIsolation.py:3398
+#: appTools/ToolCopperThieving.py:1334 appTools/ToolIsolation.py:3398
 #: appTools/ToolNCC.py:4336 appTools/ToolPaint.py:3126
 msgid "Ref. Type"
 msgstr "Tip Ref"
 
-#: appTools/ToolCopperThieving.py:1270
+#: appTools/ToolCopperThieving.py:1336
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
@@ -14746,22 +14808,22 @@ msgstr ""
 "Thieving.\n"
 "Poate fi Gerber, Excellon sau Geometrie."
 
-#: appTools/ToolCopperThieving.py:1279 appTools/ToolIsolation.py:3409
+#: appTools/ToolCopperThieving.py:1345 appTools/ToolIsolation.py:3409
 #: appTools/ToolNCC.py:4346 appTools/ToolPaint.py:3136
 msgid "Ref. Object"
 msgstr "Obiect Ref"
 
-#: appTools/ToolCopperThieving.py:1281 appTools/ToolIsolation.py:3411
+#: appTools/ToolCopperThieving.py:1347 appTools/ToolIsolation.py:3411
 #: appTools/ToolNCC.py:4348 appTools/ToolPaint.py:3138
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
 "Obiectul FlatCAM pentru a fi utilizat ca referință pt. curățarea de cupru."
 
-#: appTools/ToolCopperThieving.py:1457
+#: appTools/ToolCopperThieving.py:1524
 msgid "Insert Copper thieving"
 msgstr "Inserați Copper Thieving"
 
-#: appTools/ToolCopperThieving.py:1460
+#: appTools/ToolCopperThieving.py:1527
 msgid ""
 "Will add a polygon (may be split in multiple parts)\n"
 "that will surround the actual Gerber traces at a certain distance."
@@ -14769,11 +14831,11 @@ msgstr ""
 "Se va adăuga un poligon (poate fi împărțit în mai multe părți)\n"
 "care va înconjura traseele Gerber la o anumită distanță."
 
-#: appTools/ToolCopperThieving.py:1519
+#: appTools/ToolCopperThieving.py:1586
 msgid "Insert Robber Bar"
 msgstr "Inserați Rober Bar"
 
-#: appTools/ToolCopperThieving.py:1522
+#: appTools/ToolCopperThieving.py:1589
 msgid ""
 "Will add a polygon with a defined thickness\n"
 "that will surround the actual Gerber object\n"
@@ -14785,11 +14847,11 @@ msgstr ""
 "la o anumită distanță.\n"
 "Necesar atunci când faceți placare găuri cu model."
 
-#: appTools/ToolCopperThieving.py:1546
+#: appTools/ToolCopperThieving.py:1613
 msgid "Select Soldermask object"
 msgstr "Selectați obiectul Soldermask"
 
-#: appTools/ToolCopperThieving.py:1548
+#: appTools/ToolCopperThieving.py:1615
 msgid ""
 "Gerber Object with the soldermask.\n"
 "It will be used as a base for\n"
@@ -14799,11 +14861,11 @@ msgstr ""
 "Acesta va fi folosit ca bază pentru\n"
 "generarea de masca pentru placare cu model."
 
-#: appTools/ToolCopperThieving.py:1577
+#: appTools/ToolCopperThieving.py:1644
 msgid "Plated area"
 msgstr "Zona placată"
 
-#: appTools/ToolCopperThieving.py:1579
+#: appTools/ToolCopperThieving.py:1646
 msgid ""
 "The area to be plated by pattern plating.\n"
 "Basically is made from the openings in the plating mask.\n"
@@ -14821,19 +14883,11 @@ msgstr ""
 "un pic mai mari decât padurile de cupru, iar această zonă este\n"
 "calculată din deschiderile soldermask."
 
-#: appTools/ToolCopperThieving.py:1590
-msgid "mm"
-msgstr "mm"
-
-#: appTools/ToolCopperThieving.py:1592
-msgid "in"
-msgstr "in"
-
-#: appTools/ToolCopperThieving.py:1599
+#: appTools/ToolCopperThieving.py:1680
 msgid "Generate pattern plating mask"
 msgstr "Generați mască de placare cu model"
 
-#: appTools/ToolCopperThieving.py:1602
+#: appTools/ToolCopperThieving.py:1683
 msgid ""
 "Will add to the soldermask gerber geometry\n"
 "the geometries of the copper thieving and/or\n"
@@ -14847,7 +14901,7 @@ msgstr ""
 msgid "Corners Tool"
 msgstr "Unealta Marcaje Colt"
 
-#: appTools/ToolCorners.py:168 appTools/ToolCorners.py:343
+#: appTools/ToolCorners.py:168 appTools/ToolCorners.py:355
 msgid "Please select at least a location"
 msgstr "Vă rugăm să selectați cel puțin o locație"
 
@@ -14855,51 +14909,51 @@ msgstr "Vă rugăm să selectați cel puțin o locație"
 msgid "The tool diameter is zero."
 msgstr "Dimaetrul uneltei este zero."
 
-#: appTools/ToolCorners.py:412
+#: appTools/ToolCorners.py:415
 msgid "Excellon object with corner drills created."
 msgstr "Obiectul Excellon conținând găurile din colțuri a fost creat ..."
 
-#: appTools/ToolCorners.py:447
+#: appTools/ToolCorners.py:450
 msgid "A Gerber object with corner markers was created."
 msgstr "Obiectul Gerber conținând semnele din colțuri a fost creat ..."
 
-#: appTools/ToolCorners.py:474
+#: appTools/ToolCorners.py:477
 msgid "The Gerber object to which will be added corner markers."
 msgstr "Obiect Gerber căruia i se va adăuga marcaje de colt."
 
-#: appTools/ToolCorners.py:490
+#: appTools/ToolCorners.py:493
 msgid "Locations"
 msgstr "Locaţii"
 
-#: appTools/ToolCorners.py:492
+#: appTools/ToolCorners.py:495
 msgid "Locations where to place corner markers."
 msgstr "Locații unde să plasați markerele de colț."
 
-#: appTools/ToolCorners.py:505 appTools/ToolFiducials.py:735
+#: appTools/ToolCorners.py:508 appTools/ToolFiducials.py:735
 msgid "Top Right"
 msgstr "Dreapta-sus"
 
-#: appTools/ToolCorners.py:522
+#: appTools/ToolCorners.py:525
 msgid "Toggle ALL"
 msgstr "Comută Toate"
 
-#: appTools/ToolCorners.py:602
+#: appTools/ToolCorners.py:605
 msgid "Add Marker"
 msgstr "Adaugă Marcaj"
 
-#: appTools/ToolCorners.py:605
+#: appTools/ToolCorners.py:608
 msgid "Will add corner markers to the selected Gerber file."
 msgstr "Va adăuga marcaje de colț în fișierul Gerber selectat."
 
-#: appTools/ToolCorners.py:621
+#: appTools/ToolCorners.py:624
 msgid "Drills in Corners"
 msgstr "Găuri in Colțuri"
 
-#: appTools/ToolCorners.py:638 appTools/ToolDblSided.py:928
+#: appTools/ToolCorners.py:641 appTools/ToolDblSided.py:928
 msgid "Create Excellon Object"
 msgstr "Crează un obiect Excellon"
 
-#: appTools/ToolCorners.py:641
+#: appTools/ToolCorners.py:644
 msgid "Will add drill holes in the center of the markers."
 msgstr "Se vor adăuga găuri în centrul marcajelor."
 
@@ -19920,11 +19974,11 @@ msgstr ""
 msgid "G91 coordinates not implemented ..."
 msgstr "Coordonatele G91 nu au fost implementate ..."
 
-#: defaults.py:867
+#: defaults.py:870
 msgid "Could not load defaults file."
 msgstr "Nu am putut incărca fişierul cu valori default."
 
-#: defaults.py:880
+#: defaults.py:883
 msgid "Failed to parse defaults file."
 msgstr "Parsarea fişierului cu valori default a eșuat."
 
@@ -21696,9 +21750,6 @@ msgstr ""
 #~ "Algoritm pt curățare de cupru:<BR><B>Standard</B>: Pas fix spre interior."
 #~ "<BR><B>Punct-samanta</B>: De la punctul samanta, spre expterior."
 #~ "<BR><B>Linii drepte</B>: Linii paralele."
-
-#~ msgid "Area"
-#~ msgstr "Aria"
 
 #~ msgid "Ref"
 #~ msgstr "Ref"

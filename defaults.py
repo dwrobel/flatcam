@@ -564,6 +564,7 @@ class FlatCAMDefaults:
         "tools_calc_vshape_cut_z": 0.05,
         "tools_calc_electro_length": 10.0,
         "tools_calc_electro_width": 10.0,
+        "tools_calc_electro_area": 100.0,
         "tools_calc_electro_cdensity": 13.0,
         "tools_calc_electro_growth": 10.0,
 
@@ -664,6 +665,7 @@ class FlatCAMDefaults:
         # Copper Thieving Tool
         "tools_copper_thieving_clearance": 0.25,
         "tools_copper_thieving_margin": 1.0,
+        "tools_copper_thieving_area": 0.1,
         "tools_copper_thieving_reference": 'itself',
         "tools_copper_thieving_box_type": 'rect',
         "tools_copper_thieving_circle_steps": 64,
@@ -677,6 +679,7 @@ class FlatCAMDefaults:
         "tools_copper_thieving_rb_margin": 1.0,
         "tools_copper_thieving_rb_thickness": 1.0,
         "tools_copper_thieving_mask_clearance": 0.0,
+        "tools_copper_thieving_geo_choice": 'b',
 
         # Fiducials Tool
         "tools_fiducials_dia": 1.0,

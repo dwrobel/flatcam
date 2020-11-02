@@ -2905,7 +2905,7 @@ class PaintUI:
         )
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.set_range(0.000, 10000.0000)
         self.new_tooldia_entry.setObjectName('p_tool_dia')
 
         self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
@@ -2999,7 +2999,7 @@ class PaintUI:
         )
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName('p_offset')
 
         grid4.addWidget(self.offset_label, 2, 0)
@@ -3095,7 +3095,7 @@ class PaintUI:
         )
         self.rest_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rest_offset_entry.set_precision(self.decimals)
-        self.rest_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.rest_offset_entry.set_range(-10000.0000, 10000.0000)
 
         grid4.addWidget(self.rest_offset_label, 17, 0)
         grid4.addWidget(self.rest_offset_entry, 17, 1)

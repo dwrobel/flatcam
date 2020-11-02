@@ -498,6 +498,7 @@ class PreferencesUIManager:
             "tools_calc_vshape_cut_z": self.ui.tools_defaults_form.tools_calculators_group.cut_z_entry,
             "tools_calc_electro_length": self.ui.tools_defaults_form.tools_calculators_group.pcblength_entry,
             "tools_calc_electro_width": self.ui.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
+            "tools_calc_electro_area": self.ui.tools_defaults_form.tools_calculators_group.area_entry,
             "tools_calc_electro_cdensity": self.ui.tools_defaults_form.tools_calculators_group.cdensity_entry,
             "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
 
@@ -596,6 +597,7 @@ class PreferencesUIManager:
             # Copper Thieving Tool
             "tools_copper_thieving_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_entry,
             "tools_copper_thieving_margin": self.ui.tools2_defaults_form.tools2_cfill_group.margin_entry,
+            "tools_copper_thieving_area": self.ui.tools2_defaults_form.tools2_cfill_group.area_entry,
             "tools_copper_thieving_reference": self.ui.tools2_defaults_form.tools2_cfill_group.reference_radio,
             "tools_copper_thieving_box_type": self.ui.tools2_defaults_form.tools2_cfill_group.bbox_type_radio,
             "tools_copper_thieving_circle_steps": self.ui.tools2_defaults_form.tools2_cfill_group.circlesteps_entry,
@@ -610,6 +612,7 @@ class PreferencesUIManager:
             "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
             "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
             "tools_copper_thieving_mask_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_ppm_entry,
+            "tools_copper_thieving_geo_choice": self.ui.tools2_defaults_form.tools2_cfill_group.ppm_choice_radio,
 
             # Fiducials Tool
             "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,

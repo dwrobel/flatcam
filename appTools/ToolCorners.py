@@ -339,9 +339,6 @@ class ToolCorners(AppTool):
         bl_state = self.ui.bl_cb.get_value()
         br_state = self.ui.br_cb.get_value()
 
-        if not tl_state and not tr_state and not bl_state and not br_state:
-            self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
-
         # get the Gerber object on which the corner marker will be inserted
         selection_index = self.ui.object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
@@ -351,6 +348,11 @@ class ToolCorners(AppTool):
         except Exception as e:
             log.debug("ToolCorners.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.call_source = "app"
+            return
+
+        if tl_state is False and tr_state is False and bl_state is False and br_state is False:
+            self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
             self.app.call_source = "app"
             return
 
@@ -393,6 +395,9 @@ class ToolCorners(AppTool):
         tools[1]['solid_geometry'] = []
 
         def obj_init(obj_inst, app_inst):
+            obj_inst.options.update({
+                'name': outname
+            })
             obj_inst.tools = deepcopy(tools)
             obj_inst.create_geometry()
             obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
@@ -401,12 +406,10 @@ class ToolCorners(AppTool):
                                                                        use_thread=False)
 
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
-
         ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
 
         self.app.call_source = "app"
-
-        if not ret_val == 'fail':
+        if ret_val == 'fail':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
         else:
             self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))

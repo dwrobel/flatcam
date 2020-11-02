@@ -772,7 +772,7 @@ class CalibUI:
         )
 
         self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
 
@@ -786,7 +786,7 @@ class CalibUI:
         )
 
         self.verz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.verz_entry.set_range(-9999.9999, 9999.9999)
+        self.verz_entry.set_range(-10000.0000, 10000.0000)
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
 
@@ -809,7 +809,7 @@ class CalibUI:
         )
 
         self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.toolchangez_entry.set_range(0.0000, 9999.9999)
+        self.toolchangez_entry.set_range(0.0000, 10000.0000)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -1164,7 +1164,7 @@ class CalibUI:
             _("Factor for Scale action over X axis.")
         )
         self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.scalex_entry.set_range(0, 9999.9999)
+        self.scalex_entry.set_range(0, 10000.0000)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
@@ -1176,7 +1176,7 @@ class CalibUI:
             _("Factor for Scale action over Y axis.")
         )
         self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.scaley_entry.set_range(0, 9999.9999)
+        self.scaley_entry.set_range(0, 10000.0000)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
@@ -1245,7 +1245,7 @@ class CalibUI:
         #     _("Final factor for Scale action over X axis.")
         # )
         # self.fin_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.fin_scalex_entry.set_range(0, 9999.9999)
+        # self.fin_scalex_entry.set_range(0, 10000.0000)
         # self.fin_scalex_entry.set_precision(self.decimals)
         # self.fin_scalex_entry.setSingleStep(0.1)
         #
@@ -1257,7 +1257,7 @@ class CalibUI:
         #     _("Final factor for Scale action over Y axis.")
         # )
         # self.fin_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.fin_scaley_entry.set_range(0, 9999.9999)
+        # self.fin_scaley_entry.set_range(0, 10000.0000)
         # self.fin_scaley_entry.set_precision(self.decimals)
         # self.fin_scaley_entry.setSingleStep(0.1)
         #
