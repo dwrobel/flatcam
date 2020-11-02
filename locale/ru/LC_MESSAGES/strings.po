@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-02 18:00+0200\n"
+"POT-Creation-Date: 2020-11-02 22:54+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -707,7 +707,7 @@ msgstr ""
 "Если это не удастся, то очистка от меди также потерпит неудачу.\n"
 "- Очистка - > обычная очистка от меди."
 
-#: appDatabase.py:599 appEditors/AppGerberEditor.py:2745
+#: appDatabase.py:599 appEditors/AppGerberEditor.py:2800
 #: appTools/ToolNCC.py:4083
 msgid "Clear"
 msgstr "Сбросить"
@@ -925,7 +925,7 @@ msgstr ""
 "для зачистки неровных краёв."
 
 #: appDatabase.py:700 appDatabase.py:758 appEditors/AppGeoEditor.py:614
-#: appEditors/AppGerberEditor.py:5295 appEditors/appGCodeEditor.py:687
+#: appEditors/AppGerberEditor.py:5352 appEditors/appGCodeEditor.py:687
 #: appGUI/ObjectUI.py:143 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:255
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:183
@@ -1627,8 +1627,8 @@ msgstr "Отмена добавление инструмента из БД."
 
 #: appEditors/AppExcEditor.py:231 appEditors/AppExcEditor.py:255
 #: appEditors/AppExcEditor.py:349 appEditors/AppExcEditor.py:566
-#: appEditors/AppExcEditor.py:769 appEditors/AppGerberEditor.py:245
-#: appEditors/AppGerberEditor.py:252
+#: appEditors/AppExcEditor.py:769 appEditors/AppGerberEditor.py:246
+#: appEditors/AppGerberEditor.py:253
 msgid "Click to place ..."
 msgstr "Нажмите для размещения ..."
 
@@ -1641,10 +1641,10 @@ msgstr "Чтобы добавить отверстие, сначала выбе�
 #: appEditors/AppExcEditor.py:1291 appEditors/AppExcEditor.py:1394
 #: appEditors/AppExcEditor.py:1505 appEditors/AppExcEditor.py:3125
 #: appEditors/AppExcEditor.py:3132 appEditors/AppGeoEditor.py:4256
-#: appEditors/AppGeoEditor.py:4270 appEditors/AppGerberEditor.py:1082
-#: appEditors/AppGerberEditor.py:1309 appEditors/AppGerberEditor.py:1494
-#: appEditors/AppGerberEditor.py:1763 appEditors/AppGerberEditor.py:4599
-#: appEditors/AppGerberEditor.py:4616 appGUI/MainGUI.py:2996
+#: appEditors/AppGeoEditor.py:4270 appEditors/AppGerberEditor.py:1097
+#: appEditors/AppGerberEditor.py:1337 appEditors/AppGerberEditor.py:1536
+#: appEditors/AppGerberEditor.py:1818 appEditors/AppGerberEditor.py:4656
+#: appEditors/AppGerberEditor.py:4673 appGUI/MainGUI.py:2996
 #: appGUI/MainGUI.py:3008 appTools/ToolAlignObjects.py:253
 #: appTools/ToolAlignObjects.py:275 app_Main.py:5092 app_Main.py:5246
 msgid "Done."
@@ -1658,8 +1658,8 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:373 appEditors/AppExcEditor.py:595
 #: appEditors/AppExcEditor.py:816 appEditors/AppExcEditor.py:1362
-#: appEditors/AppGerberEditor.py:475 appEditors/AppGerberEditor.py:1941
-#: appEditors/AppGerberEditor.py:1971 appGUI/MainGUI.py:3607
+#: appEditors/AppGerberEditor.py:477 appEditors/AppGerberEditor.py:1996
+#: appEditors/AppGerberEditor.py:2026 appGUI/MainGUI.py:3607
 msgid "Click on target location ..."
 msgstr "Нажмите на целевой точке ..."
 
@@ -1668,7 +1668,7 @@ msgid "Click on the Drill Circular Array Start position"
 msgstr "Нажмите на начальную позицию кругового массива отверстий"
 
 #: appEditors/AppExcEditor.py:414 appEditors/AppExcEditor.py:857
-#: appEditors/AppGerberEditor.py:520
+#: appEditors/AppGerberEditor.py:522
 msgid "The value is not Float. Check for comma instead of dot separator."
 msgstr ""
 "Это не значение с плавающей точкой. Проверьте наличие запятой в качестве "
@@ -1703,7 +1703,7 @@ msgstr ""
 msgid "Click on the Slot Circular Array Start position"
 msgstr "Нажмите на начальную позицию круглого массива слота"
 
-#: appEditors/AppExcEditor.py:860 appEditors/AppGerberEditor.py:523
+#: appEditors/AppExcEditor.py:860 appEditors/AppGerberEditor.py:525
 msgid "The value is mistyped. Check the value."
 msgstr "Значение введено с ошибкой. Проверьте значение."
 
@@ -1726,7 +1726,7 @@ msgstr ""
 msgid "Cancelled. Nothing selected."
 msgstr "Отмененный. Ничего не выбрано."
 
-#: appEditors/AppExcEditor.py:1350 appEditors/AppGerberEditor.py:1943
+#: appEditors/AppExcEditor.py:1350 appEditors/AppGerberEditor.py:1998
 msgid "Click on reference location ..."
 msgstr "Кликните на конечную точку ..."
 
@@ -1802,7 +1802,7 @@ msgid "Done. Drill(s) deleted."
 msgstr "Готово. Отверстия удалены."
 
 #: appEditors/AppExcEditor.py:3567 appEditors/AppExcEditor.py:3577
-#: appEditors/AppGerberEditor.py:5047
+#: appEditors/AppGerberEditor.py:5104
 msgid "Click on the circular array Center position"
 msgstr "Нажмите на центральную позицию кругового массива"
 
@@ -1811,7 +1811,7 @@ msgstr "Нажмите на центральную позицию кругово
 msgid "Excellon Editor"
 msgstr "Редактор Excellon"
 
-#: appEditors/AppExcEditor.py:3715 appEditors/AppGerberEditor.py:2465
+#: appEditors/AppExcEditor.py:3715 appEditors/AppGerberEditor.py:2520
 #: appEditors/appGCodeEditor.py:669
 msgid "Name:"
 msgstr "Имя:"
@@ -1932,12 +1932,12 @@ msgstr ""
 "Это может быть линейный X (Y) или круговой"
 
 #: appEditors/AppExcEditor.py:3876 appEditors/AppExcEditor.py:4090
-#: appEditors/AppGerberEditor.py:2778
+#: appEditors/AppGerberEditor.py:2833
 msgid "Linear"
 msgstr "Линейный"
 
 #: appEditors/AppExcEditor.py:3877 appEditors/AppExcEditor.py:4091
-#: appEditors/AppGerberEditor.py:2779
+#: appEditors/AppGerberEditor.py:2834
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:52
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:149
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:107
@@ -1964,14 +1964,14 @@ msgstr "Укажите, сколько свёрел должно быть в м�
 
 #: appEditors/AppExcEditor.py:3904 appEditors/AppExcEditor.py:3954
 #: appEditors/AppExcEditor.py:4026 appEditors/AppExcEditor.py:4119
-#: appEditors/AppExcEditor.py:4170 appEditors/AppGerberEditor.py:1577
-#: appEditors/AppGerberEditor.py:2807 appEditors/AppGerberEditor.py:2856
+#: appEditors/AppExcEditor.py:4170 appEditors/AppGerberEditor.py:1632
+#: appEditors/AppGerberEditor.py:2862 appEditors/AppGerberEditor.py:2911
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:178
 msgid "Direction"
 msgstr "Направление"
 
 #: appEditors/AppExcEditor.py:3906 appEditors/AppExcEditor.py:4121
-#: appEditors/AppGerberEditor.py:2809
+#: appEditors/AppGerberEditor.py:2864
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:86
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:234
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:123
@@ -1987,7 +1987,7 @@ msgstr ""
 "- 'Угол' - произвольный угол наклона массива"
 
 #: appEditors/AppExcEditor.py:3913 appEditors/AppExcEditor.py:4035
-#: appEditors/AppExcEditor.py:4128 appEditors/AppGerberEditor.py:2816
+#: appEditors/AppExcEditor.py:4128 appEditors/AppGerberEditor.py:2871
 #: appGUI/GUIElements.py:4245 appGUI/MainGUI.py:478 appGUI/MainGUI.py:671
 #: appGUI/MainGUI.py:4432 appGUI/MainGUI.py:4698
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
@@ -2000,7 +2000,7 @@ msgid "X"
 msgstr "X"
 
 #: appEditors/AppExcEditor.py:3914 appEditors/AppExcEditor.py:4036
-#: appEditors/AppExcEditor.py:4129 appEditors/AppGerberEditor.py:2817
+#: appEditors/AppExcEditor.py:4129 appEditors/AppGerberEditor.py:2872
 #: appGUI/GUIElements.py:4252 appGUI/MainGUI.py:481 appGUI/MainGUI.py:4433
 #: appGUI/MainGUI.py:4699
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
@@ -2016,9 +2016,9 @@ msgstr "Y"
 #: appEditors/AppExcEditor.py:3966 appEditors/AppExcEditor.py:4037
 #: appEditors/AppExcEditor.py:4041 appEditors/AppExcEditor.py:4130
 #: appEditors/AppExcEditor.py:4148 appEditors/AppExcEditor.py:4182
-#: appEditors/AppGeoEditor.py:686 appEditors/AppGerberEditor.py:2818
-#: appEditors/AppGerberEditor.py:2835 appEditors/AppGerberEditor.py:2871
-#: appEditors/AppGerberEditor.py:5367
+#: appEditors/AppGeoEditor.py:686 appEditors/AppGerberEditor.py:2873
+#: appEditors/AppGerberEditor.py:2890 appEditors/AppGerberEditor.py:2926
+#: appEditors/AppGerberEditor.py:5424
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:94
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:113
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:189
@@ -2034,7 +2034,7 @@ msgid "Angle"
 msgstr "Угол"
 
 #: appEditors/AppExcEditor.py:3919 appEditors/AppExcEditor.py:4134
-#: appEditors/AppGerberEditor.py:2822
+#: appEditors/AppGerberEditor.py:2877
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:100
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:248
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:137
@@ -2042,7 +2042,7 @@ msgid "Pitch"
 msgstr "Шаг"
 
 #: appEditors/AppExcEditor.py:3921 appEditors/AppExcEditor.py:4136
-#: appEditors/AppGerberEditor.py:2824
+#: appEditors/AppGerberEditor.py:2879
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:102
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:250
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:139
@@ -2062,7 +2062,7 @@ msgstr ""
 "Максимальное значение:  360.00 градусов."
 
 #: appEditors/AppExcEditor.py:3955 appEditors/AppExcEditor.py:4171
-#: appEditors/AppGerberEditor.py:2858
+#: appEditors/AppGerberEditor.py:2913
 msgid ""
 "Direction for circular array.Can be CW = clockwise or CCW = counter "
 "clockwise."
@@ -2071,7 +2071,7 @@ msgstr ""
 "CCW = против часовой стрелки."
 
 #: appEditors/AppExcEditor.py:3962 appEditors/AppExcEditor.py:4178
-#: appEditors/AppGerberEditor.py:2866
+#: appEditors/AppGerberEditor.py:2921
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:136
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:286
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:145
@@ -2081,7 +2081,7 @@ msgid "CW"
 msgstr "CW"
 
 #: appEditors/AppExcEditor.py:3963 appEditors/AppExcEditor.py:4179
-#: appEditors/AppGerberEditor.py:2867
+#: appEditors/AppGerberEditor.py:2922
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:137
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:287
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:146
@@ -2091,7 +2091,7 @@ msgid "CCW"
 msgstr "CCW"
 
 #: appEditors/AppExcEditor.py:3967 appEditors/AppExcEditor.py:4183
-#: appEditors/AppGerberEditor.py:2873
+#: appEditors/AppGerberEditor.py:2928
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:115
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:145
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:265
@@ -2178,13 +2178,13 @@ msgid "Specify how many slots to be in the array."
 msgstr "Укажите, сколько пазов должно быть в массиве."
 
 #: appEditors/AppExcEditor.py:4203 appEditors/AppGeoEditor.py:3311
-#: appEditors/AppGerberEditor.py:2895 appEditors/appGCodeEditor.py:753
+#: appEditors/AppGerberEditor.py:2950 appEditors/appGCodeEditor.py:753
 #: appGUI/MainGUI.py:346 appGUI/MainGUI.py:1696 app_Main.py:2494
 msgid "Exit Editor"
 msgstr "Выход Из Редактора"
 
 #: appEditors/AppExcEditor.py:4206 appEditors/AppGeoEditor.py:3314
-#: appEditors/AppGerberEditor.py:2898 appEditors/appGCodeEditor.py:756
+#: appEditors/AppGerberEditor.py:2953 appEditors/appGCodeEditor.py:756
 msgid "Exit from Editor."
 msgstr "Выход из редактора."
 
@@ -2213,11 +2213,11 @@ msgstr ""
 "- 'Квадрат:' угол встречается под острым углом для внешнего буфера.\n"
 "- 'Скошенный:' линия, напрямую соединяющая элементы, встречающиеся в углу"
 
-#: appEditors/AppGeoEditor.py:96 appEditors/AppGerberEditor.py:2634
+#: appEditors/AppGeoEditor.py:96 appEditors/AppGerberEditor.py:2689
 msgid "Round"
 msgstr "Круглый"
 
-#: appEditors/AppGeoEditor.py:97 appEditors/AppGerberEditor.py:2635
+#: appEditors/AppGeoEditor.py:97 appEditors/AppGerberEditor.py:2690
 #: appGUI/ObjectUI.py:1603
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:223
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:68
@@ -2239,7 +2239,7 @@ msgstr "Круглый"
 msgid "Square"
 msgstr "Квадрат"
 
-#: appEditors/AppGeoEditor.py:98 appEditors/AppGerberEditor.py:2636
+#: appEditors/AppGeoEditor.py:98 appEditors/AppGerberEditor.py:2691
 msgid "Beveled"
 msgstr "Скошенный"
 
@@ -2264,7 +2264,7 @@ msgstr "Буфер"
 #: appEditors/AppGeoEditor.py:146 appEditors/AppGeoEditor.py:163
 #: appEditors/AppGeoEditor.py:180 appEditors/AppGeoEditor.py:2988
 #: appEditors/AppGeoEditor.py:3016 appEditors/AppGeoEditor.py:3044
-#: appEditors/AppGerberEditor.py:5100
+#: appEditors/AppGerberEditor.py:5157
 msgid "Buffer distance value is missing or wrong format. Add it and retry."
 msgstr ""
 "Отсутствует значение расстояния буфера или оно имеет неправильный формат. "
@@ -2278,8 +2278,8 @@ msgstr "Инструмент Ввода Текста"
 msgid "Font"
 msgstr "Шрифт"
 
-#: appEditors/AppGeoEditor.py:316 appEditors/AppGerberEditor.py:2491
-#: appEditors/AppGerberEditor.py:3947 appGUI/ObjectUI.py:316
+#: appEditors/AppGeoEditor.py:316 appEditors/AppGerberEditor.py:2546
+#: appEditors/AppGerberEditor.py:4002 appGUI/ObjectUI.py:316
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:103
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
@@ -2343,7 +2343,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:585 appEditors/AppGeoEditor.py:1074
 #: appEditors/AppGeoEditor.py:2976 appEditors/AppGeoEditor.py:3004
 #: appEditors/AppGeoEditor.py:3032 appEditors/AppGeoEditor.py:4413
-#: appEditors/AppGerberEditor.py:5755
+#: appEditors/AppGerberEditor.py:5812
 msgid "Cancelled. No shape selected."
 msgstr "Отменено. Форма не выбрана."
 
@@ -2356,26 +2356,26 @@ msgid "Tools"
 msgstr "Инструменты"
 
 #: appEditors/AppGeoEditor.py:609 appEditors/AppGeoEditor.py:1038
-#: appEditors/AppGerberEditor.py:5290 appEditors/AppGerberEditor.py:5719
+#: appEditors/AppGerberEditor.py:5347 appEditors/AppGerberEditor.py:5776
 #: appGUI/MainGUI.py:695 appGUI/MainGUI.py:1075 appGUI/MainGUI.py:2244
 #: appTools/ToolTransform.py:85
 msgid "Transform Tool"
 msgstr "Трансформация"
 
 #: appEditors/AppGeoEditor.py:610 appEditors/AppGeoEditor.py:702
-#: appEditors/AppGerberEditor.py:5291 appEditors/AppGerberEditor.py:5383
+#: appEditors/AppGerberEditor.py:5348 appEditors/AppGerberEditor.py:5440
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:88
 #: appTools/ToolTransform.py:513 appTools/ToolTransform.py:633
 msgid "Rotate"
 msgstr "Вращение"
 
-#: appEditors/AppGeoEditor.py:611 appEditors/AppGerberEditor.py:5292
+#: appEditors/AppGeoEditor.py:611 appEditors/AppGerberEditor.py:5349
 #: appTools/ToolTransform.py:514
 msgid "Skew/Shear"
 msgstr "Наклон/Сдвиг"
 
-#: appEditors/AppGeoEditor.py:612 appEditors/AppGerberEditor.py:2683
-#: appEditors/AppGerberEditor.py:5293 appGUI/MainGUI.py:776
+#: appEditors/AppGeoEditor.py:612 appEditors/AppGerberEditor.py:2738
+#: appEditors/AppGerberEditor.py:5350 appGUI/MainGUI.py:776
 #: appGUI/MainGUI.py:1197 appGUI/MainGUI.py:1664 appGUI/MainGUI.py:2366
 #: appGUI/MainGUI.py:4935 appGUI/ObjectUI.py:125
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:147
@@ -2383,13 +2383,13 @@ msgstr "Наклон/Сдвиг"
 msgid "Scale"
 msgstr "Масштаб"
 
-#: appEditors/AppGeoEditor.py:613 appEditors/AppGerberEditor.py:5294
+#: appEditors/AppGeoEditor.py:613 appEditors/AppGerberEditor.py:5351
 #: appTools/ToolTransform.py:516
 msgid "Mirror (Flip)"
 msgstr "Зеркалирование (отражение)"
 
-#: appEditors/AppGeoEditor.py:615 appEditors/AppGerberEditor.py:2643
-#: appEditors/AppGerberEditor.py:5296 appGUI/MainGUI.py:773
+#: appEditors/AppGeoEditor.py:615 appEditors/AppGerberEditor.py:2698
+#: appEditors/AppGerberEditor.py:5353 appGUI/MainGUI.py:773
 #: appGUI/MainGUI.py:1195 appGUI/MainGUI.py:1619 appGUI/MainGUI.py:1662
 #: appGUI/MainGUI.py:2364 appGUI/MainGUI.py:4926
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:212
@@ -2397,7 +2397,7 @@ msgstr "Зеркалирование (отражение)"
 msgid "Buffer"
 msgstr "Буфер"
 
-#: appEditors/AppGeoEditor.py:646 appEditors/AppGerberEditor.py:5327
+#: appEditors/AppGeoEditor.py:646 appEditors/AppGerberEditor.py:5384
 #: appGUI/GUIElements.py:3674
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
@@ -2406,7 +2406,7 @@ msgstr "Буфер"
 msgid "Reference"
 msgstr "Ссылка"
 
-#: appEditors/AppGeoEditor.py:648 appEditors/AppGerberEditor.py:5329
+#: appEditors/AppGeoEditor.py:648 appEditors/AppGerberEditor.py:5386
 msgid ""
 "The reference point for Rotate, Skew, Scale, Mirror.\n"
 "Can be:\n"
@@ -2423,7 +2423,7 @@ msgstr ""
 "- Точка -> пользовательская точка, заданная координатами X,Y.\n"
 "- Мин Выделение -> точка (minx, miny) ограничивающего поля выделения"
 
-#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5337
+#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5394
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appTools/ToolCalibration.py:126 appTools/ToolCalibration.py:127
 #: appTools/ToolTransform.py:557
@@ -2431,7 +2431,7 @@ msgid "Origin"
 msgstr "Источник"
 
 #: appEditors/AppGeoEditor.py:656 appEditors/AppGeoEditor.py:1047
-#: appEditors/AppGerberEditor.py:5337 appEditors/AppGerberEditor.py:5728
+#: appEditors/AppGerberEditor.py:5394 appEditors/AppGerberEditor.py:5785
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:250
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:311
@@ -2442,7 +2442,7 @@ msgstr "Источник"
 msgid "Selection"
 msgstr "Выбор"
 
-#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5337
+#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5394
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:60
@@ -2450,12 +2450,12 @@ msgstr "Выбор"
 msgid "Point"
 msgstr "Точка"
 
-#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5337
+#: appEditors/AppGeoEditor.py:656 appEditors/AppGerberEditor.py:5394
 msgid "Minimum"
 msgstr "Минимальное расстояние"
 
 #: appEditors/AppGeoEditor.py:662 appEditors/AppGeoEditor.py:958
-#: appEditors/AppGerberEditor.py:5343 appEditors/AppGerberEditor.py:5639
+#: appEditors/AppGerberEditor.py:5400 appEditors/AppGerberEditor.py:5696
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:131
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
@@ -2465,14 +2465,14 @@ msgstr "Минимальное расстояние"
 msgid "Value"
 msgstr "Значение"
 
-#: appEditors/AppGeoEditor.py:664 appEditors/AppGerberEditor.py:5345
+#: appEditors/AppGeoEditor.py:664 appEditors/AppGerberEditor.py:5402
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:62
 #: appTools/ToolTransform.py:565
 msgid "A point of reference in format X,Y."
 msgstr "Точка привязки в формате X,Y."
 
-#: appEditors/AppGeoEditor.py:671 appEditors/AppGerberEditor.py:2586
-#: appEditors/AppGerberEditor.py:5352 appGUI/ObjectUI.py:2375
+#: appEditors/AppGeoEditor.py:671 appEditors/AppGerberEditor.py:2641
+#: appEditors/AppGerberEditor.py:5409 appGUI/ObjectUI.py:2375
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:288
 #: appTools/ToolCopperThieving.py:1666 appTools/ToolDblSided.py:709
 #: appTools/ToolDblSided.py:897 appTools/ToolNCC.py:63
@@ -2482,12 +2482,12 @@ msgstr "Точка привязки в формате X,Y."
 msgid "Add"
 msgstr "Добавить"
 
-#: appEditors/AppGeoEditor.py:673 appEditors/AppGerberEditor.py:5354
+#: appEditors/AppGeoEditor.py:673 appEditors/AppGerberEditor.py:5411
 #: appTools/ToolTransform.py:574
 msgid "Add point coordinates from clipboard."
 msgstr "Координаты скопированы в буфер обмена."
 
-#: appEditors/AppGeoEditor.py:688 appEditors/AppGerberEditor.py:5369
+#: appEditors/AppGeoEditor.py:688 appEditors/AppGerberEditor.py:5426
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:98
 #: appTools/ToolTransform.py:619
 msgid ""
@@ -2501,7 +2501,7 @@ msgstr ""
 "Положительные числа для движения по часовой стрелке.\n"
 "Отрицательные числа для движения против часовой стрелки."
 
-#: appEditors/AppGeoEditor.py:704 appEditors/AppGerberEditor.py:5385
+#: appEditors/AppGeoEditor.py:704 appEditors/AppGerberEditor.py:5442
 #: appTools/ToolTransform.py:635
 msgid ""
 "Rotate the selected object(s).\n"
@@ -2513,7 +2513,7 @@ msgstr ""
 "ограничительная рамка для всех выбранных объектов."
 
 #: appEditors/AppGeoEditor.py:724 appEditors/AppGeoEditor.py:786
-#: appEditors/AppGerberEditor.py:5405 appEditors/AppGerberEditor.py:5467
+#: appEditors/AppGerberEditor.py:5462 appEditors/AppGerberEditor.py:5524
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:112
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:151
 #: appTools/ToolTransform.py:655 appTools/ToolTransform.py:717
@@ -2521,14 +2521,14 @@ msgid "Link"
 msgstr "Ссылка"
 
 #: appEditors/AppGeoEditor.py:726 appEditors/AppGeoEditor.py:788
-#: appEditors/AppGerberEditor.py:5407 appEditors/AppGerberEditor.py:5469
+#: appEditors/AppGerberEditor.py:5464 appEditors/AppGerberEditor.py:5526
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:114
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:153
 #: appTools/ToolTransform.py:657 appTools/ToolTransform.py:719
 msgid "Link the Y entry to X entry and copy its content."
 msgstr "Соедините запись Y с записью X и скопируйте ее содержимое."
 
-#: appEditors/AppGeoEditor.py:731 appEditors/AppGerberEditor.py:5412
+#: appEditors/AppGeoEditor.py:731 appEditors/AppGerberEditor.py:5469
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:151
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:124
 #: appTools/ToolFilm.py:1046 appTools/ToolTransform.py:662
@@ -2536,7 +2536,7 @@ msgid "X angle"
 msgstr "Угол наклона X"
 
 #: appEditors/AppGeoEditor.py:733 appEditors/AppGeoEditor.py:754
-#: appEditors/AppGerberEditor.py:5414 appEditors/AppGerberEditor.py:5435
+#: appEditors/AppGerberEditor.py:5471 appEditors/AppGerberEditor.py:5492
 #: appTools/ToolTransform.py:664 appTools/ToolTransform.py:685
 msgid ""
 "Angle for Skew action, in degrees.\n"
@@ -2545,13 +2545,13 @@ msgstr ""
 "Угол наклона в градусах.\n"
 "Число с плавающей запятой между -360 и 360."
 
-#: appEditors/AppGeoEditor.py:741 appEditors/AppGerberEditor.py:5422
+#: appEditors/AppGeoEditor.py:741 appEditors/AppGerberEditor.py:5479
 #: appTools/ToolTransform.py:672
 msgid "Skew X"
 msgstr "Наклон X"
 
 #: appEditors/AppGeoEditor.py:743 appEditors/AppGeoEditor.py:764
-#: appEditors/AppGerberEditor.py:5424 appEditors/AppGerberEditor.py:5445
+#: appEditors/AppGerberEditor.py:5481 appEditors/AppGerberEditor.py:5502
 #: appTools/ToolTransform.py:674 appTools/ToolTransform.py:695
 msgid ""
 "Skew/shear the selected object(s).\n"
@@ -2562,38 +2562,38 @@ msgstr ""
 "Точка отсчета - середина\n"
 "ограничительной рамки для всех выбранных объектов."
 
-#: appEditors/AppGeoEditor.py:752 appEditors/AppGerberEditor.py:5433
+#: appEditors/AppGeoEditor.py:752 appEditors/AppGerberEditor.py:5490
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:160
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:138
 #: appTools/ToolFilm.py:1055 appTools/ToolTransform.py:683
 msgid "Y angle"
 msgstr "Угол наклона Y"
 
-#: appEditors/AppGeoEditor.py:762 appEditors/AppGerberEditor.py:5443
+#: appEditors/AppGeoEditor.py:762 appEditors/AppGerberEditor.py:5500
 #: appTools/ToolTransform.py:693
 msgid "Skew Y"
 msgstr "Наклон Y"
 
-#: appEditors/AppGeoEditor.py:793 appEditors/AppGerberEditor.py:5474
+#: appEditors/AppGeoEditor.py:793 appEditors/AppGerberEditor.py:5531
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:120
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:162
 #: appTools/ToolFilm.py:1002 appTools/ToolTransform.py:724
 msgid "X factor"
 msgstr "Коэффициент X"
 
-#: appEditors/AppGeoEditor.py:795 appEditors/AppGerberEditor.py:5476
+#: appEditors/AppGeoEditor.py:795 appEditors/AppGerberEditor.py:5533
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:164
 #: appTools/ToolTransform.py:726
 msgid "Factor for scaling on X axis."
 msgstr "Коэффициент масштабирования по оси X."
 
-#: appEditors/AppGeoEditor.py:802 appEditors/AppGerberEditor.py:5483
+#: appEditors/AppGeoEditor.py:802 appEditors/AppGerberEditor.py:5540
 #: appTools/ToolTransform.py:733
 msgid "Scale X"
 msgstr "Масштаб Х"
 
 #: appEditors/AppGeoEditor.py:804 appEditors/AppGeoEditor.py:824
-#: appEditors/AppGerberEditor.py:5485 appEditors/AppGerberEditor.py:5505
+#: appEditors/AppGerberEditor.py:5542 appEditors/AppGerberEditor.py:5562
 #: appTools/ToolTransform.py:735 appTools/ToolTransform.py:755
 msgid ""
 "Scale the selected object(s).\n"
@@ -2604,59 +2604,59 @@ msgstr ""
 "Точка отсчета зависит от\n"
 "состояние флажка Scale Reference."
 
-#: appEditors/AppGeoEditor.py:813 appEditors/AppGerberEditor.py:5494
+#: appEditors/AppGeoEditor.py:813 appEditors/AppGerberEditor.py:5551
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:129
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:175
 #: appTools/ToolFilm.py:1011 appTools/ToolTransform.py:744
 msgid "Y factor"
 msgstr "Коэффициент Y"
 
-#: appEditors/AppGeoEditor.py:815 appEditors/AppGerberEditor.py:5496
+#: appEditors/AppGeoEditor.py:815 appEditors/AppGerberEditor.py:5553
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:177
 #: appTools/ToolTransform.py:746
 msgid "Factor for scaling on Y axis."
 msgstr "Коэффициент масштабирования по оси Y."
 
-#: appEditors/AppGeoEditor.py:822 appEditors/AppGerberEditor.py:5503
+#: appEditors/AppGeoEditor.py:822 appEditors/AppGerberEditor.py:5560
 #: appTools/ToolTransform.py:753
 msgid "Scale Y"
 msgstr "Масштаб Y"
 
-#: appEditors/AppGeoEditor.py:849 appEditors/AppGerberEditor.py:5530
+#: appEditors/AppGeoEditor.py:849 appEditors/AppGerberEditor.py:5587
 #: appTools/ToolTransform.py:780
 msgid "Flip on X"
 msgstr "Отразить по X"
 
 #: appEditors/AppGeoEditor.py:851 appEditors/AppGeoEditor.py:856
-#: appEditors/AppGerberEditor.py:5532 appEditors/AppGerberEditor.py:5537
+#: appEditors/AppGerberEditor.py:5589 appEditors/AppGerberEditor.py:5594
 #: appTools/ToolTransform.py:782 appTools/ToolTransform.py:787
 msgid "Flip the selected object(s) over the X axis."
 msgstr "Отражает выбранные фигуры по оси X."
 
-#: appEditors/AppGeoEditor.py:854 appEditors/AppGerberEditor.py:5535
+#: appEditors/AppGeoEditor.py:854 appEditors/AppGerberEditor.py:5592
 #: appTools/ToolTransform.py:785
 msgid "Flip on Y"
 msgstr "Отразить по Y"
 
-#: appEditors/AppGeoEditor.py:874 appEditors/AppGerberEditor.py:5555
+#: appEditors/AppGeoEditor.py:874 appEditors/AppGerberEditor.py:5612
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:191
 #: appTools/ToolTransform.py:805
 msgid "X val"
 msgstr "Значение X"
 
-#: appEditors/AppGeoEditor.py:876 appEditors/AppGerberEditor.py:5557
+#: appEditors/AppGeoEditor.py:876 appEditors/AppGerberEditor.py:5614
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:193
 #: appTools/ToolTransform.py:807
 msgid "Distance to offset on X axis. In current units."
 msgstr "Расстояние смещения по оси X. В текущих единицах."
 
-#: appEditors/AppGeoEditor.py:883 appEditors/AppGerberEditor.py:5564
+#: appEditors/AppGeoEditor.py:883 appEditors/AppGerberEditor.py:5621
 #: appTools/ToolTransform.py:814
 msgid "Offset X"
 msgstr "Смещение Х"
 
 #: appEditors/AppGeoEditor.py:885 appEditors/AppGeoEditor.py:905
-#: appEditors/AppGerberEditor.py:5566 appEditors/AppGerberEditor.py:5586
+#: appEditors/AppGerberEditor.py:5623 appEditors/AppGerberEditor.py:5643
 #: appTools/ToolTransform.py:816 appTools/ToolTransform.py:836
 msgid ""
 "Offset the selected object(s).\n"
@@ -2667,24 +2667,24 @@ msgstr ""
 "Точка отсчета - середина\n"
 "ограничительной рамки для всех выбранных объектов.\n"
 
-#: appEditors/AppGeoEditor.py:894 appEditors/AppGerberEditor.py:5575
+#: appEditors/AppGeoEditor.py:894 appEditors/AppGerberEditor.py:5632
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:204
 #: appTools/ToolTransform.py:825
 msgid "Y val"
 msgstr "Значение Y"
 
-#: appEditors/AppGeoEditor.py:896 appEditors/AppGerberEditor.py:5577
+#: appEditors/AppGeoEditor.py:896 appEditors/AppGerberEditor.py:5634
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:206
 #: appTools/ToolTransform.py:827
 msgid "Distance to offset on Y axis. In current units."
 msgstr "Расстояние смещения по оси Y. В текущих единицах."
 
-#: appEditors/AppGeoEditor.py:903 appEditors/AppGerberEditor.py:5584
+#: appEditors/AppGeoEditor.py:903 appEditors/AppGerberEditor.py:5641
 #: appTools/ToolTransform.py:834
 msgid "Offset Y"
 msgstr "Смещение Y"
 
-#: appEditors/AppGeoEditor.py:923 appEditors/AppGerberEditor.py:5604
+#: appEditors/AppGeoEditor.py:923 appEditors/AppGerberEditor.py:5661
 #: appGUI/ObjectUI.py:462 appGUI/ObjectUI.py:499
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:67
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:142
@@ -2694,7 +2694,7 @@ msgstr "Смещение Y"
 msgid "Rounded"
 msgstr "Закругленный"
 
-#: appEditors/AppGeoEditor.py:925 appEditors/AppGerberEditor.py:5606
+#: appEditors/AppGeoEditor.py:925 appEditors/AppGerberEditor.py:5663
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:218
 #: appTools/ToolTransform.py:856
 msgid ""
@@ -2708,14 +2708,14 @@ msgstr ""
 "Если не проверить, то буфер будет следовать точной геометрии\n"
 "буферизованной формы."
 
-#: appEditors/AppGeoEditor.py:933 appEditors/AppGerberEditor.py:5614
+#: appEditors/AppGeoEditor.py:933 appEditors/AppGerberEditor.py:5671
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:226
 #: appTools/ToolDistance.py:409 appTools/ToolDistanceMin.py:199
 #: appTools/ToolTransform.py:864
 msgid "Distance"
 msgstr "Расстояние"
 
-#: appEditors/AppGeoEditor.py:935 appEditors/AppGerberEditor.py:5616
+#: appEditors/AppGeoEditor.py:935 appEditors/AppGerberEditor.py:5673
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:228
 #: appTools/ToolTransform.py:866
 msgid ""
@@ -2729,12 +2729,12 @@ msgstr ""
 "Каждый геометрический элемент объекта будет увеличен\n"
 "или уменьшается с помощью \"расстояния\"."
 
-#: appEditors/AppGeoEditor.py:947 appEditors/AppGerberEditor.py:5628
+#: appEditors/AppGeoEditor.py:947 appEditors/AppGerberEditor.py:5685
 #: appTools/ToolTransform.py:878
 msgid "Buffer D"
 msgstr "Буфер D"
 
-#: appEditors/AppGeoEditor.py:949 appEditors/AppGerberEditor.py:5630
+#: appEditors/AppGeoEditor.py:949 appEditors/AppGerberEditor.py:5687
 #: appTools/ToolTransform.py:880
 msgid ""
 "Create the buffer effect on each geometry,\n"
@@ -2743,7 +2743,7 @@ msgstr ""
 "Создаёт буферный эффект для каждой геометрии,\n"
 "элемента из выбранного объекта, используя расстояние."
 
-#: appEditors/AppGeoEditor.py:960 appEditors/AppGerberEditor.py:5641
+#: appEditors/AppGeoEditor.py:960 appEditors/AppGerberEditor.py:5698
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:245
 #: appTools/ToolTransform.py:891
 msgid ""
@@ -2759,12 +2759,12 @@ msgstr ""
 "или уменьшен, чтобы соответствовать \"Значению\". Значение в процентах\n"
 "исходного размера."
 
-#: appEditors/AppGeoEditor.py:973 appEditors/AppGerberEditor.py:5654
+#: appEditors/AppGeoEditor.py:973 appEditors/AppGerberEditor.py:5711
 #: appTools/ToolTransform.py:904
 msgid "Buffer F"
 msgstr "Буфер F"
 
-#: appEditors/AppGeoEditor.py:975 appEditors/AppGerberEditor.py:5656
+#: appEditors/AppGeoEditor.py:975 appEditors/AppGerberEditor.py:5713
 #: appTools/ToolTransform.py:906
 msgid ""
 "Create the buffer effect on each geometry,\n"
@@ -2773,7 +2773,7 @@ msgstr ""
 "Создаёт буферный эффект для каждой геометрии,\n"
 "элемента из выбранного объекта, используя коэффициент."
 
-#: appEditors/AppGeoEditor.py:1046 appEditors/AppGerberEditor.py:5727
+#: appEditors/AppGeoEditor.py:1046 appEditors/AppGerberEditor.py:5784
 #: appGUI/ObjectUI.py:1557 appGUI/preferences/tools/Tools2CalPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:70
@@ -2787,42 +2787,42 @@ msgstr "Объект"
 #: appEditors/AppGeoEditor.py:1110 appEditors/AppGeoEditor.py:1133
 #: appEditors/AppGeoEditor.py:1279 appEditors/AppGeoEditor.py:1304
 #: appEditors/AppGeoEditor.py:1339 appEditors/AppGeoEditor.py:1374
-#: appEditors/AppGeoEditor.py:1405 appEditors/AppGerberEditor.py:5791
-#: appEditors/AppGerberEditor.py:5814 appEditors/AppGerberEditor.py:5959
-#: appEditors/AppGerberEditor.py:5992 appEditors/AppGerberEditor.py:6035
-#: appEditors/AppGerberEditor.py:6076 appEditors/AppGerberEditor.py:6112
+#: appEditors/AppGeoEditor.py:1405 appEditors/AppGerberEditor.py:5848
+#: appEditors/AppGerberEditor.py:5871 appEditors/AppGerberEditor.py:6016
+#: appEditors/AppGerberEditor.py:6049 appEditors/AppGerberEditor.py:6092
+#: appEditors/AppGerberEditor.py:6133 appEditors/AppGerberEditor.py:6169
 msgid "No shape selected."
 msgstr "Фигура не выбрана."
 
-#: appEditors/AppGeoEditor.py:1118 appEditors/AppGerberEditor.py:5799
+#: appEditors/AppGeoEditor.py:1118 appEditors/AppGerberEditor.py:5856
 #: appTools/ToolTransform.py:150
 msgid "Incorrect format for Point value. Needs format X,Y"
 msgstr "Неправильный формат для значения точки. Требуется формат X,Y"
 
-#: appEditors/AppGeoEditor.py:1143 appEditors/AppGerberEditor.py:5824
+#: appEditors/AppGeoEditor.py:1143 appEditors/AppGerberEditor.py:5881
 #: appTools/ToolTransform.py:167
 msgid "Rotate transformation can not be done for a value of 0."
 msgstr "Трансформация поворота не может быть выполнена для значения 0."
 
 #: appEditors/AppGeoEditor.py:1201 appEditors/AppGeoEditor.py:1222
-#: appEditors/AppGerberEditor.py:5882 appEditors/AppGerberEditor.py:5903
+#: appEditors/AppGerberEditor.py:5939 appEditors/AppGerberEditor.py:5960
 #: appTools/ToolTransform.py:225 appTools/ToolTransform.py:246
 msgid "Scale transformation can not be done for a factor of 0 or 1."
 msgstr ""
 "Преобразование масштаба не может быть выполнено с коэффициентом 0 или 1."
 
 #: appEditors/AppGeoEditor.py:1235 appEditors/AppGeoEditor.py:1244
-#: appEditors/AppGerberEditor.py:5916 appEditors/AppGerberEditor.py:5925
+#: appEditors/AppGerberEditor.py:5973 appEditors/AppGerberEditor.py:5982
 #: appTools/ToolTransform.py:259 appTools/ToolTransform.py:268
 msgid "Offset transformation can not be done for a value of 0."
 msgstr "Трансформация смещения не может быть выполнена для значения 0."
 
-#: appEditors/AppGeoEditor.py:1274 appEditors/AppGerberEditor.py:5962
+#: appEditors/AppGeoEditor.py:1274 appEditors/AppGerberEditor.py:6019
 #: appTools/ToolTransform.py:296
 msgid "Appying Rotate"
 msgstr "Применение поворота"
 
-#: appEditors/AppGeoEditor.py:1287 appEditors/AppGerberEditor.py:5974
+#: appEditors/AppGeoEditor.py:1287 appEditors/AppGerberEditor.py:6031
 msgid "Done. Rotate completed."
 msgstr "Готово. Поворот выполнен."
 
@@ -2830,17 +2830,17 @@ msgstr "Готово. Поворот выполнен."
 msgid "Rotation action was not executed"
 msgstr "Вращение не было выполнено"
 
-#: appEditors/AppGeoEditor.py:1307 appEditors/AppGerberEditor.py:5995
+#: appEditors/AppGeoEditor.py:1307 appEditors/AppGerberEditor.py:6052
 #: appTools/ToolTransform.py:322
 msgid "Applying Flip"
 msgstr "Применение отражения"
 
-#: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6007
+#: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6064
 #: appTools/ToolTransform.py:339
 msgid "Flip on the Y axis done"
 msgstr "Отражение по оси Y завершено"
 
-#: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6015
+#: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6072
 #: appTools/ToolTransform.py:348
 msgid "Flip on the X axis done"
 msgstr "Отражение по оси Х завершёно"
@@ -2849,16 +2849,16 @@ msgstr "Отражение по оси Х завершёно"
 msgid "Flip action was not executed"
 msgstr "Операция переворота не была выполнена"
 
-#: appEditors/AppGeoEditor.py:1342 appEditors/AppGerberEditor.py:6038
+#: appEditors/AppGeoEditor.py:1342 appEditors/AppGerberEditor.py:6095
 #: appTools/ToolTransform.py:369
 msgid "Applying Skew"
 msgstr "Применение наклона"
 
-#: appEditors/AppGeoEditor.py:1351 appEditors/AppGerberEditor.py:6054
+#: appEditors/AppGeoEditor.py:1351 appEditors/AppGerberEditor.py:6111
 msgid "Skew on the X axis done"
 msgstr "Наклон по оси X выполнен"
 
-#: appEditors/AppGeoEditor.py:1353 appEditors/AppGerberEditor.py:6056
+#: appEditors/AppGeoEditor.py:1353 appEditors/AppGerberEditor.py:6113
 msgid "Skew on the Y axis done"
 msgstr "Наклон по оси Y выполнен"
 
@@ -2866,16 +2866,16 @@ msgstr "Наклон по оси Y выполнен"
 msgid "Skew action was not executed"
 msgstr "Наклон не был выполнен"
 
-#: appEditors/AppGeoEditor.py:1377 appEditors/AppGerberEditor.py:6079
+#: appEditors/AppGeoEditor.py:1377 appEditors/AppGerberEditor.py:6136
 #: appTools/ToolTransform.py:396
 msgid "Applying Scale"
 msgstr "Применение масштабирования"
 
-#: appEditors/AppGeoEditor.py:1386 appEditors/AppGerberEditor.py:6092
+#: appEditors/AppGeoEditor.py:1386 appEditors/AppGerberEditor.py:6149
 msgid "Scale on the X axis done"
 msgstr "Масштабирование по оси X выполнено"
 
-#: appEditors/AppGeoEditor.py:1388 appEditors/AppGerberEditor.py:6094
+#: appEditors/AppGeoEditor.py:1388 appEditors/AppGerberEditor.py:6151
 msgid "Scale on the Y axis done"
 msgstr "Масштабирование по оси Y выполнено"
 
@@ -2883,16 +2883,16 @@ msgstr "Масштабирование по оси Y выполнено"
 msgid "Scale action was not executed"
 msgstr "Операция масштабирования не была выполнена"
 
-#: appEditors/AppGeoEditor.py:1408 appEditors/AppGerberEditor.py:6115
+#: appEditors/AppGeoEditor.py:1408 appEditors/AppGerberEditor.py:6172
 #: appTools/ToolTransform.py:424
 msgid "Applying Offset"
 msgstr "Применение смещения"
 
-#: appEditors/AppGeoEditor.py:1418 appEditors/AppGerberEditor.py:6136
+#: appEditors/AppGeoEditor.py:1418 appEditors/AppGerberEditor.py:6193
 msgid "Offset on the X axis done"
 msgstr "Смещение формы по оси X выполнено"
 
-#: appEditors/AppGeoEditor.py:1420 appEditors/AppGerberEditor.py:6138
+#: appEditors/AppGeoEditor.py:1420 appEditors/AppGerberEditor.py:6195
 msgid "Offset on the Y axis done"
 msgstr "Смещение формы по оси Y выполнено"
 
@@ -2900,65 +2900,65 @@ msgstr "Смещение формы по оси Y выполнено"
 msgid "Offset action was not executed"
 msgstr "Операция смещения не была выполнена"
 
-#: appEditors/AppGeoEditor.py:1430 appEditors/AppGerberEditor.py:6148
+#: appEditors/AppGeoEditor.py:1430 appEditors/AppGerberEditor.py:6205
 msgid "No shape selected"
 msgstr "Фигура не выбрана"
 
-#: appEditors/AppGeoEditor.py:1433 appEditors/AppGerberEditor.py:6151
+#: appEditors/AppGeoEditor.py:1433 appEditors/AppGerberEditor.py:6208
 #: appTools/ToolTransform.py:453
 msgid "Applying Buffer"
 msgstr "Применение буфера"
 
-#: appEditors/AppGeoEditor.py:1440 appEditors/AppGerberEditor.py:6173
+#: appEditors/AppGeoEditor.py:1440 appEditors/AppGerberEditor.py:6230
 #: appTools/ToolTransform.py:474
 msgid "Buffer done"
 msgstr "Буфер готов"
 
-#: appEditors/AppGeoEditor.py:1444 appEditors/AppGerberEditor.py:6177
+#: appEditors/AppGeoEditor.py:1444 appEditors/AppGerberEditor.py:6234
 #: appTools/ToolTransform.py:443 appTools/ToolTransform.py:478
 msgid "Action was not executed, due of"
 msgstr "Действие не было выполнено, в связи с"
 
-#: appEditors/AppGeoEditor.py:1448 appEditors/AppGerberEditor.py:6181
+#: appEditors/AppGeoEditor.py:1448 appEditors/AppGerberEditor.py:6238
 msgid "Rotate ..."
 msgstr "Поворот ..."
 
 #: appEditors/AppGeoEditor.py:1449 appEditors/AppGeoEditor.py:1501
-#: appEditors/AppGeoEditor.py:1517 appEditors/AppGerberEditor.py:6182
-#: appEditors/AppGerberEditor.py:6234 appEditors/AppGerberEditor.py:6250
+#: appEditors/AppGeoEditor.py:1517 appEditors/AppGerberEditor.py:6239
+#: appEditors/AppGerberEditor.py:6291 appEditors/AppGerberEditor.py:6307
 msgid "Enter an Angle Value (degrees)"
 msgstr "Введите значение угла (градусы)"
 
-#: appEditors/AppGeoEditor.py:1458 appEditors/AppGerberEditor.py:6191
+#: appEditors/AppGeoEditor.py:1458 appEditors/AppGerberEditor.py:6248
 msgid "Geometry shape rotate done"
 msgstr "Вращение фигуры выполнено"
 
-#: appEditors/AppGeoEditor.py:1461 appEditors/AppGerberEditor.py:6194
+#: appEditors/AppGeoEditor.py:1461 appEditors/AppGerberEditor.py:6251
 msgid "Geometry shape rotate cancelled"
 msgstr "Вращение фигуры отменено"
 
-#: appEditors/AppGeoEditor.py:1466 appEditors/AppGerberEditor.py:6199
+#: appEditors/AppGeoEditor.py:1466 appEditors/AppGerberEditor.py:6256
 msgid "Offset on X axis ..."
 msgstr "Смещение по оси X ..."
 
 #: appEditors/AppGeoEditor.py:1467 appEditors/AppGeoEditor.py:1485
-#: appEditors/AppGerberEditor.py:6200 appEditors/AppGerberEditor.py:6218
+#: appEditors/AppGerberEditor.py:6257 appEditors/AppGerberEditor.py:6275
 msgid "Enter a distance Value"
 msgstr "Введите значение расстояния"
 
-#: appEditors/AppGeoEditor.py:1476 appEditors/AppGerberEditor.py:6209
+#: appEditors/AppGeoEditor.py:1476 appEditors/AppGerberEditor.py:6266
 msgid "Geometry shape offset on X axis done"
 msgstr "Смещение формы по оси X выполнено"
 
-#: appEditors/AppGeoEditor.py:1479 appEditors/AppGerberEditor.py:6212
+#: appEditors/AppGeoEditor.py:1479 appEditors/AppGerberEditor.py:6269
 msgid "Geometry shape offset X cancelled"
 msgstr "Смещение формы по оси X отменено"
 
-#: appEditors/AppGeoEditor.py:1484 appEditors/AppGerberEditor.py:6217
+#: appEditors/AppGeoEditor.py:1484 appEditors/AppGerberEditor.py:6274
 msgid "Offset on Y axis ..."
 msgstr "Смещение по оси Y ..."
 
-#: appEditors/AppGeoEditor.py:1494 appEditors/AppGerberEditor.py:6227
+#: appEditors/AppGeoEditor.py:1494 appEditors/AppGerberEditor.py:6284
 msgid "Geometry shape offset on Y axis done"
 msgstr "Смещение формы по оси Y выполнено"
 
@@ -2966,11 +2966,11 @@ msgstr "Смещение формы по оси Y выполнено"
 msgid "Geometry shape offset on Y axis canceled"
 msgstr "Смещение формы по оси Y отменено"
 
-#: appEditors/AppGeoEditor.py:1500 appEditors/AppGerberEditor.py:6233
+#: appEditors/AppGeoEditor.py:1500 appEditors/AppGerberEditor.py:6290
 msgid "Skew on X axis ..."
 msgstr "Наклон по оси X ..."
 
-#: appEditors/AppGeoEditor.py:1510 appEditors/AppGerberEditor.py:6243
+#: appEditors/AppGeoEditor.py:1510 appEditors/AppGerberEditor.py:6300
 msgid "Geometry shape skew on X axis done"
 msgstr "Наклон формы по оси X выполнен"
 
@@ -2978,11 +2978,11 @@ msgstr "Наклон формы по оси X выполнен"
 msgid "Geometry shape skew on X axis canceled"
 msgstr "Наклон формы по оси X отменён"
 
-#: appEditors/AppGeoEditor.py:1516 appEditors/AppGerberEditor.py:6249
+#: appEditors/AppGeoEditor.py:1516 appEditors/AppGerberEditor.py:6306
 msgid "Skew on Y axis ..."
 msgstr "Наклон по оси Y ..."
 
-#: appEditors/AppGeoEditor.py:1526 appEditors/AppGerberEditor.py:6259
+#: appEditors/AppGeoEditor.py:1526 appEditors/AppGerberEditor.py:6316
 msgid "Geometry shape skew on Y axis done"
 msgstr "Наклон формы по оси Y выполнен"
 
@@ -2991,11 +2991,11 @@ msgid "Geometry shape skew on Y axis canceled"
 msgstr "Наклон формы по оси Y отменён"
 
 #: appEditors/AppGeoEditor.py:1960 appEditors/AppGeoEditor.py:2031
-#: appEditors/AppGerberEditor.py:1441 appEditors/AppGerberEditor.py:1519
+#: appEditors/AppGerberEditor.py:1483 appEditors/AppGerberEditor.py:1561
 msgid "Click on Center point ..."
 msgstr "Нажмите на  центральную точку ..."
 
-#: appEditors/AppGeoEditor.py:1973 appEditors/AppGerberEditor.py:1451
+#: appEditors/AppGeoEditor.py:1973 appEditors/AppGerberEditor.py:1493
 msgid "Click on Perimeter point to complete ..."
 msgstr "Для завершения щелкните по периметру ..."
 
@@ -3003,27 +3003,27 @@ msgstr "Для завершения щелкните по периметру ...
 msgid "Done. Adding Circle completed."
 msgstr "Готово. Добавление круга завершено."
 
-#: appEditors/AppGeoEditor.py:2059 appEditors/AppGerberEditor.py:1552
+#: appEditors/AppGeoEditor.py:2059 appEditors/AppGerberEditor.py:1607
 msgid "Click on Start point ..."
 msgstr "Нажмите на точку начала отсчета..."
 
-#: appEditors/AppGeoEditor.py:2061 appEditors/AppGerberEditor.py:1554
+#: appEditors/AppGeoEditor.py:2061 appEditors/AppGerberEditor.py:1609
 msgid "Click on Point3 ..."
 msgstr "Нажмите на 3-ю точку ..."
 
-#: appEditors/AppGeoEditor.py:2063 appEditors/AppGerberEditor.py:1556
+#: appEditors/AppGeoEditor.py:2063 appEditors/AppGerberEditor.py:1611
 msgid "Click on Stop point ..."
 msgstr "Нажмите на конечную точку ..."
 
-#: appEditors/AppGeoEditor.py:2068 appEditors/AppGerberEditor.py:1561
+#: appEditors/AppGeoEditor.py:2068 appEditors/AppGerberEditor.py:1616
 msgid "Click on Stop point to complete ..."
 msgstr "Нажмите на конечную точку для завершения ..."
 
-#: appEditors/AppGeoEditor.py:2070 appEditors/AppGerberEditor.py:1563
+#: appEditors/AppGeoEditor.py:2070 appEditors/AppGerberEditor.py:1618
 msgid "Click on Point2 to complete ..."
 msgstr "Нажмите на 2-ю точку для завершения ..."
 
-#: appEditors/AppGeoEditor.py:2072 appEditors/AppGerberEditor.py:1565
+#: appEditors/AppGeoEditor.py:2072 appEditors/AppGerberEditor.py:1620
 msgid "Click on Center point to complete ..."
 msgstr "Нажмите на  центральную точку для завершения..."
 
@@ -3032,15 +3032,15 @@ msgstr "Нажмите на  центральную точку для завер
 msgid "Direction: %s"
 msgstr "Направление: %s"
 
-#: appEditors/AppGeoEditor.py:2098 appEditors/AppGerberEditor.py:1591
+#: appEditors/AppGeoEditor.py:2098 appEditors/AppGerberEditor.py:1646
 msgid "Mode: Start -> Stop -> Center. Click on Start point ..."
 msgstr "Режим: Старт -> Стоп -> Центр. Нажмите на начальную точку ..."
 
-#: appEditors/AppGeoEditor.py:2101 appEditors/AppGerberEditor.py:1594
+#: appEditors/AppGeoEditor.py:2101 appEditors/AppGerberEditor.py:1649
 msgid "Mode: Point1 -> Point3 -> Point2. Click on Point1 ..."
 msgstr "Режим: Точка1 -> Точка3 -> Точка2. Нажмите на Точку1 ..."
 
-#: appEditors/AppGeoEditor.py:2104 appEditors/AppGerberEditor.py:1597
+#: appEditors/AppGeoEditor.py:2104 appEditors/AppGerberEditor.py:1652
 msgid "Mode: Center -> Start -> Stop. Click on Center point ..."
 msgstr "Режим: Центр -> Старт -> Стоп. Нажмите на центральную точку ..."
 
@@ -3065,7 +3065,7 @@ msgid "Done. Polygon completed."
 msgstr "Готово. Полигон завершен."
 
 #: appEditors/AppGeoEditor.py:2407 appEditors/AppGeoEditor.py:2472
-#: appEditors/AppGerberEditor.py:1099 appEditors/AppGerberEditor.py:1319
+#: appEditors/AppGerberEditor.py:1114 appEditors/AppGerberEditor.py:1347
 msgid "Backtracked one point ..."
 msgstr "Отступ на одну точку ..."
 
@@ -3101,7 +3101,7 @@ msgstr "Готово. Перемещение Geometry завершено."
 msgid "Done. Geometry(s) Copy completed."
 msgstr "Готово. Копирование Geometry завершено."
 
-#: appEditors/AppGeoEditor.py:2886 appEditors/AppGerberEditor.py:896
+#: appEditors/AppGeoEditor.py:2886 appEditors/AppGerberEditor.py:911
 msgid "Click on 1st point ..."
 msgstr "Нажмите на 1-й точке ..."
 
@@ -3125,7 +3125,7 @@ msgstr " Готово. Добавление текста завершено."
 msgid "Create buffer geometry ..."
 msgstr "Создание геометрии буфера ..."
 
-#: appEditors/AppGeoEditor.py:3000 appEditors/AppGerberEditor.py:5144
+#: appEditors/AppGeoEditor.py:3000 appEditors/AppGerberEditor.py:5201
 msgid "Done. Buffer Tool completed."
 msgstr "Готово. Создание буфера завершено."
 
@@ -3137,20 +3137,20 @@ msgstr "Готово. Внутренний буфер создан."
 msgid "Done. Buffer Ext Tool completed."
 msgstr "Готово. Внешний буфер создан."
 
-#: appEditors/AppGeoEditor.py:3105 appEditors/AppGerberEditor.py:2156
+#: appEditors/AppGeoEditor.py:3105 appEditors/AppGerberEditor.py:2211
 msgid "Select a shape to act as deletion area ..."
 msgstr "Выберите фигуру в качестве области для удаления ..."
 
 #: appEditors/AppGeoEditor.py:3107 appEditors/AppGeoEditor.py:3133
-#: appEditors/AppGeoEditor.py:3139 appEditors/AppGerberEditor.py:2158
+#: appEditors/AppGeoEditor.py:3139 appEditors/AppGerberEditor.py:2213
 msgid "Click to pick-up the erase shape..."
 msgstr "Кликните, что бы выбрать фигуру для стирания ..."
 
-#: appEditors/AppGeoEditor.py:3143 appEditors/AppGerberEditor.py:2217
+#: appEditors/AppGeoEditor.py:3143 appEditors/AppGerberEditor.py:2272
 msgid "Click to erase ..."
 msgstr "Нажмите для очистки ..."
 
-#: appEditors/AppGeoEditor.py:3172 appEditors/AppGerberEditor.py:2250
+#: appEditors/AppGeoEditor.py:3172 appEditors/AppGerberEditor.py:2305
 msgid "Done. Eraser tool action completed."
 msgstr "Готово. Действие инструмента стирания завершено.."
 
@@ -3158,7 +3158,7 @@ msgstr "Готово. Действие инструмента стирания �
 msgid "Create Paint geometry ..."
 msgstr "Создать геометрию окрашивания ..."
 
-#: appEditors/AppGeoEditor.py:3235 appEditors/AppGerberEditor.py:2413
+#: appEditors/AppGeoEditor.py:3235 appEditors/AppGerberEditor.py:2468
 msgid "Shape transformations ..."
 msgstr "Преобразования фигуры ..."
 
@@ -3167,8 +3167,8 @@ msgstr "Преобразования фигуры ..."
 msgid "Geometry Editor"
 msgstr "Редактор Geometry"
 
-#: appEditors/AppGeoEditor.py:3297 appEditors/AppGerberEditor.py:2491
-#: appEditors/AppGerberEditor.py:3947 appEditors/appGCodeEditor.py:687
+#: appEditors/AppGeoEditor.py:3297 appEditors/AppGerberEditor.py:2546
+#: appEditors/AppGerberEditor.py:4002 appEditors/appGCodeEditor.py:687
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2034
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
 #: appTools/ToolCorners.py:546 appTools/ToolCutOut.py:2030
@@ -3303,179 +3303,176 @@ msgstr ""
 msgid "Paint done."
 msgstr "Окраска завершена."
 
-#: appEditors/AppGerberEditor.py:211
-msgid "To add an Pad first select a aperture in Aperture Table"
+#: appEditors/AppGerberEditor.py:211 appEditors/AppGerberEditor.py:415
+#: appEditors/AppGerberEditor.py:880 appEditors/AppGerberEditor.py:1189
+#: appEditors/AppGerberEditor.py:1461 appEditors/AppGerberEditor.py:1578
+msgid "You need to preselect a aperture in the Aperture Table that has a size."
 msgstr ""
-"Чтобы добавить площадку, сначала выберите отверстие в таблице отверстий"
+"Вам необходимо предварительно выбрать диафрагму в Таблице диафрагмы, имеющую "
+"размер."
 
-#: appEditors/AppGerberEditor.py:222 appEditors/AppGerberEditor.py:422
+#: appEditors/AppGerberEditor.py:223 appEditors/AppGerberEditor.py:424
 msgid "Aperture size is zero. It needs to be greater than zero."
 msgstr "Размер отверстия равен нулю. Он должен быть больше нуля."
 
-#: appEditors/AppGerberEditor.py:375 appEditors/AppGerberEditor.py:688
+#: appEditors/AppGerberEditor.py:376 appEditors/AppGerberEditor.py:690
 msgid ""
 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."
 msgstr ""
 "Несовместимый тип отверстия. Выберите отверстие с типом 'C', 'R' или 'O'."
 
-#: appEditors/AppGerberEditor.py:387
+#: appEditors/AppGerberEditor.py:388
 msgid "Done. Adding Pad completed."
 msgstr "Готово. Добавление площадки завершено."
 
-#: appEditors/AppGerberEditor.py:414
-msgid "To add an Pad Array first select a aperture in Aperture Table"
-msgstr ""
-"Чтобы добавить массив площадок, сначала выберите отверстие в таблице "
-"отверстий"
-
-#: appEditors/AppGerberEditor.py:494
+#: appEditors/AppGerberEditor.py:496
 msgid "Click on the Pad Circular Array Start position"
 msgstr "Нажмите на начальную точку кругового массива контактных площадок"
 
-#: appEditors/AppGerberEditor.py:714
+#: appEditors/AppGerberEditor.py:716
 msgid "Too many Pads for the selected spacing angle."
 msgstr "Слишком много площадок для выбранного интервала угла."
 
-#: appEditors/AppGerberEditor.py:737
+#: appEditors/AppGerberEditor.py:739
 msgid "Done. Pad Array added."
 msgstr "Готово. Массив площадок добавлен."
 
-#: appEditors/AppGerberEditor.py:762
+#: appEditors/AppGerberEditor.py:764
 msgid "Select shape(s) and then click ..."
 msgstr "Выберите фигуры, а затем нажмите ..."
 
-#: appEditors/AppGerberEditor.py:774
+#: appEditors/AppGerberEditor.py:776
 msgid "Failed. Nothing selected."
 msgstr "Ошибка. Ничего не выбрано."
 
-#: appEditors/AppGerberEditor.py:790
+#: appEditors/AppGerberEditor.py:792
 msgid ""
 "Failed. Poligonize works only on geometries belonging to the same aperture."
 msgstr ""
 "Неудача. Полигонизация работает только с геометриями, принадлежащими к "
 "одному отверстию."
 
-#: appEditors/AppGerberEditor.py:839
+#: appEditors/AppGerberEditor.py:841
 msgid "Done. Poligonize completed."
 msgstr "Готово. Полигонизация выполнена."
 
-#: appEditors/AppGerberEditor.py:894 appEditors/AppGerberEditor.py:1116
-#: appEditors/AppGerberEditor.py:1140
+#: appEditors/AppGerberEditor.py:909 appEditors/AppGerberEditor.py:1131
+#: appEditors/AppGerberEditor.py:1155
 msgid "Corner Mode 1: 45 degrees ..."
 msgstr "Угловой режим 1: 45 градусов ..."
 
-#: appEditors/AppGerberEditor.py:906 appEditors/AppGerberEditor.py:1216
+#: appEditors/AppGerberEditor.py:921 appEditors/AppGerberEditor.py:1244
 msgid "Click on next Point or click Right mouse button to complete ..."
 msgstr ""
 "Нажмите на следующую точку или щелкните правой кнопкой мыши для "
 "завершения ..."
 
-#: appEditors/AppGerberEditor.py:1104 appEditors/AppGerberEditor.py:1137
+#: appEditors/AppGerberEditor.py:1119 appEditors/AppGerberEditor.py:1152
 msgid "Corner Mode 2: Reverse 45 degrees ..."
 msgstr "Угловой режим 2: реверс 45 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1107 appEditors/AppGerberEditor.py:1134
+#: appEditors/AppGerberEditor.py:1122 appEditors/AppGerberEditor.py:1149
 msgid "Corner Mode 3: 90 degrees ..."
 msgstr "Угловой режим 3: 90 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1110 appEditors/AppGerberEditor.py:1131
+#: appEditors/AppGerberEditor.py:1125 appEditors/AppGerberEditor.py:1146
 msgid "Corner Mode 4: Reverse 90 degrees ..."
 msgstr "Угловой режим 4: реверс 90 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1113 appEditors/AppGerberEditor.py:1128
+#: appEditors/AppGerberEditor.py:1128 appEditors/AppGerberEditor.py:1143
 msgid "Corner Mode 5: Free angle ..."
 msgstr "Угловой режим 5: свободный угол ..."
 
-#: appEditors/AppGerberEditor.py:1190 appEditors/AppGerberEditor.py:1355
-#: appEditors/AppGerberEditor.py:1394
+#: appEditors/AppGerberEditor.py:1218 appEditors/AppGerberEditor.py:1383
+#: appEditors/AppGerberEditor.py:1422
 msgid "Track Mode 1: 45 degrees ..."
 msgstr "Режим дорожки 1: 45 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1335 appEditors/AppGerberEditor.py:1389
+#: appEditors/AppGerberEditor.py:1363 appEditors/AppGerberEditor.py:1417
 msgid "Track Mode 2: Reverse 45 degrees ..."
 msgstr "Режим дорожки 2: реверс 45 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1340 appEditors/AppGerberEditor.py:1384
+#: appEditors/AppGerberEditor.py:1368 appEditors/AppGerberEditor.py:1412
 msgid "Track Mode 3: 90 degrees ..."
 msgstr "Режим дорожки 3: 90 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1345 appEditors/AppGerberEditor.py:1379
+#: appEditors/AppGerberEditor.py:1373 appEditors/AppGerberEditor.py:1407
 msgid "Track Mode 4: Reverse 90 degrees ..."
 msgstr "Режим дорожки 4: реверс 90 градусов ..."
 
-#: appEditors/AppGerberEditor.py:1350 appEditors/AppGerberEditor.py:1374
+#: appEditors/AppGerberEditor.py:1378 appEditors/AppGerberEditor.py:1402
 msgid "Track Mode 5: Free angle ..."
 msgstr "Режим дорожки 5: свободный угол ..."
 
-#: appEditors/AppGerberEditor.py:1784
+#: appEditors/AppGerberEditor.py:1839
 msgid "Scale the selected Gerber apertures ..."
 msgstr "Масштабирование выбранных отверстий Gerber ..."
 
-#: appEditors/AppGerberEditor.py:1826
+#: appEditors/AppGerberEditor.py:1881
 msgid "Buffer the selected apertures ..."
 msgstr "Создание буфера для выбранных отверстий ..."
 
-#: appEditors/AppGerberEditor.py:1868
+#: appEditors/AppGerberEditor.py:1923
 msgid "Mark polygon areas in the edited Gerber ..."
 msgstr "Отметьте полигональные области в отредактированном Gerber ..."
 
-#: appEditors/AppGerberEditor.py:1934
+#: appEditors/AppGerberEditor.py:1989
 msgid "Nothing selected to move"
 msgstr "Отменено. Ничего не выбрано для перемещения"
 
-#: appEditors/AppGerberEditor.py:2059
+#: appEditors/AppGerberEditor.py:2114
 msgid "Done. Apertures Move completed."
 msgstr "Готово. Перемещение отверстий завершено."
 
-#: appEditors/AppGerberEditor.py:2140
+#: appEditors/AppGerberEditor.py:2195
 msgid "Done. Apertures copied."
 msgstr "Готово. Отверстия скопированы."
 
-#: appEditors/AppGerberEditor.py:2458 appGUI/MainGUI.py:745
+#: appEditors/AppGerberEditor.py:2513 appGUI/MainGUI.py:745
 #: appGUI/MainGUI.py:1642 appGUI/ObjectUI.py:241
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:27
 msgid "Gerber Editor"
 msgstr "Редактор Gerber"
 
-#: appEditors/AppGerberEditor.py:2478 appGUI/ObjectUI.py:281
+#: appEditors/AppGerberEditor.py:2533 appGUI/ObjectUI.py:281
 #: appObjects/FlatCAMObj.py:492 appTools/ToolProperties.py:158
 msgid "Apertures"
 msgstr "Oтверстие"
 
-#: appEditors/AppGerberEditor.py:2480 appGUI/ObjectUI.py:283
+#: appEditors/AppGerberEditor.py:2535 appGUI/ObjectUI.py:283
 msgid "Apertures Table for the Gerber Object."
 msgstr "Таблица отверстий для объекта Gerber."
 
-#: appEditors/AppGerberEditor.py:2491 appEditors/AppGerberEditor.py:3947
+#: appEditors/AppGerberEditor.py:2546 appEditors/AppGerberEditor.py:4002
 #: appGUI/ObjectUI.py:316 appTools/ToolPunchGerber.py:1088
 msgid "Code"
 msgstr "Код"
 
-#: appEditors/AppGerberEditor.py:2491 appEditors/AppGerberEditor.py:3947
+#: appEditors/AppGerberEditor.py:2546 appEditors/AppGerberEditor.py:4002
 #: appGUI/ObjectUI.py:316
 msgid "Dim"
 msgstr "Диаметр"
 
-#: appEditors/AppGerberEditor.py:2496 appGUI/ObjectUI.py:320
+#: appEditors/AppGerberEditor.py:2551 appGUI/ObjectUI.py:320
 msgid "Index"
 msgstr "Индекс"
 
-#: appEditors/AppGerberEditor.py:2498 appEditors/AppGerberEditor.py:2527
+#: appEditors/AppGerberEditor.py:2553 appEditors/AppGerberEditor.py:2582
 #: appGUI/ObjectUI.py:322 appTools/ToolPunchGerber.py:1095
 msgid "Aperture Code"
 msgstr "Код отверстия"
 
-#: appEditors/AppGerberEditor.py:2500 appGUI/ObjectUI.py:324
+#: appEditors/AppGerberEditor.py:2555 appGUI/ObjectUI.py:324
 #: appTools/ToolPunchGerber.py:1097
 msgid "Type of aperture: circular, rectangle, macros etc"
 msgstr "Тип отверстия: круг, прямоугольник, макросы и так далее"
 
-#: appEditors/AppGerberEditor.py:2502 appGUI/ObjectUI.py:326
+#: appEditors/AppGerberEditor.py:2557 appGUI/ObjectUI.py:326
 #: appTools/ToolPunchGerber.py:1099
 msgid "Aperture Size:"
 msgstr "Размер отверстия:"
 
-#: appEditors/AppGerberEditor.py:2504 appGUI/ObjectUI.py:328
+#: appEditors/AppGerberEditor.py:2559 appGUI/ObjectUI.py:328
 msgid ""
 "Aperture Dimensions:\n"
 " - (width, height) for R, O type.\n"
@@ -3485,16 +3482,16 @@ msgstr ""
 " - (ширина, высота) для типа R, O.\n"
 " - (диам., nVertices) для типа P"
 
-#: appEditors/AppGerberEditor.py:2528
+#: appEditors/AppGerberEditor.py:2583
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:58
 msgid "Code for the new aperture"
 msgstr "Код для нового отверстия"
 
-#: appEditors/AppGerberEditor.py:2537
+#: appEditors/AppGerberEditor.py:2592
 msgid "Aperture Size"
 msgstr "Размер отверстия"
 
-#: appEditors/AppGerberEditor.py:2539
+#: appEditors/AppGerberEditor.py:2594
 msgid ""
 "Size for the new aperture.\n"
 "If aperture type is 'R' or 'O' then\n"
@@ -3508,11 +3505,11 @@ msgstr ""
 "рассчитывается как:\n"
 "sqrt(ширина ** 2 + высота ** 2)"
 
-#: appEditors/AppGerberEditor.py:2553
+#: appEditors/AppGerberEditor.py:2608
 msgid "Aperture Type"
 msgstr "Тип отверстия"
 
-#: appEditors/AppGerberEditor.py:2555
+#: appEditors/AppGerberEditor.py:2610
 msgid ""
 "Select the type of new aperture. Can be:\n"
 "C = circular\n"
@@ -3524,11 +3521,11 @@ msgstr ""
 "R = прямоугольник\n"
 "O = продолговатое"
 
-#: appEditors/AppGerberEditor.py:2566
+#: appEditors/AppGerberEditor.py:2621
 msgid "Aperture Dim"
 msgstr "Размер нового отверстия"
 
-#: appEditors/AppGerberEditor.py:2568
+#: appEditors/AppGerberEditor.py:2623
 msgid ""
 "Dimensions for the new aperture.\n"
 "Active only for rectangular apertures (type R).\n"
@@ -3538,19 +3535,19 @@ msgstr ""
 "Активен только для прямоугольных отверстий (тип R).\n"
 "Формат (ширина, высота)"
 
-#: appEditors/AppGerberEditor.py:2577
+#: appEditors/AppGerberEditor.py:2632
 msgid "Add/Delete Aperture"
 msgstr "Добавить/Удалить отверстие"
 
-#: appEditors/AppGerberEditor.py:2579
+#: appEditors/AppGerberEditor.py:2634
 msgid "Add/Delete an aperture in the aperture table"
 msgstr "Добавляет/Удаляет отверстие в таблице отверстий"
 
-#: appEditors/AppGerberEditor.py:2588
+#: appEditors/AppGerberEditor.py:2643
 msgid "Add a new aperture to the aperture list."
 msgstr "Добавляет новое отверстие в список отверстий."
 
-#: appEditors/AppGerberEditor.py:2591 appEditors/AppGerberEditor.py:2739
+#: appEditors/AppGerberEditor.py:2646 appEditors/AppGerberEditor.py:2794
 #: appGUI/GUIElements.py:325 appGUI/GUIElements.py:1012
 #: appGUI/GUIElements.py:1397 appGUI/GUIElements.py:1602
 #: appGUI/GUIElements.py:1935 appGUI/MainGUI.py:423 appGUI/MainGUI.py:734
@@ -3565,28 +3562,28 @@ msgstr "Добавляет новое отверстие в список отв�
 msgid "Delete"
 msgstr "Удалить"
 
-#: appEditors/AppGerberEditor.py:2593
+#: appEditors/AppGerberEditor.py:2648
 msgid "Delete a aperture in the aperture list"
 msgstr "Удаляет отверстие в таблице отверстий"
 
-#: appEditors/AppGerberEditor.py:2610
+#: appEditors/AppGerberEditor.py:2665
 msgid "Buffer Aperture"
 msgstr "Буфер отверстия"
 
-#: appEditors/AppGerberEditor.py:2612
+#: appEditors/AppGerberEditor.py:2667
 msgid "Buffer a aperture in the aperture list"
 msgstr "Создаёт буфер для отверстия в списке отверстий"
 
-#: appEditors/AppGerberEditor.py:2625
+#: appEditors/AppGerberEditor.py:2680
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:195
 msgid "Buffer distance"
 msgstr "Расстояние буфера"
 
-#: appEditors/AppGerberEditor.py:2626
+#: appEditors/AppGerberEditor.py:2681
 msgid "Buffer corner"
 msgstr "Угол буфера"
 
-#: appEditors/AppGerberEditor.py:2628
+#: appEditors/AppGerberEditor.py:2683
 msgid ""
 "There are 3 types of corners:\n"
 " - 'Round': the corner is rounded.\n"
@@ -3600,20 +3597,20 @@ msgstr ""
 "- 'Скошенный:' угол-это линия, которая непосредственно соединяет элементы, "
 "встречающиеся в углу"
 
-#: appEditors/AppGerberEditor.py:2658
+#: appEditors/AppGerberEditor.py:2713
 msgid "Scale Aperture"
 msgstr "Масштабирование отверстий"
 
-#: appEditors/AppGerberEditor.py:2660
+#: appEditors/AppGerberEditor.py:2715
 msgid "Scale a aperture in the aperture list"
 msgstr "Масштабирование отверстия в списке отверстий"
 
-#: appEditors/AppGerberEditor.py:2668
+#: appEditors/AppGerberEditor.py:2723
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:210
 msgid "Scale factor"
 msgstr "Коэффициент масштабирования"
 
-#: appEditors/AppGerberEditor.py:2670
+#: appEditors/AppGerberEditor.py:2725
 msgid ""
 "The factor by which to scale the selected aperture.\n"
 "Values can be between 0.0000 and 999.9999"
@@ -3621,19 +3618,19 @@ msgstr ""
 "Коэффициент масштабирования выбранного отверстия.\n"
 "Значения могут быть между 0.0000 и 999.9999"
 
-#: appEditors/AppGerberEditor.py:2698
+#: appEditors/AppGerberEditor.py:2753
 msgid "Mark polygons"
 msgstr "Отметить полигоны"
 
-#: appEditors/AppGerberEditor.py:2700
+#: appEditors/AppGerberEditor.py:2755
 msgid "Mark the polygon areas."
 msgstr "Отметьте полигональные области."
 
-#: appEditors/AppGerberEditor.py:2708
+#: appEditors/AppGerberEditor.py:2763
 msgid "Area UPPER threshold"
 msgstr "Верхней части порога"
 
-#: appEditors/AppGerberEditor.py:2710
+#: appEditors/AppGerberEditor.py:2765
 msgid ""
 "The threshold value, all areas less than this are marked.\n"
 "Can have a value between 0.0000 and 10000.0000"
@@ -3641,11 +3638,11 @@ msgstr ""
 "Пороговое значение, всех участков за вычетом отмеченных.\n"
 "Может иметь значение от 0,0000 до 9999,9999"
 
-#: appEditors/AppGerberEditor.py:2717
+#: appEditors/AppGerberEditor.py:2772
 msgid "Area LOWER threshold"
 msgstr "Площадь НИЖНЕГО порога"
 
-#: appEditors/AppGerberEditor.py:2719
+#: appEditors/AppGerberEditor.py:2774
 msgid ""
 "The threshold value, all areas more than this are marked.\n"
 "Can have a value between 0.0000 and 10000.0000"
@@ -3653,32 +3650,32 @@ msgstr ""
 "Пороговое значение, всех участков больше отмеченых.\n"
 "Может иметь значение от 0,0000 до 9999,9999"
 
-#: appEditors/AppGerberEditor.py:2733
+#: appEditors/AppGerberEditor.py:2788
 msgid "Mark"
 msgstr "Отметка"
 
-#: appEditors/AppGerberEditor.py:2735
+#: appEditors/AppGerberEditor.py:2790
 msgid "Mark the polygons that fit within limits."
 msgstr "Отмечает полигоны, которые вписываются в пределы."
 
-#: appEditors/AppGerberEditor.py:2741
+#: appEditors/AppGerberEditor.py:2796
 msgid "Delete all the marked polygons."
 msgstr "Удаление всех отмеченных полигонов."
 
-#: appEditors/AppGerberEditor.py:2747
+#: appEditors/AppGerberEditor.py:2802
 msgid "Clear all the markings."
 msgstr "Очистить все маркировки."
 
-#: appEditors/AppGerberEditor.py:2767 appGUI/MainGUI.py:753
+#: appEditors/AppGerberEditor.py:2822 appGUI/MainGUI.py:753
 #: appGUI/MainGUI.py:1180 appGUI/MainGUI.py:2349 appGUI/MainGUI.py:4925
 msgid "Add Pad Array"
 msgstr "Добавить массив контактных площадок"
 
-#: appEditors/AppGerberEditor.py:2769
+#: appEditors/AppGerberEditor.py:2824
 msgid "Add an array of pads (linear or circular array)"
 msgstr "Добавляет массив контактных площадок (линейный или круговой массив)"
 
-#: appEditors/AppGerberEditor.py:2775
+#: appEditors/AppGerberEditor.py:2830
 msgid ""
 "Select the type of pads array to create.\n"
 "It can be Linear X(Y) or Circular"
@@ -3686,17 +3683,17 @@ msgstr ""
 "Выбор типа массива контактных площадок.\n"
 "Он может быть линейным X (Y) или круговым"
 
-#: appEditors/AppGerberEditor.py:2786
+#: appEditors/AppGerberEditor.py:2841
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:95
 msgid "Nr of pads"
 msgstr "Количество площадок"
 
-#: appEditors/AppGerberEditor.py:2788
+#: appEditors/AppGerberEditor.py:2843
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:97
 msgid "Specify how many pads to be in the array."
 msgstr "Укажите, сколько контактных площадок должно быть в массиве."
 
-#: appEditors/AppGerberEditor.py:2837
+#: appEditors/AppGerberEditor.py:2892
 msgid ""
 "Angle at which the linear array is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -3708,13 +3705,13 @@ msgstr ""
 "Минимальное значение: -359.99 градусов.\n"
 "Максимальное значение:  360.00 градусов."
 
-#: appEditors/AppGerberEditor.py:3337 appEditors/AppGerberEditor.py:3341
+#: appEditors/AppGerberEditor.py:3392 appEditors/AppGerberEditor.py:3396
 msgid "Aperture code value is missing or wrong format. Add it and retry."
 msgstr ""
 "Отсутствует значение кода отверстия или оно имеет неправильный формат. "
 "Добавьте его и повторите попытку."
 
-#: appEditors/AppGerberEditor.py:3377
+#: appEditors/AppGerberEditor.py:3432
 msgid ""
 "Aperture dimensions value is missing or wrong format. Add it in format "
 "(width, height) and retry."
@@ -3722,102 +3719,102 @@ msgstr ""
 "Отсутствует значение размера отверстия или оно имеет неправильный формат. "
 "Добавьте его в формате (ширина, высота) и повторите попытку."
 
-#: appEditors/AppGerberEditor.py:3390
+#: appEditors/AppGerberEditor.py:3445
 msgid "Aperture size value is missing or wrong format. Add it and retry."
 msgstr ""
 "Отсутствует значение размера отверстия или оно имеет неправильный формат. "
 "Добавьте его и повторите попытку."
 
-#: appEditors/AppGerberEditor.py:3401
+#: appEditors/AppGerberEditor.py:3456
 msgid "Aperture already in the aperture table."
 msgstr "Отверстие уже присутствует в таблице отверстий."
 
-#: appEditors/AppGerberEditor.py:3408
+#: appEditors/AppGerberEditor.py:3463
 msgid "Added new aperture with code"
 msgstr "Добавлено новое отверстие с кодом"
 
-#: appEditors/AppGerberEditor.py:3440
+#: appEditors/AppGerberEditor.py:3495
 msgid " Select an aperture in Aperture Table"
 msgstr " Выберите отверстие в таблице отверстий"
 
-#: appEditors/AppGerberEditor.py:3448
+#: appEditors/AppGerberEditor.py:3503
 msgid "Select an aperture in Aperture Table -->"
 msgstr "Выберите отверстие в таблице отверстий-->"
 
-#: appEditors/AppGerberEditor.py:3462
+#: appEditors/AppGerberEditor.py:3517
 msgid "Deleted aperture with code"
 msgstr "Удалено отверстие с кодом"
 
-#: appEditors/AppGerberEditor.py:3530
+#: appEditors/AppGerberEditor.py:3585
 msgid "Dimensions need two float values separated by comma."
 msgstr ""
 "Размеры должны иметь два значения с плавающей запятой, разделенные запятой."
 
-#: appEditors/AppGerberEditor.py:3539
+#: appEditors/AppGerberEditor.py:3594
 msgid "Dimensions edited."
 msgstr "Размеры отредактированы."
 
-#: appEditors/AppGerberEditor.py:4061
+#: appEditors/AppGerberEditor.py:4116
 msgid "Loading Gerber into Editor"
 msgstr "Загрузка Gerber в редактор"
 
-#: appEditors/AppGerberEditor.py:4189
+#: appEditors/AppGerberEditor.py:4246
 msgid "Setting up the UI"
 msgstr "Настройка пользовательского интерфейса"
 
-#: appEditors/AppGerberEditor.py:4190
+#: appEditors/AppGerberEditor.py:4247
 msgid "Adding geometry finished. Preparing the GUI"
 msgstr ""
 "Добавление геометрии закончено. Подготовка графического интерфейса "
 "пользователя"
 
-#: appEditors/AppGerberEditor.py:4199
+#: appEditors/AppGerberEditor.py:4256
 msgid "Finished loading the Gerber object into the editor."
 msgstr "Завершена загрузка объекта Gerber в редактор."
 
-#: appEditors/AppGerberEditor.py:4336
+#: appEditors/AppGerberEditor.py:4393
 msgid ""
 "There are no Aperture definitions in the file. Aborting Gerber creation."
 msgstr "В файле нет отверстий. Прерывание создания Gerber."
 
-#: appEditors/AppGerberEditor.py:4338 appObjects/AppObject.py:164
+#: appEditors/AppGerberEditor.py:4395 appObjects/AppObject.py:164
 #: appObjects/FlatCAMGeometry.py:2078 appParsers/ParseExcellon.py:972
 #: appTools/ToolPcbWizard.py:318 app_Main.py:7709 app_Main.py:10173
 #: app_Main.py:10233 app_Main.py:10364 app_Main.py:10429
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Произошла внутренняя ошибка. Смотрите командную строку.\n"
 
-#: appEditors/AppGerberEditor.py:4346
+#: appEditors/AppGerberEditor.py:4403
 msgid "Creating Gerber."
 msgstr "Создание Gerber."
 
-#: appEditors/AppGerberEditor.py:4358
+#: appEditors/AppGerberEditor.py:4415
 msgid "Done. Gerber editing finished."
 msgstr "Редактирование Gerber завершено."
 
-#: appEditors/AppGerberEditor.py:4374
+#: appEditors/AppGerberEditor.py:4431
 msgid "Cancelled. No aperture is selected"
 msgstr "Отмена. Нет выбранных отверстий"
 
-#: appEditors/AppGerberEditor.py:4529 app_Main.py:6634
+#: appEditors/AppGerberEditor.py:4586 app_Main.py:6634
 msgid "Coordinates copied to clipboard."
 msgstr "Координаты скопированы в буфер обмена."
 
-#: appEditors/AppGerberEditor.py:4976
+#: appEditors/AppGerberEditor.py:5033
 msgid "Failed. No aperture geometry is selected."
 msgstr "Ошибка. Не выбрана геометрия отверстий."
 
-#: appEditors/AppGerberEditor.py:4985 appEditors/AppGerberEditor.py:5256
+#: appEditors/AppGerberEditor.py:5042 appEditors/AppGerberEditor.py:5313
 msgid "Done. Apertures geometry deleted."
 msgstr "Готово. Геометрия отверстий удалена."
 
-#: appEditors/AppGerberEditor.py:5128
+#: appEditors/AppGerberEditor.py:5185
 msgid "No aperture to buffer. Select at least one aperture and try again."
 msgstr ""
 "Нет отверстий для создания буфера. Выберите хотя бы одно отверстие и "
 "повторите попытку."
 
-#: appEditors/AppGerberEditor.py:5140 appTools/ToolCopperThieving.py:306
+#: appEditors/AppGerberEditor.py:5197 appTools/ToolCopperThieving.py:306
 #: appTools/ToolCopperThieving.py:907 appTools/ToolCopperThieving.py:1104
 #: appTools/ToolCorners.py:146 appTools/ToolCorners.py:413
 #: appTools/ToolCutOut.py:779 appTools/ToolCutOut.py:905
@@ -3828,59 +3825,59 @@ msgstr ""
 msgid "Failed."
 msgstr "Неудачно."
 
-#: appEditors/AppGerberEditor.py:5159
+#: appEditors/AppGerberEditor.py:5216
 msgid "Scale factor value is missing or wrong format. Add it and retry."
 msgstr ""
 "Отсутствует значение коэффициента масштабирования или оно имеет неправильный "
 "формат. Добавьте его и повторите попытку."
 
-#: appEditors/AppGerberEditor.py:5191
+#: appEditors/AppGerberEditor.py:5248
 msgid "No aperture to scale. Select at least one aperture and try again."
 msgstr ""
 "Нет отверстий для масштабирования. Выберите хотя бы одно отверстие и "
 "повторите попытку."
 
-#: appEditors/AppGerberEditor.py:5207
+#: appEditors/AppGerberEditor.py:5264
 msgid "Done. Scale Tool completed."
 msgstr "Готово. Масштабирование выполнено."
 
-#: appEditors/AppGerberEditor.py:5245
+#: appEditors/AppGerberEditor.py:5302
 msgid "Polygons marked."
 msgstr "Полигонов отмечено."
 
-#: appEditors/AppGerberEditor.py:5248
+#: appEditors/AppGerberEditor.py:5305
 msgid "No polygons were marked. None fit within the limits."
 msgstr "Полигоны не были отмечены. Ни один не укладывается в пределы."
 
-#: appEditors/AppGerberEditor.py:5976
+#: appEditors/AppGerberEditor.py:6033
 msgid "Rotation action was not executed."
 msgstr "Вращение не было выполнено."
 
-#: appEditors/AppGerberEditor.py:6018 app_Main.py:6050 app_Main.py:6097
+#: appEditors/AppGerberEditor.py:6075 app_Main.py:6050 app_Main.py:6097
 msgid "Flip action was not executed."
 msgstr "Операция переворота не была выполнена."
 
-#: appEditors/AppGerberEditor.py:6058
+#: appEditors/AppGerberEditor.py:6115
 msgid "Skew action was not executed."
 msgstr "Наклон не был выполнен."
 
-#: appEditors/AppGerberEditor.py:6097
+#: appEditors/AppGerberEditor.py:6154
 msgid "Scale action was not executed."
 msgstr "Операция масштабирования не была выполнена."
 
-#: appEditors/AppGerberEditor.py:6141
+#: appEditors/AppGerberEditor.py:6198
 msgid "Offset action was not executed."
 msgstr "Операция смещения не была выполнена."
 
-#: appEditors/AppGerberEditor.py:6230
+#: appEditors/AppGerberEditor.py:6287
 msgid "Geometry shape offset Y cancelled"
 msgstr "Смещение формы по оси Y отменено"
 
-#: appEditors/AppGerberEditor.py:6246
+#: appEditors/AppGerberEditor.py:6303
 msgid "Geometry shape skew X cancelled"
 msgstr "Наклон формы по оси X отменён"
 
-#: appEditors/AppGerberEditor.py:6262
+#: appEditors/AppGerberEditor.py:6319
 msgid "Geometry shape skew Y cancelled"
 msgstr "Наклон формы по оси Y отменён"
 
@@ -13662,7 +13659,7 @@ msgstr ""
 "способ рисования"
 
 #: appObjects/FlatCAMGeometry.py:2673 appObjects/FlatCAMGeometry.py:2682
-#: appParsers/ParseGerber.py:1949 appParsers/ParseGerber.py:1959
+#: appParsers/ParseGerber.py:1950 appParsers/ParseGerber.py:1960
 msgid "Scale factor has to be a number: integer or float."
 msgstr ""
 "Коэффициент масштабирования должен быть числом: целочисленным или с "
@@ -13672,7 +13669,7 @@ msgstr ""
 msgid "Geometry Scale done."
 msgstr "Масштабирование Geometry выполнено."
 
-#: appObjects/FlatCAMGeometry.py:2762 appParsers/ParseGerber.py:2075
+#: appObjects/FlatCAMGeometry.py:2762 appParsers/ParseGerber.py:2076
 msgid ""
 "An (x,y) pair of values are needed. Probable you entered only one value in "
 "the Offset field."
@@ -13917,26 +13914,26 @@ msgstr ""
 msgid "Font not supported, try another one."
 msgstr "Шрифт не поддерживается, попробуйте другой."
 
-#: appParsers/ParseGerber.py:423
+#: appParsers/ParseGerber.py:424
 msgid "Gerber processing. Parsing"
 msgstr "Обработка Gerber. Разбор"
 
-#: appParsers/ParseGerber.py:423 appParsers/ParseHPGL2.py:201
+#: appParsers/ParseGerber.py:424 appParsers/ParseHPGL2.py:201
 msgid "lines"
 msgstr "линий"
 
-#: appParsers/ParseGerber.py:1034 appParsers/ParseGerber.py:1134
+#: appParsers/ParseGerber.py:1035 appParsers/ParseGerber.py:1135
 #: appParsers/ParseHPGL2.py:294 appParsers/ParseHPGL2.py:308
 #: appParsers/ParseHPGL2.py:327 appParsers/ParseHPGL2.py:351
 #: appParsers/ParseHPGL2.py:386
 msgid "Coordinates missing, line ignored"
 msgstr "Координаты отсутствуют, строка игнорируется"
 
-#: appParsers/ParseGerber.py:1036 appParsers/ParseGerber.py:1136
+#: appParsers/ParseGerber.py:1037 appParsers/ParseGerber.py:1137
 msgid "GERBER file might be CORRUPT. Check the file !!!"
 msgstr "Файл GERBER может быть поврежден. Проверьте файл !!!"
 
-#: appParsers/ParseGerber.py:1090
+#: appParsers/ParseGerber.py:1091
 msgid ""
 "Region does not have enough points. File will be processed but there are "
 "parser errors. Line number"
@@ -13944,47 +13941,47 @@ msgstr ""
 "Региону не хватает точек. Файл будет обработан, но есть ошибки разбора. "
 "Номер строки"
 
-#: appParsers/ParseGerber.py:1520 appParsers/ParseHPGL2.py:421
+#: appParsers/ParseGerber.py:1521 appParsers/ParseHPGL2.py:421
 msgid "Gerber processing. Joining polygons"
 msgstr "Обработка Gerber. Соединение полигонов"
 
-#: appParsers/ParseGerber.py:1538
+#: appParsers/ParseGerber.py:1539
 msgid "Gerber processing. Applying Gerber polarity."
 msgstr "Обработка Gerber. Применение полярности Gerber."
 
-#: appParsers/ParseGerber.py:1598
+#: appParsers/ParseGerber.py:1599
 msgid "Gerber Line"
 msgstr "Строк Gerber"
 
-#: appParsers/ParseGerber.py:1598
+#: appParsers/ParseGerber.py:1599
 msgid "Gerber Line Content"
 msgstr "Содержание строк Gerber"
 
-#: appParsers/ParseGerber.py:1600
+#: appParsers/ParseGerber.py:1601
 msgid "Gerber Parser ERROR"
 msgstr "Ошибка разбора Gerber"
 
-#: appParsers/ParseGerber.py:2039
+#: appParsers/ParseGerber.py:2040
 msgid "Gerber Scale done."
 msgstr "Масштабирование Gerber выполнено."
 
-#: appParsers/ParseGerber.py:2131
+#: appParsers/ParseGerber.py:2132
 msgid "Gerber Offset done."
 msgstr "Смещение Gerber выполнено."
 
-#: appParsers/ParseGerber.py:2207
+#: appParsers/ParseGerber.py:2208
 msgid "Gerber Mirror done."
 msgstr "Зеркалирование Gerber выполнено."
 
-#: appParsers/ParseGerber.py:2281
+#: appParsers/ParseGerber.py:2282
 msgid "Gerber Skew done."
 msgstr "Наклон Gerber выполнен."
 
-#: appParsers/ParseGerber.py:2343
+#: appParsers/ParseGerber.py:2344
 msgid "Gerber Rotate done."
 msgstr "Вращение Gerber выполнено."
 
-#: appParsers/ParseGerber.py:2500
+#: appParsers/ParseGerber.py:2501
 msgid "Gerber Buffer done."
 msgstr "Буферизация Gerber выполнена."
 
@@ -19945,6 +19942,11 @@ msgstr ""
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
+
+#~ msgid "To add an Pad Array first select a aperture in Aperture Table"
+#~ msgstr ""
+#~ "Чтобы добавить массив площадок, сначала выберите отверстие в таблице "
+#~ "отверстий"
 
 #~ msgid "Close Editor"
 #~ msgstr "Закрыть редактор"
