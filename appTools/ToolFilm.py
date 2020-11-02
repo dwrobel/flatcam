@@ -613,7 +613,8 @@ class Film(AppTool):
                     drawing = svg2rlg(doc_final)
 
                     p_size = self.ui.pagesize_combo.get_value()
-                    if p_size == 'Bounds':                        renderPDF.drawToFile(drawing, filename)
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
                     else:
                         if self.ui.orientation_radio.get_value() == 'p':
                             page_size = portrait(self.ui.pagesize[p_size])

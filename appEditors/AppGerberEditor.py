@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
 from shapely.ops import unary_union

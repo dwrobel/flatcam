@@ -339,7 +339,7 @@ class ShapeCollectionVisual(CompoundVisual):
         if update:
             self.__update()
 
-    def update_visibility(self, state:bool, indexes=None) -> None:
+    def update_visibility(self, state: bool, indexes=None) -> None:
         # Lock sub-visuals updates
         self.update_lock.acquire(True)
         if indexes is None:
@@ -540,8 +540,9 @@ class ShapeCollectionVisual(CompoundVisual):
     def redraw(self, indexes=None, update_colors=None):
         """
         Redraws collection
-        :param indexes: list
+        :param indexes:     list
             Shape indexes to get from process pool
+        :param update_colors:
         """
         # Only one thread can update data
         self.results_lock.acquire(True)

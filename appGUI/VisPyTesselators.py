@@ -29,9 +29,10 @@ class GLUTess:
         pass
 
     def _on_combine(self, coords, data, weight):
-        return (coords[0], coords[1], coords[2])
+        return coords[0], coords[1], coords[2]
 
-    def _on_error(self, errno):
+    @staticmethod
+    def _on_error(errno):
         print("GLUTess error:", errno)
 
     def _on_end_primitive(self):

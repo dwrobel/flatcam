@@ -264,9 +264,7 @@ class ToolCorners(AppTool):
                 geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=2)
                 geo_buff_list.append(geo_buff)
 
-                dict_el = {}
-                dict_el['follow'] = geo
-                dict_el['solid'] = geo_buff
+                dict_el = {'follow': geo, 'solid': geo_buff}
                 new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
         else:
             ap_keys = list(new_apertures.keys())

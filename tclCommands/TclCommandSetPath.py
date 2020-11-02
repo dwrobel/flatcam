@@ -52,7 +52,7 @@ class TclCommandSetPath(TclCommand):
                 "By using this command there is no need for usage of the absolute path to the files.",
         'args': collections.OrderedDict([
             ('path', 'A folder path to where the user is supposed to have the file that he will work with.\n'
-                         'WARNING: No spaces allowed. Use quotes around the path if it contains spaces.'),
+                     'WARNING: No spaces allowed. Use quotes around the path if it contains spaces.'),
         ]),
         'examples': ['set_path D:\\Project_storage_path']
     }

@@ -2,16 +2,13 @@ from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
-# import re
-# import logging
 import traceback
 from copy import deepcopy
-# import sys
 
 from shapely.ops import unary_union, linemerge
-# from shapely.affinity import scale, translate
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
+from shapely.geometry import Point
 
 from lxml import etree as ET
 import ezdxf
@@ -315,12 +312,12 @@ class Gerber(Geometry):
 
         First is ``G54D11*`` and seconds is ``G36*``.
 
-        :param filename: Gerber file to parse.
-        :type filename: str
-        :param follow: If true, will not create polygons, just lines
-            following the gerber path.
-        :type follow: bool
-        :return: None
+        :param filename:        Gerber file to parse.
+        :type filename:         str
+        :param follow:          If true, will not create polygons, just lines
+                                following the gerber path.
+        :type follow:           bool
+        :return:                None
         """
 
         with open(filename, 'r') as gfile:
@@ -1837,12 +1834,10 @@ class Gerber(Geometry):
                 geos_length = 1
 
             if geos_length == 1:
-                geo_qrcode = []
-                geo_qrcode.append(Polygon(geos[0].exterior))
+                geo_qrcode = [Polygon(geos[0].exterior)]
                 for i_el in geos[0].interiors:
                     geo_qrcode.append(Polygon(i_el).buffer(0, resolution=res))
-                for poly in geo_qrcode:
-                    geos.append(poly)
+                geos = [poly for poly in geo_qrcode]
 
             if type(self.solid_geometry) == list:
                 self.solid_geometry += geos
@@ -1864,15 +1859,14 @@ class Gerber(Geometry):
             self.solid_geometry = [self.solid_geometry]
 
         if '0' not in self.apertures:
-            self.apertures['0'] = {}
-            self.apertures['0']['type'] = 'REG'
-            self.apertures['0']['size'] = 0.0
-            self.apertures['0']['geometry'] = []
+            self.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         for pol in self.solid_geometry:
-            new_el = {}
-            new_el['solid'] = pol
-            new_el['follow'] = pol.exterior
+            new_el = {'solid': pol, 'follow': pol.exterior}
             self.apertures['0']['geometry'].append(new_el)
 
     def import_dxf_as_gerber(self, filename, units='MM'):
@@ -1914,15 +1908,14 @@ class Gerber(Geometry):
 
         # create the self.apertures data structure
         if '0' not in self.apertures:
-            self.apertures['0'] = {}
-            self.apertures['0']['type'] = 'REG'
-            self.apertures['0']['size'] = 0.0
-            self.apertures['0']['geometry'] = []
+            self.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         for pol in flat_geo:
-            new_el = {}
-            new_el['solid'] = pol
-            new_el['follow'] = pol
+            new_el = {'solid': pol, 'follow': pol}
             self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):

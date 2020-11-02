@@ -245,9 +245,7 @@ class ToolCopperThieving(AppTool):
                 break
 
         if aperture_found:
-            geo_elem = {}
-            geo_elem['solid'] = self.robber_geo
-            geo_elem['follow'] = self.robber_line
+            geo_elem = {'solid': self.robber_geo, 'follow': self.robber_line}
             self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
         else:
             ap_keys = list(self.grb_object.apertures.keys())
@@ -261,9 +259,7 @@ class ToolCopperThieving(AppTool):
             self.grb_object.apertures[new_apid]['size'] = self.rb_thickness
             self.grb_object.apertures[new_apid]['geometry'] = []
 
-            geo_elem = {}
-            geo_elem['solid'] = self.robber_geo
-            geo_elem['follow'] = self.robber_line
+            geo_elem = {'solid': self.robber_geo, 'follow': self.robber_line}
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         geo_obj = self.grb_object.solid_geometry
@@ -857,18 +853,14 @@ class ToolCopperThieving(AppTool):
                     geo_list.append(poly)
 
                     # append into the '0' aperture
-                    geo_elem = {}
-                    geo_elem['solid'] = poly
-                    geo_elem['follow'] = poly.exterior
+                    geo_elem = {'solid': poly, 'follow': poly.exterior}
                     app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
             except TypeError:
                 # append to the new solid geometry
                 geo_list.append(app_obj.new_solid_geometry)
 
                 # append into the '0' aperture
-                geo_elem = {}
-                geo_elem['solid'] = app_obj.new_solid_geometry
-                geo_elem['follow'] = app_obj.new_solid_geometry.exterior
+                geo_elem = {'solid': app_obj.new_solid_geometry, 'follow': app_obj.new_solid_geometry.exterior}
                 app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
 
             app_obj.grb_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
@@ -993,9 +985,7 @@ class ToolCopperThieving(AppTool):
                         break
 
                 if aperture_found:
-                    geo_elem = {}
-                    geo_elem['solid'] = robber_solid_geo
-                    geo_elem['follow'] = robber_line
+                    geo_elem = {'solid': robber_solid_geo, 'follow': robber_line}
                     grb_obj.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
                 else:
                     ap_keys = list(grb_obj.apertures.keys())

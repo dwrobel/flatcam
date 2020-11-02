@@ -104,10 +104,9 @@ class TclCommandScale(TclCommand):
                         raise Exception
                 except Exception as e:
                     self.raise_tcl_error('%s\n%s' % (_("Expected -origin <origin> or "
-                                                  "-origin <min_bounds> or "
-                                                  "-origin <center> or "
-                                                  "- origin 3.0,4.2."), str(e))
-                                         )
+                                                       "-origin <min_bounds> or "
+                                                       "-origin <center> or "
+                                                       "- origin 3.0,4.2."), str(e)))
                     return 'fail'
 
         if 'factor' in args:

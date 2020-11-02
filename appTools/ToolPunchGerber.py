@@ -472,14 +472,14 @@ class ToolPunchGerber(AppTool):
                                     # since there may be drills that do not drill into a pad we test only for
                                     # drills in a pad
                                     if drill_pt.within(elem['solid']):
-                                        geo_elem = {}
-                                        geo_elem['clear'] = drill_pt
+                                        geo_elem = {'clear': drill_pt}
 
                                         if clear_apid_size not in holes_apertures:
-                                            holes_apertures[clear_apid_size] = {}
-                                            holes_apertures[clear_apid_size]['type'] = 'C'
-                                            holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                            holes_apertures[clear_apid_size]['geometry'] = []
+                                            holes_apertures[clear_apid_size] = {
+                                                'type': 'C',
+                                                'size': clear_apid_size,
+                                                'geometry': []
+                                            }
 
                                         holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -498,8 +498,8 @@ class ToolPunchGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -605,14 +605,14 @@ class ToolPunchGerber(AppTool):
 
                         # since there may be drills that do not drill into a pad we test only for drills in a pad
                         if geo.within(elem['solid']):
-                            geo_elem = {}
-                            geo_elem['clear'] = geo.centroid
+                            geo_elem = {'clear': geo.centroid}
 
                             if clear_apid_size not in holes_apertures:
-                                holes_apertures[clear_apid_size] = {}
-                                holes_apertures[clear_apid_size]['type'] = 'C'
-                                holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                holes_apertures[clear_apid_size]['geometry'] = []
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
 
                             holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -631,8 +631,8 @@ class ToolPunchGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -754,14 +754,14 @@ class ToolPunchGerber(AppTool):
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):
-                            geo_elem = {}
-                            geo_elem['clear'] = geo.centroid
+                            geo_elem = {'clear': geo.centroid}
 
                             if clear_apid_size not in holes_apertures:
-                                holes_apertures[clear_apid_size] = {}
-                                holes_apertures[clear_apid_size]['type'] = 'C'
-                                holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                holes_apertures[clear_apid_size]['geometry'] = []
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
 
                             holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -780,8 +780,8 @@ class ToolPunchGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -898,14 +898,14 @@ class ToolPunchGerber(AppTool):
 
                         # since there may be drills that do not drill into a pad we test only for geos in a pad
                         if geo.within(elem['solid']):
-                            geo_elem = {}
-                            geo_elem['clear'] = geo.centroid
+                            geo_elem = {'clear': geo.centroid}
 
                             if clear_apid_size not in holes_apertures:
-                                holes_apertures[clear_apid_size] = {}
-                                holes_apertures[clear_apid_size]['type'] = 'C'
-                                holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                holes_apertures[clear_apid_size]['geometry'] = []
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
 
                             holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -924,8 +924,8 @@ class ToolPunchGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 

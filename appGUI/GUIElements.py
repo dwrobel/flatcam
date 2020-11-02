@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSettings
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -2079,7 +2079,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         """
         pos = self.textCursor().position()
         self.moveCursor(QtGui.QTextCursor.StartOfLine)
-        line_text = self.textCursor().block().text()
+        self.textCursor().block().text()
         if self.textCursor().block().text().startswith(" "):
             # skip the white space
             self.moveCursor(QtGui.QTextCursor.NextWord)
@@ -2407,7 +2407,7 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
 class FCButton(QtWidgets.QPushButton):
     def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
         super(FCButton, self).__init__(text, parent)
-        if not checkable is None:
+        if checkable is not None:
             self.setCheckable(checkable)
 
         if not click_callback is None:

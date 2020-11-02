@@ -79,8 +79,7 @@ class TclCommand(object):
 
         :return: current command
         """
-        command_string = []
-        command_string.append(self.aliases[0])
+        command_string = [self.aliases[0]]
 
         if self.original_args is not None:
             for arg in self.original_args:
@@ -417,7 +416,7 @@ class TclCommandSignaled(TclCommand):
             # set detail for processing, it will be there until next open or close
             self.app.shell.open_processing(self.get_current_command())
 
-            def handle_finished(obj):
+            def handle_finished():
                 self.app.shell_command_finished.disconnect(handle_finished)
                 if self.error is not None:
                     self.raise_tcl_unknown_error(self.error)

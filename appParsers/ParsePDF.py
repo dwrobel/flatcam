@@ -82,12 +82,10 @@ class PdfParser(QtCore.QObject):
         self.restore_gs_re = re.compile(r'^.*Q.*$')
 
         # graphic stack where we save parameters like transformation, line_width
-        self.gs = {}
         # each element is a list composed of sublist elements
         # (each sublist has 2 lists each having 2 elements: first is offset like:
         # offset_geo = [off_x, off_y], second element is scale list with 2 elements, like: scale_geo = [sc_x, sc_yy])
-        self.gs['transform'] = []
-        self.gs['line_width'] = []  # each element is a float
+        self.gs = {'transform': [], 'line_width': []}
 
         # conversion factor to INCH
         self.point_to_unit_factor = 0.01388888888
@@ -102,15 +100,17 @@ class PdfParser(QtCore.QObject):
             # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch
             self.point_to_unit_factor = 1 / 72
 
-        path = {}
-        path['lines'] = []  # it's a list of lines subpaths
-        path['bezier'] = []  # it's a list of bezier arcs subpaths
-        path['rectangle'] = []  # it's a list of rectangle subpaths
+        path = {
+            'lines': [],        # it's a list of lines subpaths
+            'bezier': [],       # it's a list of bezier arcs subpaths
+            'rectangle': []     # it's a list of rectangle subpaths
+        }
 
-        subpath = {}
-        subpath['lines'] = []  # it's a list of points
-        subpath['bezier'] = []  # it's a list of sublists each like this [start, c1, c2, stop]
-        subpath['rectangle'] = []  # it's a list of sublists of points
+        subpath = {
+            'lines': [],        # it's a list of points
+            'bezier': [],       # it's a list of sublists each like this [start, c1, c2, stop]
+            'rectangle': []     # it's a list of sublists of points
+        }
 
         # store the start point (when 'm' command is encountered)
         current_subpath = None
@@ -141,12 +141,14 @@ class PdfParser(QtCore.QObject):
 
         # store the apertures with clear geometry here
         # we are interested only in the circular geometry (drill holes) therefore we target only Bezier subpaths
-        clear_apertures_dict = {}
         # everything will be stored in the '0' aperture since we are dealing with clear polygons not strokes
-        clear_apertures_dict['0'] = {}
-        clear_apertures_dict['0']['size'] = 0.0
-        clear_apertures_dict['0']['type'] = 'C'
-        clear_apertures_dict['0']['geometry'] = []
+        clear_apertures_dict = {
+            '0': {
+                'size': 0.0,
+                'type': 'C',
+                'geometry': []
+            }
+        }
 
         # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
         # it will be transformed into Gerber object
@@ -527,14 +529,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                     else:
                         if str(aperture) in apertures_dict.keys():
@@ -546,14 +544,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                 else:
                     apertures_dict[str(aperture)] = {}
@@ -563,14 +557,10 @@ class PdfParser(QtCore.QObject):
                     for pdf_geo in path_geo:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
-                                new_el = {}
-                                new_el['solid'] = poly
-                                new_el['follow'] = poly.exterior
+                                new_el = {'solid': poly, 'follow': poly.exterior}
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                         else:
-                            new_el = {}
-                            new_el['solid'] = pdf_geo
-                            new_el['follow'] = pdf_geo.exterior
+                            new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                             apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
 
                 continue
@@ -675,12 +665,10 @@ class PdfParser(QtCore.QObject):
                         if path_geo:
                             try:
                                 for g in path_geo:
-                                    new_el = {}
-                                    new_el['clear'] = g
+                                    new_el = {'clear': g}
                                     clear_apertures_dict['0']['geometry'].append(new_el)
                             except TypeError:
-                                new_el = {}
-                                new_el['clear'] = path_geo
+                                new_el = {'clear': path_geo}
                                 clear_apertures_dict['0']['geometry'].append(new_el)
 
                     # now that we finished searching for drill holes (this is not very precise because holes in the
@@ -690,12 +678,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['clear'] = poly
+                                    new_el = {'clear': poly}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['clear'] = pdf_geo
+                                new_el = {'clear': pdf_geo}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
                         # in case there is no stroke width yet therefore no aperture
@@ -706,12 +692,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['clear'] = poly
+                                    new_el = {'clear': poly}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['clear'] = pdf_geo
+                                new_el = {'clear': pdf_geo}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                 else:
                     # else, add the geometry as usual
@@ -719,14 +703,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
                         # in case there is no stroke width yet therefore no aperture
@@ -737,14 +717,10 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     continue
 
@@ -890,50 +866,41 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                     else:
                         if str(aperture) in apertures_dict.keys():
                             aperture += 1
-                        apertures_dict[str(aperture)] = {}
-                        apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
-                        apertures_dict[str(aperture)]['type'] = 'C'
-                        apertures_dict[str(aperture)]['geometry'] = []
+                        apertures_dict[str(aperture)] = {
+                            'size': round(applied_size, 5),
+                            'type': 'C',
+                            'geometry': []
+                        }
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                 else:
-                    apertures_dict[str(aperture)] = {}
-                    apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
-                    apertures_dict[str(aperture)]['type'] = 'C'
-                    apertures_dict[str(aperture)]['geometry'] = []
+                    apertures_dict[str(aperture)] = {
+                        'size': round(applied_size, 5),
+                        'type': 'C',
+                        'geometry': []
+                    }
+
                     for pdf_geo in path_geo:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
-                                new_el = {}
-                                new_el['solid'] = poly
-                                new_el['follow'] = poly.exterior
+                                new_el = {'solid': poly, 'follow': poly.exterior}
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                         else:
-                            new_el = {}
-                            new_el['solid'] = pdf_geo
-                            new_el['follow'] = pdf_geo.exterior
+                            new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                             apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
 
                 # ############################################# ##
@@ -946,60 +913,52 @@ class PdfParser(QtCore.QObject):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in fill_geo:
-                                    new_el = {}
-                                    new_el['clear'] = poly
+                                    new_el = {'clear': poly}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['clear'] = pdf_geo
+                                new_el = {'clear': pdf_geo}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
                         # in case there is no stroke width yet therefore no aperture
-                        apertures_dict['0'] = {}
-                        apertures_dict['0']['size'] = round(applied_size, 5)
-                        apertures_dict['0']['type'] = 'C'
-                        apertures_dict['0']['geometry'] = []
+                        apertures_dict['0'] = {
+                            'size': round(applied_size, 5),
+                            'type': 'C',
+                            'geometry': []
+                        }
+
                         for pdf_geo in fill_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['clear'] = poly
+                                    new_el = {'clear': poly}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['clear'] = pdf_geo
+                                new_el = {'clear': pdf_geo}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                 else:
                     try:
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in fill_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
                         # in case there is no stroke width yet therefore no aperture
-                        apertures_dict['0'] = {}
-                        apertures_dict['0']['size'] = round(applied_size, 5)
-                        apertures_dict['0']['type'] = 'C'
-                        apertures_dict['0']['geometry'] = []
+                        apertures_dict['0'] = {
+                            'size': round(applied_size, 5),
+                            'type': 'C',
+                            'geometry': []
+                        }
+
                         for pdf_geo in fill_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = {}
-                                    new_el['solid'] = poly
-                                    new_el['follow'] = poly.exterior
+                                    new_el = {'solid': poly, 'follow': poly.exterior}
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = {}
-                                new_el['solid'] = pdf_geo
-                                new_el['follow'] = pdf_geo.exterior
+                                new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
 
                 continue

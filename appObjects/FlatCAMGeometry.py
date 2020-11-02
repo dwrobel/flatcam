@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString, LinearRing, box
+from shapely.geometry import MultiLineString, LineString, LinearRing, box
 import shapely.affinity as affinity
 
 from camlib import Geometry, grace
@@ -2606,7 +2606,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
                     # Type(cpoly) == FlatCAMRTreeStorage | None
                     cpoly = None
-                    if paint_method == 0:   # Standard
+                    if paint_method == 0:       # Standard
                         cpoly = self.clear_polygon(bbox,
                                                    tooldia=tooldia,
                                                    steps_per_circle=obj.circle_steps,
@@ -2614,7 +2614,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                    contour=True,
                                                    connect=True,
                                                    prog_plot=False)
-                    elif paint_method == 1: # Seed
+                    elif paint_method == 1:     # Seed
                         cpoly = self.clear_polygon2(bbox,
                                                     tooldia=tooldia,
                                                     steps_per_circle=obj.circle_steps,
@@ -2622,7 +2622,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                     contour=True,
                                                     connect=True,
                                                     prog_plot=False)
-                    elif paint_method == 2: # Lines
+                    elif paint_method == 2:     # Lines
                         cpoly = self.clear_polygon3(bbox,
                                                     tooldia=tooldia,
                                                     steps_per_circle=obj.circle_steps,

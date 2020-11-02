@@ -9,12 +9,11 @@ from shapely.geometry import LineString
 from shapely.affinity import rotate
 from ezdxf.math.vector import Vector as ezdxf_vector
 
+from appParsers.ParseFont import *
+from appParsers.ParseDXF_Spline import *
 import logging
 
 log = logging.getLogger('base2')
-
-from appParsers.ParseFont import *
-from appParsers.ParseDXF_Spline import *
 
 
 def distance(pt1, pt2):
@@ -107,12 +106,12 @@ def dxfarc2shapely(arc, n_points=100):
         arc_center = ocs.to_wcs(arc.dxf.center)
         start_angle = arc.dxf.start_angle + 180
         end_angle = arc.dxf.end_angle + 180
-        dir = 'CW'
+        direction = 'CW'
     else:
         arc_center = arc.dxf.center
         start_angle = arc.dxf.start_angle
         end_angle = arc.dxf.end_angle
-        dir = 'CCW'
+        direction = 'CCW'
 
     center_x = arc_center[0]
     center_y = arc_center[1]
@@ -127,7 +126,7 @@ def dxfarc2shapely(arc, n_points=100):
     step_angle = float(abs(end_angle - start_angle) / n_points)
 
     while angle <= end_angle:
-        if dir == 'CCW':
+        if direction == 'CCW':
             x = center_x + radius * math.cos(math.radians(angle))
             y = center_y + radius * math.sin(math.radians(angle))
         else:
@@ -138,7 +137,7 @@ def dxfarc2shapely(arc, n_points=100):
 
     # in case the number of segments do not cover everything until the end of the arc
     if angle != end_angle:
-        if dir == 'CCW':
+        if direction == 'CCW':
             x = center_x + radius * math.cos(math.radians(end_angle))
             y = center_y + radius * math.sin(math.radians(end_angle))
         else:
@@ -164,12 +163,12 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
         center = ocs.to_wcs(ellipse.dxf.center)
         start_angle = ocs.to_wcs(ellipse.dxf.start_param)
         end_angle = ocs.to_wcs(ellipse.dxf.end_param)
-        dir = 'CW'
+        direction = 'CW'
     else:
         center = ellipse.dxf.center
         start_angle = ellipse.dxf.start_param
         end_angle = ellipse.dxf.end_param
-        dir = 'CCW'
+        direction = 'CCW'
 
     # print("Dir = %s" % dir)
     major_axis = ellipse.dxf.major_axis
@@ -189,7 +188,7 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
 
     angle = start_angle
     for step in range(line_seg + 1):
-        if dir == 'CW':
+        if direction == 'CW':
             major_dim = normalize_2(major_axis)
             minor_dim = normalize_2(Vector([ratio * k for k in major_axis]))
             vx = (major_dim[0] + major_dim[1]) * math.cos(angle)
@@ -380,6 +379,7 @@ def get_geo(dxf_object, container):
                 geo.append(g)
 
     return geo
+
 
 def getdxftext(exf_object, object_type, units=None):
     pass

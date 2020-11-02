@@ -389,7 +389,7 @@ class CutOut(AppTool):
 
     def on_tool_default_add(self, dia=None, muted=None):
 
-        dia = dia
+        dia = dia if dia else str(self.app.defaults["tools_cutout_tooldia"])
         self.default_data.update({
             "plot": True,
 
@@ -442,7 +442,7 @@ class CutOut(AppTool):
         })
 
         self.cut_tool_dict.update({
-            'tooldia': str(self.app.defaults["tools_cutout_tooldia"]),
+            'tooldia': dia,
             'offset': 'Path',
             'offset_value': 0.0,
             'type': _('Rough'),
@@ -874,16 +874,18 @@ class CutOut(AppTool):
                     if not holes:
                         return 'fail'
 
-                    tools = {}
-                    tools[1] = {}
-                    tools[1]["tooldia"] = mb_dia
-                    tools[1]['drills'] = holes
-                    tools[1]['solid_geometry'] = []
+                    tools = {
+                        1: {
+                            "tooldia": mb_dia,
+                            "drills": holes,
+                            "solid_geometry": []
+                        }
+                    }
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
                     exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
-                                                                           local_use=exc_obj,filename=None,
+                                                                           local_use=exc_obj, filename=None,
                                                                            use_thread=False)
                     # calculate the bounds
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
@@ -1244,11 +1246,13 @@ class CutOut(AppTool):
                     if not holes:
                         return 'fail'
 
-                    tools = {}
-                    tools[1] = {}
-                    tools[1]["tooldia"] = mb_dia
-                    tools[1]['drills'] = holes
-                    tools[1]['solid_geometry'] = []
+                    tools = {
+                        1: {
+                            "tooldia": mb_dia,
+                            "drills": holes,
+                            "solid_geometry": []
+                        }
+                    }
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
@@ -1602,11 +1606,13 @@ class CutOut(AppTool):
                             if not holes:
                                 return 'fail'
 
-                            tools = {}
-                            tools[1] = {}
-                            tools[1]["tooldia"] = mb_dia
-                            tools[1]['drills'] = holes
-                            tools[1]['solid_geometry'] = []
+                            tools = {
+                                1: {
+                                    "tooldia": mb_dia,
+                                    "drills": holes,
+                                    "solid_geometry": []
+                                }
+                            }
 
                             exc_obj.tools = tools
                             exc_obj.create_geometry()

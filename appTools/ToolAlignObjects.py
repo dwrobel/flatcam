@@ -383,7 +383,7 @@ class AlignUI:
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.aligned_label =FCLabel('<b>%s:</b>' % _("MOVING object"))
+        self.aligned_label = FCLabel('<b>%s:</b>' % _("MOVING object"))
         grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
 
         self.aligned_label.setToolTip(
@@ -478,7 +478,7 @@ class AlignUI:
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Buttons
-        self.align_object_button =FCButton(_("Align Object"))
+        self.align_object_button = FCButton(_("Align Object"))
         self.align_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/align16.png'))
         self.align_object_button.setToolTip(
             _("Align the specified object to the aligner object.\n"

@@ -270,9 +270,11 @@ class QRCode(AppTool):
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.apertures:
-            self.grb_object.apertures[new_apid] = {}
-            self.grb_object.apertures[new_apid]['geometry'] = []
-            self.grb_object.apertures[new_apid]['type'] = 'R'
+            self.grb_object.apertures[new_apid] = {
+                'type': 'R',
+                'geometry': []
+            }
+
             # TODO: HACK
             # I've artificially added 1% to the height and width because otherwise after loading the
             # exported file, it will not be correctly reconstructed (it will be made from multiple shapes instead of
@@ -282,15 +284,15 @@ class QRCode(AppTool):
             self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
         if '0' not in self.grb_object.apertures:
-            self.grb_object.apertures['0'] = {}
-            self.grb_object.apertures['0']['geometry'] = []
-            self.grb_object.apertures['0']['type'] = 'REG'
-            self.grb_object.apertures['0']['size'] = 0.0
+            self.grb_object.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
         # make sure that I place a cutout there
-        zero_elem = {}
-        zero_elem['clear'] = offset_mask_geo
+        zero_elem = {'clear': offset_mask_geo}
         self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
 
         try:
@@ -304,13 +306,13 @@ class QRCode(AppTool):
 
         try:
             for geo in self.qrcode_geometry:
-                geo_elem = {}
-                geo_elem['solid'] = translate(geo, xoff=pos[0], yoff=pos[1])
-                geo_elem['follow'] = translate(geo.centroid, xoff=pos[0], yoff=pos[1])
+                geo_elem = {
+                    'solid': translate(geo, xoff=pos[0], yoff=pos[1]),
+                    'follow': translate(geo.centroid, xoff=pos[0], yoff=pos[1])
+                }
                 self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
-            geo_elem = {}
-            geo_elem['solid'] = self.qrcode_geometry
+            geo_elem = {'solid': self.qrcode_geometry}
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:

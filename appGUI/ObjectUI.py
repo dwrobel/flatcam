@@ -170,8 +170,8 @@ class ObjectUI(QtWidgets.QWidget):
 
     def confirmation_message_int(self, accepted, minval, maxval):
         if accepted is False:
-            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
-                                 (_("Edited value is out of range"), minval, maxval), False)
+            self.app.inform[str, bool].emit(
+                '[WARNING_NOTCL] %s: [%d, %d]' % (_("Edited value is out of range"), minval, maxval), False)
         else:
             self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 

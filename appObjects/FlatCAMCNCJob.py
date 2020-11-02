@@ -2265,7 +2265,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         processed_body_gcode += gline + '\n'
 
                 gcode = processed_body_gcode
-                g = self.gc_header + '\n' + self.gc_start + '\n'  + preamble + '\n' + \
+                g = self.gc_header + '\n' + self.gc_start + '\n' + preamble + '\n' + \
                     gcode + '\n' + postamble + end_gcode
             else:
                 # try:
@@ -2286,6 +2286,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 #                          _("G-code does not have a G94 code.\n"
                 #                            "Append Code snippet will not be used.."))
                 #     g = self.gc_header + '\n' + gcode + postamble + end_gcode
+                g = ''
                 if preamble != '' and postamble != '':
                     g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + \
                         postamble + '\n' + end_gcode

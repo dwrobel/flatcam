@@ -462,7 +462,6 @@ class AppGCodeEditor(QtCore.QObject):
                     end_sel = my_text_cursor.selectionEnd()
                 else:
                     pos_list = []
-                    end_sel = 0
 
                     my_text_cursor = self.edit_area.textCursor()
                     m6_pos = my_text_cursor.selectionEnd()

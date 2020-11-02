@@ -12,7 +12,7 @@
 # ######################################################### ##
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt
 
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from appTool import AppTool
@@ -20,7 +20,7 @@ from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComb
     FCDoubleSpinner, FCButton, FCInputDialog, FCTree, NumericalEvalTupleEntry
 from appParsers.ParseFont import *
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
+from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient

@@ -79,11 +79,10 @@ class ToolImage(AppTool):
     def on_file_importimage(self):
         """
         Callback for menu item File->Import IMAGE.
-        :param type_of_obj: to import the IMAGE as Geometry or as Gerber
-        :type type_of_obj: str
+
         :return: None
         """
-        mask = []
+
         self.app.log.debug("on_file_importimage()")
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
@@ -147,7 +146,7 @@ class ToolImage(AppTool):
             geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
             geo_obj.multigeo = False
 
-        with self.app.proc_container.new(_("Importing Image")) as proc:
+        with self.app.proc_container.new(_("Importing Image")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]

@@ -167,7 +167,8 @@ class TclCommandPanelize(TclCommand):
         #             for col in range(columns):
         #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
         #                 if isinstance(obj, ExcellonObject):
-        #                     self.app.app_obj.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
+        #                     self.app.app_obj.new_object("excellon", local_outname, initialize_local_excellon,
+        #                                           plot=False,
         #                                         autoselected=False)
         #                 else:
         #                     self.app.app_obj.new_object("geometry", local_outname, initialize_local, plot=False,
@@ -199,41 +200,36 @@ class TclCommandPanelize(TclCommand):
 
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
+
                     obj_fin.tools = obj.tools.copy()
-                    obj_fin.drills = []
-                    obj_fin.slots = []
-                    obj_fin.solid_geometry = []
+                    if 'drills' not in obj_fin.tools:
+                        obj_fin.tools['drills'] = []
+                    if 'slots' not in obj_fin.tools:
+                        obj_fin.tools['slots'] = []
+                    if 'solid_geometry' not in obj_fin.tools:
+                        obj_fin.tools['solid_geometry'] = []
 
                     for option in obj.options:
                         if option != 'name':
                             try:
                                 obj_fin.options[option] = obj.options[option]
                             except Exception as e:
-                                log.warning("Failed to copy option: %s" % str(option))
-                                log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
+                                app_obj.log.warning("Failed to copy option: %s" % str(option))
+                                app_obj.log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
 
                     for row in range(rows):
                         currentx = 0.0
                         for col in range(columns):
-                            if obj.drills:
-                                for tool_dict in obj.drills:
-                                    point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
-                                    obj_fin.drills.append(
-                                        {
-                                            "point": point_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
-                                    )
-                            if obj.slots:
-                                for tool_dict in obj.slots:
-                                    start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
-                                    stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
-                                    obj_fin.slots.append(
-                                        {
-                                            "start": start_offseted,
-                                            "stop": stop_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
+                            if 'drills' in obj.tools:
+                                for drill_pt in obj.tools['drills']:
+                                    point_offseted = affinity.translate(drill_pt, currentx, currenty)
+                                    obj_fin.tools['drills'].append(point_offseted)
+                            if 'slots' in obj.tools:
+                                for slot_tuple in obj.tools['slots']:
+                                    start_offseted = affinity.translate(slot_tuple[0], currentx, currenty)
+                                    stop_offseted = affinity.translate(slot_tuple[1], currentx, currenty)
+                                    obj_fin.tools['slots'].append(
+                                        (start_offseted, stop_offseted)
                                     )
                             currentx += lenghtx
                         currenty += lenghty
@@ -292,17 +288,15 @@ class TclCommandPanelize(TclCommand):
                     self.app.app_obj.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
         if threaded is True:
-            proc = self.app.proc_container.new("Generating panel ... Please wait.")
+            self.app.proc_container.new("Generating panel ... Please wait.")
 
             def job_thread(app_obj):
                 try:
                     panelize_2()
-                    self.app.inform.emit("[success] Panel created successfully.")
+                    app_obj.inform.emit("[success] Panel created successfully.")
                 except Exception as ee:
-                    proc.done()
                     log.debug(str(ee))
                     return
-                proc.done()
 
             self.app.collection.promise(outname)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})

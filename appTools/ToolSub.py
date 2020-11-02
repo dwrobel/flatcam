@@ -195,9 +195,7 @@ class ToolSub(AppTool):
 
         def worker_job(app_obj):
             # SUBTRACTOR geometry (always the same)
-            sub_geometry = {}
-            sub_geometry['solid'] = []
-            sub_geometry['clear'] = []
+            sub_geometry = {'solid': [], 'clear': []}
             # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
             for s_apid in app_obj.sub_grb_obj.apertures:
                 for s_el in app_obj.sub_grb_obj.apertures[s_apid]['geometry']:
@@ -206,13 +204,13 @@ class ToolSub(AppTool):
                     if "clear" in s_el:
                         sub_geometry['clear'].append(s_el["clear"])
 
-            for apid in app_obj.target_grb_obj.apertures:
+            for ap_id in app_obj.target_grb_obj.apertures:
                 # TARGET geometry
-                target_geo = [geo for geo in app_obj.target_grb_obj.apertures[apid]['geometry']]
+                target_geo = [geo for geo in app_obj.target_grb_obj.apertures[ap_id]['geometry']]
 
                 # send the job to the multiprocessing JOB
                 app_obj.results.append(
-                    app_obj.pool.apply_async(app_obj.aperture_intersection, args=(apid, target_geo, sub_geometry))
+                    app_obj.pool.apply_async(app_obj.aperture_intersection, args=(ap_id, target_geo, sub_geometry))
                 )
 
             output = []
@@ -348,8 +346,8 @@ class ToolSub(AppTool):
 
             grb_obj.solid_geometry = deepcopy(poly_buff)
             grb_obj.follow_geometry = deepcopy(follow_buff)
-            grb_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=grb_obj, use_thread=False)
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=grb_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
@@ -542,7 +540,7 @@ class ToolSub(AppTool):
                     for tool in geo_obj.tools:
                         geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
                 except Exception as e:
-                    log.debug("ToolSub.new_geo_object() --> %s" % str(e))
+                    app_obj.log.debug("ToolSub.new_geo_object() --> %s" % str(e))
                 geo_obj.multigeo = False
 
         with self.app.proc_container.new(_("Generating new object ...")):

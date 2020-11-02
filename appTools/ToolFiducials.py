@@ -270,9 +270,7 @@ class ToolFiducials(AppTool):
 
             if aperture_found:
                 for geo in geo_list:
-                    dict_el = {}
-                    dict_el['follow'] = geo.centroid
-                    dict_el['solid'] = geo
+                    dict_el = {'follow': geo.centroid, 'solid': geo}
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
                 ap_keys = list(g_obj.apertures.keys())
@@ -287,9 +285,7 @@ class ToolFiducials(AppTool):
                 g_obj.apertures[new_apid]['geometry'] = []
 
                 for geo in geo_list:
-                    dict_el = {}
-                    dict_el['follow'] = geo.centroid
-                    dict_el['solid'] = geo
+                    dict_el = {'follow': geo.centroid, 'solid': geo}
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
@@ -330,9 +326,7 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 
-                    dict_el = {}
-                    dict_el['follow'] = geo_buff_h.centroid
-                    dict_el['solid'] = geo_buff_h
+                    dict_el = {'follow': geo_buff_h.centroid, 'solid': geo_buff_h}
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
                     dict_el['follow'] = geo_buff_v.centroid
                     dict_el['solid'] = geo_buff_v
@@ -344,10 +338,11 @@ class ToolFiducials(AppTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = {}
-                g_obj.apertures[new_apid]['type'] = 'C'
-                g_obj.apertures[new_apid]['size'] = line_thickness
-                g_obj.apertures[new_apid]['geometry'] = []
+                g_obj.apertures[new_apid] = {
+                    'type': 'C',
+                    'size': line_thickness,
+                    'geometry': []
+                }
 
                 for geo in geo_list:
                     geo_buff_h = geo[0].buffer(line_thickness / 2.0, self.grb_steps_per_circle)
@@ -355,9 +350,7 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 
-                    dict_el = {}
-                    dict_el['follow'] = geo_buff_h.centroid
-                    dict_el['solid'] = geo_buff_h
+                    dict_el = {'follow': geo_buff_h.centroid, 'solid': geo_buff_h}
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
                     dict_el['follow'] = geo_buff_v.centroid
                     dict_el['solid'] = geo_buff_v
@@ -412,9 +405,7 @@ class ToolFiducials(AppTool):
                 for geo in geo_list:
                     geo_buff_list.append(geo)
 
-                    dict_el = {}
-                    dict_el['follow'] = geo.centroid
-                    dict_el['solid'] = geo
+                    dict_el = {'follow': geo.centroid, 'solid': geo}
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
                 ap_keys = list(g_obj.apertures.keys())
@@ -423,19 +414,18 @@ class ToolFiducials(AppTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = {}
-                g_obj.apertures[new_apid]['type'] = 'R'
-                g_obj.apertures[new_apid]['size'] = new_ap_size
-                g_obj.apertures[new_apid]['width'] = fid_size
-                g_obj.apertures[new_apid]['height'] = fid_size
-                g_obj.apertures[new_apid]['geometry'] = []
+                g_obj.apertures[new_apid] = {
+                    'type': 'R',
+                    'size': new_ap_size,
+                    'width': fid_size,
+                    'height': fid_size,
+                    'geometry': []
+                }
 
                 for geo in geo_list:
                     geo_buff_list.append(geo)
 
-                    dict_el = {}
-                    dict_el['follow'] = geo.centroid
-                    dict_el['solid'] = geo
+                    dict_el = {'follow': geo.centroid, 'solid': geo}
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []

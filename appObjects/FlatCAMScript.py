@@ -16,7 +16,6 @@ from appGUI.ObjectUI import *
 
 import tkinter as tk
 import sys
-from copy import deepcopy
 
 import gettext
 import appTranslation as fcTranslate
@@ -219,7 +218,7 @@ class ScriptObject(FlatCAMObj):
             # it means that the script finished with an error
             result = self.app.shell.tcl.eval("set errorInfo")
             log.error("Exec command Exception: %s\n" % result)
-            self.app.shell.append_error('ERROR: %s\n '% result)
+            self.app.shell.append_error('ERROR: %s\n' % result)
 
         self.app.ui.fcinfo.lock_pmaps = False
         self.app.shell.close_processing()
