@@ -304,6 +304,11 @@ class ToolCorners(AppTool):
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
 
         def initialize(grb_obj, app_obj):
+            grb_obj.options = {}
+            for opt in g_obj.options:
+                if opt != 'name':
+                    grb_obj.options[opt] = deepcopy(g_obj.options[opt])
+            grb_obj.options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(g_obj.follow)
@@ -417,12 +422,16 @@ class ToolCorners(AppTool):
         else:
             worker_task()
 
-    def on_exit(self, corner_gerber_obj):
+    def on_exit(self, corner_gerber_obj=None):
         # plot the object
-        try:
-            self.replot(obj=corner_gerber_obj)
-        except (AttributeError, TypeError):
-            return
+        if corner_gerber_obj:
+            try:
+                for ob in corner_gerber_obj:
+                    self.replot(obj=ob)
+            except (AttributeError, TypeError):
+                self.replot(obj=corner_gerber_obj)
+            except Exception:
+                return
 
         # update the bounding box values
         try:
@@ -613,7 +622,7 @@ class CornersUI:
         grid_lay.addWidget(self.drills_label, 16, 0, 1, 2)
 
         # Drill Tooldia #
-        self.drill_dia_label = FCLabel('%s:' % _("Tool Dia"))
+        self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
         self.drill_dia_label.setToolTip(
             '%s.' % _("Drill Diameter")
         )

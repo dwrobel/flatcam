@@ -12,6 +12,7 @@ from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FC
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
 from shapely.geometry import box as box
+from shapely.ops import unary_union
 
 import math
 import logging
@@ -75,6 +76,8 @@ class ToolFiducials(AppTool):
         self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
 
         self.click_points = []
+
+        self.handlers_connected = False
 
         # SIGNALS
         self.ui.add_cfid_button.clicked.connect(self.add_fiducials)
@@ -147,12 +150,13 @@ class ToolFiducials(AppTool):
     def on_method_change(self, val):
         """
         Make sure that on method change we disconnect the event handlers and reset the points storage
-        :param val: value of the Radio button which trigger this method
-        :return: None
-        """
-        if val == 'auto':
-            self.click_points = []
 
+        :param val:     value of the Radio button which trigger this method
+        :return:        None
+        """
+        self.click_points = []
+
+        if val == 'auto':
             try:
                 self.disconnect_event_handlers()
             except TypeError:
@@ -228,10 +232,14 @@ class ToolFiducials(AppTool):
                 )
                 self.ui.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y0))
 
-            self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-            self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                            filename=None,
-                                                                            local_use=self.grb_object, use_thread=False)
+            ret_val = self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+            self.app.call_source = "app"
+            if ret_val == 'fail':
+                self.app.call_source = "app"
+                self.disconnect_event_handlers()
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                return
+
             self.on_exit()
         else:
             self.app.inform.emit(_("Click to add first Fiducial. Bottom Left..."))
@@ -259,6 +267,8 @@ class ToolFiducials(AppTool):
 
         radius = fid_size / 2.0
 
+        new_apertures = deepcopy(g_obj.apertures)
+
         if fid_type == 'circular':
             geo_list = [Point(pt).buffer(radius, self.grb_steps_per_circle) for pt in points_list]
 
@@ -271,7 +281,7 @@ class ToolFiducials(AppTool):
             if aperture_found:
                 for geo in geo_list:
                     dict_el = {'follow': geo.centroid, 'solid': geo}
-                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
                 ap_keys = list(g_obj.apertures.keys())
                 if ap_keys:
@@ -279,14 +289,15 @@ class ToolFiducials(AppTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = {}
-                g_obj.apertures[new_apid]['type'] = 'C'
-                g_obj.apertures[new_apid]['size'] = fid_size
-                g_obj.apertures[new_apid]['geometry'] = []
+                new_apertures[new_apid] = {
+                    'type': 'C',
+                    'size': fid_size,
+                    'geometry': []
+                }
 
                 for geo in geo_list:
                     dict_el = {'follow': geo.centroid, 'solid': geo}
-                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
             if g_obj.solid_geometry:
@@ -297,7 +308,6 @@ class ToolFiducials(AppTool):
                     s_list.append(g_obj.solid_geometry)
 
             s_list += geo_list
-            g_obj.solid_geometry = MultiPolygon(s_list)
         elif fid_type == 'cross':
             geo_list = []
 
@@ -327,10 +337,9 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo_buff_v)
 
                     dict_el = {'follow': geo_buff_h.centroid, 'solid': geo_buff_h}
-                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
-                    dict_el['follow'] = geo_buff_v.centroid
-                    dict_el['solid'] = geo_buff_v
-                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                    dict_el = {'follow': geo_buff_v.centroid, 'solid': geo_buff_v}
+                    new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
                 ap_keys = list(g_obj.apertures.keys())
                 if ap_keys:
@@ -338,7 +347,7 @@ class ToolFiducials(AppTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = {
+                new_apertures[new_apid] = {
                     'type': 'C',
                     'size': line_thickness,
                     'geometry': []
@@ -351,10 +360,9 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo_buff_v)
 
                     dict_el = {'follow': geo_buff_h.centroid, 'solid': geo_buff_h}
-                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
-                    dict_el['follow'] = geo_buff_v.centroid
-                    dict_el['solid'] = geo_buff_v
-                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                    dict_el = {'follow': geo_buff_v.centroid, 'solid': geo_buff_v}
+                    new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
             if g_obj.solid_geometry:
@@ -368,7 +376,6 @@ class ToolFiducials(AppTool):
             geo_buff_list = geo_buff_list.buffer(0)
             for poly in geo_buff_list:
                 s_list.append(poly)
-            g_obj.solid_geometry = MultiPolygon(s_list)
         else:
             # chess pattern fiducial type
             geo_list = []
@@ -406,7 +413,7 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
-                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
                 ap_keys = list(g_obj.apertures.keys())
                 if ap_keys:
@@ -414,7 +421,7 @@ class ToolFiducials(AppTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = {
+                new_apertures[new_apid] = {
                     'type': 'R',
                     'size': new_ap_size,
                     'width': fid_size,
@@ -426,7 +433,7 @@ class ToolFiducials(AppTool):
                     geo_buff_list.append(geo)
 
                     dict_el = {'follow': geo.centroid, 'solid': geo}
-                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                    new_apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
             s_list = []
             if g_obj.solid_geometry:
@@ -438,7 +445,28 @@ class ToolFiducials(AppTool):
 
             for poly in geo_buff_list:
                 s_list.append(poly)
-            g_obj.solid_geometry = MultiPolygon(s_list)
+
+        outname = '%s_%s' % (str(g_obj.options['name']), 'fid')
+
+        def initialize(grb_obj, app_obj):
+            grb_obj.options = {}
+            for opt in g_obj.options:
+                if opt != 'name':
+                    grb_obj.options[opt] = deepcopy(g_obj.options[opt])
+            grb_obj.options['name'] = outname
+            grb_obj.multitool = False
+            grb_obj.multigeo = False
+            grb_obj.follow = deepcopy(g_obj.follow)
+            grb_obj.apertures = new_apertures
+            grb_obj.solid_geometry = unary_union(s_list)
+            grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
+
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
+                                                                   use_thread=False)
+
+        ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
+
+        return ret
 
     def add_soldermask_opening(self):
         sm_opening_dia = self.ui.fid_size_entry.get_value() * 2.0
@@ -455,12 +483,15 @@ class ToolFiducials(AppTool):
             return
 
         self.sm_obj_set.add(self.sm_object.options['name'])
-        self.add_fiducials_geo(self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
+        ret_val = self.add_fiducials_geo(
+            self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
+        self.app.call_source = "app"
+        if ret_val == 'fail':
+            self.app.call_source = "app"
+            self.disconnect_event_handlers()
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
 
-        self.sm_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.sm_object.options['name'],
-                                                                       filename=None,
-                                                                       local_use=self.sm_object,
-                                                                       use_thread=False)
         self.on_exit()
 
     def on_mouse_release(self, event):
@@ -486,7 +517,7 @@ class ToolFiducials(AppTool):
             self.check_points()
 
     def check_points(self):
-        fid_type = self.fid_type_radio.get_value()
+        fid_type = self.ui.fid_type_radio.get_value()
 
         if len(self.click_points) == 1:
             self.ui.bottom_left_coords_entry.set_value(self.click_points[0])
@@ -499,19 +530,29 @@ class ToolFiducials(AppTool):
             elif len(self.click_points) == 3:
                 self.ui.sec_points_coords_entry.set_value(self.click_points[2])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
-                self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-                self.grb_object.source_file = self.app.f_handlers.export_gerber(
-                    obj_name=self.grb_object.options['name'], filename=None, local_use=self.grb_object,
-                    use_thread=False)
+
+                ret_val = self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+                self.app.call_source = "app"
+
+                if ret_val == 'fail':
+                    self.app.call_source = "app"
+                    self.disconnect_event_handlers()
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
                 self.on_exit()
         else:
             if len(self.click_points) == 2:
                 self.ui.top_right_coords_entry.set_value(self.click_points[1])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
-                self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-                self.grb_object.source_file = self.app.f_handlers.export_gerber(
-                    obj_name=self.grb_object.options['name'], filename=None,
-                    local_use=self.grb_object, use_thread=False)
+
+                ret_val = self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+                self.app.call_source = "app"
+
+                if ret_val == 'fail':
+                    self.app.call_source = "app"
+                    self.disconnect_event_handlers()
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
                 self.on_exit()
 
     def on_mouse_move(self, event):
@@ -521,6 +562,7 @@ class ToolFiducials(AppTool):
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 obj.plot()
+                self.app.app_obj.object_plotted.emit(obj)
 
         if run_thread:
             self.app.worker_task.emit({'fcn': worker_task, 'params': []})
@@ -569,10 +611,6 @@ class ToolFiducials(AppTool):
             except Exception as e:
                 log.debug("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
 
-        # reset the variables
-        self.grb_object = None
-        self.sm_object = None
-
         # Events ID
         self.mr = None
         # self.mm = None
@@ -587,32 +625,31 @@ class ToolFiducials(AppTool):
         self.app.inform.emit('[success] %s' % _("Fiducials Tool exit."))
 
     def connect_event_handlers(self):
-        if self.app.is_legacy is False:
-            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        else:
-            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
-            # self.app.plotcanvas.graph_event_disconnect(self.app.mm)
-            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+        if self.handlers_connected is False:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
-        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
-        # self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+
+            self.handlers_connected = True
 
     def disconnect_event_handlers(self):
-        if self.app.is_legacy is False:
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-            # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-        else:
-            self.app.plotcanvas.graph_event_disconnect(self.mr)
-            # self.app.plotcanvas.graph_event_disconnect(self.mm)
+        if self.handlers_connected is True:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
 
-        self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                              self.app.on_mouse_click_over_plot)
-        # self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-        #                                                       self.app.on_mouse_move_over_plot)
-        self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                              self.app.on_mouse_click_release_over_plot)
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.handlers_connected = False
 
     def flatten(self, geometry):
         """

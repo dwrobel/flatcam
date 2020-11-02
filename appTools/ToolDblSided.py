@@ -824,7 +824,7 @@ class DsidedUI:
         grid4.addWidget(self.alignment_label, 0, 0, 1, 2)
 
         # ## Drill diameter for alignment holes
-        self.dt_label = FCLabel("%s:" % _('Drill Diameter'))
+        self.dt_label = FCLabel("%s:" % _('Drill Dia'))
         self.dt_label.setToolTip(
             _("Diameter of the drill for the alignment holes.")
         )

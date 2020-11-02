@@ -69,7 +69,7 @@ class ToolCopperThieving(AppTool):
         self.cursor_pos = (0, 0)
         self.first_click = False
 
-        self.area_method = False
+        self.handlers_connected = False
 
         # Tool properties
         self.clearance_val = None
@@ -90,9 +90,9 @@ class ToolCopperThieving(AppTool):
         self.ui.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.ui.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
-        self.ui.fill_button.clicked.connect(self.execute)
-        self.ui.rb_button.clicked.connect(self.add_robber_bar)
-        self.ui.ppm_button.clicked.connect(self.on_add_ppm)
+        self.ui.fill_button.clicked.connect(self.on_add_copper_thieving_click)
+        self.ui.rb_button.clicked.connect(self.on_add_robber_bar_click)
+        self.ui.ppm_button.clicked.connect(self.on_add_ppm_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.work_finished.connect(self.on_new_pattern_plating_object)
@@ -150,7 +150,7 @@ class ToolCopperThieving(AppTool):
         self.ui.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
 
         # INIT SECTION
-        self.area_method = False
+        self.handlers_connected = False
         self.robber_geo = None
         self.robber_line = None
         self.new_solid_geometry = None
@@ -211,7 +211,7 @@ class ToolCopperThieving(AppTool):
             self.ui.squares_frame.hide()
             self.ui.lines_frame.show()
 
-    def add_robber_bar(self):
+    def on_add_robber_bar_click(self):
         rb_margin = self.ui.rb_margin_entry.get_value()
         self.rb_thickness = self.ui.rb_thickness_entry.get_value()
 
@@ -222,13 +222,13 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.add_robber_bar() --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_add_robber_bar_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
         try:
             outline_pol = self.grb_object.solid_geometry.envelope
-        except TypeError:
+        except (TypeError, AttributeError):
             outline_pol = MultiPolygon(self.grb_object.solid_geometry).envelope
 
         rb_distance = rb_margin + (self.rb_thickness / 2.0)
@@ -238,6 +238,7 @@ class ToolCopperThieving(AppTool):
 
         self.app.proc_container.update_view_text(' %s' % _("Append geometry"))
 
+        new_apertures = deepcopy(self.grb_object.apertures)
         aperture_found = None
         for ap_id, ap_val in self.grb_object.apertures.items():
             if ap_val['type'] == 'C' and ap_val['size'] == self.rb_thickness:
@@ -246,46 +247,66 @@ class ToolCopperThieving(AppTool):
 
         if aperture_found:
             geo_elem = {'solid': self.robber_geo, 'follow': self.robber_line}
-            self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
+            new_apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
         else:
-            ap_keys = list(self.grb_object.apertures.keys())
+            ap_keys = list(new_apertures.keys())
             if ap_keys:
                 new_apid = str(int(max(ap_keys)) + 1)
             else:
                 new_apid = '10'
 
-            self.grb_object.apertures[new_apid] = {}
-            self.grb_object.apertures[new_apid]['type'] = 'C'
-            self.grb_object.apertures[new_apid]['size'] = self.rb_thickness
-            self.grb_object.apertures[new_apid]['geometry'] = []
+            new_apertures[new_apid] = {
+                'type': 'C',
+                'size': deepcopy(self.rb_thickness),
+                'geometry': []
+            }
 
             geo_elem = {'solid': self.robber_geo, 'follow': self.robber_line}
-            self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+            new_apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
-        geo_obj = self.grb_object.solid_geometry
+        geo_obj = deepcopy(self.grb_object.solid_geometry)
         if isinstance(geo_obj, MultiPolygon):
             s_list = []
             for pol in geo_obj.geoms:
                 s_list.append(pol)
-            s_list.append(self.robber_geo)
+            s_list.append(deepcopy(self.robber_geo))
             geo_obj = MultiPolygon(s_list)
         elif isinstance(geo_obj, list):
-            geo_obj.append(self.robber_geo)
+            geo_obj.append(deepcopy(self.robber_geo))
         elif isinstance(geo_obj, Polygon):
-            geo_obj = MultiPolygon([geo_obj, self.robber_geo])
+            geo_obj = MultiPolygon([geo_obj, deepcopy(self.robber_geo)])
 
-        self.grb_object.solid_geometry = geo_obj
+        outname = '%s_%s' % (str(self.grb_object.options['name']), 'robber')
 
-        self.app.proc_container.update_view_text(' %s' % _("Append source file"))
-        # update the source file with the new geometry:
-        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                        filename=None, local_use=self.grb_object,
-                                                                        use_thread=False)
+        def initialize(grb_obj, app_obj):
+            grb_obj.options = {}
+            for opt in self.grb_object.options:
+                if opt != 'name':
+                    grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
+            grb_obj.options['name'] = outname
+            grb_obj.multitool = False
+            grb_obj.multigeo = False
+            grb_obj.follow = deepcopy(self.grb_object.follow)
+            grb_obj.apertures = new_apertures
+            grb_obj.solid_geometry = unary_union(geo_obj)
+            grb_obj.follow_geometry = deepcopy(self.grb_object.follow_geometry) + [deepcopy(self.robber_line)]
+
+            app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
+            # update the source file with the new geometry:
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
+                                                                   use_thread=False)
+
+        ret_val = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
         self.app.proc_container.update_view_text(' %s' % '')
+        if ret_val == 'fail':
+            self.app.call_source = "app"
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
+
         self.on_exit()
         self.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
 
-    def execute(self):
+    def on_add_copper_thieving_click(self):
         self.app.call_source = "copper_thieving_tool"
 
         self.clearance_val = self.ui.clearance_entry.get_value()
@@ -299,7 +320,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.execute() --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_add_copper_thieving_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -321,20 +342,7 @@ class ToolCopperThieving(AppTool):
 
         elif reference_method == 'area':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
-
-            self.area_method = True
-
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mm)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
-
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
-            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.connect_event_handlers()
 
         elif reference_method == 'box':
             bound_obj_name = self.ui.ref_combo.currentText()
@@ -401,24 +409,10 @@ class ToolCopperThieving(AppTool):
                 return
 
         elif event.button == right_button and self.mouse_is_dragging is False:
-            self.area_method = False
             self.first_click = False
 
             self.delete_tool_selection_shape()
-
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-                self.app.plotcanvas.graph_event_disconnect(self.mm)
-
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
+            self.disconnect_event_handlers()
 
             if len(self.sel_rect) == 0:
                 return
@@ -530,16 +524,16 @@ class ToolCopperThieving(AppTool):
         if not isinstance(self.grb_object.solid_geometry, Iterable):
             self.grb_object.solid_geometry = [self.grb_object.solid_geometry]
 
-        def job_thread_thieving(app_obj):
-            # #########################################################################################
-            # Prepare isolation polygon. This will create the clearance over the Gerber features ######
-            # #########################################################################################
+        def job_thread_thieving(tool_obj):
+            # #########################################################################################################
+            # Prepare isolation polygon. This will create the clearance over the Gerber features
+            # #########################################################################################################
             log.debug("Copper Thieving Tool. Preparing isolation polygons.")
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
+            tool_obj.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
 
             # variables to display the percentage of work done
             try:
-                geo_len = len(app_obj.grb_object.solid_geometry)
+                geo_len = len(tool_obj.grb_object.solid_geometry)
             except TypeError:
                 geo_len = 1
 
@@ -548,37 +542,37 @@ class ToolCopperThieving(AppTool):
 
             clearance_geometry = []
             try:
-                for pol in app_obj.grb_object.solid_geometry:
-                    if app_obj.app.abort_flag:
+                for pol in tool_obj.grb_object.solid_geometry:
+                    if tool_obj.app.abort_flag:
                         # graceful abort requested by the user
                         raise grace
 
                     clearance_geometry.append(
-                        pol.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
+                        pol.buffer(c_val, int(int(tool_obj.geo_steps_per_circle) / 4))
                     )
 
                     pol_nr += 1
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
                     if old_disp_number < disp_number <= 100:
-                        app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                    (_("Thieving"), int(disp_number)))
+                        msg = ' %s ... %d%%' % (_("Thieving"), int(disp_number))
+                        tool_obj.app.proc_container.update_view_text(msg)
                         old_disp_number = disp_number
             except TypeError:
                 # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
                 # MultiPolygon (not an iterable)
                 clearance_geometry.append(
-                    app_obj.grb_object.solid_geometry.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
+                    tool_obj.grb_object.solid_geometry.buffer(c_val, int(int(tool_obj.geo_steps_per_circle) / 4))
                 )
 
-            app_obj.app.proc_container.update_view_text(' %s ...' % _("Buffering"))
+            tool_obj.app.proc_container.update_view_text(' %s ...' % _("Buffering"))
             clearance_geometry = unary_union(clearance_geometry)
 
-            # #########################################################################################
-            # Prepare the area to fill with copper. ###################################################
-            # #########################################################################################
+            # #########################################################################################################
+            # Prepare the area to fill with copper.
+            # #########################################################################################################
             log.debug("Copper Thieving Tool. Preparing areas to fill with copper.")
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
+            tool_obj.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
 
             try:
                 if ref_obj is None or ref_obj == 'itself':
@@ -589,12 +583,16 @@ class ToolCopperThieving(AppTool):
                 log.debug("ToolCopperThieving.on_copper_thieving() --> %s" % str(e))
                 return 'fail'
 
-            app_obj.app.proc_container.update_view_text(' %s' % _("Working..."))
+            tool_obj.app.proc_container.update_view_text(' %s' % _("Working..."))
+
+            # #########################################################################################################
+            # generate the bounding box geometry
+            # #########################################################################################################
             if ref_selected == 'itself':
-                geo_n = working_obj.solid_geometry
+                geo_n = deepcopy(working_obj.solid_geometry)
 
                 try:
-                    if app_obj.ui.bbox_type_radio.get_value() == 'min':
+                    if tool_obj.ui.bbox_type_radio.get_value() == 'min':
                         if isinstance(geo_n, MultiPolygon):
                             env_obj = geo_n.convex_hull
                         elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
@@ -617,20 +615,20 @@ class ToolCopperThieving(AppTool):
                             geo = box(x0, y0, x1, y1)
                             bounding_box = geo.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                         else:
-                            app_obj.app.inform.emit(
+                            tool_obj.app.inform.emit(
                                 '[ERROR_NOTCL] %s: %s' % (_("Geometry not supported for bounding box"), type(geo_n))
                             )
                             return 'fail'
 
                 except Exception as e:
                     log.debug("ToolCopperFIll.on_copper_thieving()  'itself'  --> %s" % str(e))
-                    app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
+                    tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                     return 'fail'
             elif ref_selected == 'area':
                 geo_buff_list = []
                 try:
                     for poly in working_obj:
-                        if app_obj.app.abort_flag:
+                        if tool_obj.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
@@ -650,7 +648,7 @@ class ToolCopperThieving(AppTool):
 
                     geo_buff_list = []
                     for poly in geo_n:
-                        if app_obj.app.abort_flag:
+                        if tool_obj.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
@@ -661,18 +659,18 @@ class ToolCopperThieving(AppTool):
                     bounding_box = unary_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                     bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                 else:
-                    app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
+                    tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                     return 'fail'
 
             log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
 
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
+            tool_obj.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
 
-            # #########################################################################################
-            # ########## Generate filling geometry. ###################################################
-            # #########################################################################################
+            # #########################################################################################################
+            # ########## Generate filling geometry.
+            # #########################################################################################################
 
-            app_obj.new_solid_geometry = bounding_box.difference(clearance_geometry)
+            tool_obj.new_solid_geometry = bounding_box.difference(clearance_geometry)
 
             # determine the bounding box polygon for the entire Gerber object to which we add copper thieving
             # if isinstance(geo_n, list):
@@ -682,8 +680,11 @@ class ToolCopperThieving(AppTool):
             #
             # x0, y0, x1, y1 = env_obj.bounds
             # bounding_box = box(x0, y0, x1, y1)
-            app_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
+            tool_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
 
+            # #########################################################################################################
+            # apply the 'margin' to the bounding box geometry
+            # #########################################################################################################
             try:
                 bounding_box = thieving_obj.solid_geometry.envelope.buffer(
                     distance=margin,
@@ -696,6 +697,9 @@ class ToolCopperThieving(AppTool):
                 )
             x0, y0, x1, y1 = bounding_box.bounds
 
+            # #########################################################################################################
+            # add Thieving geometry
+            # #########################################################################################################
             if fill_type == 'dot' or fill_type == 'square':
                 # build the MultiPolygon of dots/squares that will fill the entire bounding box
                 thieving_list = []
@@ -731,9 +735,9 @@ class ToolCopperThieving(AppTool):
                 thieving_box_geo = affinity.translate(thieving_box_geo, xoff=dx, yoff=dy)
 
                 try:
-                    _it = iter(app_obj.new_solid_geometry)
+                    _it = iter(tool_obj.new_solid_geometry)
                 except TypeError:
-                    app_obj.new_solid_geometry = [app_obj.new_solid_geometry]
+                    tool_obj.new_solid_geometry = [tool_obj.new_solid_geometry]
 
                 try:
                     _it = iter(thieving_box_geo)
@@ -742,11 +746,11 @@ class ToolCopperThieving(AppTool):
 
                 thieving_geo = []
                 for dot_geo in thieving_box_geo:
-                    for geo_t in app_obj.new_solid_geometry:
+                    for geo_t in tool_obj.new_solid_geometry:
                         if dot_geo.within(geo_t):
                             thieving_geo.append(dot_geo)
 
-                app_obj.new_solid_geometry = thieving_geo
+                tool_obj.new_solid_geometry = thieving_geo
 
             if fill_type == 'line':
                 half_thick_line = line_size / 2.0
@@ -754,33 +758,33 @@ class ToolCopperThieving(AppTool):
                 # create a thick polygon-line that surrounds the copper features
                 outline_geometry = []
                 try:
-                    for pol in app_obj.grb_object.solid_geometry:
-                        if app_obj.app.abort_flag:
+                    for pol in tool_obj.grb_object.solid_geometry:
+                        if tool_obj.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
 
                         outline_geometry.append(
-                            pol.buffer(c_val+half_thick_line, int(int(app_obj.geo_steps_per_circle) / 4))
+                            pol.buffer(c_val+half_thick_line, int(int(tool_obj.geo_steps_per_circle) / 4))
                         )
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
                         if old_disp_number < disp_number <= 100:
-                            app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                        (_("Buffering"), int(disp_number)))
+                            msg = ' %s ... %d%%' % (_("Buffering"), int(disp_number))
+                            tool_obj.app.proc_container.update_view_text(msg)
                             old_disp_number = disp_number
                 except TypeError:
                     # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
                     # MultiPolygon (not an iterable)
                     outline_geometry.append(
-                        app_obj.grb_object.solid_geometry.buffer(
+                        tool_obj.grb_object.solid_geometry.buffer(
                             c_val+half_thick_line,
-                            int(int(app_obj.geo_steps_per_circle) / 4)
+                            int(int(tool_obj.geo_steps_per_circle) / 4)
                         )
                     )
 
-                app_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
+                tool_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
                 outline_geometry = unary_union(outline_geometry)
 
                 outline_line = []
@@ -788,13 +792,13 @@ class ToolCopperThieving(AppTool):
                     for geo_o in outline_geometry:
                         outline_line.append(
                             geo_o.exterior.buffer(
-                                half_thick_line, resolution=int(int(app_obj.geo_steps_per_circle) / 4)
+                                half_thick_line, resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                             )
                         )
                 except TypeError:
                     outline_line.append(
                         outline_geometry.exterior.buffer(
-                            half_thick_line, resolution=int(int(app_obj.geo_steps_per_circle) / 4)
+                            half_thick_line, resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                         )
                     )
 
@@ -805,7 +809,7 @@ class ToolCopperThieving(AppTool):
                 box_outline_geo_exterior = box_outline_geo.exterior
                 box_outline_geometry = box_outline_geo_exterior.buffer(
                     half_thick_line,
-                    resolution=int(int(app_obj.geo_steps_per_circle) / 4)
+                    resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                 )
 
                 bx0, by0, bx1, by1 = box_outline_geo.bounds
@@ -815,7 +819,7 @@ class ToolCopperThieving(AppTool):
                 while new_x <= x1 - half_thick_line:
                     line_geo = LineString([(new_x, by0), (new_x, by1)]).buffer(
                         half_thick_line,
-                        resolution=int(int(app_obj.geo_steps_per_circle) / 4)
+                        resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                     )
                     thieving_lines_geo.append(line_geo)
                     new_x += line_size + line_spacing
@@ -823,7 +827,7 @@ class ToolCopperThieving(AppTool):
                 while new_y <= y1 - half_thick_line:
                     line_geo = LineString([(bx0, new_y), (bx1, new_y)]).buffer(
                         half_thick_line,
-                        resolution=int(int(app_obj.geo_steps_per_circle) / 4)
+                        resolution=int(int(tool_obj.geo_steps_per_circle) / 4)
                     )
                     thieving_lines_geo.append(line_geo)
                     new_y += line_size + line_spacing
@@ -833,53 +837,76 @@ class ToolCopperThieving(AppTool):
                 for line_poly in thieving_lines_geo:
                     rest_line = line_poly.difference(clearance_geometry)
                     diff_lines_geo.append(rest_line)
-                app_obj.flatten([outline_geometry, box_outline_geometry, diff_lines_geo])
-                app_obj.new_solid_geometry = app_obj.flat_geometry
+                tool_obj.flatten([outline_geometry, box_outline_geometry, diff_lines_geo])
+                tool_obj.new_solid_geometry = tool_obj.flat_geometry
 
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append geometry"))
-            geo_list = app_obj.grb_object.solid_geometry
-            if isinstance(app_obj.grb_object.solid_geometry, MultiPolygon):
-                geo_list = list(app_obj.grb_object.solid_geometry.geoms)
+            tool_obj.app.proc_container.update_view_text(' %s' % _("Append geometry"))
+            geo_list = deepcopy(tool_obj.grb_object.solid_geometry)
+            if isinstance(tool_obj.grb_object.solid_geometry, MultiPolygon):
+                geo_list = list(geo_list.geoms)
 
-            if '0' not in app_obj.grb_object.apertures:
-                app_obj.grb_object.apertures['0'] = {}
-                app_obj.grb_object.apertures['0']['geometry'] = []
-                app_obj.grb_object.apertures['0']['type'] = 'REG'
-                app_obj.grb_object.apertures['0']['size'] = 0.0
+            new_apertures = deepcopy(tool_obj.grb_object.apertures)
+            if '0' not in new_apertures:
+                new_apertures['0'] = {
+                    'type': 'REG',
+                    'size': 0.0,
+                    'geometry': []
+                }
 
             try:
-                for poly in app_obj.new_solid_geometry:
+                for poly in tool_obj.new_solid_geometry:
                     # append to the new solid geometry
                     geo_list.append(poly)
 
                     # append into the '0' aperture
                     geo_elem = {'solid': poly, 'follow': poly.exterior}
-                    app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+                    new_apertures['0']['geometry'].append(deepcopy(geo_elem))
             except TypeError:
                 # append to the new solid geometry
-                geo_list.append(app_obj.new_solid_geometry)
+                geo_list.append(tool_obj.new_solid_geometry)
 
                 # append into the '0' aperture
-                geo_elem = {'solid': app_obj.new_solid_geometry, 'follow': app_obj.new_solid_geometry.exterior}
-                app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+                geo_elem = {'solid': tool_obj.new_solid_geometry, 'follow': tool_obj.new_solid_geometry.exterior}
+                new_apertures['0']['geometry'].append(deepcopy(geo_elem))
 
-            app_obj.grb_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
+            new_solid_geo = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
-            # update the source file with the new geometry:
-            app_obj.grb_object.source_file = app_obj.app.f_handlers.export_gerber(
-                obj_name=app_obj.grb_object.options['name'], filename=None, local_use=app_obj.grb_object,
-                use_thread=False)
-            app_obj.app.proc_container.update_view_text(' %s' % '')
-            app_obj.on_exit()
-            app_obj.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
+            outname = '%s_%s' % (str(self.grb_object.options['name']), 'thief')
+
+            def initialize(grb_obj, app_obj):
+                grb_obj.options = {}
+                for opt in self.grb_object.options:
+                    if opt != 'name':
+                        grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
+                grb_obj.options['name'] = outname
+                grb_obj.multitool = False
+                grb_obj.multigeo = False
+                grb_obj.follow = deepcopy(self.grb_object.follow)
+                grb_obj.apertures = new_apertures
+                grb_obj.solid_geometry = deepcopy(new_solid_geo)
+                grb_obj.follow_geometry = deepcopy(self.grb_object.follow_geometry)
+
+                app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
+                grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                       local_use=grb_obj,
+                                                                       use_thread=False)
+
+            ret_val = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
+            tool_obj.app.proc_container.update_view_text(' %s' % '')
+            if ret_val == 'fail':
+                self.app.call_source = "app"
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                return
+
+            tool_obj.on_exit()
+            tool_obj.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
 
         if run_threaded:
             self.app.worker_task.emit({'fcn': job_thread_thieving, 'params': [self]})
         else:
             job_thread_thieving(self)
 
-    def on_add_ppm(self):
+    def on_add_ppm_click(self):
         run_threaded = True
 
         if run_threaded:
@@ -895,6 +922,9 @@ class ToolCopperThieving(AppTool):
             self.on_new_pattern_plating_object()
 
     def on_new_pattern_plating_object(self):
+        ppm_clearance = self.ui.clearance_ppm_entry.get_value()
+        rb_thickness = self.rb_thickness
+
         # get the Gerber object on which the Copper thieving will be inserted
         selection_index = self.ui.sm_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.sm_object_combo.rootModelIndex())
@@ -902,12 +932,9 @@ class ToolCopperThieving(AppTool):
         try:
             self.sm_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.on_add_ppm() --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_add_ppm_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
-
-        ppm_clearance = self.ui.clearance_ppm_entry.get_value()
-        rb_thickness = self.rb_thickness
 
         self.app.proc_container.update_view_text(' %s' % _("Append PP-M geometry"))
         geo_list = self.sm_object.solid_geometry
@@ -932,11 +959,16 @@ class ToolCopperThieving(AppTool):
             plated_area += self.robber_geo.area
         self.ui.plated_area_entry.set_value(plated_area)
 
-        thieving_solid_geo = self.new_solid_geometry
-        robber_solid_geo = self.robber_geo
-        robber_line = self.robber_line
+        thieving_solid_geo = deepcopy(self.new_solid_geometry)
+        robber_solid_geo = deepcopy(self.robber_geo)
+        robber_line = deepcopy(self.robber_line)
 
         def obj_init(grb_obj, app_obj):
+            grb_obj.options = {}
+            for opt in self.sm_object.options:
+                if opt != 'name':
+                    grb_obj.options[opt] = deepcopy(self.sm_object.options[opt])
+            grb_obj.options['name'] = outname
             grb_obj.multitool = False
             grb_obj.source_file = []
             grb_obj.multigeo = False
@@ -947,10 +979,11 @@ class ToolCopperThieving(AppTool):
             # if we have copper thieving geometry, add it
             if thieving_solid_geo:
                 if '0' not in grb_obj.apertures:
-                    grb_obj.apertures['0'] = {}
-                    grb_obj.apertures['0']['geometry'] = []
-                    grb_obj.apertures['0']['type'] = 'REG'
-                    grb_obj.apertures['0']['size'] = 0.0
+                    grb_obj.apertures['0'] = {
+                        'type': 'REG',
+                        'size': 0.0,
+                        'geometry': []
+                    }
 
                 try:
                     for poly in thieving_solid_geo:
@@ -967,6 +1000,7 @@ class ToolCopperThieving(AppTool):
                         grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
                 except TypeError:
                     # append to the new solid geometry
+                    assert isinstance(thieving_solid_geo, Polygon)
                     geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
                     # append into the '0' aperture
@@ -995,10 +1029,11 @@ class ToolCopperThieving(AppTool):
                     else:
                         new_apid = '10'
 
-                    grb_obj.apertures[new_apid] = {}
-                    grb_obj.apertures[new_apid]['type'] = 'C'
-                    grb_obj.apertures[new_apid]['size'] = rb_thickness + ppm_clearance
-                    grb_obj.apertures[new_apid]['geometry'] = []
+                    grb_obj.apertures[new_apid] = {
+                        'type': 'C',
+                        'size': rb_thickness + ppm_clearance,
+                        'geometry': []
+                    }
 
                     geo_elem = {
                         'solid': robber_solid_geo.buffer(ppm_clearance),
@@ -1012,61 +1047,49 @@ class ToolCopperThieving(AppTool):
 
             app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=name, filename=None, local_use=grb_obj,
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)
             app_obj.proc_container.update_view_text(' %s' % '')
 
         # Object name
         obj_name, separatpr, obj_extension = self.sm_object.options['name'].rpartition('.')
-        name = '%s_%s.%s' % (obj_name, 'plating_mask', obj_extension)
+        outname = '%s_%s.%s' % (obj_name, 'plating_mask', obj_extension)
 
-        self.app.app_obj.new_object('gerber', name, obj_init, autoselected=False)
+        ret_val = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
+        if ret_val == 'fail':
+            self.app.call_source = "app"
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
 
         # Register recent file
-        self.app.file_opened.emit("gerber", name)
+        self.app.file_opened.emit("gerber", outname)
 
         self.on_exit()
         self.app.inform.emit('[success] %s' % _("Generating Pattern Plating Mask done."))
 
-    def replot(self, obj):
+    def replot(self, obj, run_thread=True):
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 obj.plot()
+                self.app.app_obj.object_plotted.emit(obj)
 
-        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+        if run_thread:
+            self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+        else:
+            worker_task()
 
-    def on_exit(self):
+    def on_exit(self, obj=None):
         # plot the objects
-        if self.grb_object:
-            self.replot(obj=self.grb_object)
-
-        if self.sm_object:
-            self.replot(obj=self.sm_object)
-
-        # update the bounding box values
-        try:
-            a, b, c, d = self.grb_object.bounds()
-            self.grb_object.options['xmin'] = a
-            self.grb_object.options['ymin'] = b
-            self.grb_object.options['xmax'] = c
-            self.grb_object.options['ymax'] = d
-        except Exception as e:
-            log.debug("ToolCopperThieving.on_exit() bounds -> copper thieving Gerber error --> %s" % str(e))
-
-        # update the bounding box values
-        try:
-            a, b, c, d = self.sm_object.bounds()
-            self.sm_object.options['xmin'] = a
-            self.sm_object.options['ymin'] = b
-            self.sm_object.options['xmax'] = c
-            self.sm_object.options['ymax'] = d
-        except Exception as e:
-            log.debug("ToolCopperThieving.on_exit() bounds -> pattern plating mask error --> %s" % str(e))
+        if obj:
+            try:
+                for ob in obj:
+                    self.replot(obj=ob)
+            except (AttributeError, TypeError):
+                self.replot(obj=obj)
+            except Exception:
+                return
 
         # reset the variables
-        self.grb_object = None
-        self.sm_object = None
-        self.ref_obj = None
         self.sel_rect = []
 
         # Events ID
@@ -1079,10 +1102,31 @@ class ToolCopperThieving(AppTool):
         self.first_click = False
 
         # if True it means we exited from tool in the middle of area adding therefore disconnect the events
-        if self.area_method is True:
+        if self.handlers_connected is True:
             self.app.delete_selection_shape()
-            self.area_method = False
 
+        self.disconnect_event_handlers()
+
+        self.app.call_source = "app"
+        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool exit."))
+
+    def connect_event_handlers(self):
+        if self.handlers_connected is False:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.handlers_connected = True
+
+    def disconnect_event_handlers(self):
+        if self.handlers_connected is True:
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
@@ -1096,9 +1140,7 @@ class ToolCopperThieving(AppTool):
                                                                   self.app.on_mouse_move_over_plot)
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
-
-        self.app.call_source = "app"
-        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool exit."))
+            self.handlers_connected = False
 
     def flatten(self, geometry):
         """
