@@ -160,7 +160,7 @@ class ToolCorners(AppTool):
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
         margin = self.ui.margin_entry.get_value()
-        line_length = self.ui.l_entry.get_value()
+        line_length = self.ui.l_entry.get_value() / 2.0
 
         geo_list = []
 
@@ -304,11 +304,17 @@ class ToolCorners(AppTool):
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
 
         def initialize(grb_obj, app_obj):
+            grb_obj.options = {}
+            for opt in g_obj.options:
+                if opt != 'name':
+                    grb_obj.options[opt] = deepcopy(g_obj.options[opt])
+            grb_obj.options['name'] = outname
             grb_obj.multitool = False
             grb_obj.multigeo = False
-            grb_obj.follow = False
+            grb_obj.follow = deepcopy(g_obj.follow)
             grb_obj.apertures = new_apertures
             grb_obj.solid_geometry = unary_union(s_list)
+            grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
 
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)
@@ -416,12 +422,16 @@ class ToolCorners(AppTool):
         else:
             worker_task()
 
-    def on_exit(self, corner_gerber_obj):
+    def on_exit(self, corner_gerber_obj=None):
         # plot the object
-        try:
-            self.replot(obj=corner_gerber_obj)
-        except (AttributeError, TypeError):
-            return
+        if corner_gerber_obj:
+            try:
+                for ob in corner_gerber_obj:
+                    self.replot(obj=ob)
+            except (AttributeError, TypeError):
+                self.replot(obj=corner_gerber_obj)
+            except Exception:
+                return
 
         # update the bounding box values
         try:
@@ -612,7 +622,7 @@ class CornersUI:
         grid_lay.addWidget(self.drills_label, 16, 0, 1, 2)
 
         # Drill Tooldia #
-        self.drill_dia_label = FCLabel('%s:' % _("Tool Dia"))
+        self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
         self.drill_dia_label.setToolTip(
             '%s.' % _("Drill Diameter")
         )

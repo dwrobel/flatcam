@@ -93,7 +93,7 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.l_entry, 8, 1)
 
         # Drill Tool Diameter
-        self.drill_dia_label = FCLabel('%s:' % _("Tool Dia"))
+        self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
         self.drill_dia_label.setToolTip(
             '%s.' % _("Drill Diameter")
         )

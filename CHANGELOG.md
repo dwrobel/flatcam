@@ -14,6 +14,12 @@ CHANGELOG for FlatCAM beta
 - fixed the Tcl COmmand Panelize, Excellon panelization section
 - Fixed an issue in Tool Calibration export_excellon method call
 - PEP8 corrections all over the app
+- made sure that the object selection will not work while in Editors or in the App Tools
+- some minor changes to strings and icons
+- in Corner Markers Tool - the new Gerber object will have also follow_geometry
+- upgraded the Fiducials Tool to create new objects instead of updating in place the source objects
+- upgraded the Copper Thieving Tool to create new objects instead of updating in place the source objects
+- updated translation strings
 
 1.11.2020
 
