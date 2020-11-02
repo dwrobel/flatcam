@@ -10,6 +10,8 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
 # ##########################################################
+from PyQt5.QtCore import QSettings
+
 import platform
 
 from appGUI.GUIElements import *
@@ -20,6 +22,7 @@ from appGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
 from appGUI.preferences.geometry.GeometryPreferencesUI import GeometryPreferencesUI
 from appGUI.preferences.gerber.GerberPreferencesUI import GerberPreferencesUI
 from appEditors.AppGeoEditor import FCShapeTool
+
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser

@@ -1,7 +1,6 @@
 from tclCommands.TclCommand import TclCommand
 
 import collections
-from copy import copy
 
 
 class TclCommandExportSVG(TclCommand):

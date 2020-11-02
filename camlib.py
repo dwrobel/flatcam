@@ -3172,12 +3172,12 @@ class CNCjob(Geometry):
 
         # Depth parameters
         self.z_cut = tool_dict['tools_drill_cutz']
-        old_zcut = deepcopy(tool_dict["tools_drill_cutz"])  # multidepth use this
+        old_zcut = deepcopy(tool_dict["tools_drill_cutz"])      # multidepth use this
         self.multidepth = tool_dict['tools_drill_multidepth']
         self.z_depthpercut = tool_dict['tools_drill_depthperpass']
         self.z_move = tool_dict['tools_drill_travelz']
-        self.f_plunge = tool_dict["tools_drill_f_plunge"]   # used directly in the preprocessor Toolchange method
-        self.f_retract = tool_dict["tools_drill_f_retract"] # used in the current method
+        self.f_plunge = tool_dict["tools_drill_f_plunge"]       # used directly in the preprocessor Toolchange method
+        self.f_retract = tool_dict["tools_drill_f_retract"]     # used in the current method
 
         # Feedrate parameters
         self.z_feedrate = tool_dict['tools_drill_feedrate_z']
@@ -5283,8 +5283,8 @@ class CNCjob(Geometry):
         self.z_move = float(z_move) if z_move is not None else None
 
         self.feedrate = float(feedrate) if feedrate else  self.app.defaults["geometry_feedrate"]
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else  self.app.defaults["geometry_feedrate_z"]
-        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else  self.app.defaults["geometry_feedrate_rapid"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else self.app.defaults["geometry_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir

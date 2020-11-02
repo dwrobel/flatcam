@@ -8,7 +8,6 @@
 from tclCommands.TclCommand import TclCommand
 
 import collections
-import os
 import logging
 import gettext
 import appTranslation as fcTranslate

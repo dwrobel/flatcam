@@ -190,9 +190,9 @@ class ToolEtchCompensation(AppTool):
 
         # update the apertures attributes (keys in the apertures dict)
         for ap in new_apertures:
-            type = new_apertures[ap]['type']
+            ap_type = new_apertures[ap]['type']
             for k in new_apertures[ap]:
-                if type == 'R' or type == 'O':
+                if ap_type == 'R' or ap_type == 'O':
                     if k == 'width' or k == 'height':
                         new_apertures[ap][k] += offset
                 else:
@@ -207,9 +207,9 @@ class ToolEtchCompensation(AppTool):
         # in case of 'R' or 'O' aperture type we need to update the aperture 'size' after
         # the 'width' and 'height' keys were updated
         for ap in new_apertures:
-            type = new_apertures[ap]['type']
+            ap_type = new_apertures[ap]['type']
             for k in new_apertures[ap]:
-                if type == 'R' or type == 'O':
+                if ap_type == 'R' or ap_type == 'O':
                     if k == 'size':
                         new_apertures[ap][k] = math.sqrt(
                             new_apertures[ap]['width'] ** 2 + new_apertures[ap]['height'] ** 2)
@@ -233,8 +233,8 @@ class ToolEtchCompensation(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=new_obj,
-                                                                    use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=new_obj,
+                                                                   use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 

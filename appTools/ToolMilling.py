@@ -635,7 +635,7 @@ class ToolMilling(AppTool, Excellon):
         # Get source object.
         try:
             self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 

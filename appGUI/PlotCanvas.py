@@ -575,13 +575,13 @@ class CursorBig(QtCore.QObject):
 
     def set_data(self, pos, **kwargs):
         """Internal event handler to draw the cursor when the mouse moves."""
-        if 'edge_color' in kwargs:
-            color = kwargs['edge_color']
-        else:
-            if self.app.defaults['global_theme'] == 'white':
-                color = '#000000FF'
-            else:
-                color = '#FFFFFFFF'
+        # if 'edge_color' in kwargs:
+        #     color = kwargs['edge_color']
+        # else:
+        #     if self.app.defaults['global_theme'] == 'white':
+        #         color = '#000000FF'
+        #     else:
+        #         color = '#FFFFFFFF'
 
         position = [pos[0][0], pos[0][1]]
         self.mouse_position_updated.emit(position)

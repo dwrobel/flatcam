@@ -639,7 +639,7 @@ class ToolCalibration(AppTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
+                app.log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -649,7 +649,7 @@ class ToolCalibration(AppTool):
             except (AttributeError, TypeError):
                 pass
 
-        def initialize_gerber(obj_init, app):
+        def initialize_gerber(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
@@ -671,12 +671,12 @@ class ToolCalibration(AppTool):
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
 
             try:
-                obj_init.source_file = self.app.f_handlers.export_gerber(obj_name=obj_name, filename=None,
-                                                                         local_use=obj_init, use_thread=False)
+                obj_init.source_file = app_obj.f_handlers.export_gerber(obj_name=obj_name, filename=None,
+                                                                        local_use=obj_init, use_thread=False)
             except (AttributeError, TypeError):
                 pass
 
-        def initialize_excellon(obj_init, app):
+        def initialize_excellon(obj_init, app_obj):
             obj_init.tools = deepcopy(obj.tools)
 
             # drills are offset, so they need to be deep copied
@@ -689,8 +689,8 @@ class ToolCalibration(AppTool):
 
             obj_init.create_geometry()
 
-            obj_init.source_file = self.app.export.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
-                                                                   use_thread=False)
+            obj_init.source_file = app_obj.f_handlers.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
+                                                                      use_thread=False)
 
         obj = self.cal_object
         obj_name = obj_name

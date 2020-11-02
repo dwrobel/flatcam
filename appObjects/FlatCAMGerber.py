@@ -11,13 +11,11 @@
 # ##########################################################
 
 
-from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
-from shapely.ops import unary_union
+from shapely.geometry import Point, MultiLineString, LineString, LinearRing
 
 from appParsers.ParseGerber import Gerber
 from appObjects.FlatCAMObj import *
 
-import math
 import numpy as np
 from copy import deepcopy
 
@@ -210,7 +208,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 pass
 
             self.apertures_row = 0
-            aper_no = self.apertures_row + 1
+
             sort = []
             for k in list(self.apertures.keys()):
                 sort.append(int(k))
@@ -397,7 +395,7 @@ class GerberObject(FlatCAMObj, Gerber):
             non_copper = bounding_box.difference(self.solid_geometry)
 
             if non_copper is None or non_copper.is_empty:
-                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
             geo_obj.solid_geometry = non_copper
 
@@ -423,7 +421,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 bounding_box = bounding_box.envelope
 
             if bounding_box is None or bounding_box.is_empty:
-                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
             geo_obj.solid_geometry = bounding_box
 
@@ -532,17 +530,16 @@ class GerberObject(FlatCAMObj, Gerber):
                     "startz": self.app.defaults['geometry_startz']
                 })
 
-                geo_obj.tools = {}
-                geo_obj.tools['1'] = {}
+                geo_obj.tools = {'1': {}}
                 geo_obj.tools.update({
                     '1': {
-                        'tooldia': dia,
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': tool_type,
-                        'data': default_data,
-                        'solid_geometry': geo_obj.solid_geometry
+                        'tooldia':          dia,
+                        'offset':           'Path',
+                        'offset_value':     0.0,
+                        'type':             _('Rough'),
+                        'tool_type':        tool_type,
+                        'data':             default_data,
+                        'solid_geometry':   geo_obj.solid_geometry
                     }
                 })
 
@@ -679,17 +676,16 @@ class GerberObject(FlatCAMObj, Gerber):
                         "startz": self.app.defaults['geometry_startz']
                     })
 
-                    geo_obj.tools = {}
-                    geo_obj.tools['1'] = {}
+                    geo_obj.tools = {'1': {}}
                     geo_obj.tools.update({
                         '1': {
-                            'tooldia': dia,
-                            'offset': 'Path',
-                            'offset_value': 0.0,
-                            'type': _('Rough'),
-                            'tool_type': tool_type,
-                            'data': default_data,
-                            'solid_geometry': geo_obj.solid_geometry
+                            'tooldia':          dia,
+                            'offset':           'Path',
+                            'offset_value':     0.0,
+                            'type':             _('Rough'),
+                            'tool_type':        tool_type,
+                            'data':             default_data,
+                            'solid_geometry':   geo_obj.solid_geometry
                         }
                     })
 
@@ -776,7 +772,7 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             follow_name = outname
 
-        def follow_init(follow_obj, app):
+        def follow_init(follow_obj, app_obj):
             # Propagate options
             follow_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             follow_obj.solid_geometry = self.follow_geometry
@@ -854,7 +850,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         log.debug("FlatCAMObj.GerberObject.convert_units()")
 
-        factor = Gerber.convert_units(self, units)
+        Gerber.convert_units(self, units)
 
         # self.options['isotooldia'] = float(self.options['isotooldia']) * factor
         # self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor

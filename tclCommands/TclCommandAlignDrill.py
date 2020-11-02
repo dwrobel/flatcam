@@ -108,8 +108,10 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        tooldia = args['dia']
+
         # Tools
-        tools = {"1": {"C": args['dia']}}
+        # tools = {"1": {"C": args['dia']}}
 
         def alligndrill_init_me(init_obj, app_obj):
             """
@@ -126,8 +128,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 for hole in holes:
                     point = Point(hole)
                     point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                    drills.append({"point": point, "tool": "1"})
-                    drills.append({"point": point_mirror, "tool": "1"})
+                    drills.append(point)
+                    drills.append(point_mirror)
             else:
                 if 'box' not in args:
                     return "ERROR: -grid can be used only for -box"
@@ -167,11 +169,17 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 for hole in localholes:
                     point = Point(hole)
                     point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                    drills.append({"point": point, "tool": "1"})
-                    drills.append({"point": point_mirror, "tool": "1"})
+                    drills.append(point)
+                    drills.append(point_mirror)
 
-            init_obj.tools = tools
-            init_obj.drills = drills
+            init_obj.tools = {
+                '1': {
+                    'tooldia': tooldia,
+                    'drills': drills,
+                    'solid_geometry': []
+                }
+            }
+
             init_obj.create_geometry()
 
         # Box

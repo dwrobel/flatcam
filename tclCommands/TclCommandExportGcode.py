@@ -80,5 +80,5 @@ class TclCommandExportGcode(TclCommandSignaled):
             self.raise_tcl_error('!!!Promises exists, but should not here!!!')
 
         del args['name']
-        modified_gcode = obj.get_gcode(**args)
+        obj.get_gcode(**args)
         return

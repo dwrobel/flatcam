@@ -109,9 +109,10 @@ class ToolPDF(AppTool):
         short_name = filename.split('/')[-1].split('\\')[-1]
         self.parsing_promises.append(short_name)
 
-        self.pdf_parsed[short_name] = {}
-        self.pdf_parsed[short_name]['pdf'] = {}
-        self.pdf_parsed[short_name]['filename'] = filename
+        self.pdf_parsed[short_name] = {
+            'pdf': {},
+            'filename': filename
+        }
 
         self.pdf_decompressed[short_name] = ''
 
@@ -181,22 +182,26 @@ class ToolPDF(AppTool):
             name_tool = 0
             for dia in sorted_dia:
                 name_tool += 1
+                tool = str(name_tool)
 
-                # create tools dictionary
-                spec = {"C": dia, 'solid_geometry': []}
-                exc_obj.tools[str(name_tool)] = spec
+                exc_obj.tools[tool] = {
+                    'tooldia': dia,
+                    'drills': [],
+                    'solid_geometry': []
+                }
 
-                # create drill list of dictionaries
+                # update the drill list
                 for dia_points in points:
                     if dia == dia_points:
                         for pt in points[dia_points]:
-                            exc_obj.drills.append({'point': Point(pt), 'tool': str(name_tool)})
+                            exc_obj.tools[tool]['drills'].append(Point(pt))
                         break
 
             ret = exc_obj.create_geometry()
             if ret == 'fail':
                 log.debug("Could not create geometry for Excellon object.")
                 return "fail"
+
             for tool in exc_obj.tools:
                 if exc_obj.tools[tool]['solid_geometry']:
                     return

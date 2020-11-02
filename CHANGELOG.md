@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.11.2020
+
+- fixed the Tcl Command AlignDrill
+- fixed the Tcl Command AlignDrillGrid
+- fixed the Tcl COmmand Panelize, Excellon panelization section
+- Fixed an issue in Tool Calibration export_excellon method call
+- PEP8 corrections all over the app
+
 1.11.2020
 
 - updated the French Translation (by Olivier Cornet)
@@ -20,6 +28,7 @@ CHANGELOG for FlatCAM beta
 - in Join Excellon functionality made sure that the new Combo Exellon object will have copied the data from source objects and not just references, therefore will survive the delete of its parents
 - updated Turkish translation (by Mehmet Kaya)
 - updated all the languages except Turkish
+- in the Tool PDF fixed the creation of Excellon objects to the current Excellon object data structure
 
 31.10.2020
 

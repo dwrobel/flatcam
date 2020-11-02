@@ -793,8 +793,8 @@ class ToolIsolation(AppTool, Gerber):
                                                     parent=self.app.ui)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
-        def find_optimal(val):
-            tool_add_popup.set_value(float(val))
+        def find_optimal(valor):
+            tool_add_popup.set_value(float(valor))
 
         self.optimal_found_sig.connect(find_optimal)
 
@@ -1620,8 +1620,7 @@ class ToolIsolation(AppTool, Gerber):
                             self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                             geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
-                        geo_obj.tools = {}
-                        geo_obj.tools['1'] = {}
+                        geo_obj.tools = {'1': {}}
                         geo_obj.tools.update({
                             '1': {
                                 'tooldia':          float(tool_dia),

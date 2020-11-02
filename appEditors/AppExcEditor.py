@@ -11,7 +11,6 @@ from PyQt5.QtCore import Qt
 from camlib import distance, arc, FlatCAMRTreeStorage
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
-from appParsers.ParseExcellon import Excellon
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 import shapely.affinity as affinity

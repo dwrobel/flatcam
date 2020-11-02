@@ -252,7 +252,7 @@ class TclCommandCopperClear(TclCommand):
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args:
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
-                                                   select_method=0, # ITSELF
+                                                   select_method=0,     # ITSELF
                                                    ncctooldia=tooldia,
                                                    overlap=overlap,
                                                    order=order,
@@ -283,7 +283,7 @@ class TclCommandCopperClear(TclCommand):
 
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
                                                    sel_obj=box_obj,
-                                                   select_method=2, # REFERENCE OBJECT
+                                                   select_method=2,     # REFERENCE OBJECT
                                                    ncctooldia=tooldia,
                                                    overlap=overlap,
                                                    order=order,

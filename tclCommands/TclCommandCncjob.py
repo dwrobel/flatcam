@@ -154,7 +154,7 @@ class TclCommandCncjob(TclCommandSignaled):
         if "dpp" in args:
             args["multidepth"] = True
             if args["dpp"] is None:
-                args["dpp"] =self.app.defaults["geometry_depthperpass"]
+                args["dpp"] = self.app.defaults["geometry_depthperpass"]
             else:
                 args["dpp"] = float(args["dpp"])
         else:
@@ -188,7 +188,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["dwell"] = self.app.defaults["geometry_dwell"]
             args["dwelltime"] = self.app.defaults["geometry_dwelltime"]
 
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else  self.app.defaults["geometry_ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["geometry_ppname_g"]
 
         if "toolchangez" in args:
             args["toolchange"] = True

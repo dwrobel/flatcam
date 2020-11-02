@@ -36,6 +36,7 @@ def PolygonPath(polygon):
     geometric object"""
     this = Polygon(polygon)
     assert this.geom_type == 'Polygon'
+
     def coding(ob):
         # The codes will be all "LINETO" commands, except for "MOVETO"s at the
         # beginning of each subpath
@@ -43,12 +44,9 @@ def PolygonPath(polygon):
         vals = ones(n, dtype=Path.code_type) * Path.LINETO
         vals[0] = Path.MOVETO
         return vals
-    vertices = concatenate(
-                    [asarray(this.exterior)] 
-                    + [asarray(r) for r in this.interiors])
-    codes = concatenate(
-                [coding(this.exterior)] 
-                + [coding(r) for r in this.interiors])
+
+    vertices = concatenate([asarray(this.exterior)] + [asarray(r) for r in this.interiors])
+    codes = concatenate([coding(this.exterior)] + [coding(r) for r in this.interiors])
     return Path(vertices, codes)
 
 

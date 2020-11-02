@@ -1971,8 +1971,7 @@ class ToolsDB2(QtWidgets.QWidget):
         else:
             new_name = "new_tool_1"
 
-        dict_elem = {}
-        dict_elem['name'] = new_name
+        dict_elem = {'name': new_name}
         if type(self.app.defaults["geometry_cnctooldia"]) == float:
             dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
         else:

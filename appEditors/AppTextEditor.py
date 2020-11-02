@@ -332,7 +332,7 @@ class AppTextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
             self.code_editor.moveCursor(QtGui.QTextCursor.Start)
-            r = self.code_editor.find(str(text_to_be_found), flags)
+            self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
 

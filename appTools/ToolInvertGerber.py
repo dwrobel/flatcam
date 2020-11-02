@@ -131,21 +131,18 @@ class ToolInvertGerber(AppTool):
         new_apertures = {}
 
         if '0' not in new_apertures:
-            new_apertures['0'] = {}
-            new_apertures['0']['type'] = 'C'
-            new_apertures['0']['size'] = 0.0
-            new_apertures['0']['geometry'] = []
+            new_apertures['0'] = {
+                'type': 'C',
+                'size': 0.0,
+                'geometry': []
+            }
 
         try:
             for poly in new_solid_geometry:
-                new_el = {}
-                new_el['solid'] = poly
-                new_el['follow'] = poly.exterior
+                new_el = {'solid': poly, 'follow': poly.exterior}
                 new_apertures['0']['geometry'].append(new_el)
         except TypeError:
-            new_el = {}
-            new_el['solid'] = new_solid_geometry
-            new_el['follow'] = new_solid_geometry.exterior
+            new_el = {'solid': new_solid_geometry, 'follow': new_solid_geometry.exterior}
             new_apertures['0']['geometry'].append(new_el)
 
         def init_func(new_obj, app_obj):
@@ -157,8 +154,8 @@ class ToolInvertGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
