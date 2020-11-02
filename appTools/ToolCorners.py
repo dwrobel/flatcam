@@ -160,7 +160,7 @@ class ToolCorners(AppTool):
         marker_type = self.ui.type_radio.get_value()
         line_thickness = self.ui.thick_entry.get_value()
         margin = self.ui.margin_entry.get_value()
-        line_length = self.ui.l_entry.get_value()
+        line_length = self.ui.l_entry.get_value() / 2.0
 
         geo_list = []
 
@@ -306,9 +306,10 @@ class ToolCorners(AppTool):
         def initialize(grb_obj, app_obj):
             grb_obj.multitool = False
             grb_obj.multigeo = False
-            grb_obj.follow = False
+            grb_obj.follow = deepcopy(g_obj.follow)
             grb_obj.apertures = new_apertures
             grb_obj.solid_geometry = unary_union(s_list)
+            grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
 
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)

@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - PEP8 corrections all over the app
 - made sure that the object selection will not work while in Editors or in the App Tools
 - some minor changes to strings and icons
+- in Corner Markers Tool - the new Gerber object will have also follow_geometry
 
 1.11.2020
 
