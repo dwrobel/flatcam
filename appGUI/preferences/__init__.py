@@ -1,4 +1,5 @@
 from appGUI.GUIElements import *
+from PyQt5.QtCore import QSettings
 import gettext
 import appTranslation as fcTranslate
 import builtins
