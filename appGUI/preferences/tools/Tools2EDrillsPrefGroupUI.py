@@ -126,7 +126,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         # Diameter value
         self.dia_entry = FCDoubleSpinner()
         self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.set_range(0.0000, 9999.9999)
+        self.dia_entry.set_range(0.0000, 10000.0000)
 
         self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.dia_label.setToolTip(
@@ -153,7 +153,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         self.circular_ring_entry = FCDoubleSpinner()
         self.circular_ring_entry.set_precision(self.decimals)
-        self.circular_ring_entry.set_range(0.0000, 9999.9999)
+        self.circular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid_lay.addWidget(self.circular_ring_label, 14, 0)
         grid_lay.addWidget(self.circular_ring_entry, 14, 1)
@@ -166,7 +166,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         self.oblong_ring_entry = FCDoubleSpinner()
         self.oblong_ring_entry.set_precision(self.decimals)
-        self.oblong_ring_entry.set_range(0.0000, 9999.9999)
+        self.oblong_ring_entry.set_range(0.0000, 10000.0000)
 
         grid_lay.addWidget(self.oblong_ring_label, 15, 0)
         grid_lay.addWidget(self.oblong_ring_entry, 15, 1)
@@ -179,7 +179,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         self.square_ring_entry = FCDoubleSpinner()
         self.square_ring_entry.set_precision(self.decimals)
-        self.square_ring_entry.set_range(0.0000, 9999.9999)
+        self.square_ring_entry.set_range(0.0000, 10000.0000)
 
         grid_lay.addWidget(self.square_ring_label, 16, 0)
         grid_lay.addWidget(self.square_ring_entry, 16, 1)
@@ -192,7 +192,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         self.rectangular_ring_entry = FCDoubleSpinner()
         self.rectangular_ring_entry.set_precision(self.decimals)
-        self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
+        self.rectangular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid_lay.addWidget(self.rectangular_ring_label, 17, 0)
         grid_lay.addWidget(self.rectangular_ring_entry, 17, 1)
@@ -205,7 +205,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         self.other_ring_entry = FCDoubleSpinner()
         self.other_ring_entry.set_precision(self.decimals)
-        self.other_ring_entry.set_range(0.0000, 9999.9999)
+        self.other_ring_entry.set_range(0.0000, 10000.0000)
 
         grid_lay.addWidget(self.other_ring_label, 18, 0)
         grid_lay.addWidget(self.other_ring_entry, 18, 1)

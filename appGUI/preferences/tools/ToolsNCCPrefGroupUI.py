@@ -102,7 +102,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-9999.9999, 0.0000)
+        self.cutz_entry.set_range(-10000.0000, 0.0000)
         self.cutz_entry.setSingleStep(0.1)
 
         self.cutz_entry.setToolTip(
@@ -122,7 +122,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.0001, 9999.9999)
+        self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.newdialabel, 5, 0)
@@ -271,7 +271,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "The value can be between 0.0 and 9999.9 FlatCAM units.")
         )
         self.ncc_offset_spinner = FCDoubleSpinner()
-        self.ncc_offset_spinner.set_range(0.00, 9999.9999)
+        self.ncc_offset_spinner.set_range(0.00, 10000.0000)
         self.ncc_offset_spinner.set_precision(self.decimals)
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setSingleStep(0.1)

@@ -817,7 +817,7 @@ class FidoUI:
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin_entry.set_range(-9999.9999, 9999.9999)
+        self.margin_entry.set_range(-10000.0000, 10000.0000)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
@@ -880,7 +880,7 @@ class FidoUI:
             _("Thickness of the line that makes the fiducial.")
         )
         self.line_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.line_thickness_entry.set_range(0.00001, 9999.9999)
+        self.line_thickness_entry.set_range(0.00001, 10000.0000)
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 

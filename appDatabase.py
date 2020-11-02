@@ -225,7 +225,7 @@ class ToolsDB2UI:
             _("Tool Diameter."))
 
         self.dia_entry = FCDoubleSpinner()
-        self.dia_entry.set_range(-9999.9999, 9999.9999)
+        self.dia_entry.set_range(-10000.0000, 10000.0000)
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.setObjectName('gdb_dia')
 
@@ -247,7 +247,7 @@ class ToolsDB2UI:
         )
         self.tol_min_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tol_min_entry.set_precision(self.decimals)
-        self.tol_min_entry.set_range(0, 9999.9999)
+        self.tol_min_entry.set_range(0, 10000.0000)
         self.tol_min_entry.setSingleStep(0.1)
         self.tol_min_entry.setObjectName("gdb_tol_min")
 
@@ -261,7 +261,7 @@ class ToolsDB2UI:
         )
         self.tol_max_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tol_max_entry.set_precision(self.decimals)
-        self.tol_max_entry.set_range(0, 9999.9999)
+        self.tol_max_entry.set_range(0, 10000.0000)
         self.tol_max_entry.setSingleStep(0.1)
         self.tol_max_entry.setObjectName("gdb_tol_max")
 
@@ -313,7 +313,7 @@ class ToolsDB2UI:
               "Diameter of the tip for V-Shape Tools."))
 
         self.mill_vdia_entry = FCDoubleSpinner()
-        self.mill_vdia_entry.set_range(0.0000, 9999.9999)
+        self.mill_vdia_entry.set_range(0.0000, 10000.0000)
         self.mill_vdia_entry.set_precision(self.decimals)
         self.mill_vdia_entry.setObjectName('gdb_vdia')
 
@@ -379,7 +379,7 @@ class ToolsDB2UI:
               "A value to be used as offset from the current path."))
 
         self.mill_custom_offset_entry = FCDoubleSpinner()
-        self.mill_custom_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_custom_offset_entry.set_range(-10000.0000, 10000.0000)
         self.mill_custom_offset_entry.set_precision(self.decimals)
         self.mill_custom_offset_entry.setObjectName('gdb_custom_offset')
 
@@ -398,7 +398,7 @@ class ToolsDB2UI:
               "The depth at which to cut into material."))
 
         self.mill_cutz_entry = FCDoubleSpinner()
-        self.mill_cutz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_cutz_entry.set_range(-10000.0000, 10000.0000)
         self.mill_cutz_entry.set_precision(self.decimals)
         self.mill_cutz_entry.setObjectName('gdb_cutz')
 
@@ -425,7 +425,7 @@ class ToolsDB2UI:
               "The value used to cut into material on each pass."))
 
         self.mill_multidepth_entry = FCDoubleSpinner()
-        self.mill_multidepth_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_multidepth_entry.set_range(-10000.0000, 10000.0000)
         self.mill_multidepth_entry.set_precision(self.decimals)
         self.mill_multidepth_entry.setObjectName('gdb_multidepth_entry')
 
@@ -440,7 +440,7 @@ class ToolsDB2UI:
               "above the surface of the material, avoiding all fixtures."))
 
         self.mill_travelz_entry = FCDoubleSpinner()
-        self.mill_travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_travelz_entry.set_range(-10000.0000, 10000.0000)
         self.mill_travelz_entry.set_precision(self.decimals)
         self.mill_travelz_entry.setObjectName('gdb_travelz')
 
@@ -473,7 +473,7 @@ class ToolsDB2UI:
               "the extra cut."))
 
         self.mill_ecut_length_entry = FCDoubleSpinner()
-        self.mill_ecut_length_entry.set_range(0.0000, 9999.9999)
+        self.mill_ecut_length_entry.set_range(0.0000, 10000.0000)
         self.mill_ecut_length_entry.set_precision(self.decimals)
         self.mill_ecut_length_entry.setObjectName('gdb_ecut_length')
 
@@ -492,7 +492,7 @@ class ToolsDB2UI:
               "The speed on XY plane used while cutting into material."))
 
         self.mill_frxy_entry = FCDoubleSpinner()
-        self.mill_frxy_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frxy_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_frxy_entry.set_precision(self.decimals)
         self.mill_frxy_entry.setObjectName('gdb_frxy')
 
@@ -506,7 +506,7 @@ class ToolsDB2UI:
               "The speed on Z plane."))
 
         self.mill_frz_entry = FCDoubleSpinner()
-        self.mill_frz_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frz_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_frz_entry.set_precision(self.decimals)
         self.mill_frz_entry.setObjectName('gdb_frz')
 
@@ -522,7 +522,7 @@ class ToolsDB2UI:
               "the G0 g-code command. Mostly 3D printers."))
 
         self.mill_frapids_entry = FCDoubleSpinner()
-        self.mill_frapids_entry.set_range(0.0000, 9999.9999)
+        self.mill_frapids_entry.set_range(0.0000, 10000.0000)
         self.mill_frapids_entry.set_precision(self.decimals)
         self.mill_frapids_entry.setObjectName('gdb_frapids')
 
@@ -542,7 +542,7 @@ class ToolsDB2UI:
               "The speed of the spindle in RPM."))
 
         self.mill_spindle_entry = FCDoubleSpinner()
-        self.mill_spindle_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_spindle_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_spindle_entry.set_precision(self.decimals)
         self.mill_spindle_entry.setObjectName('gdb_spindle')
 
@@ -569,7 +569,7 @@ class ToolsDB2UI:
               "A delay used to allow the motor spindle reach its set speed."))
 
         self.mill_dwelltime_entry = FCDoubleSpinner()
-        self.mill_dwelltime_entry.set_range(0.0000, 9999.9999)
+        self.mill_dwelltime_entry.set_range(0.0000, 10000.0000)
         self.mill_dwelltime_entry.set_precision(self.decimals)
         self.mill_dwelltime_entry.setObjectName('gdb_dwelltime')
 
@@ -652,7 +652,7 @@ class ToolsDB2UI:
         )
         self.ncc_margin_entry = FCDoubleSpinner()
         self.ncc_margin_entry.set_precision(self.decimals)
-        self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.ncc_margin_entry.set_range(-10000.0000, 10000.0000)
         self.ncc_margin_entry.setObjectName("gdb_n_margin")
 
         self.grid2.addWidget(nccmarginlabel, 16, 0)
@@ -763,7 +763,7 @@ class ToolsDB2UI:
         )
         self.paint_offset_entry = FCDoubleSpinner()
         self.paint_offset_entry.set_precision(self.decimals)
-        self.paint_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.paint_offset_entry.set_range(-10000.0000, 10000.0000)
         self.paint_offset_entry.setObjectName('gdb_p_offset')
 
         self.grid3.addWidget(marginlabel, 2, 0)
@@ -927,9 +927,9 @@ class ToolsDB2UI:
         self.drill_cutz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.drill_cutz_entry.set_range(-9999.9999, 0.0000)
+            self.drill_cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.drill_cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_cutz_entry.setSingleStep(0.1)
         self.drill_cutz_entry.setObjectName("gdb_e_cutz")
@@ -947,7 +947,7 @@ class ToolsDB2UI:
 
         self.drill_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_offset_entry.set_precision(self.decimals)
-        self.drill_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.drill_offset_entry.set_range(-10000.0000, 10000.0000)
         self.drill_offset_entry.setObjectName("gdb_e_offset")
 
         self.grid5.addWidget(self.tool_offset_label, 6, 0)
@@ -976,7 +976,7 @@ class ToolsDB2UI:
               "The value used to cut into material on each pass."))
         self.drill_maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_maxdepth_entry.set_precision(self.decimals)
-        self.drill_maxdepth_entry.set_range(0, 9999.9999)
+        self.drill_maxdepth_entry.set_range(0, 10000.0000)
         self.drill_maxdepth_entry.setSingleStep(0.1)
 
         self.drill_maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -996,9 +996,9 @@ class ToolsDB2UI:
         self.drill_travelz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.drill_travelz_entry.set_range(0.00001, 9999.9999)
+            self.drill_travelz_entry.set_range(0.00001, 10000.0000)
         else:
-            self.drill_travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_travelz_entry.setSingleStep(0.1)
         self.drill_travelz_entry.setObjectName("gdb_e_travelz")
@@ -1021,7 +1021,7 @@ class ToolsDB2UI:
         )
         self.drill_feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_feedrate_z_entry.set_precision(self.decimals)
-        self.drill_feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_z_entry.set_range(0.0, 910000.0000)
         self.drill_feedrate_z_entry.setSingleStep(0.1)
         self.drill_feedrate_z_entry.setObjectName("gdb_e_feedratez")
 
@@ -1039,7 +1039,7 @@ class ToolsDB2UI:
         )
         self.drill_feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_feedrate_rapid_entry.set_precision(self.decimals)
-        self.drill_feedrate_rapid_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_rapid_entry.set_range(0.0, 910000.0000)
         self.drill_feedrate_rapid_entry.setSingleStep(0.1)
         self.drill_feedrate_rapid_entry.setObjectName("gdb_e_fr_rapid")
 
@@ -1086,7 +1086,7 @@ class ToolsDB2UI:
               "A delay used to allow the motor spindle reach its set speed."))
         self.drill_dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_dwelltime_entry.set_precision(self.decimals)
-        self.drill_dwelltime_entry.set_range(0.0, 9999.9999)
+        self.drill_dwelltime_entry.set_range(0.0, 10000.0000)
         self.drill_dwelltime_entry.setSingleStep(0.1)
         self.drill_dwelltime_entry.setObjectName("gdb_e_dwelltime")
 
@@ -1149,7 +1149,7 @@ class ToolsDB2UI:
 
         # Margin
         self.cutout_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutout_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.cutout_margin_entry.set_range(-10000.0000, 10000.0000)
         self.cutout_margin_entry.setSingleStep(0.1)
         self.cutout_margin_entry.set_precision(self.decimals)
         self.cutout_margin_entry.setObjectName('gdb_ct_margin')
@@ -1211,9 +1211,9 @@ class ToolsDB2UI:
         self.cutout_thin_depth_entry.setObjectName('gdb_ct_gap_depth')
 
         if self.machinist_setting == 0:
-            self.cutout_thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.cutout_thin_depth_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.cutout_thin_depth_entry.setRange(-9999.9999, 9999.9999)
+            self.cutout_thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.cutout_thin_depth_entry.setSingleStep(0.1)
 
         self.grid6.addWidget(self.thin_depth_label, 17, 0)
@@ -2976,7 +2976,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         dia_item = FCDoubleSpinner()
 #         dia_item.set_precision(self.decimals)
 #         dia_item.setSingleStep(0.1)
-#         dia_item.set_range(0.0, 9999.9999)
+#         dia_item.set_range(0.0, 10000.0000)
 #         dia_item.set_value(float(tooldict['tooldia']))
 #         widget.setCellWidget(row, 2, dia_item)
 #
@@ -2989,7 +2989,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         c_offset_item = FCDoubleSpinner()
 #         c_offset_item.set_precision(self.decimals)
 #         c_offset_item.setSingleStep(0.1)
-#         c_offset_item.set_range(-9999.9999, 9999.9999)
+#         c_offset_item.set_range(-10000.0000, 10000.0000)
 #         c_offset_item.set_value(float(tooldict['offset_value']))
 #         widget.setCellWidget(row, 4, c_offset_item)
 #
@@ -3009,9 +3009,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         cutz_item.set_precision(self.decimals)
 #         cutz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             cutz_item.set_range(-9999.9999, 9999.9999)
+#             cutz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             cutz_item.set_range(-9999.9999, -0.0000)
+#             cutz_item.set_range(-10000.0000, -0.0000)
 #
 #         cutz_item.set_value(float(data['cutz']))
 #         widget.setCellWidget(row, 7, cutz_item)
@@ -3033,14 +3033,14 @@ class ToolsDB2(QtWidgets.QWidget):
 #         depth_per_pass_item = FCDoubleSpinner()
 #         depth_per_pass_item.set_precision(self.decimals)
 #         depth_per_pass_item.setSingleStep(0.1)
-#         depth_per_pass_item.set_range(0.0, 9999.9999)
+#         depth_per_pass_item.set_range(0.0, 10000.0000)
 #         depth_per_pass_item.set_value(float(data['depthperpass']))
 #         widget.setCellWidget(row, 9, depth_per_pass_item)
 #
 #         vtip_dia_item = FCDoubleSpinner()
 #         vtip_dia_item.set_precision(self.decimals)
 #         vtip_dia_item.setSingleStep(0.1)
-#         vtip_dia_item.set_range(0.0, 9999.9999)
+#         vtip_dia_item.set_range(0.0, 10000.0000)
 #         vtip_dia_item.set_value(float(data['vtipdia']))
 #         widget.setCellWidget(row, 10, vtip_dia_item)
 #
@@ -3055,28 +3055,28 @@ class ToolsDB2(QtWidgets.QWidget):
 #         travelz_item.set_precision(self.decimals)
 #         travelz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             travelz_item.set_range(-9999.9999, 9999.9999)
+#             travelz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             travelz_item.set_range(0.0000, 9999.9999)
+#             travelz_item.set_range(0.0000, 10000.0000)
 #
 #         travelz_item.set_value(float(data['travelz']))
 #         widget.setCellWidget(row, 12, travelz_item)
 #
 #         fr_item = FCDoubleSpinner()
 #         fr_item.set_precision(self.decimals)
-#         fr_item.set_range(0.0, 9999.9999)
+#         fr_item.set_range(0.0, 10000.0000)
 #         fr_item.set_value(float(data['feedrate']))
 #         widget.setCellWidget(row, 13, fr_item)
 #
 #         frz_item = FCDoubleSpinner()
 #         frz_item.set_precision(self.decimals)
-#         frz_item.set_range(0.0, 9999.9999)
+#         frz_item.set_range(0.0, 10000.0000)
 #         frz_item.set_value(float(data['feedrate_z']))
 #         widget.setCellWidget(row, 14, frz_item)
 #
 #         frrapids_item = FCDoubleSpinner()
 #         frrapids_item.set_precision(self.decimals)
-#         frrapids_item.set_range(0.0, 9999.9999)
+#         frrapids_item.set_range(0.0, 10000.0000)
 #         frrapids_item.set_value(float(data['feedrate_rapid']))
 #         widget.setCellWidget(row, 15, frrapids_item)
 #
@@ -3092,7 +3092,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         dwelltime_item = FCDoubleSpinner()
 #         dwelltime_item.set_precision(self.decimals)
-#         dwelltime_item.set_range(0.0000, 9999.9999)
+#         dwelltime_item.set_range(0.0000, 10000.0000)
 #         dwelltime_item.set_value(float(data['dwelltime']))
 #         widget.setCellWidget(row, 18, dwelltime_item)
 #
@@ -3108,7 +3108,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         ecut_length_item = FCDoubleSpinner()
 #         ecut_length_item.set_precision(self.decimals)
-#         ecut_length_item.set_range(0.0000, 9999.9999)
+#         ecut_length_item.set_range(0.0000, 10000.0000)
 #         ecut_length_item.set_value(data['extracut_length'])
 #         widget.setCellWidget(row, 21, ecut_length_item)
 #
@@ -3123,9 +3123,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         toolchangez_item.set_precision(self.decimals)
 #         toolchangez_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             toolchangez_item.set_range(-9999.9999, 9999.9999)
+#             toolchangez_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             toolchangez_item.set_range(0.0000, 9999.9999)
+#             toolchangez_item.set_range(0.0000, 10000.0000)
 #
 #         toolchangez_item.set_value(float(data['toolchangez']))
 #         widget.setCellWidget(row, 24, toolchangez_item)
@@ -3137,9 +3137,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         endz_item.set_precision(self.decimals)
 #         endz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             endz_item.set_range(-9999.9999, 9999.9999)
+#             endz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             endz_item.set_range(0.0000, 9999.9999)
+#             endz_item.set_range(0.0000, 10000.0000)
 #
 #         endz_item.set_value(float(data['endz']))
 #         widget.setCellWidget(row, 26, endz_item)

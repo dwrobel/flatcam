@@ -103,7 +103,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.drill_pitch_label.setMinimumWidth(100)
         self.drill_pitch_entry = FCDoubleSpinner()
-        self.drill_pitch_entry.set_range(0, 99999.9999)
+        self.drill_pitch_entry.set_range(0, 910000.0000)
         self.drill_pitch_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.drill_pitch_label, 5, 0)

@@ -3773,7 +3773,7 @@ class AppExcEditorUI:
         hlay = QtWidgets.QHBoxLayout()
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.0000, 9999.9999)
+        self.addtool_entry.set_range(0.0000, 10000.0000)
 
         hlay.addWidget(self.addtool_entry)
 
@@ -3831,7 +3831,7 @@ class AppExcEditorUI:
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
         self.resdrill_entry.setSizePolicy(sizePolicy)
         self.resdrill_entry.set_precision(self.decimals)
-        self.resdrill_entry.set_range(0.0000, 9999.9999)
+        self.resdrill_entry.set_range(0.0000, 10000.0000)
 
         hlay2.addWidget(self.resdrill_entry)
 
@@ -3924,7 +3924,7 @@ class AppExcEditorUI:
 
         self.drill_pitch_entry = FCDoubleSpinner()
         self.drill_pitch_entry.set_precision(self.decimals)
-        self.drill_pitch_entry.set_range(0.0000, 9999.9999)
+        self.drill_pitch_entry.set_range(0.0000, 10000.0000)
 
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
@@ -4018,7 +4018,7 @@ class AppExcEditorUI:
         self.slot_length_entry = FCDoubleSpinner()
         self.slot_length_entry.set_precision(self.decimals)
         self.slot_length_entry.setSingleStep(0.1)
-        self.slot_length_entry.setRange(0.0000, 9999.9999)
+        self.slot_length_entry.setRange(0.0000, 10000.0000)
 
         self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
 
@@ -4140,7 +4140,7 @@ class AppExcEditorUI:
         self.slot_array_pitch_entry = FCDoubleSpinner()
         self.slot_array_pitch_entry.set_precision(self.decimals)
         self.slot_array_pitch_entry.setSingleStep(0.1)
-        self.slot_array_pitch_entry.setRange(0.0000, 9999.9999)
+        self.slot_array_pitch_entry.setRange(0.0000, 10000.0000)
 
         self.slot_array_linear_form.addRow(self.slot_array_pitch_label, self.slot_array_pitch_entry)
 

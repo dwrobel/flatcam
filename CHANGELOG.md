@@ -19,6 +19,11 @@ CHANGELOG for FlatCAM beta
 - in Corner Markers Tool - the new Gerber object will have also follow_geometry
 - upgraded the Fiducials Tool to create new objects instead of updating in place the source objects
 - upgraded the Copper Thieving Tool to create new objects instead of updating in place the source objects
+- in Copper Thieving Tool added a new parameter to filter areas too small to be desired in the copper thieving; added it to Preferences too
+- Copper Thieving Tool added a new parameter to select what extra geometry to include in the Pattern Plating Mask; added it to the Preferences
+- made a wide change on the spinners GUI ranges: from 9999.9999 all values to 10000.0000
+- fixed some late issues in Corner Markers Tool new feature (messages)
+- upgraded Calculator Tool and added the new parameter is the Preferences
 - updated translation strings
 
 1.11.2020

@@ -54,9 +54,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.setSingleStep(0.1)
@@ -107,9 +107,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.travelz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.travelz_entry.set_range(0.0001, 9999.9999)
+            self.travelz_entry.set_range(0.0001, 10000.0000)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
@@ -139,9 +139,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.000, 9999.9999)
+            self.toolchangez_entry.set_range(0.000, 10000.0000)
         else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
@@ -159,9 +159,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.endz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.endz_entry.set_range(0.000, 9999.9999)
+            self.endz_entry.set_range(0.000, 10000.0000)
         else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.set_precision(self.decimals)
         self.endz_entry.setSingleStep(0.1)
@@ -189,7 +189,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "plane in units per minute")
         )
         self.cncfeedrate_entry = FCDoubleSpinner()
-        self.cncfeedrate_entry.set_range(0, 99999.9999)
+        self.cncfeedrate_entry.set_range(0, 910000.0000)
         self.cncfeedrate_entry.set_precision(self.decimals)
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
@@ -205,7 +205,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "It is called also Plunge.")
         )
         self.feedrate_z_entry = FCDoubleSpinner()
-        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.set_range(0, 910000.0000)
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setWrapping(True)

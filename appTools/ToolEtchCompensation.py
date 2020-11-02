@@ -366,7 +366,7 @@ class EtchUI:
         )
         self.thick_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thick_entry.set_precision(self.decimals)
-        self.thick_entry.set_range(0.0000, 9999.9999)
+        self.thick_entry.set_range(0.0000, 10000.0000)
         self.thick_entry.setObjectName(_("Thickness"))
 
         grid0.addWidget(self.thick_label, 12, 0)
@@ -421,7 +421,7 @@ class EtchUI:
         )
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName(_("Offset"))
 
         grid0.addWidget(self.offset_label, 20, 0)

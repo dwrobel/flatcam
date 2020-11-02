@@ -2620,7 +2620,7 @@ class AppGerberEditor(QtCore.QObject):
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
         buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel('%s:' % _("Buffer corner"))
@@ -2672,7 +2672,7 @@ class AppGerberEditor(QtCore.QObject):
         )
         self.scale_factor_entry = FCDoubleSpinner()
         self.scale_factor_entry.set_precision(self.decimals)
-        self.scale_factor_entry.set_range(0.0000, 9999.9999)
+        self.scale_factor_entry.set_range(0.0000, 10000.0000)
 
         scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
 
@@ -2708,7 +2708,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ma_upper_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area UPPER threshold"))
         self.ma_upper_threshold_lbl.setToolTip(
             _("The threshold value, all areas less than this are marked.\n"
-              "Can have a value between 0.0000 and 9999.9999")
+              "Can have a value between 0.0000 and 10000.0000")
         )
         self.ma_upper_threshold_entry = FCDoubleSpinner()
         self.ma_upper_threshold_entry.set_precision(self.decimals)
@@ -2717,7 +2717,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ma_lower_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area LOWER threshold"))
         self.ma_lower_threshold_lbl.setToolTip(
             _("The threshold value, all areas more than this are marked.\n"
-              "Can have a value between 0.0000 and 9999.9999")
+              "Can have a value between 0.0000 and 10000.0000")
         )
         self.ma_lower_threshold_entry = FCDoubleSpinner()
         self.ma_lower_threshold_entry.set_precision(self.decimals)
@@ -2827,7 +2827,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.pad_pitch_entry = FCDoubleSpinner()
         self.pad_pitch_entry.set_precision(self.decimals)
-        self.pad_pitch_entry.set_range(0.0000, 9999.9999)
+        self.pad_pitch_entry.set_range(0.0000, 10000.0000)
         self.pad_pitch_entry.setSingleStep(0.1)
 
         self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
@@ -5623,7 +5623,7 @@ class TransformEditorTool(AppTool):
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(
@@ -6198,7 +6198,7 @@ class TransformEditorTool(AppTool):
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
+                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']),
                                 parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
@@ -6216,7 +6216,7 @@ class TransformEditorTool(AppTool):
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
+                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']),
                                 parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))

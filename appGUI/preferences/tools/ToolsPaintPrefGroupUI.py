@@ -78,7 +78,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
         self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.0000, 9999.9999)
+        self.tipdia_entry.set_range(0.0000, 10000.0000)
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName(_("V-Tip Dia"))
 
@@ -107,7 +107,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999.9999, 0.0000)
+        self.cutz_entry.set_range(-910000.0000, 0.0000)
         self.cutz_entry.setObjectName(_("Cut Z"))
 
         self.cutz_entry.setToolTip(
@@ -126,7 +126,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.000, 9999.9999)
+        self.newdia_entry.set_range(0.000, 10000.0000)
         self.newdia_entry.setObjectName(_("Tool Dia"))
 
         grid0.addWidget(self.newdialabel, 5, 0)
@@ -185,7 +185,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "be painted.")
         )
         self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.setSingleStep(0.1)
 

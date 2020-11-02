@@ -49,7 +49,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         )
         self.margin_entry = FCDoubleSpinner()
         self.margin_entry.set_precision(self.decimals)
-        self.margin_entry.set_range(0.0000, 9999.9999)
+        self.margin_entry.set_range(0.0000, 10000.0000)
         self.margin_entry.setObjectName(_("Margin"))
 
         grid0.addWidget(self.margin_label, 2, 0, 1, 2)

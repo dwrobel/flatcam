@@ -2072,7 +2072,7 @@ class CutoutUI:
         # Tool Diameter
         self.dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia.set_precision(self.decimals)
-        self.dia.set_range(0.0000, 9999.9999)
+        self.dia.set_range(0.0000, 10000.0000)
 
         self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Dia"))
         self.dia_label.setToolTip(
@@ -2129,9 +2129,9 @@ class CutoutUI:
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.setRange(-9999.9999, -0.00001)
+            self.cutz_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+            self.cutz_entry.setRange(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -2151,7 +2151,7 @@ class CutoutUI:
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.setRange(0, 9999.9999)
+        self.maxdepth_entry.setRange(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(
@@ -2167,7 +2167,7 @@ class CutoutUI:
 
         # Margin
         self.margin = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin.set_range(-9999.9999, 9999.9999)
+        self.margin.set_range(-10000.0000, 10000.0000)
         self.margin.setSingleStep(0.1)
         self.margin.set_precision(self.decimals)
 
@@ -2225,9 +2225,9 @@ class CutoutUI:
         self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thin_depth_entry.set_precision(self.decimals)
         if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.thin_depth_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
+            self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.thin_depth_label, 32, 0)

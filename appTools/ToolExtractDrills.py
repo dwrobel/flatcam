@@ -552,7 +552,7 @@ class ExtractDrillsUI:
         # Diameter value
         self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.set_range(0.0000, 9999.9999)
+        self.dia_entry.set_range(0.0000, 10000.0000)
 
         self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.dia_label.setToolTip(
@@ -593,7 +593,7 @@ class ExtractDrillsUI:
 
         self.circular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.circular_ring_entry.set_precision(self.decimals)
-        self.circular_ring_entry.set_range(0.0000, 9999.9999)
+        self.circular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.circular_ring_label, 1, 0)
         grid2.addWidget(self.circular_ring_entry, 1, 1)
@@ -606,7 +606,7 @@ class ExtractDrillsUI:
 
         self.oblong_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.oblong_ring_entry.set_precision(self.decimals)
-        self.oblong_ring_entry.set_range(0.0000, 9999.9999)
+        self.oblong_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.oblong_ring_label, 2, 0)
         grid2.addWidget(self.oblong_ring_entry, 2, 1)
@@ -619,7 +619,7 @@ class ExtractDrillsUI:
 
         self.square_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_ring_entry.set_precision(self.decimals)
-        self.square_ring_entry.set_range(0.0000, 9999.9999)
+        self.square_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.square_ring_label, 3, 0)
         grid2.addWidget(self.square_ring_entry, 3, 1)
@@ -632,7 +632,7 @@ class ExtractDrillsUI:
 
         self.rectangular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rectangular_ring_entry.set_precision(self.decimals)
-        self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
+        self.rectangular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.rectangular_ring_label, 4, 0)
         grid2.addWidget(self.rectangular_ring_entry, 4, 1)
@@ -645,7 +645,7 @@ class ExtractDrillsUI:
 
         self.other_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.other_ring_entry.set_precision(self.decimals)
-        self.other_ring_entry.set_range(0.0000, 9999.9999)
+        self.other_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.other_ring_label, 5, 0)
         grid2.addWidget(self.other_ring_entry, 5, 1)

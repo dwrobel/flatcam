@@ -72,7 +72,7 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner()
-        self.margin_entry.set_range(-9999.9999, 9999.9999)
+        self.margin_entry.set_range(-10000.0000, 10000.0000)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
@@ -85,7 +85,7 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
             _("The length of the line that makes the corner marker.")
         )
         self.l_entry = FCDoubleSpinner()
-        self.l_entry.set_range(-9999.9999, 9999.9999)
+        self.l_entry.set_range(-10000.0000, 10000.0000)
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 

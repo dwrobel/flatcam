@@ -73,7 +73,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "ignore for any other cases.")
         )
         self.feedrate_rapid_entry = FCDoubleSpinner()
-        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+        self.feedrate_rapid_entry.set_range(0, 910000.0000)
         self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setWrapping(True)
@@ -125,7 +125,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
             _("The feedrate used while the probe is probing.")
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
-        self.feedrate_probe_entry.set_range(0, 99999.9999)
+        self.feedrate_probe_entry.set_range(0, 910000.0000)
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setWrapping(True)
@@ -243,7 +243,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_range(0.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid1.addWidget(self.over_z_label, 18, 0)
@@ -271,7 +271,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.polish_dia_entry = FCDoubleSpinner()
         self.polish_dia_entry.set_precision(self.decimals)
-        self.polish_dia_entry.set_range(0.000, 9999.9999)
+        self.polish_dia_entry.set_range(0.000, 10000.0000)
 
         grid1.addWidget(self.polish_dia_lbl, 24, 0)
         grid1.addWidget(self.polish_dia_entry, 24, 1)
@@ -298,7 +298,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.polish_pressure_entry = FCDoubleSpinner()
         self.polish_pressure_entry.set_precision(self.decimals)
-        self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_pressure_entry.set_range(-10000.0000, 10000.0000)
 
         grid1.addWidget(self.polish_pressure_lbl, 28, 0)
         grid1.addWidget(self.polish_pressure_entry, 28, 1)
@@ -310,7 +310,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.polish_margin_entry = FCDoubleSpinner()
         self.polish_margin_entry.set_precision(self.decimals)
-        self.polish_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
 
         grid1.addWidget(self.polish_margin_lbl, 30, 0)
         grid1.addWidget(self.polish_margin_entry, 30, 1)

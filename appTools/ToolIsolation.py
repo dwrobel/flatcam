@@ -782,12 +782,12 @@ class ToolIsolation(AppTool, Gerber):
     def on_add_tool_by_key(self):
         # tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
         #                                text='%s:' % _('Enter a Tool Diameter'),
-        #                                min=0.0001, max=9999.9999, decimals=self.decimals)
+        #                                min=0.0001, max=10000.0000, decimals=self.decimals)
         btn_icon = QtGui.QIcon(self.app.resource_location + '/open_excellon32.png')
 
         tool_add_popup = FCInputDialogSpinnerButton(title='%s...' % _("New Tool"),
                                                     text='%s:' % _('Enter a Tool Diameter'),
-                                                    min=0.0001, max=9999.9999, decimals=self.decimals,
+                                                    min=0.0001, max=10000.0000, decimals=self.decimals,
                                                     button_icon=btn_icon,
                                                     callback=self.on_find_optimal_tooldia,
                                                     parent=self.app.ui)
@@ -3111,7 +3111,7 @@ class IsoUI:
 
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.set_range(0.000, 10000.0000)
         self.new_tooldia_entry.setObjectName("i_new_tooldia")
 
         new_tool_lay.addWidget(self.new_tooldia_entry)

@@ -451,7 +451,7 @@ class GerberObjectUI(ObjectUI):
         )
 
         self.noncopper_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.noncopper_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.noncopper_margin_entry.set_range(-10000.0000, 10000.0000)
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
@@ -489,7 +489,7 @@ class GerberObjectUI(ObjectUI):
               "to the nearest polygon.")
         )
         self.bbmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.bbmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.bbmargin_entry.set_range(-10000.0000, 10000.0000)
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
@@ -796,7 +796,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tooldia_entry.set_precision(self.decimals)
-        self.tooldia_entry.set_range(0.0, 9999.9999)
+        self.tooldia_entry.set_range(0.0, 10000.0000)
         self.tooldia_entry.setSingleStep(0.1)
 
         self.generate_milling_button = QtWidgets.QPushButton(_('Mill Drills'))
@@ -816,7 +816,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.slot_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.slot_tooldia_entry.set_precision(self.decimals)
-        self.slot_tooldia_entry.set_range(0.0, 9999.9999)
+        self.slot_tooldia_entry.set_range(0.0, 10000.0000)
         self.slot_tooldia_entry.setSingleStep(0.1)
 
         self.generate_milling_slots_button = QtWidgets.QPushButton(_('Mill Slots'))
@@ -1065,7 +1065,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.tool_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tool_offset_entry.set_precision(self.decimals)
-        self.tool_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.tool_offset_entry.set_range(-10000.0000, 10000.0000)
         self.tool_offset_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.tool_offset_lbl, 0, 0)
@@ -1085,7 +1085,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.00001, 9999.9999)
+        self.addtool_entry.set_range(0.00001, 10000.0000)
         self.addtool_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.addtool_entry_lbl, 3, 0)
@@ -1176,7 +1176,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.00001, 9999.9999)
+        self.tipdia_entry.set_range(0.00001, 10000.0000)
         self.tipdia_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.tipdialabel, 1, 0)
@@ -1210,9 +1210,9 @@ class GeometryObjectUI(ObjectUI):
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -1232,7 +1232,7 @@ class GeometryObjectUI(ObjectUI):
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.set_range(0, 9999.9999)
+        self.maxdepth_entry.set_range(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(
@@ -1255,9 +1255,9 @@ class GeometryObjectUI(ObjectUI):
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.travelz_entry.set_range(0.00001, 9999.9999)
+            self.travelz_entry.set_range(0.00001, 10000.0000)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.setSingleStep(0.1)
 
@@ -1272,7 +1272,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cncfeedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncfeedrate_entry.set_precision(self.decimals)
-        self.cncfeedrate_entry.set_range(0, 99999.9999)
+        self.cncfeedrate_entry.set_range(0, 910000.0000)
         self.cncfeedrate_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.frlabel, 10, 0)
@@ -1287,7 +1287,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_z_entry.set_precision(self.decimals)
-        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.set_range(0, 910000.0000)
         self.feedrate_z_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.frzlabel, 11, 0)
@@ -1304,7 +1304,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+        self.feedrate_rapid_entry.set_range(0, 910000.0000)
         self.feedrate_rapid_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
@@ -1362,7 +1362,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.set_range(0, 9999.9999)
+        self.dwelltime_entry.set_range(0, 10000.0000)
         self.dwelltime_entry.setSingleStep(0.1)
 
         self.dwelltime_entry.setToolTip(
@@ -1381,7 +1381,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-9999.9999, 9999.9999)
+        self.pdepth_entry.set_range(-10000.0000, 10000.0000)
         self.pdepth_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.pdepth_label, 17, 0)
@@ -1397,7 +1397,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0.0, 9999.9999)
+        self.feedrate_probe_entry.set_range(0.0, 10000.0000)
         self.feedrate_probe_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.feedrate_probe_label, 18, 0)
@@ -1458,9 +1458,9 @@ class GeometryObjectUI(ObjectUI):
         )
 
         if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0, 9999.9999)
+            self.toolchangez_entry.set_range(0, 10000.0000)
         else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.setSingleStep(0.1)
         self.ois_tcz_geo = OptionalInputSection(self.toolchangeg_cb, [self.toolchangez_entry])
@@ -1489,9 +1489,9 @@ class GeometryObjectUI(ObjectUI):
         self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.endz_entry.set_range(0, 9999.9999)
+            self.endz_entry.set_range(0, 10000.0000)
         else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.setSingleStep(0.1)
 
@@ -1589,7 +1589,7 @@ class GeometryObjectUI(ObjectUI):
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_range(0.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid_a1.addWidget(self.over_z_label, 2, 0)
@@ -1642,7 +1642,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.polish_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.polish_dia_entry.set_precision(self.decimals)
-        self.polish_dia_entry.set_range(0.000, 9999.9999)
+        self.polish_dia_entry.set_range(0.000, 10000.0000)
         self.polish_dia_entry.setObjectName("g_polish_dia")
 
         self.grid4.addWidget(self.polish_dia_lbl, 16, 0)
@@ -1671,7 +1671,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.polish_pressure_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.polish_pressure_entry.set_precision(self.decimals)
-        self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_pressure_entry.set_range(-10000.0000, 10000.0000)
         self.polish_pressure_entry.setObjectName("g_polish_pressure")
 
         self.grid4.addWidget(self.polish_pressure_lbl, 18, 0)
@@ -1684,7 +1684,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.polish_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.polish_margin_entry.set_precision(self.decimals)
-        self.polish_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
         self.polish_margin_entry.setObjectName("g_polish_margin")
 
         self.grid4.addWidget(self.polish_margin_lbl, 20, 0)
@@ -2046,7 +2046,7 @@ class CNCObjectUI(ObjectUI):
         self.exc_cnc_tools_table.setColumnHidden(4, True)
 
         self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tooldia_entry.set_range(0, 9999.9999)
+        self.tooldia_entry.set_range(0, 10000.0000)
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.setSingleStep(0.1)
         self.custom_box.addWidget(self.tooldia_entry)
@@ -2156,7 +2156,7 @@ class CNCObjectUI(ObjectUI):
         )
         self.ptravelz_entry = FCDoubleSpinner()
         self.ptravelz_entry.set_precision(self.decimals)
-        self.ptravelz_entry.set_range(0.0000, 9999.9999)
+        self.ptravelz_entry.set_range(0.0000, 10000.0000)
 
         grid0.addWidget(self.ptravelz_label, 9, 0)
         grid0.addWidget(self.ptravelz_entry, 9, 1)
@@ -2169,7 +2169,7 @@ class CNCObjectUI(ObjectUI):
         )
         self.pdepth_entry = FCDoubleSpinner()
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+        self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
         grid0.addWidget(self.pdepth_label, 11, 0)
         grid0.addWidget(self.pdepth_entry, 11, 1)
@@ -2181,7 +2181,7 @@ class CNCObjectUI(ObjectUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0, 99999.9999)
+        self.feedrate_probe_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.feedrate_probe_label, 13, 0)
         grid0.addWidget(self.feedrate_probe_entry, 13, 1)

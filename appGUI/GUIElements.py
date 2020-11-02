@@ -1160,7 +1160,7 @@ class FCDoubleSlider(QtWidgets.QSlider):
 
 class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
 
-    def __init__(self, min=0, max=9999.9999, step=1, precision=4, orientation='horizontal', **kwargs):
+    def __init__(self, min=0, max=10000.0000, step=1, precision=4, orientation='horizontal', **kwargs):
         super().__init__(**kwargs)
 
         self.slider = FCDoubleSlider(orientation=orientation)

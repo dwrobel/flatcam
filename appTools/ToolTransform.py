@@ -873,7 +873,7 @@ class TransformUI:
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(
