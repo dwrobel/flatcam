@@ -207,14 +207,15 @@ class FCPad(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("To add an Pad first select a aperture in Aperture Table"))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
             self.draw_app.in_action = False
             self.complete = True
+            self.draw_app.select_tool('select')
             return
 
         if self.radius == 0:
@@ -410,11 +411,12 @@ class FCPadArray(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("To add an Pad Array first select a aperture in Aperture Table"))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
             self.complete = True
             self.draw_app.in_action = False
             self.draw_app.array_frame.hide()
+            self.draw_app.select_tool('select')
             return
 
         if self.radius == 0:
@@ -871,7 +873,20 @@ class FCRegion(FCShapeTool):
 
         self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
 
-        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        try:
+            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        except KeyError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.select_tool('select')
+            return
+
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
@@ -1167,7 +1182,20 @@ class FCTrack(FCShapeTool):
 
         self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
 
-        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        try:
+            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        except KeyError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.select_tool('select')
+            return
+
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
@@ -1426,16 +1454,30 @@ class FCDisc(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_disc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        try:
+            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        except KeyError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.select_tool('select')
+            return
+
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
         if '0' in self.draw_app.storage_dict:
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
         else:
-            self.draw_app.storage_dict['0'] = {}
-            self.draw_app.storage_dict['0']['type'] = 'C'
-            self.draw_app.storage_dict['0']['size'] = 0.0
-            self.draw_app.storage_dict['0']['geometry'] = []
+            self.draw_app.storage_dict['0'] = {
+                'type': 'C',
+                'size': 0.0,
+                'geometry': []
+            }
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -1529,7 +1571,20 @@ class FCSemiDisc(FCShapeTool):
         # 132 = p1, p3, p2
         self.mode = "c12"  # Center, p1, p2
 
-        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        try:
+            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        except KeyError:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except Exception:
+                pass
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.select_tool('select')
+            return
+
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
         if '0' in self.draw_app.storage_dict:
@@ -4160,11 +4215,13 @@ class AppGerberEditor(QtCore.QObject):
             def run(self):
                 self.worker_job(self.app)
 
-        self.thread.start(QtCore.QThread.NormalPriority)
+        # self.thread.start(QtCore.QThread.NormalPriority)
 
         executable_edit = Execute_Edit(app=self)
-        executable_edit.moveToThread(self.thread)
-        executable_edit.start.emit("Started")
+        # executable_edit.moveToThread(self.thread)
+        # executable_edit.start.emit("Started")
+
+        self.app.worker_task.emit({'fcn': executable_edit.run, 'params': []})
 
     @staticmethod
     def add_apertures(aperture_id, aperture_dict):

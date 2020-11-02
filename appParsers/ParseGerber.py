@@ -293,6 +293,7 @@ class Gerber(Geometry):
 
         if apertureType in self.aperture_macros:
             self.apertures[apid] = {"type": "AM",
+                                    # "size": 0.0,
                                     "macro": self.aperture_macros[apertureType],
                                     "modifiers": paramList}
             return apid

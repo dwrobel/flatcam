@@ -25,6 +25,9 @@ CHANGELOG for FlatCAM beta
 - fixed some late issues in Corner Markers Tool new feature (messages)
 - upgraded Calculator Tool and added the new parameter is the Preferences
 - updated translation strings
+- fixed borderline bug in Gerber editor when the edited Gerber object last aperture is a aperture without size (Aperture Macro)
+- improved the loading of a Gerber object in the Gerber Editor
+- updated translation strings
 
 1.11.2020
 
