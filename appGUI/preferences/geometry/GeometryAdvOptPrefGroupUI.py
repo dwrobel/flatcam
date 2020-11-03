@@ -33,7 +33,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         self.geo_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.geo_label.setToolTip(
-            _("A list of Geometry advanced parameters.\n"
+            _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
               "Advanced App. Level.")
         )

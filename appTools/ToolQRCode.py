@@ -203,7 +203,7 @@ class QRCode(AppTool):
                     log.debug("QRCode.make() bounds error --> %s" % str(ee))
 
                 app_obj.call_source = 'qrcode_tool'
-                app_obj.inform.emit(_("Click on the Destination point ..."))
+                app_obj.inform.emit(_("Click on the DESTINATION point ..."))
 
         self.app.worker_task.emit({'fcn': job_thread_qr, 'params': [self.app]})
 

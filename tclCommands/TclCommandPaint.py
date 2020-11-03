@@ -282,7 +282,7 @@ class TclCommandPaint(TclCommand):
                 box_obj = self.app.collection.get_by_name(str(box_name))
             except Exception as e:
                 log.debug("TclCommandPaint.execute() --> %s" % str(e))
-                self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+                self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
                 return "Could not retrieve object: %s" % name
 
             self.app.paint_tool.paint_poly_ref(obj=obj,

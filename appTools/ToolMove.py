@@ -137,7 +137,7 @@ class ToolMove(AppTool):
                 else:
                     self.point2 = copy(self.point1)
                     self.point1 = pos
-                self.app.inform.emit(_("MOVE: Click on the Destination point ..."))
+                self.app.inform.emit(_("Click on the DESTINATION point ..."))
 
             if self.clicked_move == 1:
                 try:

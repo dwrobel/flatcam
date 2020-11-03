@@ -509,7 +509,7 @@ class ToolPunchGerber(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("The value of the fixed diameter is 0.0. Aborting."))
             return 'fail'
 
-        fail_msg = _("Could not generate punched hole Gerber because the punch hole size is bigger than"
+        fail_msg = _("Failed. Punch hole size is bigger than"
                      " some of the apertures in the Gerber object.")
 
         new_options = {}
@@ -581,9 +581,9 @@ class ToolPunchGerber(AppTool):
         punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
 
         if punched_solid_geometry == temp_solid_geometry:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Could not generate punched hole Gerber because the newly created object "
-                                   "geometry is the same as the one in the source object geometry..."))
+            msg = '[WARNING_NOTCL] %s' % \
+                  _("Failed. The new object geometry is the same as the one in the source object geometry...")
+            self.app.inform.emit(msg)
             return 'fail'
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
@@ -1037,7 +1037,7 @@ class PunchUI:
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # Select all
-        self.select_all_cb = FCCheckBox('%s' % _("ALL"))
+        self.select_all_cb = FCCheckBox('%s' % _("All"))
         pad_grid.addWidget(self.select_all_cb, 0, 0)
 
         # Circular Aperture Selection

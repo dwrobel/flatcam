@@ -529,7 +529,7 @@ class ToolFiducials(AppTool):
                 self.app.inform.emit(_("Click to add the second fiducial. Top Left or Bottom Right..."))
             elif len(self.click_points) == 3:
                 self.ui.sec_points_coords_entry.set_value(self.click_points[2])
-                self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
+                self.app.inform.emit('[success] %s' % _("Done."))
 
                 ret_val = self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
                 self.app.call_source = "app"
@@ -543,7 +543,7 @@ class ToolFiducials(AppTool):
         else:
             if len(self.click_points) == 2:
                 self.ui.top_right_coords_entry.set_value(self.click_points[1])
-                self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
+                self.app.inform.emit('[success] %s' % _("Done."))
 
                 ret_val = self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
                 self.app.call_source = "app"
@@ -831,7 +831,7 @@ class FidoUI:
         ], stretch=False)
         self.mode_label = QtWidgets.QLabel(_("Mode:"))
         self.mode_label.setToolTip(
-            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n "
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")
         )
         grid_lay.addWidget(self.mode_label, 3, 0)

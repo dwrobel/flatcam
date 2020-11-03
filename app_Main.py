@@ -5123,10 +5123,10 @@ class App(QtCore.QObject):
                 self.form = QtWidgets.QFormLayout(self)
 
                 self.ref_radio = RadioSet([
-                    {"label": _("Bottom-Left"), "value": "bl"},
-                    {"label": _("Top-Left"), "value": "tl"},
-                    {"label": _("Bottom-Right"), "value": "br"},
-                    {"label": _("Top-Right"), "value": "tr"},
+                    {"label": _("Bottom Left"), "value": "bl"},
+                    {"label": _("Top Left"), "value": "tl"},
+                    {"label": _("Bottom Right"), "value": "br"},
+                    {"label": _("Top Right"), "value": "tr"},
                     {"label": _("Center"), "value": "c"}
                 ], orientation='vertical', stretch=False)
                 self.ref_radio.set_value(choice)
@@ -5844,7 +5844,7 @@ class App(QtCore.QObject):
                       "not existing or doesn't have the read permissions.\n"
                       "Check to see if exists, it should be here: %s\n"
                       "It may help to reboot the app, it will try to recreate it if it's missing." % self.data_path)
-            self.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.inform.emit('[ERROR] %s' % _("Could not load the file."))
             return 'fail'
 
         for idx in range(self.ui.plot_tab_area.count()):
@@ -6047,7 +6047,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[success] %s' %
                                  _("Flip on Y axis done."))
             except Exception as e:
-                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_flipx(self):
@@ -6094,7 +6094,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[success] %s' %
                                  _("Flip on X axis done."))
             except Exception as e:
-                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_rotate(self, silent=False, preset=None):
@@ -9820,14 +9820,14 @@ class MenuFileHandlers(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
                     if ret == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             eret = make_excellon()
             if eret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
                 return 'fail'
             if local_use is not None:
                 return eret
@@ -9954,14 +9954,14 @@ class MenuFileHandlers(QtCore.QObject):
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:
             gret = make_gerber()
             if gret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export.'))
                 return 'fail'
             if local_use is not None:
                 return gret
@@ -10021,14 +10021,14 @@ class MenuFileHandlers(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret_dxf_val = make_dxf()
                     if ret_dxf_val == 'fail':
-                        app_obj.inform.emit('[WARNING_NOTCL] %s' % _('Could not export DXF file.'))
+                        app_obj.inform.emit('[WARNING_NOTCL] %s' % _('Could not export.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             ret = make_dxf()
             if ret == 'fail':
-                self.inform.emit('[WARNING_NOTCL] %s' % _('Could not export DXF file.'))
+                self.inform.emit('[WARNING_NOTCL] %s' % _('Could not export.'))
                 return
             if local_use is not None:
                 return ret

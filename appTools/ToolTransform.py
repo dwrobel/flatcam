@@ -308,8 +308,7 @@ class ToolTransform(AppTool):
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s...' % _('Rotate done'))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_flip(self, axis, point):
@@ -336,7 +335,7 @@ class ToolTransform(AppTool):
                                     sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
                                 else:
                                     sel_obj.options['mirror_y'] = True
-                                self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                             elif axis == 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -345,12 +344,11 @@ class ToolTransform(AppTool):
                                     sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
                                 else:
                                     sel_obj.options['mirror_x'] = True
-                                self.app.inform.emit('[success] %s...' % _('Flip on the X axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_skew(self, axis, xvalue, yvalue, point):
@@ -382,8 +380,7 @@ class ToolTransform(AppTool):
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -410,8 +407,7 @@ class ToolTransform(AppTool):
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Scale on the'), str(axis), _('axis done')))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -440,7 +436,7 @@ class ToolTransform(AppTool):
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Offset on the'), str(axis), _('axis done')))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_buffer_action(self, value, join, factor=None):
@@ -475,7 +471,7 @@ class ToolTransform(AppTool):
 
                 except Exception as e:
                     self.app.log.debug("ToolTransform.on_buffer_action() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     @staticmethod
@@ -616,7 +612,7 @@ class TransformUI:
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")

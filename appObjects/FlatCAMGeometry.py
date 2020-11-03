@@ -2371,7 +2371,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # ])
                 try:
                     dia_cnc_dict['solid_geometry'] = deepcopy(tool_solid_geometry)
-                    app_obj.inform.emit('[success] %s' % _("Finished G-Code processing..."))
+                    app_obj.inform.emit('[success] %s...' % _("Finished G-Code processing"))
                 except Exception as ee:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(ee)))
 
@@ -2542,7 +2542,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"
             job_obj.gcode_parse()
-            app_obj.inform.emit('[success] %s' % _("Finished G-Code processing..."))
+            app_obj.inform.emit('[success] %s...' % _("Finished G-Code processing"))
 
         if use_thread:
             # To be run in separate thread
@@ -2641,7 +2641,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different strategy of paint"), str(e))
+                                                 "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
                     return
 
@@ -2742,7 +2742,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             return
 
         self.app.proc_container.new_text = ''
-        self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def offset(self, vect):
         """
@@ -2815,7 +2815,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.solid_geometry = translate_recursion(self.solid_geometry)
 
         self.app.proc_container.new_text = ''
-        self.app.inform.emit('[success] %s' % _("Geometry Offset done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.GeometryObject.convert_units()")

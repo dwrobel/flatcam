@@ -107,8 +107,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
               "- Incremental G91 -> the reference is the previous position")
         )
         self.coords_type_radio = RadioSet([
-            {"label": _("Absolute G90"), "value": "G90"},
-            {"label": _("Incremental G91"), "value": "G91"}
+            {"label": _("Absolute"), "value": "G90"},
+            {"label": _("Incremental"), "value": "G91"}
         ], orientation='vertical', stretch=False)
         grid0.addWidget(coords_type_label, 8, 0)
         grid0.addWidget(self.coords_type_radio, 8, 1)

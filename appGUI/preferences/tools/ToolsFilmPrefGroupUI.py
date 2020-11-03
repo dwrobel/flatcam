@@ -213,7 +213,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], stretch=False)
 
-        self.file_type_label = FCLabel(_("Film Type:"))
+        self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
             _("The file type of the saved film. Can be:\n"
               "- 'SVG' -> open-source vectorial format\n"

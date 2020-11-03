@@ -781,7 +781,7 @@ class SubUI:
         grid0.addWidget(self.sub_geo_combo, 20, 1)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the subtractor object."))
 
         grid0.addWidget(self.close_paths_cb, 22, 0, 1, 2)
 

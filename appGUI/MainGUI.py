@@ -1010,7 +1010,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.replot_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear plot"))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
         self.zoom_in_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
         self.zoom_out_btn = self.toolbarview.addAction(
@@ -1036,7 +1036,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Tools Toolbar# ##############################
         # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
@@ -1097,9 +1097,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.select_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill Hole'))
+            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Hole Array'))
+            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Array'))
         self.add_slot_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/slot26.png'), _('Add Slot'))
         self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
@@ -1162,7 +1162,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Shape(s)"))
 
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape '-'"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
@@ -2181,7 +2181,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.replot_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear plot"))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
         self.zoom_in_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
         self.zoom_out_btn = self.toolbarview.addAction(
@@ -2205,7 +2205,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ######################### Tools Toolbar #################################
         # #########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
@@ -2266,9 +2266,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.select_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill Hole'))
+            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Hole Array'))
+            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/resize16.png'), _('Resize Drill'))
         self.add_slot_btn = self.exc_edit_toolbar.addAction(
@@ -3250,7 +3250,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.delete_selected()
                         self.app.grb_editor.plot_all()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                     return
 
                 # Delete aperture in apertures table if delete key event comes from the Selected Tab
@@ -3334,7 +3334,7 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
 
                     # Add Disc Tool
@@ -3380,7 +3380,7 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
 
                     # Add Region Tool
@@ -3465,7 +3465,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                     return
 
                 # Delete tools in tools table if delete key event comes from the Selected Tab
@@ -3581,7 +3581,7 @@ class MainGUI(QtWidgets.QMainWindow):
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
                         return
 
                     # Add Drill Hole Tool
@@ -3649,7 +3649,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                 '[success] %s: %s %s' % (_("Added new tool with dia"), formated_val, str(self.units))
                             )
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                         return
         elif self.app.call_source == 'gcode_editor':
             # CTRL
@@ -4015,7 +4015,7 @@ class ShortcutsTab(QtWidgets.QWidget):
 
         self.sh_hlay = QtWidgets.QHBoxLayout()
 
-        self.sh_title = QtWidgets.QTextEdit(_('<b>Shortcut Key List</b>'))
+        self.sh_title = QtWidgets.QTextEdit('<b>%s</b>' % _('Shortcut Key List'))
         self.sh_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.sh_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
         self.sh_title.setMaximumHeight(30)
@@ -4507,8 +4507,8 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _('Del'), _("Delete Object"),
                     _('Del'), _("Alternate: Delete Tool"),
                     _('`'), _("(left to Key_1)Toggle Notebook Area (Left Side)"),
-                    _('SPACE'), _("En(Dis)able Obj Plot"),
-                    _('ESC'), _("Deselects all objects")
+                    _('Space'), _("En(Dis)able Obj Plot"),
+                    _('Esc'), _("Deselects all objects")
                 )
         )
 
@@ -4708,7 +4708,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Ctrl+X'), _("Polygon Cut Tool"),
             _('Space'), _("Rotate Geometry"),
             _('ENTER'), _("Finish drawing for certain tools"),
-            _('ESC'), _("Abort and return to Select"),
+            _('Esc'), _("Abort and return to Select"),
             _('Del'), _("Delete Shape")
         )
 
@@ -4792,17 +4792,17 @@ class ShortcutsTab(QtWidgets.QWidget):
         """ % (
             _("EXCELLON EDITOR"),
             _('A'), _("Add Drill Array"),
-            _('C'), _("Copy Drill(s)"),
+            _('C'), _("Copy Drill"),
             _('D'), _("Add Drill"),
             _('J'), _("Jump to Location (x, y)"),
-            _('M'), _("Move Drill(s)"),
+            _('M'), _("Move Drill"),
             _('Q'), _("Add Slot Array"),
-            _('R'), _("Resize Drill(s)"),
+            _('R'), _("Resize Drill"),
             _('T'), _("Add a new Tool"),
             _('W'), _("Add Slot"),
             _('Shift+M'), _("Distance Minimum Tool"),
-            _('Del'), _("Delete Drill(s)"),
-            _('Del'), _("Alternate: Delete Tool(s)"),
+            _('Del'), _("Delete Drill"),
+            _('Del'), _("Alternate: Delete Tool"),
             _('Esc'), _("Abort and return to Select"),
             _('Ctrl+S'), _("Save Object and Exit Editor")
         )
@@ -4937,7 +4937,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('T'), _("Within Track & Region Tools will cycle FORWARD the bend modes"),
             _('Del'), _("Delete"),
             _('Del'), _("Alternate: Delete Apertures"),
-            _('ESC'), _("Abort and return to Select"),
+            _('Esc'), _("Abort and return to Select"),
             _('Shift+M'), _("Distance Minimum Tool"),
             _('Ctrl+E'), _("Eraser Tool"),
             _('Ctrl+S'), _("Save Object and Exit Editor"),

@@ -241,7 +241,7 @@ class GerberObjectUI(ObjectUI):
         self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
         self.editor_button.setToolTip(
-            _("Edit an Gerber object.")
+            _("Start the Object Editor")
         )
         self.editor_button.setStyleSheet("""
                                       QPushButton
@@ -580,7 +580,7 @@ class ExcellonObjectUI(ObjectUI):
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(
-            _("Edit an Excellon object.")
+            _("Start the Object Editor")
         )
         self.editor_button.setStyleSheet("""
                                       QPushButton
@@ -673,7 +673,7 @@ class ExcellonObjectUI(ObjectUI):
               "will be showed as a T1, T2 ... Tn in the Machine Code.\n\n"
               "Here the tools are selected for G-code generation."))
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units) \n"
+            _("Tool Diameter. It's value\n"
               "is the cut width into the material."))
         self.tools_table.horizontalHeaderItem(2).setToolTip(
             _("The number of Drill holes. Holes that are drilled with\n"
@@ -902,7 +902,7 @@ class GeometryObjectUI(ObjectUI):
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(
-            _("Edit an Geometry object.")
+            _("Start the Object Editor")
         )
         self.editor_button.setStyleSheet("""
                                       QPushButton
@@ -1008,10 +1008,8 @@ class GeometryObjectUI(ObjectUI):
                 "will be showed as a T1, T2 ... Tn")
             )
         self.geo_tools_table.horizontalHeaderItem(1).setToolTip(
-            _(
-                "Tool Diameter. It's value (in current FlatCAM units) \n"
-                "is the cut width into the material."
-            ))
+            _("Tool Diameter. It's value\n"
+              "is the cut width into the material."))
         self.geo_tools_table.horizontalHeaderItem(2).setToolTip(
             _(
                 "The value for the Offset can be:\n"
@@ -1596,7 +1594,7 @@ class GeometryObjectUI(ObjectUI):
         grid_a1.addWidget(self.over_z_entry, 2, 1)
 
         # Button Add Area
-        self.add_area_button = QtWidgets.QPushButton(_('Add area:'))
+        self.add_area_button = QtWidgets.QPushButton(_('Add Area:'))
         self.add_area_button.setToolTip(_("Add an Exclusion Area."))
 
         # Area Selection shape
@@ -1910,7 +1908,7 @@ class CNCObjectUI(ObjectUI):
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(
-            _("Edit an GCode object.")
+            _("Start the Object Editor")
         )
         self.editor_button.setStyleSheet("""
                                        QPushButton

@@ -97,11 +97,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.maxdepth_entry, 2, 1)
 
         # Object kind
-        kindlabel = FCLabel('%s:' % _('Object kind'))
+        kindlabel = FCLabel('%s:' % _('Kind'))
         kindlabel.setToolTip(
-            _("Choice of what kind the object we want to cutout is.<BR>"
-              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
-              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+            _("Choice of what kind the object we want to cutout is.\n"
+              "- Single: contain a single PCB Gerber outline object.\n"
+              "- Panel: a panel PCB Gerber object, which is made\n"
               "out of many individual PCB outlines.")
         )
 

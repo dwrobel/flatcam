@@ -195,8 +195,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_angle_label.setToolTip(
             _("Angle at which the slot is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -359.99 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
         self.slot_angle_label.setMinimumWidth(100)
 

@@ -5213,7 +5213,7 @@ class CNCjob(Geometry):
         # #############################################################################################################
         self.gcode = gcode
 
-        self.app.inform.emit(_("Finished G-Code generation..."))
+        self.app.inform.emit('%s ...' % _("Finished G-Code generation"))
         return gcode, start_gcode
 
     # no longer used
@@ -7090,7 +7090,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                 next_x = pt[0]
                 next_y = pt[1]
 
@@ -7238,7 +7238,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                 next_x = pt[0]
                 next_y = pt[1]
 

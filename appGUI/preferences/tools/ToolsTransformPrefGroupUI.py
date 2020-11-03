@@ -95,7 +95,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
@@ -123,7 +123,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         grid0.addWidget(self.skewx_label, 9, 0)
@@ -137,7 +137,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         grid0.addWidget(self.skewy_label, 10, 0)

@@ -115,7 +115,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
@@ -124,7 +124,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
 
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
 
         grid0.addWidget(cutzlabel, 5, 0)
@@ -338,7 +338,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                         {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+            _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 25, 0)
