@@ -160,7 +160,7 @@ class ToolMove(AppTool):
                                 if obj.options['plot'] and obj.visible is True]
 
                     def job_move(app_obj):
-                        with self.app.proc_container.new(_("Moving...")):
+                        with self.app.proc_container.new(_("Moving ...")):
 
                             if not obj_list:
                                 app_obj.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
@@ -226,7 +226,7 @@ class ToolMove(AppTool):
     def replot(self, obj_list):
 
         def worker_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 for sel_obj in obj_list:
                     sel_obj.plot()
 

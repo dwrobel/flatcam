@@ -1891,7 +1891,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         kind = self.ui.cncplot_method_combo.get_value()
 
         def worker_task():
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot(kind=kind)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})

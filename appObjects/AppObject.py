@@ -449,7 +449,7 @@ class AppObject(QtCore.QObject):
 
         # here it is done the object plotting
         def plotting_task(t_obj):
-            with self.app.proc_container.new(_("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 if t_obj.kind == 'cncjob':
                     t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
                 if t_obj.kind == 'gerber':

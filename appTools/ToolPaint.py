@@ -2193,7 +2193,7 @@ class ToolPaint(AppTool, Gerber):
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        proc = self.app.proc_container.new(_("Painting..."))
+        proc = self.app.proc_container.new(_("Painting ..."))
 
         if run_threaded:
             # Background

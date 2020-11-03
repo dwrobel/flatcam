@@ -333,7 +333,7 @@ class PcbWizard(AppTool):
 
         if excellon_fileobj is not None and excellon_fileobj != '':
             if self.process_finished:
-                with self.app.proc_container.new(_("Importing Excellon.")):
+                with self.app.proc_container.new('%s ...' % _("Importing")):
 
                     # Object name
                     name = self.outname

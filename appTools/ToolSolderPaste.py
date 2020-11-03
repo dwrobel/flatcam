@@ -667,7 +667,7 @@ class SolderPaste(AppTool):
         :param use_thread: use thread, True or False
         :return: a Geometry type object
         """
-        proc = self.app.proc_container.new(_("Creating Solder Paste dispensing geometry."))
+        proc = self.app.proc_container.new(_("Working ..."))
         obj = work_object
 
         # Sort tools in descending order
@@ -956,7 +956,7 @@ class SolderPaste(AppTool):
         if use_thread:
             # To be run in separate thread
             def job_thread(app_obj):
-                with self.app.proc_container.new("Generating CNC Code"):
+                with self.app.proc_container.new('%s' % _("Working ...")):
                     if app_obj.app_obj.new_object("cncjob", name, job_init) != 'fail':
                         app_obj.inform.emit('[success] [success] %s: %s' %
                                             (_("ToolSolderPaste CNCjob created"), name))

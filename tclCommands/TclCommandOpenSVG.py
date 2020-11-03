@@ -74,7 +74,7 @@ class TclCommandOpenSVG(TclCommandSignaled):
 
         units = self.app.defaults['units'].upper()
 
-        with self.app.proc_container.new("Import SVG"):
+        with self.app.proc_container.new(_("Working ...")):
 
             # Object creation
             ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)

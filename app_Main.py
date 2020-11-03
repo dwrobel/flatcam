@@ -9358,7 +9358,7 @@ class MenuFileHandlers(QtCore.QObject):
             return
 
         if use_thread is True:
-            self.app.proc_container.new(_("Printing PDF ... Please wait."))
+            self.app.proc_container.new(_("Printing PDF ..."))
             self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_selection]})
         else:
             self.save_pdf(filename, obj_selection)
@@ -9555,7 +9555,7 @@ class MenuFileHandlers(QtCore.QObject):
         except Exception:
             return 'fail'
 
-        with self.app.proc_container.new(_("Exporting SVG")):
+        with self.app.proc_container.new(_("Exporting ...")):
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor)
 
             # Determine bounding area for svg export
@@ -9815,7 +9815,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         if use_thread is True:
 
-            with self.app.proc_container.new(_("Exporting Excellon")):
+            with self.app.proc_container.new(_("Exporting ...")):
 
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
@@ -9949,7 +9949,7 @@ class MenuFileHandlers(QtCore.QObject):
                 return 'fail'
 
         if use_thread is True:
-            with self.app.proc_container.new(_("Exporting Gerber")):
+            with self.app.proc_container.new(_("Exporting ...")):
 
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
@@ -10016,7 +10016,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         if use_thread is True:
 
-            with self.app.proc_container.new(_("Exporting DXF")):
+            with self.app.proc_container.new(_("Exporting ...")):
 
                 def job_thread_exc(app_obj):
                     ret_dxf_val = make_dxf()
@@ -10069,7 +10069,7 @@ class MenuFileHandlers(QtCore.QObject):
             # appGUI feedback
             app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-        with self.app.proc_container.new(_("Importing SVG")):
+        with self.app.proc_container.new(_("Importing ...")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10124,7 +10124,7 @@ class MenuFileHandlers(QtCore.QObject):
             # appGUI feedback
             app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-        with self.app.proc_container.new(_("Importing DXF")):
+        with self.app.proc_container.new(_("Importing ...")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10182,7 +10182,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.app.log.debug("open_gerber()")
 
-        with self.app.proc_container.new(_("Opening Gerber")):
+        with self.app.proc_container.new(_("Opening ...")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
@@ -10246,7 +10246,7 @@ class MenuFileHandlers(QtCore.QObject):
             app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), filename))
             return "fail"
 
-        with self.app.proc_container.new(_("Opening Excellon.")):
+        with self.app.proc_container.new(_("Opening ...")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
             ret_val = self.app.app_obj.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
@@ -10306,7 +10306,7 @@ class MenuFileHandlers(QtCore.QObject):
 
             job_obj.create_geometry()
 
-        with self.app.proc_container.new(_("Opening G-Code.")):
+        with self.app.proc_container.new(_("Opening ...")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10380,7 +10380,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.app.log.debug("open_hpgl2()")
 
-        with self.app.proc_container.new(_("Opening HPGL2")):
+        with self.app.proc_container.new(_("Opening ...")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
@@ -10433,7 +10433,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.app.log.debug("open_script()")
 
-        with self.app.proc_container.new(_("Opening TCL Script...")):
+        with self.app.proc_container.new(_("Opening ...")):
 
             # Object name
             script_name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10642,7 +10642,7 @@ class MenuFileHandlers(QtCore.QObject):
         if from_tcl:
             log.debug("MenuFileHandlers.save_project() -> Project saved from TCL command.")
 
-        with self.app.proc_container.new(_("Saving FlatCAM Project")):
+        with self.app.proc_container.new(_("Saving Project ...")):
             # Capture the latest changes
             # Current object
             try:

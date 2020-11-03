@@ -927,7 +927,7 @@ class ToolIsolation(AppTool, Gerber):
             return
 
         def job_thread(app_obj, is_display):
-            with self.app.proc_container.new(_("Working...")):
+            with self.app.proc_container.new(_("Working ...")):
                 try:
                     old_disp_number = 0
                     pol_nr = 0
@@ -1387,7 +1387,7 @@ class ToolIsolation(AppTool, Gerber):
             self.find_safe_tooldia_worker(is_displayed=False)
 
         def worker_task(iso_obj):
-            with self.app.proc_container.new(_("Isolating...")):
+            with self.app.proc_container.new(_("Isolating ...")):
                 self.isolate_handler(iso_obj)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': [self.grb_obj]})
