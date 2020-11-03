@@ -256,7 +256,7 @@ class AppObject(QtCore.QObject):
                     'tooldia': float(app.defaults["geometry_cnctooldia"]),
                     'offset': 'Path',
                     'offset_value': 0.0,
-                    'type': _('Rough'),
+                    'type': 'Rough',
                     'tool_type': 'C1',
                     'data': deepcopy(default_data),
                     'solid_geometry': []

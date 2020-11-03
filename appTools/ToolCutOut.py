@@ -311,7 +311,7 @@ class CutOut(AppTool):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = _("Rough")
+        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -445,7 +445,7 @@ class CutOut(AppTool):
             'tooldia': dia,
             'offset': 'Path',
             'offset_value': 0.0,
-            'type': _('Rough'),
+            'type': 'Rough',
             'tool_type': 'C1',
             'data': deepcopy(self.default_data),
             'solid_geometry': []

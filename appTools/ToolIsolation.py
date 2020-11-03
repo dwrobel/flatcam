@@ -900,7 +900,7 @@ class ToolIsolation(AppTool, Gerber):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else _("Rough")
+            typ = 'Iso' if tt == 'V' else 'Rough'
 
             self.iso_tools[currenuid].update({
                 'type': typ,
@@ -1095,7 +1095,7 @@ class ToolIsolation(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = _("Rough")
+        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -1626,7 +1626,7 @@ class ToolIsolation(AppTool, Gerber):
                                 'tooldia':          float(tool_dia),
                                 'offset':           'Path',
                                 'offset_value':     0.0,
-                                'type':             _('Rough'),
+                                'type':             'Rough',
                                 'tool_type':        tool_type,
                                 'data':             tool_data,
                                 'solid_geometry':   geo_obj.solid_geometry
@@ -1788,7 +1788,7 @@ class ToolIsolation(AppTool, Gerber):
                             'tooldia':          float(tool_dia),
                             'offset':           'Path',
                             'offset_value':     0.0,
-                            'type':             _('Rough'),
+                            'type':             'Rough',
                             'tool_type':        tool_type,
                             'data':             tool_data,
                             'solid_geometry':   deepcopy(new_solid_geo)
@@ -1905,7 +1905,10 @@ class ToolIsolation(AppTool, Gerber):
 
         for tool in sorted_tools:
             tool_dia = tools_storage[tool]['tooldia']
+            tool_has_offset = tools_storage[tool]['offset']
+            tool_offset_value = tools_storage[tool]['offset_value']
             tool_type = tools_storage[tool]['tool_type']
+            tool_cut_type = tools_storage[tool]['type']
             tool_data = tools_storage[tool]['data']
 
             to_follow = tool_data['tools_iso_follow']
@@ -1979,9 +1982,9 @@ class ToolIsolation(AppTool, Gerber):
             tools_storage.update({
                 tool: {
                     'tooldia':          float(tool_dia),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             _('Rough'),
+                    'offset':           tool_has_offset,
+                    'offset_value':     tool_offset_value,
+                    'type':             tool_cut_type,
                     'tool_type':        tool_type,
                     'data':             tool_data,
                     'solid_geometry':   deepcopy(new_solid_geo)

@@ -26,7 +26,7 @@ class ToolsDB2UI:
         self.decimals = self.app.decimals
 
         self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
+        self.type_item_options = ['Iso', 'Rough', 'Finish']
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         settings = QtCore.QSettings("Open Source", "FlatCAM")
@@ -1417,7 +1417,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 'tooldia': self.app.defaults["geometry_cnctooldia"]
                 'offset': 'Path'
                 'offset_value': 0.0
-                'type':  _('Rough'),
+                'type':  'Rough',
                 'tool_type': 'C1'
                 'data': dict()
             }
@@ -1907,6 +1907,28 @@ class ToolsDB2(QtWidgets.QWidget):
             "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
+            "endxy":            self.app.defaults["geometry_endxy"],
+            "search_time":      int(self.app.defaults["geometry_search_time"]),
+            "z_pdepth":         float(self.app.defaults["geometry_z_pdepth"]),
+            "f_plunge":         float(self.app.defaults["geometry_f_plunge"]),
+
+            "spindledir":               self.app.defaults["geometry_spindledir"],
+            "optimization_type":        self.app.defaults["geometry_optimization_type"],
+            "feedrate_probe":           self.app.defaults["geometry_feedrate_probe"],
+
+            "segx":             self.app.defaults["geometry_segx"],
+            "segy":             self.app.defaults["geometry_segy"],
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       self.app.defaults["geometry_area_overz"],
+            "polish":           self.app.defaults["geometry_polish"],
+            "polish_dia":       self.app.defaults["geometry_polish_dia"],
+            "polish_pressure":  self.app.defaults["geometry_polish_pressure"],
+            "polish_travelz":   self.app.defaults["geometry_polish_travelz"],
+            "polish_margin":    self.app.defaults["geometry_polish_margin"],
+            "polish_overlap":   self.app.defaults["geometry_polish_overlap"],
+            "polish_method":    self.app.defaults["geometry_polish_method"],
 
             # NCC
             "tools_ncc_operation":       self.app.defaults["tools_ncc_operation"],
@@ -2642,7 +2664,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #                 'tooldia': self.app.defaults["geometry_cnctooldia"]
 #                 'offset': 'Path'
 #                 'offset_value': 0.0
-#                 'type':  _('Rough'),
+#                 'type':  'Rough',
 #                 'tool_type': 'C1'
 #                 'data': dict()
 #             }

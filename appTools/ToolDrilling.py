@@ -1213,7 +1213,7 @@ class ToolDrilling(AppTool, Excellon):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else _("Rough")
+            typ = 'Iso' if tt == 'V' else 'Rough'
 
             self.excellon_tools[current_uid].update({
                 'type': typ,

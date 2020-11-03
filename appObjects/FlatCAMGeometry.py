@@ -128,7 +128,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.sel_tools = {}
 
         self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
+        self.type_item_options = ['Iso', 'Rough', 'Finish']
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         # flag to store if the V-Shape tool is selected in self.ui.geo_tools_table
@@ -534,7 +534,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         'tooldia': self.app.dec_format(float(toold), self.decimals),
                         'offset': 'Path',
                         'offset_value': 0.0,
-                        'type': _('Rough'),
+                        'type': 'Rough',
                         'tool_type': self.tool_type,
                         'data': new_data,
                         'solid_geometry': self.solid_geometry
@@ -1069,7 +1069,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = _("Rough")
+        typ = 'Rough'
         tool_type = 'C1'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -1199,7 +1199,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     'tooldia': tooldia,
                     'offset': 'Path',
                     'offset_value': 0.0,
-                    'type': _('Rough'),
+                    'type': 'Rough',
                     'tool_type': 'C1',
                     'data': deepcopy(self.default_data),
                     'solid_geometry': self.solid_geometry
@@ -1587,8 +1587,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 elif cw_col == 3:
                     # force toolpath type as 'Iso' if the tool type is V-Shape
                     if self.ui.geo_tools_table.cellWidget(cw_row, 4).currentText() == 'V':
-                        tooluid_value['type'] = _('Iso')
-                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText(_('Iso'))
+                        tooluid_value['type'] = 'Iso'
+                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText('Iso')
                         self.ui.geo_tools_table.cellWidget(cw_row, 3).setCurrentIndex(idx)
                     else:
                         tooluid_value['type'] = cb_txt
@@ -1597,7 +1597,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
                     # if the tool_type selected is V-Shape then autoselect the toolpath type as Iso
                     if cb_txt == 'V':
-                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText(_('Iso'))
+                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText('Iso')
                         self.ui.geo_tools_table.cellWidget(cw_row, 3).setCurrentIndex(idx)
                     else:
                         self.ui.cutz_entry.set_value(self.old_cutz)
@@ -2287,7 +2287,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 #         current_uid = int(k)
                 #         break
 
-                if dia_cnc_dict['offset'] == 'in':
+                if dia_cnc_dict['offset'].lower() == 'in':
                     tool_offset = -tooldia_val / 2
                 elif dia_cnc_dict['offset'].lower() == 'out':
                     tool_offset = tooldia_val / 2

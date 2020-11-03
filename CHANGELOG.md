@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.11.2020
+
+- fixed an issue in Tool Isolation used with tools from the Tools Database: the set offset value was not used
+- updated the Tools Database to include all the Geometry keys in the every tool from database
+- made sure that the Operation Type values ('Iso', 'Rough' and 'Finish') are not translated as this may create issues all over the application
+- fix an older issue that made that only the Custom choice created an effect when changing the Offset in the Geometry Object Tool Table
+
 2.11.2020
 
 - fixed the Tcl Command AlignDrill

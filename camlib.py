@@ -1228,7 +1228,7 @@ class Geometry(object):
                 'tooldia': tooldia,
                 'offset': 'Path',
                 'offset_value': 0.0,
-                'type': _('Rough'),
+                'type': 'Rough',
                 'tool_type': 'C1',
                 'data': deepcopy(new_data),
                 'solid_geometry': self.solid_geometry
@@ -1289,7 +1289,7 @@ class Geometry(object):
                 'tooldia': tooldia,
                 'offset': 'Path',
                 'offset_value': 0.0,
-                'type': _('Rough'),
+                'type': 'Rough',
                 'tool_type': 'C1',
                 'data': deepcopy(new_data),
                 'solid_geometry': self.solid_geometry
@@ -3517,15 +3517,22 @@ class CNCjob(Geometry):
         p = self.pp_geometry
 
         # Offset the Geometry if it is the case
-        # FIXME need to test if in ["Path", "In", "Out", "Custom"]. For now only 'Custom' is somehow done
-        offset = tools[tool]['offset_value']
-        if offset != 0.0:
+        if tools[tool]['offset'].lower() == 'in':
+            tool_offset = -float(tools[tool]['tooldia']) / 2.0
+        elif tools[tool]['offset'].lower() == 'out':
+            tool_offset = float(tools[tool]['tooldia']) / 2.0
+        elif tools[tool]['offset'].lower() == 'custom':
+            tool_offset = tools[tool]['offset_value']
+        else:
+            tool_offset = 0.0
+
+        if tool_offset != 0.0:
             for it in flat_geometry:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
                     if it.is_ring:
                         it = Polygon(it)
-                temp_solid_geometry.append(it.buffer(offset, join_style=2))
+                temp_solid_geometry.append(it.buffer(tool_offset, join_style=2))
             temp_solid_geometry = self.flatten(temp_solid_geometry, reset=True, pathonly=True)
         else:
             temp_solid_geometry = flat_geometry
