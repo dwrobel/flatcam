@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-03 06:21+0200\n"
-"PO-Revision-Date: 2020-11-03 06:21+0200\n"
+"POT-Creation-Date: 2020-11-03 14:25+0200\n"
+"PO-Revision-Date: 2020-11-03 14:25+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -204,7 +204,7 @@ msgstr "Dışlama alanları eklendi."
 
 #: appCommon/Common.py:509 appCommon/Common.py:642 appCommon/Common.py:704
 msgid "Generate the CNC Job object."
-msgstr "CNC için bir program oluşturulacaktır."
+msgstr "CNC İş nesnesi oluşturun."
 
 #: appCommon/Common.py:509
 msgid "With Exclusion areas."
@@ -2962,7 +2962,7 @@ msgstr "Merkez noktasını tıklayın ..."
 
 #: appEditors/AppGeoEditor.py:1973 appEditors/AppGerberEditor.py:1493
 msgid "Click on Perimeter point to complete ..."
-msgstr "Tamamlamak için çevresine tıklayın ..."
+msgstr "Tamamlamak için çevre noktasını tıklayın ..."
 
 #: appEditors/AppGeoEditor.py:2005
 msgid "Done. Adding Circle completed."
@@ -3287,10 +3287,9 @@ msgstr "Çizim tamamlandı."
 #: appEditors/AppGerberEditor.py:211 appEditors/AppGerberEditor.py:415
 #: appEditors/AppGerberEditor.py:880 appEditors/AppGerberEditor.py:1189
 #: appEditors/AppGerberEditor.py:1461 appEditors/AppGerberEditor.py:1578
-#, fuzzy
-#| msgid "To add an Pad first select a aperture in Aperture Table"
 msgid "You need to preselect a aperture in the Aperture Table that has a size."
-msgstr "Bir pad eklemek için önce Şekil Tablosundan bir şekil seçin"
+msgstr ""
+"Bir şekil eklemek için önce Şekil Tablosundan bir şekil seçmeniz gerekir."
 
 #: appEditors/AppGerberEditor.py:223 appEditors/AppGerberEditor.py:424
 msgid "Aperture size is zero. It needs to be greater than zero."
@@ -3730,10 +3729,8 @@ msgid "Dimensions edited."
 msgstr "Boyutlar düzenlendi."
 
 #: appEditors/AppGerberEditor.py:4148
-#, fuzzy
-#| msgid "Loading..."
 msgid "Loading"
-msgstr "Yükleniyor..."
+msgstr "Yükleniyor"
 
 #: appEditors/AppGerberEditor.py:4278
 msgid "Setting up the UI"
@@ -12627,7 +12624,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:27
 msgid "Panelize Tool Options"
-msgstr "Panelize Araç Seçenekleri"
+msgstr "Panelli PCB Seçenekleri"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:33
 msgid ""
@@ -16015,10 +16012,8 @@ msgstr ""
 "türleri desteklenir"
 
 #: appTools/ToolImage.py:149 appTools/ToolPcbWizard.py:336
-#, fuzzy
-#| msgid "Importing SVG"
 msgid "Importing"
-msgstr "SVG dosyası içe aktarılıyor"
+msgstr "İçe aktarılıyor"
 
 #: appTools/ToolImage.py:161 appTools/ToolPDF.py:155 app_Main.py:10070
 #: app_Main.py:10125 app_Main.py:10203 app_Main.py:10266 app_Main.py:10332
@@ -16215,8 +16210,6 @@ msgid "Tool(s) deleted from Tool Table."
 msgstr "Uç(lar) Araçlar Tablosundan silindi."
 
 #: appTools/ToolIsolation.py:1390
-#, fuzzy
-#| msgid "Isolating..."
 msgid "Isolating ..."
 msgstr "Yalıtılıyor..."
 
@@ -16481,8 +16474,6 @@ msgid "MOVE: Click on the Destination point ..."
 msgstr "TAŞI: Hedef noktasını tıklayın ..."
 
 #: appTools/ToolMove.py:163
-#, fuzzy
-#| msgid "Moving..."
 msgid "Moving ..."
 msgstr "Taşınıyor..."
 
@@ -16825,10 +16816,8 @@ msgid "Open PDF cancelled"
 msgstr "PDF'yi açma işlemi iptal edildi"
 
 #: appTools/ToolPDF.py:123
-#, fuzzy
-#| msgid "Working ..."
 msgid "Parsing ..."
-msgstr "Çalışıyor ..."
+msgstr "Okunuyor ..."
 
 #: appTools/ToolPDF.py:139 app_Main.py:10297
 msgid "Failed to open"
@@ -16923,8 +16912,6 @@ msgid "Paint Done."
 msgstr "Çizim işlemi başarıyla tamamlandı."
 
 #: appTools/ToolPaint.py:2196
-#, fuzzy
-#| msgid "Painting..."
 msgid "Painting ..."
 msgstr "Çiziliyor..."
 
@@ -18038,10 +18025,8 @@ msgid "Subtraction aperture processing finished."
 msgstr "Aralık çıkarma işlemi tamamlandı."
 
 #: appTools/ToolSub.py:353 appTools/ToolSub.py:547
-#, fuzzy
-#| msgid "Open Project ..."
 msgid "New object ..."
-msgstr "Proje Aç..."
+msgstr "Yeni nesne..."
 
 #: appTools/ToolSub.py:356 appTools/ToolSub.py:550 appTools/ToolSub.py:632
 msgid "Generating new object failed."
@@ -19202,20 +19187,16 @@ msgid "Save Object as PDF ..."
 msgstr "Nesneyi PDF Olarak Kaydet ..."
 
 #: app_Main.py:9361
-#, fuzzy
-#| msgid "Painting..."
 msgid "Printing PDF ..."
-msgstr "Çiziliyor..."
+msgstr "PDF yazdırılıyor ..."
 
 #: app_Main.py:9536
 msgid "PDF file saved to"
 msgstr "PDF dosyası şuraya kaydedildi"
 
 #: app_Main.py:9558 app_Main.py:9818 app_Main.py:9952 app_Main.py:10019
-#, fuzzy
-#| msgid "Exporting SVG"
 msgid "Exporting ..."
-msgstr "SVG'yi dışa aktarılıyor"
+msgstr "Dışa aktarılıyor ..."
 
 #: app_Main.py:9601
 msgid "SVG file exported to"
@@ -19262,10 +19243,8 @@ msgid "Could not export DXF file."
 msgstr "DXF dosyası dışa aktarılamadı."
 
 #: app_Main.py:10072 app_Main.py:10127 tclCommands/TclCommandImportSvg.py:76
-#, fuzzy
-#| msgid "Importing SVG"
 msgid "Importing ..."
-msgstr "SVG dosyası içe aktarılıyor"
+msgstr "İçe aktarılıyor ..."
 
 #: app_Main.py:10080 app_Main.py:10135
 msgid "Import failed."
@@ -19287,10 +19266,8 @@ msgstr ""
 
 #: app_Main.py:10185 app_Main.py:10249 app_Main.py:10309 app_Main.py:10383
 #: app_Main.py:10436 tclCommands/TclCommandOpenDXF.py:81
-#, fuzzy
-#| msgid "Opening G-Code."
 msgid "Opening ..."
-msgstr "G-Kodu açılıyor."
+msgstr "Açılıyor ..."
 
 #: app_Main.py:10196
 msgid "Open Gerber failed. Probable not a Gerber file."
@@ -19373,10 +19350,8 @@ msgid "Project loaded from"
 msgstr "Şuradan yüklenen proje"
 
 #: app_Main.py:10645
-#, fuzzy
-#| msgid "&Save Project ..."
 msgid "Saving Project ..."
-msgstr "&Save Project ..."
+msgstr "Proje kaydediliyor ..."
 
 #: app_Main.py:10667 app_Main.py:10703
 msgid "Project saved to"

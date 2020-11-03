@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - fix an older issue that made that only the Custom choice created an effect when changing the Offset in the Geometry Object Tool Table
 - trying to optimize Gerber Editor selection with the mouse
 - optimized some of the strings
+- fixed the project context save functionality to work in the new program configuration
+- updated Turkish translation (by Mehmet Kaya)
 
 2.11.2020
 
