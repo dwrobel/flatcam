@@ -196,6 +196,7 @@ class FCPad(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'pad'
         self.draw_app = draw_app
+        self.dont_execute = False
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -213,6 +214,7 @@ class FCPad(FCShapeTool):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.select_tool('select')
@@ -407,6 +409,7 @@ class FCPadArray(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'array'
         self.draw_app = draw_app
+        self.dont_execute = False
 
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
@@ -414,6 +417,7 @@ class FCPadArray(FCShapeTool):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("You need to preselect a aperture in the Aperture Table that has a size."))
             self.complete = True
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.draw_app.array_frame.hide()
             self.draw_app.select_tool('select')
@@ -869,6 +873,7 @@ class FCRegion(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'region'
         self.draw_app = draw_app
+        self.dont_execute = False
 
         self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
 
@@ -881,6 +886,7 @@ class FCRegion(FCShapeTool):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.select_tool('select')
@@ -927,6 +933,10 @@ class FCRegion(FCShapeTool):
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         new_geo_el = {}
 
         x = data[0]
@@ -1178,6 +1188,7 @@ class FCTrack(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'track'
         self.draw_app = draw_app
+        self.dont_execute = False
 
         self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
 
@@ -1190,6 +1201,7 @@ class FCTrack(FCShapeTool):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.select_tool('select')
@@ -1202,7 +1214,7 @@ class FCTrack(FCShapeTool):
 
         self.temp_points = []
 
-        self. final_click = False
+        self.final_click = False
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1250,6 +1262,10 @@ class FCTrack(FCShapeTool):
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         self.update_grid_info()
         new_geo_el = {}
 
@@ -1445,6 +1461,7 @@ class FCDisc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'disc'
+        self.dont_execute = False
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1462,6 +1479,7 @@ class FCDisc(FCShapeTool):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.select_tool('select')
@@ -1499,6 +1517,10 @@ class FCDisc(FCShapeTool):
         return ""
 
     def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         new_geo_el = {}
         if len(self.points) == 1:
             p1 = self.points[0]
@@ -1548,6 +1570,7 @@ class FCSemiDisc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'semidisc'
+        self.dont_execute = False
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1579,6 +1602,7 @@ class FCSemiDisc(FCShapeTool):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception:
                 pass
+            self.dont_execute = True
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.select_tool('select')
@@ -1651,6 +1675,10 @@ class FCSemiDisc(FCShapeTool):
                 return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         new_geo_el = {}
         new_geo_el_pt1 = {}
         new_geo_el_pt2 = {}
