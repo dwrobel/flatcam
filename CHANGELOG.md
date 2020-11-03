@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - updated Turkish translation (by Mehmet Kaya)
 - in NCC and Isolation Tools, the Validity Checking of the tools is now multithreaded when the Check Validity UI control is checked
 - translation strings updated
+- fixed an error in Gerber parser, when it encounter a pen-up followed by pen-down move while in a region
 
 2.11.2020
 
