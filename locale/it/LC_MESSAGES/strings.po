@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-03 22:36+0200\n"
-"PO-Revision-Date: 2020-11-03 22:36+0200\n"
+"POT-Creation-Date: 2020-11-03 22:42+0200\n"
+"PO-Revision-Date: 2020-11-03 22:45+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -2024,12 +2024,6 @@ msgstr "Passo = distanza tra due elementi della matrice."
 
 #: appEditors/AppExcEditor.py:3934 appEditors/AppExcEditor.py:4150
 #: appEditors/AppGerberEditor.py:2923
-#, fuzzy
-#| msgid ""
-#| "Angle at which the linear array is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the linear array is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2039,7 +2033,7 @@ msgstr ""
 "Angolo al quale è posizionata la matrice lineare.\n"
 "La precisione è al massimo di 2 decimali.\n"
 "Valore minimo: -360 gradi.\n"
-"Valore massimo:  360.00 gradi."
+"Valore massimo: 360.00 gradi."
 
 #: appEditors/AppExcEditor.py:3955 appEditors/AppExcEditor.py:4171
 #: appEditors/AppGerberEditor.py:2944
@@ -2124,12 +2118,6 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4043
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:196
-#, fuzzy
-#| msgid ""
-#| "Angle at which the slot is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the slot is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2139,7 +2127,7 @@ msgstr ""
 "Angolo al quale è posizionato lo slot.\n"
 "La precisione è di massimo 2 decimali.\n"
 "Valore minimo: -360 gradi.\n"
-"Valore massimo:  360.00 gradi."
+"Valore massimo: 360.00 gradi."
 
 #: appEditors/AppExcEditor.py:4076
 msgid "Slot Array Parameters"
@@ -2827,10 +2815,8 @@ msgstr "Applico Rotazione"
 #: appTools/ToolTransform.py:383 appTools/ToolTransform.py:410
 #: appTools/ToolTransform.py:439 appTools/ToolTransform.py:474 app_Main.py:6050
 #: app_Main.py:6097
-#, fuzzy
-#| msgid "action was not executed."
 msgid "Action was not executed"
-msgstr "l'azione non è stata eseguita."
+msgstr "L'azione non è stata eseguita"
 
 #: appEditors/AppGeoEditor.py:1307 appEditors/AppGerberEditor.py:6081
 #: appTools/ToolTransform.py:321
@@ -3173,12 +3159,10 @@ msgid "with diameter"
 msgstr "con diametro"
 
 #: appEditors/AppGeoEditor.py:4807 appEditors/AppGeoEditor.py:4842
-#, fuzzy
-#| msgid "A selection of at least 2 geo items is required to do Intersection."
 msgid "A selection of minimum two items is required to do Intersection."
 msgstr ""
 "Per effettuare l'intersezione è necessaria una selezione di almeno 2 "
-"elementi geometrici."
+"elementi."
 
 #: appEditors/AppGeoEditor.py:4928 appEditors/AppGeoEditor.py:5032
 msgid ""
@@ -3250,10 +3234,11 @@ msgstr "Paint fatto."
 #: appEditors/AppGerberEditor.py:211 appEditors/AppGerberEditor.py:415
 #: appEditors/AppGerberEditor.py:879 appEditors/AppGerberEditor.py:1188
 #: appEditors/AppGerberEditor.py:1460 appEditors/AppGerberEditor.py:1577
+#, fuzzy
+#| msgid "To add an Pad first select a aperture in Aperture Table"
 msgid "You need to preselect a aperture in the Aperture Table that has a size."
 msgstr ""
-"È necessario preselezionare un'apertura nella tabella Aperture che abbia una "
-"dimensione."
+"Per aggiungere un pad, seleziona prima un'apertura nella tabella Aperture"
 
 #: appEditors/AppGerberEditor.py:223 appEditors/AppGerberEditor.py:424
 msgid "Aperture size is zero. It needs to be greater than zero."
@@ -3538,7 +3523,7 @@ msgid ""
 "Can have a value between 0.0000 and 10000.0000"
 msgstr ""
 "Il valore di soglia, tutte le aree inferiori a questa sono contrassegnate.\n"
-"Può avere un valore compreso tra 0,0000 e 9999,9999"
+"Può avere un valore compreso tra 0,0000 e 10000,0000"
 
 #: appEditors/AppGerberEditor.py:2803
 msgid "Area LOWER threshold"
@@ -3550,7 +3535,7 @@ msgid ""
 "Can have a value between 0.0000 and 10000.0000"
 msgstr ""
 "Il valore di soglia, tutte le aree più di questa sono contrassegnate.\n"
-"Può avere un valore compreso tra 0,0000 e 9999,9999"
+"Può avere un valore compreso tra 0,0000 e 10000,0000"
 
 #: appEditors/AppGerberEditor.py:2819
 msgid "Mark"
@@ -7312,10 +7297,8 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:1597 appTools/ToolDrilling.py:2584
 #: appTools/ToolMilling.py:2260
-#, fuzzy
-#| msgid "Add area:"
 msgid "Add Area:"
-msgstr "Aggiungi area:"
+msgstr "Aggiungi Area:"
 
 #: appGUI/ObjectUI.py:1598 appTools/ToolDrilling.py:2585
 #: appTools/ToolMilling.py:2261
@@ -8257,10 +8240,8 @@ msgstr ""
 "- Incrementale G91 -> il riferimento è la posizione precedente"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:110
-#, fuzzy
-#| msgid "Absolute G90"
 msgid "Absolute"
-msgstr "Assolute G90"
+msgstr "Assolute"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:111
 #, fuzzy
@@ -8372,17 +8353,12 @@ msgstr "Opzioni avanzate"
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "A list of Gerber advanced parameters.\n"
-#| "Those parameters are available only for\n"
-#| "Advanced App. Level."
 msgid ""
 "A list of advanced parameters.\n"
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
-"Un elenco di parametri Gerber avanzati.\n"
+"Un elenco di parametri avanzati.\n"
 "Tali parametri sono disponibili solo per\n"
 "App a livello avanzato."
 
@@ -10436,7 +10412,7 @@ msgstr "Area"
 #: appTools/ToolCopperThieving.py:1300
 msgid "Thieving areas with area less then this value will not be added."
 msgstr ""
-"Le aree di furto con area inferiore a questo valore non verranno aggiunte."
+"Zone di thieving con area minore di questo valore non saranno aggiunte."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:99
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
@@ -10645,7 +10621,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:290
 #: appTools/ToolCopperThieving.py:1668
 msgid "Choose which additional geometry to include, if available."
-msgstr "Scegli quale geometria aggiuntiva includere, se disponibile."
+msgstr "Scegli quale geometria addizionale includere, se disponibile."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:294
 #: appTools/ToolCopperThieving.py:499 appTools/ToolCopperThieving.py:503
@@ -10656,7 +10632,7 @@ msgstr "Deposito"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:295
 #: appTools/ToolCopperThieving.py:1673
 msgid "Robber bar"
-msgstr "Barra del Ladro"
+msgstr "Barra Robber"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:27
 msgid "Calibration Tool Options"
@@ -11522,7 +11498,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:96
 #: appTools/ToolCorners.py:628 appTools/ToolDblSided.py:827
 msgid "Drill Dia"
-msgstr "Diametro Fori"
+msgstr "Diametro foro"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49
 #: appTools/ToolDblSided.py:829 appTools/ToolDblSided.py:834
@@ -11668,7 +11644,7 @@ msgstr "E' la larghezza della scheda. In centimetri."
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:120
 #: appTools/ToolCalculators.py:386
 msgid "This is the board area."
-msgstr "Questa è l'area del PCB."
+msgstr "Questa è l'area della scheda."
 
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:130
 #: appTools/ToolCalculators.py:408
@@ -11705,12 +11681,12 @@ msgstr "Opzioni marcatori bordi"
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
 #: appTools/ToolCorners.py:548
 msgid "Shape of the marker."
-msgstr "Forma del pennarello."
+msgstr "Forma del marker."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:48
 #: appTools/ToolCorners.py:552
 msgid "Semi-Cross"
-msgstr "Mezza-Croce"
+msgstr "Semi-Croce"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
 #: appTools/ToolCorners.py:562
@@ -12371,16 +12347,12 @@ msgstr "Progressivo"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:341
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:305
-#, fuzzy
-#| msgid ""
-#| "- 'Normal' -  normal plotting, done at the end of the job\n"
-#| "- 'Progressive' - each shape is plotted after it is generated"
 msgid ""
 "- 'Normal' - normal plotting, done at the end of the job\n"
 "- 'Progressive' - each shape is plotted after it is generated"
 msgstr ""
-"- 'Normale':  stampa normale, eseguita alla fine del lavoro\n"
-"- 'Progressivo': dopo che ogni forma è stata generata, verrà tracciata"
+"- 'Normale': - stampa normale, eseguita alla fine del lavoro\n"
+"- 'Progressivo': - dopo che ogni forma è stata generata, verrà tracciata"
 
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:27
 msgid "NCC Tool Options"
@@ -13777,10 +13749,8 @@ msgstr "Annullato su richiesta dell'utente."
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:267
 #: appTools/ToolDistance.py:398 appTools/ToolMove.py:140
 #: appTools/ToolQRCode.py:206
-#, fuzzy
-#| msgid "Click on the DESTINATION point."
 msgid "Click on the DESTINATION point ..."
-msgstr "Fai clic sul punto di DESTINAZIONE."
+msgstr "Fai clic sul punto di DESTINAZIONE ..."
 
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:260
 #: appTools/ToolAlignObjects.py:267
@@ -13964,11 +13934,11 @@ msgstr ""
 
 #: appTools/ToolCalculators.py:336
 msgid "Area Calculation"
-msgstr "Calcolo dell'area"
+msgstr "Calcolo area"
 
 #: appTools/ToolCalculators.py:338
 msgid "Choose how to calculate the board area."
-msgstr "Scegli come calcolare l'area del PCB."
+msgstr "Scegli come calcolare l'area della scheda."
 
 #: appTools/ToolCalculators.py:356 appTools/ToolCalculators.py:374
 #: appTools/ToolCalculators.py:392
@@ -14557,15 +14527,15 @@ msgstr "Selezionare almeno una locazione"
 
 #: appTools/ToolCorners.py:332
 msgid "The tool diameter is zero."
-msgstr "Il diametro dell'utensile è zero."
+msgstr "Il diametro del tool è zero."
 
 #: appTools/ToolCorners.py:415
 msgid "Excellon object with corner drills created."
-msgstr "Oggetto Excellon con i fori di angolo creati ..."
+msgstr "Oggetto Excellon con i fori sui bordi creato."
 
 #: appTools/ToolCorners.py:450
 msgid "A Gerber object with corner markers was created."
-msgstr "Oggetto Gerber con i marcatori di angolo creati ..."
+msgstr "L'oggetto Gerber con marker sui bordi è stato creato."
 
 #: appTools/ToolCorners.py:477
 msgid "The Gerber object to which will be added corner markers."
@@ -14597,7 +14567,7 @@ msgstr "Aggiungerà marcatori bordi al file Gerber selezionato."
 
 #: appTools/ToolCorners.py:624
 msgid "Drills in Corners"
-msgstr "Trapani negli angoli"
+msgstr "Fori negli angoli"
 
 #: appTools/ToolCorners.py:641 appTools/ToolDblSided.py:928
 msgid "Create Excellon Object"
@@ -14605,7 +14575,7 @@ msgstr "Creao oggetto Excellon"
 
 #: appTools/ToolCorners.py:644
 msgid "Will add drill holes in the center of the markers."
-msgstr "Aggiungerà fori al centro dei marker."
+msgstr "Aggiungerà dei fori al centro dei markers."
 
 #: appTools/ToolCutOut.py:388
 msgid "Updated tool from Tools Database."
@@ -14904,7 +14874,7 @@ msgstr ""
 
 #: appTools/ToolDblSided.py:212
 msgid "Alignment Drills"
-msgstr "Punte di allineamento"
+msgstr "Griglia di allineamento"
 
 #: appTools/ToolDblSided.py:216
 msgid "Excellon object with alignment drills created..."
@@ -19503,6 +19473,15 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "Could not load bookmarks file."
 #~ msgstr "Impossibile caricare il file dei segnalibri."
 
+#~ msgid "Iso"
+#~ msgstr "Iso"
+
+#~ msgid "Rough"
+#~ msgstr "Grezzo"
+
+#~ msgid "Finish"
+#~ msgstr "Finito"
+
 #~ msgid "Tool Diameter."
 #~ msgstr "Diametro utensile."
 
@@ -19611,6 +19590,11 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "Done. Adding Pad completed."
 #~ msgstr "Fatto. Aggiunta del pad completata."
 
+#~ msgid "To add an Pad Array first select a aperture in Aperture Table"
+#~ msgstr ""
+#~ "Per aggiungere una matrice pad, selezionare prima un'apertura nella "
+#~ "tabella Aperture"
+
 #~ msgid "Too many Pads for the selected spacing angle."
 #~ msgstr "Troppi pad per l'angolo di spaziatura selezionato."
 
@@ -19644,6 +19628,12 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ "La precisione è di massimo 2 decimali.\n"
 #~ "Il valore minimo è: -359,99 gradi.\n"
 #~ "Il valore massimo è: 360,00 gradi."
+
+#~ msgid "Loading Gerber into Editor"
+#~ msgstr "Caricamento Gerber in Editor"
+
+#~ msgid "Creating Gerber."
+#~ msgstr "Creazioen Gerber."
 
 #~ msgid "Done. Gerber editing finished."
 #~ msgstr "Fatto. Modifica di Gerber terminata."
@@ -19813,6 +19803,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 #~ msgstr "<span style=\"color:red;\"><b>Advanzato</b></span>"
 
+#~ msgid "Plotting..."
+#~ msgstr "Sto disegnando..."
+
 #~ msgid "Finished G-Code processing..."
 #~ msgstr "Generazione G_Code terminata..."
 
@@ -19831,6 +19824,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 
 #~ msgid "Done"
 #~ msgstr "Fatto"
+
+#~ msgid "Plotting Apertures"
+#~ msgstr "Generazione aperture"
 
 #~ msgid "Done. All four points have been acquired."
 #~ msgstr "Fatto. I quattro punti sono stati ascuisiti."
@@ -19875,6 +19871,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ " Impossibile generare il film del foro punzonato perché la dimensione del "
 #~ "foro del punzone è maggiore di alcune delle aperture nell'oggetto Gerber."
 
+#~ msgid "Importing Image"
+#~ msgstr "Importo immagine"
+
 #~ msgid "Click to add next polygon or right click to start isolation."
 #~ msgstr ""
 #~ "Clicca per aggiungere il prossimo poligono o tasto destro per iniziare "
@@ -19895,6 +19894,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "MOVE: Click on the Destination point ..."
 #~ msgstr "SPOSTA: clicca sul punto di destinazione ..."
 
+#~ msgid "Parsing PDF file ..."
+#~ msgstr "Analisi file PDF ..."
+
 #, python-format
 #~ msgid "Could not retrieve object: %s"
 #~ msgstr "Impossibile ottenere l'oggetto: %s"
@@ -19910,6 +19912,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ "Scegli il tipo di oggetto per l'oggetto pannello:\n"
 #~ "- Geometria\n"
 #~ "- Gerber"
+
+#~ msgid "Importing Excellon."
+#~ msgstr "Importazione Excellon."
 
 #~ msgid "Excellon format"
 #~ msgstr "Formato Excellon"
@@ -19932,6 +19937,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "ALL"
 #~ msgstr "TUTTO"
 
+#~ msgid "Generating QRCode geometry"
+#~ msgstr "Generazione geometria QRCode"
+
 #~ msgid "Click on the Destination point ..."
 #~ msgstr "Clicca sul punto di destinazione ..."
 
@@ -19940,6 +19948,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 
 #~ msgid "Nozzle tool(s) deleted from Tool Table."
 #~ msgstr "Utensile(i) ugello cancellato(i) dalla tabella."
+
+#~ msgid "Creating Solder Paste dispensing geometry."
+#~ msgstr "Creazione della geometria di erogazione della pasta per saldatura."
 
 #~ msgid "Cancelled. Empty file, it has no geometry..."
 #~ msgstr "Annullato. File vuoto, non ha geometrie..."
@@ -19954,6 +19965,9 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ "Avanzamento (velocità) durante lo spostamento in verticale\n"
 #~ "  alla posizione di dispensa (sul piano Z)."
 
+#~ msgid "Generating new object ..."
+#~ msgstr "Generazione nuovo oggetto ..."
+
 #~ msgid "Due of"
 #~ msgstr "A causa di"
 
@@ -19966,71 +19980,23 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "Top-Right"
 #~ msgstr "Alto-destra"
 
-#~ msgid "Could not export Excellon file."
-#~ msgstr "Impossibile esportare file Excellon."
-
-#~ msgid "Could not export DXF file."
-#~ msgstr "Impossibile esportare file DXF."
-
-#~ msgid "Finished G-Code generation..."
-#~ msgstr "Generazione G-Code terminata..."
-
-#~ msgid "Could not load defaults file."
-#~ msgstr "Impossibile caricare il file delle impostazioni predefinite."
-
-#~ msgid "Could not retrieve box object"
-#~ msgstr "Non posso recuperare l'oggetto box"
-
-#~ msgid "Iso"
-#~ msgstr "Iso"
-
-#~ msgid "Rough"
-#~ msgstr "Grezzo"
-
-#~ msgid "Finish"
-#~ msgstr "Finito"
-
-#~ msgid "Loading Gerber into Editor"
-#~ msgstr "Caricamento Gerber in Editor"
-
-#~ msgid "Creating Gerber."
-#~ msgstr "Creazioen Gerber."
-
-#~ msgid "Plotting..."
-#~ msgstr "Sto disegnando..."
-
-#~ msgid "Plotting Apertures"
-#~ msgstr "Generazione aperture"
-
-#~ msgid "Importing Image"
-#~ msgstr "Importo immagine"
-
-#~ msgid "Parsing PDF file ..."
-#~ msgstr "Analisi file PDF ..."
-
-#~ msgid "Importing Excellon."
-#~ msgstr "Importazione Excellon."
-
-#~ msgid "Generating QRCode geometry"
-#~ msgstr "Generazione geometria QRCode"
-
-#~ msgid "Creating Solder Paste dispensing geometry."
-#~ msgstr "Creazione della geometria di erogazione della pasta per saldatura."
-
-#~ msgid "Generating new object ..."
-#~ msgstr "Generazione nuovo oggetto ..."
-
 #~ msgid "Printing PDF ... Please wait."
 #~ msgstr "Stampa PDF ... Attendere."
 
 #~ msgid "Exporting Excellon"
 #~ msgstr "Esportazione Excellon"
 
+#~ msgid "Could not export Excellon file."
+#~ msgstr "Impossibile esportare file Excellon."
+
 #~ msgid "Exporting Gerber"
 #~ msgstr "Esportazione Gerber"
 
 #~ msgid "Exporting DXF"
 #~ msgstr "Esportazione DXF"
+
+#~ msgid "Could not export DXF file."
+#~ msgstr "Impossibile esportare file DXF."
 
 #~ msgid "Importing DXF"
 #~ msgstr "Importazione DXF"
@@ -20050,10 +20016,14 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "Saving FlatCAM Project"
 #~ msgstr "Salva progetto FlatCAM"
 
-#~ msgid "To add an Pad Array first select a aperture in Aperture Table"
-#~ msgstr ""
-#~ "Per aggiungere una matrice pad, selezionare prima un'apertura nella "
-#~ "tabella Aperture"
+#~ msgid "Finished G-Code generation..."
+#~ msgstr "Generazione G-Code terminata..."
+
+#~ msgid "Could not load defaults file."
+#~ msgstr "Impossibile caricare il file delle impostazioni predefinite."
+
+#~ msgid "Could not retrieve box object"
+#~ msgstr "Non posso recuperare l'oggetto box"
 
 #~ msgid "Close Editor"
 #~ msgstr "Chiudi Editor"
