@@ -17,6 +17,8 @@ CHANGELOG for FlatCAM beta
 - optimized some of the strings
 - fixed the project context save functionality to work in the new program configuration
 - updated Turkish translation (by Mehmet Kaya)
+- in NCC and Isolation Tools, the Validity Checking of the tools is now multithreaded when the Check Validity UI control is checked
+- translation strings updated
 
 2.11.2020
 

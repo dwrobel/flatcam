@@ -845,10 +845,59 @@ class NonCopperClear(AppTool, Gerber):
             })
 
     def on_find_optimal_tooldia(self):
-        self.find_safe_tooldia_worker(is_displayed=True)
+        self.find_safe_tooldia_worker()
 
-    def find_safe_tooldia_worker(self, is_displayed):
-        self.app.inform.emit(_("NCC Tool. Checking tools for validity."))
+    @staticmethod
+    def find_optim_mp(aperture_storage, decimals):
+        msg = 'ok'
+        total_geo = []
+
+        for ap in list(aperture_storage.keys()):
+            if 'geometry' in aperture_storage[ap]:
+                for geo_el in aperture_storage[ap]['geometry']:
+                    if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                        total_geo.append(geo_el['solid'])
+
+        total_geo = MultiPolygon(total_geo)
+        total_geo = total_geo.buffer(0)
+
+        try:
+            __ = iter(total_geo)
+            geo_len = len(total_geo)
+        except TypeError:
+            msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
+                                          "There are no distances between geometry elements to be found."))
+
+        min_dict = {}
+        idx = 1
+        for geo in total_geo:
+            for s_geo in total_geo[idx:]:
+                # minimize the number of distances by not taking into considerations
+                # those that are too small
+                dist = geo.distance(s_geo)
+                dist = float('%.*f' % (decimals, dist))
+                loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                proc_loc = (
+                    (float('%.*f' % (decimals, loc_1.x)), float('%.*f' % (decimals, loc_1.y))),
+                    (float('%.*f' % (decimals, loc_2.x)), float('%.*f' % (decimals, loc_2.y)))
+                )
+
+                if dist in min_dict:
+                    min_dict[dist].append(proc_loc)
+                else:
+                    min_dict[dist] = [proc_loc]
+
+            idx += 1
+
+        min_list = list(min_dict.keys())
+        min_dist = min(min_list)
+
+        return msg, min_dist
+
+    # multiprocessing variant
+    def find_safe_tooldia_multiprocessing(self):
+        self.app.inform.emit(_("Checking tools for validity."))
         self.units = self.app.defaults['units'].upper()
 
         obj_name = self.ui.object_combo.currentText()
@@ -864,8 +913,77 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        def job_thread(app_obj, is_display):
-            with self.app.proc_container.new(_("Working...")):
+        def job_thread(app_obj):
+            with self.app.proc_container.new(_("Checking ...")):
+
+                ap_storage = fcobj.apertures
+
+                p = app_obj.pool.apply_async(self.find_optim_mp, args=(ap_storage, self.decimals))
+                res = p.get()
+
+                if res[0] != 'ok':
+                    app_obj.inform.emit(res[0])
+                    return 'fail'
+                else:
+                    min_dist = res[1]
+
+                try:
+                    min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                    self.safe_tooldia = min_dist_truncated
+
+                    # find the selected tool ID's
+                    sorted_tools = []
+                    table_items = self.ui.tools_table.selectedItems()
+                    sel_rows = {t.row() for t in table_items}
+                    for row in sel_rows:
+                        tid = int(self.ui.tools_table.item(row, 3).text())
+                        sorted_tools.append(tid)
+                    if not sorted_tools:
+                        msg = _("There are no tools selected in the Tool Table.")
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
+                        return 'fail'
+
+                    # check if the tools diameters are less then the safe tool diameter
+                    suitable_tools = []
+                    for tool in sorted_tools:
+                        tool_dia = float(self.ncc_tools[tool]['tooldia'])
+                        if tool_dia <= self.safe_tooldia:
+                            suitable_tools.append(tool_dia)
+
+                    if not suitable_tools:
+                        msg = _("Incomplete isolation. None of the selected tools could do a complete isolation.")
+                        self.app.inform.emit('[WARNING] %s' % msg)
+                    else:
+                        msg = _("At least one of the selected tools can do a complete isolation.")
+                        self.app.inform.emit('[success] %s' % msg)
+
+                    # reset the value to prepare for another isolation
+                    self.safe_tooldia = None
+                except Exception as ee:
+                    log.debug(str(ee))
+                    return
+
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def find_safe_tooldia_worker(self):
+        self.app.inform.emit(_("Checking tools for validity."))
+        self.units = self.app.defaults['units'].upper()
+
+        obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            fcobj = self.app.collection.get_by_name(obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
+            return
+
+        if fcobj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
+            return
+
+        def job_thread(app_obj):
+            with self.app.proc_container.new(_("Checking ...")):
                 try:
                     old_disp_number = 0
                     pol_nr = 0
@@ -933,46 +1051,16 @@ class NonCopperClear(AppTool, Gerber):
                     min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
                     self.safe_tooldia = min_dist_truncated
 
-                    if is_display:
-                        self.optimal_found_sig.emit(min_dist_truncated)
+                    self.optimal_found_sig.emit(min_dist_truncated)
 
-                        app_obj.inform.emit('[success] %s: %s %s' %
-                                            (_("Optimal tool diameter found"), str(min_dist_truncated),
-                                             self.units.lower()))
-                    else:
-                        # find the selected tool ID's
-                        sorted_tools = []
-                        table_items = self.ui.tools_table.selectedItems()
-                        sel_rows = {t.row() for t in table_items}
-                        for row in sel_rows:
-                            tid = int(self.ui.tools_table.item(row, 3).text())
-                            sorted_tools.append(tid)
-                        if not sorted_tools:
-                            msg = _("There are no tools selected in the Tool Table.")
-                            self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
-                            return 'fail'
-
-                        # check if the tools diameters are less then the safe tool diameter
-                        suitable_tools = []
-                        for tool in sorted_tools:
-                            tool_dia = float(self.ncc_tools[tool]['tooldia'])
-                            if tool_dia <= self.safe_tooldia:
-                                suitable_tools.append(tool_dia)
-
-                        if not suitable_tools:
-                            msg = _("Incomplete isolation. None of the selected tools could do a complete isolation.")
-                            self.app.inform.emit('[WARNING] %s' % msg)
-                        else:
-                            msg = _("At least one of the selected tools can do a complete isolation.")
-                            self.app.inform.emit('[success] %s' % msg)
-
-                        # reset the value to prepare for another isolation
-                        self.safe_tooldia = None
+                    app_obj.inform.emit('[success] %s: %s %s' %
+                                        (_("Optimal tool diameter found"), str(min_dist_truncated),
+                                         self.units.lower()))
                 except Exception as ee:
                     log.debug(str(ee))
                     return
 
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, is_displayed]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -1327,7 +1415,8 @@ class NonCopperClear(AppTool, Gerber):
             return
 
         if self.ui.valid_cb.get_value() is True:
-            self.find_safe_tooldia_worker(is_displayed=False)
+            # this is done in another Process
+            self.find_safe_tooldia_multiprocessing()
 
         # use the selected tools in the tool table; get diameters for isolation
         self.iso_dia_list = []
