@@ -2287,7 +2287,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 #         current_uid = int(k)
                 #         break
 
-                if dia_cnc_dict['offset'] == 'in':
+                if dia_cnc_dict['offset'].lower() == 'in':
                     tool_offset = -tooldia_val / 2
                 elif dia_cnc_dict['offset'].lower() == 'out':
                     tool_offset = tooldia_val / 2
