@@ -7107,17 +7107,17 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if type(obj) == GeometryObject:
-            self.on_file_exportdxf()
+            self.f_handlers.on_file_exportdxf()
         elif type(obj) == ExcellonObject:
-            self.on_file_saveexcellon()
+            self.f_handlers.on_file_saveexcellon()
         elif type(obj) == CNCJobObject:
             obj.on_exportgcode_button_click()
         elif type(obj) == GerberObject:
-            self.on_file_savegerber()
+            self.f_handlers.on_file_savegerber()
         elif type(obj) == ScriptObject:
-            self.on_file_savescript()
+            self.f_handlers.on_file_savescript()
         elif type(obj) == DocumentObject:
-            self.on_file_savedocument()
+            self.f_handlers.on_file_savedocument()
 
     def obj_move(self):
         """
