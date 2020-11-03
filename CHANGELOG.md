@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - translation strings updated
 - fixed an error in Gerber parser, when it encounter a pen-up followed by pen-down move while in a region
 - trimmed the application strings
+- updated the Italian translation (by Massimiliano Golfetto)
 
 2.11.2020
 
