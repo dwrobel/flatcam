@@ -577,7 +577,7 @@ class CutOut(AppTool):
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+                                 _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
                                    "Fill in a correct value and retry. "))
             return
 
@@ -906,7 +906,7 @@ class CutOut(AppTool):
                         return
 
                     # cutout_obj.plot(plot_tool=1)
-                    app_obj.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
+                    app_obj.inform.emit('[success] %s' % _("Any-form Cutout operation finished."))
                     # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
@@ -1295,7 +1295,7 @@ class CutOut(AppTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
         if self.man_cutout_obj is None:
@@ -1327,7 +1327,7 @@ class CutOut(AppTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
         if self.app.is_legacy is False:
@@ -1424,7 +1424,7 @@ class CutOut(AppTool):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_geo() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Gerber object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
@@ -1470,7 +1470,7 @@ class CutOut(AppTool):
                     geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
                 else:
                     app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
-                        _("Geometry not supported for cutout"), type(geo_union)))
+                        _("Geometry not supported"), type(geo_union)))
                     return 'fail'
             else:
                 geo = geo_union
@@ -2009,9 +2009,9 @@ class CutoutUI:
         # Object kind
         self.kindlabel = QtWidgets.QLabel('%s:' % _('Kind'))
         self.kindlabel.setToolTip(
-            _("Choice of what kind the object we want to cutout is.<BR>"
-              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
-              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+            _("Choice of what kind the object we want to cutout is.\n"
+              "- Single: contain a single PCB Gerber outline object.\n"
+              "- Panel: a panel PCB Gerber object, which is made\n"
               "out of many individual PCB outlines.")
         )
         self.obj_kind_combo = RadioSet([

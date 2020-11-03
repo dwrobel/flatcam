@@ -710,7 +710,7 @@ class ToolPaint(AppTool, Gerber):
                 tools = f.read()
         except IOError:
             self.app.log.error("Could not load tools DB file.")
-            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.app.inform.emit('[ERROR] %s' % _("Could not load the file."))
             self.blockSignals(False)
             self.on_tool_default_add(dia=tool_dia)
             return
@@ -1005,7 +1005,7 @@ class ToolPaint(AppTool, Gerber):
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except Exception as e:
             log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object: %s"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return
 
         if self.paint_obj is None:
@@ -1068,7 +1068,7 @@ class ToolPaint(AppTool, Gerber):
             self.poly_sel_disconnect_flag = True
 
         elif self.select_method == 2:   # _("Area Selection")
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the paint area."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -1134,7 +1134,7 @@ class ToolPaint(AppTool, Gerber):
                     self.app.inform.emit(
                         '%s: %d. %s' % (_("Added polygon"),
                                         int(len(self.poly_dict)),
-                                        _("Click to add next polygon or right click to start painting."))
+                                        _("Click to add next polygon or right click to start."))
                     )
                 else:
                     try:
@@ -1147,7 +1147,7 @@ class ToolPaint(AppTool, Gerber):
                         return
                     self.app.inform.emit(
                         '%s. %s' % (_("Removed polygon"),
-                                    _("Click to add/remove next polygon or right click to start painting."))
+                                    _("Click to add/remove next polygon or right click to start."))
                     )
 
                 self.app.tool_shapes.redraw()
@@ -1860,7 +1860,7 @@ class ToolPaint(AppTool, Gerber):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different strategy of paint"), str(e))
+                                                 "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
                     continue
 
@@ -2069,7 +2069,7 @@ class ToolPaint(AppTool, Gerber):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     msg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                "Or a different strategy of paint"), str(e))
+                                                "Or a different method of Paint"), str(e))
                     self.app.inform.emit(msg)
                     continue
 
@@ -2842,7 +2842,7 @@ class PaintUI:
               "this function will not be able to create painting geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units) \n"
+            _("Tool Diameter. It's value\n"
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
@@ -2945,7 +2945,7 @@ class PaintUI:
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 

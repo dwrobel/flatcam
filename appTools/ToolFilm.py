@@ -291,7 +291,7 @@ class Film(AppTool):
                 if film_obj.apertures[apid]['type'] == 'C':
                     if punch_size >= float(film_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole film because the punch hole size"
+                                             _("Failed. Punch hole size"
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -303,7 +303,7 @@ class Film(AppTool):
                     if punch_size >= float(film_obj.apertures[apid]['width']) or \
                             punch_size >= float(film_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not generate punched hole film because the punch hole size"
+                                             _("Failed. Punch hole size"
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -321,7 +321,7 @@ class Film(AppTool):
 
             if punched_solid_geometry == temp_solid_geometry:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Could not generate punched hole film because the newly created object geometry "
+                                     _("Failed. The new object geometry "
                                        "is the same as the one in the source object geometry..."))
                 return 'fail'
 
@@ -955,7 +955,7 @@ class FilmUI:
         self.tf_type_box_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_box_combo_label = FCLabel(_("Box Type:"))
+        self.tf_type_box_combo_label = FCLabel('%s:' % _("Box Type"))
         self.tf_type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
               "film creation. It can be: Gerber or Geometry type."
@@ -1147,7 +1147,7 @@ class FilmUI:
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
                                   stretch=False)
-        self.film_type_label = FCLabel(_("Film Type:"))
+        self.film_type_label = FCLabel('%s:' % _("Film Type"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
               "Positive means that it will print the features\n"
@@ -1259,7 +1259,7 @@ class FilmUI:
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], stretch=False)
 
-        self.file_type_label = FCLabel(_("Film Type:"))
+        self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
             _("The file type of the saved film. Can be:\n"
               "- 'SVG' -> open-source vectorial format\n"

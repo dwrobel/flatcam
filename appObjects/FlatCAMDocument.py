@@ -67,13 +67,9 @@ class DocumentObject(FlatCAMObj):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Basic"))
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _("Advanced"))
 
         self.document_editor_tab = AppTextEditor(app=self.app)
         stylesheet = """

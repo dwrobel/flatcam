@@ -623,7 +623,7 @@ class ToolCopperThieving(AppTool):
                             bounding_box = geo.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                         else:
                             tool_obj.app.inform.emit(
-                                '[ERROR_NOTCL] %s: %s' % (_("Geometry not supported for bounding box"), type(geo_n))
+                                '[ERROR_NOTCL] %s: %s' % (_("Geometry not supported for"), type(geo_n))
                             )
                             return 'fail'
 
@@ -1363,7 +1363,7 @@ class ThievingUI:
         self.ref_combo_type_label.hide()
 
         # Bounding Box Type #
-        self.bbox_type_label = FCLabel(_("Box Type:"))
+        self.bbox_type_label = FCLabel('%s:' % _("Box Type"))
         self.bbox_type_label.setToolTip(
             _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")

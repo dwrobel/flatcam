@@ -590,12 +590,12 @@ class SolderPaste(AppTool):
                     self.tooltable_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a Nozzle tool to delete."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit('[success] %s' % _("Nozzle tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tools deleted from Tool Table."))
         self.build_ui()
 
     def on_rmb_combo(self, pos, combo):
@@ -806,7 +806,8 @@ class SolderPaste(AppTool):
                         if not geo_obj.tools[tooluid_key]['solid_geometry']:
                             a += 1
                     if a == len(geo_obj.tools):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _('Cancelled. Empty file, it has no geometry...'))
+                        msg = '[ERROR_NOTCL] %s' % '%s ...' % _('Cancelled. Empty file, it has no geometry')
+                        self.app.inform.emit(msg)
                         return 'fail'
 
                     app_obj.inform.emit('[success] %s...' % _("Solder Paste geometry generated successfully"))
@@ -890,7 +891,7 @@ class SolderPaste(AppTool):
             ymax = obj.options['ymax']
         except Exception as e:
             log.debug("SolderPaste.on_create_gcode() --> %s\n" % str(e))
-            msg = '[ERROR] %s' % _("An internal error has ocurred. See shell.\n")
+            msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
             msg += 'SolderPaste.on_create_gcode() --> %s' % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
@@ -1186,7 +1187,7 @@ class SolderUI:
 
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('New Nozzle Tool'))
         self.addtool_entry_lbl.setToolTip(
-            _("Diameter for the new Nozzle tool to add in the Tool Table")
+            _("Diameter for the new tool to add in the Tool Table")
         )
         self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_range(0.0000001, 10000.0000)
@@ -1210,7 +1211,7 @@ class SolderUI:
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
 
         grid0.addWidget(self.addtool_btn, 0, 0)
@@ -1351,7 +1352,7 @@ class SolderUI:
         self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
-              " to Dispense position (on Z plane).")
+              "to Dispense position (on Z plane).")
         )
         self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 

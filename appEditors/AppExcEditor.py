@@ -514,7 +514,7 @@ class FCDrillArray(FCShapeTool):
         else:
             if (self.drill_angle * self.drill_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Too many drills for the selected spacing angle."))
+                                              _("Too many items for the selected spacing angle."))
                 self.draw_app.app.jump_signal.disconnect()
                 return
 
@@ -1036,7 +1036,7 @@ class FCSlotArray(FCShapeTool):
         else:
             if (self.slot_angle * self.slot_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Too many Slots for the selected spacing angle."))
+                                              _("Too many items for the selected spacing angle."))
                 self.draw_app.app.jump_signal.disconnect()
                 return
 
@@ -2241,7 +2241,7 @@ class AppExcEditor(QtCore.QObject):
         self.e_ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
         self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
-        self.app.inform.emit('[success] %s' % _("Done. Tool edit completed."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
         # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
 
@@ -2861,7 +2861,7 @@ class AppExcEditor(QtCore.QObject):
                                      )
             except Exception:
                 msg = '[ERROR] %s' % \
-                      _("An internal error has ocurred. See Shell.\n")
+                      _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return
@@ -3491,7 +3491,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit('[success] %s' % _("Done. Drill(s) deleted."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def delete_shape(self, del_shape):
         self.is_modified = True
@@ -3933,8 +3933,8 @@ class AppExcEditorUI:
         self.linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
         self.linear_angle_label.setMinimumWidth(100)
 
@@ -3952,7 +3952,7 @@ class AppExcEditorUI:
         self.array_circular_frame.setLayout(self.circular_box)
 
         self.drill_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
-        self.drill_direction_label.setToolTip(_("Direction for circular array."
+        self.drill_direction_label.setToolTip(_("Direction for circular array.\n"
                                                 "Can be CW = clockwise or CCW = counter clockwise."))
         self.drill_direction_label.setMinimumWidth(100)
 
@@ -4042,8 +4042,8 @@ class AppExcEditorUI:
         self.slot_angle_label.setToolTip(
             _("Angle at which the slot is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
         self.slot_angle_label.setMinimumWidth(100)
 
@@ -4149,8 +4149,8 @@ class AppExcEditorUI:
         self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
         self.slot_array_linear_angle_label.setMinimumWidth(100)
 
@@ -4168,7 +4168,7 @@ class AppExcEditorUI:
         self.slot_array_circular_frame.setLayout(self.slot_array_circular_box)
 
         self.slot_array_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
-        self.slot_array_direction_label.setToolTip(_("Direction for circular array."
+        self.slot_array_direction_label.setToolTip(_("Direction for circular array.\n"
                                                      "Can be CW = clockwise or CCW = counter clockwise."))
         self.slot_array_direction_label.setMinimumWidth(100)
 

@@ -278,7 +278,7 @@ class TclCommandCopperClear(TclCommand):
                 box_obj = self.app.collection.get_by_name(str(box_name))
             except Exception as e:
                 log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
-                self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+                self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
                 return "Could not retrieve object: %s" % name
 
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,

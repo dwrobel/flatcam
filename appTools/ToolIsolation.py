@@ -1452,7 +1452,7 @@ class ToolIsolation(AppTool, Gerber):
 
                 self.grb_obj.solid_geometry = self.grb_obj.solid_geometry.buffer(0.0000001)
                 self.grb_obj.solid_geometry = self.grb_obj.solid_geometry.buffer(-0.0000001)
-                app_obj.inform.emit('[success] %s.' % _("Done"))
+                app_obj.inform.emit('[success] %s' % _("Done."))
                 self.grb_obj.plot_single_object.emit()
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': [self.app]})
@@ -2292,7 +2292,7 @@ class ToolIsolation(AppTool, Gerber):
                     self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
                         '%s: %d. %s' % (_("Added polygon"), int(len(self.poly_dict)),
-                                        _("Click to add next polygon or right click to start isolation."))
+                                        _("Click to add next polygon or right click to start."))
                     )
                 else:
                     try:
@@ -2305,7 +2305,7 @@ class ToolIsolation(AppTool, Gerber):
                         return
                     self.app.inform.emit(
                         '%s. %s' % (_("Removed polygon"),
-                                    _("Click to add/remove next polygon or right click to start isolation."))
+                                    _("Click to add/remove next polygon or right click to start."))
                     )
 
                 self.app.tool_shapes.redraw()
@@ -2406,7 +2406,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit(
                 '%s: %d. %s' % (_("Added polygon"),
                                 int(added_poly_count),
-                                _("Click to add next polygon or right click to start isolation."))
+                                _("Click to add next polygon or right click to start."))
             )
         else:
             self.app.inform.emit(_("No polygon in selection."))
@@ -3138,7 +3138,7 @@ class IsoUI:
               "this function will not be able to create routing geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units)\n"
+            _("Tool Diameter. It's value\n"
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
@@ -3256,7 +3256,7 @@ class IsoUI:
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 

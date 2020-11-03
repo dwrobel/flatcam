@@ -102,7 +102,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.reference_label = FCLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper Thieving extent is based on the object extent.\n"
+            _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
@@ -114,7 +114,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
             {'label': _('Rectangular'), 'value': 'rect'},
             {"label": _("Minimal"), "value": "min"}
         ], stretch=False)
-        self.bbox_type_label = FCLabel(_("Box Type:"))
+        self.bbox_type_label = FCLabel('%s:' % _("Box Type"))
         self.bbox_type_label.setToolTip(
             _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")

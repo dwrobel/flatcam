@@ -302,7 +302,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
                                               {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+            _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 20, 0)

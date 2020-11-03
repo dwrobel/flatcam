@@ -314,9 +314,9 @@ class BookmarkManager(QtWidgets.QWidget):
                 f.close()
             except Exception:
                 e = sys.exc_info()[0]
-                self.app.log.error("Could not load defaults file.")
+                self.app.log.error("Could not load the file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             # Save Bookmarks to a file
@@ -346,7 +346,7 @@ class BookmarkManager(QtWidgets.QWidget):
                     bookmarks = f.readlines()
             except IOError:
                 self.app.log.error("Could not load bookmarks file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             for line in bookmarks:

@@ -84,7 +84,7 @@ class TclCommandMirror(TclCommandSignaled):
             try:
                 box = self.app.collection.get_by_name(args['box'])
             except Exception:
-                return "Could not retrieve object box: %s" % args['box']
+                return "Could not retrieve object: %s" % args['box']
 
             if box is None:
                 return "Object box not found: %s" % args['box']

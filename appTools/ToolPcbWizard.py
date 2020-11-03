@@ -412,7 +412,7 @@ class WizardUI:
         self.tools_table.setVisible(False)
 
         self.layout.addWidget(FCLabel(""))
-        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon format")))
+        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
         # Form Layout
         form_layout1 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout1)

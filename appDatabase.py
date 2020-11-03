@@ -222,7 +222,7 @@ class ToolsDB2UI:
         # Tool Dia
         self.dia_label = FCLabel('%s:' % _('Diameter'))
         self.dia_label.setToolTip(
-            _("Tool Diameter."))
+            '%s.' % _("Tool Diameter"))
 
         self.dia_entry = FCDoubleSpinner()
         self.dia_entry.set_range(-10000.0000, 10000.0000)
@@ -1735,7 +1735,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 tools = f.read()
         except IOError:
             self.app.log.error("Could not load tools DB file.")
-            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.app.inform.emit('[ERROR] %s' % _("Could not load the file."))
             return
 
         try:
@@ -2127,7 +2127,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 e = sys.exc_info()[0]
                 self.app.log.error("Could not load Tools DB file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             # Save update options
@@ -2161,7 +2161,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     tools_in_db = f.read()
             except IOError:
                 self.app.log.error("Could not load Tools DB file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             try:

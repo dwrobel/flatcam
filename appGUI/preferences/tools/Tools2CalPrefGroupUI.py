@@ -128,8 +128,8 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
               "- top-left -> the user will align the PCB vertically\n"
               "- bottom-right -> the user will align the PCB horizontally")
         )
-        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
-                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+        self.second_point_radio = RadioSet([{'label': _('Top Left'), 'value': 'tl'},
+                                            {'label': _('Bottom Right'), 'value': 'br'}],
                                            orientation='vertical')
 
         grid_lay.addWidget(second_point_lbl, 8, 0)

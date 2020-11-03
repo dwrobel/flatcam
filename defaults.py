@@ -867,7 +867,7 @@ class FlatCAMDefaults:
             f.close()
         except IOError:
             log.error("Could not load defaults file.")
-            inform.emit('[ERROR] %s' % _("Could not load defaults file."))
+            inform.emit('[ERROR] %s' % _("Could not load the file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
             return

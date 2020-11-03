@@ -84,8 +84,8 @@ class BufferSelectionTool(AppTool):
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
-        form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
-        self.buffer_corner_lbl = FCLabel(_("Buffer corner:"))
+        form_layout.addRow('%S:' % _("Buffer distance"), self.buffer_distance_entry)
+        self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded for exterior buffer.\n"
@@ -438,7 +438,7 @@ class PaintOptionsTool(AppTool):
         grid.setColumnStretch(1, 1)
 
         # Tool dia
-        ptdlabel = FCLabel('%s:' % _('Tool dia'))
+        ptdlabel = FCLabel('%s:' % _('Tool Dia'))
         ptdlabel.setToolTip(
            _("Diameter of the tool to be used in the operation.")
         )
@@ -685,7 +685,7 @@ class TransformEditorTool(AppTool):
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
@@ -1284,9 +1284,9 @@ class TransformEditorTool(AppTool):
                     sel_sha.rotate(-val, point=(px, py))
                     self.draw_app.replot()
 
-                self.app.inform.emit('[success] %s' % _("Done. Rotate completed."))
+                self.app.inform.emit('[success] %s' % _("Done."))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_flip(self, axis, point):
@@ -1312,14 +1312,14 @@ class TransformEditorTool(AppTool):
                 for sha in shape_list:
                     if axis == 'X':
                         sha.mirror('X', (px, py))
-                        self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                     elif axis == 'Y':
                         sha.mirror('Y', (px, py))
-                        self.app.inform.emit('[success] %s' % _('Flip on the X axis done'))
+                        self.app.inform.emit('[success] %s' % _('Flip on X axis done'))
                     self.draw_app.replot()
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_skew(self, axis, xval, yval, point):
@@ -1353,7 +1353,7 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -1387,7 +1387,7 @@ class TransformEditorTool(AppTool):
                 else:
                     self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_offset(self, axis, num):
@@ -1420,7 +1420,7 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_buffer_action(self, value, join, factor=None):
@@ -1441,7 +1441,7 @@ class TransformEditorTool(AppTool):
 
                 except Exception as e:
                     self.app.log.debug("TransformEditorTool.on_buffer_action() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_rotate_key(self):
@@ -2002,7 +2002,7 @@ class FCCircle(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2081,7 +2081,7 @@ class FCArc(FCShapeTool):
     def on_key(self, key):
         if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return _('Direction: %s') % self.direction.upper()
+            return '%s: %s' % (_('Direction'), self.direction.upper())
 
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
@@ -2242,7 +2242,7 @@ class FCArc(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2315,7 +2315,7 @@ class FCRectangle(FCShapeTool):
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2390,7 +2390,7 @@ class FCPolygon(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Polygon completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_key(self, key):
         # Jump to coords
@@ -2447,7 +2447,7 @@ class FCPath(FCPolygon):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Path completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -2639,7 +2639,7 @@ class FCExplode(FCShapeTool):
             geo_list.append(DrawToolShape(line))
         self.geometry = geo_list
         self.draw_app.on_shape_complete()
-        self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
+        self.draw_app.app.inform.emit('[success] %s...' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2679,7 +2679,7 @@ class FCMove(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
-        self.draw_app.app.inform.emit(_(" Click on destination point ..."))
+        self.draw_app.app.inform.emit(_("Click on destination point ..."))
         self.origin = origin
 
     def click(self, point):
@@ -2719,7 +2719,7 @@ class FCMove(FCShapeTool):
             # Delete old
             self.draw_app.delete_selected()
             self.complete = True
-            self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Move completed."))
+            self.draw_app.app.inform.emit('[success] %s' % _("Done."))
             try:
                 self.draw_app.app.jump_signal.disconnect()
             except TypeError:
@@ -2852,7 +2852,7 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -2925,7 +2925,7 @@ class FCText(FCShapeTool):
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit('[success]%s' % _(" Done. Adding Text completed."))
+        self.draw_app.app.inform.emit('[success]%s' % _("Done."))
 
     def utility_geometry(self, data=None):
         """
@@ -2997,7 +2997,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
@@ -3025,7 +3025,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
@@ -3053,7 +3053,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -3169,7 +3169,7 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -4804,7 +4804,7 @@ class AppGeoEditor(QtCore.QObject):
         except Exception as e:
             log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("A selection of at least 2 geo items is required to do Intersection."))
+                                 _("A selection of minimum two items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4839,7 +4839,7 @@ class AppGeoEditor(QtCore.QObject):
         except Exception as e:
             log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("A selection of at least 2 geo items is required to do Intersection."))
+                                 _("A selection of minimum two items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -5012,7 +5012,7 @@ class AppGeoEditor(QtCore.QObject):
 
         if not results:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed, the result is empty. Choose a smaller buffer value."))
+                                 _("Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()

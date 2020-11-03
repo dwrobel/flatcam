@@ -1110,7 +1110,7 @@ class NonCopperClear(AppTool, Gerber):
                 tools = f.read()
         except IOError:
             self.app.log.error("Could not load tools DB file.")
-            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.app.inform.emit('[ERROR] %s' % _("Could not load the file."))
             self.blockSignals(False)
             self.on_tool_default_add(dia=tool_dia)
             return
@@ -4009,7 +4009,7 @@ class NccUI:
               "this function will not be able to create painting geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units)\n"
+            _("Tool Diameter. It's value\n"
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
@@ -4138,7 +4138,7 @@ class NccUI:
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 

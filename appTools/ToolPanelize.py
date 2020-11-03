@@ -812,8 +812,8 @@ class PanelizeUI:
         self.panel_type_label = FCLabel("<b>%s:</b>" % _("Panel Type"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
-              "- Geometry\n"
-              "- Gerber")
+              "- Gerber\n"
+              "- Geometry")
         )
         form_layout.addRow(self.panel_type_label)
         form_layout.addRow(self.panel_type_radio)

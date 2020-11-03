@@ -367,7 +367,6 @@ class EtchUI:
         self.thick_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thick_entry.set_precision(self.decimals)
         self.thick_entry.set_range(0.0000, 10000.0000)
-        self.thick_entry.setObjectName(_("Thickness"))
 
         grid0.addWidget(self.thick_label, 12, 0)
         grid0.addWidget(self.thick_entry, 12, 1)
@@ -394,21 +393,19 @@ class EtchUI:
             _("A list of etchants.")
         )
         self.etchants_combo = FCComboBox(callback=self.confirmation_message)
-        self.etchants_combo.setObjectName(_("Etchants"))
         self.etchants_combo.addItems(["CuCl2", "Fe3Cl", _("Alkaline baths")])
 
         grid0.addWidget(self.etchants_label, 18, 0)
         grid0.addWidget(self.etchants_combo, 18, 1)
 
         # Etch Factor
-        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch factor'))
+        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch Factor'))
         self.factor_label.setToolTip(
             _("The ratio between depth etch and lateral etch .\n"
               "Accepts real numbers and formulas using the operators: /,*,+,-,%")
         )
         self.factor_entry = NumericalEvalEntry(border_color='#0069A9')
         self.factor_entry.setPlaceholderText(_("Real number or formula"))
-        self.factor_entry.setObjectName(_("Etch_factor"))
 
         grid0.addWidget(self.factor_label, 19, 0)
         grid0.addWidget(self.factor_entry, 19, 1)
@@ -422,7 +419,6 @@ class EtchUI:
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-10000.0000, 10000.0000)
-        self.offset_entry.setObjectName(_("Offset"))
 
         grid0.addWidget(self.offset_label, 20, 0)
         grid0.addWidget(self.offset_entry, 20, 1)

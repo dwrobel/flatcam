@@ -369,7 +369,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 output = self.app.pool.apply_async(self.buffer_handler, args=([self.solid_geometry]))
                 self.solid_geometry = output.get()
 
-                self.app.inform.emit('[success] %s.' % _("Done"))
+                self.app.inform.emit('[success] %s' % _("Done."))
                 self.plot_single_object.emit()
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})

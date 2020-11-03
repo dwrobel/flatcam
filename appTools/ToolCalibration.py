@@ -291,7 +291,7 @@ class ToolCalibration(AppTool):
         elif len(self.click_points) == 4:
             self.ui.top_right_coordx_tgt.set_value(self.click_points[3][0])
             self.ui.top_right_coordy_tgt.set_value(self.click_points[3][1])
-            self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
+            self.app.inform.emit('[success] %s' % _("Done."))
             self.disconnect_cal_events()
 
     def reset_calibration_points(self):
@@ -851,8 +851,8 @@ class CalibUI:
               "- top-left -> the user will align the PCB vertically\n"
               "- bottom-right -> the user will align the PCB horizontally")
         )
-        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
-                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+        self.second_point_radio = RadioSet([{'label': _('Top Left'), 'value': 'tl'},
+                                            {'label': _('Bottom Right'), 'value': 'br'}],
                                            orientation='vertical')
 
         grid_lay.addWidget(second_point_lbl, 7, 0)
@@ -1197,7 +1197,7 @@ class CalibUI:
 
         self.skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
         self.skewx_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1210,7 +1210,7 @@ class CalibUI:
 
         self.skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
         self.skewy_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)

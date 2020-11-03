@@ -385,7 +385,7 @@ class FCPad(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Pad completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
@@ -713,7 +713,7 @@ class FCPadArray(FCShapeTool):
         else:
             if (self.pad_angle * self.pad_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Too many Pads for the selected spacing angle."))
+                                              _("Too many items for the selected spacing angle."))
                 return
 
             radius = distance(self.destination, self.origin)
@@ -735,8 +735,7 @@ class FCPadArray(FCShapeTool):
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Pad Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
@@ -838,7 +837,7 @@ class FCPoligonize(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Poligonize completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
         # MS: always return to the Select Tool if modifier key is not pressed
         # else return to the current tool
@@ -918,7 +917,7 @@ class FCRegion(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) > 0:
-            self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
+            self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
@@ -1241,7 +1240,7 @@ class FCTrack(FCShapeTool):
 
         self.draw_app.plot_all()
         if len(self.points) > 0:
-            self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
+            self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
@@ -2111,7 +2110,7 @@ class FCApertureMove(FCShapeTool):
 
         self.draw_app.plot_all()
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Apertures Move completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
@@ -2192,7 +2191,7 @@ class FCApertureCopy(FCApertureMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Apertures copied."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
 
@@ -2302,7 +2301,7 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
@@ -2621,7 +2620,7 @@ class AppGerberEditor(QtCore.QObject):
 
         grid1.addWidget(self.apcode_entry, 1, 1)
 
-        apsize_lbl = QtWidgets.QLabel('%s:' % _('Aperture Size'))
+        apsize_lbl = QtWidgets.QLabel('%s' % _('Aperture Size:'))
         apsize_lbl.setToolTip(
             _("Size for the new aperture.\n"
               "If aperture type is 'R' or 'O' then\n"
@@ -2923,8 +2922,8 @@ class AppGerberEditor(QtCore.QObject):
         self.linear_angle_label.setToolTip(
            _("Angle at which the linear array is placed.\n"
              "The precision is of max 2 decimals.\n"
-             "Min value is: -359.99 degrees.\n"
-             "Max value is:  360.00 degrees.")
+             "Min value is: -360.00 degrees.\n"
+             "Max value is: 360.00 degrees.")
         )
         self.linear_angle_label.setMinimumWidth(100)
 
@@ -2942,7 +2941,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.pad_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.pad_direction_label.setToolTip(
-           _("Direction for circular array."
+           _("Direction for circular array.\n"
              "Can be CW = clockwise or CCW = counter clockwise.")
         )
         self.pad_direction_label.setMinimumWidth(100)
@@ -4444,7 +4443,7 @@ class AppGerberEditor(QtCore.QObject):
             # make sure to clean the previous results
             self.results = []
             self.deactivate_grb_editor()
-            self.app.inform.emit('[success] %s' % _("Done. Gerber editing finished."))
+            self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_tool_select(self, tool):
         """
@@ -5070,8 +5069,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit('[success] %s' %
-                             _("Done. Apertures geometry deleted."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def delete_shape(self, geo_el):
         self.is_modified = True
@@ -5230,7 +5228,7 @@ class AppGerberEditor(QtCore.QObject):
                 return
 
         self.plot_all()
-        self.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_scale(self):
         scale_factor = 1.0
@@ -5292,8 +5290,7 @@ class AppGerberEditor(QtCore.QObject):
                 log.debug("AppGerberEditor.on_scale() --> %s" % str(e))
 
         self.plot_all()
-        self.app.inform.emit('[success] %s' %
-                             _("Done. Scale Tool completed."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_markarea(self):
         # clear previous marking
@@ -5342,7 +5339,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.build_ui()
         self.plot_all()
-        self.app.inform.emit('[success] %s' % _("Done. Apertures geometry deleted."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_eraser(self):
         self.select_tool('eraser')
@@ -5455,7 +5452,7 @@ class TransformEditorTool(AppTool):
 
         self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
@@ -6060,9 +6057,9 @@ class TransformEditorTool(AppTool):
                         sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-val, origin=(px, py))
                 self.draw_app.plot_all()
 
-                self.app.inform.emit('[success] %s' % _("Done. Rotate completed."))
+                self.app.inform.emit('[success] %s' % _("Done."))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Action was not executed"), str(e)))
                 return
 
     def on_flip(self, axis, point):
@@ -6093,7 +6090,7 @@ class TransformEditorTool(AppTool):
                             sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
                         if 'clear' in sel_el:
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
-                        self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                     elif axis == 'Y':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
@@ -6101,10 +6098,10 @@ class TransformEditorTool(AppTool):
                             sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
                         if 'clear' in sel_el:
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
-                        self.app.inform.emit('[success] %s...' % _('Flip on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                 self.draw_app.plot_all()
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Action was not executed"), str(e)))
                 return
 
     def on_skew(self, axis, xval, yval, point):
@@ -6144,7 +6141,7 @@ class TransformEditorTool(AppTool):
                 else:
                     self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Action was not executed"), str(e)))
                 return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -6183,7 +6180,7 @@ class TransformEditorTool(AppTool):
                         self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Action was not executed"), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -6227,7 +6224,7 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Action was not executed"), str(e)))
                 return
 
     def on_buffer_action(self, value, join, factor=None):
@@ -6263,7 +6260,7 @@ class TransformEditorTool(AppTool):
 
             except Exception as e:
                 self.app.log.debug("TransformEditorTool.on_buffer_action() --> %s" % str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_rotate_key(self):

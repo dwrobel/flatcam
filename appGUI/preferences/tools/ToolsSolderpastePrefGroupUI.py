@@ -53,7 +53,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # New Nozzle Tool Dia
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('New Nozzle Dia'))
         self.addtool_entry_lbl.setToolTip(
-            _("Diameter for the new Nozzle tool to add in the Tool Table")
+            _("Diameter for the new tool to add in the Tool Table")
         )
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
