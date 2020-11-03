@@ -2378,6 +2378,18 @@ class FCApertureSelect(DrawTool):
         except Exception as e:
             log.debug("AppGerberEditor.FCApertureSelect --> %s" % str(e))
 
+        try:
+            self.grb_editor_app.selection_triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.grb_editor_app.selection_triggered.connect(self.selection_worker)
+
+        try:
+            self.grb_editor_app.plot_object.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.grb_editor_app.plot_object.connect(self.clean_up)
+
     def set_origin(self, origin):
         self.origin = origin
 
@@ -2411,46 +2423,63 @@ class FCApertureSelect(DrawTool):
             self.grb_editor_app.selected.clear()
             self.sel_aperture.clear()
 
-        for storage in self.grb_editor_app.storage_dict:
-            try:
-                for shape_stored in self.grb_editor_app.storage_dict[storage]['geometry']:
-                    if 'solid' in shape_stored.geo:
-                        geometric_data = shape_stored.geo['solid']
-                        if Point(point).within(geometric_data):
-                            if shape_stored in self.grb_editor_app.selected:
-                                self.grb_editor_app.selected.remove(shape_stored)
-                            else:
-                                # add the object to the selected shapes
-                                self.grb_editor_app.selected.append(shape_stored)
-            except KeyError:
-                pass
+        self.grb_editor_app.selection_triggered.emit(point)
 
-        # select the aperture in the Apertures Table that is associated with the selected shape
-        self.sel_aperture.clear()
+    def selection_worker(self, point):
+        def job_thread(editor_obj):
+            with editor_obj.app.proc_container.new('%s' % _("Working ...")):
+                brake_flag = False
+                for storage_key, storage_val in editor_obj.storage_dict.items():
+                    for shape_stored in storage_val['geometry']:
+                        if 'solid' in shape_stored.geo:
+                            geometric_data = shape_stored.geo['solid']
+                            if Point(point).intersects(geometric_data):
+                                if shape_stored in editor_obj.selected:
+                                    editor_obj.selected.remove(shape_stored)
+                                else:
+                                    # add the object to the selected shapes
+                                    editor_obj.selected.append(shape_stored)
+                                brake_flag = True
+                                break
+                    if brake_flag is True:
+                        break
 
-        self.grb_editor_app.apertures_table.clearSelection()
-        try:
-            self.grb_editor_app.apertures_table.cellPressed.disconnect()
-        except Exception as e:
-            log.debug("AppGerberEditor.FCApertureSelect.click_release() --> %s" % str(e))
+                # #############################################################################################################
+                # select the aperture in the Apertures Table that is associated with the selected shape
+                # #############################################################################################################
+                self.sel_aperture.clear()
+                editor_obj.apertures_table.clearSelection()
 
-        for shape_s in self.grb_editor_app.selected:
-            for storage in self.grb_editor_app.storage_dict:
-                if shape_s in self.grb_editor_app.storage_dict[storage]['geometry']:
-                    self.sel_aperture.append(storage)
+                # disconnect signal when clicking in the table
+                try:
+                    editor_obj.apertures_table.cellPressed.disconnect()
+                except Exception as e:
+                    log.debug("AppGerberEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
-        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for aper in self.sel_aperture:
-            for row in range(self.grb_editor_app.apertures_table.rowCount()):
-                if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
-                    if not self.grb_editor_app.apertures_table.item(row, 0).isSelected():
-                        self.grb_editor_app.apertures_table.selectRow(row)
-                        self.grb_editor_app.last_aperture_selected = aper
-        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+                brake_flag = False
+                for shape_s in editor_obj.selected:
+                    for storage in editor_obj.storage_dict:
+                        if shape_s in editor_obj.storage_dict[storage]['geometry']:
+                            self.sel_aperture.append(storage)
+                            brake_flag = True
+                            break
+                    if brake_flag is True:
+                        break
 
-        self.grb_editor_app.apertures_table.cellPressed.connect(self.grb_editor_app.on_row_selected)
+                # actual row selection is done here
+                for aper in self.sel_aperture:
+                    for row in range(editor_obj.apertures_table.rowCount()):
+                        if str(aper) == editor_obj.apertures_table.item(row, 1).text():
+                            if not editor_obj.apertures_table.item(row, 0).isSelected():
+                                editor_obj.apertures_table.selectRow(row)
+                                editor_obj.last_aperture_selected = aper
 
-        return ""
+                # reconnect signal when clicking in the table
+                editor_obj.apertures_table.cellPressed.connect(editor_obj.on_row_selected)
+
+                editor_obj.plot_object.emit(None)
+
+        self.grb_editor_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.grb_editor_app]})
 
     def clean_up(self):
         self.grb_editor_app.plot_all()
@@ -2480,6 +2509,9 @@ class AppGerberEditor(QtCore.QObject):
     draw_shape_idx = -1
     # plot_finished = QtCore.pyqtSignal()
     mp_finished = QtCore.pyqtSignal(list)
+
+    selection_triggered = QtCore.pyqtSignal(object)
+    plot_object = QtCore.pyqtSignal(object)
 
     def __init__(self, app):
         # assert isinstance(app, FlatCAMApp.App), \
@@ -4113,7 +4145,7 @@ class AppGerberEditor(QtCore.QObject):
 
             @staticmethod
             def worker_job(app_obj):
-                with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
+                with app_obj.app.proc_container.new('%s ...' % _("Loading")):
                     # ###############################################################
                     # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
                     # ###############################################################
@@ -4400,7 +4432,7 @@ class AppGerberEditor(QtCore.QObject):
             grb_obj.source_file = self.app.f_handlers.export_gerber(obj_name=out_name, filename=None,
                                                                     local_use=grb_obj, use_thread=False)
 
-        with self.app.proc_container.new(_("Creating Gerber.")):
+        with self.app.proc_container.new(_("Working ...")):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
@@ -4615,8 +4647,8 @@ class AppGerberEditor(QtCore.QObject):
                             self.select_tool("select")
                         return
 
-                if isinstance(self.active_tool, FCApertureSelect):
-                    self.plot_all()
+                # if isinstance(self.active_tool, FCApertureSelect):
+                #     self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
@@ -4702,9 +4734,9 @@ class AppGerberEditor(QtCore.QObject):
                 elif isinstance(self.active_tool, FCApertureSelect):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
-                    # if there are selected objects then plot them
-                    if self.selected:
-                        self.plot_all()
+                    # # if there are selected objects then plot them
+                    # if self.selected:
+                    #     self.plot_all()
         except Exception as e:
             log.warning("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
@@ -4888,11 +4920,11 @@ class AppGerberEditor(QtCore.QObject):
         :return: None
         :rtype: None
         """
-        with self.app.proc_container.new("Plotting"):
+        with self.app.proc_container.new('%s ...' % _("Plotting")):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                # fix for apertures with now geometry inside
+                # fix for apertures with no geometry inside
                 if 'geometry' in self.storage_dict[storage]:
                     for elem in self.storage_dict[storage]['geometry']:
                         if 'solid' in elem.geo:

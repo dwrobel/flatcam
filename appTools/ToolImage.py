@@ -146,7 +146,7 @@ class ToolImage(AppTool):
             geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
             geo_obj.multigeo = False
 
-        with self.app.proc_container.new(_("Importing Image")):
+        with self.app.proc_container.new('%s ...' % _("Importing")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]

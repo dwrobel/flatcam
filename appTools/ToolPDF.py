@@ -120,7 +120,7 @@ class ToolPDF(AppTool):
             # graceful abort requested by the user
             raise grace
 
-        with self.app.proc_container.new(_("Parsing PDF file ...")):
+        with self.app.proc_container.new(_("Parsing ...")):
             with open(filename, "rb") as f:
                 pdf = f.read()
 

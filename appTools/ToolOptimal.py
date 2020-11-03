@@ -142,7 +142,7 @@ class ToolOptimal(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber objects can be evaluated."))
             return
 
-        proc = self.app.proc_container.new(_("Working..."))
+        proc = self.app.proc_container.new(_("Working ..."))
 
         def job_thread(app_obj):
             app_obj.inform.emit(_("Optimal Tool. Started to search for the minimum distance between copper features."))

@@ -365,7 +365,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
 
         def buffer_task():
-            with self.app.proc_container.new('%s...' % _("Buffering")):
+            with self.app.proc_container.new('%s ...' % _("Buffering")):
                 output = self.app.pool.apply_async(self.buffer_handler, args=([self.solid_geometry]))
                 self.solid_geometry = output.get()
 
@@ -992,7 +992,7 @@ class GerberObject(FlatCAMObj, Gerber):
             visibility = kwargs['visible']
 
         def job_thread(app_obj):
-            with self.app.proc_container.new(_("Plotting Apertures")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         for elem in app_obj.apertures[aperture_to_plot_mark]['geometry']:

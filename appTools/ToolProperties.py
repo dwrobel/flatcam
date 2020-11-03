@@ -192,7 +192,7 @@ class Properties(AppTool):
         self.treeWidget.addChild(obj_name, [obj.options['name']])
 
         def job_thread(obj_prop):
-            self.app.proc_container.new(_("Calculating dimensions ... Please wait."))
+            self.app.proc_container.new(_("Working ..."))
 
             length = 0.0
             width = 0.0

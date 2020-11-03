@@ -416,7 +416,7 @@ class ToolCorners(AppTool):
 
     def replot(self, obj, run_thread=True):
         def worker_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 obj.plot()
                 self.app.app_obj.object_plotted.emit(obj)
 

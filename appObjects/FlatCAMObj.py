@@ -263,7 +263,7 @@ class FlatCAMObj(QtCore.QObject):
             with self.app.proc_container.new(_("Offsetting...")):
                 self.offset(vector_val)
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot()
             self.app.app_obj.object_changed.emit(self)
 
@@ -294,7 +294,7 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.inform.emit('[success] %s' % _("Scale done."))
 
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot()
             self.app.app_obj.object_changed.emit(self)
 
@@ -310,7 +310,7 @@ class FlatCAMObj(QtCore.QObject):
             with self.app.proc_container.new(_("Skewing...")):
                 self.skew(x_angle, y_angle)
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot()
             self.app.app_obj.object_changed.emit(self)
 
@@ -390,7 +390,7 @@ class FlatCAMObj(QtCore.QObject):
 
     def single_object_plot(self):
         def plot_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot()
             self.app.app_obj.object_changed.emit(self)
 

@@ -78,7 +78,7 @@ class TclCommandOpenDXF(TclCommandSignaled):
 
         units = self.app.defaults['units'].upper()
 
-        with self.app.proc_container.new("Open DXF"):
+        with self.app.proc_container.new('%s' % _("Opening ...")):
 
             # Object creation
             ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)

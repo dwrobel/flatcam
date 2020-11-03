@@ -288,12 +288,12 @@ class TclCommandPanelize(TclCommand):
                     self.app.app_obj.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
         if threaded is True:
-            self.app.proc_container.new("Generating panel ... Please wait.")
+            self.app.proc_container.new(_("Working ..."))
 
             def job_thread(app_obj):
                 try:
                     panelize_2()
-                    app_obj.inform.emit("[success] Panel created successfully.")
+                    app_obj.inform.emit('[success]' % _("Done."))
                 except Exception as ee:
                     log.debug(str(ee))
                     return
@@ -302,4 +302,4 @@ class TclCommandPanelize(TclCommand):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             panelize_2()
-            self.app.inform.emit("[success] Panel created successfully.")
+            self.app.inform.emit('[success]' % _("Done."))

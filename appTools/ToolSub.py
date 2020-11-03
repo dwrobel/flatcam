@@ -194,35 +194,36 @@ class ToolSub(AppTool):
                     self.new_apertures[apid][key] = self.target_grb_obj.apertures[apid][key]
 
         def worker_job(app_obj):
-            # SUBTRACTOR geometry (always the same)
-            sub_geometry = {'solid': [], 'clear': []}
-            # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
-            for s_apid in app_obj.sub_grb_obj.apertures:
-                for s_el in app_obj.sub_grb_obj.apertures[s_apid]['geometry']:
-                    if "solid" in s_el:
-                        sub_geometry['solid'].append(s_el["solid"])
-                    if "clear" in s_el:
-                        sub_geometry['clear'].append(s_el["clear"])
+            with app_obj.app.proc_container.new('%s' % _("Working ...")):
+                # SUBTRACTOR geometry (always the same)
+                sub_geometry = {'solid': [], 'clear': []}
+                # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
+                for s_apid in app_obj.sub_grb_obj.apertures:
+                    for s_el in app_obj.sub_grb_obj.apertures[s_apid]['geometry']:
+                        if "solid" in s_el:
+                            sub_geometry['solid'].append(s_el["solid"])
+                        if "clear" in s_el:
+                            sub_geometry['clear'].append(s_el["clear"])
 
-            for ap_id in app_obj.target_grb_obj.apertures:
-                # TARGET geometry
-                target_geo = [geo for geo in app_obj.target_grb_obj.apertures[ap_id]['geometry']]
+                for ap_id in app_obj.target_grb_obj.apertures:
+                    # TARGET geometry
+                    target_geo = [geo for geo in app_obj.target_grb_obj.apertures[ap_id]['geometry']]
 
-                # send the job to the multiprocessing JOB
-                app_obj.results.append(
-                    app_obj.pool.apply_async(app_obj.aperture_intersection, args=(ap_id, target_geo, sub_geometry))
-                )
+                    # send the job to the multiprocessing JOB
+                    app_obj.results.append(
+                        app_obj.pool.apply_async(app_obj.aperture_intersection, args=(ap_id, target_geo, sub_geometry))
+                    )
 
-            output = []
-            for p in app_obj.results:
-                res = p.get()
-                output.append(res)
-                app_obj.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(res[0])))
+                output = []
+                for p in app_obj.results:
+                    res = p.get()
+                    output.append(res)
+                    app_obj.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(res[0])))
 
-            app_obj.app.inform.emit("%s" % _("Subtraction aperture processing finished."))
+                app_obj.app.inform.emit("%s" % _("Subtraction aperture processing finished."))
 
-            outname = app_obj.ui.target_gerber_combo.currentText() + '_sub'
-            app_obj.aperture_processing_finished.emit(outname, output)
+                outname = app_obj.ui.target_gerber_combo.currentText() + '_sub'
+                app_obj.aperture_processing_finished.emit(outname, output)
 
         self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
 
@@ -349,7 +350,7 @@ class ToolSub(AppTool):
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=grb_obj, use_thread=False)
 
-        with self.app.proc_container.new(_("Generating new object ...")):
+        with self.app.proc_container.new(_("New object ...")):
             ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
@@ -543,7 +544,7 @@ class ToolSub(AppTool):
                     app_obj.log.debug("ToolSub.new_geo_object() --> %s" % str(e))
                 geo_obj.multigeo = False
 
-        with self.app.proc_container.new(_("Generating new object ...")):
+        with self.app.proc_container.new(_("New object ...")):
             ret = self.app.app_obj.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))

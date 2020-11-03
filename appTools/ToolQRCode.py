@@ -163,47 +163,47 @@ class QRCode(AppTool):
         self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
         self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
 
-        self.proc = self.app.proc_container.new('%s...' % _("Generating QRCode geometry"))
-
         def job_thread_qr(app_obj):
-            error_code = {
-                'L': qrcode.constants.ERROR_CORRECT_L,
-                'M': qrcode.constants.ERROR_CORRECT_M,
-                'Q': qrcode.constants.ERROR_CORRECT_Q,
-                'H': qrcode.constants.ERROR_CORRECT_H
-            }[self.ui.error_radio.get_value()]
+            with self.app.proc_container.new('%s' % _("Working ...")) as self.proc:
 
-            qr = qrcode.QRCode(
-                version=self.ui.version_entry.get_value(),
-                error_correction=error_code,
-                box_size=self.ui.bsize_entry.get_value(),
-                border=self.ui.border_size_entry.get_value(),
-                image_factory=qrcode.image.svg.SvgFragmentImage
-            )
-            qr.add_data(text_data)
-            qr.make()
+                error_code = {
+                    'L': qrcode.constants.ERROR_CORRECT_L,
+                    'M': qrcode.constants.ERROR_CORRECT_M,
+                    'Q': qrcode.constants.ERROR_CORRECT_Q,
+                    'H': qrcode.constants.ERROR_CORRECT_H
+                }[self.ui.error_radio.get_value()]
 
-            svg_file = BytesIO()
-            img = qr.make_image()
-            img.save(svg_file)
+                qr = qrcode.QRCode(
+                    version=self.ui.version_entry.get_value(),
+                    error_correction=error_code,
+                    box_size=self.ui.bsize_entry.get_value(),
+                    border=self.ui.border_size_entry.get_value(),
+                    image_factory=qrcode.image.svg.SvgFragmentImage
+                )
+                qr.add_data(text_data)
+                qr.make()
 
-            svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
-            svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
-            self.qrcode_geometry = deepcopy(svg_geometry)
+                svg_file = BytesIO()
+                img = qr.make_image()
+                img.save(svg_file)
 
-            svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
-            self.qrcode_utility_geometry = svg_geometry
+                svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
+                svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
+                self.qrcode_geometry = deepcopy(svg_geometry)
 
-            # make a bounding box of the QRCode geometry to help drawing the utility geometry in case it is too
-            # complicated
-            try:
-                a, b, c, d = self.qrcode_utility_geometry.bounds
-                self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
-            except Exception as ee:
-                log.debug("QRCode.make() bounds error --> %s" % str(ee))
+                svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
+                self.qrcode_utility_geometry = svg_geometry
 
-            app_obj.call_source = 'qrcode_tool'
-            app_obj.inform.emit(_("Click on the Destination point ..."))
+                # make a bounding box of the QRCode geometry to help drawing the utility geometry in case it is too
+                # complicated
+                try:
+                    a, b, c, d = self.qrcode_utility_geometry.bounds
+                    self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
+                except Exception as ee:
+                    log.debug("QRCode.make() bounds error --> %s" % str(ee))
+
+                app_obj.call_source = 'qrcode_tool'
+                app_obj.inform.emit(_("Click on the Destination point ..."))
 
         self.app.worker_task.emit({'fcn': job_thread_qr, 'params': [self.app]})
 
@@ -463,7 +463,7 @@ class QRCode(AppTool):
 
     def replot(self, obj):
         def worker_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 obj.plot()
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})

@@ -2709,7 +2709,7 @@ class FCMove(FCShapeTool):
             return "Done."
 
     def make(self):
-        with self.draw_app.app.proc_container.new("Moving Geometry ..."):
+        with self.draw_app.app.proc_container.new(_("Working ...")):
             # Create new geometry
             dx = self.destination[0] - self.origin[0]
             dy = self.destination[1] - self.origin[1]

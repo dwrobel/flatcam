@@ -2561,7 +2561,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     def on_polish(self):
 
         def job_thread(obj):
-            with obj.app.proc_container.new(_("Working...")):
+            with obj.app.proc_container.new(_("Working ...")):
                 tooldia = obj.ui.polish_dia_entry.get_value()
                 depth = obj.ui.polish_pressure_entry.get_value()
                 travelz = obj.ui.polish_travelz_entry.get_value()

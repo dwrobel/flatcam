@@ -73,7 +73,7 @@ class TclCommandImportSvg(TclCommandSignaled):
         if obj_type != "geometry" and obj_type != "gerber":
             self.raise_tcl_error("Option type can be 'geometry' or 'gerber' only, got '%s'." % obj_type)
 
-        with self.app.proc_container.new("Import SVG"):
+        with self.app.proc_container.new('%s' % _("Importing ...")):
 
             # Object creation
             self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
