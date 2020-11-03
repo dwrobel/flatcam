@@ -1228,7 +1228,7 @@ class Geometry(object):
                 'tooldia': tooldia,
                 'offset': 'Path',
                 'offset_value': 0.0,
-                'type': _('Rough'),
+                'type': 'Rough',
                 'tool_type': 'C1',
                 'data': deepcopy(new_data),
                 'solid_geometry': self.solid_geometry
@@ -1289,7 +1289,7 @@ class Geometry(object):
                 'tooldia': tooldia,
                 'offset': 'Path',
                 'offset_value': 0.0,
-                'type': _('Rough'),
+                'type': 'Rough',
                 'tool_type': 'C1',
                 'data': deepcopy(new_data),
                 'solid_geometry': self.solid_geometry

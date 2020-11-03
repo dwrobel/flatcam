@@ -412,7 +412,7 @@ class ToolPaint(AppTool, Gerber):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else _("Rough")
+            typ = 'Iso' if tt == 'V' else 'Rough'
 
             self.paint_tools[current_uid].update({
                 'type': typ,
@@ -730,7 +730,7 @@ class ToolPaint(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = _("Rough")
+        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():

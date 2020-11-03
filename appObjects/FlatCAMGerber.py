@@ -536,7 +536,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         'tooldia':          dia,
                         'offset':           'Path',
                         'offset_value':     0.0,
-                        'type':             _('Rough'),
+                        'type':             'Rough',
                         'tool_type':        tool_type,
                         'data':             default_data,
                         'solid_geometry':   geo_obj.solid_geometry
@@ -682,7 +682,7 @@ class GerberObject(FlatCAMObj, Gerber):
                             'tooldia':          dia,
                             'offset':           'Path',
                             'offset_value':     0.0,
-                            'type':             _('Rough'),
+                            'type':             'Rough',
                             'tool_type':        tool_type,
                             'data':             default_data,
                             'solid_geometry':   geo_obj.solid_geometry
