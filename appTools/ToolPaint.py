@@ -2842,7 +2842,7 @@ class PaintUI:
               "this function will not be able to create painting geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value\n"
+            _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(

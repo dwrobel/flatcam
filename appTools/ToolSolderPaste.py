@@ -1178,7 +1178,7 @@ class SolderUI:
               "with solder paste, the app will issue a warning message box.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+            _("Tool Diameter. Its value\n"
               "is the width of the solder paste dispensed."))
 
         # ### Add a new Tool ## ##
