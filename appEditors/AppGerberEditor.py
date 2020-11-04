@@ -4365,6 +4365,10 @@ class AppGerberEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
+
+        if not self.app.plotcanvas.native.hasFocus():
+            self.app.plotcanvas.native.setFocus()
+
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging

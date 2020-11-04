@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-11-04 18:02+0200\n"
-"PO-Revision-Date: 2020-11-04 18:02+0200\n"
+"PO-Revision-Date: 2020-11-04 21:22+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -753,15 +753,6 @@ msgstr "Üst Üste Gelme"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:184
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:163
 #: appTools/ToolNCC.py:4206 appTools/ToolPaint.py:2975
-#, fuzzy
-#| msgid ""
-#| "How much (percentage) of the tool width to overlap each tool pass.\n"
-#| "Adjust the value starting with lower values\n"
-#| "and increasing it if areas that should be cleared are still \n"
-#| "not cleared.\n"
-#| "Lower values = faster processing, faster execution on CNC.\n"
-#| "Higher values = slow processing and slow execution on CNC\n"
-#| "due of too many paths."
 msgid ""
 "How much (percentage) of the tool width to overlap each tool pass.\n"
 "Adjust the value starting with lower values\n"
@@ -773,11 +764,11 @@ msgid ""
 msgstr ""
 "Ucun her geçişinde uç genişliğinin ne kadarlık kısmının (yüzde) üst üste "
 "geleceğini belirler.\n"
-"Daha düşük değerlerden başlayarak ve temizlenecek alanlar hala \n"
-"temizlenmemişse değeri artırın.\n"
+"Değeri daha düşük değerlerden başlayarak ayarlayın ve işlenmesi gereken "
+"alanlar hâlâ işlenmiyorsa değeri artırın.\n"
 "Düşük değerler = Daha hızlı işleme, CNC'de daha hızlı yürütme sağlar.\n"
-"Daha yüksek değerler = Çok sayıda yol nedeniyle CNC'de yavaş\n"
-"işleme ve yavaş yürütmeye sebep olur."
+"Daha yüksek değerler = Çok sayıda yol nedeniyle CNC'de yavaş işleme \n"
+"ve yavaş yürütmeye sebep olur."
 
 #: appDatabase.py:649 appDatabase.py:1156 appEditors/AppGeoEditor.py:473
 #: appGUI/ObjectUI.py:1679
@@ -930,12 +921,6 @@ msgstr "Hizala"
 #: appDatabase.py:704 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:257
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:267 appTools/ToolNCC.py:4285
 #: appTools/ToolNCC.py:4381
-#, fuzzy
-#| msgid ""
-#| "If used, it will add an offset to the copper features.\n"
-#| "The copper clearing will finish to a distance\n"
-#| "from the copper features.\n"
-#| "The value can be between 0 and 10 FlatCAM units."
 msgid ""
 "If used, it will add an offset to the copper features.\n"
 "The copper clearing will finish to a distance\n"
@@ -943,8 +928,7 @@ msgid ""
 msgstr ""
 "İşaretlendiğinde, bakır alanlara bir hiza ekleyecektir.\n"
 "Bakır temizliği, bakır alanların belirli bir mesafesine\n"
-"kadar olacaktır.\n"
-"Değer, 0 ile 10 arasında FlatCAM birimi olabilir."
+"kadar olacaktır."
 
 #: appDatabase.py:759 appEditors/AppGeoEditor.py:475
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:183
@@ -2101,10 +2085,8 @@ msgstr "Uzunluk"
 
 #: appEditors/AppExcEditor.py:4085
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:164
-#, fuzzy
-#| msgid "Length = The length of the slot."
 msgid "Length. The length of the slot."
-msgstr "Uzunluk = Yuvanın uzunluğu."
+msgstr "Uzunluk. Yuvanın uzunluğu."
 
 #: appEditors/AppExcEditor.py:4099
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:180
@@ -2535,7 +2517,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:741 appEditors/AppGerberEditor.py:5555
 #: appTools/ToolTransform.py:667
 msgid "Skew X"
-msgstr "X Eğrilt"
+msgstr "Eğrilt"
 
 #: appEditors/AppGeoEditor.py:743 appEditors/AppGeoEditor.py:764
 #: appEditors/AppGerberEditor.py:5557 appEditors/AppGerberEditor.py:5578
@@ -2559,7 +2541,7 @@ msgstr "Y Eğim Açısı"
 #: appEditors/AppGeoEditor.py:762 appEditors/AppGerberEditor.py:5576
 #: appTools/ToolTransform.py:688
 msgid "Skew Y"
-msgstr "Y Eğrilt"
+msgstr "Eğrilt"
 
 #: appEditors/AppGeoEditor.py:793 appEditors/AppGerberEditor.py:5607
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:120
@@ -2900,10 +2882,8 @@ msgid "Rotate done"
 msgstr "Döndürme işlemi tamamlandı"
 
 #: appEditors/AppGeoEditor.py:1461 appEditors/AppGerberEditor.py:6327
-#, fuzzy
-#| msgid "Rotate Angle"
 msgid "Rotate cancelled"
-msgstr "Rotate Angle"
+msgstr "Döndürme işlemi iptal edildi"
 
 #: appEditors/AppGeoEditor.py:1466 appEditors/AppGerberEditor.py:6332
 msgid "Offset on X axis ..."
@@ -2915,58 +2895,44 @@ msgid "Enter a distance Value"
 msgstr "Bir mesafe değeri girin"
 
 #: appEditors/AppGeoEditor.py:1479 appEditors/AppGerberEditor.py:6345
-#, fuzzy
-#| msgid "Open DXF cancelled."
 msgid "Offset X cancelled"
-msgstr "Open DXF cancelled."
+msgstr "X hizalama işlemi iptal edildi"
 
 #: appEditors/AppGeoEditor.py:1484 appEditors/AppGerberEditor.py:6350
 msgid "Offset on Y axis ..."
 msgstr "Y ekseninde hiza ..."
 
 #: appEditors/AppGeoEditor.py:1494 appEditors/AppGerberEditor.py:6360
-#, fuzzy
-#| msgid "Offset on the Y axis done"
 msgid "Offset on Y axis done"
-msgstr "Y eksenindeki hizalama işlemi yapıldı"
+msgstr "Y ekseninde hizalama işlemi yapıldı"
 
 #: appEditors/AppGeoEditor.py:1497
-#, fuzzy
-#| msgid "Offset on the Y axis done"
 msgid "Offset on the Y axis canceled"
-msgstr "Y eksenindeki hizalama işlemi yapıldı"
+msgstr "Y ekseninde hizalama işlemi iptal edildi"
 
 #: appEditors/AppGeoEditor.py:1500 appEditors/AppGerberEditor.py:6366
 msgid "Skew on X axis ..."
 msgstr "X ekseninde eğrilt ..."
 
 #: appEditors/AppGeoEditor.py:1510 appEditors/AppGerberEditor.py:6376
-#, fuzzy
-#| msgid "Skew on X axis done."
 msgid "Skew on X axis done"
-msgstr "X ekseninde eğme işlemi tamamlandı."
+msgstr "X ekseninde eğritlme işlemi yapıldı"
 
 #: appEditors/AppGeoEditor.py:1513
-#, fuzzy
-#| msgid "Skew on X axis done."
 msgid "Skew on X axis canceled"
-msgstr "X ekseninde eğme işlemi tamamlandı."
+msgstr "X eksenindeki eğriltme işlemi iptal edildi"
 
 #: appEditors/AppGeoEditor.py:1516 appEditors/AppGerberEditor.py:6382
 msgid "Skew on Y axis ..."
 msgstr "Y Ekseninde Eğrilt ..."
 
 #: appEditors/AppGeoEditor.py:1526 appEditors/AppGerberEditor.py:6392
-#, fuzzy
-#| msgid "Skew on Y axis done."
 msgid "Skew on Y axis done"
-msgstr "Y ekseninde eğme işlemi tamamlandı."
+msgstr "Y ekseninde eğriltme işlemi yapıldı"
 
 #: appEditors/AppGeoEditor.py:1529
-#, fuzzy
-#| msgid "Skew on Y axis done."
 msgid "Skew on Y axis canceled"
-msgstr "Y ekseninde eğme işlemi tamamlandı."
+msgstr "Y ekseninde eğrilme işlemi iptal edildi"
 
 #: appEditors/AppGeoEditor.py:1960 appEditors/AppGeoEditor.py:2031
 #: appEditors/AppGerberEditor.py:1500 appEditors/AppGerberEditor.py:1583
@@ -3161,17 +3127,13 @@ msgstr ""
 
 #: appEditors/AppGeoEditor.py:4936 appEditors/AppGeoEditor.py:4988
 #: appEditors/AppGeoEditor.py:5037 appEditors/AppGeoEditor.py:5084
-#, fuzzy
-#| msgid "Failed. Nothing selected."
 msgid "Nothing selected."
-msgstr "Hata. Hiçbir şey seçilmedi."
+msgstr "Hiçbir şey seçilmedi."
 
 #: appEditors/AppGeoEditor.py:4940 appEditors/AppGeoEditor.py:4992
 #: appEditors/AppGeoEditor.py:5041
-#, fuzzy
-#| msgid "Invalid distance for buffering."
 msgid "Invalid distance."
-msgstr "Tampon oluşturmak için geçersiz mesafe."
+msgstr "Geçersiz mesafe."
 
 #: appEditors/AppGeoEditor.py:4964 appEditors/AppGeoEditor.py:5012
 #: appEditors/AppGeoEditor.py:5061
@@ -3341,10 +3303,8 @@ msgid "Added new aperture with code"
 msgstr "Şu kodlu yeni şekil eklendi"
 
 #: appEditors/AppGerberEditor.py:3095
-#, fuzzy
-#| msgid " Select an aperture in Aperture Table"
 msgid "Select an aperture in Aperture Table"
-msgstr " Şekil Tablosundan bir şekil seçin"
+msgstr "Şekil Tablosundan bir şekil seçin"
 
 #: appEditors/AppGerberEditor.py:3103
 msgid "Select an aperture in Aperture Table -->"
@@ -3701,22 +3661,16 @@ msgid "Specify how many pads to be in the array."
 msgstr "Dizide kaç tane ped olması gerektiğini belirtin."
 
 #: appEditors/AppGerberEditor.py:6363
-#, fuzzy
-#| msgid "Open cancelled."
 msgid "Offset Y cancelled"
-msgstr "Open cancelled."
+msgstr "Y hizalama işlemi iptal edildi"
 
 #: appEditors/AppGerberEditor.py:6379
-#, fuzzy
-#| msgid "Open DXF cancelled."
 msgid "Skew X cancelled"
-msgstr "Open DXF cancelled."
+msgstr "X eğriltme işlemi iptal edildi"
 
 #: appEditors/AppGerberEditor.py:6395
-#, fuzzy
-#| msgid "Skew_Y angle"
 msgid "Skew Y cancelled"
-msgstr "Skew_Y angle"
+msgstr "Y eğriltme işlemi iptal edildi"
 
 #: appEditors/AppTextEditor.py:84
 msgid "Find"
@@ -5093,8 +5047,6 @@ msgstr "Varsayılan"
 #: appGUI/MainGUI.py:863
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:33
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:35
-#, fuzzy
-#| msgid "Create CNC Job"
 msgid "Create CNCJob"
 msgstr "CNC İşi Oluştur"
 
@@ -6549,10 +6501,8 @@ msgstr ""
 "sağlar."
 
 #: appGUI/ObjectUI.py:724
-#, fuzzy
-#| msgid "Generate GCode out of drill holes in an Excellon object."
 msgid "Generate GCode from the drill holes in an Excellon object."
-msgstr "Bir Excellon nesnesindeki matkap deliklerinden G Kod oluşturun."
+msgstr "Bir Excellon nesnesindeki deliklerinden G Kodu oluşturun."
 
 #: appGUI/ObjectUI.py:735 appGUI/ObjectUI.py:1790
 msgid "Milling Tool"
@@ -9206,8 +9156,6 @@ msgstr ""
 "başlatılmasını gerektirir."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:64
-#, fuzzy
-#| msgid "Precision INCH"
 msgid "Precision Inch"
 msgstr "İNÇ Hassasiyet"
 
@@ -12105,15 +12053,6 @@ msgstr "Kalan Parça İşleme"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:245
 #: appTools/ToolIsolation.py:3394 appTools/ToolNCC.py:4338
 #: appTools/ToolPaint.py:3079
-#, fuzzy
-#| msgid ""
-#| "If checked, use 'rest machining'.\n"
-#| "Basically it will isolate outside PCB features,\n"
-#| "using the biggest tool and continue with the next tools,\n"
-#| "from bigger to smaller, to isolate the copper features that\n"
-#| "could not be cleared by previous tool, until there is\n"
-#| "no more copper features to isolate or there are no more tools.\n"
-#| "If not checked, use the standard algorithm."
 msgid ""
 "If checked, use 'rest machining'.\n"
 "Basically it will process copper outside PCB features,\n"
@@ -12124,12 +12063,12 @@ msgid ""
 "\n"
 "If not checked, use the standard algorithm."
 msgstr ""
-"Bu onay kutusu işaretlenirse, 'Kalan Parça İşleme' kullanılır.\n"
-"Bu, en büyük ucu kullanarak PCB'nin ana bakırını \n"
-"temizler ve temizlenecek daha fazla bakır kalmayana veya \n"
-"daha fazla uç kalmayana kadar önceki uçla temizlenemeyen\n"
-"bakır alanlarını temizlemek için bir sonraki uçla, daha büyükten\n"
-"daha küçüğe doğru ilerler.\n"
+"İşaretlenirse, 'Kalan Parça İşleme' kullanılır.\n"
+"Temel olarak, PCB özelliklerinin dışında kalan bakırları işleyecek.\n"
+"En büyük uçtan başlayarak ve büyükten küçüğe doğru kullanarak işlenecek "
+"hiçbir şey kalmayıncaya kadar veya önceki uçla temizlenemeyen bakırları "
+"işlemeye devam edecektir.\n"
+"\n"
 "Onay kutusu seçilmezse, standart algoritma kullanılır."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:258
@@ -13827,8 +13766,6 @@ msgstr "İptal edildi. G Kod üretimi için dört nokta gereklidir."
 #: app_Main.py:8652 app_Main.py:8694 app_Main.py:8736 app_Main.py:8777
 #: app_Main.py:8822 app_Main.py:8867 app_Main.py:9330 app_Main.py:9334
 #: camlib.py:2403 camlib.py:2471 camlib.py:2539 camlib.py:2617
-#, fuzzy
-#| msgid "No object selected."
 msgid "No object is selected."
 msgstr "Hiçbir nesne seçilmedi."
 
@@ -15134,10 +15071,8 @@ msgid "Starting G-Code"
 msgstr "G-Kodu başlatılıyor"
 
 #: appTools/ToolDrilling.py:1673 appTools/ToolMilling.py:1355
-#, fuzzy
-#| msgid "Generating Excellon CNCJob..."
 msgid "Generating CNCJob..."
-msgstr "Excellon CNC İşi oluşturuluyor ..."
+msgstr "CNC İşi oluşturuluyor ..."
 
 #: appTools/ToolDrilling.py:1791 camlib.py:3214 camlib.py:3644 camlib.py:5730
 msgid "The Toolchange X,Y format has to be (x, y)."
@@ -15406,20 +15341,12 @@ msgstr ""
 "Genişlik, her zaman bakır kaynağının genişliğinin iki katıdır."
 
 #: appTools/ToolFilm.py:160
-#, fuzzy
-#| msgid "No FlatCAM object selected. Load an object for Film and retry."
 msgid "Load an object for Film and retry."
-msgstr ""
-"Hiçbir FlatCAM nesnesi seçilmedi. Film için bir nesne yükleyin ve tekrar "
-"deneyin."
+msgstr "Film için bir nesne yükleyin ve tekrar deneyin."
 
 #: appTools/ToolFilm.py:167
-#, fuzzy
-#| msgid "No FlatCAM object selected. Load an object for Box and retry."
 msgid "Load an object for Box and retry."
-msgstr ""
-"Hiçbir FlatCAM nesnesi seçilmedi. Çerçeve için bir nesne yükleyin ve tekrar "
-"deneyin."
+msgstr "Çerçeve için bir nesne yükleyin ve tekrar deneyin."
 
 #: appTools/ToolFilm.py:182
 msgid "Generating Film ..."
@@ -15785,10 +15712,8 @@ msgid "Tool(s) deleted from Tool Table."
 msgstr "Uç(lar) Araçlar Tablosundan silindi."
 
 #: appTools/ToolIsolation.py:1479
-#, fuzzy
-#| msgid "Isolation"
 msgid "Isolating"
-msgstr "Yalıtım"
+msgstr "Yalıtılıyor"
 
 #: appTools/ToolIsolation.py:1499
 msgid "Following geometry was generated"
@@ -16022,7 +15947,7 @@ msgstr "TAŞIMA işlemi iptal edildi. Taşınacak nesne (ler) yok."
 
 #: appTools/ToolMove.py:211
 msgid "object was moved"
-msgstr "nesne taşındı"
+msgstr "nesnesi taşındı"
 
 #: appTools/ToolMove.py:221
 msgid "Error when mouse left click."
@@ -16820,21 +16745,16 @@ msgid "Import Excellon"
 msgstr "Excellon'u İçe Aktar"
 
 #: appTools/ToolPcbWizard.py:466
-#, fuzzy
-#| msgid ""
-#| "Import in FlatCAM an Excellon file\n"
-#| "that store it's information's in 2 files.\n"
-#| "One usually has .DRL extension while\n"
-#| "the other has .INF extension."
 msgid ""
 "Import an Excellon file\n"
 "that store it's information's in 2 files.\n"
 "One usually has .DRL extension while\n"
 "the other has .INF extension."
 msgstr ""
-"FlatCAM'de, bilgileri 2 dosyada bulunan\n"
-"Excellon dosyasını içe aktarın. \n"
-"Birinde genellikle .DRL, diğerinde .INF uzantısı vardır."
+"Bilgilerinin 2 dosyada saklandığı \n"
+"bir Excellon dosyasını içe aktarın.\n"
+"Biri genellikle .DRL uzantısına sahipken\n"
+"diğeri .INF uzantısına sahiptir."
 
 #: appTools/ToolProperties.py:127
 msgid "Object Properties are displayed."
@@ -18196,10 +18116,8 @@ msgid "Adding New Grid cancelled"
 msgstr "Yeni ızgara ekleme işlemi iptal edildi"
 
 #: app_Main.py:6351
-#, fuzzy
-#| msgid " Grid Value does not exist"
 msgid "Grid Value does not exist"
-msgstr " Izgara değeri mevcut değil"
+msgstr "Izgara değeri mevcut değil"
 
 #: app_Main.py:6353
 msgid "Grid Value deleted"
@@ -18214,8 +18132,6 @@ msgid "Key Shortcut List"
 msgstr "Klavye Kısayol Listesi"
 
 #: app_Main.py:6401
-#, fuzzy
-#| msgid "Name copied on clipboard ..."
 msgid "Name copied to clipboard ..."
 msgstr "İsim panoya kopyalandı ..."
 
@@ -18631,10 +18547,8 @@ msgstr ""
 "ediliyor."
 
 #: app_Main.py:10387
-#, fuzzy
-#| msgid " Open HPGL2 failed. Probable not a HPGL2 file."
 msgid "Failed. Probable not a HPGL2 file."
-msgstr " HPGL2 açılamadı. Muhtemelen bir HPGL2 dosyası değil."
+msgstr "Başarısız oldu. Muhtemelen bir HPGL2 dosyası değil."
 
 #: app_Main.py:10413
 msgid "TCL script file opened in Code Editor."

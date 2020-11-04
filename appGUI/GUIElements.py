@@ -899,7 +899,7 @@ class FCSpinner(QtWidgets.QSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None, policy=True):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
 
@@ -924,8 +924,9 @@ class FCSpinner(QtWidgets.QSpinBox):
         self.prev_readyToEdit = True
         self.menu = None
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.setSizePolicy(sizePolicy)
+        if policy:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
@@ -1277,7 +1278,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None, policy=True):
         """
 
         :param suffix:      a char added to the end of the value in the LineEdit; like a '%' or '$' etc
@@ -1314,8 +1315,9 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.prev_readyToEdit = True
         self.menu = None
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.setSizePolicy(sizePolicy)
+        if policy:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
     def on_edit_finished(self):
         self.clearFocus()
