@@ -14,6 +14,8 @@ CHANGELOG for FlatCAM beta
 - fixed issue in the Excellon Editor where the Space key did not toggle the direction of the array of drills
 - combed the application strings all over the app and trimmed them up until those starting with letter 'O'
 - updated the translation strings
+- fixed the UI layout in Excellon Editor and made sure that after changing a value in the Notebook side after the mouse is inside the canvas, the canvas takes the focus allowing the key shortcuts to work
+- Turkish language strings updated (by Mehmet Kaya)
 
 3.11.2020
 
@@ -3080,7 +3082,7 @@ RELEASE 8.993
 - added all the tools from Gerber Editor to the the contextual menu
 - added the menu entry "Edit" in the Project contextual menu for Gerber objects
 - started to work in adding slots and slots array in Excellon Editor
-- in FCSlot finished the utility geometry and the GUI for it
+- in SlotAdd finished the utility geometry and the GUI for it
 
 12.08.2019
 
