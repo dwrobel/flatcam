@@ -3277,10 +3277,6 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.on_toggle_notebook()
                     return
 
-                # Rotate
-                if key == QtCore.Qt.Key_Space or key == 'Space':
-                    self.app.grb_editor.transform_tool.on_rotate_key()
-
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
                     self.app.grb_editor.launched_from_shortcuts = True
@@ -3306,6 +3302,11 @@ class MainGUI(QtWidgets.QMainWindow):
                     if response is not None:
                         self.app.inform.emit(response)
                 else:
+
+                    # Rotate
+                    if key == QtCore.Qt.Key_Space or key == 'Space':
+                        self.app.grb_editor.transform_tool.on_rotate_key()
+
                     # Add Array of pads
                     if key == QtCore.Qt.Key_A or key == 'A':
                         self.app.grb_editor.launched_from_shortcuts = True
@@ -4823,7 +4824,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Esc'), _("Abort and return to Select"),
             _('Space'), _("Toggle Slot direction"),
             _('Ctrl+S'), _("Save Object and Exit Editor"),
-            _('Ctrl+Space'), _("Toggle Slot Array direction")
+            _('Ctrl+Space'), _("Toggle array direction")
         )
 
         # GERBER EDITOR SHORTCUT LIST
@@ -4900,6 +4901,11 @@ class ShortcutsTab(QtWidgets.QWidget):
                     <td height="20"><strong>%s</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>%s</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
                 <tr height="20">
                     <td height="20">&nbsp;</td>
                     <td>&nbsp;</td>
@@ -4957,6 +4963,7 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Del'), _("Delete"),
             _('Del'), _("Alternate: Delete Apertures"),
             _('Esc'), _("Abort and return to Select"),
+            _('Space'), _("Toggle array direction"),
             _('Shift+M'), _("Distance Minimum Tool"),
             _('Ctrl+E'), _("Eraser Tool"),
             _('Ctrl+S'), _("Save Object and Exit Editor"),

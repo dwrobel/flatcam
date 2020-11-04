@@ -744,6 +744,31 @@ class FCPadArray(FCShapeTool):
         self.draw_app.ui.array_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
 
+    def on_key(self, key):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == 'Control':
+            pass
+        elif mod_key is None:
+            # Toggle Drill Array Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.ui.pad_axis_radio.get_value() == 'X':
+                    self.draw_app.ui.pad_axis_radio.set_value('Y')
+                elif self.draw_app.ui.pad_axis_radio.get_value() == 'Y':
+                    self.draw_app.ui.pad_axis_radio.set_value('A')
+                elif self.draw_app.ui.pad_axis_radio.get_value() == 'A':
+                    self.draw_app.ui.pad_axis_radio.set_value('X')
+
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.ui.apertures_table.clearSelection()

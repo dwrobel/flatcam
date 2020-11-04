@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - updated the translation strings
 - fixed the UI layout in Excellon Editor and made sure that after changing a value in the Notebook side after the mouse is inside the canvas, the canvas takes the focus allowing the key shortcuts to work
 - Turkish language strings updated (by Mehmet Kaya)
+- in Gerber Editor added the shortcut key 'Space' to change the direction of the array of pads
 
 3.11.2020
 
