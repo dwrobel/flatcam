@@ -603,24 +603,21 @@ class Panelize(AppTool):
                         panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
 
         if self.constrain_flag is False:
-            self.app.inform.emit('[success] %s' % _("Panel done..."))
+            self.app.inform.emit('[success] %s' % _("Done."))
         else:
             self.constrain_flag = False
             self.app.inform.emit(_("{text} Too big for the constrain area. "
                                    "Final panel has {col} columns and {row} rows").format(
                 text='[WARNING] ', col=columns, row=rows))
 
-        proc = self.app.proc_container.new(_("Working ..."))
-
         def job_thread(app_obj):
-            try:
-                panelize_worker()
-                app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
-            except Exception as ee:
-                proc.done()
-                log.debug(str(ee))
-                return
-            proc.done()
+            with self.app.proc_container.new(_("Working ...")):
+                try:
+                    panelize_worker()
+                    app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
+                except Exception as ee:
+                    log.debug(str(ee))
+                    return
 
         self.app.collection.promise(self.outname)
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})

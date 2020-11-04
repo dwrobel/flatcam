@@ -126,7 +126,7 @@ class ScriptObject(FlatCAMObj):
         # ---------------------------------------------------- #
         # ----------- LOAD THE TEXT SOURCE FILE -------------- #
         # ---------------------------------------------------- #
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
         self.script_editor_tab.t_frame.hide()
 
         try:

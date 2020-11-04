@@ -163,7 +163,8 @@ class ToolMove(AppTool):
                         with self.app.proc_container.new(_("Moving ...")):
 
                             if not obj_list:
-                                app_obj.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
+                                app_obj.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."),
+                                                                                 _("No object is selected.")))
                                 return "fail"
 
                             try:

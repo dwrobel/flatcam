@@ -2400,7 +2400,8 @@ class Geometry(object):
                 self.solid_geometry = mirror_geom(self.solid_geometry)
             self.app.inform.emit('[success] %s...' % _('Object was mirrored'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to mirror. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
+
 
         self.app.proc_container.new_text = ''
 
@@ -2467,7 +2468,7 @@ class Geometry(object):
                 self.solid_geometry = rotate_geom(self.solid_geometry)
             self.app.inform.emit('[success] %s...' % _('Object was rotated'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to rotate. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
 
         self.app.proc_container.new_text = ''
 
@@ -2535,7 +2536,7 @@ class Geometry(object):
                 self.solid_geometry = skew_geom(self.solid_geometry)
             self.app.inform.emit('[success] %s...' % _('Object was skewed'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to skew. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
 
         self.app.proc_container.new_text = ''
 
@@ -2613,7 +2614,7 @@ class Geometry(object):
 
             self.app.inform.emit('[success] %s...' % _('Object was buffered'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to buffer. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
 
         self.app.proc_container.new_text = ''
 
@@ -5955,7 +5956,7 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
         self.app.inform.emit(
-            '%s... %s %s' % (_("Finished G-Code generation"), str(path_count), _(" paths traced."))
+            '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
         )
 
         return self.gcode, start_gcode
@@ -6073,7 +6074,7 @@ class CNCjob(Geometry):
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
         self.app.inform.emit(
-            '%s... %s %s' % (_("Finished SolderPaste G-Code generation"), str(path_count), _("paths traced."))
+            '%s... %s %s.' % (_("Finished SolderPaste G-Code generation"), str(path_count), _("paths traced"))
         )
 
         # Finish

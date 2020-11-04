@@ -1679,7 +1679,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 return 'fail'
 
     def on_edit_probing_gcode(self):
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
 
         gco = self.probing_gcode_text
         if gco is None or gco == '':
@@ -1969,7 +1969,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:
         """
 
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
 
         preamble = self.prepend_snippet
         postamble = self.append_snippet

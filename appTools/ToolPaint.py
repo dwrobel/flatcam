@@ -2182,13 +2182,13 @@ class ToolPaint(AppTool, Gerber):
             proc.done()
 
             if ret == 'fail':
-                self.app.inform.emit('[ERROR] %s' % _("Paint failed."))
+                self.app.inform.emit('[ERROR] %s' % _("Failed."))
                 return
 
             # focus on Properties Tab
             # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
-            self.app.inform.emit('[success] %s' % _("Paint Done."))
+            self.app.inform.emit('[success] %s' % _("Done."))
 
         # Promise object with the new name
         self.app.collection.promise(name)
@@ -2974,8 +2974,8 @@ class PaintUI:
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -3077,11 +3077,11 @@ class PaintUI:
         self.rest_cb.setObjectName('p_rest_machining')
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
         grid4.addWidget(self.rest_cb, 16, 0, 1, 2)

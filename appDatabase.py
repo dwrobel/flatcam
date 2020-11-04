@@ -607,7 +607,7 @@ class ToolsDB2UI:
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -615,7 +615,7 @@ class ToolsDB2UI:
         self.ncc_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                                 {'label': _('Conventional'), 'value': 'cv'}])
         self.ncc_milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -629,8 +629,8 @@ class ToolsDB2UI:
         nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be cleared are still \n"
-              "not cleared.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -703,8 +703,7 @@ class ToolsDB2UI:
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "from the copper features.")
         )
         self.grid2.addWidget(self.ncc_choice_offset_cb, 19, 0)
 
@@ -738,8 +737,8 @@ class ToolsDB2UI:
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -853,7 +852,7 @@ class ToolsDB2UI:
         # Milling Type Radio Button
         self.iso_milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.iso_milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -861,7 +860,7 @@ class ToolsDB2UI:
         self.iso_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                                 {'label': _('Conventional'), 'value': 'cv'}])
         self.iso_milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )

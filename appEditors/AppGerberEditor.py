@@ -19,7 +19,7 @@ import logging
 
 from camlib import distance, arc, three_point_circle
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
-    EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry
+    EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2
 from appTool import AppTool
 
 import numpy as np
@@ -455,7 +455,7 @@ class FCPadArray(FCShapeTool):
 
         self.selected_size = None
         self.pad_axis = 'X'
-        self.pad_array = 'linear'
+        self.pad_array = 0  # 'linear'
         self.pad_array_size = None
         self.pad_pitch = None
         self.pad_linear_angle = None
@@ -487,7 +487,7 @@ class FCPadArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.pad_array == 'Linear':
+        if self.draw_app.ui.array_type_combo.get_value() == 0:     # 'Linear'
             self.make()
             return
         else:
@@ -529,7 +529,7 @@ class FCPadArray(FCShapeTool):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.pad_array == 'Linear':
+        if self.pad_array == 0:     # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -573,7 +573,7 @@ class FCPadArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        else:
+        else:   # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -700,7 +700,7 @@ class FCPadArray(FCShapeTool):
 
         self.draw_app.current_storage = self.storage_obj
 
-        if self.pad_array == 'Linear':
+        if self.pad_array == 0:     # 'Linear'
             for item in range(self.pad_array_size):
                 if self.pad_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
@@ -714,7 +714,7 @@ class FCPadArray(FCShapeTool):
                     )
 
                 self.geometry.append(DrawToolShape(geo))
-        else:
+        else:   # 'Circular'
             if (self.pad_angle * self.pad_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many items for the selected spacing angle."))
@@ -3013,7 +3013,7 @@ class AppGerberEditor(QtCore.QObject):
             if ap_code not in self.oldapcode_newapcode:
                 self.storage_dict[ap_code] = {}
 
-                type_val = self.aptype_cb.currentText()
+                type_val = self.ui.aptype_cb.currentText()
                 self.storage_dict[ap_code]['type'] = type_val
 
                 if type_val == 'R' or type_val == 'O':
@@ -3092,7 +3092,7 @@ class AppGerberEditor(QtCore.QObject):
             else:
                 # deleted_tool_dia = float(self.ui.apertures_table.item(self.ui.apertures_table.currentRow(), 1).text())
                 if len(self.ui.apertures_table.selectionModel().selectedRows()) == 0:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _(" Select an aperture in Aperture Table"))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Select an aperture in Aperture Table"))
                     return
 
                 deleted_apcode_list = []
@@ -5279,7 +5279,7 @@ class AppGerberEditorUI:
         )
         self.array_box.addWidget(self.padarray_label)
 
-        self.array_type_combo = FCComboBox()
+        self.array_type_combo = FCComboBox2()
         self.array_type_combo.setToolTip(
             _("Select the type of pads array to create.\n"
               "It can be Linear X(Y) or Circular")
@@ -5885,7 +5885,7 @@ class TransformEditorTool(AppTool):
 
     def template(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         self.draw_app.select_tool("select")
@@ -6278,7 +6278,7 @@ class TransformEditorTool(AppTool):
         elem_list = self.draw_app.selected
 
         if not elem_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
         with self.app.proc_container.new(_("Applying Buffer")):
@@ -6321,10 +6321,10 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val, ref=1)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape rotate done"))
+            self.app.inform.emit('[success] %s...' % _("Rotate done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape rotate cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Rotate cancelled"))
 
     def on_offx_key(self):
         units = self.app.defaults['units'].lower()
@@ -6339,10 +6339,10 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Offset on the X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Offset X cancelled"))
 
     def on_offy_key(self):
         units = self.app.defaults['units'].lower()
@@ -6357,10 +6357,10 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Offset on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Offset Y cancelled"))
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
@@ -6373,10 +6373,10 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Skew on X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Skew X cancelled"))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
@@ -6389,10 +6389,10 @@ class TransformEditorTool(AppTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Skew on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Skew Y cancelled"))
 
     @staticmethod
     def alt_bounds(shapelist):

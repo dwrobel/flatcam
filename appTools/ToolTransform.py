@@ -139,7 +139,7 @@ class ToolTransform(AppTool):
                 py = (ymax + ymin) * 0.5
                 return px, py
             else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
                 return "fail"
         elif ref_val == 2:  # "Point" reference
             point_val = self.uipoint_entry.get_value()
@@ -290,7 +290,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
@@ -315,7 +315,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object selected. Please Select an object to flip"))
+            self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Flip")):
@@ -360,8 +360,7 @@ class ToolTransform(AppTool):
             return
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No object selected. Please Select an object to shear/skew!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Skew")):
@@ -387,7 +386,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -414,7 +413,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -443,7 +442,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to buffer!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Buffer")):

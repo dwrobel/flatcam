@@ -198,7 +198,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
         grid0.addWidget(self.film_mirror_axis_label, 13, 0)
         grid0.addWidget(self.film_mirror_axis, 13, 1)

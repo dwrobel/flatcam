@@ -721,7 +721,7 @@ class ExcellonObjectUI(ObjectUI):
         self.drill_button = QtWidgets.QPushButton(_('Drilling Tool'))
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'))
         self.drill_button.setToolTip(
-            _("Generate GCode out of drill holes in an Excellon object.")
+            _("Generate GCode from the drill holes in an Excellon object.")
         )
         self.drill_button.setStyleSheet("""
                                       QPushButton

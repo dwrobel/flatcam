@@ -306,7 +306,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         # Start Z
         startzlabel = FCLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
-            _("Height of the tool just after start.\n"
+            _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')

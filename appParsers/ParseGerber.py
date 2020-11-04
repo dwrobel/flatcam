@@ -421,7 +421,7 @@ class Gerber(Geometry):
 
         s_tol = float(self.app.defaults["gerber_simp_tolerance"])
 
-        self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("lines")))
+        self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("Lines").lower()))
         try:
             for gline in glines:
                 if self.app.abort_flag:
@@ -2042,7 +2042,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
@@ -2133,8 +2133,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Offset done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def mirror(self, axis, point):
@@ -2209,8 +2208,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Mirror done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def skew(self, angle_x, angle_y, point):
@@ -2284,7 +2282,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Skew done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point):
@@ -2346,7 +2344,7 @@ class Gerber(Geometry):
         except Exception as e:
             log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def buffer(self, distance, join=2, factor=None):

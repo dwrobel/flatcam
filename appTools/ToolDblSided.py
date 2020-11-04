@@ -403,7 +403,7 @@ class DblSidedTool(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
             return
 
         for obj in obj_list:

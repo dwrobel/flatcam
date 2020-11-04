@@ -1670,7 +1670,7 @@ class ToolDrilling(AppTool, Excellon):
         # Object initialization function for app.app_obj.new_object()
         def job_init(job_obj, app_obj):
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
-            app_obj.inform.emit(_("Generating Excellon CNCJob..."))
+            app_obj.inform.emit(_("Generating CNCJob..."))
 
             # #########################################################################################################
             # #########################################################################################################
@@ -2414,7 +2414,7 @@ class DrillingUI:
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
-            _("Height of the tool just after start.\n"
+            _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')

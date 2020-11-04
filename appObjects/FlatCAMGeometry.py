@@ -2001,7 +2001,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             if self.special_group:
                 self.app.inform.emit(
                     '[WARNING_NOTCL] %s %s %s.' %
-                    (_("This Geometry can't be processed because it is"), str(self.special_group), _("geometry"))
+                    (_("This Geometry can't be processed because it is"), str(self.special_group), _("Geometry"))
                 )
                 return
         except AttributeError:

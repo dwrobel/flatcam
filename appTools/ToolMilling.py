@@ -1352,7 +1352,7 @@ class ToolMilling(AppTool, Excellon):
         def job_init(job_obj, app_obj):
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
-            app_obj.inform.emit(_("Generating Excellon CNCJob..."))
+            app_obj.inform.emit(_("Generating CNCJob..."))
 
             # get the tool_table items in a list of row items
             tool_table_items = self.get_selected_tools_table_items()
@@ -2086,7 +2086,7 @@ class MillingUI:
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
-            _("Height of the tool just after start.\n"
+            _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
@@ -2163,7 +2163,7 @@ class MillingUI:
         self.feedrate_probe_entry.setVisible(False)
 
         # Preprocessor Excellon selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor E"))
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Excellon Objects.")
@@ -2175,7 +2175,7 @@ class MillingUI:
         self.grid3.addWidget(self.pp_excellon_name_cb, 15, 1)
 
         # Preprocessor Geometry selection
-        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor G"))
+        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_geo_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Geometry (Milling) Objects.")

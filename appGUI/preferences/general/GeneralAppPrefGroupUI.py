@@ -61,7 +61,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.precision_metric_entry, 1, 1)
 
         # Precision Inch
-        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision INCH'))
+        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision Inch'))
         self.precision_inch_label.setToolTip(
             _("The number of decimals used throughout the application\n"
               "when the set units are in INCH system.\n"

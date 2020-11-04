@@ -32,7 +32,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Create CNC Job
         # ------------------------------
-        self.cncjob_label = QtWidgets.QLabel('<b>%s:</b>' % _('Create CNC Job'))
+        self.cncjob_label = QtWidgets.QLabel('<b>%s:</b>' % _('Create CNCJob'))
         self.cncjob_label.setToolTip(
             _("Create a CNC Job object\n"
               "tracing the contours of this\n"

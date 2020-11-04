@@ -44,8 +44,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Gerber file.")
         )
 
-        self.gerber_units_radio = RadioSet([{'label': _('INCH'), 'value': 'IN'},
-                                            {'label': _('MM'), 'value': 'MM'}])
+        self.gerber_units_radio = RadioSet([{'label': _('Inch'), 'value': 'IN'},
+                                            {'label': _('mm'), 'value': 'MM'}])
         self.gerber_units_radio.setToolTip(
             _("The units used in the Gerber file.")
         )

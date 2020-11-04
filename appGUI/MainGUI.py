@@ -737,7 +737,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'),
-            '%s\t%s' % (_('Move Drill(s)'), _('M')))
+            '%s\t%s' % (_('Move Drill'), _('M')))
 
         # ########################################################################
         # ########################## GERBER Editor # #############################
@@ -860,7 +860,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuproject.addSeparator()
 
         self.menuprojectgeneratecnc = self.menuproject.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cnc32.png'), _('Generate CNC'))
+            QtGui.QIcon(self.app.resource_location + '/cnc32.png'), _('Create CNCJob'))
         self.menuprojectviewsource = self.menuproject.addAction(
             QtGui.QIcon(self.app.resource_location + '/source32.png'), _('View Source'))
 
@@ -971,7 +971,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open project"))
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
         self.file_save_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
@@ -1026,11 +1026,11 @@ class MainGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), '%s ...' % _('New Script'))
         self.open_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), '%s ...' % _('Open Script'))
         self.run_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s ...' % _('Run Script'))
 
         # ########################################################################
         # ########################## Tools Toolbar# ##############################
@@ -1167,7 +1167,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects "))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
         # ########################################################################
         # ########################## Gerber Editor Toolbar# ######################
@@ -2142,9 +2142,9 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open project"))
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open Project"))
         self.file_save_btn = self.toolbarfile.addAction(
-            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
+            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save Project"))
 
         # ########################################################################
         # ######################### Edit Toolbar #################################
@@ -2195,11 +2195,11 @@ class MainGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), '%s ...' % _('New Script'))
         self.open_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), '%s ...' % _('Open Script'))
         self.run_script_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s ...' % _('Run Script'))
 
         # #########################################################################
         # ######################### Tools Toolbar #################################
@@ -2290,7 +2290,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ################### Geometry Editor Toolbar ############################
         # ########################################################################
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select 'Esc'"))
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle'))
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(
@@ -3555,13 +3555,12 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.select_tool('slot_add')
                     return
 
-                # Propagate to tool
-
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
                     return
 
+                # Propagate to tool
                 # we do this so we can reuse the following keys while inside a Tool
                 # the above keys are general enough so were left outside
                 if self.app.exc_editor.active_tool is not None and self.select_drill_btn.isChecked() is False:
@@ -3646,7 +3645,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
                         self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
-                        tool_add_popup = FCInputDialog(title=_("New Tool ..."),
+                        tool_add_popup = FCInputDialog(title='%s ...' % _("New Tool"),
                                                        text='%s:' % _('Enter a Tool Diameter'),
                                                        min=0.0000, max=99.9999, decimals=4)
                         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))

@@ -600,7 +600,7 @@ class ToolCalibration(AppTool):
             self.cal_object = model_index.internalPointer().obj
         except Exception as e:
             log.debug("ToolCalibration.on_cal_button_click() --> %s" % str(e))
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return 'fail'
 
         obj_name = self.cal_object.options["name"] + "_calibrated"
@@ -696,7 +696,7 @@ class ToolCalibration(AppTool):
         obj_name = obj_name
 
         if obj is None:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             log.debug("ToolCalibration.new_calibrated_object() --> No object to calibrate")
             return 'fail'
 

@@ -30,7 +30,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Create CNC Job
-        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNC Job'))
+        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNCJob'))
         self.cncjob_label.setToolTip(
             _("Parameters used to create a CNC Job object\n"
               "for this drill object.")

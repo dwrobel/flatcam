@@ -66,7 +66,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                            {'label': 'Y', 'value': 'Y'}])
-        self.mirax_label = QtWidgets.QLabel(_("Mirror Axis:"))
+        self.mirax_label = QtWidgets.QLabel('%s:' % _("Mirror Axis"))
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
