@@ -174,7 +174,7 @@ class DrawTool(object):
         return bounds_rec(obj)
 
 
-class FCShapeTool(DrawTool):
+class ShapeToolEditorGrb(DrawTool):
     """
     Abstract class for tools that create a shape.
     """
@@ -187,7 +187,7 @@ class FCShapeTool(DrawTool):
         pass
 
 
-class FCPad(FCShapeTool):
+class PadEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
@@ -383,7 +383,7 @@ class FCPad(FCShapeTool):
         try:
             self.geometry = DrawToolShape(self.util_shape(self.points))
         except Exception as e:
-            log.debug("FCPad.make() --> %s" % str(e))
+            log.debug("PadEditorGrb.make() --> %s" % str(e))
 
         self.draw_app.in_action = False
         self.complete = True
@@ -400,7 +400,7 @@ class FCPad(FCShapeTool):
             pass
 
 
-class FCPadArray(FCShapeTool):
+class PadArrayEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: MultiPolygon
     """
@@ -779,7 +779,7 @@ class FCPadArray(FCShapeTool):
             pass
 
 
-class FCPoligonize(FCShapeTool):
+class PoligonizeEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
@@ -889,7 +889,7 @@ class FCPoligonize(FCShapeTool):
         self.draw_app.plot_all()
 
 
-class FCRegion(FCShapeTool):
+class RegionEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
@@ -929,7 +929,7 @@ class FCRegion(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.FCRegion --> %s" % str(e))
+            log.debug("AppGerberEditor.RegionEditorGrb --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1039,7 +1039,7 @@ class FCRegion(FCShapeTool):
                                                                               join_style=1)
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
-                    log.debug("AppGerberEditor.FCRegion.utility_geometry() --> %s" % str(e))
+                    log.debug("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
             else:
                 new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
                                                                      resolution=int(self.steps_per_circle / 4))
@@ -1205,7 +1205,7 @@ class FCRegion(FCShapeTool):
             pass
 
 
-class FCTrack(FCShapeTool):
+class TrackEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
@@ -1243,7 +1243,7 @@ class FCTrack(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.FCTrack.__init__() --> %s" % str(e))
+            log.debug("AppGerberEditor.TrackEditorGrb.__init__() --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location +
                                                   '/aero_path%s.png' % self.draw_app.bend_mode))
@@ -1394,7 +1394,7 @@ class FCTrack(FCShapeTool):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("AppGerberEditor.FCTrack.on_key() --> %s" % str(e))
+                log.debug("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
@@ -1433,7 +1433,7 @@ class FCTrack(FCShapeTool):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("AppGerberEditor.FCTrack.on_key() --> %s" % str(e))
+                log.debug("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
@@ -1478,7 +1478,7 @@ class FCTrack(FCShapeTool):
             pass
 
 
-class FCDisc(FCShapeTool):
+class DiscEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
@@ -1562,7 +1562,7 @@ class FCDisc(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.FCDisc --> %s" % str(e))
+            log.debug("AppGerberEditor.DiscEditorGrb --> %s" % str(e))
 
         self.draw_app.current_storage = self.storage_obj
 
@@ -1591,7 +1591,7 @@ class FCDisc(FCShapeTool):
             pass
 
 
-class FCSemiDisc(FCShapeTool):
+class DiscSemiEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'semidisc'
@@ -1600,7 +1600,7 @@ class FCSemiDisc(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.FCSemiDisc --> %s" % str(e))
+            log.debug("AppGerberEditor.DiscSemiEditorGrb --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1880,9 +1880,9 @@ class FCSemiDisc(FCShapeTool):
             pass
 
 
-class FCScale(FCShapeTool):
+class ScaleEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
-        FCShapeTool.__init__(self, draw_app)
+        ShapeToolEditorGrb.__init__(self, draw_app)
         self.name = 'scale'
 
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -1922,9 +1922,9 @@ class FCScale(FCShapeTool):
         self.draw_app.plot_all()
 
 
-class FCBuffer(FCShapeTool):
+class BufferEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
-        FCShapeTool.__init__(self, draw_app)
+        ShapeToolEditorGrb.__init__(self, draw_app)
         self.name = 'buffer'
 
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -1964,9 +1964,9 @@ class FCBuffer(FCShapeTool):
         self.draw_app.plot_all()
 
 
-class FCMarkArea(FCShapeTool):
+class MarkEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
-        FCShapeTool.__init__(self, draw_app)
+        ShapeToolEditorGrb.__init__(self, draw_app)
         self.name = 'markarea'
 
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -2027,7 +2027,7 @@ class FCMarkArea(FCShapeTool):
         self.draw_app.plot_all()
 
 
-class FCApertureMove(FCShapeTool):
+class MoveEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'move'
@@ -2211,9 +2211,9 @@ class FCApertureMove(FCShapeTool):
             return DrawToolUtilityShape(ss_el)
 
 
-class FCApertureCopy(FCApertureMove):
+class CopyEditorGrb(MoveEditorGrb):
     def __init__(self, draw_app):
-        FCApertureMove.__init__(self, draw_app)
+        MoveEditorGrb.__init__(self, draw_app)
         self.name = 'copy'
 
     def make(self):
@@ -2249,7 +2249,7 @@ class FCApertureCopy(FCApertureMove):
         self.draw_app.app.jump_signal.disconnect()
 
 
-class FCEraser(FCShapeTool):
+class EraserEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'eraser'
@@ -2305,7 +2305,7 @@ class FCEraser(FCShapeTool):
             try:
                 self.draw_app.ui.apertures_table.cellPressed.disconnect()
             except Exception as e:
-                log.debug("AppGerberEditor.FCEraser.click_release() --> %s" % str(e))
+                log.debug("AppGerberEditor.EraserEditorGrb.click_release() --> %s" % str(e))
 
             self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             for aper in sel_aperture:
@@ -2397,7 +2397,7 @@ class FCEraser(FCShapeTool):
         return DrawToolUtilityShape(geo_list)
 
 
-class FCApertureSelect(DrawTool):
+class SelectEditorGrb(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'select'
@@ -2410,8 +2410,8 @@ class FCApertureSelect(DrawTool):
         # here we store all shapes that were selected
         self.sel_storage = []
 
-        # since FCApertureSelect tool is activated whenever a tool is exited I place here the reinitialization of the
-        # bending modes using in FCRegion and FCTrack
+        # since SelectEditorGrb tool is activated whenever a tool is exited I place here the reinitialization of the
+        # bending modes using in RegionEditorGrb and TrackEditorGrb
         self.draw_app.bend_mode = 1
 
         # here store the selected apertures
@@ -2420,7 +2420,7 @@ class FCApertureSelect(DrawTool):
         try:
             self.draw_app.ui.apertures_table.clearSelection()
         except Exception as e:
-            log.error("FlatCAMGerbEditor.FCApertureSelect.__init__() --> %s" % str(e))
+            log.error("FlatCAMGerbEditor.SelectEditorGrb.__init__() --> %s" % str(e))
 
         self.draw_app.hide_tool('all')
         self.draw_app.hide_tool('select')
@@ -2429,7 +2429,7 @@ class FCApertureSelect(DrawTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.FCApertureSelect --> %s" % str(e))
+            log.debug("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
 
         try:
             self.draw_app.selection_triggered.disconnect()
@@ -2507,7 +2507,7 @@ class FCApertureSelect(DrawTool):
                 try:
                     editor_obj.ui.apertures_table.cellPressed.disconnect()
                 except Exception as e:
-                    log.debug("AppGerberEditor.FCApertureSelect.click_release() --> %s" % str(e))
+                    log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
 
                 brake_flag = False
                 for shape_s in editor_obj.selected:
@@ -2538,9 +2538,9 @@ class FCApertureSelect(DrawTool):
         self.draw_app.plot_all()
 
 
-class FCTransform(FCShapeTool):
+class TransformEditorGrb(ShapeToolEditorGrb):
     def __init__(self, draw_app):
-        FCShapeTool.__init__(self, draw_app)
+        ShapeToolEditorGrb.__init__(self, draw_app)
         self.name = 'transformation'
 
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -2663,7 +2663,7 @@ class AppGerberEditor(QtCore.QObject):
         self.snap_y = None
         self.pos = None
 
-        # used in FCRegion and FCTrack. Will store the bending mode
+        # used in RegionEditorGrb and TrackEditorGrb. Will store the bending mode
         self.bend_mode = 1
 
         # signal that there is an action active like polygon or path
@@ -2779,21 +2779,21 @@ class AppGerberEditor(QtCore.QObject):
 
     def connect_grb_toolbar_signals(self):
         self.tools_gerber.update({
-            "select": {"button": self.app.ui.grb_select_btn,            "constructor": FCApertureSelect},
-            "pad": {"button": self.app.ui.grb_add_pad_btn,              "constructor": FCPad},
-            "array": {"button": self.app.ui.add_pad_ar_btn,             "constructor": FCPadArray},
-            "track": {"button": self.app.ui.grb_add_track_btn,          "constructor": FCTrack},
-            "region": {"button": self.app.ui.grb_add_region_btn,        "constructor": FCRegion},
-            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,  "constructor": FCPoligonize},
-            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,    "constructor": FCSemiDisc},
-            "disc": {"button": self.app.ui.grb_add_disc_btn,            "constructor": FCDisc},
-            "buffer": {"button": self.app.ui.aperture_buffer_btn,       "constructor": FCBuffer},
-            "scale": {"button": self.app.ui.aperture_scale_btn,         "constructor": FCScale},
-            "markarea": {"button": self.app.ui.aperture_markarea_btn,   "constructor": FCMarkArea},
-            "eraser": {"button": self.app.ui.aperture_eraser_btn,       "constructor": FCEraser},
-            "copy": {"button": self.app.ui.aperture_copy_btn,           "constructor": FCApertureCopy},
-            "transform": {"button": self.app.ui.grb_transform_btn,      "constructor": FCTransform},
-            "move": {"button": self.app.ui.aperture_move_btn,           "constructor": FCApertureMove},
+            "select": {"button": self.app.ui.grb_select_btn,            "constructor": SelectEditorGrb},
+            "pad": {"button": self.app.ui.grb_add_pad_btn,              "constructor": PadEditorGrb},
+            "array": {"button": self.app.ui.add_pad_ar_btn,             "constructor": PadArrayEditorGrb},
+            "track": {"button": self.app.ui.grb_add_track_btn,          "constructor": TrackEditorGrb},
+            "region": {"button": self.app.ui.grb_add_region_btn,        "constructor": RegionEditorGrb},
+            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,  "constructor": PoligonizeEditorGrb},
+            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,    "constructor": DiscSemiEditorGrb},
+            "disc": {"button": self.app.ui.grb_add_disc_btn,            "constructor": DiscEditorGrb},
+            "buffer": {"button": self.app.ui.aperture_buffer_btn,       "constructor": BufferEditorGrb},
+            "scale": {"button": self.app.ui.aperture_scale_btn,         "constructor": ScaleEditorGrb},
+            "markarea": {"button": self.app.ui.aperture_markarea_btn,   "constructor": MarkEditorGrb},
+            "eraser": {"button": self.app.ui.aperture_eraser_btn,       "constructor": EraserEditorGrb},
+            "copy": {"button": self.app.ui.aperture_copy_btn,           "constructor": CopyEditorGrb},
+            "transform": {"button": self.app.ui.grb_transform_btn,      "constructor": TransformEditorGrb},
+            "move": {"button": self.app.ui.aperture_move_btn,           "constructor": MoveEditorGrb},
         })
 
         for tool in self.tools_gerber:
@@ -4072,7 +4072,7 @@ class AppGerberEditor(QtCore.QObject):
                     self.tools_gerber[t]["button"].setChecked(False)
 
                 self.select_tool('select')
-                self.active_tool = FCApertureSelect(self)
+                self.active_tool = SelectEditorGrb(self)
 
     def on_row_selected(self, row, col):
         # if col == 0:
@@ -4215,7 +4215,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
-                if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
+                if isinstance(self.active_tool, ShapeToolEditorGrb) and self.active_tool.complete:
                     if self.current_storage is not None:
                         self.on_grb_shape_complete(self.current_storage)
                         self.build_ui()
@@ -4233,14 +4233,14 @@ class AppGerberEditor(QtCore.QObject):
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
-                        # return to Select tool but not for FCPad
-                        if isinstance(self.active_tool, FCPad):
+                        # return to Select tool but not for PadEditorGrb
+                        if isinstance(self.active_tool, PadEditorGrb):
                             self.select_tool(self.active_tool.name)
                         else:
                             self.select_tool("select")
                         return
 
-                # if isinstance(self.active_tool, FCApertureSelect):
+                # if isinstance(self.active_tool, SelectEditorGrb):
                 #     self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
@@ -4273,7 +4273,7 @@ class AppGerberEditor(QtCore.QObject):
                         except Exception as e:
                             log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
 
-                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCApertureSelect):
+                        if self.active_tool.complete is False and not isinstance(self.active_tool, SelectEditorGrb):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
@@ -4287,8 +4287,8 @@ class AppGerberEditor(QtCore.QObject):
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
                         # right mouse click will finish the action
-                        if isinstance(self.active_tool, FCShapeTool):
-                            if isinstance(self.active_tool, FCTrack):
+                        if isinstance(self.active_tool, ShapeToolEditorGrb):
+                            if isinstance(self.active_tool, TrackEditorGrb):
                                 self.active_tool.make()
                             else:
                                 self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
@@ -4298,9 +4298,9 @@ class AppGerberEditor(QtCore.QObject):
                                 self.app.inform.emit('[success] %s' % _("Done."))
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
-                                # else return to the current tool but not for FCTrack
+                                # else return to the current tool but not for TrackEditorGrb
 
-                                if isinstance(self.active_tool, FCTrack):
+                                if isinstance(self.active_tool, TrackEditorGrb):
                                     self.select_tool(self.active_tool.name)
                                 else:
                                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -4324,7 +4324,7 @@ class AppGerberEditor(QtCore.QObject):
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
 
-                elif isinstance(self.active_tool, FCApertureSelect):
+                elif isinstance(self.active_tool, SelectEditorGrb):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # # if there are selected objects then plot them
@@ -4461,9 +4461,9 @@ class AppGerberEditor(QtCore.QObject):
 
         # # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
-            # I make an exception for FCRegion and FCTrack because clicking and dragging while making regions can
+            # I make an exception for RegionEditorGrb and TrackEditorGrb because clicking and dragging while making regions can
             # create strange issues like missing a point in a track/region
-            if isinstance(self.active_tool, FCRegion) or isinstance(self.active_tool, FCTrack):
+            if isinstance(self.active_tool, RegionEditorGrb) or isinstance(self.active_tool, TrackEditorGrb):
                 pass
             else:
                 dx = pos_canvas[0] - self.pos[0]
@@ -4944,7 +4944,7 @@ class AppGerberEditor(QtCore.QObject):
         self.select_tool('eraser')
 
     def on_transform(self):
-        if type(self.active_tool) == FCTransform:
+        if type(self.active_tool) == TransformEditorGrb:
             self.select_tool('select')
         else:
             self.select_tool('transform')
