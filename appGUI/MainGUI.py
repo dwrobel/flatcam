@@ -3436,6 +3436,16 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
+
+                # we do this so we can reuse the following keys while inside a Tool
+                # the above keys are general enough so were left outside
+                if self.app.exc_editor.active_tool is not None and self.select_drill_btn.isChecked() is False:
+                    response = self.app.exc_editor.active_tool.on_key(key=key)
+                    if response is not None:
+                        self.app.inform.emit(response)
+                else:
+                    pass
+
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
@@ -4775,6 +4785,14 @@ class ShortcutsTab(QtWidgets.QWidget):
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
+                    <td height="20"><strong>%s</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>%s</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
                     <td height="20">&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
@@ -4804,7 +4822,9 @@ class ShortcutsTab(QtWidgets.QWidget):
             _('Del'), _("Delete Drill"),
             _('Del'), _("Alternate: Delete Tool"),
             _('Esc'), _("Abort and return to Select"),
-            _('Ctrl+S'), _("Save Object and Exit Editor")
+            _('Space'), _("Toggle Slot direction"),
+            _('Ctrl+S'), _("Save Object and Exit Editor"),
+            _('Ctrl+Space'), _("Toggle Slot Array direction")
         )
 
         # GERBER EDITOR SHORTCUT LIST
