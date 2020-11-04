@@ -578,7 +578,7 @@ class CutOut(AppTool):
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-                                   "Fill in a correct value and retry. "))
+                                   "Fill in a correct value and retry."))
             return
 
         # if cutout_obj.multigeo is True:
@@ -951,9 +951,9 @@ class CutOut(AppTool):
             return
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Gaps value can be only one of: "
-                                                          "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                                          "Fill in a correct value and retry. "))
+            msg = '[WARNING_NOTCL] %s' % _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
+                                           "Fill in a correct value and retry.")
+            self.app.inform.emit(msg)
             return
 
         # if cutout_obj.multigeo is True:

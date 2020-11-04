@@ -206,8 +206,8 @@ class ToolMove(AppTool):
 
                         # delete the selection bounding box
                         self.delete_shape()
-                        self.app.inform.emit('[success] %s %s' %
-                                             (str(sel_obj.kind).capitalize(), 'object was moved ...'))
+                        self.app.inform.emit('[success] %s %s ...' %
+                                             (str(sel_obj.kind).capitalize(), _('object was moved')))
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
@@ -217,8 +217,7 @@ class ToolMove(AppTool):
 
                 except TypeError as e:
                     log.debug("ToolMove.on_left_click() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] ToolMove.on_left_click() --> %s' %
-                                         _('Error when mouse left click.'))
+                    self.app.inform.emit('[ERROR_NOTCL] ToolMove. %s' % _('Error when mouse left click.'))
                     return
 
             self.clicked_move = 1

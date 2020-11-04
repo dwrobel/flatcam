@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-04 03:22+0200\n"
-"PO-Revision-Date: 2020-11-04 03:22+0200\n"
+"POT-Creation-Date: 2020-11-04 15:23+0200\n"
+"PO-Revision-Date: 2020-11-04 15:28+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -115,7 +115,7 @@ msgstr "Yer İşaretleri"
 #: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3462
 #: appObjects/FlatCAMCNCJob.py:1754 appObjects/ObjectCollection.py:126
 #: appTools/ToolCorners.py:332 appTools/ToolFilm.py:242
-#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:269
+#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:268
 #: appTools/ToolPcbWizard.py:189 appTools/ToolPcbWizard.py:212
 #: appTools/ToolQRCode.py:531 appTools/ToolQRCode.py:580 app_Main.py:1785
 #: app_Main.py:2801 app_Main.py:4534 app_Main.py:8323 app_Main.py:8362
@@ -299,7 +299,7 @@ msgstr "Kalınlık"
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
 #: appTools/ToolCalculators.py:289 appTools/ToolCutOut.py:2237
 msgid "Tool Diameter"
-msgstr "Delik Genişliği"
+msgstr "Takım Çapı"
 
 #: appDatabase.py:236
 msgid "Diameter Tolerance"
@@ -1657,10 +1657,8 @@ msgstr "Değer yanlış yazılmış. Değeri kontrol edin"
 
 #: appEditors/AppExcEditor.py:517 appEditors/AppExcEditor.py:1076
 #: appEditors/AppGerberEditor.py:720
-#, fuzzy
-#| msgid "Too many Slots for the selected spacing angle."
 msgid "Too many items for the selected spacing angle."
-msgstr "Seçilen mesafe için çok fazla yuva var."
+msgstr "Seçilen aralık açısı için çok fazla öge var."
 
 #: appEditors/AppExcEditor.py:599
 msgid "To add a slot first select a tool"
@@ -1804,7 +1802,7 @@ msgstr "Yuvaları Dönüştür"
 
 #: appEditors/AppExcEditor.py:3817
 msgid "Convert the slots in the selected tools to drills."
-msgstr "Seçili araçlardaki yuvaları deliklere dönüştürün."
+msgstr "Seçili yuvaları deliklere dönüştürün."
 
 #: appEditors/AppExcEditor.py:3827
 msgid "Add/Delete Tool"
@@ -1816,7 +1814,7 @@ msgid ""
 "for this Excellon object."
 msgstr ""
 "Bu Excellon nesnesinin Araçlar Listesine\n"
-"bir araç ekleyin/silin."
+"bir delik ekleyin/silin."
 
 #: appEditors/AppExcEditor.py:3839 appEditors/AppGeoEditor.py:441
 #: appGUI/ObjectUI.py:1080 appGUI/ObjectUI.py:1637
@@ -1825,7 +1823,7 @@ msgstr ""
 #: appTools/ToolCutOut.py:2077 appTools/ToolIsolation.py:3196
 #: appTools/ToolNCC.py:4079 appTools/ToolNCC.py:4090 appTools/ToolPaint.py:2900
 msgid "Tool Dia"
-msgstr "Uç Kalınlığı"
+msgstr "Takım Çapı"
 
 #: appEditors/AppExcEditor.py:3841 appGUI/ObjectUI.py:1082
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:57
@@ -2019,12 +2017,6 @@ msgstr "Mesafe = Dizi ögeleri arasındaki mesafe."
 
 #: appEditors/AppExcEditor.py:4005 appEditors/AppExcEditor.py:4221
 #: appEditors/AppGerberEditor.py:5346
-#, fuzzy
-#| msgid ""
-#| "Angle at which the linear array is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the linear array is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2119,12 +2111,6 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4114
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:196
-#, fuzzy
-#| msgid ""
-#| "Angle at which the slot is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the slot is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2472,19 +2458,13 @@ msgstr "Panodan nokta koordinatları ekleyin."
 #: appEditors/AppGeoEditor.py:688 appEditors/AppGerberEditor.py:5502
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:98
 #: appTools/ToolTransform.py:615
-#, fuzzy
-#| msgid ""
-#| "Angle for Rotation action, in degrees.\n"
-#| "Float number between -360 and 359.\n"
-#| "Positive numbers for CW motion.\n"
-#| "Negative numbers for CCW motion."
 msgid ""
 "Angle, in degrees.\n"
 "Float number between -360 and 359.\n"
 "Positive numbers for CW motion.\n"
 "Negative numbers for CCW motion."
 msgstr ""
-"Derece olarak dönme açısı.\n"
+"Derece cinsinden açı.\n"
 "-360 ile 359 arasında bir gerçek sayı.\n"
 "Saat yönünde hareket için pozitif sayılar.\n"
 "Saat yönünün tersine hareket için negatif sayılar."
@@ -2827,10 +2807,8 @@ msgstr "Döndürme işlemi uygulanıyor"
 #: appTools/ToolTransform.py:383 appTools/ToolTransform.py:410
 #: appTools/ToolTransform.py:439 appTools/ToolTransform.py:474 app_Main.py:6050
 #: app_Main.py:6097
-#, fuzzy
-#| msgid "action was not executed."
 msgid "Action was not executed"
-msgstr "işlem gerçekleştirilemedi."
+msgstr "İşlem gerçekleştirilemedi"
 
 #: appEditors/AppGeoEditor.py:1307 appEditors/AppGerberEditor.py:6128
 #: appTools/ToolTransform.py:321
@@ -2838,18 +2816,14 @@ msgid "Applying Flip"
 msgstr "Çevirme işlemi uygulanıyor"
 
 #: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6140
-#: appTools/ToolTransform.py:338
-#, fuzzy
-#| msgid "Flip on Y axis done."
+#: appTools/ToolTransform.py:338 app_Main.py:6048
 msgid "Flip on Y axis done"
-msgstr "Y ekseni üzerinde çevirme işlemi tamamlandı."
+msgstr "Y ekseni üzerinde çevirme işlemi tamamlandı"
 
 #: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6148
-#: appTools/ToolTransform.py:347
-#, fuzzy
-#| msgid "Flip on X axis done."
+#: appTools/ToolTransform.py:347 app_Main.py:6095
 msgid "Flip on X axis done"
-msgstr "X ekseni üzerinde çevirme işlemi tamamlandı."
+msgstr "X ekseni üzerinde çevirme işlemi tamamlandı"
 
 #: appEditors/AppGeoEditor.py:1342 appEditors/AppGerberEditor.py:6171
 #: appTools/ToolTransform.py:367
@@ -3047,7 +3021,7 @@ msgstr " TAŞI: Başlangıç noktasını tıklayın ..."
 
 #: appEditors/AppGeoEditor.py:2682
 msgid "Click on destination point ..."
-msgstr "Bitiş noktasını tıklayın ..."
+msgstr "Hedef noktaya tıklayın ..."
 
 #: appEditors/AppGeoEditor.py:2712 appEditors/AppGerberEditor.py:2458
 #: appEditors/AppGerberEditor.py:4003 appObjects/FlatCAMGeometry.py:2564
@@ -3173,12 +3147,8 @@ msgid "with diameter"
 msgstr "çap ile"
 
 #: appEditors/AppGeoEditor.py:4807 appEditors/AppGeoEditor.py:4842
-#, fuzzy
-#| msgid "A selection of at least 2 geo items is required to do Intersection."
 msgid "A selection of minimum two items is required to do Intersection."
-msgstr ""
-"Kesişim yapabilmek için en az 2 geometrik şekilden oluşan bir seçim "
-"gereklidir."
+msgstr "Kesişim yapabilmek için en az iki öge seçilmelidir."
 
 #: appEditors/AppGeoEditor.py:4928 appEditors/AppGeoEditor.py:5032
 msgid ""
@@ -3433,7 +3403,7 @@ msgstr "Koordinatlar panoya kopyalandı."
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1115
 #: appTools/ToolCorners.py:419 appTools/ToolFiducials.py:563
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:466 app_Main.py:4813
+#: appTools/ToolMove.py:228 appTools/ToolQRCode.py:466 app_Main.py:4813
 msgid "Plotting"
 msgstr "Çiziliyor"
 
@@ -6204,22 +6174,16 @@ msgid "Add a new Tool"
 msgstr "Yeni Bir Araç Ekle"
 
 #: appGUI/MainGUI.py:4825
-#, fuzzy
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot direction"
-msgstr "Çalışma Alanı Etkin/Devre Dışı"
+msgstr "Yuva yönünü değiştir"
 
 #: appGUI/MainGUI.py:4827
-#, fuzzy
-#| msgid "Ctrl+S"
 msgid "Ctrl+Space"
-msgstr "Ctrl+S"
+msgstr "Ctrl+Space"
 
 #: appGUI/MainGUI.py:4827
-#, fuzzy
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot Array direction"
-msgstr "Çalışma Alanı Etkin/Devre Dışı"
+msgstr "Yuva Dizisi yönünü değiştir"
 
 #: appGUI/MainGUI.py:4944
 msgid "GERBER EDITOR"
@@ -6357,10 +6321,8 @@ msgstr "Nesne üzerindeki çizimleri göster."
 
 #: appGUI/ObjectUI.py:244 appGUI/ObjectUI.py:583 appGUI/ObjectUI.py:905
 #: appGUI/ObjectUI.py:1911
-#, fuzzy
-#| msgid "Save Object and Exit Editor"
 msgid "Start the Object Editor"
-msgstr "Nesneyi Kaydet ve Düzenleyiciyi Kapat"
+msgstr "Nesne Düzenleyiciyi Başlat"
 
 #: appGUI/ObjectUI.py:255 appGUI/ObjectUI.py:594 appGUI/ObjectUI.py:916
 #: appGUI/ObjectUI.py:1922
@@ -6552,16 +6514,12 @@ msgstr ""
 #: appGUI/ObjectUI.py:676 appGUI/ObjectUI.py:1011 appTools/ToolDrilling.py:2072
 #: appTools/ToolIsolation.py:3141 appTools/ToolMilling.py:1677
 #: appTools/ToolNCC.py:4012 appTools/ToolPaint.py:2845
-#, fuzzy
-#| msgid ""
-#| "Tool Diameter. It's value (in current FlatCAM units)\n"
-#| "is the cut width into the material."
 msgid ""
-"Tool Diameter. It's value\n"
+"Tool Diameter. Its value\n"
 "is the cut width into the material."
 msgstr ""
-"Bu uç kalınlığıdır. Değeri (mevcut FlatCAM birimlerinde) \n"
-"malzemenin kesim genişliğidir."
+"Bu uç kalınlığıdır.\n"
+"Değeri malzemenin kesim genişliğidir."
 
 #: appGUI/ObjectUI.py:679 appTools/ToolDrilling.py:2075
 #: appTools/ToolMilling.py:1680
@@ -8229,10 +8187,8 @@ msgid "Absolute"
 msgstr "Kesin"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:111
-#, fuzzy
-#| msgid "Incremental G91"
 msgid "Incremental"
-msgstr "Eklemeli G91"
+msgstr "Eklemeli"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:121
 msgid "Force Windows style line-ending"
@@ -8338,19 +8294,13 @@ msgstr "Gelişmiş Seçenekler"
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "A list of Gerber advanced parameters.\n"
-#| "Those parameters are available only for\n"
-#| "Advanced App. Level."
 msgid ""
 "A list of advanced parameters.\n"
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
-"Gerber gelişmiş seçeneklerinin listesi.\n"
-"Bu seçenekler yalnızca Gelişmiş Uygulama\n"
-"Seviye için kullanılabilir."
+"Gelişmiş seçeneklerin listesi.\n"
+"Bu seçenekler, yalnızca Uygulamanın Gelişmiş seviyesi içindir."
 
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:48
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:52
@@ -11716,21 +11666,16 @@ msgstr "Şekil"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102
 #: appTools/ToolCutOut.py:2012
-#, fuzzy
-#| msgid ""
-#| "Choice of what kind the object we want to cutout is.<BR>- <B>Single</B>: "
-#| "contain a single PCB Gerber outline object.<BR>- <B>Panel</B>: a panel "
-#| "PCB Gerber object, which is made\n"
-#| "out of many individual PCB outlines."
 msgid ""
 "Choice of what kind the object we want to cutout is.\n"
 "- Single: contain a single PCB Gerber outline object.\n"
 "- Panel: a panel PCB Gerber object, which is made\n"
 "out of many individual PCB outlines."
 msgstr ""
-"Nesnenin kesim şeklini seçin. <BR> - <B> Tekli </B>: Gerber dosyasında "
-"oluşturulan tek bir PCB şeklini içerir. <BR> - <B> Panel </B>: Gerber "
-"dosyasında oluşturulan PCB’nin panelleştirilmesi."
+"Kesmek istediğimiz nesnenin kesim şeklinin seçimi.\n"
+"-Tekli: Bir tane PCB Gerber şeklini içerir.\n"
+"-Panel: Birçok bağımsız PCB şeklinden \n"
+"oluşan bir panel PCB Gerber nesnesi."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109
 #: appTools/ToolCutOut.py:2018
@@ -12234,7 +12179,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:350
 #: appTools/ToolIsolation.py:3425 appTools/ToolNCC.py:4466
 msgid "Check validity"
-msgstr "Doğruluğu Kontrol Et"
+msgstr "Uygunluğu Kontrol Et"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:352
@@ -12579,8 +12524,6 @@ msgstr "Yeni Ağızlık Çapı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:56
 #: appTools/ToolSolderPaste.py:1190
-#, fuzzy
-#| msgid "Diameter for the new Nozzle tool to add in the Tool Table"
 msgid "Diameter for the new tool to add in the Tool Table"
 msgstr "Araçlar Tablosuna eklenecek yeni nozul (ağızlık) çapı"
 
@@ -12747,12 +12690,10 @@ msgid "Close paths"
 msgstr "Yolları Kapat"
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:39 appTools/ToolSub.py:784
-#, fuzzy
-#| msgid ""
-#| "Checking this will close the paths cut by the Geometry subtractor object."
 msgid "Checking this will close the paths cut by the subtractor object."
 msgstr ""
-"Bunu işaretlenmesi, Şekil çıkarma nesnesi tarafından kesilen yolları kapatır."
+"Bunun işaretlenmesi, Şekil çıkarma nesnesi tarafından kesilen yolları "
+"kapatır."
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:42 appTools/ToolSub.py:680
 msgid "Delete source"
@@ -12805,15 +12746,11 @@ msgstr "Eğim"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:126
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:140
 #: appTools/ToolCalibration.py:1200 appTools/ToolCalibration.py:1213
-#, fuzzy
-#| msgid ""
-#| "Angle for Skew action, in degrees.\n"
-#| "Float number between -360 and 359."
 msgid ""
 "Angle, in degrees.\n"
 "Float number between -360 and 359."
 msgstr ""
-"Derece olarak eğim açısı.\n"
+"Derece cinsinden açı.\n"
 "-360 ve 359 arasında bir gerçek sayıdır."
 
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:27
@@ -13711,10 +13648,8 @@ msgstr "Kullanıcı isteği ile iptal edildi."
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:267
 #: appTools/ToolDistance.py:398 appTools/ToolMove.py:140
 #: appTools/ToolQRCode.py:206
-#, fuzzy
-#| msgid "Click on the DESTINATION point."
 msgid "Click on the DESTINATION point ..."
-msgstr "HEDEF noktayı tıklayın."
+msgstr "HEDEF noktaya tıklayın."
 
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:260
 #: appTools/ToolAlignObjects.py:267
@@ -14315,10 +14250,8 @@ msgid "Working..."
 msgstr "Çalışıyor..."
 
 #: appTools/ToolCopperThieving.py:626
-#, fuzzy
-#| msgid "Geometry not supported for cutout"
 msgid "Geometry not supported for"
-msgstr "Kesmek için şekil desteklenmiyor"
+msgstr "Şekil şundan dolayı desteklenmiyor"
 
 #: appTools/ToolCopperThieving.py:632 appTools/ToolNCC.py:1784
 #: appTools/ToolNCC.py:1839 appTools/ToolNCC.py:2833 appTools/ToolPaint.py:2468
@@ -14572,18 +14505,14 @@ msgstr ""
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr "Geçit sayı değeri eksik. Ekleyin ve tekrar deneyin."
 
-#: appTools/ToolCutOut.py:580
-#, fuzzy
-#| msgid ""
-#| "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-#| "Fill in a correct value and retry. "
+#: appTools/ToolCutOut.py:580 appTools/ToolCutOut.py:954
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-"Fill in a correct value and retry. "
+"Fill in a correct value and retry."
 msgstr ""
-"Geçitlerin sayısı yalnızca şunlardan biri olabilir:\n"
-" 'Yok', 'Sol Sağ', 'Üst Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8. Doğru "
-"sayıyı girin ve tekrar deneyin. "
+"Geçitlerin sayısı yalnızca şunlardan biri olabilir: 'Yok', 'Sol Sağ', 'Üst "
+"Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8.\n"
+"Doğru sayıyı girin ve tekrar deneyin."
 
 #: appTools/ToolCutOut.py:901 appTools/ToolCutOut.py:1274
 #: appTools/ToolCutOut.py:1632
@@ -14605,15 +14534,6 @@ msgstr "Kesme işlemi tamamlandı."
 #: tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr "Nesne bulunamadı"
-
-#: appTools/ToolCutOut.py:954
-msgid ""
-"Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-"Fill in a correct value and retry. "
-msgstr ""
-"Geçitlerin sayısı yalnızca şunlardan biri olabilir:\n"
-" 'Yok', 'Sol Sağ', 'Üst Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8. Doğru "
-"sayıyı girin ve tekrar deneyin. "
 
 #: appTools/ToolCutOut.py:1124 appTools/ToolCutOut.py:1197
 msgid "Rectangular cutout with negative margin is not possible."
@@ -14658,10 +14578,8 @@ msgstr ""
 "deneyin."
 
 #: appTools/ToolCutOut.py:1473
-#, fuzzy
-#| msgid "Geometry not supported for cutout"
 msgid "Geometry not supported"
-msgstr "Kesmek için şekil desteklenmiyor"
+msgstr "Şekil desteklenmiyor"
 
 #: appTools/ToolCutOut.py:1545
 msgid "Making manual bridge gap..."
@@ -15608,28 +15526,19 @@ msgstr ""
 "ve tekrar deneyin."
 
 #: appTools/ToolFilm.py:294 appTools/ToolFilm.py:306
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
+#: appTools/ToolPunchGerber.py:512
 msgid ""
-"Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
 "object."
 msgstr ""
-"Delik yeri açma deliklerinin Gerber nesnesindeki bazı deliklerden daha büyük "
-"olmasından dolayı delikli bir film oluşturulamadı."
+"Başarısız oldu. Delik yeri açma deliğinin boyutu Gerber nesnesindeki bazı "
+"deliklerden daha büyüktür."
 
 #: appTools/ToolFilm.py:324 appTools/ToolPunchGerber.py:585
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the newly created object "
-#| "geometry is the same as the one in the source object geometry..."
 msgid ""
 "Failed. The new object geometry is the same as the one in the source object "
 "geometry..."
-msgstr ""
-"Delikli bir film oluşturulamadı çünkü yeni oluşturulan deliğin şekliyle, "
-"orijinal deliğin şekli aynı ..."
+msgstr "Başarısız oldu. Yeni nesne şekli, kaynak nesne şekliyle aynıdır ..."
 
 #: appTools/ToolFilm.py:379 appTools/ToolFilm.py:384
 msgid "Export negative film"
@@ -15909,17 +15818,13 @@ msgstr ""
 
 #: appTools/ToolIsolation.py:963 appTools/ToolIsolation.py:1028
 #: appTools/ToolNCC.py:900 appTools/ToolNCC.py:969
-#, fuzzy
-#| msgid "NCC Tool. Checking tools for validity."
 msgid "Checking tools for validity."
-msgstr "Bakır Temizleme. Uçların uygunluğu kontrol ediliyor."
+msgstr "Uçların uygunluğu kontrol ediliyor."
 
 #: appTools/ToolIsolation.py:980 appTools/ToolIsolation.py:1045
 #: appTools/ToolNCC.py:917 appTools/ToolNCC.py:986
-#, fuzzy
-#| msgid "Working ..."
 msgid "Checking ..."
-msgstr "Çalışıyor ..."
+msgstr "Kontrol ediliyor ..."
 
 #: appTools/ToolIsolation.py:1006 appTools/ToolIsolation.py:1604
 #: appTools/ToolIsolation.py:1805 appTools/ToolIsolation.py:1992
@@ -16029,23 +15934,18 @@ msgstr "Çokgen eklendi"
 
 #: appTools/ToolIsolation.py:2295 appTools/ToolIsolation.py:2409
 #: appTools/ToolPaint.py:1137
-#, fuzzy
-#| msgid "Click to add next polygon or right click to start painting."
 msgid "Click to add next polygon or right click to start."
-msgstr ""
-"Sonraki çokgeni eklemek için tıklayın veya çizime başlamak için sağ tıklayın."
+msgstr "Sonraki çokgeni eklemek için tıklayın veya başlamak için sağ tıklayın."
 
 #: appTools/ToolIsolation.py:2307 appTools/ToolPaint.py:1149
 msgid "Removed polygon"
 msgstr "Çokgen kaldırıldı"
 
 #: appTools/ToolIsolation.py:2308 appTools/ToolPaint.py:1150
-#, fuzzy
-#| msgid "Click to add/remove next polygon or right click to start painting."
 msgid "Click to add/remove next polygon or right click to start."
 msgstr ""
-"Sonraki çokgeni eklemek/kaldırmak için tıklayın veya çizime başlamak için "
-"sağ tıklayın."
+"Sonraki çokgeni eklemek/kaldırmak için tıklayın veya başlamak için sağ "
+"tıklayın."
 
 #: appTools/ToolIsolation.py:2313 appTools/ToolPaint.py:1155
 msgid "No polygon detected under click position."
@@ -16227,7 +16127,11 @@ msgstr "Taşınıyor..."
 msgid "No object(s) selected."
 msgstr "Hiçbir nesne seçilmedi."
 
-#: appTools/ToolMove.py:221
+#: appTools/ToolMove.py:210
+msgid "object was moved"
+msgstr "nesne taşındı"
+
+#: appTools/ToolMove.py:220
 msgid "Error when mouse left click."
 msgstr "Sol tıklandığında hata oluştu."
 
@@ -17102,18 +17006,6 @@ msgstr "Delik Yeri Açma Aracı"
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "Sabit çap değeri 0.0'dır. Durduruluyor."
 
-#: appTools/ToolPunchGerber.py:512
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
-msgid ""
-"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
-"object."
-msgstr ""
-"Delik yeri açma deliklerinin Gerber nesnesindeki bazı deliklerden daha büyük "
-"olmasından dolayı delikli bir film oluşturulamadı."
-
 #: appTools/ToolPunchGerber.py:976 appTools/ToolPunchGerber.py:1291
 msgid "Punch Gerber"
 msgstr "Gerber Delik Yeri Açma"
@@ -17429,10 +17321,8 @@ msgid "Nozzle tool from Tool Table was edited."
 msgstr "Nozul (ağızlık) Araçlar Tablosunda düzenlendi."
 
 #: appTools/ToolSolderPaste.py:598
-#, fuzzy
-#| msgid "Tool(s) deleted from Tool Table."
 msgid "Tools deleted from Tool Table."
-msgstr "Uç(lar) Araçlar Tablosundan silindi."
+msgstr "Uç(lar), Araçlar Tablosundan silindi."
 
 #: appTools/ToolSolderPaste.py:652
 msgid "No SolderPaste mask Gerber object loaded."
@@ -17522,10 +17412,10 @@ msgstr ""
 
 #: appTools/ToolSolderPaste.py:1181
 msgid ""
-"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
 msgstr ""
-"Nozul (ağızlık) genişliği. Bu değer (mevcut FlatCAM birimlerinde) \n"
+"Nozul (ağızlık) genişliği. Bu değer\n"
 "sıkılan lehim pastasının genişliğidir."
 
 #: appTools/ToolSolderPaste.py:1188
@@ -17538,7 +17428,7 @@ msgid ""
 "with the diameter specified above."
 msgstr ""
 "Araçlar Tablosuna yukarıda belirtilen \n"
-"çapta ne bir nozul (ağızlık) ekleyin."
+"çapta bir nozul (ağızlık) ekleyin."
 
 #: appTools/ToolSolderPaste.py:1229
 msgid "STEP 1"
@@ -18429,17 +18319,9 @@ msgstr "Araçlar Veri Tabanını Kaydet"
 msgid "No object selected to Flip on Y axis."
 msgstr "Y ekseninde çevrilecek hiçbir nesne seçilmedi."
 
-#: app_Main.py:6048
-msgid "Flip on Y axis done."
-msgstr "Y ekseni üzerinde çevirme işlemi tamamlandı."
-
 #: app_Main.py:6069
 msgid "No object selected to Flip on X axis."
 msgstr "X ekseninde çevirmek için hiçbir nesne seçilmedi."
-
-#: app_Main.py:6095
-msgid "Flip on X axis done."
-msgstr "X ekseni üzerinde çevirme işlemi tamamlandı."
 
 #: app_Main.py:6117
 msgid "No object selected to Rotate."
@@ -18866,10 +18748,8 @@ msgstr "Excellon dosyası şuraya aktarıldı"
 
 #: app_Main.py:9823 app_Main.py:9830 app_Main.py:9957 app_Main.py:9964
 #: app_Main.py:10024 app_Main.py:10031
-#, fuzzy
-#| msgid "Could not export file."
 msgid "Could not export."
-msgstr "Dosya dışa aktarılamadı."
+msgstr "Dışa aktarılamadı."
 
 #: app_Main.py:9944
 msgid "Gerber file exported to"
@@ -19340,6 +19220,27 @@ msgstr "Orijin, yüklenen tüm nesneleri hizalayarak ayarlanıyor "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyin."
+
+#~ msgid ""
+#~ "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+#~ "Fill in a correct value and retry. "
+#~ msgstr ""
+#~ "Geçitlerin sayısı yalnızca şunlardan biri olabilir:\n"
+#~ " 'Yok', 'Sol Sağ', 'Üst Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8. Doğru "
+#~ "sayıyı girin ve tekrar deneyin. "
+
+#~ msgid ""
+#~ "Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+#~ "object."
+#~ msgstr ""
+#~ "Başarısız oldu. Delik yeri açma deliğinin boyutu Gerber nesnesindeki bazı "
+#~ "deliklerden daha büyüktür."
+
+#~ msgid "Flip on Y axis done."
+#~ msgstr "Y ekseni üzerinde çevirme işlemi tamamlandı."
+
+#~ msgid "Flip on X axis done."
+#~ msgstr "X ekseni üzerinde çevirme işlemi tamamlandı."
 
 #~ msgid "Flip on the Y axis done"
 #~ msgstr "Y ekseninde çevirme işlemi tamamlandı"

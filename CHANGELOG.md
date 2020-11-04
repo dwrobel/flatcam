@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.11.2020
+
+- updated all the translation files
+
 3.11.2020
 
 - fixed an issue in Tool Isolation used with tools from the Tools Database: the set offset value was not used

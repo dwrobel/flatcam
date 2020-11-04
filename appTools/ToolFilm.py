@@ -291,7 +291,7 @@ class Film(AppTool):
                 if film_obj.apertures[apid]['type'] == 'C':
                     if punch_size >= float(film_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Failed. Punch hole size"
+                                             _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -303,7 +303,7 @@ class Film(AppTool):
                     if punch_size >= float(film_obj.apertures[apid]['width']) or \
                             punch_size >= float(film_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Failed. Punch hole size"
+                                             _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:

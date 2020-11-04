@@ -673,7 +673,7 @@ class ExcellonObjectUI(ObjectUI):
               "will be showed as a T1, T2 ... Tn in the Machine Code.\n\n"
               "Here the tools are selected for G-code generation."))
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value\n"
+            _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
         self.tools_table.horizontalHeaderItem(2).setToolTip(
             _("The number of Drill holes. Holes that are drilled with\n"
@@ -1008,7 +1008,7 @@ class GeometryObjectUI(ObjectUI):
                 "will be showed as a T1, T2 ... Tn")
             )
         self.geo_tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value\n"
+            _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
         self.geo_tools_table.horizontalHeaderItem(2).setToolTip(
             _(

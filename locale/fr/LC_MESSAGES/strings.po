@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-04 03:21+0200\n"
-"PO-Revision-Date: 2020-11-04 03:21+0200\n"
+"POT-Creation-Date: 2020-11-04 14:55+0200\n"
+"PO-Revision-Date: 2020-11-04 14:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -116,7 +116,7 @@ msgstr "Signets"
 #: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3462
 #: appObjects/FlatCAMCNCJob.py:1754 appObjects/ObjectCollection.py:126
 #: appTools/ToolCorners.py:332 appTools/ToolFilm.py:242
-#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:269
+#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:268
 #: appTools/ToolPcbWizard.py:189 appTools/ToolPcbWizard.py:212
 #: appTools/ToolQRCode.py:531 appTools/ToolQRCode.py:580 app_Main.py:1785
 #: app_Main.py:2801 app_Main.py:4534 app_Main.py:8323 app_Main.py:8362
@@ -2863,14 +2863,14 @@ msgid "Applying Flip"
 msgstr "Appliquer Flip"
 
 #: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6140
-#: appTools/ToolTransform.py:338
+#: appTools/ToolTransform.py:338 app_Main.py:6048
 #, fuzzy
 #| msgid "Flip on Y axis done."
 msgid "Flip on Y axis done"
 msgstr "Rotation sur l'axe des Y effectué."
 
 #: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6148
-#: appTools/ToolTransform.py:347
+#: appTools/ToolTransform.py:347 app_Main.py:6095
 #, fuzzy
 #| msgid "Flip on X axis done."
 msgid "Flip on X axis done"
@@ -3473,7 +3473,7 @@ msgstr "Coordonnées copiées dans le presse-papier."
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1115
 #: appTools/ToolCorners.py:419 appTools/ToolFiducials.py:563
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:466 app_Main.py:4813
+#: appTools/ToolMove.py:228 appTools/ToolQRCode.py:466 app_Main.py:4813
 msgid "Plotting"
 msgstr "Traçage"
 
@@ -4151,7 +4151,7 @@ msgstr "Au repos."
 
 #: appGUI/GUIElements.py:4474
 msgid "Application started ..."
-msgstr "Bienvenu dans FlatCam ..."
+msgstr ""
 
 #: appGUI/GUIElements.py:4475
 msgid "Hello!"
@@ -6624,7 +6624,7 @@ msgstr ""
 #| "Tool Diameter. It's value (in current FlatCAM units)\n"
 #| "is the cut width into the material."
 msgid ""
-"Tool Diameter. It's value\n"
+"Tool Diameter. Its value\n"
 "is the cut width into the material."
 msgstr ""
 "Diamètre de l'outil. C'est sa valeur (en unités FlatCAM actuelles)\n"
@@ -14745,14 +14745,14 @@ msgstr ""
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr "Le nombre de lacunes est manquant. Ajoutez-le et réessayez."
 
-#: appTools/ToolCutOut.py:580
+#: appTools/ToolCutOut.py:580 appTools/ToolCutOut.py:954
 #, fuzzy
 #| msgid ""
 #| "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
 #| "Fill in a correct value and retry. "
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-"Fill in a correct value and retry. "
+"Fill in a correct value and retry."
 msgstr ""
 "Le nombres des ponts ne peut être que l'une des valeurs suivantes: 'Aucune', "
 "'None', 'LR', 'TB', '2LR','2TB', 4 ou 8. Saisissez une valeur correcte, puis "
@@ -14778,15 +14778,6 @@ msgstr "L'opération de découpe sous n'importe quelle forme est terminée."
 #: tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr "Objet non trouvé"
-
-#: appTools/ToolCutOut.py:954
-msgid ""
-"Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-"Fill in a correct value and retry. "
-msgstr ""
-"Le nombres des ponts ne peut être que l'une des valeurs suivantes: 'Aucune', "
-"'None', 'LR', 'TB', '2LR','2TB', 4 ou 8. Saisissez une valeur correcte, puis "
-"réessayez. "
 
 #: appTools/ToolCutOut.py:1124 appTools/ToolCutOut.py:1197
 msgid "Rectangular cutout with negative margin is not possible."
@@ -15792,12 +15783,13 @@ msgstr ""
 "poinçonnage et réessayer."
 
 #: appTools/ToolFilm.py:294 appTools/ToolFilm.py:306
+#: appTools/ToolPunchGerber.py:512
 #, fuzzy
 #| msgid ""
 #| "Could not generate punched hole film because the punch hole sizeis bigger "
 #| "than some of the apertures in the Gerber object."
 msgid ""
-"Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
 "object."
 msgstr ""
 "Impossible de générer un film perforé car la taille du trou perforé est plus "
@@ -16441,7 +16433,13 @@ msgstr "En mouvement..."
 msgid "No object(s) selected."
 msgstr "Aucun objet sélectionné."
 
-#: appTools/ToolMove.py:221
+#: appTools/ToolMove.py:210
+#, fuzzy
+#| msgid "Object was mirrored"
+msgid "object was moved"
+msgstr "L'objet a été reflété"
+
+#: appTools/ToolMove.py:220
 msgid "Error when mouse left click."
 msgstr "Erreur lorsque le clic gauche de la souris."
 
@@ -17341,18 +17339,6 @@ msgstr "Outil de Poinçonnage"
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "La valeur du diamètre fixe est de 0,0. Abandon."
 
-#: appTools/ToolPunchGerber.py:512
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
-msgid ""
-"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
-"object."
-msgstr ""
-"Impossible de générer un film perforé car la taille du trou perforé est plus "
-"grande que certaines des ouvertures de l’objet Gerber."
-
 #: appTools/ToolPunchGerber.py:976 appTools/ToolPunchGerber.py:1291
 msgid "Punch Gerber"
 msgstr "Percer Gerber"
@@ -17776,8 +17762,12 @@ msgstr ""
 "d'avertissement."
 
 #: appTools/ToolSolderPaste.py:1181
+#, fuzzy
+#| msgid ""
+#| "Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+#| "is the width of the solder paste dispensed."
 msgid ""
-"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
 msgstr ""
 "Diamètre de l'outil de buse. C'est sa valeur (en unités FlatCAM actuelles)\n"
@@ -18713,17 +18703,9 @@ msgstr "Enregistrement de la base de données d'outils"
 msgid "No object selected to Flip on Y axis."
 msgstr "Aucun objet sélectionné pour basculer sur l’axe Y."
 
-#: app_Main.py:6048
-msgid "Flip on Y axis done."
-msgstr "Rotation sur l'axe des Y effectué."
-
 #: app_Main.py:6069
 msgid "No object selected to Flip on X axis."
 msgstr "Aucun objet sélectionné pour basculer sur l’axe X."
-
-#: app_Main.py:6095
-msgid "Flip on X axis done."
-msgstr "Rotation sur l'axe des X effectué."
 
 #: app_Main.py:6117
 msgid "No object selected to Rotate."
@@ -19637,6 +19619,31 @@ msgstr "Origine définie en décalant tous les objets chargés avec "
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Aucun nom de géométrie dans les arguments. Indiquez un nom et réessayez."
+
+#~ msgid ""
+#~ "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+#~ "Fill in a correct value and retry. "
+#~ msgstr ""
+#~ "Le nombres des ponts ne peut être que l'une des valeurs suivantes: "
+#~ "'Aucune', 'None', 'LR', 'TB', '2LR','2TB', 4 ou 8. Saisissez une valeur "
+#~ "correcte, puis réessayez. "
+
+#, fuzzy
+#~| msgid ""
+#~| "Could not generate punched hole film because the punch hole sizeis "
+#~| "bigger than some of the apertures in the Gerber object."
+#~ msgid ""
+#~ "Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+#~ "object."
+#~ msgstr ""
+#~ "Impossible de générer un film perforé car la taille du trou perforé est "
+#~ "plus grande que certaines des ouvertures de l’objet Gerber."
+
+#~ msgid "Flip on Y axis done."
+#~ msgstr "Rotation sur l'axe des Y effectué."
+
+#~ msgid "Flip on X axis done."
+#~ msgstr "Rotation sur l'axe des X effectué."
 
 #~ msgid "Could not load bookmarks file."
 #~ msgstr "Impossible de charger le fichier des Menus."

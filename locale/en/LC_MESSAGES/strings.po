@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-04 03:21+0200\n"
-"PO-Revision-Date: 2020-11-04 03:21+0200\n"
+"POT-Creation-Date: 2020-11-04 14:54+0200\n"
+"PO-Revision-Date: 2020-11-04 14:54+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -114,7 +114,7 @@ msgstr "Bookmarks"
 #: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3462
 #: appObjects/FlatCAMCNCJob.py:1754 appObjects/ObjectCollection.py:126
 #: appTools/ToolCorners.py:332 appTools/ToolFilm.py:242
-#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:269
+#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:268
 #: appTools/ToolPcbWizard.py:189 appTools/ToolPcbWizard.py:212
 #: appTools/ToolQRCode.py:531 appTools/ToolQRCode.py:580 app_Main.py:1785
 #: app_Main.py:2801 app_Main.py:4534 app_Main.py:8323 app_Main.py:8362
@@ -2800,12 +2800,12 @@ msgid "Applying Flip"
 msgstr "Applying Flip"
 
 #: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6140
-#: appTools/ToolTransform.py:338
+#: appTools/ToolTransform.py:338 app_Main.py:6048
 msgid "Flip on Y axis done"
 msgstr "Flip on Y axis done"
 
 #: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6148
-#: appTools/ToolTransform.py:347
+#: appTools/ToolTransform.py:347 app_Main.py:6095
 msgid "Flip on X axis done"
 msgstr "Flip on X axis done"
 
@@ -3383,7 +3383,7 @@ msgstr "Coordinates copied to clipboard."
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1115
 #: appTools/ToolCorners.py:419 appTools/ToolFiducials.py:563
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:466 app_Main.py:4813
+#: appTools/ToolMove.py:228 appTools/ToolQRCode.py:466 app_Main.py:4813
 msgid "Plotting"
 msgstr "Plotting"
 
@@ -6150,17 +6150,14 @@ msgid "Add a new Tool"
 msgstr "Add a new Tool"
 
 #: appGUI/MainGUI.py:4825
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot direction"
 msgstr "Toggle Slot direction"
 
 #: appGUI/MainGUI.py:4827
-#| msgid "Ctrl+S"
 msgid "Ctrl+Space"
 msgstr "Ctrl+Space"
 
 #: appGUI/MainGUI.py:4827
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot Array direction"
 msgstr "Toggle Slot Array direction"
 
@@ -6503,11 +6500,14 @@ msgstr ""
 #: appGUI/ObjectUI.py:676 appGUI/ObjectUI.py:1011 appTools/ToolDrilling.py:2072
 #: appTools/ToolIsolation.py:3141 appTools/ToolMilling.py:1677
 #: appTools/ToolNCC.py:4012 appTools/ToolPaint.py:2845
+#| msgid ""
+#| "Tool Diameter. It's value\n"
+#| "is the cut width into the material."
 msgid ""
-"Tool Diameter. It's value\n"
+"Tool Diameter. Its value\n"
 "is the cut width into the material."
 msgstr ""
-"Tool Diameter. It's value\n"
+"Tool Diameter. Its value\n"
 "is the cut width into the material."
 
 #: appGUI/ObjectUI.py:679 appTools/ToolDrilling.py:2075
@@ -14480,13 +14480,16 @@ msgstr "Tool Diameter is zero value. Change it to a positive real number."
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr "Number of gaps value is missing. Add it and retry."
 
-#: appTools/ToolCutOut.py:580
+#: appTools/ToolCutOut.py:580 appTools/ToolCutOut.py:954
+#| msgid ""
+#| "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
+#| "Fill in a correct value and retry. "
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-"Fill in a correct value and retry. "
+"Fill in a correct value and retry."
 msgstr ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-"Fill in a correct value and retry. "
+"Fill in a correct value and retry."
 
 #: appTools/ToolCutOut.py:901 appTools/ToolCutOut.py:1274
 #: appTools/ToolCutOut.py:1632
@@ -14508,14 +14511,6 @@ msgstr "Any-form Cutout operation finished."
 #: tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr "Object not found"
-
-#: appTools/ToolCutOut.py:954
-msgid ""
-"Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-"Fill in a correct value and retry. "
-msgstr ""
-"Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-"Fill in a correct value and retry. "
 
 #: appTools/ToolCutOut.py:1124 appTools/ToolCutOut.py:1197
 msgid "Rectangular cutout with negative margin is not possible."
@@ -15496,11 +15491,12 @@ msgstr ""
 "No Excellon object selected. Load an object for punching reference and retry."
 
 #: appTools/ToolFilm.py:294 appTools/ToolFilm.py:306
+#: appTools/ToolPunchGerber.py:512
 msgid ""
-"Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
 "object."
 msgstr ""
-"Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
 "object."
 
 #: appTools/ToolFilm.py:324 appTools/ToolPunchGerber.py:585
@@ -16113,7 +16109,12 @@ msgstr "Moving ..."
 msgid "No object(s) selected."
 msgstr "No object(s) selected."
 
-#: appTools/ToolMove.py:221
+#: appTools/ToolMove.py:210
+#| msgid "Object was mirrored"
+msgid "object was moved"
+msgstr "object was moved"
+
+#: appTools/ToolMove.py:220
 msgid "Error when mouse left click."
 msgstr "Error when mouse left click."
 
@@ -16998,14 +16999,6 @@ msgstr "Punch Tool"
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "The value of the fixed diameter is 0.0. Aborting."
 
-#: appTools/ToolPunchGerber.py:512
-msgid ""
-"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
-"object."
-msgstr ""
-"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
-"object."
-
 #: appTools/ToolPunchGerber.py:976 appTools/ToolPunchGerber.py:1291
 msgid "Punch Gerber"
 msgstr "Punch Gerber"
@@ -17410,11 +17403,14 @@ msgstr ""
 " with solder paste, the app will issue a warning message box."
 
 #: appTools/ToolSolderPaste.py:1181
+#| msgid ""
+#| "Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+#| "is the width of the solder paste dispensed."
 msgid ""
-"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
 msgstr ""
-"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
 
 #: appTools/ToolSolderPaste.py:1188
@@ -18320,17 +18316,9 @@ msgstr "Save Tools Database"
 msgid "No object selected to Flip on Y axis."
 msgstr "No object selected to Flip on Y axis."
 
-#: app_Main.py:6048
-msgid "Flip on Y axis done."
-msgstr "Flip on Y axis done."
-
 #: app_Main.py:6069
 msgid "No object selected to Flip on X axis."
 msgstr "No object selected to Flip on X axis."
-
-#: app_Main.py:6095
-msgid "Flip on X axis done."
-msgstr "Flip on X axis done."
 
 #: app_Main.py:6117
 msgid "No object selected to Rotate."
@@ -19208,6 +19196,26 @@ msgstr "Origin set by offsetting all loaded objects with "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "No Geometry name in args. Provide a name and try again."
+
+#~ msgid ""
+#~ "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+#~ "Fill in a correct value and retry. "
+#~ msgstr ""
+#~ "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+#~ "Fill in a correct value and retry. "
+
+#~ msgid ""
+#~ "Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+#~ "object."
+#~ msgstr ""
+#~ "Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+#~ "object."
+
+#~ msgid "Flip on Y axis done."
+#~ msgstr "Flip on Y axis done."
+
+#~ msgid "Flip on X axis done."
+#~ msgstr "Flip on X axis done."
 
 #~ msgid "Could not load bookmarks file."
 #~ msgstr "Could not load bookmarks file."

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-04 03:22+0200\n"
+"POT-Creation-Date: 2020-11-04 15:11+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -112,7 +112,7 @@ msgstr "Закладки"
 #: appGUI/MainGUI.py:3237 appGUI/MainGUI.py:3462
 #: appObjects/FlatCAMCNCJob.py:1754 appObjects/ObjectCollection.py:126
 #: appTools/ToolCorners.py:332 appTools/ToolFilm.py:242
-#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:269
+#: appTools/ToolFilm.py:390 appTools/ToolImage.py:111 appTools/ToolMove.py:268
 #: appTools/ToolPcbWizard.py:189 appTools/ToolPcbWizard.py:212
 #: appTools/ToolQRCode.py:531 appTools/ToolQRCode.py:580 app_Main.py:1785
 #: app_Main.py:2801 app_Main.py:4534 app_Main.py:8323 app_Main.py:8362
@@ -1669,10 +1669,8 @@ msgstr "Значение введено с ошибкой. Проверьте з
 
 #: appEditors/AppExcEditor.py:517 appEditors/AppExcEditor.py:1076
 #: appEditors/AppGerberEditor.py:720
-#, fuzzy
-#| msgid "Too many Slots for the selected spacing angle."
 msgid "Too many items for the selected spacing angle."
-msgstr "Слишком много пазов для выбранного расстояния."
+msgstr "Слишком много элементов для выбранного интервала."
 
 #: appEditors/AppExcEditor.py:599
 msgid "To add a slot first select a tool"
@@ -2036,22 +2034,16 @@ msgstr "Подача = Расстояние между элементами ма
 
 #: appEditors/AppExcEditor.py:4005 appEditors/AppExcEditor.py:4221
 #: appEditors/AppGerberEditor.py:5346
-#, fuzzy
-#| msgid ""
-#| "Angle at which the linear array is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the linear array is placed.\n"
 "The precision is of max 2 decimals.\n"
 "Min value is: -360.00 degrees.\n"
 "Max value is: 360.00 degrees."
 msgstr ""
-"Угол, под которым расположен линейный массив.\n"
-"Точность составляет не более 2 десятичных знаков.\n"
-"Минимальное значение: -359.99 градусов.\n"
-"Максимальное значение:  360.00 градусов."
+"Угол, под которым размещается линейный массив.\n"
+"Точность - максимум 2 десятичных знака.\n"
+"Минимальное значение: -360,00 градусов.\n"
+"Максимальное значение: 360,00 градусов."
 
 #: appEditors/AppExcEditor.py:4026 appEditors/AppExcEditor.py:4242
 #: appEditors/AppGerberEditor.py:5367
@@ -2136,21 +2128,15 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4114
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:196
-#, fuzzy
-#| msgid ""
-#| "Angle at which the slot is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -360 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the slot is placed.\n"
 "The precision is of max 2 decimals.\n"
 "Min value is: -360.00 degrees.\n"
 "Max value is: 360.00 degrees."
 msgstr ""
-"Угол, под которым расположен паз.\n"
-"Точность составляет не более 2 десятичных знаков.\n"
-"Минимальное значение: -359,99 градусов.\n"
+"Угол, под которым размещается прорезь.\n"
+"Точность - максимум 2 десятичных знака.\n"
+"Минимальное значение: -360,00 градусов.\n"
 "Максимальное значение: 360,00 градусов."
 
 #: appEditors/AppExcEditor.py:4147
@@ -2489,19 +2475,13 @@ msgstr "Координаты скопированы в буфер обмена."
 #: appEditors/AppGeoEditor.py:688 appEditors/AppGerberEditor.py:5502
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:98
 #: appTools/ToolTransform.py:615
-#, fuzzy
-#| msgid ""
-#| "Angle for Rotation action, in degrees.\n"
-#| "Float number between -360 and 359.\n"
-#| "Positive numbers for CW motion.\n"
-#| "Negative numbers for CCW motion."
 msgid ""
 "Angle, in degrees.\n"
 "Float number between -360 and 359.\n"
 "Positive numbers for CW motion.\n"
 "Negative numbers for CCW motion."
 msgstr ""
-"Угол поворота в градусах.\n"
+"Угол в градусах.\n"
 "Число с плавающей запятой от -360 до 359.\n"
 "Положительные числа для движения по часовой стрелке.\n"
 "Отрицательные числа для движения против часовой стрелки."
@@ -2837,10 +2817,8 @@ msgstr "Применение поворота"
 #: appTools/ToolTransform.py:383 appTools/ToolTransform.py:410
 #: appTools/ToolTransform.py:439 appTools/ToolTransform.py:474 app_Main.py:6050
 #: app_Main.py:6097
-#, fuzzy
-#| msgid "action was not executed."
 msgid "Action was not executed"
-msgstr "действие не было выполнено."
+msgstr "Действие не выполнено"
 
 #: appEditors/AppGeoEditor.py:1307 appEditors/AppGerberEditor.py:6128
 #: appTools/ToolTransform.py:321
@@ -2848,18 +2826,14 @@ msgid "Applying Flip"
 msgstr "Применение отражения"
 
 #: appEditors/AppGeoEditor.py:1315 appEditors/AppGerberEditor.py:6140
-#: appTools/ToolTransform.py:338
-#, fuzzy
-#| msgid "Flip on Y axis done."
+#: appTools/ToolTransform.py:338 app_Main.py:6048
 msgid "Flip on Y axis done"
-msgstr "Отражение по оси Y завершено."
+msgstr "Отражение по оси Y завершено"
 
 #: appEditors/AppGeoEditor.py:1318 appEditors/AppGerberEditor.py:6148
-#: appTools/ToolTransform.py:347
-#, fuzzy
-#| msgid "Flip on X axis done."
+#: appTools/ToolTransform.py:347 app_Main.py:6095
 msgid "Flip on X axis done"
-msgstr "Отражение по оси Х завершено."
+msgstr "Отражение по оси Х завершено"
 
 #: appEditors/AppGeoEditor.py:1342 appEditors/AppGerberEditor.py:6171
 #: appTools/ToolTransform.py:367
@@ -3056,10 +3030,8 @@ msgid " MOVE: Click on reference point ..."
 msgstr " Перемещение: Нажмите на исходную точку ..."
 
 #: appEditors/AppGeoEditor.py:2682
-#, fuzzy
-#| msgid " Click on destination point ..."
 msgid "Click on destination point ..."
-msgstr " Нажмите на конечную точку ..."
+msgstr "Нажмите на конечную точку ..."
 
 #: appEditors/AppGeoEditor.py:2712 appEditors/AppGerberEditor.py:2458
 #: appEditors/AppGerberEditor.py:4003 appObjects/FlatCAMGeometry.py:2564
@@ -3183,10 +3155,9 @@ msgid "with diameter"
 msgstr "с диаметром"
 
 #: appEditors/AppGeoEditor.py:4807 appEditors/AppGeoEditor.py:4842
-#, fuzzy
-#| msgid "A selection of at least 2 geo items is required to do Intersection."
 msgid "A selection of minimum two items is required to do Intersection."
-msgstr "Выберите по крайней мере 2 элемента геометрии для пересечения."
+msgstr ""
+"Чтобы выполнить «Пересечение», необходимо выбрать минимум два предмета."
 
 #: appEditors/AppGeoEditor.py:4928 appEditors/AppGeoEditor.py:5032
 msgid ""
@@ -3447,7 +3418,7 @@ msgstr "Координаты скопированы в буфер обмена."
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1115
 #: appTools/ToolCorners.py:419 appTools/ToolFiducials.py:563
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:466 app_Main.py:4813
+#: appTools/ToolMove.py:228 appTools/ToolQRCode.py:466 app_Main.py:4813
 msgid "Plotting"
 msgstr "Прорисовка"
 
@@ -5740,8 +5711,6 @@ msgid "Shell disabled."
 msgstr "Командная строка отключена."
 
 #: appGUI/MainGUI.py:4028
-#, fuzzy
-#| msgid "Shortcuts List"
 msgid "Shortcut Key List"
 msgstr "Список комбинаций клавиш"
 
@@ -6227,22 +6196,16 @@ msgid "Add a new Tool"
 msgstr "Добавить инструмент"
 
 #: appGUI/MainGUI.py:4825
-#, fuzzy
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot direction"
-msgstr "Переключить рабочую область"
+msgstr "Переключить направление слота"
 
 #: appGUI/MainGUI.py:4827
-#, fuzzy
-#| msgid "Ctrl+S"
 msgid "Ctrl+Space"
-msgstr "Ctrl+S"
+msgstr "Ctrl+Пробел"
 
 #: appGUI/MainGUI.py:4827
-#, fuzzy
-#| msgid "Toggle Plot Area"
 msgid "Toggle Slot Array direction"
-msgstr "Переключить рабочую область"
+msgstr "Переключить направление массива слотов"
 
 #: appGUI/MainGUI.py:4944
 msgid "GERBER EDITOR"
@@ -6385,10 +6348,8 @@ msgstr "Начертить (отобразить) этот объект."
 
 #: appGUI/ObjectUI.py:244 appGUI/ObjectUI.py:583 appGUI/ObjectUI.py:905
 #: appGUI/ObjectUI.py:1911
-#, fuzzy
-#| msgid "Save Object and Exit Editor"
 msgid "Start the Object Editor"
-msgstr "Сохранить объект и закрыть редактор"
+msgstr "Запустить редактор объектов"
 
 #: appGUI/ObjectUI.py:255 appGUI/ObjectUI.py:594 appGUI/ObjectUI.py:916
 #: appGUI/ObjectUI.py:1922
@@ -6589,15 +6550,11 @@ msgstr ""
 #: appGUI/ObjectUI.py:676 appGUI/ObjectUI.py:1011 appTools/ToolDrilling.py:2072
 #: appTools/ToolIsolation.py:3141 appTools/ToolMilling.py:1677
 #: appTools/ToolNCC.py:4012 appTools/ToolPaint.py:2845
-#, fuzzy
-#| msgid ""
-#| "Tool Diameter. It's value (in current FlatCAM units)\n"
-#| "is the cut width into the material."
 msgid ""
-"Tool Diameter. It's value\n"
+"Tool Diameter. Its value\n"
 "is the cut width into the material."
 msgstr ""
-"Диаметр инструмента. Это значение (в текущих единицах FlatCAM) \n"
+"Диаметр инструмента. Это значение \n"
 "ширины разреза в материале."
 
 #: appGUI/ObjectUI.py:679 appTools/ToolDrilling.py:2075
@@ -7336,8 +7293,6 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:1597 appTools/ToolDrilling.py:2584
 #: appTools/ToolMilling.py:2260
-#, fuzzy
-#| msgid "Add area:"
 msgid "Add Area:"
 msgstr "Добавить область:"
 
@@ -8287,16 +8242,12 @@ msgstr ""
 "- Инкрементальный G91 -> ссылка на предыдущую позицию"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:110
-#, fuzzy
-#| msgid "Absolute G90"
 msgid "Absolute"
-msgstr "Абсолютный путь G90"
+msgstr "Абсолютное"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:111
-#, fuzzy
-#| msgid "Incremental G91"
 msgid "Incremental"
-msgstr "Инкрементальный G91"
+msgstr "Инкрементальный"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:121
 msgid "Force Windows style line-ending"
@@ -8403,17 +8354,12 @@ msgstr "Дополнительные настройки"
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:36
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "A list of Gerber advanced parameters.\n"
-#| "Those parameters are available only for\n"
-#| "Advanced App. Level."
 msgid ""
 "A list of advanced parameters.\n"
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
-"Список расширенных параметров Gerber.\n"
+"Список расширенных параметров.\n"
 "Эти параметры доступны только для\n"
 "расширенного режима приложения."
 
@@ -11522,8 +11468,6 @@ msgstr ""
 "допустимый порог."
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:27
-#, fuzzy
-#| msgid "2Sided Tool Options"
 msgid "2-Sided Tool Options"
 msgstr "2-х сторонняя плата"
 
@@ -11774,22 +11718,16 @@ msgstr "Тип"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102
 #: appTools/ToolCutOut.py:2012
-#, fuzzy
-#| msgid ""
-#| "Choice of what kind the object we want to cutout is.<BR>- <B>Single</B>: "
-#| "contain a single PCB Gerber outline object.<BR>- <B>Panel</B>: a panel "
-#| "PCB Gerber object, which is made\n"
-#| "out of many individual PCB outlines."
 msgid ""
 "Choice of what kind the object we want to cutout is.\n"
 "- Single: contain a single PCB Gerber outline object.\n"
 "- Panel: a panel PCB Gerber object, which is made\n"
 "out of many individual PCB outlines."
 msgstr ""
-"Выбор того, какой объект мы хотим вырезать.<BR>-<B>Single </B>: содержит "
-"один объект контура печатной платы Gerber.<BR>-<B>панель </B>: объект "
-"Гербера PCB панели, который сделан\n"
-"из множества отдельных печатных плат очертания."
+"Выбор того, какой объект мы хотим вырезать.\n"
+"- Single: содержит один контурный объект Gerber печатной платы.\n"
+"- Панель: печатная плата панельного объекта Gerber, изготовленная\n"
+"из множества отдельных контуров печатных плат."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109
 #: appTools/ToolCutOut.py:2018
@@ -12382,18 +12320,12 @@ msgstr "Последовательный"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:341
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:305
-#, fuzzy
-#| msgid ""
-#| "- 'Normal' -  normal plotting, done at the end of the job\n"
-#| "- 'Progressive' - each shape is plotted after it is generated"
 msgid ""
 "- 'Normal' - normal plotting, done at the end of the job\n"
 "- 'Progressive' - each shape is plotted after it is generated"
 msgstr ""
-"- 'Нормальный' - нормальное построение, выполненное в конце задания очистки "
-"от меди \n"
-"- 'Последовательный' - после создания каждой фигуры она будет нанесена на "
-"график"
+"- «Нормальный» - нормальное черчение, выполняется в конце работы\n"
+"- «Прогрессивный» - каждая форма строится после ее создания."
 
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:27
 msgid "NCC Tool Options"
@@ -12660,12 +12592,8 @@ msgstr "Новый диаметр сопла"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:56
 #: appTools/ToolSolderPaste.py:1190
-#, fuzzy
-#| msgid "Diameter for the new Nozzle tool to add in the Tool Table"
 msgid "Diameter for the new tool to add in the Tool Table"
-msgstr ""
-"Диаметр для нового инструмента сопла, который нужно добавить в таблице "
-"инструмента"
+msgstr "Диаметр нового инструмента, добавляемого в таблицу инструментов"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:72
 #: appTools/ToolSolderPaste.py:1257
@@ -12832,11 +12760,8 @@ msgid "Close paths"
 msgstr "Закрыть пути"
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:39 appTools/ToolSub.py:784
-#, fuzzy
-#| msgid ""
-#| "Checking this will close the paths cut by the Geometry subtractor object."
 msgid "Checking this will close the paths cut by the subtractor object."
-msgstr "Проверка этого закроет пути, прорезанные объектом субметора Геометрия."
+msgstr "Проверка этого закроет пути, прорезанные вычитающим объектом."
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:42 appTools/ToolSub.py:680
 msgid "Delete source"
@@ -12891,15 +12816,11 @@ msgstr "Наклон"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:126
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:140
 #: appTools/ToolCalibration.py:1200 appTools/ToolCalibration.py:1213
-#, fuzzy
-#| msgid ""
-#| "Angle for Skew action, in degrees.\n"
-#| "Float number between -360 and 359."
 msgid ""
 "Angle, in degrees.\n"
 "Float number between -360 and 359."
 msgstr ""
-"Угол наклона в градусах.\n"
+"Угол в градусах.\n"
 "Число с плавающей запятой между -360 и 359."
 
 #: appGUI/preferences/utilities/AutoCompletePrefGroupUI.py:27
@@ -13805,10 +13726,8 @@ msgstr "Отменено по запросу пользователя."
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:267
 #: appTools/ToolDistance.py:398 appTools/ToolMove.py:140
 #: appTools/ToolQRCode.py:206
-#, fuzzy
-#| msgid "Click on the DESTINATION point."
 msgid "Click on the DESTINATION point ..."
-msgstr "Нажмите на конечную точку."
+msgstr "Нажмите на конечную точку ..."
 
 #: appTools/ToolAlignObjects.py:245 appTools/ToolAlignObjects.py:260
 #: appTools/ToolAlignObjects.py:267
@@ -14416,10 +14335,8 @@ msgid "Working..."
 msgstr "Обработка…"
 
 #: appTools/ToolCopperThieving.py:626
-#, fuzzy
-#| msgid "Geometry not supported for cutout"
 msgid "Geometry not supported for"
-msgstr "Геометрия не поддерживается для выреза"
+msgstr "Геометрия не поддерживается для"
 
 #: appTools/ToolCopperThieving.py:632 appTools/ToolNCC.py:1784
 #: appTools/ToolNCC.py:1839 appTools/ToolNCC.py:2833 appTools/ToolPaint.py:2468
@@ -14679,17 +14596,14 @@ msgid "Number of gaps value is missing. Add it and retry."
 msgstr ""
 "Значение количества перемычек отсутствует. Добавьте его и повторите попытку.."
 
-#: appTools/ToolCutOut.py:580
-#, fuzzy
-#| msgid ""
-#| "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-#| "Fill in a correct value and retry. "
+#: appTools/ToolCutOut.py:580 appTools/ToolCutOut.py:954
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
-"Fill in a correct value and retry. "
+"Fill in a correct value and retry."
 msgstr ""
 "Значение перемычки может быть только одним из: «None», «lr», «tb», «2lr», "
-"«2tb», 4 или 8. Введите правильное значение и повторите попытку. "
+"«2tb», 4 или 8.\n"
+"Введите правильное значение и повторите попытку."
 
 #: appTools/ToolCutOut.py:901 appTools/ToolCutOut.py:1274
 #: appTools/ToolCutOut.py:1632
@@ -14711,14 +14625,6 @@ msgstr "Операция обрезки закончена."
 #: tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr "Объект не найден"
-
-#: appTools/ToolCutOut.py:954
-msgid ""
-"Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-"Fill in a correct value and retry. "
-msgstr ""
-"Значение перемычки может быть только одним из: «None», «lr», «tb», «2lr», "
-"«2tb», 4 или 8. Введите правильное значение и повторите попытку. "
 
 #: appTools/ToolCutOut.py:1124 appTools/ToolCutOut.py:1197
 msgid "Rectangular cutout with negative margin is not possible."
@@ -14767,10 +14673,8 @@ msgstr ""
 "Выберите файл Gerber и повторите попытку."
 
 #: appTools/ToolCutOut.py:1473
-#, fuzzy
-#| msgid "Geometry not supported for cutout"
 msgid "Geometry not supported"
-msgstr "Геометрия не поддерживается для выреза"
+msgstr "Геометрия не поддерживается"
 
 #: appTools/ToolCutOut.py:1545
 msgid "Making manual bridge gap..."
@@ -15716,28 +15620,21 @@ msgstr ""
 "попытку."
 
 #: appTools/ToolFilm.py:294 appTools/ToolFilm.py:306
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
+#: appTools/ToolPunchGerber.py:512
 msgid ""
-"Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
 "object."
 msgstr ""
-"Не удалось создать пленку с перфорированным отверстием, поскольку размер "
-"перфорированного отверстия больше, чем некоторые отверстия в объекте Gerber."
+"Не удалось. Размер перфорационного отверстия больше, чем у некоторых "
+"отверстий в объекте Гербера."
 
 #: appTools/ToolFilm.py:324 appTools/ToolPunchGerber.py:585
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the newly created object "
-#| "geometry is the same as the one in the source object geometry..."
 msgid ""
 "Failed. The new object geometry is the same as the one in the source object "
 "geometry..."
 msgstr ""
-"Не удалось создать пленку с перфорацией, поскольку геометрия вновь "
-"созданного объекта такая же, как в геометрии исходного объекта ..."
+"Не удалось. Новая геометрия объекта такая же, как и в геометрии исходного "
+"объекта ..."
 
 #: appTools/ToolFilm.py:379 appTools/ToolFilm.py:384
 msgid "Export negative film"
@@ -16144,24 +16041,20 @@ msgstr "Добавленный полигон"
 
 #: appTools/ToolIsolation.py:2295 appTools/ToolIsolation.py:2409
 #: appTools/ToolPaint.py:1137
-#, fuzzy
-#| msgid "Click to add next polygon or right click to start painting."
 msgid "Click to add next polygon or right click to start."
 msgstr ""
-"Щелкните, чтобы добавить следующий полигон, или щелкните правой кнопкой "
-"мыши, чтобы начать рисование."
+"Щелкните, чтобы добавить следующий многоугольник, или щелкните правой "
+"кнопкой мыши, чтобы начать."
 
 #: appTools/ToolIsolation.py:2307 appTools/ToolPaint.py:1149
 msgid "Removed polygon"
 msgstr "Удалённый полигон"
 
 #: appTools/ToolIsolation.py:2308 appTools/ToolPaint.py:1150
-#, fuzzy
-#| msgid "Click to add/remove next polygon or right click to start painting."
 msgid "Click to add/remove next polygon or right click to start."
 msgstr ""
-"Нажмите для добавления/удаления следующего полигона или щелкните правой "
-"кнопкой мыши, чтобы начать рисование."
+"Щелкните, чтобы добавить / удалить следующий многоугольник, или щелкните "
+"правой кнопкой мыши, чтобы начать."
 
 #: appTools/ToolIsolation.py:2313 appTools/ToolPaint.py:1155
 msgid "No polygon detected under click position."
@@ -16356,7 +16249,11 @@ msgstr "Перемещение ..."
 msgid "No object(s) selected."
 msgstr "Нет выбранных объектов."
 
-#: appTools/ToolMove.py:221
+#: appTools/ToolMove.py:210
+msgid "object was moved"
+msgstr "объект был перемещен"
+
+#: appTools/ToolMove.py:220
 msgid "Error when mouse left click."
 msgstr "Ошибка при щелчке левой кнопкой мыши."
 
@@ -17246,18 +17143,6 @@ msgstr "Перфорация"
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "Значение фиксированного диаметра составляет 0,0. Прерывание."
 
-#: appTools/ToolPunchGerber.py:512
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
-msgid ""
-"Failed. Punch hole size is bigger than some of the apertures in the Gerber "
-"object."
-msgstr ""
-"Не удалось создать пленку с перфорированным отверстием, поскольку размер "
-"перфорированного отверстия больше, чем некоторые отверстия в объекте Gerber."
-
 #: appTools/ToolPunchGerber.py:976 appTools/ToolPunchGerber.py:1291
 msgid "Punch Gerber"
 msgstr "Перфорация"
@@ -17576,10 +17461,8 @@ msgid "Nozzle tool from Tool Table was edited."
 msgstr "Сопло было изменено в таблице инструментов."
 
 #: appTools/ToolSolderPaste.py:598
-#, fuzzy
-#| msgid "Tool(s) deleted from Tool Table."
 msgid "Tools deleted from Tool Table."
-msgstr "Инструмент удалён из таблицы инструментов."
+msgstr "Инструменты удалены из таблицы инструментов."
 
 #: appTools/ToolSolderPaste.py:652
 msgid "No SolderPaste mask Gerber object loaded."
@@ -17674,11 +17557,11 @@ msgstr ""
 
 #: appTools/ToolSolderPaste.py:1181
 msgid ""
-"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
 msgstr ""
-"Насадка инструментальная Диаметр. Это значение (в текущих единицах FlatCAM)\n"
-"ширина выдавленной паяльной пасты."
+"Диаметр инструмента. Его ценность\n"
+"ширина нанесенной паяльной пасты."
 
 #: appTools/ToolSolderPaste.py:1188
 msgid "New Nozzle Tool"
@@ -18587,17 +18470,9 @@ msgstr "Сохранить БД"
 msgid "No object selected to Flip on Y axis."
 msgstr "Не выбран объект для отражения по оси Y."
 
-#: app_Main.py:6048
-msgid "Flip on Y axis done."
-msgstr "Отражение по оси Y завершено."
-
 #: app_Main.py:6069
 msgid "No object selected to Flip on X axis."
 msgstr "Не выбран объект для отражения по оси Х."
-
-#: app_Main.py:6095
-msgid "Flip on X axis done."
-msgstr "Отражение по оси Х завершено."
 
 #: app_Main.py:6117
 msgid "No object selected to Rotate."
@@ -19022,10 +18897,8 @@ msgstr "Файл Excellon экспортируется в"
 
 #: app_Main.py:9823 app_Main.py:9830 app_Main.py:9957 app_Main.py:9964
 #: app_Main.py:10024 app_Main.py:10031
-#, fuzzy
-#| msgid "Could not export file."
 msgid "Could not export."
-msgstr "Не удалось экспортировать файл."
+msgstr "Не удалось экспортировать."
 
 #: app_Main.py:9944
 msgid "Gerber file exported to"
@@ -19494,6 +19367,31 @@ msgstr ""
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
+
+#~ msgid ""
+#~ "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+#~ "Fill in a correct value and retry. "
+#~ msgstr ""
+#~ "Значение перемычки может быть только одним из: «None», «lr», «tb», «2lr», "
+#~ "«2tb», 4 или 8. Введите правильное значение и повторите попытку. "
+
+#, fuzzy
+#~| msgid ""
+#~| "Could not generate punched hole film because the punch hole sizeis "
+#~| "bigger than some of the apertures in the Gerber object."
+#~ msgid ""
+#~ "Failed. Punch hole sizeis bigger than some of the apertures in the Gerber "
+#~ "object."
+#~ msgstr ""
+#~ "Не удалось создать пленку с перфорированным отверстием, поскольку размер "
+#~ "перфорированного отверстия больше, чем некоторые отверстия в объекте "
+#~ "Gerber."
+
+#~ msgid "Flip on Y axis done."
+#~ msgstr "Отражение по оси Y завершено."
+
+#~ msgid "Flip on X axis done."
+#~ msgstr "Отражение по оси Х завершено."
 
 #~ msgid "Could not load bookmarks file."
 #~ msgstr "Не удалось загрузить файл закладок."

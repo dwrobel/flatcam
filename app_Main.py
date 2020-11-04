@@ -6044,8 +6044,7 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.app_obj.object_changed.emit(obj)
-                self.inform.emit('[success] %s' %
-                                 _("Flip on Y axis done."))
+                self.inform.emit('[success] %s.' % _("Flip on Y axis done"))
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
@@ -6091,8 +6090,7 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.app_obj.object_changed.emit(obj)
-                self.inform.emit('[success] %s' %
-                                 _("Flip on X axis done."))
+                self.inform.emit('[success] %s.' % _("Flip on X axis done"))
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
