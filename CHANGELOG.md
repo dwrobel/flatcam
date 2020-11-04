@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - trimmed the application strings
 - updated the Italian translation (by Massimiliano Golfetto)
 - fixed a series of issues in Gerber Editor tools when the user is trying to use the tools by preselecting a aperture without size (aperture macro)
+- moved all the UI stuff out of the Gerber Editor class in its own class
 
 2.11.2020
 
