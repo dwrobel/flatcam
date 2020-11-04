@@ -198,7 +198,7 @@ class HPGL2:
         line_num = 0
         gline = ""
 
-        self.app.inform.emit('%s %d %s.' % (_("HPGL2 processing. Parsing"), len(glines), _("lines")))
+        self.app.inform.emit('%s %d %s.' % (_("HPGL2 processing. Parsing"), len(glines), _("Lines").lower()))
         try:
             for gline in glines:
                 if self.app.abort_flag:

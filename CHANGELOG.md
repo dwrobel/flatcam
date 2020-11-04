@@ -10,6 +10,10 @@ CHANGELOG for FlatCAM beta
 4.11.2020
 
 - updated all the translation files
+- fixed issue with arrays of items could not be added in the Gerber/Excellon Editor when a translation is used
+- fixed issue in the Excellon Editor where the Space key did not toggle the direction of the array of drills
+- combed the application strings all over the app and trimmed them up until those starting with letter 'O'
+- updated the translation strings
 
 3.11.2020
 

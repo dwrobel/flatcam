@@ -4763,7 +4763,7 @@ class App(QtCore.QObject):
                         self.exc_areas.clear_shapes()
                     self.inform.emit('%s...' % _("Object(s) deleted"))
                 else:
-                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+                    self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
@@ -5104,7 +5104,7 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_locate()")
 
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return 'fail'
 
         class DialogBoxChoice(QtWidgets.QDialog):
@@ -5433,7 +5433,7 @@ class App(QtCore.QObject):
         if not self.collection.get_selected():
             log.warning("App.convert_any2geo --> No object selected")
             self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object is selected. Select an object and try again."))
+                             _("No object is selected."))
             return
 
         for obj in self.collection.get_selected():
@@ -5511,7 +5511,7 @@ class App(QtCore.QObject):
         if not self.collection.get_selected():
             log.warning("App.convert_any2gerber --> No object selected")
             self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object is selected. Select an object and try again."))
+                             _("No object is selected."))
             return
 
         for obj in self.collection.get_selected():
@@ -5681,7 +5681,7 @@ class App(QtCore.QObject):
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2excellon--> No object selected")
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected. Select an object and try again."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         for obj in self.collection.get_selected():
@@ -6019,7 +6019,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Flip on Y axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
         else:
             try:
                 # first get a bounding box to fit all
@@ -6065,7 +6065,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Flip on X axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
         else:
             try:
                 # first get a bounding box to fit all
@@ -6112,7 +6112,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Rotate."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
@@ -6165,7 +6165,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Skew/Shear on X axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
         else:
             skewxbox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
@@ -6203,7 +6203,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Skew/Shear on Y axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
         else:
             skewybox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
@@ -6348,7 +6348,7 @@ class App(QtCore.QObject):
                 try:
                     self.defaults["global_grid_context_menu"][str(units)].remove(val)
                 except ValueError:
-                    self.inform.emit('[ERROR_NOTCL]%s...' % _(" Grid Value does not exist"))
+                    self.inform.emit('[ERROR_NOTCL]%s...' % _("Grid Value does not exist"))
                     return
                 self.inform.emit('[success] %s...' % _("Grid Value deleted"))
         else:
@@ -6394,12 +6394,11 @@ class App(QtCore.QObject):
             name = obj.options["name"]
         except AttributeError:
             self.log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _(" No object selected to copy it's name"))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         self.clipboard.setText(name)
-        self.inform.emit(_("Name copied on clipboard ..."))
+        self.inform.emit(_("Name copied to clipboard ..."))
 
     def on_mouse_click_over_plot(self, event):
         """
@@ -7173,7 +7172,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         self.inform.emit('%s' % _("Viewing the source code of the selected object."))
-        self.proc_container.view.set_busy(_("Loading..."))
+        self.proc_container.view.set_busy('%s...' % _("Loading"))
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
@@ -7271,7 +7270,7 @@ class App(QtCore.QObject):
         :return: None
         """
         dia_box = Dialog_box(title=_("Go to Line ..."),
-                             label=_("Line:"),
+                             label='%s:' % _("Line"),
                              icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
                              initial_text='')
         try:
@@ -8506,7 +8505,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setIcon(QtWidgets.QMessageBox.Warning)
@@ -8608,7 +8607,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8650,7 +8649,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8692,7 +8691,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8734,7 +8733,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8775,7 +8774,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8820,7 +8819,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8865,7 +8864,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setIcon(QtWidgets.QMessageBox.Warning)
@@ -9328,11 +9327,11 @@ class MenuFileHandlers(QtCore.QObject):
                 obj_name = _("FlatCAM objects print")
         except AttributeError as err:
             self.app.log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         if not obj_selection:
-            self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         filter_ = "PDF File .pdf (*.PDF);; All Files (*.*)"
@@ -10067,7 +10066,7 @@ class MenuFileHandlers(QtCore.QObject):
             # appGUI feedback
             app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-        with self.app.proc_container.new(_("Importing ...")):
+        with self.app.proc_container.new('%s ...' % _("Importing")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10122,7 +10121,7 @@ class MenuFileHandlers(QtCore.QObject):
             # appGUI feedback
             app_obj.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-        with self.app.proc_container.new(_("Importing ...")):
+        with self.app.proc_container.new('%s ...' % _("Importing")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10385,7 +10384,7 @@ class MenuFileHandlers(QtCore.QObject):
             # # ## Object creation # ##
             ret = self.app.app_obj.new_object("geometry", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
+                self.inform.emit('[ERROR_NOTCL]%s' % _('Failed. Probable not a HPGL2 file.'))
                 return 'fail'
 
             # Register recent file

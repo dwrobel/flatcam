@@ -43,8 +43,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Excellon file.")
         )
 
-        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                              {'label': _('MM'), 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
+                                              {'label': _('mm'), 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("The units used in the Excellon file.")
         )

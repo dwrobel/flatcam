@@ -179,8 +179,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "therefore this parameter will be used.")
         )
 
-        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                              {'label': _('MM'), 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
+                                              {'label': _('mm'), 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("This sets the units of Excellon files.\n"
               "Some Excellon files don't have an header\n"

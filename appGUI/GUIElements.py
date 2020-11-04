@@ -4173,7 +4173,7 @@ class FCJog(QtWidgets.QFrame):
         self.jog_origin_button = QtWidgets.QToolButton()
         self.jog_origin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/origin2_32.png'))
         self.jog_origin_button.setToolTip(
-            _("Move to Origin.")
+            '%s' % _("Move to Origin")
         )
 
         grbl_jog_grid.addWidget(self.jog_origin_button, 3, 1)
@@ -4534,23 +4534,23 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             # Open Project ...
             menu_openproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
-                                                 _('Open Project ...'), self)
+                                                 '%s ...' % _('Open Project'), self)
             self.menu_open.addAction(menu_openproject)
             self.menu_open.addSeparator()
 
             # Open Gerber ...
             menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                _('Open &Gerber ...\tCtrl+G'), self)
+                                                '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
             menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                  _('Open &Excellon ...\tCtrl+E'), self)
+                                                  '%s ...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...
             menu_opengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
-                                               _('Open G-&Code ...'), self)
+                                               '%s ...' % _('Open G-Code'), self)
             self.menu_open.addAction(menu_opengcode)
 
             self.menu_open.addSeparator()

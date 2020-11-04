@@ -181,7 +181,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -189,7 +189,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conventional'), 'value': 'cv'}])
         self.milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -244,11 +244,11 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.rest_cb.setObjectName("i_rest_machining")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will isolate outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to isolate the copper features that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper features to isolate or there are no more tools.\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
 

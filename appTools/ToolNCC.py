@@ -2167,9 +2167,9 @@ class NonCopperClear(AppTool, Gerber):
         log.debug("Executing the handler ...")
 
         if run_threaded:
-            proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
+            proc = self.app.proc_container.new('%s...' % _("Non-Copper Clearing"))
         else:
-            self.app.proc_container.view.set_busy(_("Non-Copper clearing ..."))
+            self.app.proc_container.view.set_busy('%s...' % _("Non-Copper Clearing"))
             QtWidgets.QApplication.processEvents()
 
         # ######################################################################################################
@@ -2751,9 +2751,9 @@ class NonCopperClear(AppTool, Gerber):
         :return:
         """
         if run_threaded:
-            proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
+            proc = self.app.proc_container.new('%s...' % _("Non-Copper Clearing"))
         else:
-            self.app.proc_container.view.set_busy(_("Non-Copper clearing ..."))
+            self.app.proc_container.view.set_busy('%s...' % _("Non-Copper Clearing"))
             QtWidgets.QApplication.processEvents()
 
         # #####################################################################
@@ -4180,7 +4180,7 @@ class NccUI:
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -4188,7 +4188,7 @@ class NccUI:
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conventional'), 'value': 'cv'}])
         self.milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -4205,8 +4205,8 @@ class NccUI:
         self.nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be cleared are still \n"
-              "not cleared.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -4284,8 +4284,7 @@ class NccUI:
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "from the copper features.")
         )
         self.grid3.addWidget(self.ncc_choice_offset_cb, 19, 0)
 
@@ -4337,11 +4336,11 @@ class NccUI:
 
         self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
 
@@ -4381,8 +4380,7 @@ class NccUI:
         self.rest_ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "from the copper features.")
         )
         self.grid3.addWidget(self.rest_ncc_choice_offset_cb, 28, 0)
 

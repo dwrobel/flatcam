@@ -73,7 +73,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             {'label': _('Auto'), 'value': 'auto'},
             {"label": _("Manual"), "value": "manual"}
         ], stretch=False)
-        self.mode_label = QtWidgets.QLabel(_("Mode:"))
+        self.mode_label = QtWidgets.QLabel('%s:' % _("Mode"))
         self.mode_label.setToolTip(
             _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")

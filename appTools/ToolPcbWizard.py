@@ -450,8 +450,8 @@ class WizardUI:
         form_layout1.addRow(self.zeros_label, self.zeros_radio)
 
         # Units type
-        self.units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                     {'label': _('MM'), 'value': 'METRIC'}])
+        self.units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
+                                     {'label': _('mm'), 'value': 'METRIC'}])
         self.units_label = FCLabel("<b>%s:</b>" % _('Units'))
         self.units_label.setToolTip(
             _("The type of units that the coordinates and tool\n"
@@ -463,7 +463,7 @@ class WizardUI:
 
         self.import_button = QtWidgets.QPushButton(_("Import Excellon"))
         self.import_button.setToolTip(
-            _("Import in FlatCAM an Excellon file\n"
+            _("Import an Excellon file\n"
               "that store it's information's in 2 files.\n"
               "One usually has .DRL extension while\n"
               "the other has .INF extension.")

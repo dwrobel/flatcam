@@ -156,19 +156,19 @@ class Film(AppTool):
         try:
             name = self.ui.tf_object_combo.currentText()
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Film and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' %
+                                 (_("No object is selected."), _("Load an object for Film and retry.")))
             return
 
         try:
             boxname = self.ui.tf_box_combo.currentText()
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Box and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' %
+                                 (_("No object is selected."), _("Load an object for Box and retry.")))
             return
 
         if name == '' or boxname == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         scale_stroke_width = float(self.ui.film_scale_stroke_entry.get_value())
@@ -1108,7 +1108,7 @@ class FilmUI:
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
         grid0.addWidget(self.film_mirror_axis_label, 16, 0)
         grid0.addWidget(self.film_mirror_axis, 16, 1)

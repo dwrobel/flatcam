@@ -161,7 +161,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # Slot length
         self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
-            _("Length = The length of the slot.")
+            _("Length. The length of the slot.")
         )
         self.slot_length_label.setMinimumWidth(100)
 
