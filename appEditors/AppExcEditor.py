@@ -538,6 +538,31 @@ class FCDrillArray(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
+    def on_key(self, key):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == 'Control':
+            # Toggle Pad Array Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'X':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('Y')
+                elif self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'Y':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('A')
+                elif self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'A':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('X')
+
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        elif mod_key is None:
+            pass
+
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.e_ui.tools_table_exc.clearSelection()
@@ -739,6 +764,18 @@ class FCSlot(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.e_ui.slot_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
+
+    def on_key(self, key):
+        # Toggle Pad Direction
+        if key == QtCore.Qt.Key_Space:
+            if self.draw_app.e_ui.slot_axis_radio.get_value() == 'X':
+                self.draw_app.e_ui.slot_axis_radio.set_value('Y')
+            elif self.draw_app.e_ui.slot_axis_radio.get_value() == 'Y':
+                self.draw_app.e_ui.slot_axis_radio.set_value('A')
+            elif self.draw_app.e_ui.slot_axis_radio.get_value() == 'A':
+                self.draw_app.e_ui.slot_axis_radio.set_value('X')
+            # ## Utility geometry (animated)
+            self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1064,6 +1101,40 @@ class FCSlotArray(FCShapeTool):
         self.draw_app.e_ui.slot_frame.hide()
         self.draw_app.e_ui.slot_array_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
+
+    def on_key(self, key):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == 'Control':
+            # Toggle Pad Array Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'X':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('Y')
+                elif self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'Y':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('A')
+                elif self.draw_app.e_ui.slot_array_axis_radio.get_value() == 'A':
+                    self.draw_app.e_ui.slot_array_axis_radio.set_value('X')
+
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        elif mod_key is None:
+            # Toggle Pad Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.e_ui.slot_axis_radio.get_value() == 'X':
+                    self.draw_app.e_ui.slot_axis_radio.set_value('Y')
+                elif self.draw_app.e_ui.slot_axis_radio.get_value() == 'Y':
+                    self.draw_app.e_ui.slot_axis_radio.set_value('A')
+                elif self.draw_app.e_ui.slot_axis_radio.get_value() == 'A':
+                    self.draw_app.e_ui.slot_axis_radio.set_value('X')
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
     def clean_up(self):
         self.draw_app.selected = []

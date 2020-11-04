@@ -22,6 +22,10 @@ CHANGELOG for FlatCAM beta
 - fixed an error in Gerber parser, when it encounter a pen-up followed by pen-down move while in a region
 - trimmed the application strings
 - updated the Italian translation (by Massimiliano Golfetto)
+- fixed a series of issues in Gerber Editor tools when the user is trying to use the tools by preselecting a aperture without size (aperture macro)
+- moved all the UI stuff out of the Gerber Editor class in its own class
+- in the Excellon Editor, added shortcut keys Space and Ctrl+Space for toggling the direction of the Slots, respectively for the Array of Slots
+- updated the translation strings to the latest changes in the app strings
 
 2.11.2020
 
