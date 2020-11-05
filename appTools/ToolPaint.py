@@ -13,8 +13,8 @@ from copy import deepcopy
 
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage, grace
-from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox, \
-    FCLabel, FCComboBox2
+from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
+    FCButton, FCComboBox, FCLabel, FCComboBox2
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import unary_union, linemerge
@@ -381,11 +381,11 @@ class ToolPaint(AppTool, Gerber):
         self.blockSignals(False)
 
     def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4,
-                                       parent=self.app.ui)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+        tool_add_popup = FCInputDoubleSpinner(title='%s...' % _("New Tool"),
+                                              text='%s:' % _('Enter a Tool Diameter'),
+                                              min=0.0000, max=99.9999, decimals=self.decimals,
+                                              parent=self.app.ui)
+        tool_add_popup.set_icon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()
         if ok:

@@ -6830,7 +6830,7 @@ class CNCjob(Geometry):
 
         :param obj:         FlatCAM CNCJob object for which to plot the annotations
         :type obj:
-        :param visible:     annotaions visibility
+        :param visible:     annotations visibility
         :type visible:      bool
         :return:            Nothing
         :rtype:
@@ -6840,9 +6840,11 @@ class CNCjob(Geometry):
             return
 
         if visible is True:
-            obj.text_col.enabled = True
+            if self.app.is_legacy is False:
+                obj.annotation.clear(update=True)
+            obj.text_col.visible = True
         else:
-            obj.text_col.enabled = False
+            obj.text_col.visible = False
             return
 
         text = []
@@ -8606,6 +8608,15 @@ class FlatCAMRTree(object):
         :return:
         """
         return next(self.rti.nearest(pt, objects=True))
+
+    def intersection(self, pt):
+        """
+        Will raise StopIteration if no items are found.
+
+        :param pt:
+        :return:
+        """
+        return next(self.rti.intersection(pt, objects=True))
 
 
 class FlatCAMRTreeStorage(FlatCAMRTree):

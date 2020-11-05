@@ -3829,6 +3829,8 @@ class AppExcEditorUI:
         self.ui_vertical_lay.addWidget(separator_line)
 
         self.convert_slots_btn = FCButton('%s' % _("Convert Slots"))
+        self.convert_slots_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/convert32.png'))
+
         self.convert_slots_btn.setToolTip(
             _("Convert the slots in the selected tools to drills.")
         )
@@ -3870,7 +3872,8 @@ class AppExcEditorUI:
         hlay.addWidget(self.addtool_entry)
 
         # Tool Diameter Button
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn = FCButton(_('Add'))
+        self.addtool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the tool list\n"
               "with the diameter specified above.")
@@ -3881,7 +3884,8 @@ class AppExcEditorUI:
         grid1.addLayout(hlay, 0, 1)
 
         # Delete Tool
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete Tool'))
+        self.deltool_btn = FCButton(_('Delete Tool'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.deltool_btn.setToolTip(
             _("Delete a tool in the tool list\n"
               "by selecting a row in the tool table.")
@@ -3930,7 +3934,8 @@ class AppExcEditorUI:
         hlay2.addWidget(self.resdrill_entry)
 
         # Resize Button
-        self.resize_btn = QtWidgets.QPushButton(_('Resize'))
+        self.resize_btn = FCButton(_('Resize'))
+        self.resize_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/resize16.png'))
         self.resize_btn.setToolTip(
             _("Resize drill(s)")
         )
@@ -4309,7 +4314,7 @@ class AppExcEditorUI:
         layout.addStretch(1)
 
         # Editor
-        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'))
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")

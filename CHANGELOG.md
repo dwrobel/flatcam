@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.11.2020
+
+- fixed the annotation plotting in the CNCJob object
+- created a new InputDialog widget that has the buttons and the context menu translated and replaced the old widget throughout the app
+- updated the translation strings
+
 4.11.2020
 
 - updated all the translation files
@@ -18,6 +24,8 @@ CHANGELOG for FlatCAM beta
 - Turkish language strings updated (by Mehmet Kaya)
 - in Gerber Editor added the shortcut key 'Space' to change the direction of the array of pads
 - updated all the translation languages. Translated by Google the Spanish, Russian. Romanian translation updated.
+- refactored the name of the classes from the Gerber Editor
+- added more icons in the Gerber and Excellon Editors for the buttons
 
 3.11.2020
 
@@ -3372,7 +3380,7 @@ RELEASE 8.993
 
 23.05.2019
 
-- fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored
+- fixed bug in Gerber editor FCDisk and DiscSemiEditorGrb that the resulting geometry was not stored into the '0' aperture where all the solids are stored
 - fixed minor issue in Gerber Editor where apertures were included in the saved object even if there was no geometric data for that aperture
 - some PEP8 cleanup in FlatCAMApp.py
 
@@ -3447,7 +3455,7 @@ RELEASE 8.993
 - made the Feedrate Rapids parameter to depend on the type of preprocessor choosed. It will be showed only for a preprocessor which the name contain 'marlin' and for any preprocessor's that have 'custom' in the name
 - fixed the camlib.Gerber functions of mirror, scale, offset, skew and rotate to work with the new data structure for apertures geometry
 - fixed Gerber Editor selection to work with the new Gerber data structure in self.apertures
-- fixed Gerber Editor FCPad class to work with the new Gerber data structure in self.apertures
+- fixed Gerber Editor PadEditorGrb class to work with the new Gerber data structure in self.apertures
 - fixed camlib.Gerber issues related to what happen after parsing rectangular apertures 
 - wip in camblib.Gerber
 - completely converted the Gerber editor to the new data structure
