@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - fixed the annotation plotting in the CNCJob object
 - created a new InputDialog widget that has the buttons and the context menu translated and replaced the old widget throughout the app
 - updated the translation strings
+- Turkish language strings updated
+- set some policy rules back the way they were for the combo boxes in Geometry Object properties
 
 4.11.2020
 

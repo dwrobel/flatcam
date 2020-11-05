@@ -2103,7 +2103,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
 class FCComboBox(QtWidgets.QComboBox):
 
-    def __init__(self, parent=None, callback=None):
+    def __init__(self, parent=None, callback=None, policy=True):
         super(FCComboBox, self).__init__(parent)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.view = self.view()
@@ -2113,8 +2113,9 @@ class FCComboBox(QtWidgets.QComboBox):
         self._set_last = False
         self._obj_type = None
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.setSizePolicy(sizePolicy)
+        if policy is True:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position

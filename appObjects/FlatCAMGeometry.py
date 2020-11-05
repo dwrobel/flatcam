@@ -203,7 +203,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- OFFSET   ------------------------------------- #
-            offset_item = FCComboBox()
+            offset_item = FCComboBox(policy=False)
             for item in self.offset_item_options:
                 offset_item.addItem(item)
             idx = offset_item.findText(tooluid_value['offset'])
@@ -215,7 +215,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
             # -------------------- TYPE     ------------------------------------- #
-            type_item = FCComboBox()
+            type_item = FCComboBox(policy=False)
             for item in self.type_item_options:
                 type_item.addItem(item)
             idx = type_item.findText(tooluid_value['type'])
@@ -227,7 +227,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
 
             # -------------------- TOOL TYPE ------------------------------------- #
-            tool_type_item = FCComboBox()
+            tool_type_item = FCComboBox(policy=False)
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
             idx = tool_type_item.findText(tooluid_value['tool_type'])
