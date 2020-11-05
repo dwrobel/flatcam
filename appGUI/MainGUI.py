@@ -1224,18 +1224,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
         self.grid_toolbar.addWidget(self.grid_gap_x_entry)
 
-        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(FCLabel(" "))
         self.grid_gap_link_cb = FCCheckBox()
         self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n"
                                            "is copied to the Grid_Y value."))
         self.grid_toolbar.addWidget(self.grid_gap_link_cb)
-        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(FCLabel(" "))
 
         self.grid_gap_y_entry = FCEntry2()
         self.grid_gap_y_entry.setMaximumWidth(70)
         self.grid_gap_y_entry.setToolTip(_("Grid Y snapping distance"))
         self.grid_toolbar.addWidget(self.grid_gap_y_entry)
-        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(FCLabel(" "))
 
         self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
 
@@ -1257,25 +1257,25 @@ class MainGUI(QtWidgets.QMainWindow):
         self.axis_status_label.setToolTip(_("Toggle the display of axis on canvas"))
         self.axis_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/axis16.png'))
         self.status_toolbar.addWidget(self.axis_status_label)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.status_toolbar.addWidget(FCLabel(" "))
 
         self.pref_status_label = FCLabel()
         self.pref_status_label.setToolTip(_("Preferences"))
         self.pref_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/settings18.png'))
         self.status_toolbar.addWidget(self.pref_status_label)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.status_toolbar.addWidget(FCLabel(" "))
 
         self.shell_status_label = FCLabel()
         self.shell_status_label.setToolTip(_("Command Line"))
         self.shell_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/shell20.png'))
         self.status_toolbar.addWidget(self.shell_status_label)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.status_toolbar.addWidget(FCLabel(" "))
 
         self.hud_label = FCLabel()
         self.hud_label.setToolTip(_("HUD (Heads up display)"))
         self.hud_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/hud16.png'))
         self.status_toolbar.addWidget(self.hud_label)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.status_toolbar.addWidget(FCLabel(" "))
 
         self.wplace_label = FCLabel("A4")
         self.wplace_label.setToolTip(_("Draw a delimiting rectangle on canvas.\n"
@@ -1283,12 +1283,12 @@ class MainGUI(QtWidgets.QMainWindow):
                                      )
         self.wplace_label.setMargin(2)
         self.status_toolbar.addWidget(self.wplace_label)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.status_toolbar.addWidget(FCLabel(" "))
 
         # #######################################################################
         # ####################### Delta Coordinates TOOLBAR #####################
         # #######################################################################
-        self.rel_position_label = QtWidgets.QLabel(
+        self.rel_position_label = FCLabel(
             "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
         self.rel_position_label.setMinimumWidth(110)
         self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
@@ -1297,7 +1297,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # #######################################################################
         # ####################### Coordinates TOOLBAR ###########################
         # #######################################################################
-        self.position_label = QtWidgets.QLabel("&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
+        self.position_label = FCLabel("&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
         self.position_label.setMinimumWidth(110)
         self.position_label.setToolTip(_("Absolute measurement.\n"
                                          "Reference is (X=0, Y= 0) position"))
@@ -1508,7 +1508,7 @@ class MainGUI(QtWidgets.QMainWindow):
               "to the initial values loaded after first launch."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_defaults_button)
 
-        self.pref_open_button = QtWidgets.QPushButton()
+        self.pref_open_button = FCButton()
         self.pref_open_button.setText(_("Open Pref Folder"))
         self.pref_open_button.setIcon(QtGui.QIcon(self.app.resource_location + '/pref.png'))
         self.pref_open_button.setMinimumWidth(130)
@@ -1540,7 +1540,7 @@ class MainGUI(QtWidgets.QMainWindow):
             _("Apply the current preferences without saving to a file."))
         self.pref_tab_bottom_layout_2.addWidget(self.pref_apply_button)
 
-        self.pref_save_button = QtWidgets.QPushButton()
+        self.pref_save_button = FCButton()
         self.pref_save_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.pref_save_button.setText(_("Save"))
         self.pref_save_button.setMinimumWidth(130)
@@ -1549,7 +1549,7 @@ class MainGUI(QtWidgets.QMainWindow):
               "which is the file storing the working default preferences."))
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
 
-        self.pref_close_button = QtWidgets.QPushButton()
+        self.pref_close_button = FCButton()
         self.pref_close_button.setText(_("Cancel"))
         self.pref_close_button.setMinimumWidth(130)
         self.pref_close_button.setToolTip(
@@ -1723,7 +1723,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.status_toolbar)
         self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
 
-        self.units_label = QtWidgets.QLabel("[mm]")
+        self.units_label = FCLabel("[mm]")
         self.units_label.setToolTip(_("Application units"))
         self.units_label.setMargin(2)
         self.infobar.addWidget(self.units_label)

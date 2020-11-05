@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor added the shortcut key 'Space' to change the direction of the array of pads
 - updated all the translation languages. Translated by Google the Spanish, Russian. Romanian translation updated.
 - refactored the name of the classes from the Gerber Editor
+- added more icons in the Gerber and Excellon Editors for the buttons
 
 3.11.2020
 

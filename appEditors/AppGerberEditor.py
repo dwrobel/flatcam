@@ -18,8 +18,8 @@ from copy import copy, deepcopy
 import logging
 
 from camlib import distance, arc, three_point_circle
-from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
-    EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2
+from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
+    FCInputDialog, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
 from appTool import AppTool
 
 import numpy as np
@@ -4461,8 +4461,8 @@ class AppGerberEditor(QtCore.QObject):
 
         # # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
-            # I make an exception for RegionEditorGrb and TrackEditorGrb because clicking and dragging while making regions can
-            # create strange issues like missing a point in a track/region
+            # I make an exception for RegionEditorGrb and TrackEditorGrb because clicking and dragging while making 
+            # regions can create strange issues like missing a point in a track/region
             if isinstance(self.active_tool, RegionEditorGrb) or isinstance(self.active_tool, TrackEditorGrb):
                 pass
             else:
@@ -4988,19 +4988,19 @@ class AppGerberEditorUI:
 
         # Page Title icon
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
-        self.icon = QtWidgets.QLabel()
+        self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
         # Title label
-        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Gerber Editor'))
+        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Gerber Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
         # Object name
         self.name_box = QtWidgets.QHBoxLayout()
         layout.addLayout(self.name_box)
-        name_label = QtWidgets.QLabel(_("Name:"))
+        name_label = FCLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
@@ -5013,7 +5013,7 @@ class AppGerberEditorUI:
         # #########################
         # ### Gerber Apertures ####
         # #########################
-        self.apertures_table_label = QtWidgets.QLabel('<b>%s:</b>' % _('Apertures'))
+        self.apertures_table_label = FCLabel('<b>%s:</b>' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
@@ -5043,7 +5043,7 @@ class AppGerberEditorUI:
               " - (width, height) for R, O type.\n"
               " - (dia, nVertices) for P type"))
 
-        self.empty_label = QtWidgets.QLabel('')
+        self.empty_label = FCLabel('')
         self.custom_box.addWidget(self.empty_label)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Apertures widgets
@@ -5062,7 +5062,7 @@ class AppGerberEditorUI:
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
 
-        apcode_lbl = QtWidgets.QLabel('%s:' % _('Aperture Code'))
+        apcode_lbl = FCLabel('%s:' % _('Aperture Code'))
         apcode_lbl.setToolTip(_("Code for the new aperture"))
         grid1.addWidget(apcode_lbl, 1, 0)
 
@@ -5072,7 +5072,7 @@ class AppGerberEditorUI:
 
         grid1.addWidget(self.apcode_entry, 1, 1)
 
-        apsize_lbl = QtWidgets.QLabel('%s' % _('Aperture Size:'))
+        apsize_lbl = FCLabel('%s' % _('Aperture Size:'))
         apsize_lbl.setToolTip(
             _("Size for the new aperture.\n"
               "If aperture type is 'R' or 'O' then\n"
@@ -5088,7 +5088,7 @@ class AppGerberEditorUI:
 
         grid1.addWidget(self.apsize_entry, 2, 1)
 
-        aptype_lbl = QtWidgets.QLabel('%s:' % _('Aperture Type'))
+        aptype_lbl = FCLabel('%s:' % _('Aperture Type'))
         aptype_lbl.setToolTip(
             _("Select the type of new aperture. Can be:\n"
               "C = circular\n"
@@ -5101,7 +5101,7 @@ class AppGerberEditorUI:
         self.aptype_cb.addItems(['C', 'R', 'O'])
         grid1.addWidget(self.aptype_cb, 3, 1)
 
-        self.apdim_lbl = QtWidgets.QLabel('%s:' % _('Aperture Dim'))
+        self.apdim_lbl = FCLabel('%s:' % _('Aperture Dim'))
         self.apdim_lbl.setToolTip(
             _("Dimensions for the new aperture.\n"
               "Active only for rectangular apertures (type R).\n"
@@ -5112,7 +5112,7 @@ class AppGerberEditorUI:
         self.apdim_entry = EvalEntry2()
         grid1.addWidget(self.apdim_entry, 4, 1)
 
-        apadd_del_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
+        apadd_del_lbl = FCLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
         apadd_del_lbl.setToolTip(
             _("Add/Delete an aperture in the aperture table")
         )
@@ -5121,12 +5121,14 @@ class AppGerberEditorUI:
         hlay_ad = QtWidgets.QHBoxLayout()
         self.apertures_box.addLayout(hlay_ad)
 
-        self.addaperture_btn = QtWidgets.QPushButton(_('Add'))
+        self.addaperture_btn = FCButton(_('Add'))
+        self.addaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addaperture_btn.setToolTip(
             _("Add a new aperture to the aperture list.")
         )
 
-        self.delaperture_btn = QtWidgets.QPushButton(_('Delete'))
+        self.delaperture_btn = FCButton(_('Delete'))
+        self.delaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delaperture_btn.setToolTip(
             _("Delete a aperture in the aperture list")
         )
@@ -5145,7 +5147,7 @@ class AppGerberEditorUI:
         self.buffer_tool_frame.hide()
 
         # Title
-        buf_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Buffer Aperture'))
+        buf_title_lbl = FCLabel('<b>%s:</b>' % _('Buffer Aperture'))
         buf_title_lbl.setToolTip(
             _("Buffer a aperture in the aperture list")
         )
@@ -5161,7 +5163,7 @@ class AppGerberEditorUI:
         self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
         buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
-        self.buffer_corner_lbl = QtWidgets.QLabel('%s:' % _("Buffer corner"))
+        self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded.\n"
@@ -5178,7 +5180,8 @@ class AppGerberEditorUI:
         hlay_buf = QtWidgets.QHBoxLayout()
         self.buffer_tools_box.addLayout(hlay_buf)
 
-        self.buffer_button = QtWidgets.QPushButton(_("Buffer"))
+        self.buffer_button = FCButton(_("Buffer"))
+        self.buffer_button.setIcon(QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'))
         hlay_buf.addWidget(self.buffer_button)
 
         # ##################
@@ -5193,7 +5196,7 @@ class AppGerberEditorUI:
         self.scale_tool_frame.hide()
 
         # Title
-        scale_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Scale Aperture'))
+        scale_title_lbl = FCLabel('<b>%s:</b>' % _('Scale Aperture'))
         scale_title_lbl.setToolTip(
             _("Scale a aperture in the aperture list")
         )
@@ -5203,7 +5206,7 @@ class AppGerberEditorUI:
         scale_form_layout = QtWidgets.QFormLayout()
         self.scale_tools_box.addLayout(scale_form_layout)
 
-        self.scale_factor_lbl = QtWidgets.QLabel('%s:' % _("Scale factor"))
+        self.scale_factor_lbl = FCLabel('%s:' % _("Scale factor"))
         self.scale_factor_lbl.setToolTip(
             _("The factor by which to scale the selected aperture.\n"
               "Values can be between 0.0000 and 999.9999")
@@ -5218,7 +5221,8 @@ class AppGerberEditorUI:
         hlay_scale = QtWidgets.QHBoxLayout()
         self.scale_tools_box.addLayout(hlay_scale)
 
-        self.scale_button = QtWidgets.QPushButton(_("Scale"))
+        self.scale_button = FCButton(_("Scale"))
+        self.scale_button.setIcon(QtGui.QIcon(self.app.resource_location + '/clean32.png'))
         hlay_scale.addWidget(self.scale_button)
 
         # ######################
@@ -5233,7 +5237,7 @@ class AppGerberEditorUI:
         self.ma_tool_frame.hide()
 
         # Title
-        ma_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Mark polygons'))
+        ma_title_lbl = FCLabel('<b>%s:</b>' % _('Mark polygons'))
         ma_title_lbl.setToolTip(
             _("Mark the polygon areas.")
         )
@@ -5243,7 +5247,7 @@ class AppGerberEditorUI:
         ma_form_layout = QtWidgets.QFormLayout()
         self.ma_tools_box.addLayout(ma_form_layout)
 
-        self.ma_upper_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area UPPER threshold"))
+        self.ma_upper_threshold_lbl = FCLabel('%s:' % _("Area UPPER threshold"))
         self.ma_upper_threshold_lbl.setToolTip(
             _("The threshold value, all areas less than this are marked.\n"
               "Can have a value between 0.0000 and 10000.0000")
@@ -5252,7 +5256,7 @@ class AppGerberEditorUI:
         self.ma_upper_threshold_entry.set_precision(self.decimals)
         self.ma_upper_threshold_entry.set_range(0, 10000)
 
-        self.ma_lower_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area LOWER threshold"))
+        self.ma_lower_threshold_lbl = FCLabel('%s:' % _("Area LOWER threshold"))
         self.ma_lower_threshold_lbl.setToolTip(
             _("The threshold value, all areas more than this are marked.\n"
               "Can have a value between 0.0000 and 10000.0000")
@@ -5268,19 +5272,22 @@ class AppGerberEditorUI:
         hlay_ma = QtWidgets.QHBoxLayout()
         self.ma_tools_box.addLayout(hlay_ma)
 
-        self.ma_threshold_button = QtWidgets.QPushButton(_("Mark"))
+        self.ma_threshold_button = FCButton(_("Mark"))
+        self.ma_threshold_button.setIcon(QtGui.QIcon(self.app.resource_location + '/markarea32.png'))
         self.ma_threshold_button.setToolTip(
             _("Mark the polygons that fit within limits.")
         )
         hlay_ma.addWidget(self.ma_threshold_button)
 
-        self.ma_delete_button = QtWidgets.QPushButton(_("Delete"))
+        self.ma_delete_button = FCButton(_("Delete"))
+        self.ma_delete_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.ma_delete_button.setToolTip(
             _("Delete all the marked polygons.")
         )
         hlay_ma.addWidget(self.ma_delete_button)
 
-        self.ma_clear_button = QtWidgets.QPushButton(_("Clear"))
+        self.ma_clear_button = FCButton(_("Clear"))
+        self.ma_clear_button.setIcon(QtGui.QIcon(self.app.resource_location + '/clean32.png'))
         self.ma_clear_button.setToolTip(
             _("Clear all the markings.")
         )
@@ -5299,10 +5306,10 @@ class AppGerberEditorUI:
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        self.emptyarray_label = QtWidgets.QLabel('')
+        self.emptyarray_label = FCLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
-        self.padarray_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Pad Array"))
+        self.padarray_label = FCLabel('<b>%s</b>' % _("Add Pad Array"))
         self.padarray_label.setToolTip(
             _("Add an array of pads (linear or circular array)")
         )
@@ -5321,7 +5328,7 @@ class AppGerberEditorUI:
         self.array_form = QtWidgets.QFormLayout()
         self.array_box.addLayout(self.array_form)
 
-        self.pad_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of pads'))
+        self.pad_array_size_label = FCLabel('%s:' % _('Nr of pads'))
         self.pad_array_size_label.setToolTip(
             _("Specify how many pads to be in the array.")
         )
@@ -5342,7 +5349,7 @@ class AppGerberEditorUI:
         self.linear_form = QtWidgets.QFormLayout()
         self.linear_box.addLayout(self.linear_form)
 
-        self.pad_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.pad_axis_label = FCLabel('%s:' % _('Direction'))
         self.pad_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -5357,7 +5364,7 @@ class AppGerberEditorUI:
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
-        self.pad_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.pad_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.pad_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -5370,7 +5377,7 @@ class AppGerberEditorUI:
 
         self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
 
-        self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.linear_angle_label = FCLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
@@ -5391,7 +5398,7 @@ class AppGerberEditorUI:
         self.circular_box.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circular_box)
 
-        self.pad_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.pad_direction_label = FCLabel('%s:' % _('Direction'))
         self.pad_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -5406,7 +5413,7 @@ class AppGerberEditorUI:
         self.pad_direction_radio.set_value('CW')
         self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
 
-        self.pad_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.pad_angle_label = FCLabel('%s:' % _('Angle'))
         self.pad_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -5430,7 +5437,7 @@ class AppGerberEditorUI:
         layout.addStretch()
 
         # Editor
-        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'))
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
@@ -5465,7 +5472,7 @@ class TransformEditorTool(AppTool):
         self.decimals = self.app.decimals
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                         QLabel
                                         {
@@ -5474,7 +5481,7 @@ class TransformEditorTool(AppTool):
                                         }
                                         """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(''))
+        self.layout.addWidget(FCLabel(''))
 
         # ## Layout
         grid0 = QtWidgets.QGridLayout()
@@ -5483,10 +5490,10 @@ class TransformEditorTool(AppTool):
         grid0.setColumnStretch(1, 1)
         grid0.setColumnStretch(2, 0)
 
-        grid0.addWidget(QtWidgets.QLabel(''))
+        grid0.addWidget(FCLabel(''))
 
         # Reference
-        ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        ref_label = FCLabel('%s:' % _("Reference"))
         ref_label.setToolTip(
             _("The reference point for Rotate, Skew, Scale, Mirror.\n"
               "Can be:\n"
@@ -5502,7 +5509,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(ref_label, 0, 0)
         grid0.addWidget(self.ref_combo, 0, 1, 1, 2)
 
-        self.point_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.point_label = FCLabel('%s:' % _("Value"))
         self.point_label.setToolTip(
             _("A point of reference in format X,Y.")
         )
@@ -5523,10 +5530,10 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 5, 0, 1, 3)
 
         # ## Rotate Title
-        rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
+        rotate_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.rotateName)
         grid0.addWidget(rotate_title_label, 6, 0, 1, 3)
 
-        self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
+        self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
@@ -5560,7 +5567,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 8, 0, 1, 3)
 
         # ## Skew Title
-        skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
+        skew_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.skewName)
         grid0.addWidget(skew_title_label, 9, 0, 1, 2)
 
         self.skew_link_cb = FCCheckBox()
@@ -5571,7 +5578,7 @@ class TransformEditorTool(AppTool):
 
         grid0.addWidget(self.skew_link_cb, 9, 2)
 
-        self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
+        self.skewx_label = FCLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
@@ -5592,7 +5599,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.skewx_entry, 10, 1)
         grid0.addWidget(self.skewx_button, 10, 2)
 
-        self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
+        self.skewy_label = FCLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
@@ -5622,7 +5629,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 14, 0, 1, 3)
 
         # ## Scale Title
-        scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
+        scale_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.scaleName)
         grid0.addWidget(scale_title_label, 15, 0, 1, 2)
 
         self.scale_link_cb = FCCheckBox()
@@ -5633,7 +5640,7 @@ class TransformEditorTool(AppTool):
 
         grid0.addWidget(self.scale_link_cb, 15, 2)
 
-        self.scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
+        self.scalex_label = FCLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
@@ -5653,7 +5660,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.scalex_entry, 17, 1)
         grid0.addWidget(self.scalex_button, 17, 2)
 
-        self.scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
+        self.scaley_label = FCLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
@@ -5686,7 +5693,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 21, 0, 1, 3)
 
         # ## Flip Title
-        flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
+        flip_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.flipName)
         grid0.addWidget(flip_title_label, 23, 0, 1, 3)
 
         self.flipx_button = FCButton(_("Flip on X"))
@@ -5711,10 +5718,10 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 27, 0, 1, 3)
 
         # ## Offset Title
-        offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
+        offset_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.offsetName)
         grid0.addWidget(offset_title_label, 29, 0, 1, 3)
 
-        self.offx_label = QtWidgets.QLabel('%s:' % _("X val"))
+        self.offx_label = FCLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
             _("Distance to offset on X axis. In current units.")
         )
@@ -5734,7 +5741,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.offx_entry, 31, 1)
         grid0.addWidget(self.offx_button, 31, 2)
 
-        self.offy_label = QtWidgets.QLabel('%s:' % _("Y val"))
+        self.offy_label = FCLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
@@ -5760,7 +5767,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(separator_line, 34, 0, 1, 3)
 
         # ## Buffer Title
-        buffer_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.bufferName)
+        buffer_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.bufferName)
         grid0.addWidget(buffer_title_label, 35, 0, 1, 2)
 
         self.buffer_rounded_cb = FCCheckBox('%s' % _("Rounded"))
@@ -5773,7 +5780,7 @@ class TransformEditorTool(AppTool):
 
         grid0.addWidget(self.buffer_rounded_cb, 35, 2)
 
-        self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
+        self.buffer_label = FCLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
             _("A positive value will create the effect of dilation,\n"
               "while a negative value will create the effect of erosion.\n"
@@ -5798,7 +5805,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.buffer_entry, 37, 1)
         grid0.addWidget(self.buffer_button, 37, 2)
 
-        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.buffer_factor_label = FCLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
             _("A positive value will create the effect of dilation,\n"
               "while a negative value will create the effect of erosion.\n"
@@ -5824,7 +5831,7 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.buffer_factor_entry, 38, 1)
         grid0.addWidget(self.buffer_factor_button, 38, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 42, 0, 1, 3)
+        grid0.addWidget(FCLabel(''), 42, 0, 1, 3)
 
         self.layout.addStretch()
 
