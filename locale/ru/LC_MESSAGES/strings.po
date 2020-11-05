@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:41+0200\n"
+"POT-Creation-Date: 2020-11-06 01:46+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -1403,9 +1403,9 @@ msgstr ""
 "активной геометрии после выбора инструмента\n"
 "в базе данных."
 
-#: appDatabase.py:1366 appGUI/GUIElements.py:2266 appGUI/GUIElements.py:2335
-#: appGUI/GUIElements.py:2396 appGUI/GUIElements.py:2460
-#: appGUI/GUIElements.py:3802 appGUI/MainGUI.py:1553
+#: appDatabase.py:1366 appGUI/GUIElements.py:2267 appGUI/GUIElements.py:2336
+#: appGUI/GUIElements.py:2397 appGUI/GUIElements.py:2461
+#: appGUI/GUIElements.py:3803 appGUI/MainGUI.py:1553
 #: appGUI/preferences/PreferencesUIManager.py:949 app_Main.py:2500
 #: app_Main.py:3527 app_Main.py:4471 app_Main.py:4724 app_Main.py:9001
 msgid "Cancel"
@@ -1969,7 +1969,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:4018 appEditors/AppExcEditor.py:4143
 #: appEditors/AppExcEditor.py:4239 appEditors/AppGerberEditor.py:5362
-#: appGUI/GUIElements.py:4340 appGUI/MainGUI.py:478 appGUI/MainGUI.py:671
+#: appGUI/GUIElements.py:4341 appGUI/MainGUI.py:478 appGUI/MainGUI.py:671
 #: appGUI/MainGUI.py:4442 appGUI/MainGUI.py:4708
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:187
@@ -1982,7 +1982,7 @@ msgstr "X"
 
 #: appEditors/AppExcEditor.py:4019 appEditors/AppExcEditor.py:4144
 #: appEditors/AppExcEditor.py:4240 appEditors/AppGerberEditor.py:5363
-#: appGUI/GUIElements.py:4347 appGUI/MainGUI.py:481 appGUI/MainGUI.py:4443
+#: appGUI/GUIElements.py:4348 appGUI/MainGUI.py:481 appGUI/MainGUI.py:4443
 #: appGUI/MainGUI.py:4709
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:188
@@ -2385,7 +2385,7 @@ msgid "Buffer"
 msgstr "Буфер"
 
 #: appEditors/AppGeoEditor.py:646 appEditors/AppGerberEditor.py:5497
-#: appGUI/GUIElements.py:3766
+#: appGUI/GUIElements.py:3767
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
 #: appTools/ToolDblSided.py:684 appTools/ToolDblSided.py:860
@@ -3704,7 +3704,7 @@ msgstr "Заменяет строку из поля «Найти» на стро
 msgid "String to replace the one in the Find box throughout the text."
 msgstr "Строка, заменяющая строку в поле поиска по всему тексту."
 
-#: appEditors/AppTextEditor.py:106 appGUI/GUIElements.py:4368
+#: appEditors/AppTextEditor.py:106 appGUI/GUIElements.py:4369
 #: appGUI/ObjectUI.py:1887 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:61
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
@@ -3892,7 +3892,7 @@ msgstr "Ctrl+X"
 
 #: appGUI/GUIElements.py:313 appGUI/GUIElements.py:1001
 #: appGUI/GUIElements.py:1387 appGUI/GUIElements.py:1592
-#: appGUI/GUIElements.py:1925 appGUI/GUIElements.py:3831 appGUI/MainGUI.py:417
+#: appGUI/GUIElements.py:1925 appGUI/GUIElements.py:3832 appGUI/MainGUI.py:417
 #: appGUI/MainGUI.py:731 appGUI/MainGUI.py:790 appGUI/MainGUI.py:870
 #: appGUI/MainGUI.py:989 appGUI/MainGUI.py:1206 appGUI/MainGUI.py:1690
 #: appGUI/MainGUI.py:2161 appGUI/MainGUI.py:2374 appGUI/MainGUI.py:4952
@@ -3904,7 +3904,7 @@ msgstr "Копировать"
 
 #: appGUI/GUIElements.py:313 appGUI/GUIElements.py:1001
 #: appGUI/GUIElements.py:1387 appGUI/GUIElements.py:1592
-#: appGUI/GUIElements.py:1925 appGUI/GUIElements.py:3831 appGUI/MainGUI.py:417
+#: appGUI/GUIElements.py:1925 appGUI/GUIElements.py:3832 appGUI/MainGUI.py:417
 #: appGUI/MainGUI.py:4449
 msgid "Ctrl+C"
 msgstr "Ctrl+C"
@@ -3923,7 +3923,7 @@ msgstr "Ctrl+V"
 
 #: appGUI/GUIElements.py:325 appGUI/GUIElements.py:1013
 #: appGUI/GUIElements.py:1399 appGUI/GUIElements.py:1604
-#: appGUI/GUIElements.py:1937 appGUI/GUIElements.py:3849 appGUI/MainGUI.py:4517
+#: appGUI/GUIElements.py:1937 appGUI/GUIElements.py:3850 appGUI/MainGUI.py:4517
 #: appGUI/MainGUI.py:4518 appGUI/MainGUI.py:4722 appGUI/MainGUI.py:4822
 #: appGUI/MainGUI.py:4823 appGUI/MainGUI.py:4963 appGUI/MainGUI.py:4964
 msgid "Del"
@@ -3931,7 +3931,7 @@ msgstr "Удалить"
 
 #: appGUI/GUIElements.py:332 appGUI/GUIElements.py:1020
 #: appGUI/GUIElements.py:1406 appGUI/GUIElements.py:1611
-#: appGUI/GUIElements.py:1944 appGUI/GUIElements.py:3839 appGUI/MainGUI.py:448
+#: appGUI/GUIElements.py:1944 appGUI/GUIElements.py:3840 appGUI/MainGUI.py:448
 #: appGUI/MainGUI.py:568 appGUI/MainGUI.py:4448
 #: appObjects/ObjectCollection.py:1128 appObjects/ObjectCollection.py:1175
 msgid "Select All"
@@ -3939,7 +3939,7 @@ msgstr "Выбрать все"
 
 #: appGUI/GUIElements.py:332 appGUI/GUIElements.py:1020
 #: appGUI/GUIElements.py:1406 appGUI/GUIElements.py:1611
-#: appGUI/GUIElements.py:1944 appGUI/GUIElements.py:3839 appGUI/MainGUI.py:448
+#: appGUI/GUIElements.py:1944 appGUI/GUIElements.py:3840 appGUI/MainGUI.py:448
 #: appGUI/MainGUI.py:4448
 msgid "Ctrl+A"
 msgstr "Ctrl+A"
@@ -3952,15 +3952,15 @@ msgstr "подняться"
 msgid "Step Down"
 msgstr "спускаться"
 
-#: appGUI/GUIElements.py:2265 appGUI/GUIElements.py:2334
-#: appGUI/GUIElements.py:2395 appGUI/GUIElements.py:2459
-#: appGUI/GUIElements.py:3801 app_Main.py:4470 app_Main.py:4634
+#: appGUI/GUIElements.py:2266 appGUI/GUIElements.py:2335
+#: appGUI/GUIElements.py:2396 appGUI/GUIElements.py:2460
+#: appGUI/GUIElements.py:3802 app_Main.py:4470 app_Main.py:4634
 #: app_Main.py:4723 app_Main.py:8520 app_Main.py:8535 app_Main.py:8879
 #: app_Main.py:8891
 msgid "Ok"
 msgstr "Да"
 
-#: appGUI/GUIElements.py:3768
+#: appGUI/GUIElements.py:3769
 msgid ""
 "The reference can be:\n"
 "- Absolute -> the reference point is point (0,0)\n"
@@ -3970,19 +3970,19 @@ msgstr ""
 "- Абсолютный -> точка отсчета - это точка (0,0)\n"
 "- Относительный -> опорной точкой является положение мыши перед перемещением"
 
-#: appGUI/GUIElements.py:3773
+#: appGUI/GUIElements.py:3774
 msgid "Abs"
 msgstr "Абс"
 
-#: appGUI/GUIElements.py:3774
+#: appGUI/GUIElements.py:3775
 msgid "Relative"
 msgstr "Относительный"
 
-#: appGUI/GUIElements.py:3784
+#: appGUI/GUIElements.py:3785
 msgid "Location"
 msgstr "Местоположение"
 
-#: appGUI/GUIElements.py:3786
+#: appGUI/GUIElements.py:3787
 msgid ""
 "The Location value is a tuple (x,y).\n"
 "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -3994,86 +3994,86 @@ msgstr ""
 "Если ссылка является относительной, то переход будет на расстоянии (x, y)\n"
 "от текущей точки расположения мыши."
 
-#: appGUI/GUIElements.py:3844
+#: appGUI/GUIElements.py:3845
 msgid "Save Log"
 msgstr "Сохранить журнал"
 
-#: appGUI/GUIElements.py:3844 appGUI/MainGUI.py:164 appGUI/MainGUI.py:346
+#: appGUI/GUIElements.py:3845 appGUI/MainGUI.py:164 appGUI/MainGUI.py:346
 #: appGUI/MainGUI.py:4458 appGUI/MainGUI.py:4717 appGUI/MainGUI.py:4826
 #: appGUI/MainGUI.py:4969
 msgid "Ctrl+S"
 msgstr "Ctrl+S"
 
-#: appGUI/GUIElements.py:3849
+#: appGUI/GUIElements.py:3850
 msgid "Clear All"
 msgstr "Oчистить все"
 
-#: appGUI/GUIElements.py:3896 appTools/ToolShell.py:299
+#: appGUI/GUIElements.py:3897 appTools/ToolShell.py:299
 msgid "Type >help< to get started"
 msgstr "Введите >справка< чтобы начать работу"
 
-#: appGUI/GUIElements.py:4263 appGUI/GUIElements.py:4280
+#: appGUI/GUIElements.py:4264 appGUI/GUIElements.py:4281
 msgid "Jog the Y axis."
 msgstr "Пробегитесь по оси Y."
 
-#: appGUI/GUIElements.py:4271 appGUI/MainGUI.py:432 appGUI/MainGUI.py:1000
+#: appGUI/GUIElements.py:4272 appGUI/MainGUI.py:432 appGUI/MainGUI.py:1000
 #: appGUI/MainGUI.py:2172
 msgid "Move to Origin"
 msgstr "Перейти к началу координат"
 
-#: appGUI/GUIElements.py:4288 appGUI/GUIElements.py:4296
+#: appGUI/GUIElements.py:4289 appGUI/GUIElements.py:4297
 msgid "Jog the X axis."
 msgstr "Переместите ось X."
 
-#: appGUI/GUIElements.py:4306 appGUI/GUIElements.py:4316
+#: appGUI/GUIElements.py:4307 appGUI/GUIElements.py:4317
 msgid "Jog the Z axis."
 msgstr "Пробегитесь по оси Z."
 
-#: appGUI/GUIElements.py:4342
+#: appGUI/GUIElements.py:4343
 msgid "Zero the CNC X axes at current position."
 msgstr "Обнулите оси X ЧПУ в текущем положении."
 
-#: appGUI/GUIElements.py:4350
+#: appGUI/GUIElements.py:4351
 msgid "Zero the CNC Y axes at current position."
 msgstr "Обнулите оси Y ЧПУ в текущем положении."
 
-#: appGUI/GUIElements.py:4355
+#: appGUI/GUIElements.py:4356
 msgid "Z"
 msgstr "Z"
 
-#: appGUI/GUIElements.py:4358
+#: appGUI/GUIElements.py:4359
 msgid "Zero the CNC Z axes at current position."
 msgstr "Обнулите оси Z ЧПУ в текущем положении."
 
-#: appGUI/GUIElements.py:4362
+#: appGUI/GUIElements.py:4363
 msgid "Do Home"
 msgstr "Наведение"
 
-#: appGUI/GUIElements.py:4364
+#: appGUI/GUIElements.py:4365
 msgid "Perform a homing cycle on all axis."
 msgstr "Выполните цикл самонаведения по всей оси."
 
-#: appGUI/GUIElements.py:4372
+#: appGUI/GUIElements.py:4373
 msgid "Zero all CNC axes at current position."
 msgstr "Обнулите все оси ЧПУ в текущем положении."
 
-#: appGUI/GUIElements.py:4527 appGUI/GUIElements.py:4536
+#: appGUI/GUIElements.py:4528 appGUI/GUIElements.py:4537
 msgid "Idle."
 msgstr "Нет заданий."
 
-#: appGUI/GUIElements.py:4569
+#: appGUI/GUIElements.py:4570
 msgid "Application started ..."
 msgstr "Приложение запущено ..."
 
-#: appGUI/GUIElements.py:4570
+#: appGUI/GUIElements.py:4571
 msgid "Hello!"
 msgstr "Приветствую!"
 
-#: appGUI/GUIElements.py:4617
+#: appGUI/GUIElements.py:4618
 msgid "Run Script ..."
 msgstr "Выполнить сценарий ..."
 
-#: appGUI/GUIElements.py:4619 appGUI/MainGUI.py:199
+#: appGUI/GUIElements.py:4620 appGUI/MainGUI.py:199
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
@@ -4083,42 +4083,42 @@ msgstr ""
 "включающий автоматизацию некоторых\n"
 "функций FlatCAM."
 
-#: appGUI/GUIElements.py:4628 appGUI/MainGUI.py:121
+#: appGUI/GUIElements.py:4629 appGUI/MainGUI.py:121
 #: appTools/ToolPcbWizard.py:390 appTools/ToolPcbWizard.py:397
 msgid "Open"
 msgstr "Открыть"
 
-#: appGUI/GUIElements.py:4632 appGUI/MainGUI.py:126 appGUI/MainGUI.py:974
+#: appGUI/GUIElements.py:4633 appGUI/MainGUI.py:126 appGUI/MainGUI.py:974
 #: appGUI/MainGUI.py:2145 appGUI/MainGUI.py:4455 app_Main.py:8427
 #: app_Main.py:8430
 msgid "Open Project"
 msgstr "Открыть проект"
 
-#: appGUI/GUIElements.py:4638 appGUI/MainGUI.py:133 appGUI/MainGUI.py:969
+#: appGUI/GUIElements.py:4639 appGUI/MainGUI.py:133 appGUI/MainGUI.py:969
 #: appGUI/MainGUI.py:2140 app_Main.py:8307 app_Main.py:8312
 msgid "Open Gerber"
 msgstr "Открыть Gerber"
 
-#: appGUI/GUIElements.py:4638 appGUI/MainGUI.py:133 appGUI/MainGUI.py:4452
+#: appGUI/GUIElements.py:4639 appGUI/MainGUI.py:133 appGUI/MainGUI.py:4452
 msgid "Ctrl+G"
 msgstr "Ctrl+G"
 
-#: appGUI/GUIElements.py:4643 appGUI/MainGUI.py:138 appGUI/MainGUI.py:971
+#: appGUI/GUIElements.py:4644 appGUI/MainGUI.py:138 appGUI/MainGUI.py:971
 #: appGUI/MainGUI.py:2142 app_Main.py:8347 app_Main.py:8352
 msgid "Open Excellon"
 msgstr "Открыть Excellon"
 
-#: appGUI/GUIElements.py:4643 appGUI/MainGUI.py:138 appGUI/MainGUI.py:782
+#: appGUI/GUIElements.py:4644 appGUI/MainGUI.py:138 appGUI/MainGUI.py:782
 #: appGUI/MainGUI.py:4451 appGUI/MainGUI.py:4968
 msgid "Ctrl+E"
 msgstr "Ctrl+E"
 
-#: appGUI/GUIElements.py:4648 appGUI/MainGUI.py:143 app_Main.py:8390
+#: appGUI/GUIElements.py:4649 appGUI/MainGUI.py:143 app_Main.py:8390
 #: app_Main.py:8395
 msgid "Open G-Code"
 msgstr "Открыть G-Code"
 
-#: appGUI/GUIElements.py:4658 appGUI/MainGUI.py:330
+#: appGUI/GUIElements.py:4659 appGUI/MainGUI.py:330
 msgid "Exit"
 msgstr "Выход"
 
