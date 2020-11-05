@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Turkish language strings updated
 - set some policy rules back the way they were for the combo boxes in Geometry Object properties
 - updated the Italian translation (by Massimiliano Golfetto)
+- finished the Google-translation of the German language strings
 
 4.11.2020
 
