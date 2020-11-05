@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:26+0200\n"
-"PO-Revision-Date: 2020-11-05 16:26+0200\n"
+"POT-Creation-Date: 2020-11-05 16:45+0200\n"
+"PO-Revision-Date: 2020-11-05 16:45+0200\n"
 "Last-Translator: Marius Stanciu - Google Translate\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -12932,6 +12932,10 @@ msgid ""
 "Object ({kind}) failed because: {error} \n"
 "\n"
 msgstr "El objeto ({kind}) falló porque: {error}\n"
+
+#: appObjects/AppObject.py:171
+msgid "New object with name:"
+msgstr "Nuevo objeto con nombre:"
 
 #: appObjects/AppObject.py:184
 msgid "Converting units to "

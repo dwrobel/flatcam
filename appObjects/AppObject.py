@@ -168,7 +168,7 @@ class AppObject(QtCore.QObject):
             return "fail"
 
         t2 = time.time()
-        msg = "New object with name: %s. %f seconds executing initialize()." % (name, (t2 - t1))
+        msg = "%s %s. %f seconds executing initialize()." % (_("New object with name:"), name, (t2 - t1))
         log.debug(msg)
         self.app.inform_shell.emit(msg)
 

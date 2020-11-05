@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:26+0200\n"
-"PO-Revision-Date: 2020-11-05 16:26+0200\n"
+"POT-Creation-Date: 2020-11-05 16:41+0200\n"
+"PO-Revision-Date: 2020-11-05 16:43+0200\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -12798,6 +12798,10 @@ msgid ""
 msgstr ""
 "Objeto ({kind}) falhou porque: {error} \n"
 "\n"
+
+#: appObjects/AppObject.py:171
+msgid "New object with name:"
+msgstr "Novo objeto com nome:"
 
 #: appObjects/AppObject.py:184
 msgid "Converting units to "

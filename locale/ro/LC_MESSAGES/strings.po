@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:26+0200\n"
-"PO-Revision-Date: 2020-11-05 16:32+0200\n"
+"POT-Creation-Date: 2020-11-05 16:41+0200\n"
+"PO-Revision-Date: 2020-11-05 16:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -12936,6 +12936,10 @@ msgid ""
 msgstr ""
 "Obiectul ({kind}) a eșuat din cauza: {error} \n"
 "\n"
+
+#: appObjects/AppObject.py:171
+msgid "New object with name:"
+msgstr "Obiect nou cu numele:"
 
 #: appObjects/AppObject.py:184
 msgid "Converting units to "
