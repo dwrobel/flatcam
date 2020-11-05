@@ -8607,6 +8607,15 @@ class FlatCAMRTree(object):
         """
         return next(self.rti.nearest(pt, objects=True))
 
+    def intersection(self, pt):
+        """
+        Will raise StopIteration if no items are found.
+
+        :param pt:
+        :return:
+        """
+        return next(self.rti.intersection(pt, objects=True))
+
 
 class FlatCAMRTreeStorage(FlatCAMRTree):
     """

@@ -3801,6 +3801,7 @@ class AppGerberEditor(QtCore.QObject):
                                     else:
                                         for clear_geo in global_clear_geo:
                                             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
                                             # the solid_geometry. We want for clear_geometry just to cut into
                                             # solid_geometry not to delete it
                                             if clear_geo.within(solid_geo):
