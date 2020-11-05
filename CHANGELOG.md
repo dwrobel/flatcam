@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.11.2020
+
+- fixed the annotation plotting in the CNCJob object
+- created a new InputDialog widget that has the buttons and the context menu translated and replaced the old widget throughout the app
+- updated the translation strings
+
 4.11.2020
 
 - updated all the translation files

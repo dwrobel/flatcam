@@ -2220,6 +2220,84 @@ class FCInputDialog(QtWidgets.QInputDialog):
         pass
 
 
+class FCInputDoubleSpinner(QtWidgets.QDialog):
+    def __init__(self, parent=None, title=None, text=None,
+                 min=0.0, max=100.0000, step=1, decimals=4, init_val=None):
+        super(FCInputDoubleSpinner, self).__init__(parent)
+
+        self.val = 0.0
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min
+        self.max = max
+        self.step = step
+        self.decimals = decimals
+
+        self.lbl = FCLabel(self.text)
+
+        if title is None:
+            self.title = 'title'
+        else:
+            self.title = title
+        if text is None:
+            self.text = 'text'
+        else:
+            self.text = text
+
+        self.wdg = FCDoubleSpinner()
+        self.wdg.set_value(self.init_value)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_icon(self, icon):
+        self.setWindowIcon(icon)
+
+    def set_min(self, val):
+        self.wdg.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.set_step(val)
+
+    def set_value(self, val):
+        self.wdg.set_value(val)
+
+    def get_value(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return self.wdg.get_value(), True
+        else:
+            return None, False
+
+
 class FCInputSpinner(QtWidgets.QDialog):
     def __init__(self, parent=None, title=None, text=None, min=None, max=None, decimals=4, step=1, init_val=None):
         super().__init__(parent)
@@ -2252,6 +2330,9 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -2310,6 +2391,9 @@ class FCInputDialogSlider(QtWidgets.QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -2372,6 +2456,9 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
         self.layout.addWidget(self.wdg)
@@ -2383,6 +2470,9 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
 
     def set_text(self, txt):
         self.lbl.set_value(txt)
+
+    def set_icon(self, icon):
+        self.setWindowIcon(icon)
 
     def set_min(self, val):
         self.wdg.spinner.setMinimum(val)
@@ -3707,6 +3797,9 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
                                                      orientation=Qt.Horizontal, parent=self)
         self.form.addRow(self.button_box)
+
+        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
 
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)

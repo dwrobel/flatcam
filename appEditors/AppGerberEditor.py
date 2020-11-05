@@ -19,7 +19,7 @@ import logging
 
 from camlib import distance, arc, three_point_circle
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
-    FCInputDialog, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
+    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
 from appTool import AppTool
 
 import numpy as np
@@ -6348,12 +6348,12 @@ class TransformEditorTool(AppTool):
                 return
 
     def on_rotate_key(self):
-        val_box = FCInputDialog(title=_("Rotate ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_rotate']),
-                                parent=self.app.ui)
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
+        val_box = FCInputDoubleSpinner(title=_("Rotate ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_rotate']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -6366,11 +6366,11 @@ class TransformEditorTool(AppTool):
     def on_offx_key(self):
         units = self.app.defaults['units'].lower()
 
-        val_box = FCInputDialog(title=_("Offset on X axis ..."),
-                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_x']),
-                                parent=self.app.ui)
+        val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
+                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
+                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_offset_x']),
+                                       parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
         val, ok = val_box.get_value()
@@ -6384,12 +6384,12 @@ class TransformEditorTool(AppTool):
     def on_offy_key(self):
         units = self.app.defaults['units'].lower()
 
-        val_box = FCInputDialog(title=_("Offset on Y axis ..."),
-                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-10000.0000, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_y']),
-                                parent=self.app.ui)
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
+        val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
+                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
+                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_offset_y']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -6400,11 +6400,11 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Offset Y cancelled"))
 
     def on_skewx_key(self):
-        val_box = FCInputDialog(title=_("Skew on X axis ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_x']),
-                                parent=self.app.ui)
+        val_box = FCInputDoubleSpinner(title=_("Skew on X axis ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_skew_x']),
+                                       parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
         val, ok = val_box.get_value()
@@ -6416,11 +6416,11 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Skew X cancelled"))
 
     def on_skewy_key(self):
-        val_box = FCInputDialog(title=_("Skew on Y axis ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_y']),
-                                parent=self.app.ui)
+        val_box = FCInputDoubleSpinner(title=_("Skew on Y axis ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_skew_y']),
+                                       parent=self.app.ui)
         val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
         val, ok = val_box.get_value()

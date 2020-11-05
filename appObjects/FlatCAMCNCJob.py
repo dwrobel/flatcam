@@ -2509,10 +2509,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
 
-        # Annotaions shapes plotting
+        # Annotations shapes plotting
         try:
             if self.app.is_legacy is False:
-                if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                if self.ui.annotation_cb.get_value() and visible:
                     self.plot_annotations(obj=self, visible=True)
                 else:
                     self.plot_annotations(obj=self, visible=False)
@@ -2521,20 +2521,28 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
 
-    def on_annotation_change(self):
+    def on_annotation_change(self, val):
         """
         Handler for toggling the annotation display by clicking a checkbox.
         :return:
         """
 
         if self.app.is_legacy is False:
-            if self.ui.annotation_cb.get_value():
-                self.text_col.enabled = True
-            else:
-                self.text_col.enabled = False
-            # kind = self.ui.cncplot_method_combo.get_value()
-            # self.plot(kind=kind)
-            self.annotation.redraw()
+            # self.text_col.visible = True if val == 2 else False
+            # self.plot(kind=self.ui.cncplot_method_combo.get_value())
+            # Annotations shapes plotting
+            try:
+                if self.app.is_legacy is False:
+                    if val and self.ui.plot_cb.get_value():
+                        self.plot_annotations(obj=self, visible=True)
+                    else:
+                        self.plot_annotations(obj=self, visible=False)
+
+            except (ObjectDeleted, AttributeError):
+                if self.app.is_legacy is False:
+                    self.annotation.clear(update=True)
+
+            # self.annotation.redraw()
         else:
             kind = self.ui.cncplot_method_combo.get_value()
             self.plot(kind=kind)

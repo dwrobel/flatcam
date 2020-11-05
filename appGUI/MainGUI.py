@@ -3646,10 +3646,10 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
                         self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
-                        tool_add_popup = FCInputDialog(title='%s ...' % _("New Tool"),
-                                                       text='%s:' % _('Enter a Tool Diameter'),
-                                                       min=0.0000, max=99.9999, decimals=4)
-                        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+                        tool_add_popup = FCInputDoubleSpinner(title='%s ...' % _("New Tool"),
+                                                              text='%s:' % _('Enter a Tool Diameter'),
+                                                              min=0.0000, max=99.9999, decimals=self.decimals)
+                        tool_add_popup.set_icon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
                         val, ok = tool_add_popup.get_value()
                         if ok:

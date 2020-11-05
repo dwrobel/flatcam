@@ -6830,7 +6830,7 @@ class CNCjob(Geometry):
 
         :param obj:         FlatCAM CNCJob object for which to plot the annotations
         :type obj:
-        :param visible:     annotaions visibility
+        :param visible:     annotations visibility
         :type visible:      bool
         :return:            Nothing
         :rtype:
@@ -6840,9 +6840,11 @@ class CNCjob(Geometry):
             return
 
         if visible is True:
-            obj.text_col.enabled = True
+            if self.app.is_legacy is False:
+                obj.annotation.clear(update=True)
+            obj.text_col.visible = True
         else:
-            obj.text_col.enabled = False
+            obj.text_col.visible = False
             return
 
         text = []
