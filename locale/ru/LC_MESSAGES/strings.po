@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:27+0200\n"
+"POT-Creation-Date: 2020-11-05 16:41+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -12860,6 +12860,10 @@ msgid ""
 msgstr ""
 "Объект ({kind}) не выполнен, потому что: {error} \n"
 "\n"
+
+#: appObjects/AppObject.py:171
+msgid "New object with name:"
+msgstr "Новый объект с именем:"
 
 #: appObjects/AppObject.py:184
 msgid "Converting units to "

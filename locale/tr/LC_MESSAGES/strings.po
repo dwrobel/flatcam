@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-11-05 16:27+0200\n"
-"PO-Revision-Date: 2020-11-05 16:30+0200\n"
+"POT-Creation-Date: 2020-11-05 16:42+0200\n"
+"PO-Revision-Date: 2020-11-05 18:58+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -1800,15 +1800,15 @@ msgstr "Seçili yuvaları deliklere dönüştürün."
 
 #: appEditors/AppExcEditor.py:3845
 msgid "Add/Delete Tool"
-msgstr "Delik Ekle/Kaldır"
+msgstr "Delik veya Yuva Ekle/Kaldır"
 
 #: appEditors/AppExcEditor.py:3847
 msgid ""
 "Add/Delete a tool to the tool list\n"
 "for this Excellon object."
 msgstr ""
-"Bu Excellon nesnesinin Araçlar Listesine\n"
-"bir delik ekleyin/silin."
+"Bu Excellon nesnesinin Araçlar Tablosuna\n"
+"bir delik veya yuva ekleyin/silin."
 
 #: appEditors/AppExcEditor.py:3861 appEditors/AppGeoEditor.py:441
 #: appGUI/ObjectUI.py:1080 appGUI/ObjectUI.py:1637
@@ -1817,7 +1817,7 @@ msgstr ""
 #: appTools/ToolCutOut.py:2077 appTools/ToolIsolation.py:3196
 #: appTools/ToolNCC.py:4079 appTools/ToolNCC.py:4090 appTools/ToolPaint.py:2900
 msgid "Tool Dia"
-msgstr "Uç kalınlığı"
+msgstr "Uç Kalınlığı"
 
 #: appEditors/AppExcEditor.py:3863 appGUI/ObjectUI.py:1082
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:57
@@ -1847,15 +1847,15 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:3887
 msgid "Delete Tool"
-msgstr "Seçili Deliği Sil"
+msgstr "Deliği Sil"
 
 #: appEditors/AppExcEditor.py:3890
 msgid ""
 "Delete a tool in the tool list\n"
 "by selecting a row in the tool table."
 msgstr ""
-"Araçlar Tablosundan bir satır \n"
-"seçerek delik listesindeki bir deliği silin."
+"Araçlar Tablosundan bir satır seçerek \n"
+"delik listesindeki bir deliği silin."
 
 #: appEditors/AppExcEditor.py:3915
 msgid "Resize Tool"
@@ -3946,7 +3946,7 @@ msgstr "Değeri Azalt"
 #: app_Main.py:4723 app_Main.py:8520 app_Main.py:8535 app_Main.py:8879
 #: app_Main.py:8891
 msgid "Ok"
-msgstr "Evet"
+msgstr "Tamam"
 
 #: appGUI/GUIElements.py:3768
 msgid ""
@@ -12800,6 +12800,10 @@ msgid ""
 msgstr ""
 "Nesne ({kind}) başarısız oldu çünkü: {error} \n"
 "\n"
+
+#: appObjects/AppObject.py:171
+msgid "New object with name:"
+msgstr "Yeni nesnenin adı:"
 
 #: appObjects/AppObject.py:184
 msgid "Converting units to "
