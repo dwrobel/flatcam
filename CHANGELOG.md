@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor made the selection multithreaded in a bid to get more performance but until Shapely will start working on vectorized geometry this don't yield too much improvement
 - in Gerber Editor, for selection now the intersection of the click point and the geometry is determined for chunks of the original geometry, each chunk gets done in a separate process
 - updated the French translation (by Olivier Cornet)
+- fixed the new InputDialog widget to set its passed values in the constructor
+
 
 5.11.2020
 
