@@ -243,7 +243,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
         self.draw_app.app.inform.emit(_("Click to place ..."))
 
@@ -476,7 +476,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
 
@@ -508,6 +508,14 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
+        """
+
+        :param data:    a tuple of coordinates (x, y)
+        :type data:     tuple
+        :param static:  if to draw a static temp geometry
+        :type static:   bool
+        :return:
+        """
         if self.dont_execute is True:
             self.draw_app.select_tool('select')
             return
@@ -515,12 +523,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.pad_axis = self.draw_app.ui.pad_axis_radio.get_value()
         self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
         self.pad_array = self.draw_app.ui.array_type_combo.get_value()
+
         try:
             self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
             try:
-                self.pad_pitch = float(self.draw_app.ui.pad_pitch_entry.get_value())
-                self.pad_linear_angle = float(self.draw_app.ui.linear_angle_spinner.get_value())
-                self.pad_angle = float(self.draw_app.ui.pad_angle_entry.get_value())
+                self.pad_pitch = self.draw_app.ui.pad_pitch_entry.get_value()
+                self.pad_linear_angle = self.draw_app.ui.linear_angle_spinner.get_value()
+                self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
             except TypeError:
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
@@ -538,7 +547,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 dy = data[1]
 
             geo_el_list = []
-            geo_el = []
+            geo_el = {}
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
@@ -573,7 +582,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        else:   # 'Circular'
+        elif self.pad_array == 1:   # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -581,10 +590,38 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+
+                    temp_line_el = {
+                        'solid': LineString(temp_points)
+                    }
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line_el)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug(str(e))
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -694,6 +731,42 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
             return None
 
+    def circular_util_shape(self, radius, angle):
+        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
+        self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
+
+        circular_geo = []
+        if self.pad_direction == 'CW':
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians), use_radians=True)
+                geo_el = {
+                    'solid': geo_sol,
+                    'follow': geo_fol
+                }
+                circular_geo.append(DrawToolShape(geo_el))
+        else:
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians - math.pi), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians - math.pi), use_radians=True)
+                geo_el = {
+                    'solid': geo_sol,
+                    'follow': geo_fol
+                }
+                circular_geo.append(DrawToolShape(geo_el))
+
+        return circular_geo
+
     def make(self):
         self.geometry = []
         geo = None
@@ -721,23 +794,13 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 return
 
             radius = distance(self.destination, self.origin)
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
-                if self.pad_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
-                geo = self.util_shape((x, y))
-                if self.pad_direction == 'CW':
-                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
-                else:
-                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
 
-                self.geometry.append(DrawToolShape(geo))
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
@@ -1144,7 +1207,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-                self.draw_app.draw_utility_geometry(geo=geo)
+                self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
 
         if key == 'T' or key == QtCore.Qt.Key_T:
@@ -1167,7 +1230,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1191,7 +1254,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1383,7 +1446,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-                self.draw_app.draw_utility_geometry(geo=geo)
+                self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
 
         # Jump to coords
@@ -1425,7 +1488,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1464,7 +1527,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -2397,9 +2460,12 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         return DrawToolUtilityShape(geo_list)
 
 
-class SelectEditorGrb(DrawTool):
+class SelectEditorGrb(QtCore.QObject, DrawTool):
+    selection_triggered = QtCore.pyqtSignal(object)
+
     def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
+        super().__init__(draw_app=draw_app)
+        # DrawTool.__init__(self, draw_app)
         self.name = 'select'
         self.origin = None
 
@@ -2417,6 +2483,9 @@ class SelectEditorGrb(DrawTool):
         # here store the selected apertures
         self.sel_aperture = []
 
+        # multiprocessing results
+        self.results = []
+
         try:
             self.draw_app.ui.apertures_table.clearSelection()
         except Exception as e:
@@ -2432,16 +2501,16 @@ class SelectEditorGrb(DrawTool):
             log.debug("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
 
         try:
-            self.draw_app.selection_triggered.disconnect()
+            self.selection_triggered.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.selection_triggered.connect(self.selection_worker)
+        self.selection_triggered.connect(self.selection_worker)
 
         try:
             self.draw_app.plot_object.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.plot_object.connect(self.clean_up)
+        self.draw_app.plot_object.connect(self.after_selection)
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2476,63 +2545,95 @@ class SelectEditorGrb(DrawTool):
             self.draw_app.selected.clear()
             self.sel_aperture.clear()
 
-        self.draw_app.selection_triggered.emit(point)
+        self.selection_triggered.emit(point)
 
     def selection_worker(self, point):
         def job_thread(editor_obj):
+            self.results = []
             with editor_obj.app.proc_container.new('%s' % _("Working ...")):
-                brake_flag = False
-                for storage_key, storage_val in editor_obj.storage_dict.items():
-                    for shape_stored in storage_val['geometry']:
-                        if 'solid' in shape_stored.geo:
-                            geometric_data = shape_stored.geo['solid']
-                            if Point(point).intersects(geometric_data):
-                                if shape_stored in editor_obj.selected:
-                                    editor_obj.selected.remove(shape_stored)
-                                else:
-                                    # add the object to the selected shapes
-                                    editor_obj.selected.append(shape_stored)
-                                brake_flag = True
-                                break
-                    if brake_flag is True:
-                        break
 
-                # ######################################################################################################
-                # select the aperture in the Apertures Table that is associated with the selected shape
-                # ######################################################################################################
-                self.sel_aperture.clear()
-                editor_obj.ui.apertures_table.clearSelection()
+                def divide_chunks(l, n):
+                    # looping till length l
+                    for i in range(0, len(l), n):
+                        yield l[i:i + n]
 
-                # disconnect signal when clicking in the table
-                try:
-                    editor_obj.ui.apertures_table.cellPressed.disconnect()
-                except Exception as e:
-                    log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+                # divide in chunks of 77 elements
+                n = 77
 
-                brake_flag = False
-                for shape_s in editor_obj.selected:
-                    for storage in editor_obj.storage_dict:
-                        if shape_s in editor_obj.storage_dict[storage]['geometry']:
-                            self.sel_aperture.append(storage)
-                            brake_flag = True
-                            break
-                    if brake_flag is True:
-                        break
+                for ap_key, storage_val in editor_obj.storage_dict.items():
+                    # divide in chunks of 77 elements
+                    geo_list = list(divide_chunks(storage_val['geometry'], n))
+                    for chunk, list30 in enumerate(geo_list):
+                        self.results.append(
+                            editor_obj.pool.apply_async(
+                                self.check_intersection, args=(ap_key, chunk, list30, point))
+                        )
 
-                # actual row selection is done here
-                for aper in self.sel_aperture:
-                    for row in range(editor_obj.ui.apertures_table.rowCount()):
-                        if str(aper) == editor_obj.ui.apertures_table.item(row, 1).text():
-                            if not editor_obj.ui.apertures_table.item(row, 0).isSelected():
-                                editor_obj.ui.apertures_table.selectRow(row)
-                                editor_obj.last_aperture_selected = aper
+                output = []
+                for p in self.results:
+                    output.append(p.get())
 
-                # reconnect signal when clicking in the table
-                editor_obj.ui.apertures_table.cellPressed.connect(editor_obj.on_row_selected)
+                for ret_val in output:
+                    if ret_val:
+                        k = ret_val[0]
+                        part = ret_val[1]
+                        idx = ret_val[2] + (part * n)
+                        shape_stored = editor_obj.storage_dict[k]['geometry'][idx]
+
+                        if shape_stored in editor_obj.selected:
+                            editor_obj.selected.remove(shape_stored)
+                        else:
+                            # add the object to the selected shapes
+                            editor_obj.selected.append(shape_stored)
 
                 editor_obj.plot_object.emit(None)
 
         self.draw_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.draw_app]})
+
+    @staticmethod
+    def check_intersection(ap_key, chunk, geo_storage, point):
+        for idx, shape_stored in enumerate(geo_storage):
+            if 'solid' in shape_stored.geo:
+                geometric_data = shape_stored.geo['solid']
+                if Point(point).intersects(geometric_data):
+                    return ap_key, chunk, idx
+
+    def after_selection(self):
+        # ######################################################################################################
+        # select the aperture in the Apertures Table that is associated with the selected shape
+        # ######################################################################################################
+        self.sel_aperture.clear()
+        self.draw_app.ui.apertures_table.clearSelection()
+
+        # disconnect signal when clicking in the table
+        try:
+            self.draw_app.ui.apertures_table.cellPressed.disconnect()
+        except Exception as e:
+            log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+
+        brake_flag = False
+        for shape_s in self.draw_app.selected:
+            for storage in self.draw_app.storage_dict:
+                if shape_s in self.draw_app.storage_dict[storage]['geometry']:
+                    self.sel_aperture.append(storage)
+                    brake_flag = True
+                    break
+            if brake_flag is True:
+                break
+
+        # actual row selection is done here
+        for aper in self.sel_aperture:
+            for row in range(self.draw_app.ui.apertures_table.rowCount()):
+                if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
+                    if not self.draw_app.ui.apertures_table.item(row, 0).isSelected():
+                        self.draw_app.ui.apertures_table.selectRow(row)
+                        self.draw_app.last_aperture_selected = aper
+
+        # reconnect signal when clicking in the table
+        self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+
+        # and plot all
+        self.draw_app.plot_all()
 
     def clean_up(self):
         self.draw_app.plot_all()
@@ -2563,7 +2664,6 @@ class AppGerberEditor(QtCore.QObject):
     # plot_finished = QtCore.pyqtSignal()
     mp_finished = QtCore.pyqtSignal(list)
 
-    selection_triggered = QtCore.pyqtSignal(object)
     plot_object = QtCore.pyqtSignal(object)
 
     def __init__(self, app):
@@ -4487,11 +4587,14 @@ class AppGerberEditor(QtCore.QObject):
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
-            self.draw_utility_geometry(geo=geo)
+            self.draw_utility_geometry(geo_shape=geo)
 
-    def draw_utility_geometry(self, geo):
-        if type(geo.geo) == list:
-            for el in geo.geo:
+    def draw_utility_geometry(self, geo_shape):
+        # it's a DrawToolShape therefore it stores his geometry in the geo attribute
+        geometry = geo_shape.geo
+
+        try:
+            for el in geometry:
                 geometric_data = el['solid']
                 # Add the new utility shape
                 self.tool_shape.add(
@@ -4499,8 +4602,8 @@ class AppGerberEditor(QtCore.QObject):
                     # face_color=self.app.defaults['global_alt_sel_fill'],
                     update=False, layer=0, tolerance=None
                 )
-        else:
-            geometric_data = geo.geo['solid']
+        except TypeError:
+            geometric_data = geometry['solid']
             # Add the new utility shape
             self.tool_shape.add(
                 shape=geometric_data,
@@ -5321,8 +5424,7 @@ class AppGerberEditorUI:
             _("Select the type of pads array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItem(_("Linear"))
-        self.array_type_combo.addItem(_("Circular"))
+        self.array_type_combo.addItems([_("Linear"), _("Circular")])
 
         self.array_box.addWidget(self.array_type_combo)
 

@@ -2250,6 +2250,9 @@ class FCInputDoubleSpinner(QtWidgets.QDialog):
             self.text = text
 
         self.wdg = FCDoubleSpinner()
+        self.wdg.set_precision(self.decimals)
+        self.wdg.set_range(self.min, self.max)
+        self.wdg.set_step(self.step)
         self.wdg.set_value(self.init_value)
 
         QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
