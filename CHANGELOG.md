@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor fixed the Add circular array capability
 - in Gerber Editor remade the utility geometry generation for Circular Pad Array to show the array updated in real time and also fixed the adding of array in negative quadrants
 - in Excellon Editor remade the utility geometry generation for Circular Drill/Slot Array to show the array updated in real time and also fixed the adding of array in negative quadrants
+- Turkish language strings updated (by Mehmet Kaya)
+- both for Excellon and Gerber editor fixed the direction of slots/pads when adding a circular array
 
 5.11.2020
 

@@ -743,8 +743,8 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians), use_radians=True)
+                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians + angle), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians + angle), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol
@@ -757,8 +757,8 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
                 geo = self.util_shape((x, y))
-                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians - math.pi), use_radians=True)
-                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians - math.pi), use_radians=True)
+                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians + angle - math.pi), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians + angle - math.pi), use_radians=True)
                 geo_el = {
                     'solid': geo_sol,
                     'follow': geo_fol

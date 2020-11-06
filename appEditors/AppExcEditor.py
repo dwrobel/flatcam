@@ -1035,7 +1035,7 @@ class SlotArray(FCShapeTool):
                 y = self.origin[1] + radius * math.sin(-angle_radians + angle)
 
                 geo_sol = self.util_shape((x, y))
-                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+                geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians + angle), use_radians=True)
 
                 circular_geo.append(DrawToolShape(geo_sol))
         else:
@@ -1045,7 +1045,7 @@ class SlotArray(FCShapeTool):
                 y = self.origin[1] + radius * math.sin(angle_radians + angle)
 
                 geo_sol = self.util_shape((x, y))
-                # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
+                geo_sol = affinity.rotate(geo_sol, angle=(angle_radians + angle - math.pi), use_radians=True)
 
                 circular_geo.append(DrawToolShape(geo_sol))
 
