@@ -527,9 +527,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         try:
             self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
             try:
-                self.pad_pitch = float(self.draw_app.ui.pad_pitch_entry.get_value())
-                self.pad_linear_angle = float(self.draw_app.ui.linear_angle_spinner.get_value())
-                self.pad_angle = float(self.draw_app.ui.pad_angle_entry.get_value())
+                self.pad_pitch = self.draw_app.ui.pad_pitch_entry.get_value()
+                self.pad_linear_angle = self.draw_app.ui.linear_angle_spinner.get_value()
+                self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
             except TypeError:
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
@@ -590,19 +590,38 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) == 1:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                temp_circular_geo = LineString(temp_points)
-                new_geo_el = {
-                    'solid': temp_circular_geo
-                }
-                return DrawToolUtilityShape(geo=new_geo_el)
-            else:
-                geo_el = self.util_shape(
-                    (cdx, cdy)
-                )
-                return DrawToolUtilityShape(geo=geo_el)
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+
+                    temp_line_el = {
+                        'solid': LineString(temp_points)
+                    }
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line_el)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug(str(e))
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -712,6 +731,42 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
             return None
 
+    def circular_util_shape(self, radius, angle):
+        self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
+        self.pad_angle = self.draw_app.ui.pad_angle_entry.get_value()
+
+        circular_geo = []
+        if self.pad_direction == 'CW':
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians), use_radians=True)
+                geo_el = {
+                    'solid': geo_sol,
+                    'follow': geo_fol
+                }
+                circular_geo.append(DrawToolShape(geo_el))
+        else:
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians - math.pi), use_radians=True)
+                geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians - math.pi), use_radians=True)
+                geo_el = {
+                    'solid': geo_sol,
+                    'follow': geo_fol
+                }
+                circular_geo.append(DrawToolShape(geo_el))
+
+        return circular_geo
+
     def make(self):
         self.geometry = []
         geo = None
@@ -739,30 +794,12 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 return
 
             radius = distance(self.destination, self.origin)
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.pad_array_size):
-                angle_radians = math.radians(self.pad_angle * i)
-                if self.pad_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
-                geo = self.util_shape((x, y))
-
-                if self.pad_direction == 'CW':
-                    geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians), use_radians=True)
-                    geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians), use_radians=True)
-                else:
-                    geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians - math.pi), use_radians=True)
-                    geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians - math.pi), use_radians=True)
-
-                geo_el = {
-                    'solid': geo_sol,
-                    'follow': geo_fol
-                }
-                self.geometry.append(DrawToolShape(geo_el))
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
 
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
