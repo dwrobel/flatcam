@@ -2488,10 +2488,23 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         def job_thread(editor_obj):
             self.results = []
             with editor_obj.app.proc_container.new('%s' % _("Working ...")):
+
+                def divide_chunks(l, n):
+                    # looping till length l
+                    for i in range(0, len(l), n):
+                        yield l[i:i + n]
+
+                # divide in chunks of 77 elements
+                n = 77
+
                 for ap_key, storage_val in editor_obj.storage_dict.items():
-                    self.results.append(
-                        editor_obj.pool.apply_async(self.check_intersection, args=(ap_key, storage_val, point))
-                    )
+                    # divide in chunks of 77 elements
+                    geo_list = list(divide_chunks(storage_val['geometry'], n))
+                    for chunk, list30 in enumerate(geo_list):
+                        self.results.append(
+                            editor_obj.pool.apply_async(
+                                self.check_intersection, args=(ap_key, chunk, list30, point))
+                        )
 
                 output = []
                 for p in self.results:
@@ -2500,7 +2513,8 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                 for ret_val in output:
                     if ret_val:
                         k = ret_val[0]
-                        idx = ret_val[1]
+                        part = ret_val[1]
+                        idx = ret_val[2] + (part * n)
                         shape_stored = editor_obj.storage_dict[k]['geometry'][idx]
 
                         if shape_stored in editor_obj.selected:
@@ -2514,12 +2528,12 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.draw_app]})
 
     @staticmethod
-    def check_intersection(ap_key, ap_storage, point):
-        for idx, shape_stored in enumerate(ap_storage['geometry']):
+    def check_intersection(ap_key, chunk, geo_storage, point):
+        for idx, shape_stored in enumerate(geo_storage):
             if 'solid' in shape_stored.geo:
                 geometric_data = shape_stored.geo['solid']
                 if Point(point).intersects(geometric_data):
-                    return ap_key, idx
+                    return ap_key, chunk, idx
 
     def after_selection(self):
         # ######################################################################################################
