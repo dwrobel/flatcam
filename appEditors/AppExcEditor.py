@@ -454,7 +454,7 @@ class DrillArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
-        else:   # 'Çircular'
+        elif self.drill_array == 1:  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -462,10 +462,63 @@ class DrillArray(FCShapeTool):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+                    temp_line = LineString(temp_points)
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug("DrillArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, angle):
+        self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
+        self.drill_angle = self.draw_app.ui.drill_angle_entry.get_value()
+
+        circular_geo = []
+        if self.drill_direction == 'CW':
+            for i in range(self.drill_array_size):
+                angle_radians = math.radians(self.drill_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+        else:
+            for i in range(self.drill_array_size):
+                angle_radians = math.radians(self.drill_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
 
     def util_shape(self, point):
         if point[0] is None and point[1] is None:
@@ -522,18 +575,13 @@ class DrillArray(FCShapeTool):
                 return
 
             radius = distance(self.destination, self.origin)
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.drill_array_size):
-                angle_radians = math.radians(self.drill_angle * i)
-                if self.drill_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
-                geo = self.util_shape((x, y))
-                self.geometry.append(DrawToolShape(geo))
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
+
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
@@ -939,10 +987,69 @@ class SlotArray(FCShapeTool):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+            # if len(self.pt) > 0:
+            #     temp_points = [x for x in self.pt]
+            #     temp_points.append([cdx, cdy])
+            #     return DrawToolUtilityShape(LineString(temp_points))
+
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+                    temp_line = LineString(temp_points)
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug("SlotArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, angle):
+        self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
+        self.slot_angle = self.draw_app.ui.slot_array_angle_entry.get_value()
+        self.slot_array_size = self.draw_app.ui.slot_array_size_entry.get_value()
+
+        circular_geo = []
+        if self.slot_direction == 'CW':
+            for i in range(self.slot_array_size):
+                angle_radians = math.radians(self.slot_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+        else:
+            for i in range(self.slot_array_size):
+                angle_radians = math.radians(self.slot_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -1080,24 +1187,33 @@ class SlotArray(FCShapeTool):
                 self.draw_app.app.jump_signal.disconnect()
                 return
 
+            # radius = distance(self.destination, self.origin)
+            # initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+            # for i in range(self.slot_array_size):
+            #     angle_radians = math.radians(self.slot_angle * i)
+            #     if self.slot_direction == 'CW':
+            #         x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
+            #         y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
+            #     else:
+            #         x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
+            #         y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+            #
+            #     geo = self.util_shape((x, y))
+            #     if self.slot_direction == 'CW':
+            #         geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
+            #     else:
+            #         geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+            #
+            #     self.geometry.append(DrawToolShape(geo))
+
             radius = distance(self.destination, self.origin)
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.slot_array_size):
-                angle_radians = math.radians(self.slot_angle * i)
-                if self.slot_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
-                geo = self.util_shape((x, y))
-                if self.slot_direction == 'CW':
-                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
-                else:
-                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
 
-                self.geometry.append(DrawToolShape(geo))
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
