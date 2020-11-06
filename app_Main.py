@@ -166,7 +166,7 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # version = "Unstable Version"
     version = 8.994
-    version_date = "2020/10/30"
+    version_date = "2020/11/7"
     beta = True
 
     engine = '3D'
