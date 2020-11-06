@@ -13,7 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor, for selection now the intersection of the click point and the geometry is determined for chunks of the original geometry, each chunk gets done in a separate process
 - updated the French translation (by Olivier Cornet)
 - fixed the new InputDialog widget to set its passed values in the constructor
-
+- in Gerber Editor fixed the Add circular array capability
 
 5.11.2020
 

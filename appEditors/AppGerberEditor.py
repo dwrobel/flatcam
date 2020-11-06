@@ -243,7 +243,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
         self.draw_app.app.inform.emit(_("Click to place ..."))
 
@@ -476,7 +476,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
 
@@ -508,6 +508,14 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
+        """
+
+        :param data:    a tuple of coordinates (x, y)
+        :type data:     tuple
+        :param static:  if to draw a static temp geometry
+        :type static:   bool
+        :return:
+        """
         if self.dont_execute is True:
             self.draw_app.select_tool('select')
             return
@@ -515,6 +523,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
         self.pad_axis = self.draw_app.ui.pad_axis_radio.get_value()
         self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
         self.pad_array = self.draw_app.ui.array_type_combo.get_value()
+
         try:
             self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
             try:
@@ -538,7 +547,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 dy = data[1]
 
             geo_el_list = []
-            geo_el = []
+            geo_el = {}
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
@@ -573,7 +582,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        else:   # 'Circular'
+        elif self.pad_array == 1:   # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -581,10 +590,19 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
+            if len(self.pt) == 1:
                 temp_points = [x for x in self.pt]
                 temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+                temp_circular_geo = LineString(temp_points)
+                new_geo_el = {
+                    'solid': temp_circular_geo
+                }
+                return DrawToolUtilityShape(geo=new_geo_el)
+            else:
+                geo_el = self.util_shape(
+                    (cdx, cdy)
+                )
+                return DrawToolUtilityShape(geo=geo_el)
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -732,12 +750,20 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                     y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
                 geo = self.util_shape((x, y))
-                if self.pad_direction == 'CW':
-                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
-                else:
-                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
 
-                self.geometry.append(DrawToolShape(geo))
+                if self.pad_direction == 'CW':
+                    geo_sol = affinity.rotate(geo['solid'], angle=(math.pi - angle_radians), use_radians=True)
+                    geo_fol = affinity.rotate(geo['follow'], angle=(math.pi - angle_radians), use_radians=True)
+                else:
+                    geo_sol = affinity.rotate(geo['solid'], angle=(angle_radians - math.pi), use_radians=True)
+                    geo_fol = affinity.rotate(geo['follow'], angle=(angle_radians - math.pi), use_radians=True)
+
+                geo_el = {
+                    'solid': geo_sol,
+                    'follow': geo_fol
+                }
+                self.geometry.append(DrawToolShape(geo_el))
+
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
@@ -1144,7 +1170,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-                self.draw_app.draw_utility_geometry(geo=geo)
+                self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
 
         if key == 'T' or key == QtCore.Qt.Key_T:
@@ -1167,7 +1193,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1191,7 +1217,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1383,7 +1409,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-                self.draw_app.draw_utility_geometry(geo=geo)
+                self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
 
         # Jump to coords
@@ -1425,7 +1451,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -1464,7 +1490,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
             geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-            self.draw_app.draw_utility_geometry(geo=geo)
+            self.draw_app.draw_utility_geometry(geo_shape=geo)
 
             return msg
 
@@ -4524,11 +4550,14 @@ class AppGerberEditor(QtCore.QObject):
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
-            self.draw_utility_geometry(geo=geo)
+            self.draw_utility_geometry(geo_shape=geo)
 
-    def draw_utility_geometry(self, geo):
-        if type(geo.geo) == list:
-            for el in geo.geo:
+    def draw_utility_geometry(self, geo_shape):
+        # it's a DrawToolShape therefore it stores his geometry in the geo attribute
+        geometry = geo_shape.geo
+
+        try:
+            for el in geometry:
                 geometric_data = el['solid']
                 # Add the new utility shape
                 self.tool_shape.add(
@@ -4536,8 +4565,8 @@ class AppGerberEditor(QtCore.QObject):
                     # face_color=self.app.defaults['global_alt_sel_fill'],
                     update=False, layer=0, tolerance=None
                 )
-        else:
-            geometric_data = geo.geo['solid']
+        except TypeError:
+            geometric_data = geometry['solid']
             # Add the new utility shape
             self.tool_shape.add(
                 shape=geometric_data,
@@ -5358,8 +5387,7 @@ class AppGerberEditorUI:
             _("Select the type of pads array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItem(_("Linear"))
-        self.array_type_combo.addItem(_("Circular"))
+        self.array_type_combo.addItems([_("Linear"), _("Circular")])
 
         self.array_box.addWidget(self.array_type_combo)
 
