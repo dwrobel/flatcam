@@ -2397,9 +2397,12 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         return DrawToolUtilityShape(geo_list)
 
 
-class SelectEditorGrb(DrawTool):
+class SelectEditorGrb(QtCore.QObject, DrawTool):
+    selection_triggered = QtCore.pyqtSignal(object)
+
     def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
+        super().__init__(draw_app=draw_app)
+        # DrawTool.__init__(self, draw_app)
         self.name = 'select'
         self.origin = None
 
@@ -2417,6 +2420,9 @@ class SelectEditorGrb(DrawTool):
         # here store the selected apertures
         self.sel_aperture = []
 
+        # multiprocessing results
+        self.results = []
+
         try:
             self.draw_app.ui.apertures_table.clearSelection()
         except Exception as e:
@@ -2432,16 +2438,16 @@ class SelectEditorGrb(DrawTool):
             log.debug("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
 
         try:
-            self.draw_app.selection_triggered.disconnect()
+            self.selection_triggered.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.selection_triggered.connect(self.selection_worker)
+        self.selection_triggered.connect(self.selection_worker)
 
         try:
             self.draw_app.plot_object.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.plot_object.connect(self.clean_up)
+        self.draw_app.plot_object.connect(self.after_selection)
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2476,63 +2482,81 @@ class SelectEditorGrb(DrawTool):
             self.draw_app.selected.clear()
             self.sel_aperture.clear()
 
-        self.draw_app.selection_triggered.emit(point)
+        self.selection_triggered.emit(point)
 
     def selection_worker(self, point):
         def job_thread(editor_obj):
+            self.results = []
             with editor_obj.app.proc_container.new('%s' % _("Working ...")):
-                brake_flag = False
-                for storage_key, storage_val in editor_obj.storage_dict.items():
-                    for shape_stored in storage_val['geometry']:
-                        if 'solid' in shape_stored.geo:
-                            geometric_data = shape_stored.geo['solid']
-                            if Point(point).intersects(geometric_data):
-                                if shape_stored in editor_obj.selected:
-                                    editor_obj.selected.remove(shape_stored)
-                                else:
-                                    # add the object to the selected shapes
-                                    editor_obj.selected.append(shape_stored)
-                                brake_flag = True
-                                break
-                    if brake_flag is True:
-                        break
+                for ap_key, storage_val in editor_obj.storage_dict.items():
+                    self.results.append(
+                        editor_obj.pool.apply_async(self.check_intersection, args=(ap_key, storage_val, point))
+                    )
 
-                # ######################################################################################################
-                # select the aperture in the Apertures Table that is associated with the selected shape
-                # ######################################################################################################
-                self.sel_aperture.clear()
-                editor_obj.ui.apertures_table.clearSelection()
+                output = []
+                for p in self.results:
+                    output.append(p.get())
 
-                # disconnect signal when clicking in the table
-                try:
-                    editor_obj.ui.apertures_table.cellPressed.disconnect()
-                except Exception as e:
-                    log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+                for ret_val in output:
+                    if ret_val:
+                        k = ret_val[0]
+                        idx = ret_val[1]
+                        shape_stored = editor_obj.storage_dict[k]['geometry'][idx]
 
-                brake_flag = False
-                for shape_s in editor_obj.selected:
-                    for storage in editor_obj.storage_dict:
-                        if shape_s in editor_obj.storage_dict[storage]['geometry']:
-                            self.sel_aperture.append(storage)
-                            brake_flag = True
-                            break
-                    if brake_flag is True:
-                        break
-
-                # actual row selection is done here
-                for aper in self.sel_aperture:
-                    for row in range(editor_obj.ui.apertures_table.rowCount()):
-                        if str(aper) == editor_obj.ui.apertures_table.item(row, 1).text():
-                            if not editor_obj.ui.apertures_table.item(row, 0).isSelected():
-                                editor_obj.ui.apertures_table.selectRow(row)
-                                editor_obj.last_aperture_selected = aper
-
-                # reconnect signal when clicking in the table
-                editor_obj.ui.apertures_table.cellPressed.connect(editor_obj.on_row_selected)
+                        if shape_stored in editor_obj.selected:
+                            editor_obj.selected.remove(shape_stored)
+                        else:
+                            # add the object to the selected shapes
+                            editor_obj.selected.append(shape_stored)
 
                 editor_obj.plot_object.emit(None)
 
         self.draw_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.draw_app]})
+
+    @staticmethod
+    def check_intersection(ap_key, ap_storage, point):
+        for idx, shape_stored in enumerate(ap_storage['geometry']):
+            if 'solid' in shape_stored.geo:
+                geometric_data = shape_stored.geo['solid']
+                if Point(point).intersects(geometric_data):
+                    return ap_key, idx
+
+    def after_selection(self):
+        # ######################################################################################################
+        # select the aperture in the Apertures Table that is associated with the selected shape
+        # ######################################################################################################
+        self.sel_aperture.clear()
+        self.draw_app.ui.apertures_table.clearSelection()
+
+        # disconnect signal when clicking in the table
+        try:
+            self.draw_app.ui.apertures_table.cellPressed.disconnect()
+        except Exception as e:
+            log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+
+        brake_flag = False
+        for shape_s in self.draw_app.selected:
+            for storage in self.draw_app.storage_dict:
+                if shape_s in self.draw_app.storage_dict[storage]['geometry']:
+                    self.sel_aperture.append(storage)
+                    brake_flag = True
+                    break
+            if brake_flag is True:
+                break
+
+        # actual row selection is done here
+        for aper in self.sel_aperture:
+            for row in range(self.draw_app.ui.apertures_table.rowCount()):
+                if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
+                    if not self.draw_app.ui.apertures_table.item(row, 0).isSelected():
+                        self.draw_app.ui.apertures_table.selectRow(row)
+                        self.draw_app.last_aperture_selected = aper
+
+        # reconnect signal when clicking in the table
+        self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+
+        # and plot all
+        self.draw_app.plot_all()
 
     def clean_up(self):
         self.draw_app.plot_all()
@@ -2563,7 +2587,6 @@ class AppGerberEditor(QtCore.QObject):
     # plot_finished = QtCore.pyqtSignal()
     mp_finished = QtCore.pyqtSignal(list)
 
-    selection_triggered = QtCore.pyqtSignal(object)
     plot_object = QtCore.pyqtSignal(object)
 
     def __init__(self, app):

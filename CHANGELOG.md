@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.11.2020
+
+- in Gerber Editor made the selection multithreaded in a bid to get more performance but until Shapely will start working on vectorized geometry this don't yield too much improvement
+
 5.11.2020
 
 - fixed the annotation plotting in the CNCJob object
