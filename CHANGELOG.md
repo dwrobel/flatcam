@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed the new InputDialog widget to set its passed values in the constructor
 - in Gerber Editor fixed the Add circular array capability
 - in Gerber Editor remade the utility geometry generation for Circular Pad Array to show the array updated in real time and also fixed the adding of array in negative quadrants
+- in Excellon Editor remade the utility geometry generation for Circular Drill/Slot Array to show the array updated in real time and also fixed the adding of array in negative quadrants
 
 5.11.2020
 
