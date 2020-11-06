@@ -1450,6 +1450,10 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 return _("Backtracked one point ...")
 
         # Jump to coords
+        if key == QtCore.Qt.Key_G or key == 'G':
+            self.draw_app.app.ui.grid_snap_btn.trigger()
+
+        # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 

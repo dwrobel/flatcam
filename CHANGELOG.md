@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - in Excellon Editor remade the utility geometry generation for Circular Drill/Slot Array to show the array updated in real time and also fixed the adding of array in negative quadrants
 - Turkish language strings updated (by Mehmet Kaya)
 - both for Excellon and Gerber editor fixed the direction of slots/pads when adding a circular array
+- in Gerber editor added the G key shortcut to toggle the grid snapping
 
 5.11.2020
 
