@@ -2869,7 +2869,7 @@ class NonCopperClear(AppTool, Gerber):
                 bounding_box = unary_union(geo_buff_list)
             elif ncc_sel_obj.kind == 'gerber':
                 geo_n = unary_union(geo_n).convex_hull
-                bounding_box = unary_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
+                bounding_box = unary_union(ncc_sel_obj.solid_geometry).convex_hull.intersection(geo_n)
                 bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
@@ -3315,7 +3315,7 @@ class NonCopperClear(AppTool, Gerber):
             rest_geo = []
             current_uid = 1
             try:
-                tool = eval(self.app.defaults["tools_ncc_tools"])[0]
+                tool = eval(str(self.app.defaults["tools_ncc_tools"]))[0]
             except TypeError:
                 tool = eval(self.app.defaults["tools_ncc_tools"])
 
