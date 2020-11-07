@@ -396,18 +396,17 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.e_cut_entry.setDisabled(True)
 
         # set the text on tool_data_label after loading the object
-        sel_rows = []
-        sel_items = self.ui.geo_tools_table.selectedItems()
-        for it in sel_items:
-            new_row = it.row()
-            if new_row not in sel_rows:
-                sel_rows.append(new_row)
+        sel_rows = set()
+        for it in self.ui.geo_tools_table.selectedItems():
+            sel_rows.add(it.row())
+
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
 
     def set_ui(self, ui):
+        # this one adds the 'name' key and the self.ui.name_entry widget in the self.form_fields dict
         FlatCAMObj.set_ui(self, ui)
 
         log.debug("GeometryObject.set_ui()")
@@ -634,24 +633,24 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
 
         # V tool shape params changed
-        self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
-        self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
+        self.ui.tipdia_entry.valueChanged.connect(self.on_update_cutz)
+        self.ui.tipangle_entry.valueChanged.connect(self.on_update_cutz)
 
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
 
         # Exclusion areas signals
-        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
-        self.ui.exclusion_table.lost_focus.connect(self.clear_selection)
-        self.ui.exclusion_table.itemClicked.connect(self.draw_sel_shape)
+        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.on_exclusion_table_toggle_all)
+        self.ui.exclusion_table.lost_focus.connect(self.on_clear_selection)
+        self.ui.exclusion_table.itemClicked.connect(self.on_draw_sel_shape)
         self.ui.add_area_button.clicked.connect(self.on_add_area_click)
         self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
         self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
         # Tools Table signals
-        self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
+        self.ui.geo_tools_table.drag_drop_sig.connect(self.on_rebuild_ui)
         self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         self.launch_job.connect(self.mtool_gen_cncjob)
@@ -670,7 +669,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 
-    def rebuild_ui(self):
+    def on_rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -929,17 +928,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_disconnect()
 
         if row is None:
-            sel_rows = []
-            sel_items = self.ui.geo_tools_table.selectedItems()
-            for it in sel_items:
-                new_row = it.row()
-                if new_row not in sel_rows:
-                    sel_rows.append(new_row)
+            sel_rows = set()
+            for it in self.ui.geo_tools_table.selectedItems():
+                sel_rows.add(it.row())
+            sel_rows = list(sel_rows)
         else:
             sel_rows = row if type(row) == list else [row]
 
         if not sel_rows:
-            # sel_rows = [0]
             self.ui.generate_cnc_button.setDisabled(True)
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
@@ -949,7 +945,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.generate_cnc_button.setDisabled(False)
 
+        # #############################################################################################################
         # update the QLabel that shows for which Tool we have the parameters in the UI form
+        # #############################################################################################################
         if len(sel_rows) == 1:
             current_row = sel_rows[0]
 
@@ -977,7 +975,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         for current_row in sel_rows:
             self.set_tool_offset_visibility(current_row)
 
-            # populate the form with the data from the tool associated with the row parameter
+            # #########################################################################################################
+            # determine the tool UID
+            # #########################################################################################################
             try:
                 item = self.ui.geo_tools_table.item(current_row, 5)
                 if type(item) is not None:
@@ -990,8 +990,10 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.ui_connect()
                 return
 
+            # #########################################################################################################
             # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
             # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+            # #########################################################################################################
             try:
                 item = self.ui.geo_tools_table.cellWidget(current_row, 4)
                 if item is not None:
@@ -1004,6 +1006,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
                 return
 
+            # #########################################################################################################
+            # set the FORM data
+            # #########################################################################################################
             try:
                 # set the form with data from the newly selected tool
                 for tooluid_key, tooluid_value in list(self.tools.items()):
@@ -1017,7 +1022,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
 
                             if key == 'tool_type' and value == 'V':
-                                self.update_cutz()
+                                self.on_update_cutz()
             except Exception as e:
                 log.debug("GeometryObject.update_ui() -> %s " % str(e))
 
@@ -1214,7 +1219,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 }
             })
 
-        self.tools[self.tooluid]['data']['name'] = self.options['name']
+        self.tools[self.tooluid]['data']['name'] = deepcopy(self.options['name'])
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
@@ -1294,7 +1299,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             }
         })
 
-        self.tools[self.tooluid]['data']['name'] = self.options['name']
+        self.tools[self.tooluid]['data']['name'] = deepcopy(self.options['name'])
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
@@ -1527,7 +1532,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                   "NB: a value of zero means that Tool Dia = 'V-tip Dia'")
             )
 
-            self.update_cutz()
+            self.on_update_cutz()
         else:
             self.ui.tipdialabel.hide()
             self.ui.tipdia_entry.hide()
@@ -1540,7 +1545,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             )
             self.ui.cutz_entry.setToolTip('')
 
-    def update_cutz(self):
+    def on_update_cutz(self):
         vdia = float(self.ui.tipdia_entry.get_value())
         half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
 
@@ -1616,6 +1621,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key:
+                    # avoid the change of the name from the data tool dictionary
+                    if form_key == 'name':
+                        continue
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
@@ -1703,7 +1711,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             widget_idx = self.ui.grid3.indexOf(widget_changed)
             # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
             if widget_idx == 1 or widget_idx == 3:
-                self.update_cutz()
+                self.on_update_cutz()
         except Exception as e:
             log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
 
@@ -2978,7 +2986,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.app.exc_areas.delete_sel_shapes(idxs=list(sel_rows))
         self.app.exc_areas.e_shape_modified.emit()
 
-    def draw_sel_shape(self):
+    def on_draw_sel_shape(self):
         sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
@@ -3003,7 +3011,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         if self.app.is_legacy is True:
             self.app.move_tool.sel_shapes.redraw()
 
-    def clear_selection(self):
+    def on_clear_selection(self):
         self.app.delete_selection_shape()
         # self.ui.exclusion_table.clearSelection()
 
@@ -3024,7 +3032,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.over_z_label.setDisabled(False)
             self.ui.over_z_entry.setDisabled(False)
 
-    def exclusion_table_toggle_all(self):
+    def on_exclusion_table_toggle_all(self):
         """
         will toggle the selection of all rows in Exclusion Areas table
 
@@ -3043,7 +3051,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.delete_sel_shape()
         else:
             self.ui.exclusion_table.selectAll()
-            self.draw_sel_shape()
+            self.on_draw_sel_shape()
 
     def plot_element(self, element, color=None, visible=None):
 

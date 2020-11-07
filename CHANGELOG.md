@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - in Project tab, when selecting multiple CNCJob objects, in the context menu the name of the Save entry change to Batch Save and those objects are all saved each in its own file
 - added support for shortcut key F2 when in the Project Tab and that will allow the object renaming much faster
 - fixed issue with first click on the header of the Tool Table in the Geometry Object Properties and also made sure that clicking the Plot Items in the last column will not select rows
+- fixed issue with the Geometry object name, object made from NCC Tool (rest machining), being changed on row clicking in the Geometry Tool Table
 
 7.11.2020
 
