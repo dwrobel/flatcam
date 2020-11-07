@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 7.11.2020
 
 - fixed some issues with not finding the methods when treating the startup arguments
+- set the app to "Unstable" status
 
 7.11.2020
 
