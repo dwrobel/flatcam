@@ -1026,144 +1026,195 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             return
 
         new_geo_el = {}
-
         x = data[0]
         y = data[1]
 
         if len(self.points) == 0:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = Point((x, y)).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
             return DrawToolUtilityShape(new_geo_el)
 
-        if len(self.points) == 1:
+        elif len(self.points) == 1:
             self.temp_points = [x for x in self.points]
 
+            # previous point coordinates
             old_x = self.points[0][0]
             old_y = self.points[0][1]
+            # how many grid sections between old point and new point
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if mx and my:
-                if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.draw_app.bend_mode != 5:
-                        if self.draw_app.bend_mode == 1:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.draw_app.bend_mode == 2:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.draw_app.bend_mode == 3:
-                            self.inter_point = (x, old_y)
-                        elif self.draw_app.bend_mode == 4:
-                            self.inter_point = (old_x, y)
+            if self.draw_app.app.ui.grid_snap_btn.isChecked() and mx and my:
+                # calculate intermediary point
+                if self.draw_app.bend_mode != 5:
+                    if self.draw_app.bend_mode == 1:
+                        # if we move from left to right
+                        if x > old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            if mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                        # if we move from right to left
+                        elif x < old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            if mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                    elif self.draw_app.bend_mode == 2:
+                        if x > old_x:
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                        if x < old_x:
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                    elif self.draw_app.bend_mode == 3:
+                        self.inter_point = (x, old_y)
+                    elif self.draw_app.bend_mode == 4:
+                        self.inter_point = (old_x, y)
 
-                        if self.inter_point is not None:
-                            self.temp_points.append(self.inter_point)
-                        else:
-                            self.inter_point = data
-
+                    # add the intermediary point to the points storage
+                    if self.inter_point is not None:
+                        self.temp_points.append(self.inter_point)
+                    else:
+                        self.inter_point = (x, y)
                 else:
-                    self.inter_point = data
+                    self.inter_point = None
 
-            self.temp_points.append(data)
-            new_geo_el = {}
+            else:
+                self.inter_point = (x, y)
+
+            # add click point to the points storage
+            self.temp_points.append(
+                (x, y)
+            )
 
             if len(self.temp_points) > 1:
                 try:
-                    new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
-                                                                              resolution=int(self.steps_per_circle / 4),
-                                                                              join_style=1)
+                    geo_sol = LineString(self.temp_points)
+                    geo_sol = geo_sol.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
+                    new_geo_el = {
+                        'solid': geo_sol
+                    }
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
                     log.debug("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
             else:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
-                                                                     resolution=int(self.steps_per_circle / 4))
+                geo_sol = Point(self.temp_points).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+                new_geo_el = {
+                    'solid': geo_sol
+                }
                 return DrawToolUtilityShape(new_geo_el)
 
-        if len(self.points) > 2:
+        elif len(self.points) > 1:
             self.temp_points = [x for x in self.points]
+
+            # previous point coordinates
             old_x = self.points[-1][0]
             old_y = self.points[-1][1]
+            # how many grid sections between old point and new point
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if mx and my:
-                if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.draw_app.bend_mode != 5:
-                        if self.draw_app.bend_mode == 1:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.draw_app.bend_mode == 2:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.draw_app.bend_mode == 3:
-                            self.inter_point = (x, old_y)
-                        elif self.draw_app.bend_mode == 4:
-                            self.inter_point = (old_x, y)
+            if self.draw_app.app.ui.grid_snap_btn.isChecked() and mx and my:
+                # calculate intermediary point
+                if self.draw_app.bend_mode != 5:
+                    if self.draw_app.bend_mode == 1:
+                        # if we move from left to right
+                        if x > old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            elif mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y + self.gridy_size * (my - mx))
+                            elif mx == my:
+                                pass
+                        # if we move from right to left
+                        if x < old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            elif mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y + self.gridy_size * (my - mx))
+                            elif mx == my:
+                                pass
+                    elif self.draw_app.bend_mode == 2:
+                        if x > old_x:
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                        if x < old_x:
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                    elif self.draw_app.bend_mode == 3:
+                        self.inter_point = (x, old_y)
+                    elif self.draw_app.bend_mode == 4:
+                        self.inter_point = (old_x, y)
 
+                    # add the intermediary point to the points storage
+                    # self.temp_points.append(self.inter_point)
+                    if self.inter_point is not None:
                         self.temp_points.append(self.inter_point)
-            self.temp_points.append(data)
+                else:
+                    self.inter_point = None
+            else:
+                self.inter_point = (x, y)
+
+            # add click point to the points storage
+            self.temp_points.append(
+                (x, y)
+            )
+
+            # create the geometry
+            geo_line = LinearRing(self.temp_points)
+            geo_sol = geo_line.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
             new_geo_el = {
-                'solid': LinearRing(self.temp_points).buffer(self.buf_val,
-                                                             resolution=int(self.steps_per_circle / 4),
-                                                             join_style=1),
-                'follow': LinearRing(self.temp_points)}
+                'solid': geo_sol,
+                'follow': geo_line
+            }
 
             return DrawToolUtilityShape(new_geo_el)
 
@@ -1180,9 +1231,8 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 self.draw_app.last_aperture_selected = '0'
 
             new_geo_el = {
-                'solid': Polygon(self.points).buffer(self.buf_val,
-                                                     resolution=int(self.steps_per_circle / 4),
-                                                     join_style=2), 'follow': Polygon(self.points).exterior
+                'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=2),
+                'follow': Polygon(self.points).exterior
             }
 
             self.geometry = DrawToolShape(new_geo_el)
@@ -2556,17 +2606,17 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
             self.results = []
             with editor_obj.app.proc_container.new('%s' % _("Working ...")):
 
-                def divide_chunks(l, n):
-                    # looping till length l
-                    for i in range(0, len(l), n):
-                        yield l[i:i + n]
+                def divide_chunks(lst, n):
+                    # looping till length of lst
+                    for i in range(0, len(lst), n):
+                        yield lst[i:i + n]
 
                 # divide in chunks of 77 elements
-                n = 77
+                n_chunks = 77
 
                 for ap_key, storage_val in editor_obj.storage_dict.items():
                     # divide in chunks of 77 elements
-                    geo_list = list(divide_chunks(storage_val['geometry'], n))
+                    geo_list = list(divide_chunks(storage_val['geometry'], n_chunks))
                     for chunk, list30 in enumerate(geo_list):
                         self.results.append(
                             editor_obj.pool.apply_async(
@@ -2581,7 +2631,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                     if ret_val:
                         k = ret_val[0]
                         part = ret_val[1]
-                        idx = ret_val[2] + (part * n)
+                        idx = ret_val[2] + (part * n_chunks)
                         shape_stored = editor_obj.storage_dict[k]['geometry'][idx]
 
                         if shape_stored in editor_obj.selected:
@@ -3127,31 +3177,32 @@ class AppGerberEditor(QtCore.QObject):
 
         if ap_code == '0':
             if ap_code not in self.tid2apcode:
-                self.storage_dict[ap_code] = {}
-                self.storage_dict[ap_code]['type'] = 'REG'
-                size_val = 0
-                self.ui.apsize_entry.set_value(size_val)
-                self.storage_dict[ap_code]['size'] = size_val
-
-                self.storage_dict[ap_code]['geometry'] = []
+                self.storage_dict[ap_code] = {
+                    'type': 'REG',
+                    'size': 0.0,
+                    'geometry': []
+                }
+                self.ui.apsize_entry.set_value(0.0)
 
                 # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and
                 # gets updated on values each time a aperture code is edited or added
                 self.oldapcode_newapcode[ap_code] = ap_code
         else:
             if ap_code not in self.oldapcode_newapcode:
-                self.storage_dict[ap_code] = {}
-
                 type_val = self.ui.aptype_cb.currentText()
-                self.storage_dict[ap_code]['type'] = type_val
-
                 if type_val == 'R' or type_val == 'O':
                     try:
                         dims = self.ui.apdim_entry.get_value()
-                        self.storage_dict[ap_code]['width'] = dims[0]
-                        self.storage_dict[ap_code]['height'] = dims[1]
-
                         size_val = np.sqrt((dims[0] ** 2) + (dims[1] ** 2))
+
+                        self.storage_dict[ap_code] = {
+                            'type': type_val,
+                            'size': size_val,
+                            'width': dims[0],
+                            'height': dims[1],
+                            'geometry': []
+                        }
+
                         self.ui.apsize_entry.set_value(size_val)
 
                     except Exception as e:
@@ -3173,16 +3224,18 @@ class AppGerberEditor(QtCore.QObject):
                             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                                  _("Aperture size value is missing or wrong format. Add it and retry."))
                             return
-                self.storage_dict[ap_code]['size'] = size_val
 
-                self.storage_dict[ap_code]['geometry'] = []
+                    self.storage_dict[ap_code] = {
+                        'type': type_val,
+                        'size': size_val,
+                        'geometry': []
+                    }
 
                 # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets updated on
                 # values  each time a aperture code is edited or added
                 self.oldapcode_newapcode[ap_code] = ap_code
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Aperture already in the aperture table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
                 return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
@@ -4791,7 +4844,7 @@ class AppGerberEditor(QtCore.QObject):
             except KeyError:
                 pass
         if geo_el in self.selected:
-            self.selected.remove(geo_el)  # TODO: Check performance
+            self.selected.remove(geo_el)
 
     def delete_utility_geometry(self):
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
@@ -5034,11 +5087,9 @@ class AppGerberEditor(QtCore.QObject):
             self.ma_annotation.set(text=text, pos=position, visible=True,
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color='#000000FF')
-            self.app.inform.emit('[success] %s' %
-                                 _("Polygons marked."))
+            self.app.inform.emit('[success] %s' % _("Polygons marked."))
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No polygons were marked. None fit within the limits."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No polygons were marked. None fit within the limits."))
 
     def delete_marked_polygons(self):
         for shape_sel in self.geo_to_delete:

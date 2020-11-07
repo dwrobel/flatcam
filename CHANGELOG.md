@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - Turkish language strings updated (by Mehmet Kaya)
 - both for Excellon and Gerber editor fixed the direction of slots/pads when adding a circular array
 - in Gerber editor added the G key shortcut to toggle the grid snapping
+- made some changes in the Region Tool from the Gerber Editor
 
 5.11.2020
 
