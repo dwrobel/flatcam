@@ -7,6 +7,20 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.11.2020
+
+- fixed a small issue in Excellon Editor that reset the delta coordinates on right mouse button click too, which was incorrect. Only left mouse button click should reset the delta coordinates.
+- In Gerber Editor upgraded the UI
+- in Gerber Editor made sure that trying to add a Circular Pad array with null radius will fail
+- in Gerber Editor when the radius is zero the utility geometry is deleted
+- in Excellon Editor made sure that trying to add a Circular Drill/Slot array with null radius will fail
+- in Excellon Editor when the radius is zero the utility geometry is deleted
+- in Gerber Editor fixed an error in the Eraser tool trying to disconnect the Jump signal
+- small UI change in the Isolation Tool for the Reference Object selection
+- small UI changes in NCC Tool and in Paint Tool for the Reference Object selection
+- language strings recompiled to make sure that the .MO files are well optimized
+RELEASE 8.994
+
 6.11.2020
 
 - in Gerber Editor made the selection multithreaded in a bid to get more performance but until Shapely will start working on vectorized geometry this don't yield too much improvement
@@ -18,6 +32,8 @@ CHANGELOG for FlatCAM beta
 - in Excellon Editor remade the utility geometry generation for Circular Drill/Slot Array to show the array updated in real time and also fixed the adding of array in negative quadrants
 - Turkish language strings updated (by Mehmet Kaya)
 - both for Excellon and Gerber editor fixed the direction of slots/pads when adding a circular array
+- in Gerber editor added the G key shortcut to toggle the grid snapping
+- made some changes in the Region Tool from the Gerber Editor
 
 5.11.2020
 

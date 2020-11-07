@@ -4417,10 +4417,7 @@ class NccUI:
         self.grid3.addWidget(self.select_label, 29, 0, )
         self.grid3.addWidget(self.select_combo, 29, 1)
 
-        form1 = QtWidgets.QFormLayout()
-        self.grid3.addLayout(form1, 30, 0, 1, 2)
-
-        self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
+        self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
         self.reference_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -4428,20 +4425,17 @@ class NccUI:
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        form1.addRow(self.reference_combo_type_label, self.reference_combo_type)
+        self.grid3.addWidget(self.reference_combo_type_label, 31, 0, )
+        self.grid3.addWidget(self.reference_combo_type, 31, 1)
 
-        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
-        self.reference_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
-        form1.addRow(self.reference_combo_label, self.reference_combo)
+
+        self.grid3.addWidget(self.reference_combo, 33, 0, 1, 2)
 
         self.reference_combo.hide()
-        self.reference_combo_label.hide()
         self.reference_combo_type.hide()
         self.reference_combo_type_label.hide()
 
@@ -4454,8 +4448,8 @@ class NccUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 31, 0)
-        self.grid3.addWidget(self.area_shape_radio, 31, 1)
+        self.grid3.addWidget(self.area_shape_label, 35, 0)
+        self.grid3.addWidget(self.area_shape_radio, 35, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -4468,12 +4462,12 @@ class NccUI:
         )
         self.valid_cb.setObjectName("n_check")
 
-        self.grid3.addWidget(self.valid_cb, 33, 0, 1, 2)
+        self.grid3.addWidget(self.valid_cb, 37, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 35, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 39, 0, 1, 2)
 
         self.generate_ncc_button = FCButton(_('Generate Geometry'))
         self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
@@ -4541,7 +4535,6 @@ class NccUI:
 
         if sel_combo == 0:  # itself
             self.reference_combo.hide()
-            self.reference_combo_label.hide()
             self.reference_combo_type.hide()
             self.reference_combo_type_label.hide()
             self.area_shape_label.hide()
@@ -4551,7 +4544,6 @@ class NccUI:
             self.ncc_rest_cb.setDisabled(False)
         elif sel_combo == 1:    # area selection
             self.reference_combo.hide()
-            self.reference_combo_label.hide()
             self.reference_combo_type.hide()
             self.reference_combo_type_label.hide()
             self.area_shape_label.show()
@@ -4562,7 +4554,6 @@ class NccUI:
             # self.ncc_rest_cb.setDisabled(True)
         else:
             self.reference_combo.show()
-            self.reference_combo_label.show()
             self.reference_combo_type.show()
             self.reference_combo_type_label.show()
             self.area_shape_label.hide()

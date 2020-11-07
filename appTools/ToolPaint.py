@@ -3120,10 +3120,8 @@ class PaintUI:
         grid4.addWidget(selectlabel, 18, 0)
         grid4.addWidget(self.selectmethod_combo, 18, 1)
 
-        form1 = QtWidgets.QFormLayout()
-        grid4.addLayout(form1, 20, 0, 1, 2)
-
-        self.reference_type_label = FCLabel('%s:' % _("Ref. Type"))
+        # Type of Reference Object
+        self.reference_type_label = FCLabel('%s:' % _("Type"))
         self.reference_type_label.setToolTip(
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -3131,20 +3129,18 @@ class PaintUI:
         self.reference_type_combo = FCComboBox2()
         self.reference_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        form1.addRow(self.reference_type_label, self.reference_type_combo)
+        grid4.addWidget(self.reference_type_label, 20, 0)
+        grid4.addWidget(self.reference_type_combo, 20, 1)
 
-        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
-        self.reference_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
+        # Reference Object
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
-        form1.addRow(self.reference_combo_label, self.reference_combo)
+
+        grid4.addWidget(self.reference_combo, 22, 0, 1, 2)
 
         self.reference_combo.hide()
-        self.reference_combo_label.hide()
         self.reference_type_combo.hide()
         self.reference_type_label.hide()
 
@@ -3157,8 +3153,8 @@ class PaintUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid4.addWidget(self.area_shape_label, 21, 0)
-        grid4.addWidget(self.area_shape_radio, 21, 1)
+        grid4.addWidget(self.area_shape_label, 24, 0)
+        grid4.addWidget(self.area_shape_radio, 24, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -3220,12 +3216,10 @@ class PaintUI:
 
         if sel_combo == 3:  # _("Reference Object")
             self.reference_combo.show()
-            self.reference_combo_label.show()
             self.reference_type_combo.show()
             self.reference_type_label.show()
         else:
             self.reference_combo.hide()
-            self.reference_combo_label.hide()
             self.reference_type_combo.hide()
             self.reference_type_label.hide()
 

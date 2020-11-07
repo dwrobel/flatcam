@@ -455,7 +455,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.selected_size = None
         self.pad_axis = 'X'
-        self.pad_array = 0  # 'linear'
+        self.pad_array = 'linear'  # 'linear'
         self.pad_array_size = None
         self.pad_pitch = None
         self.pad_linear_angle = None
@@ -487,7 +487,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
     def click(self, point):
 
-        if self.draw_app.ui.array_type_combo.get_value() == 0:     # 'Linear'
+        if self.draw_app.ui.array_type_radio.get_value() == 0:     # 'Linear'
             self.make()
             return
         else:
@@ -522,7 +522,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.pad_axis = self.draw_app.ui.pad_axis_radio.get_value()
         self.pad_direction = self.draw_app.ui.pad_direction_radio.get_value()
-        self.pad_array = self.draw_app.ui.array_type_combo.get_value()
+        self.pad_array = self.draw_app.ui.array_type_radio.get_value()
 
         try:
             self.pad_array_size = int(self.draw_app.ui.pad_array_size_entry.get_value())
@@ -538,7 +538,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.pad_array == 0:     # 'Linear'
+        if self.pad_array == 'linear':     # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -582,7 +582,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        elif self.pad_array == 1:   # 'Circular'
+        elif self.pad_array == 'circular':   # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -596,6 +596,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -773,7 +776,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.current_storage = self.storage_obj
 
-        if self.pad_array == 0:     # 'Linear'
+        if self.pad_array == 'linear':     # 'Linear'
             for item in range(self.pad_array_size):
                 if self.pad_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
@@ -794,6 +797,12 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                 return
 
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('select')
+                return
+
             if self.destination[0] < self.origin[0]:
                 radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
@@ -1026,144 +1035,195 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             return
 
         new_geo_el = {}
-
         x = data[0]
         y = data[1]
 
         if len(self.points) == 0:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = Point((x, y)).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
             return DrawToolUtilityShape(new_geo_el)
 
-        if len(self.points) == 1:
+        elif len(self.points) == 1:
             self.temp_points = [x for x in self.points]
 
+            # previous point coordinates
             old_x = self.points[0][0]
             old_y = self.points[0][1]
+            # how many grid sections between old point and new point
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if mx and my:
-                if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.draw_app.bend_mode != 5:
-                        if self.draw_app.bend_mode == 1:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.draw_app.bend_mode == 2:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.draw_app.bend_mode == 3:
-                            self.inter_point = (x, old_y)
-                        elif self.draw_app.bend_mode == 4:
-                            self.inter_point = (old_x, y)
+            if self.draw_app.app.ui.grid_snap_btn.isChecked() and mx and my:
+                # calculate intermediary point
+                if self.draw_app.bend_mode != 5:
+                    if self.draw_app.bend_mode == 1:
+                        # if we move from left to right
+                        if x > old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            if mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                        # if we move from right to left
+                        elif x < old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            if mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                    elif self.draw_app.bend_mode == 2:
+                        if x > old_x:
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                        if x < old_x:
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                    elif self.draw_app.bend_mode == 3:
+                        self.inter_point = (x, old_y)
+                    elif self.draw_app.bend_mode == 4:
+                        self.inter_point = (old_x, y)
 
-                        if self.inter_point is not None:
-                            self.temp_points.append(self.inter_point)
-                        else:
-                            self.inter_point = data
-
+                    # add the intermediary point to the points storage
+                    if self.inter_point is not None:
+                        self.temp_points.append(self.inter_point)
+                    else:
+                        self.inter_point = (x, y)
                 else:
-                    self.inter_point = data
+                    self.inter_point = None
 
-            self.temp_points.append(data)
-            new_geo_el = {}
+            else:
+                self.inter_point = (x, y)
+
+            # add click point to the points storage
+            self.temp_points.append(
+                (x, y)
+            )
 
             if len(self.temp_points) > 1:
                 try:
-                    new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
-                                                                              resolution=int(self.steps_per_circle / 4),
-                                                                              join_style=1)
+                    geo_sol = LineString(self.temp_points)
+                    geo_sol = geo_sol.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
+                    new_geo_el = {
+                        'solid': geo_sol
+                    }
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
                     log.debug("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
             else:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
-                                                                     resolution=int(self.steps_per_circle / 4))
+                geo_sol = Point(self.temp_points).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+                new_geo_el = {
+                    'solid': geo_sol
+                }
                 return DrawToolUtilityShape(new_geo_el)
 
-        if len(self.points) > 2:
+        elif len(self.points) > 1:
             self.temp_points = [x for x in self.points]
+
+            # previous point coordinates
             old_x = self.points[-1][0]
             old_y = self.points[-1][1]
+            # how many grid sections between old point and new point
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if mx and my:
-                if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.draw_app.bend_mode != 5:
-                        if self.draw_app.bend_mode == 1:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                    else:
-                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.draw_app.bend_mode == 2:
-                            if x > old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x + self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                            if x < old_x:
-                                if mx > my:
-                                    self.inter_point = (old_x - self.gridx_size * my, y)
-                                if mx < my:
-                                    if y < old_y:
-                                        self.inter_point = (x, old_y - self.gridy_size * mx)
-                                    else:
-                                        self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.draw_app.bend_mode == 3:
-                            self.inter_point = (x, old_y)
-                        elif self.draw_app.bend_mode == 4:
-                            self.inter_point = (old_x, y)
+            if self.draw_app.app.ui.grid_snap_btn.isChecked() and mx and my:
+                # calculate intermediary point
+                if self.draw_app.bend_mode != 5:
+                    if self.draw_app.bend_mode == 1:
+                        # if we move from left to right
+                        if x > old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            elif mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y + self.gridy_size * (my - mx))
+                            elif mx == my:
+                                pass
+                        # if we move from right to left
+                        if x < old_x:
+                            # if the number of grid sections is greater on the X axis
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                            # if the number of grid sections is greater on the Y axis
+                            elif mx < my:
+                                # if we move from top to down
+                                if y < old_y:
+                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                # if we move from down to top or at the same height
+                                else:
+                                    self.inter_point = (old_x, old_y + self.gridy_size * (my - mx))
+                            elif mx == my:
+                                pass
+                    elif self.draw_app.bend_mode == 2:
+                        if x > old_x:
+                            if mx > my:
+                                self.inter_point = (old_x + self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                        if x < old_x:
+                            if mx > my:
+                                self.inter_point = (old_x - self.gridx_size * my, y)
+                            if mx < my:
+                                if y < old_y:
+                                    self.inter_point = (x, old_y - self.gridy_size * mx)
+                                else:
+                                    self.inter_point = (x, old_y + self.gridy_size * mx)
+                    elif self.draw_app.bend_mode == 3:
+                        self.inter_point = (x, old_y)
+                    elif self.draw_app.bend_mode == 4:
+                        self.inter_point = (old_x, y)
 
+                    # add the intermediary point to the points storage
+                    # self.temp_points.append(self.inter_point)
+                    if self.inter_point is not None:
                         self.temp_points.append(self.inter_point)
-            self.temp_points.append(data)
+                else:
+                    self.inter_point = None
+            else:
+                self.inter_point = (x, y)
+
+            # add click point to the points storage
+            self.temp_points.append(
+                (x, y)
+            )
+
+            # create the geometry
+            geo_line = LinearRing(self.temp_points)
+            geo_sol = geo_line.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
             new_geo_el = {
-                'solid': LinearRing(self.temp_points).buffer(self.buf_val,
-                                                             resolution=int(self.steps_per_circle / 4),
-                                                             join_style=1),
-                'follow': LinearRing(self.temp_points)}
+                'solid': geo_sol,
+                'follow': geo_line
+            }
 
             return DrawToolUtilityShape(new_geo_el)
 
@@ -1180,9 +1240,8 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 self.draw_app.last_aperture_selected = '0'
 
             new_geo_el = {
-                'solid': Polygon(self.points).buffer(self.buf_val,
-                                                     resolution=int(self.steps_per_circle / 4),
-                                                     join_style=2), 'follow': Polygon(self.points).exterior
+                'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=2),
+                'follow': Polygon(self.points).exterior
             }
 
             self.geometry = DrawToolShape(new_geo_el)
@@ -1302,6 +1361,8 @@ class TrackEditorGrb(ShapeToolEditorGrb):
 
         self.temp_points = []
 
+        self.current_point = None
+
         self.final_click = False
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1319,21 +1380,25 @@ class TrackEditorGrb(ShapeToolEditorGrb):
     def click(self, point):
         self.draw_app.in_action = True
 
-        if not self.points:
-            self.points.append(point)
-        elif point != self.points[-1]:
+        self.current_point = point
+
+        if not self.points or point != self.points[-1]:
             self.points.append(point)
         else:
             return
 
-        new_geo_el = {}
-
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = Point(self.temp_points)
+            point_geo = Point(self.temp_points[0])
+            new_geo_el = {
+                'solid': point_geo.buffer(self.buf_val, int(self.steps_per_circle)),
+                'follow': point_geo
+            }
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = LineString(self.temp_points)
+            line_geo = LineString(self.temp_points)
+            new_geo_el = {
+                'solid': line_geo.buffer(self.buf_val, int(self.steps_per_circle)),
+                'follow': line_geo
+            }
 
         self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
                                        self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry'])
@@ -1355,10 +1420,11 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             return
 
         self.update_grid_info()
-        new_geo_el = {}
 
         if not self.points:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val, int(self.steps_per_circle))
+            new_geo_el = {
+                'solid': Point(data).buffer(self.buf_val, int(self.steps_per_circle))
+            }
             return DrawToolUtilityShape(new_geo_el)
         else:
             old_x = self.points[-1][0]
@@ -1414,28 +1480,35 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                     pass
 
             self.temp_points.append(data)
-            if len(self.temp_points) == 1:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-                return DrawToolUtilityShape(new_geo_el)
 
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+            if len(self.temp_points) == 1:
+                new_geo_el = {
+                    'solid': Point(self.temp_points[0]).buffer(self.buf_val, int(self.steps_per_circle))
+                }
+            else:
+                new_geo_el = {
+                    'solid': LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+                }
+
             return DrawToolUtilityShape(new_geo_el)
 
     def make(self):
-        new_geo_el = {}
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = Point(self.temp_points)
+            follow_geo = Point(self.temp_points[0])
+            solid_geo = follow_geo.buffer(self.buf_val, int(self.steps_per_circle))
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['solid'] = new_geo_el['solid'].buffer(0)     # try to clean the geometry
-            new_geo_el['follow'] = LineString(self.temp_points)
+            follow_geo = LineString(self.temp_points)
+            solid_geo = follow_geo.buffer(self.buf_val, int(self.steps_per_circle))
+            solid_geo = solid_geo.buffer(0)     # try to clean the geometry
 
+        new_geo_el = {
+            'solid': solid_geo,
+            'follow': follow_geo
+        }
         self.geometry = DrawToolShape(new_geo_el)
 
         self.draw_app.in_action = False
         self.complete = True
-
         self.draw_app.app.jump_signal.disconnect()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
@@ -1448,6 +1521,10 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_G or key == 'G':
+            self.draw_app.app.ui.grid_snap_btn.trigger()
 
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
@@ -2047,7 +2124,7 @@ class MarkEditorGrb(ShapeToolEditorGrb):
         self.draw_app.ui.ma_tool_frame.show()
 
         # clear previous marking
-        self.draw_app.ui.ma_annotation.clear(update=True)
+        self.draw_app.ma_annotation.clear(update=True)
 
         try:
             self.draw_app.ui.ma_threshold_button.clicked.disconnect()
@@ -2419,7 +2496,10 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except TypeError:
+            pass
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2552,17 +2632,17 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
             self.results = []
             with editor_obj.app.proc_container.new('%s' % _("Working ...")):
 
-                def divide_chunks(l, n):
-                    # looping till length l
-                    for i in range(0, len(l), n):
-                        yield l[i:i + n]
+                def divide_chunks(lst, n):
+                    # looping till length of lst
+                    for i in range(0, len(lst), n):
+                        yield lst[i:i + n]
 
                 # divide in chunks of 77 elements
-                n = 77
+                n_chunks = 77
 
                 for ap_key, storage_val in editor_obj.storage_dict.items():
                     # divide in chunks of 77 elements
-                    geo_list = list(divide_chunks(storage_val['geometry'], n))
+                    geo_list = list(divide_chunks(storage_val['geometry'], n_chunks))
                     for chunk, list30 in enumerate(geo_list):
                         self.results.append(
                             editor_obj.pool.apply_async(
@@ -2577,7 +2657,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                     if ret_val:
                         k = ret_val[0]
                         part = ret_val[1]
-                        idx = ret_val[2] + (part * n)
+                        idx = ret_val[2] + (part * n_chunks)
                         shape_stored = editor_obj.storage_dict[k]['geometry'][idx]
 
                         if shape_stored in editor_obj.selected:
@@ -2857,7 +2937,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
 
-        self.ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
+        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
@@ -2939,12 +3019,20 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.aptype_cb.set_value(self.app.defaults["gerber_editor_newtype"])
         self.ui.apdim_entry.set_value(self.app.defaults["gerber_editor_newdim"])
 
+        # PAD Array
+        self.ui.array_type_radio.set_value('linear')   # Linear
+        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
         self.ui.pad_array_size_entry.set_value(int(self.app.defaults["gerber_editor_array_size"]))
+
         # linear array
+        self.ui.pad_axis_radio.set_value('X')
+        self.on_linear_angle_radio(val=self.ui.pad_axis_radio.get_value())
         self.ui.pad_axis_radio.set_value(self.app.defaults["gerber_editor_lin_axis"])
         self.ui.pad_pitch_entry.set_value(float(self.app.defaults["gerber_editor_lin_pitch"]))
         self.ui.linear_angle_spinner.set_value(self.app.defaults["gerber_editor_lin_angle"])
+
         # circular array
+        self.ui.pad_direction_radio.set_value('CW')
         self.ui.pad_direction_radio.set_value(self.app.defaults["gerber_editor_circ_dir"])
         self.ui.pad_angle_entry.set_value(float(self.app.defaults["gerber_editor_circ_angle"]))
 
@@ -3123,31 +3211,32 @@ class AppGerberEditor(QtCore.QObject):
 
         if ap_code == '0':
             if ap_code not in self.tid2apcode:
-                self.storage_dict[ap_code] = {}
-                self.storage_dict[ap_code]['type'] = 'REG'
-                size_val = 0
-                self.ui.apsize_entry.set_value(size_val)
-                self.storage_dict[ap_code]['size'] = size_val
-
-                self.storage_dict[ap_code]['geometry'] = []
+                self.storage_dict[ap_code] = {
+                    'type': 'REG',
+                    'size': 0.0,
+                    'geometry': []
+                }
+                self.ui.apsize_entry.set_value(0.0)
 
                 # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and
                 # gets updated on values each time a aperture code is edited or added
                 self.oldapcode_newapcode[ap_code] = ap_code
         else:
             if ap_code not in self.oldapcode_newapcode:
-                self.storage_dict[ap_code] = {}
-
                 type_val = self.ui.aptype_cb.currentText()
-                self.storage_dict[ap_code]['type'] = type_val
-
                 if type_val == 'R' or type_val == 'O':
                     try:
                         dims = self.ui.apdim_entry.get_value()
-                        self.storage_dict[ap_code]['width'] = dims[0]
-                        self.storage_dict[ap_code]['height'] = dims[1]
-
                         size_val = np.sqrt((dims[0] ** 2) + (dims[1] ** 2))
+
+                        self.storage_dict[ap_code] = {
+                            'type': type_val,
+                            'size': size_val,
+                            'width': dims[0],
+                            'height': dims[1],
+                            'geometry': []
+                        }
+
                         self.ui.apsize_entry.set_value(size_val)
 
                     except Exception as e:
@@ -3169,16 +3258,18 @@ class AppGerberEditor(QtCore.QObject):
                             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                                  _("Aperture size value is missing or wrong format. Add it and retry."))
                             return
-                self.storage_dict[ap_code]['size'] = size_val
 
-                self.storage_dict[ap_code]['geometry'] = []
+                    self.storage_dict[ap_code] = {
+                        'type': type_val,
+                        'size': size_val,
+                        'geometry': []
+                    }
 
                 # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets updated on
                 # values  each time a aperture code is edited or added
                 self.oldapcode_newapcode[ap_code] = ap_code
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Aperture already in the aperture table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Aperture already in the aperture table."))
                 return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
@@ -4394,6 +4485,7 @@ class AppGerberEditor(QtCore.QObject):
                             else:
                                 self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
                                 self.active_tool.make()
+
                             if self.active_tool.complete:
                                 self.on_grb_shape_complete()
                                 self.app.inform.emit('[success] %s' % _("Done."))
@@ -4787,7 +4879,7 @@ class AppGerberEditor(QtCore.QObject):
             except KeyError:
                 pass
         if geo_el in self.selected:
-            self.selected.remove(geo_el)  # TODO: Check performance
+            self.selected.remove(geo_el)
 
     def delete_utility_geometry(self):
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
@@ -4825,18 +4917,41 @@ class AppGerberEditor(QtCore.QObject):
         if geo_el in self.selected:
             self.selected.remove(geo_el)
 
-    def on_array_type_combo(self):
-        if self.ui.array_type_combo.currentIndex() == 0:
-            self.ui.array_circular_frame.hide()
-            self.ui.array_linear_frame.show()
+    def on_array_type_radio(self, val):
+        if val == 'linear':
+            self.ui.pad_axis_label.show()
+            self.ui.pad_axis_radio.show()
+            self.ui.pad_pitch_label.show()
+            self.ui.pad_pitch_entry.show()
+            self.ui.linear_angle_label.show()
+            self.ui.linear_angle_spinner.show()
+            self.ui.lin_separator_line.show()
+
+            self.ui.pad_direction_label.hide()
+            self.ui.pad_direction_radio.hide()
+            self.ui.pad_angle_label.hide()
+            self.ui.pad_angle_entry.hide()
+            self.ui.circ_separator_line.hide()
         else:
             self.delete_utility_geometry()
-            self.ui.array_circular_frame.show()
-            self.ui.array_linear_frame.hide()
+
+            self.ui.pad_axis_label.hide()
+            self.ui.pad_axis_radio.hide()
+            self.ui.pad_pitch_label.hide()
+            self.ui.pad_pitch_entry.hide()
+            self.ui.linear_angle_label.hide()
+            self.ui.linear_angle_spinner.hide()
+            self.ui.lin_separator_line.hide()
+
+            self.ui.pad_direction_label.show()
+            self.ui.pad_direction_radio.show()
+            self.ui.pad_angle_label.show()
+            self.ui.pad_angle_entry.show()
+            self.ui.circ_separator_line.show()
+
             self.app.inform.emit(_("Click on the circular array Center position"))
 
-    def on_linear_angle_radio(self):
-        val = self.ui.pad_axis_radio.get_value()
+    def on_linear_angle_radio(self, val):
         if val == 'A':
             self.ui.linear_angle_spinner.show()
             self.ui.linear_angle_label.show()
@@ -5030,11 +5145,9 @@ class AppGerberEditor(QtCore.QObject):
             self.ma_annotation.set(text=text, pos=position, visible=True,
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color='#000000FF')
-            self.app.inform.emit('[success] %s' %
-                                 _("Polygons marked."))
+            self.app.inform.emit('[success] %s' % _("Polygons marked."))
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No polygons were marked. None fit within the limits."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No polygons were marked. None fit within the limits."))
 
     def delete_marked_polygons(self):
         for shape_sel in self.geo_to_delete:
@@ -5114,9 +5227,9 @@ class AppGerberEditorUI:
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
-        # #########################
-        # ### Gerber Apertures ####
-        # #########################
+        # #############################################################################################################
+        # #################################### Gerber Apertures Table #################################################
+        # #############################################################################################################
         self.apertures_table_label = FCLabel('<b>%s:</b>' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
@@ -5147,8 +5260,10 @@ class AppGerberEditorUI:
               " - (width, height) for R, O type.\n"
               " - (dia, nVertices) for P type"))
 
-        self.empty_label = FCLabel('')
-        self.custom_box.addWidget(self.empty_label)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Apertures widgets
         # this way I can hide/show the frame
@@ -5159,23 +5274,33 @@ class AppGerberEditorUI:
         self.apertures_box.setContentsMargins(0, 0, 0, 0)
         self.apertures_frame.setLayout(self.apertures_box)
 
-        # # ## Add/Delete an new Aperture ## ##
-
+        # #############################################################################################################
+        # ############################ Add/Delete an new Aperture #####################################################
+        # #############################################################################################################
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
 
+        # Title
+        apadd_del_lbl = FCLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
+        apadd_del_lbl.setToolTip(
+            _("Add/Delete an aperture in the aperture table")
+        )
+        grid1.addWidget(apadd_del_lbl, 0, 0, 1, 2)
+
+        # Aperture Code
         apcode_lbl = FCLabel('%s:' % _('Aperture Code'))
         apcode_lbl.setToolTip(_("Code for the new aperture"))
-        grid1.addWidget(apcode_lbl, 1, 0)
 
         self.apcode_entry = FCSpinner()
-        self.apcode_entry.set_range(0, 999)
+        self.apcode_entry.set_range(0, 1000)
         self.apcode_entry.setWrapping(True)
 
+        grid1.addWidget(apcode_lbl, 1, 0)
         grid1.addWidget(self.apcode_entry, 1, 1)
 
+        # Aperture Size
         apsize_lbl = FCLabel('%s' % _('Aperture Size:'))
         apsize_lbl.setToolTip(
             _("Size for the new aperture.\n"
@@ -5184,14 +5309,15 @@ class AppGerberEditorUI:
               "calculated as:\n"
               "sqrt(width**2 + height**2)")
         )
-        grid1.addWidget(apsize_lbl, 2, 0)
 
         self.apsize_entry = FCDoubleSpinner()
         self.apsize_entry.set_precision(self.decimals)
-        self.apsize_entry.set_range(0.0, 9999)
+        self.apsize_entry.set_range(0.0, 10000.0000)
 
+        grid1.addWidget(apsize_lbl, 2, 0)
         grid1.addWidget(self.apsize_entry, 2, 1)
 
+        # Aperture Type
         aptype_lbl = FCLabel('%s:' % _('Aperture Type'))
         aptype_lbl.setToolTip(
             _("Select the type of new aperture. Can be:\n"
@@ -5199,31 +5325,34 @@ class AppGerberEditorUI:
               "R = rectangular\n"
               "O = oblong")
         )
-        grid1.addWidget(aptype_lbl, 3, 0)
 
         self.aptype_cb = FCComboBox()
         self.aptype_cb.addItems(['C', 'R', 'O'])
+
+        grid1.addWidget(aptype_lbl, 3, 0)
         grid1.addWidget(self.aptype_cb, 3, 1)
 
+        # Aperture Dimensions
         self.apdim_lbl = FCLabel('%s:' % _('Aperture Dim'))
         self.apdim_lbl.setToolTip(
             _("Dimensions for the new aperture.\n"
               "Active only for rectangular apertures (type R).\n"
               "The format is (width, height)")
         )
-        grid1.addWidget(self.apdim_lbl, 4, 0)
 
         self.apdim_entry = EvalEntry2()
+
+        grid1.addWidget(self.apdim_lbl, 4, 0)
         grid1.addWidget(self.apdim_entry, 4, 1)
 
-        apadd_del_lbl = FCLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
-        apadd_del_lbl.setToolTip(
-            _("Add/Delete an aperture in the aperture table")
-        )
-        self.apertures_box.addWidget(apadd_del_lbl)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 6, 0, 1, 2)
 
+        # Aperture Buttons
         hlay_ad = QtWidgets.QHBoxLayout()
-        self.apertures_box.addLayout(hlay_ad)
+        grid1.addLayout(hlay_ad, 8, 0, 1, 2)
 
         self.addaperture_btn = FCButton(_('Add'))
         self.addaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -5239,9 +5368,9 @@ class AppGerberEditorUI:
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
 
-        # ###################
-        # ### BUFFER TOOL ###
-        # ###################
+        # #############################################################################################################
+        # ############################################ BUFFER TOOL ####################################################
+        # #############################################################################################################
         self.buffer_tool_frame = QtWidgets.QFrame()
         self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.buffer_tool_frame)
@@ -5267,6 +5396,8 @@ class AppGerberEditorUI:
         self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
         buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
+
+        # Buffer Corner
         self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
@@ -5280,6 +5411,11 @@ class AppGerberEditorUI:
         self.buffer_corner_cb.addItem(_("Beveled"))
         buf_form_layout.addRow(self.buffer_corner_lbl, self.buffer_corner_cb)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        buf_form_layout.addRow(separator_line)
+
         # Buttons
         hlay_buf = QtWidgets.QHBoxLayout()
         self.buffer_tools_box.addLayout(hlay_buf)
@@ -5288,9 +5424,9 @@ class AppGerberEditorUI:
         self.buffer_button.setIcon(QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'))
         hlay_buf.addWidget(self.buffer_button)
 
-        # ##################
-        # ### SCALE TOOL ###
-        # ##################
+        # #############################################################################################################
+        # ########################################### SCALE TOOL ######################################################
+        # #############################################################################################################
         self.scale_tool_frame = QtWidgets.QFrame()
         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.scale_tool_frame)
@@ -5321,6 +5457,11 @@ class AppGerberEditorUI:
 
         scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        scale_form_layout.addRow(separator_line)
+
         # Buttons
         hlay_scale = QtWidgets.QHBoxLayout()
         self.scale_tools_box.addLayout(hlay_scale)
@@ -5329,9 +5470,9 @@ class AppGerberEditorUI:
         self.scale_button.setIcon(QtGui.QIcon(self.app.resource_location + '/clean32.png'))
         hlay_scale.addWidget(self.scale_button)
 
-        # ######################
-        # ### Mark Area TOOL ###
-        # ######################
+        # #############################################################################################################
+        # ######################################### Mark Area TOOL ####################################################
+        # #############################################################################################################
         self.ma_tool_frame = QtWidgets.QFrame()
         self.ma_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.ma_tool_frame)
@@ -5339,6 +5480,11 @@ class AppGerberEditorUI:
         self.ma_tools_box.setContentsMargins(0, 0, 0, 0)
         self.ma_tool_frame.setLayout(self.ma_tools_box)
         self.ma_tool_frame.hide()
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.ma_tools_box.addWidget(separator_line)
 
         # Title
         ma_title_lbl = FCLabel('<b>%s:</b>' % _('Mark polygons'))
@@ -5397,12 +5543,9 @@ class AppGerberEditorUI:
         )
         hlay_ma.addWidget(self.ma_clear_button)
 
-        # ######################
-        # ### Add Pad Array ####
-        # ######################
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
-        # all the add Pad array  widgets
-        # this way I can hide/show the frame
+        # #############################################################################################################
+        # ######################################### Add Pad Array #####################################################
+        # #############################################################################################################
         self.array_frame = QtWidgets.QFrame()
         self.array_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.array_frame)
@@ -5410,48 +5553,57 @@ class AppGerberEditorUI:
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        self.emptyarray_label = FCLabel('')
-        self.array_box.addWidget(self.emptyarray_label)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.array_box.addWidget(separator_line)
 
+        array_grid = QtWidgets.QGridLayout()
+        array_grid.setColumnStretch(0, 0)
+        array_grid.setColumnStretch(1, 1)
+        self.array_box.addLayout(array_grid)
+
+        # Title
         self.padarray_label = FCLabel('<b>%s</b>' % _("Add Pad Array"))
         self.padarray_label.setToolTip(
             _("Add an array of pads (linear or circular array)")
         )
-        self.array_box.addWidget(self.padarray_label)
+        array_grid.addWidget(self.padarray_label, 0, 0, 1, 2)
 
-        self.array_type_combo = FCComboBox2()
-        self.array_type_combo.setToolTip(
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of pads array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItems([_("Linear"), _("Circular")])
 
-        self.array_box.addWidget(self.array_type_combo)
+        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                          {'label': _('Circular'), 'value': 'circular'}])
 
-        self.array_form = QtWidgets.QFormLayout()
-        self.array_box.addLayout(self.array_form)
+        array_grid.addWidget(array_type_lbl, 2, 0)
+        array_grid.addWidget(self.array_type_radio, 2, 1)
 
-        self.pad_array_size_label = FCLabel('%s:' % _('Nr of pads'))
-        self.pad_array_size_label.setToolTip(
+        # Number of Pads in Array
+        pad_array_size_label = FCLabel('%s:' % _('Nr of pads'))
+        pad_array_size_label.setToolTip(
             _("Specify how many pads to be in the array.")
         )
-        self.pad_array_size_label.setMinimumWidth(100)
 
         self.pad_array_size_entry = FCSpinner()
-        self.pad_array_size_entry.set_range(1, 9999)
+        self.pad_array_size_entry.set_range(1, 10000)
 
-        self.array_form.addRow(self.pad_array_size_label, self.pad_array_size_entry)
+        array_grid.addWidget(pad_array_size_label, 4, 0)
+        array_grid.addWidget(self.pad_array_size_entry, 4, 1)
 
-        self.array_linear_frame = QtWidgets.QFrame()
-        self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_linear_frame)
-        self.linear_box = QtWidgets.QVBoxLayout()
-        self.linear_box.setContentsMargins(0, 0, 0, 0)
-        self.array_linear_frame.setLayout(self.linear_box)
+        # #############################################################################################################
+        # ############################ Linear Pad Array ###############################################################
+        # #############################################################################################################
+        self.lin_separator_line = QtWidgets.QFrame()
+        self.lin_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.lin_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        array_grid.addWidget(self.lin_separator_line, 6, 0, 1, 2)
 
-        self.linear_form = QtWidgets.QFormLayout()
-        self.linear_box.addLayout(self.linear_form)
-
+        # Linear Direction
         self.pad_axis_label = FCLabel('%s:' % _('Direction'))
         self.pad_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
@@ -5459,27 +5611,29 @@ class AppGerberEditorUI:
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the array inclination")
         )
-        self.pad_axis_label.setMinimumWidth(100)
 
         self.pad_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
                                         {'label': _('Y'), 'value': 'Y'},
                                         {'label': _('Angle'), 'value': 'A'}])
-        self.pad_axis_radio.set_value('X')
-        self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
+        array_grid.addWidget(self.pad_axis_label, 8, 0)
+        array_grid.addWidget(self.pad_axis_radio, 8, 1)
+
+        # Linear Pitch
         self.pad_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.pad_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
-        self.pad_pitch_label.setMinimumWidth(100)
 
         self.pad_pitch_entry = FCDoubleSpinner()
         self.pad_pitch_entry.set_precision(self.decimals)
         self.pad_pitch_entry.set_range(0.0000, 10000.0000)
         self.pad_pitch_entry.setSingleStep(0.1)
 
-        self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
+        array_grid.addWidget(self.pad_pitch_label, 10, 0)
+        array_grid.addWidget(self.pad_pitch_entry, 10, 1)
 
+        # Linear Angle
         self.linear_angle_label = FCLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
@@ -5487,56 +5641,50 @@ class AppGerberEditorUI:
               "Min value is: -360.00 degrees.\n"
               "Max value is: 360.00 degrees.")
         )
-        self.linear_angle_label.setMinimumWidth(100)
 
         self.linear_angle_spinner = FCDoubleSpinner()
         self.linear_angle_spinner.set_precision(self.decimals)
         self.linear_angle_spinner.setRange(-360.00, 360.00)
-        self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
-        self.array_circular_frame = QtWidgets.QFrame()
-        self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_circular_frame)
-        self.circular_box = QtWidgets.QVBoxLayout()
-        self.circular_box.setContentsMargins(0, 0, 0, 0)
-        self.array_circular_frame.setLayout(self.circular_box)
+        array_grid.addWidget(self.linear_angle_label, 12, 0)
+        array_grid.addWidget(self.linear_angle_spinner, 12, 1)
 
+        # #############################################################################################################
+        # ################################### Circular Pad Array ######################################################
+        # #############################################################################################################
+        self.circ_separator_line = QtWidgets.QFrame()
+        self.circ_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.circ_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        array_grid.addWidget(self.circ_separator_line, 14, 0, 1, 2)
+
+        # Circular Direction
         self.pad_direction_label = FCLabel('%s:' % _('Direction'))
         self.pad_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
         )
-        self.pad_direction_label.setMinimumWidth(100)
-
-        self.circular_form = QtWidgets.QFormLayout()
-        self.circular_box.addLayout(self.circular_form)
 
         self.pad_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                              {'label': _('CCW'), 'value': 'CCW'}])
-        self.pad_direction_radio.set_value('CW')
-        self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
 
+        array_grid.addWidget(self.pad_direction_label, 16, 0)
+        array_grid.addWidget(self.pad_direction_radio, 16, 1)
+
+        # Circular Angle
         self.pad_angle_label = FCLabel('%s:' % _('Angle'))
         self.pad_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.pad_angle_label.setMinimumWidth(100)
 
         self.pad_angle_entry = FCDoubleSpinner()
         self.pad_angle_entry.set_precision(self.decimals)
         self.pad_angle_entry.set_range(-360.00, 360.00)
         self.pad_angle_entry.setSingleStep(0.1)
 
-        self.circular_form.addRow(self.pad_angle_label, self.pad_angle_entry)
+        array_grid.addWidget(self.pad_angle_label, 18, 0)
+        array_grid.addWidget(self.pad_angle_entry, 18, 1)
 
-        self.array_circular_frame.hide()
-
-        self.linear_angle_spinner.hide()
-        self.linear_angle_label.hide()
-
-        self.array_frame.hide()
         self.custom_box.addStretch()
-
         layout.addStretch()
 
         # Editor

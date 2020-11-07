@@ -330,7 +330,7 @@ class DrillArray(FCShapeTool):
 
         self.selected_dia = None
         self.drill_axis = 'X'
-        self.drill_array = 0    # 'linear'
+        self.drill_array = 'linear'    # 'linear'
         self.drill_array_size = None
         self.drill_pitch = None
         self.drill_linear_angle = None
@@ -382,7 +382,7 @@ class DrillArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             self.make()
             return
         else:
@@ -405,7 +405,7 @@ class DrillArray(FCShapeTool):
     def utility_geometry(self, data=None, static=None):
         self.drill_axis = self.draw_app.ui.drill_axis_radio.get_value()
         self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
-        self.drill_array = self.draw_app.ui.array_type_combo.get_value()
+        self.drill_array = self.draw_app.ui.array_type_radio.get_value()
         try:
             self.drill_array_size = int(self.draw_app.ui.drill_array_size_entry.get_value())
             try:
@@ -421,7 +421,7 @@ class DrillArray(FCShapeTool):
                                           (_("The value is mistyped. Check the value"), str(e)))
             return
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -454,7 +454,7 @@ class DrillArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
-        elif self.drill_array == 1:  # 'Circular'
+        elif self.drill_array == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -468,6 +468,9 @@ class DrillArray(FCShapeTool):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -553,7 +556,7 @@ class DrillArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.drill_pitch * item)), self.points[1]))
@@ -575,6 +578,12 @@ class DrillArray(FCShapeTool):
                 return
 
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
+
             if self.destination[0] < self.origin[0]:
                 radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
@@ -879,7 +888,7 @@ class SlotArray(FCShapeTool):
         self.radius = float(self.selected_dia / 2.0)
 
         self.slot_axis = 'X'
-        self.slot_array = 0     # 'linear'
+        self.slot_array = 'linear'     # 'linear'
         self.slot_array_size = None
         self.slot_pitch = None
         self.slot_linear_angle = None
@@ -910,7 +919,7 @@ class SlotArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             self.make()
             return
         else:   # 'Circular'
@@ -933,7 +942,7 @@ class SlotArray(FCShapeTool):
     def utility_geometry(self, data=None, static=None):
         self.slot_axis = self.draw_app.ui.slot_array_axis_radio.get_value()
         self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
-        self.slot_array = self.draw_app.ui.slot_array_type_combo.get_value()
+        self.slot_array = self.draw_app.ui.slot_array_type_radio.get_value()
         try:
             self.slot_array_size = int(self.draw_app.ui.slot_array_size_entry.get_value())
             try:
@@ -948,7 +957,7 @@ class SlotArray(FCShapeTool):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -998,6 +1007,9 @@ class SlotArray(FCShapeTool):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -1166,7 +1178,7 @@ class SlotArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             for item in range(self.slot_array_size):
                 if self.slot_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.slot_pitch * item)), self.points[1]))
@@ -1207,6 +1219,12 @@ class SlotArray(FCShapeTool):
             #     self.geometry.append(DrawToolShape(geo))
 
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
+
             if self.destination[0] < self.origin[0]:
                 radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
@@ -1862,8 +1880,8 @@ class AppExcEditor(QtCore.QObject):
         # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
-        self.ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
-        self.ui.slot_array_type_combo.currentIndexChanged.connect(self.on_slot_array_type_combo)
+        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
+        self.ui.slot_array_type_radio.activated_custom.connect(self.on_slot_array_type_radio)
 
         self.ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
         self.ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
@@ -1976,8 +1994,10 @@ class AppExcEditor(QtCore.QObject):
         # according to the set Preferences already loaded
         self.on_slot_angle_radio()
 
-        self.on_array_type_combo()
-        self.on_slot_array_type_combo()
+        self.ui.array_type_radio.set_value('linear')
+        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+        self.ui.slot_array_type_radio.set_value('linear')
+        self.on_slot_array_type_radio(val=self.ui.slot_array_type_radio.get_value())
         self.on_linear_angle_radio()
         self.on_slot_array_linear_angle_radio()
 
@@ -3153,14 +3173,14 @@ class AppExcEditor(QtCore.QObject):
             # event_is_dragging = self.app.plotcanvas.is_dragging
             # right_button = 3
 
-        self.pos = self.canvas.translate_coords(event_pos)
-
-        if self.app.grid_status():
-            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-        else:
-            self.pos = (self.pos[0], self.pos[1])
-
         if event.button == 1:
+            self.pos = self.canvas.translate_coords(event_pos)
+
+            if self.app.grid_status():
+                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            else:
+                self.pos = (self.pos[0], self.pos[1])
+
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3201,82 +3221,6 @@ class AppExcEditor(QtCore.QObject):
                     self.replot()
             else:
                 self.app.log.debug("No active tool to respond to click!")
-
-    def on_exc_shape_complete(self, storage):
-        self.app.log.debug("on_shape_complete()")
-
-        # Add shape
-        if type(storage) is list:
-            for item_storage in storage:
-                self.add_exc_shape(self.active_tool.geometry, item_storage)
-        else:
-            self.add_exc_shape(self.active_tool.geometry, storage)
-
-        # Remove any utility shapes
-        self.delete_utility_geometry()
-        self.tool_shape.clear(update=True)
-
-        # Replot and reset tool.
-        self.replot()
-        # self.active_tool = type(self.active_tool)(self)
-
-    def add_exc_shape(self, shape, storage):
-        """
-        Adds a shape to a specified shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :param storage:     object where to store the shapes
-        :return:            None
-        """
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_exc_shape(subshape, storage)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % str(type(shape))
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        else:
-            storage.insert(shape)  # TODO: Check performance
-
-    def add_shape(self, shape):
-        """
-        Adds a shape to the shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :return:            None
-        """
-
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_shape(subshape)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        # else:
-        #     self.storage.insert(shape)
 
     def on_exc_click_release(self, event):
         """
@@ -3353,90 +3297,6 @@ class AppExcEditor(QtCore.QObject):
         except Exception as e:
             log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
-
-    def draw_selection_area_handler(self, start, end, sel_type):
-        """
-        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
-        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
-        event handler.
-        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
-
-        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
-        deselected.
-
-        :param start:       mouse position when the selection LMB click was done
-        :param end:         mouse position when the left mouse button is released
-        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :return:
-        """
-
-        start_pos = (start[0], start[1])
-        end_pos = (end[0], end[1])
-        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-        modifiers = None
-
-        # delete the selection shape that was just drawn, we no longer need it
-        self.app.delete_selection_shape()
-
-        # detect if a modifier key was pressed while the left mouse button was released
-        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.modifiers == QtCore.Qt.ShiftModifier:
-            modifiers = 'Shift'
-        elif self.modifiers == QtCore.Qt.ControlModifier:
-            modifiers = 'Control'
-
-        if modifiers == self.app.defaults["global_mselect_key"]:
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-
-                        if obj in self.selected:
-                            # remove the shape object from the selected shapes storage
-                            self.selected.remove(obj)
-                        else:
-                            # add the shape object to the selected shapes storage
-                            self.selected.append(obj)
-        else:
-            # clear the selection shapes storage
-            self.selected = []
-            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-                        self.selected.append(obj)
-
-        try:
-            self.ui.tools_table_exc.cellPressed.disconnect()
-        except Exception:
-            pass
-
-        # first deselect all rows (tools) in the Tools Table
-        self.ui.tools_table_exc.clearSelection()
-        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for storage in self.storage_dict:
-            for shape_s in self.selected:
-                if shape_s in self.storage_dict[storage].get_objects():
-                    for key_tool_nr in self.tool2tooldia:
-                        if self.tool2tooldia[key_tool_nr] == storage:
-                            row_to_sel = key_tool_nr - 1
-                            # item = self.ui.tools_table_exc.item(row_to_sel, 1)
-                            # self.ui.tools_table_exc.setCurrentItem(item)
-                            # item.setSelected(True)
-
-                            # if the row to be selected is not already in the selected rows then select it
-                            # otherwise don't do it as it seems that we have a toggle effect
-                            if row_to_sel not in set(
-                                    index.row() for index in self.ui.tools_table_exc.selectedIndexes()):
-                                self.ui.tools_table_exc.selectRow(row_to_sel)
-                            self.last_tool_selected = int(key_tool_nr)
-
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-        self.replot()
 
     def on_canvas_move(self, event):
         """
@@ -3546,6 +3406,166 @@ class AppExcEditor(QtCore.QObject):
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                      edge_width=self.app.defaults["global_cursor_width"],
                                      size=self.app.defaults["global_cursor_size"])
+
+    def add_exc_shape(self, shape, storage):
+        """
+        Adds a shape to a specified shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :param storage:     object where to store the shapes
+        :return:            None
+        """
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_exc_shape(subshape, storage)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % str(type(shape))
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        else:
+            storage.insert(shape)  # TODO: Check performance
+
+    def add_shape(self, shape):
+        """
+        Adds a shape to the shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :return:            None
+        """
+
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_shape(subshape)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % type(shape)
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        # else:
+        #     self.storage.insert(shape)
+
+    def on_exc_shape_complete(self, storage):
+        self.app.log.debug("on_shape_complete()")
+
+        # Add shape
+        if type(storage) is list:
+            for item_storage in storage:
+                self.add_exc_shape(self.active_tool.geometry, item_storage)
+        else:
+            self.add_exc_shape(self.active_tool.geometry, storage)
+
+        # Remove any utility shapes
+        self.delete_utility_geometry()
+        self.tool_shape.clear(update=True)
+
+        # Replot and reset tool.
+        self.replot()
+        # self.active_tool = type(self.active_tool)(self)
+
+    def draw_selection_area_handler(self, start, end, sel_type):
+        """
+        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
+        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
+        event handler.
+        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
+
+        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
+        deselected.
+
+        :param start:       mouse position when the selection LMB click was done
+        :param end:         mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:
+        """
+
+        start_pos = (start[0], start[1])
+        end_pos = (end[0], end[1])
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+        modifiers = None
+
+        # delete the selection shape that was just drawn, we no longer need it
+        self.app.delete_selection_shape()
+
+        # detect if a modifier key was pressed while the left mouse button was released
+        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.modifiers == QtCore.Qt.ShiftModifier:
+            modifiers = 'Shift'
+        elif self.modifiers == QtCore.Qt.ControlModifier:
+            modifiers = 'Control'
+
+        if modifiers == self.app.defaults["global_mselect_key"]:
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+
+                        if obj in self.selected:
+                            # remove the shape object from the selected shapes storage
+                            self.selected.remove(obj)
+                        else:
+                            # add the shape object to the selected shapes storage
+                            self.selected.append(obj)
+        else:
+            # clear the selection shapes storage
+            self.selected = []
+            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        self.selected.append(obj)
+
+        try:
+            self.ui.tools_table_exc.cellPressed.disconnect()
+        except Exception:
+            pass
+
+        # first deselect all rows (tools) in the Tools Table
+        self.ui.tools_table_exc.clearSelection()
+        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for storage in self.storage_dict:
+            for shape_s in self.selected:
+                if shape_s in self.storage_dict[storage].get_objects():
+                    for key_tool_nr in self.tool2tooldia:
+                        if self.tool2tooldia[key_tool_nr] == storage:
+                            row_to_sel = key_tool_nr - 1
+                            # item = self.ui.tools_table_exc.item(row_to_sel, 1)
+                            # self.ui.tools_table_exc.setCurrentItem(item)
+                            # item.setSelected(True)
+
+                            # if the row to be selected is not already in the selected rows then select it
+                            # otherwise don't do it as it seems that we have a toggle effect
+                            if row_to_sel not in set(
+                                    index.row() for index in self.ui.tools_table_exc.selectedIndexes()):
+                                self.ui.tools_table_exc.selectRow(row_to_sel)
+                            self.last_tool_selected = int(key_tool_nr)
+
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.replot()
 
     def update_utility_geometry(self, data):
         # ### Utility geometry (animated) ###
@@ -3755,8 +3775,8 @@ class AppExcEditor(QtCore.QObject):
         if unsel_shape in self.selected:
             self.selected.remove(unsel_shape)
 
-    def on_array_type_combo(self):
-        if self.ui.array_type_combo.currentIndex() == 0:
+    def on_array_type_radio(self, val):
+        if val == 'linear':
             self.ui.array_circular_frame.hide()
             self.ui.array_linear_frame.show()
         else:
@@ -3765,8 +3785,8 @@ class AppExcEditor(QtCore.QObject):
             self.ui.array_linear_frame.hide()
             self.app.inform.emit(_("Click on the circular array Center position"))
 
-    def on_slot_array_type_combo(self):
-        if self.ui.slot_array_type_combo.currentIndex() == 0:
+    def on_slot_array_type_radio(self, val):
+        if val == 'linear':
             self.ui.slot_array_circular_frame.hide()
             self.ui.slot_array_linear_frame.show()
         else:
@@ -3897,11 +3917,11 @@ class AppExcEditorUI:
         self.ui_vertical_lay.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.ui_vertical_lay)
 
-        # ## Page Title box (spacing between children)
+        # Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         self.ui_vertical_lay.addLayout(self.title_box)
 
-        # ## Page Title
+        # Page Title
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
         self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
@@ -3912,17 +3932,18 @@ class AppExcEditorUI:
         self.title_box.addWidget(self.icon, stretch=0)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        # ## Object name
+        # Object name box
         self.name_box = QtWidgets.QHBoxLayout()
         self.ui_vertical_lay.addLayout(self.name_box)
 
+        # Object Name
         name_label = FCLabel(_("Name:"))
         self.name_entry = FCEntry()
 
         self.name_box.addWidget(name_label)
         self.name_box.addWidget(self.name_entry)
 
-        # ### Tools Drills ## ##
+        # Tools Drills Table Title
         self.tools_table_label = FCLabel("<b>%s</b>" % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools in this Excellon object\n"
@@ -3930,7 +3951,9 @@ class AppExcEditorUI:
         )
         self.ui_vertical_lay.addWidget(self.tools_table_label)
 
-        # Drills TABLE
+        # #############################################################################################################
+        # ########################################## Drills TABLE #####################################################
+        # #############################################################################################################
         self.tools_table_exc = FCTable()
         self.tools_table_exc.setColumnCount(4)
         self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
@@ -3957,7 +3980,7 @@ class AppExcEditorUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.ui_vertical_lay.addWidget(separator_line)
 
-        # ### Add a new Tool ## ##
+        # Add a new Tool
         self.addtool_label = FCLabel('<b>%s</b>' % _('Add/Delete Tool'))
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
@@ -4089,16 +4112,20 @@ class AppExcEditorUI:
             _("Add an array of drills (linear or circular array)")
         )
         
-        # Special Combo - it works by indexes as opposed to the items Text
-        self.array_type_combo = FCComboBox2()
-        self.array_type_combo.setToolTip(
+        self.array_grid.addWidget(self.drill_array_label, 0, 0, 1, 2)
+
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of drills array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItems([_("Linear"), _("Circular")])
 
-        self.array_grid.addWidget(self.drill_array_label, 0, 0, 1, 2)
-        self.array_grid.addWidget(self.array_type_combo, 2, 0, 1, 2)
+        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                          {'label': _('Circular'), 'value': 'circular'}])
+
+        self.array_grid.addWidget(array_type_lbl, 2, 0)
+        self.array_grid.addWidget(self.array_type_radio, 2, 1)
 
         # Set the number of drill holes in the drill array
         self.drill_array_size_label = FCLabel('%s:' % _('Number'))
@@ -4289,9 +4316,6 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ##################################### ADDING SLOT ARRAY  ####################################################
         # #############################################################################################################
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
-        # all the add slot  widgets
-        # this way I can hide/show the frame
         self.slot_array_frame = QtWidgets.QFrame()
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_array_frame)
@@ -4310,15 +4334,18 @@ class AppExcEditorUI:
 
         self.slot_array_grid.addWidget(self.slot_array_label, 0, 0, 1, 2)
 
-        # Special type of Combobox that get_value() by indexes and not by items text
-        self.slot_array_type_combo = FCComboBox2()
-        self.slot_array_type_combo.setToolTip(
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of slot array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.slot_array_type_combo.addItems([_("Linear"), _("Circular")])
 
-        self.slot_array_grid.addWidget(self.slot_array_type_combo, 2, 0, 1, 2)
+        self.slot_array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                               {'label': _('Circular'), 'value': 'circular'}])
+
+        self.slot_array_grid.addWidget(array_type_lbl, 2, 0)
+        self.slot_array_grid.addWidget(self.slot_array_type_radio, 2, 1)
 
         # Set the number of slot holes in the slot array
         self.slot_array_size_label = FCLabel('%s:' % _('Number'))
