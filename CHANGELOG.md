@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor fixed an error in the Eraser tool trying to disconnect the Jump signal
 - small UI change in the Isolation Tool for the Reference Object selection
 - small UI changes in NCC Tool and in Paint Tool for the Reference Object selection
+- language strings recompiled to make sure that the .MO files are well optimized
 RELEASE 8.994
 
 6.11.2020
