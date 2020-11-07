@@ -44,7 +44,7 @@ class ToolInvertGerber(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='ALT+G', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolInvertGerber()")
@@ -131,21 +131,18 @@ class ToolInvertGerber(AppTool):
         new_apertures = {}
 
         if '0' not in new_apertures:
-            new_apertures['0'] = {}
-            new_apertures['0']['type'] = 'C'
-            new_apertures['0']['size'] = 0.0
-            new_apertures['0']['geometry'] = []
+            new_apertures['0'] = {
+                'type': 'C',
+                'size': 0.0,
+                'geometry': []
+            }
 
         try:
             for poly in new_solid_geometry:
-                new_el = {}
-                new_el['solid'] = poly
-                new_el['follow'] = poly.exterior
+                new_el = {'solid': poly, 'follow': poly.exterior}
                 new_apertures['0']['geometry'].append(new_el)
         except TypeError:
-            new_el = {}
-            new_el['solid'] = new_solid_geometry
-            new_el['follow'] = new_solid_geometry.exterior
+            new_el = {'solid': new_solid_geometry, 'follow': new_solid_geometry.exterior}
             new_apertures['0']['geometry'].append(new_el)
 
         def init_func(new_obj, app_obj):
@@ -157,8 +154,8 @@ class ToolInvertGerber(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
-                                                                    local_use=new_obj, use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -238,7 +235,7 @@ class InvertUI:
         )
         self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin_entry.set_precision(self.decimals)
-        self.margin_entry.set_range(0.0000, 9999.9999)
+        self.margin_entry.set_range(0.0000, 10000.0000)
         self.margin_entry.setObjectName(_("Margin"))
 
         grid0.addWidget(self.margin_label, 5, 0, 1, 2)
@@ -267,6 +264,7 @@ class InvertUI:
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.invert_btn = FCButton(_('Invert Gerber'))
+        self.invert_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/invert32.png'))
         self.invert_btn.setToolTip(
             _("Will invert the Gerber object: areas that have copper\n"
               "will be empty of copper and previous empty area will be\n"

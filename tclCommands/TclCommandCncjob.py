@@ -154,7 +154,7 @@ class TclCommandCncjob(TclCommandSignaled):
         if "dpp" in args:
             args["multidepth"] = True
             if args["dpp"] is None:
-                args["dpp"] =self.app.defaults["geometry_depthperpass"]
+                args["dpp"] = self.app.defaults["geometry_depthperpass"]
             else:
                 args["dpp"] = float(args["dpp"])
         else:
@@ -169,7 +169,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["endxy"] = args["endxy"]
         else:
             if self.app.defaults["geometry_endxy"]:
-                args["endxy"] = self.app.defaults["geometry_endxy"]
+                args["endxy"] = str(self.app.defaults["geometry_endxy"])
             else:
                 args["endxy"] = '0, 0'
         if len(eval(args["endxy"])) != 2:
@@ -188,7 +188,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["dwell"] = self.app.defaults["geometry_dwell"]
             args["dwelltime"] = self.app.defaults["geometry_dwelltime"]
 
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else  self.app.defaults["geometry_ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["geometry_ppname_g"]
 
         if "toolchangez" in args:
             args["toolchange"] = True
@@ -204,7 +204,7 @@ class TclCommandCncjob(TclCommandSignaled):
             args["toolchangexy"] = args["toolchangexy"]
         else:
             if self.app.defaults["geometry_toolchangexy"]:
-                args["toolchangexy"] = self.app.defaults["geometry_toolchangexy"]
+                args["toolchangexy"] = str(self.app.defaults["geometry_toolchangexy"])
             else:
                 args["toolchangexy"] = '0, 0'
         if len(eval(args["toolchangexy"])) != 2:

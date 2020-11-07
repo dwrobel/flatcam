@@ -364,7 +364,8 @@ class Distance(AppTool):
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Pads overlapped. Aborting."))
                         return
 
-                    pos = (clicked_pads[0].x, clicked_pads[0].y)
+                    if clicked_pads:
+                        pos = (clicked_pads[0].x, clicked_pads[0].y)
 
                 self.app.on_jump_to(custom_location=pos, fit_center=False)
                 # Update cursor
@@ -394,7 +395,7 @@ class Distance(AppTool):
     def calculate_distance(self, pos):
         if len(self.points) == 1:
             self.ui.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
-            self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
+            self.app.inform.emit(_("Click on the DESTINATION point ..."))
         elif len(self.points) == 2:
             # self.app.app_cursor.enabled = False
             dx = self.points[1][0] - self.points[0][0]

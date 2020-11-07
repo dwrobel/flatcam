@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -30,7 +30,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Paint area
         # ------------------------------
-        self.paint_label = QtWidgets.QLabel(_('<b>Parameters:</b>'))
+        self.paint_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
         self.paint_label.setToolTip(
             _("Creates tool paths to cover the\n"
               "whole area of a polygon.")
@@ -78,7 +78,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
         self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.0000, 9999.9999)
+        self.tipdia_entry.set_range(0.0000, 10000.0000)
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName(_("V-Tip Dia"))
 
@@ -107,7 +107,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999.9999, 0.0000)
+        self.cutz_entry.set_range(-910000.0000, 0.0000)
         self.cutz_entry.setObjectName(_("Cut Z"))
 
         self.cutz_entry.setToolTip(
@@ -126,7 +126,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.000, 9999.9999)
+        self.newdia_entry.set_range(0.000, 10000.0000)
         self.newdia_entry.setObjectName(_("Tool Dia"))
 
         grid0.addWidget(self.newdialabel, 5, 0)
@@ -162,8 +162,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -185,7 +185,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "be painted.")
         )
         self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.setSingleStep(0.1)
 
@@ -210,7 +210,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
         # ], orientation='vertical', stretch=False)
-        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo = FCComboBox2()
         self.paintmethod_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
@@ -243,11 +243,11 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.rest_cb.setObjectName(_("Rest"))
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
         grid0.addWidget(self.rest_cb, 14, 0, 1, 2)
@@ -273,9 +273,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #     orientation='vertical',
         #     stretch=None
         # )
-        self.selectmethod_combo = FCComboBox()
+        self.selectmethod_combo = FCComboBox2()
         self.selectmethod_combo.addItems(
-            [_("Polygon Selection"), _("Area Selection"), _("All"), _("Reference Object")]
+            [_("All"), _("Polygon Selection"), _("Area Selection"), _("Reference Object")]
         )
 
         grid0.addWidget(selectlabel, 15, 0)
@@ -302,7 +302,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
                                               {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+            _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 20, 0)

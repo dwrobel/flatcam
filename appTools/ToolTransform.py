@@ -139,7 +139,7 @@ class ToolTransform(AppTool):
                 py = (ymax + ymin) * 0.5
                 return px, py
             else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
                 return "fail"
         elif ref_val == 2:  # "Point" reference
             point_val = self.uipoint_entry.get_value()
@@ -290,7 +290,7 @@ class ToolTransform(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
@@ -308,15 +308,14 @@ class ToolTransform(AppTool):
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s...' % _('Rotate done'))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_flip(self, axis, point):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object selected. Please Select an object to flip"))
+            self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Flip")):
@@ -336,7 +335,7 @@ class ToolTransform(AppTool):
                                     sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
                                 else:
                                     sel_obj.options['mirror_y'] = True
-                                self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                             elif axis == 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -345,12 +344,11 @@ class ToolTransform(AppTool):
                                     sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
                                 else:
                                     sel_obj.options['mirror_x'] = True
-                                self.app.inform.emit('[success] %s...' % _('Flip on the X axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on X axis done'))
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_skew(self, axis, xvalue, yvalue, point):
@@ -362,8 +360,7 @@ class ToolTransform(AppTool):
             return
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No object selected. Please Select an object to shear/skew!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Skew")):
@@ -382,15 +379,14 @@ class ToolTransform(AppTool):
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -410,15 +406,14 @@ class ToolTransform(AppTool):
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Scale on the'), str(axis), _('axis done')))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
-                                         (_("Due of"), str(e), _("action was not executed.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_offset(self, axis, num):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -440,14 +435,14 @@ class ToolTransform(AppTool):
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Offset on the'), str(axis), _('axis done')))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_buffer_action(self, value, join, factor=None):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to buffer!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Buffer")):
@@ -475,7 +470,7 @@ class ToolTransform(AppTool):
 
                 except Exception as e:
                     self.app.log.debug("ToolTransform.on_buffer_action() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     @staticmethod
@@ -616,7 +611,7 @@ class TransformUI:
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
@@ -873,7 +868,7 @@ class TransformUI:
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(

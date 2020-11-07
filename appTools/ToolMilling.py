@@ -635,7 +635,7 @@ class ToolMilling(AppTool, Excellon):
         # Get source object.
         try:
             self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
@@ -980,7 +980,7 @@ class ToolMilling(AppTool, Excellon):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else "Rough"
+            typ = 'Iso' if tt == 'V' else 'Rough'
 
             self.iso_tools[current_uid].update({
                 'type': typ,
@@ -1352,7 +1352,7 @@ class ToolMilling(AppTool, Excellon):
         def job_init(job_obj, app_obj):
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
-            app_obj.inform.emit(_("Generating Excellon CNCJob..."))
+            app_obj.inform.emit(_("Generating CNCJob..."))
 
             # get the tool_table items in a list of row items
             tool_table_items = self.get_selected_tools_table_items()
@@ -1674,7 +1674,7 @@ class MillingUI:
               "will be showed as a T1, T2 ... Tn in the Machine Code.\n\n"
               "Here the tools are selected for G-code generation."))
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units) \n"
+            _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
         self.tools_table.horizontalHeaderItem(2).setToolTip(
             _("The number of Drill holes. Holes that are drilled with\n"
@@ -1783,7 +1783,7 @@ class MillingUI:
 
         self.mill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mill_dia_entry.set_precision(self.decimals)
-        self.mill_dia_entry.set_range(0.0000, 9999.9999)
+        self.mill_dia_entry.set_range(0.0000, 10000.0000)
         self.mill_dia_entry.setObjectName("e_milling_dia")
 
         self.grid1.addWidget(self.mill_dia_label, 3, 0)
@@ -1800,9 +1800,9 @@ class MillingUI:
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("e_cutz")
@@ -1824,7 +1824,7 @@ class MillingUI:
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.set_range(0, 9999.9999)
+        self.maxdepth_entry.set_range(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -1846,9 +1846,9 @@ class MillingUI:
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.travelz_entry.set_range(0.00001, 9999.9999)
+            self.travelz_entry.set_range(0.00001, 10000.0000)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("e_travelz")
@@ -1864,7 +1864,7 @@ class MillingUI:
         )
         self.xyfeedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xyfeedrate_entry.set_precision(self.decimals)
-        self.xyfeedrate_entry.set_range(0, 9999.9999)
+        self.xyfeedrate_entry.set_range(0, 10000.0000)
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("e_feedratexy")
 
@@ -1881,7 +1881,7 @@ class MillingUI:
         )
         self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_z_entry.set_precision(self.decimals)
-        self.feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.feedrate_z_entry.set_range(0.0, 910000.0000)
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("e_feedratez")
 
@@ -1899,7 +1899,7 @@ class MillingUI:
         )
         self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0.0, 99999.9999)
+        self.feedrate_rapid_entry.set_range(0.0, 910000.0000)
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("e_fr_rapid")
 
@@ -1963,7 +1963,7 @@ class MillingUI:
 
         self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.set_range(0.0, 9999.9999)
+        self.dwelltime_entry.set_range(0.0, 10000.0000)
         self.dwelltime_entry.setSingleStep(0.1)
 
         self.dwelltime_entry.setToolTip(
@@ -1986,7 +1986,7 @@ class MillingUI:
 
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName("e_offset")
 
         self.grid1.addWidget(self.tool_offset_label, 25, 0)
@@ -2073,9 +2073,9 @@ class MillingUI:
               "tool change.")
         )
         if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0, 9999.9999)
+            self.toolchangez_entry.set_range(0.0, 10000.0000)
         else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.setSingleStep(0.1)
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
@@ -2086,7 +2086,7 @@ class MillingUI:
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
-            _("Height of the tool just after start.\n"
+            _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
@@ -2104,9 +2104,9 @@ class MillingUI:
         self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.endz_entry.set_range(0.0, 9999.9999)
+            self.endz_entry.set_range(0.0, 10000.0000)
         else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.setSingleStep(0.1)
 
@@ -2134,7 +2134,7 @@ class MillingUI:
 
         self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-9999.9999, 9999.9999)
+        self.pdepth_entry.set_range(-10000.0000, 10000.0000)
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setObjectName("e_depth_probe")
 
@@ -2152,7 +2152,7 @@ class MillingUI:
 
         self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0.0, 9999.9999)
+        self.feedrate_probe_entry.set_range(0.0, 10000.0000)
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setObjectName("e_fr_probe")
 
@@ -2163,7 +2163,7 @@ class MillingUI:
         self.feedrate_probe_entry.setVisible(False)
 
         # Preprocessor Excellon selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor E"))
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Excellon Objects.")
@@ -2175,7 +2175,7 @@ class MillingUI:
         self.grid3.addWidget(self.pp_excellon_name_cb, 15, 1)
 
         # Preprocessor Geometry selection
-        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor G"))
+        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_geo_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Geometry (Milling) Objects.")
@@ -2250,14 +2250,14 @@ class MillingUI:
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_range(0.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid_a1.addWidget(self.over_z_label, 2, 0)
         grid_a1.addWidget(self.over_z_entry, 2, 1)
 
         # Button Add Area
-        self.add_area_button = QtWidgets.QPushButton(_('Add area:'))
+        self.add_area_button = QtWidgets.QPushButton(_('Add Area:'))
         self.add_area_button.setToolTip(_("Add an Exclusion Area."))
 
         # Area Selection shape

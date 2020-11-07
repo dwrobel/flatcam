@@ -63,9 +63,9 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.set_precision(self.decimals)
@@ -86,7 +86,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.maxdepth_entry = FCDoubleSpinner()
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.set_range(0, 9999.9999)
+        self.maxdepth_entry.set_range(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -105,9 +105,9 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.travelz_entry.set_range(0.0001, 9999.9999)
+            self.travelz_entry.set_range(0.0001, 10000.0000)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(travelzlabel, 5, 0)
         grid0.addWidget(self.travelz_entry, 5, 1, 1, 2)
@@ -131,9 +131,9 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0001, 9999.9999)
+            self.toolchangez_entry.set_range(0.0001, 10000.0000)
         else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(toolchangezlabel, 7, 0)
         grid0.addWidget(self.toolchangez_entry, 7, 1, 1, 2)
@@ -148,9 +148,9 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.endz_entry.set_range(0.0000, 9999.9999)
+            self.endz_entry.set_range(0.0000, 10000.0000)
         else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(endz_label, 8, 0)
         grid0.addWidget(self.endz_entry, 8, 1, 1, 2)
@@ -177,7 +177,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_z_entry = FCDoubleSpinner()
         self.feedrate_z_entry.set_precision(self.decimals)
-        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(frlabel, 10, 0)
         grid0.addWidget(self.feedrate_z_entry, 10, 1, 1, 2)
@@ -210,7 +210,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         dwelltime.setToolTip(_("Number of time units for spindle to dwell."))
         self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.set_range(0, 99999.9999)
+        self.dwelltime_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(dwelltime, 13, 0)
         grid0.addWidget(self.dwelltime_entry, 13, 1, 1, 2)
@@ -226,6 +226,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
+        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
         grid0.addWidget(pp_excellon_label, 14, 0)
         grid0.addWidget(self.pp_excellon_name_cb, 14, 1, 1, 2)
@@ -254,7 +255,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.drill_overlap_entry = FCDoubleSpinner()
         self.drill_overlap_entry.set_precision(self.decimals)
-        self.drill_overlap_entry.set_range(0.0, 9999.9999)
+        self.drill_overlap_entry.set_range(0.0, 10000.0000)
         self.drill_overlap_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.drill_overlap_label, 22, 0)
@@ -305,7 +306,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         # Start Z
         startzlabel = FCLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
-            _("Height of the tool just after start.\n"
+            _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
@@ -324,7 +325,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_rapid_entry = FCDoubleSpinner()
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+        self.feedrate_rapid_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(fr_rapid_label, 35, 0)
         grid0.addWidget(self.feedrate_rapid_entry, 35, 1, 1, 2)
@@ -337,7 +338,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.pdepth_entry = FCDoubleSpinner()
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+        self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
         grid0.addWidget(self.pdepth_label, 37, 0)
         grid0.addWidget(self.pdepth_entry, 37, 1, 1, 2)
@@ -349,7 +350,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0, 99999.9999)
+        self.feedrate_probe_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.feedrate_probe_label, 38, 0)
         grid0.addWidget(self.feedrate_probe_entry, 38, 1, 1, 2)
@@ -443,7 +444,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_range(0.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.over_z_label, 55, 0)

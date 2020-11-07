@@ -42,6 +42,8 @@ class PreferencesUIManager:
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 
+        self.old_color = QtGui.QColor('black')
+
         # when adding entries here read the comments in the  method found below named:
         # def app_obj.new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
@@ -282,6 +284,14 @@ class PreferencesUIManager:
             "geometry_area_shape":      self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
             "geometry_area_strategy":   self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
             "geometry_area_overz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
+            # Polish
+            "geometry_polish":          self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_cb,
+            "geometry_polish_dia":      self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_dia_entry,
+            "geometry_polish_pressure": self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_pressure_entry,
+            "geometry_polish_travelz":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_travelz_entry,
+            "geometry_polish_margin":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_margin_entry,
+            "geometry_polish_overlap":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_over_entry,
+            "geometry_polish_method":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_method_combo,
 
             # Geometry Editor
             "geometry_editor_sel_limit":        self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
@@ -488,6 +498,7 @@ class PreferencesUIManager:
             "tools_calc_vshape_cut_z": self.ui.tools_defaults_form.tools_calculators_group.cut_z_entry,
             "tools_calc_electro_length": self.ui.tools_defaults_form.tools_calculators_group.pcblength_entry,
             "tools_calc_electro_width": self.ui.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
+            "tools_calc_electro_area": self.ui.tools_defaults_form.tools_calculators_group.area_entry,
             "tools_calc_electro_cdensity": self.ui.tools_defaults_form.tools_calculators_group.cdensity_entry,
             "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
 
@@ -530,13 +541,17 @@ class PreferencesUIManager:
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
+
+            # Subtractor Tool
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
+            "tools_sub_delete_sources":  self.ui.tools_defaults_form.tools_sub_group.delete_sources_cb,
 
             # Corner Markers Tool
-
+            "tools_corners_type": self.ui.tools_defaults_form.tools_corners_group.type_radio,
             "tools_corners_thickness": self.ui.tools_defaults_form.tools_corners_group.thick_entry,
             "tools_corners_length": self.ui.tools_defaults_form.tools_corners_group.l_entry,
             "tools_corners_margin": self.ui.tools_defaults_form.tools_corners_group.margin_entry,
+            "tools_corners_drill_dia": self.ui.tools_defaults_form.tools_corners_group.drill_dia_entry,
 
             # #######################################################################################################
             # ########################################## TOOLS 2 ####################################################
@@ -582,6 +597,7 @@ class PreferencesUIManager:
             # Copper Thieving Tool
             "tools_copper_thieving_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_entry,
             "tools_copper_thieving_margin": self.ui.tools2_defaults_form.tools2_cfill_group.margin_entry,
+            "tools_copper_thieving_area": self.ui.tools2_defaults_form.tools2_cfill_group.area_entry,
             "tools_copper_thieving_reference": self.ui.tools2_defaults_form.tools2_cfill_group.reference_radio,
             "tools_copper_thieving_box_type": self.ui.tools2_defaults_form.tools2_cfill_group.bbox_type_radio,
             "tools_copper_thieving_circle_steps": self.ui.tools2_defaults_form.tools2_cfill_group.circlesteps_entry,
@@ -596,6 +612,7 @@ class PreferencesUIManager:
             "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
             "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
             "tools_copper_thieving_mask_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_ppm_entry,
+            "tools_copper_thieving_geo_choice": self.ui.tools2_defaults_form.tools2_cfill_group.ppm_choice_radio,
 
             # Fiducials Tool
             "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,
@@ -897,7 +914,7 @@ class PreferencesUIManager:
         # Preferences save, update the color of the Preferences Tab text
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
 
         # restore the default stylesheet by setting a blank one
         self.ui.pref_apply_button.setStyleSheet("")
@@ -990,7 +1007,7 @@ class PreferencesUIManager:
             # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                     self.ui.plot_tab_area.closeTab(idx)
                     break
 
@@ -1018,7 +1035,7 @@ class PreferencesUIManager:
         # Preferences save, update the color of the Preferences Tab text
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                 self.ui.plot_tab_area.closeTab(idx)
                 break
 
@@ -1123,6 +1140,7 @@ class PreferencesUIManager:
 
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.old_color = self.ui.plot_tab_area.tabBar.tabTextColor(idx)
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
             self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")

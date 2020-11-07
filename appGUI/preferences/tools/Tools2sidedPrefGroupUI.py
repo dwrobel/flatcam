@@ -24,7 +24,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "2sided Tool Options", parent=parent)
         super(Tools2sidedPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("2Sided Tool Options")))
+        self.setTitle(str(_("2-Sided Tool Options")))
         self.decimals = decimals
 
         # ## Board cuttout
@@ -40,11 +40,11 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
 
         # ## Drill diameter for alignment holes
         self.drill_dia_entry = FCDoubleSpinner()
-        self.drill_dia_entry.set_range(0.000001, 9999.9999)
+        self.drill_dia_entry.set_range(0.000001, 10000.0000)
         self.drill_dia_entry.set_precision(self.decimals)
         self.drill_dia_entry.setSingleStep(0.1)
 
-        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
+        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill Dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
@@ -66,7 +66,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                            {'label': 'Y', 'value': 'Y'}])
-        self.mirax_label = QtWidgets.QLabel(_("Mirror Axis:"))
+        self.mirax_label = QtWidgets.QLabel('%s:' % _("Mirror Axis"))
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )

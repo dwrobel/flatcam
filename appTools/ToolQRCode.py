@@ -163,47 +163,47 @@ class QRCode(AppTool):
         self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
         self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
 
-        self.proc = self.app.proc_container.new('%s...' % _("Generating QRCode geometry"))
-
         def job_thread_qr(app_obj):
-            error_code = {
-                'L': qrcode.constants.ERROR_CORRECT_L,
-                'M': qrcode.constants.ERROR_CORRECT_M,
-                'Q': qrcode.constants.ERROR_CORRECT_Q,
-                'H': qrcode.constants.ERROR_CORRECT_H
-            }[self.ui.error_radio.get_value()]
+            with self.app.proc_container.new('%s' % _("Working ...")) as self.proc:
 
-            qr = qrcode.QRCode(
-                version=self.ui.version_entry.get_value(),
-                error_correction=error_code,
-                box_size=self.ui.bsize_entry.get_value(),
-                border=self.ui.border_size_entry.get_value(),
-                image_factory=qrcode.image.svg.SvgFragmentImage
-            )
-            qr.add_data(text_data)
-            qr.make()
+                error_code = {
+                    'L': qrcode.constants.ERROR_CORRECT_L,
+                    'M': qrcode.constants.ERROR_CORRECT_M,
+                    'Q': qrcode.constants.ERROR_CORRECT_Q,
+                    'H': qrcode.constants.ERROR_CORRECT_H
+                }[self.ui.error_radio.get_value()]
 
-            svg_file = BytesIO()
-            img = qr.make_image()
-            img.save(svg_file)
+                qr = qrcode.QRCode(
+                    version=self.ui.version_entry.get_value(),
+                    error_correction=error_code,
+                    box_size=self.ui.bsize_entry.get_value(),
+                    border=self.ui.border_size_entry.get_value(),
+                    image_factory=qrcode.image.svg.SvgFragmentImage
+                )
+                qr.add_data(text_data)
+                qr.make()
 
-            svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
-            svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
-            self.qrcode_geometry = deepcopy(svg_geometry)
+                svg_file = BytesIO()
+                img = qr.make_image()
+                img.save(svg_file)
 
-            svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
-            self.qrcode_utility_geometry = svg_geometry
+                svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
+                svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
+                self.qrcode_geometry = deepcopy(svg_geometry)
 
-            # make a bounding box of the QRCode geometry to help drawing the utility geometry in case it is too
-            # complicated
-            try:
-                a, b, c, d = self.qrcode_utility_geometry.bounds
-                self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
-            except Exception as ee:
-                log.debug("QRCode.make() bounds error --> %s" % str(ee))
+                svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
+                self.qrcode_utility_geometry = svg_geometry
 
-            app_obj.call_source = 'qrcode_tool'
-            app_obj.inform.emit(_("Click on the Destination point ..."))
+                # make a bounding box of the QRCode geometry to help drawing the utility geometry in case it is too
+                # complicated
+                try:
+                    a, b, c, d = self.qrcode_utility_geometry.bounds
+                    self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
+                except Exception as ee:
+                    log.debug("QRCode.make() bounds error --> %s" % str(ee))
+
+                app_obj.call_source = 'qrcode_tool'
+                app_obj.inform.emit(_("Click on the DESTINATION point ..."))
 
         self.app.worker_task.emit({'fcn': job_thread_qr, 'params': [self.app]})
 
@@ -270,9 +270,11 @@ class QRCode(AppTool):
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.apertures:
-            self.grb_object.apertures[new_apid] = {}
-            self.grb_object.apertures[new_apid]['geometry'] = []
-            self.grb_object.apertures[new_apid]['type'] = 'R'
+            self.grb_object.apertures[new_apid] = {
+                'type': 'R',
+                'geometry': []
+            }
+
             # TODO: HACK
             # I've artificially added 1% to the height and width because otherwise after loading the
             # exported file, it will not be correctly reconstructed (it will be made from multiple shapes instead of
@@ -282,15 +284,15 @@ class QRCode(AppTool):
             self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
         if '0' not in self.grb_object.apertures:
-            self.grb_object.apertures['0'] = {}
-            self.grb_object.apertures['0']['geometry'] = []
-            self.grb_object.apertures['0']['type'] = 'REG'
-            self.grb_object.apertures['0']['size'] = 0.0
+            self.grb_object.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
         # make sure that I place a cutout there
-        zero_elem = {}
-        zero_elem['clear'] = offset_mask_geo
+        zero_elem = {'clear': offset_mask_geo}
         self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
 
         try:
@@ -304,13 +306,13 @@ class QRCode(AppTool):
 
         try:
             for geo in self.qrcode_geometry:
-                geo_elem = {}
-                geo_elem['solid'] = translate(geo, xoff=pos[0], yoff=pos[1])
-                geo_elem['follow'] = translate(geo.centroid, xoff=pos[0], yoff=pos[1])
+                geo_elem = {
+                    'solid': translate(geo, xoff=pos[0], yoff=pos[1]),
+                    'follow': translate(geo.centroid, xoff=pos[0], yoff=pos[1])
+                }
                 self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
-            geo_elem = {}
-            geo_elem['solid'] = self.qrcode_geometry
+            geo_elem = {'solid': self.qrcode_geometry}
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:
@@ -461,7 +463,7 @@ class QRCode(AppTool):
 
     def replot(self, obj):
         def worker_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 obj.plot()
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
@@ -519,7 +521,9 @@ class QRCode(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_png',
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export PNG"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -566,7 +570,9 @@ class QRCode(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export SVG"),
+                ext_filter=_filter)
 
         filename = str(filename)
 
@@ -888,6 +894,7 @@ class QRcodeUI:
 
         # ## Insert QRCode
         self.qrcode_button = QtWidgets.QPushButton(_("Insert QRCode"))
+        self.qrcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/qrcode32.png'))
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )

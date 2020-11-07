@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet, FCFileSaveDialog, FCLabel
+    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2
 from camlib import to_dict
 
 import sys
@@ -24,6 +24,10 @@ class ToolsDB2UI:
     def __init__(self, app, grid_layout):
         self.app = app
         self.decimals = self.app.decimals
+
+        self.offset_item_options = ["Path", "In", "Out", "Custom"]
+        self.type_item_options = ['Iso', 'Rough', 'Finish']
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         settings = QtCore.QSettings("Open Source", "FlatCAM")
         if settings.contains("machinist"):
@@ -177,20 +181,19 @@ class ToolsDB2UI:
         descript_vlay.addLayout(tools_vlay)
         descript_vlay.addStretch()
 
-        milling_vlay = QtWidgets.QVBoxLayout()
-        milling_vlay.addWidget(self.milling_box)
-        milling_vlay.addStretch()
+        mill_vlay = QtWidgets.QVBoxLayout()
+        mill_vlay.addWidget(self.milling_box)
+        mill_vlay.addStretch()
 
         drilling_vlay = QtWidgets.QVBoxLayout()
         drilling_vlay.addWidget(self.drill_box)
 
         param_hlay.addLayout(descript_vlay)
-        param_hlay.addLayout(milling_vlay)
         param_hlay.addLayout(drilling_vlay)
         param_hlay.addLayout(tools_vlay)
 
         # always visible, always to be included last
-        param_hlay.addLayout(milling_vlay)
+        param_hlay.addLayout(mill_vlay)
 
         param_hlay.addStretch()
 
@@ -219,10 +222,10 @@ class ToolsDB2UI:
         # Tool Dia
         self.dia_label = FCLabel('%s:' % _('Diameter'))
         self.dia_label.setToolTip(
-            _("Tool Diameter."))
+            '%s.' % _("Tool Diameter"))
 
         self.dia_entry = FCDoubleSpinner()
-        self.dia_entry.set_range(-9999.9999, 9999.9999)
+        self.dia_entry.set_range(-10000.0000, 10000.0000)
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.setObjectName('gdb_dia')
 
@@ -244,7 +247,7 @@ class ToolsDB2UI:
         )
         self.tol_min_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tol_min_entry.set_precision(self.decimals)
-        self.tol_min_entry.set_range(0, 9999.9999)
+        self.tol_min_entry.set_range(0, 10000.0000)
         self.tol_min_entry.setSingleStep(0.1)
         self.tol_min_entry.setObjectName("gdb_tol_min")
 
@@ -258,7 +261,7 @@ class ToolsDB2UI:
         )
         self.tol_max_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tol_max_entry.set_precision(self.decimals)
-        self.tol_max_entry.set_range(0, 9999.9999)
+        self.tol_max_entry.set_range(0, 10000.0000)
         self.tol_max_entry.setSingleStep(0.1)
         self.tol_max_entry.setObjectName("gdb_tol_max")
 
@@ -270,9 +273,9 @@ class ToolsDB2UI:
         self.tool_op_label.setToolTip(
             _("The kind of Application Tool where this tool is to be used."))
 
-        self.tool_op_combo = FCComboBox()
+        self.tool_op_combo = FCComboBox2()
         self.tool_op_combo.addItems(
-            [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _("Cutout")])
+            [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _('Cutout')])
         self.tool_op_combo.setObjectName('gdb_tool_target')
 
         self.grid_tool.addWidget(self.tool_op_label, 8, 0)
@@ -297,7 +300,7 @@ class ToolsDB2UI:
               "V = v-shape milling tool"))
 
         self.mill_shape_combo = FCComboBox()
-        self.mill_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.mill_shape_combo.addItems(self.tool_type_item_options)
         self.mill_shape_combo.setObjectName('gdb_shape')
 
         self.grid0.addWidget(self.shape_label, 2, 0)
@@ -310,7 +313,7 @@ class ToolsDB2UI:
               "Diameter of the tip for V-Shape Tools."))
 
         self.mill_vdia_entry = FCDoubleSpinner()
-        self.mill_vdia_entry.set_range(0.0000, 9999.9999)
+        self.mill_vdia_entry.set_range(0.0000, 10000.0000)
         self.mill_vdia_entry.set_precision(self.decimals)
         self.mill_vdia_entry.setObjectName('gdb_vdia')
 
@@ -346,7 +349,7 @@ class ToolsDB2UI:
               "Finish = finishing cut, high feedrate"))
 
         self.mill_type_combo = FCComboBox()
-        self.mill_type_combo.addItems(["Iso", "Rough", "Finish"])
+        self.mill_type_combo.addItems(self.type_item_options)
         self.mill_type_combo.setObjectName('gdb_type')
 
         self.grid0.addWidget(self.type_label, 10, 0)
@@ -363,7 +366,7 @@ class ToolsDB2UI:
               "Custom = custom offset using the Custom Offset value"))
 
         self.mill_tooloffset_combo = FCComboBox()
-        self.mill_tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
+        self.mill_tooloffset_combo.addItems(self.offset_item_options)
         self.mill_tooloffset_combo.setObjectName('gdb_tool_offset')
 
         self.grid0.addWidget(self.tooloffset_label, 12, 0)
@@ -376,7 +379,7 @@ class ToolsDB2UI:
               "A value to be used as offset from the current path."))
 
         self.mill_custom_offset_entry = FCDoubleSpinner()
-        self.mill_custom_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_custom_offset_entry.set_range(-10000.0000, 10000.0000)
         self.mill_custom_offset_entry.set_precision(self.decimals)
         self.mill_custom_offset_entry.setObjectName('gdb_custom_offset')
 
@@ -395,7 +398,7 @@ class ToolsDB2UI:
               "The depth at which to cut into material."))
 
         self.mill_cutz_entry = FCDoubleSpinner()
-        self.mill_cutz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_cutz_entry.set_range(-10000.0000, 10000.0000)
         self.mill_cutz_entry.set_precision(self.decimals)
         self.mill_cutz_entry.setObjectName('gdb_cutz')
 
@@ -422,7 +425,7 @@ class ToolsDB2UI:
               "The value used to cut into material on each pass."))
 
         self.mill_multidepth_entry = FCDoubleSpinner()
-        self.mill_multidepth_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_multidepth_entry.set_range(-10000.0000, 10000.0000)
         self.mill_multidepth_entry.set_precision(self.decimals)
         self.mill_multidepth_entry.setObjectName('gdb_multidepth_entry')
 
@@ -437,7 +440,7 @@ class ToolsDB2UI:
               "above the surface of the material, avoiding all fixtures."))
 
         self.mill_travelz_entry = FCDoubleSpinner()
-        self.mill_travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_travelz_entry.set_range(-10000.0000, 10000.0000)
         self.mill_travelz_entry.set_precision(self.decimals)
         self.mill_travelz_entry.setObjectName('gdb_travelz')
 
@@ -470,7 +473,7 @@ class ToolsDB2UI:
               "the extra cut."))
 
         self.mill_ecut_length_entry = FCDoubleSpinner()
-        self.mill_ecut_length_entry.set_range(0.0000, 9999.9999)
+        self.mill_ecut_length_entry.set_range(0.0000, 10000.0000)
         self.mill_ecut_length_entry.set_precision(self.decimals)
         self.mill_ecut_length_entry.setObjectName('gdb_ecut_length')
 
@@ -489,7 +492,7 @@ class ToolsDB2UI:
               "The speed on XY plane used while cutting into material."))
 
         self.mill_frxy_entry = FCDoubleSpinner()
-        self.mill_frxy_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frxy_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_frxy_entry.set_precision(self.decimals)
         self.mill_frxy_entry.setObjectName('gdb_frxy')
 
@@ -503,7 +506,7 @@ class ToolsDB2UI:
               "The speed on Z plane."))
 
         self.mill_frz_entry = FCDoubleSpinner()
-        self.mill_frz_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frz_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_frz_entry.set_precision(self.decimals)
         self.mill_frz_entry.setObjectName('gdb_frz')
 
@@ -519,7 +522,7 @@ class ToolsDB2UI:
               "the G0 g-code command. Mostly 3D printers."))
 
         self.mill_frapids_entry = FCDoubleSpinner()
-        self.mill_frapids_entry.set_range(0.0000, 9999.9999)
+        self.mill_frapids_entry.set_range(0.0000, 10000.0000)
         self.mill_frapids_entry.set_precision(self.decimals)
         self.mill_frapids_entry.setObjectName('gdb_frapids')
 
@@ -539,7 +542,7 @@ class ToolsDB2UI:
               "The speed of the spindle in RPM."))
 
         self.mill_spindle_entry = FCDoubleSpinner()
-        self.mill_spindle_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_spindle_entry.set_range(-9910000.0000, 9910000.0000)
         self.mill_spindle_entry.set_precision(self.decimals)
         self.mill_spindle_entry.setObjectName('gdb_spindle')
 
@@ -566,7 +569,7 @@ class ToolsDB2UI:
               "A delay used to allow the motor spindle reach its set speed."))
 
         self.mill_dwelltime_entry = FCDoubleSpinner()
-        self.mill_dwelltime_entry.set_range(0.0000, 9999.9999)
+        self.mill_dwelltime_entry.set_range(0.0000, 10000.0000)
         self.mill_dwelltime_entry.set_precision(self.decimals)
         self.mill_dwelltime_entry.setObjectName('gdb_dwelltime')
 
@@ -604,7 +607,7 @@ class ToolsDB2UI:
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -612,7 +615,7 @@ class ToolsDB2UI:
         self.ncc_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                                 {'label': _('Conventional'), 'value': 'cv'}])
         self.ncc_milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -626,8 +629,8 @@ class ToolsDB2UI:
         nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be cleared are still \n"
-              "not cleared.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -649,7 +652,7 @@ class ToolsDB2UI:
         )
         self.ncc_margin_entry = FCDoubleSpinner()
         self.ncc_margin_entry.set_precision(self.decimals)
-        self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.ncc_margin_entry.set_range(-10000.0000, 10000.0000)
         self.ncc_margin_entry.setObjectName("gdb_n_margin")
 
         self.grid2.addWidget(nccmarginlabel, 16, 0)
@@ -664,7 +667,7 @@ class ToolsDB2UI:
               "- Line-based: Parallel lines.")
         )
 
-        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
@@ -700,8 +703,7 @@ class ToolsDB2UI:
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "from the copper features.")
         )
         self.grid2.addWidget(self.ncc_choice_offset_cb, 19, 0)
 
@@ -735,8 +737,8 @@ class ToolsDB2UI:
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -760,7 +762,7 @@ class ToolsDB2UI:
         )
         self.paint_offset_entry = FCDoubleSpinner()
         self.paint_offset_entry.set_precision(self.decimals)
-        self.paint_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.paint_offset_entry.set_range(-10000.0000, 10000.0000)
         self.paint_offset_entry.setObjectName('gdb_p_offset')
 
         self.grid3.addWidget(marginlabel, 2, 0)
@@ -779,7 +781,7 @@ class ToolsDB2UI:
               "in the order specified.")
         )
 
-        self.paint_method_combo = FCComboBox()
+        self.paint_method_combo = FCComboBox2()
         self.paint_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
@@ -850,7 +852,7 @@ class ToolsDB2UI:
         # Milling Type Radio Button
         self.iso_milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.iso_milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -858,7 +860,7 @@ class ToolsDB2UI:
         self.iso_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                                 {'label': _('Conventional'), 'value': 'cv'}])
         self.iso_milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -877,8 +879,8 @@ class ToolsDB2UI:
 
         self.iso_follow_cb = FCCheckBox()
         self.iso_follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                    "This means that it will cut through\n"
-                                    "the middle of the trace."))
+                                        "This means that it will cut through\n"
+                                        "the middle of the trace."))
         self.iso_follow_cb.setObjectName("gdb_i_follow")
 
         self.grid4.addWidget(self.follow_label, 6, 0)
@@ -924,9 +926,9 @@ class ToolsDB2UI:
         self.drill_cutz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.drill_cutz_entry.set_range(-9999.9999, 0.0000)
+            self.drill_cutz_entry.set_range(-10000.0000, 0.0000)
         else:
-            self.drill_cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_cutz_entry.setSingleStep(0.1)
         self.drill_cutz_entry.setObjectName("gdb_e_cutz")
@@ -944,7 +946,7 @@ class ToolsDB2UI:
 
         self.drill_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_offset_entry.set_precision(self.decimals)
-        self.drill_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.drill_offset_entry.set_range(-10000.0000, 10000.0000)
         self.drill_offset_entry.setObjectName("gdb_e_offset")
 
         self.grid5.addWidget(self.tool_offset_label, 6, 0)
@@ -973,7 +975,7 @@ class ToolsDB2UI:
               "The value used to cut into material on each pass."))
         self.drill_maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_maxdepth_entry.set_precision(self.decimals)
-        self.drill_maxdepth_entry.set_range(0, 9999.9999)
+        self.drill_maxdepth_entry.set_range(0, 10000.0000)
         self.drill_maxdepth_entry.setSingleStep(0.1)
 
         self.drill_maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -993,9 +995,9 @@ class ToolsDB2UI:
         self.drill_travelz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.drill_travelz_entry.set_range(0.00001, 9999.9999)
+            self.drill_travelz_entry.set_range(0.00001, 10000.0000)
         else:
-            self.drill_travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_travelz_entry.setSingleStep(0.1)
         self.drill_travelz_entry.setObjectName("gdb_e_travelz")
@@ -1018,7 +1020,7 @@ class ToolsDB2UI:
         )
         self.drill_feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_feedrate_z_entry.set_precision(self.decimals)
-        self.drill_feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_z_entry.set_range(0.0, 910000.0000)
         self.drill_feedrate_z_entry.setSingleStep(0.1)
         self.drill_feedrate_z_entry.setObjectName("gdb_e_feedratez")
 
@@ -1036,7 +1038,7 @@ class ToolsDB2UI:
         )
         self.drill_feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_feedrate_rapid_entry.set_precision(self.decimals)
-        self.drill_feedrate_rapid_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_rapid_entry.set_range(0.0, 910000.0000)
         self.drill_feedrate_rapid_entry.setSingleStep(0.1)
         self.drill_feedrate_rapid_entry.setObjectName("gdb_e_fr_rapid")
 
@@ -1083,7 +1085,7 @@ class ToolsDB2UI:
               "A delay used to allow the motor spindle reach its set speed."))
         self.drill_dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_dwelltime_entry.set_precision(self.decimals)
-        self.drill_dwelltime_entry.set_range(0.0, 9999.9999)
+        self.drill_dwelltime_entry.set_range(0.0, 10000.0000)
         self.drill_dwelltime_entry.setSingleStep(0.1)
         self.drill_dwelltime_entry.setObjectName("gdb_e_dwelltime")
 
@@ -1146,7 +1148,7 @@ class ToolsDB2UI:
 
         # Margin
         self.cutout_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutout_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.cutout_margin_entry.set_range(-10000.0000, 10000.0000)
         self.cutout_margin_entry.setSingleStep(0.1)
         self.cutout_margin_entry.set_precision(self.decimals)
         self.cutout_margin_entry.setObjectName('gdb_ct_margin')
@@ -1208,9 +1210,9 @@ class ToolsDB2UI:
         self.cutout_thin_depth_entry.setObjectName('gdb_ct_gap_depth')
 
         if self.machinist_setting == 0:
-            self.cutout_thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.cutout_thin_depth_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.cutout_thin_depth_entry.setRange(-9999.9999, 9999.9999)
+            self.cutout_thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.cutout_thin_depth_entry.setSingleStep(0.1)
 
         self.grid6.addWidget(self.thin_depth_label, 17, 0)
@@ -1394,19 +1396,16 @@ class ToolsDB2(QtWidgets.QWidget):
 
     mark_tools_rows = QtCore.pyqtSignal()
 
-    def __init__(self, app, callback_on_edited, callback_on_tool_request, parent=None):
+    def __init__(self, app, callback_on_tool_request, parent=None):
         super(ToolsDB2, self).__init__(parent)
 
         self.app = app
         self.app_ui = self.app.ui
         self.decimals = self.app.decimals
-        self.callback_app = callback_on_edited
 
         self.on_tool_request = callback_on_tool_request
 
-        self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = ["Iso", "Rough", "Finish"]
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.tools_db_changed_flag = False
 
         '''
         dict to hold all the tools in the Tools DB
@@ -1417,13 +1416,15 @@ class ToolsDB2(QtWidgets.QWidget):
                 'tooldia': self.app.defaults["geometry_cnctooldia"]
                 'offset': 'Path'
                 'offset_value': 0.0
-                'type':  _('Rough'),
+                'type':  'Rough',
                 'tool_type': 'C1'
                 'data': dict()
             }
         }
         '''
         self.db_tool_dict = {}
+
+        self.old_color = QtGui.QColor('black')
 
         # ##############################################################################
         # ##############################################################################
@@ -1719,7 +1720,13 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_connect()
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+
+        # set the old color for the Tools Database Tab
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.old_color = self.app.ui.plot_tab_area.tabBar.tabTextColor(idx)
+
+        filename = self.app.tools_database_path()
 
         # load the database tools from the file
         try:
@@ -1727,7 +1734,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 tools = f.read()
         except IOError:
             self.app.log.error("Could not load tools DB file.")
-            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.app.inform.emit('[ERROR] %s' % _("Could not load the file."))
             return
 
         try:
@@ -1811,7 +1818,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui.tool_description_box.setEnabled(True)
         if self.db_tool_dict:
-            if tool_target == _("General"):
+            if tool_target == 0:    # _("General")
                 self.ui.milling_box.setEnabled(True)
                 self.ui.ncc_box.setEnabled(True)
                 self.ui.paint_box.setEnabled(True)
@@ -1833,33 +1840,33 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.drill_box.hide()
                 self.ui.cutout_box.hide()
 
-                if tool_target == _("Milling"):
+                if tool_target == 1:    # _("Milling")
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Drilling"):
+                if tool_target == 2:    # _("Drilling")
                     self.ui.drill_box.setEnabled(True)
                     self.ui.drill_box.show()
 
-                if tool_target == _("Isolation"):
+                if tool_target == 3:    # _("Isolation")
                     self.ui.iso_box.setEnabled(True)
                     self.ui.iso_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Paint"):
+                if tool_target == 4:    # _("Paint")
                     self.ui.paint_box.setEnabled(True)
                     self.ui.paint_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("NCC"):
+                if tool_target == 5:    # _("NCC")
                     self.ui.ncc_box.setEnabled(True)
                     self.ui.ncc_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
-                if tool_target == _("Cutout"):
+                if tool_target == 6:    # _("Cutout")
                     self.ui.cutout_box.setEnabled(True)
                     self.ui.cutout_box.show()
                     self.ui.milling_box.setEnabled(True)
@@ -1874,7 +1881,7 @@ class ToolsDB2(QtWidgets.QWidget):
         default_data = {}
         default_data.update({
             "plot":             True,
-            "tool_target": _("General"),
+            "tool_target": 0,   # _("General")
             "tol_min": 0.0,
             "tol_max": 0.0,
 
@@ -1899,6 +1906,28 @@ class ToolsDB2(QtWidgets.QWidget):
             "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
+            "endxy":            self.app.defaults["geometry_endxy"],
+            "search_time":      int(self.app.defaults["geometry_search_time"]),
+            "z_pdepth":         float(self.app.defaults["geometry_z_pdepth"]),
+            "f_plunge":         float(self.app.defaults["geometry_f_plunge"]),
+
+            "spindledir":               self.app.defaults["geometry_spindledir"],
+            "optimization_type":        self.app.defaults["geometry_optimization_type"],
+            "feedrate_probe":           self.app.defaults["geometry_feedrate_probe"],
+
+            "segx":             self.app.defaults["geometry_segx"],
+            "segy":             self.app.defaults["geometry_segy"],
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       self.app.defaults["geometry_area_overz"],
+            "polish":           self.app.defaults["geometry_polish"],
+            "polish_dia":       self.app.defaults["geometry_polish_dia"],
+            "polish_pressure":  self.app.defaults["geometry_polish_pressure"],
+            "polish_travelz":   self.app.defaults["geometry_polish_travelz"],
+            "polish_margin":    self.app.defaults["geometry_polish_margin"],
+            "polish_overlap":   self.app.defaults["geometry_polish_overlap"],
+            "polish_method":    self.app.defaults["geometry_polish_method"],
 
             # NCC
             "tools_ncc_operation":       self.app.defaults["tools_ncc_operation"],
@@ -1963,8 +1992,7 @@ class ToolsDB2(QtWidgets.QWidget):
         else:
             new_name = "new_tool_1"
 
-        dict_elem = {}
-        dict_elem['name'] = new_name
+        dict_elem = {'name': new_name}
         if type(self.app.defaults["geometry_cnctooldia"]) == float:
             dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
         else:
@@ -2029,7 +2057,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.ui.tree_widget.setCurrentItem(last_item)
             last_item.setSelected(True)
 
-        self.callback_app()
+        self.on_tools_db_edited()
         self.app.inform.emit('[success] %s' % _("Tool copied from Tools DB."))
 
     def on_tool_delete(self):
@@ -2068,12 +2096,13 @@ class ToolsDB2(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Tools Database"),
-                                                           directory='{l_save}/FlatCAM_{n}_{date}'.format(
-                                                                l_save=str(self.app.get_last_save_folder()),
-                                                                n=_("Tools_Database"),
-                                                                date=date),
-                                                           ext_filter=filter__)
+
+        filename, _f = FCFileSaveDialog.get_saved_filename(
+            caption=_("Export Tools Database"),
+            directory='{l_save}/FlatCAM_{n}_{date}'.format(l_save=str(self.app.get_last_save_folder()),
+                                                           n=_("Tools_Database"),
+                                                           date=date),
+            ext_filter=filter__)
 
         filename = str(filename)
 
@@ -2097,7 +2126,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 e = sys.exc_info()[0]
                 self.app.log.error("Could not load Tools DB file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             # Save update options
@@ -2131,7 +2160,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     tools_in_db = f.read()
             except IOError:
                 self.app.log.error("Could not load Tools DB file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             try:
@@ -2149,12 +2178,12 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 
-        filename = self.app.data_path + "/tools_db.FlatDB"
+        filename = self.app.tools_database_path()
 
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app_ui.plot_tab_area.count()):
             if self.app_ui.plot_tab_area.tabText(idx) == _("Tools Database"):
-                self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, self.old_color)
                 self.ui.save_db_btn.setStyleSheet("")
 
                 # clean the dictionary and leave only keys of interest
@@ -2170,7 +2199,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Drilling'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_drill'):
+                                if str(k).startswith('tools_drill') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2178,7 +2207,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Isolation'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_iso'):
+                                if str(k).startswith('tools_iso') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2186,7 +2215,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Paint'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_paint'):
+                                if str(k).startswith('tools_paint') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2194,7 +2223,15 @@ class ToolsDB2(QtWidgets.QWidget):
                     if self.db_tool_dict[tool_id]['data']['tool_target'] == _('NCC'):
                         for k in list(self.db_tool_dict[tool_id]['data'].keys()):
                             if str(k).startswith('tools_'):
-                                if str(k).startswith('tools_ncc'):
+                                if str(k).startswith('tools_ncc') or str(k).startswith('tools_mill'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Cutout'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_cutout') or str(k).startswith('tools_mill'):
                                     pass
                                 else:
                                     self.db_tool_dict[tool_id]['data'].pop(k, None)
@@ -2355,10 +2392,23 @@ class ToolsDB2(QtWidgets.QWidget):
             if wdg is None:
                 return
 
+            if isinstance(wdg, FCButton) or isinstance(wdg, QtWidgets.QAction):
+                # this is called when adding a new tool; no need to run the update below since that section is for
+                # when editing a tool
+                self.on_tools_db_edited()
+                return
+
             wdg_name = wdg.objectName()
             val = wdg.get_value()
-        except AttributeError:
+        except AttributeError as err:
+            self.app.log.debug("ToolsDB2.update_storage() -> %s" % str(err))
             return
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # ################ EDITING PARAMETERS IN A TOOL SECTION
+        # #############################################################################################################
+        # #############################################################################################################
 
         # #############################################################################################################
         # this might change in the future; it makes sense to change values at once for all tools
@@ -2523,7 +2573,7 @@ class ToolsDB2(QtWidgets.QWidget):
             elif wdg_name == "gdb_ct_mb_spacing":
                 self.db_tool_dict[tool_id]['data']['tools_cutout_mb_spacing'] = val
 
-        self.callback_app()
+        self.on_tools_db_edited()
 
     def on_tool_requested_from_app(self):
         if not self.ui.tree_widget.selectedItems():
@@ -2541,6 +2591,25 @@ class ToolsDB2(QtWidgets.QWidget):
                 if str(key) == str(tool_uid):
                     selected_tool = self.db_tool_dict[key]
                     self.on_tool_request(tool=selected_tool)
+
+    def on_tools_db_edited(self, silent=None):
+        """
+        Executed whenever a tool is edited in Tools Database.
+        Will color the text of the Tools Database tab to Red color.
+
+        :return:
+        """
+
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
+        self.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
+
+        self.tools_db_changed_flag = True
+        if silent is None:
+            msg = '[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved.")
+            self.app.inform[str, bool].emit(msg, False)
 
     def on_cancel_tool(self):
         for idx in range(self.app_ui.plot_tab_area.count()):
@@ -2594,7 +2663,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #                 'tooldia': self.app.defaults["geometry_cnctooldia"]
 #                 'offset': 'Path'
 #                 'offset_value': 0.0
-#                 'type':  _('Rough'),
+#                 'type':  'Rough',
 #                 'tool_type': 'C1'
 #                 'data': dict()
 #             }
@@ -2845,7 +2914,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #               "A position on Z plane to move immediately after job stop."))
 #
 #     def setup_db_ui(self):
-#         filename = self.app.data_path + '/tools_db.FlatDB'
+#         filename = self.app.tools_database_path()
 #
 #         # load the database tools from the file
 #         try:
@@ -2928,7 +2997,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         dia_item = FCDoubleSpinner()
 #         dia_item.set_precision(self.decimals)
 #         dia_item.setSingleStep(0.1)
-#         dia_item.set_range(0.0, 9999.9999)
+#         dia_item.set_range(0.0, 10000.0000)
 #         dia_item.set_value(float(tooldict['tooldia']))
 #         widget.setCellWidget(row, 2, dia_item)
 #
@@ -2941,7 +3010,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         c_offset_item = FCDoubleSpinner()
 #         c_offset_item.set_precision(self.decimals)
 #         c_offset_item.setSingleStep(0.1)
-#         c_offset_item.set_range(-9999.9999, 9999.9999)
+#         c_offset_item.set_range(-10000.0000, 10000.0000)
 #         c_offset_item.set_value(float(tooldict['offset_value']))
 #         widget.setCellWidget(row, 4, c_offset_item)
 #
@@ -2961,9 +3030,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         cutz_item.set_precision(self.decimals)
 #         cutz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             cutz_item.set_range(-9999.9999, 9999.9999)
+#             cutz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             cutz_item.set_range(-9999.9999, -0.0000)
+#             cutz_item.set_range(-10000.0000, -0.0000)
 #
 #         cutz_item.set_value(float(data['cutz']))
 #         widget.setCellWidget(row, 7, cutz_item)
@@ -2985,14 +3054,14 @@ class ToolsDB2(QtWidgets.QWidget):
 #         depth_per_pass_item = FCDoubleSpinner()
 #         depth_per_pass_item.set_precision(self.decimals)
 #         depth_per_pass_item.setSingleStep(0.1)
-#         depth_per_pass_item.set_range(0.0, 9999.9999)
+#         depth_per_pass_item.set_range(0.0, 10000.0000)
 #         depth_per_pass_item.set_value(float(data['depthperpass']))
 #         widget.setCellWidget(row, 9, depth_per_pass_item)
 #
 #         vtip_dia_item = FCDoubleSpinner()
 #         vtip_dia_item.set_precision(self.decimals)
 #         vtip_dia_item.setSingleStep(0.1)
-#         vtip_dia_item.set_range(0.0, 9999.9999)
+#         vtip_dia_item.set_range(0.0, 10000.0000)
 #         vtip_dia_item.set_value(float(data['vtipdia']))
 #         widget.setCellWidget(row, 10, vtip_dia_item)
 #
@@ -3007,28 +3076,28 @@ class ToolsDB2(QtWidgets.QWidget):
 #         travelz_item.set_precision(self.decimals)
 #         travelz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             travelz_item.set_range(-9999.9999, 9999.9999)
+#             travelz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             travelz_item.set_range(0.0000, 9999.9999)
+#             travelz_item.set_range(0.0000, 10000.0000)
 #
 #         travelz_item.set_value(float(data['travelz']))
 #         widget.setCellWidget(row, 12, travelz_item)
 #
 #         fr_item = FCDoubleSpinner()
 #         fr_item.set_precision(self.decimals)
-#         fr_item.set_range(0.0, 9999.9999)
+#         fr_item.set_range(0.0, 10000.0000)
 #         fr_item.set_value(float(data['feedrate']))
 #         widget.setCellWidget(row, 13, fr_item)
 #
 #         frz_item = FCDoubleSpinner()
 #         frz_item.set_precision(self.decimals)
-#         frz_item.set_range(0.0, 9999.9999)
+#         frz_item.set_range(0.0, 10000.0000)
 #         frz_item.set_value(float(data['feedrate_z']))
 #         widget.setCellWidget(row, 14, frz_item)
 #
 #         frrapids_item = FCDoubleSpinner()
 #         frrapids_item.set_precision(self.decimals)
-#         frrapids_item.set_range(0.0, 9999.9999)
+#         frrapids_item.set_range(0.0, 10000.0000)
 #         frrapids_item.set_value(float(data['feedrate_rapid']))
 #         widget.setCellWidget(row, 15, frrapids_item)
 #
@@ -3044,7 +3113,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         dwelltime_item = FCDoubleSpinner()
 #         dwelltime_item.set_precision(self.decimals)
-#         dwelltime_item.set_range(0.0000, 9999.9999)
+#         dwelltime_item.set_range(0.0000, 10000.0000)
 #         dwelltime_item.set_value(float(data['dwelltime']))
 #         widget.setCellWidget(row, 18, dwelltime_item)
 #
@@ -3060,7 +3129,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         ecut_length_item = FCDoubleSpinner()
 #         ecut_length_item.set_precision(self.decimals)
-#         ecut_length_item.set_range(0.0000, 9999.9999)
+#         ecut_length_item.set_range(0.0000, 10000.0000)
 #         ecut_length_item.set_value(data['extracut_length'])
 #         widget.setCellWidget(row, 21, ecut_length_item)
 #
@@ -3075,9 +3144,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         toolchangez_item.set_precision(self.decimals)
 #         toolchangez_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             toolchangez_item.set_range(-9999.9999, 9999.9999)
+#             toolchangez_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             toolchangez_item.set_range(0.0000, 9999.9999)
+#             toolchangez_item.set_range(0.0000, 10000.0000)
 #
 #         toolchangez_item.set_value(float(data['toolchangez']))
 #         widget.setCellWidget(row, 24, toolchangez_item)
@@ -3089,9 +3158,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #         endz_item.set_precision(self.decimals)
 #         endz_item.setSingleStep(0.1)
 #         if self.app.defaults['global_machinist_setting']:
-#             endz_item.set_range(-9999.9999, 9999.9999)
+#             endz_item.set_range(-10000.0000, 10000.0000)
 #         else:
-#             endz_item.set_range(0.0000, 9999.9999)
+#             endz_item.set_range(0.0000, 10000.0000)
 #
 #         endz_item.set_value(float(data['endz']))
 #         widget.setCellWidget(row, 26, endz_item)
@@ -3282,7 +3351,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #     def on_save_tools_db(self, silent=False):
 #         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 #
-#         filename = self.app.data_path + "/tools_db.FlatDB"
+#         filename = self.app.tools_database_path()
 #
 #         # Preferences save, update the color of the Tools DB Tab text
 #         for idx in range(self.app_ui.plot_tab_area.count()):

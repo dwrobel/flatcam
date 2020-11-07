@@ -10,12 +10,14 @@
 # ## and made it work with Python 3                                    #
 # ######################################################################
 
-import re, os, sys, glob
+import re
+import os
+import sys
+import glob
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 from shapely.affinity import translate, scale
 from shapely.geometry import MultiPolygon
-
 
 import freetype as ft
 from fontTools import ttLib
@@ -32,7 +34,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base2')
 
 
-class ParseFont():
+class ParseFont:
 
     FONT_SPECIFIER_NAME_ID = 4
     FONT_SPECIFIER_FAMILY_ID = 1
@@ -69,12 +71,12 @@ class ParseFont():
         if os.path.isfile(executable):
             data = os.popen(executable).readlines()
             match = re.compile('\d+: (.+)')
-            set = []
+            set_lst = []
             for line in data:
                 result = match.match(line)
                 if result:
-                    set.append(result.group(1))
-            return set
+                    set_lst.append(result.group(1))
+            return set_lst
         else:
             directories = [
                 # what seems to be the standard installation point
@@ -91,7 +93,7 @@ class ParseFont():
             dir_set = []
 
             for directory in directories:
-                directory = directory = os.path.expanduser(os.path.expandvars(directory))
+                directory = os.path.expanduser(os.path.expandvars(directory))
                 try:
                     if os.path.isdir(directory):
                         for path, children, files in os.walk(directory):
@@ -116,7 +118,7 @@ class ParseFont():
         dir_set = []
 
         for directory in directories:
-            directory = directory = os.path.expanduser(os.path.expandvars(directory))
+            directory = os.path.expanduser(os.path.expandvars(directory))
             try:
                 if os.path.isdir(directory):
                     for path, children, files in os.walk(directory):
@@ -144,7 +146,7 @@ class ParseFont():
                     winreg.HKEY_LOCAL_MACHINE,
                     keyName
                 )
-            except OSError as err:
+            except OSError:
                 pass
 
         if not k:
@@ -195,7 +197,7 @@ class ParseFont():
                 break
         return name, family
 
-    def __init__(self, app, parent=None):
+    def __init__(self, app):
         super(ParseFont, self).__init__()
 
         self.app = app
@@ -217,7 +219,7 @@ class ParseFont():
         if paths is None:
             if sys.platform == 'win32':
                 font_directory = ParseFont.get_win32_font_path()
-                paths = [font_directory,]
+                paths = [font_directory, ]
 
                 # now get all installed fonts directly...
                 for f in self.get_win32_fonts(font_directory):
@@ -275,7 +277,7 @@ class ParseFont():
             else:
                 try:
                     name = name.replace(" Regular", '')
-                except Exception as e:
+                except Exception:
                     pass
                 self.regular_f.update({name: font})
         log.debug("Font parsing is finished.")
@@ -318,7 +320,7 @@ class ParseFont():
                 if previous > 0 and glyph_index > 0:
                     delta = face.get_kerning(previous, glyph_index)
                     pen_x += delta.x
-            except Exception as e:
+            except Exception:
                 pass
 
             face.load_glyph(glyph_index)

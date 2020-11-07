@@ -11,16 +11,13 @@
 # ##########################################################
 
 
-from shapely.geometry import Point, LineString
-
-from copy import deepcopy
+from shapely.geometry import LineString
 
 from appParsers.ParseExcellon import Excellon
 from appObjects.FlatCAMObj import *
 
 import itertools
 import numpy as np
-from collections import defaultdict
 
 import gettext
 import appTranslation as fcTranslate
@@ -1016,10 +1013,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for tool in tools:
-                for slot in self.tools[tool]['slots']:
+            for m_tool in tools:
+                for slot in self.tools[m_tool]['slots']:
                     toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
-                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["tooldia"])))
+                    file_tool = float('%.*f' % (self.decimals, float(self.tools[m_tool]["tooldia"])))
 
                     # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
                     # for the file_tool (tooldia actually)
@@ -1164,8 +1161,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     r_color[3] = 1
 
                     new_color = '#'
-                    for idx in range(len(r_color)):
-                        new_color += '%x' % int(r_color[idx] * 255)
+                    for idx_c in range(len(r_color)):
+                        new_color += '%x' % int(r_color[idx_c] * 255)
                     # do it until a valid color is generated
                     # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
                     # for a total of 9 chars
@@ -1278,21 +1275,21 @@ class ExcellonObject(FlatCAMObj, Excellon):
             for option in exc.options:
                 if option != 'name':
                     try:
-                        exc_final.options[option] = exc.options[option]
+                        exc_final.options[option] = deepcopy(exc.options[option])
                     except Exception:
                         exc.app.log.warning("Failed to copy option.", option)
 
             for tool in exc.tools:
                 toolid += 1
-                new_tools[toolid] = exc.tools[tool]
+                new_tools[toolid] = deepcopy(exc.tools[tool])
 
             exc_final.tools = deepcopy(new_tools)
             # add the zeros and units to the exc_final object
-            exc_final.zeros = exc.zeros
-            exc_final.units = exc.units
+            exc_final.zeros = deepcopy(exc.zeros)
+            exc_final.units = deepcopy(exc.units)
             total_geo += exc.solid_geometry
 
-        exc_final.solid_geometry = total_geo
+        exc_final.solid_geometry = deepcopy(total_geo)
 
         fused_tools_dict = {}
         if exc_final.tools and fuse_tools:

@@ -80,8 +80,9 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
         else:
             gridoffsety = args['gridoffsety']
 
+        tooldia = args['dia']
         # Tools
-        tools = {"1": {"C": args['dia']}}
+        # tools = {"1": {"C": args['dia']}}
 
         def aligndrillgrid_init_me(init_obj, app_obj):
             """
@@ -101,13 +102,18 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
 
                 for col in range(args['columns']):
                     point = Point(currentx + gridoffsetx, currenty + gridoffsety)
-                    drills.append({"point": point, "tool": "1"})
+                    drills.append(point)
                     currentx = currentx + args['gridx']
 
                 currenty = currenty + args['gridy']
 
-            init_obj.tools = tools
-            init_obj.drills = drills
+            init_obj.tools = {
+                '1': {
+                    'tooldia': tooldia,
+                    'drills': drills,
+                    'solid_geometry': []
+                }
+            }
             init_obj.create_geometry()
 
         # Create the new object

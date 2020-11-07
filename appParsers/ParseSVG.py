@@ -24,7 +24,7 @@ from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
 # from svg.path.path import Move
 # from svg.path.path import Close
 import svg.path
-from shapely.geometry import LineString, MultiLineString
+from shapely.geometry import LineString, MultiLineString, Point
 from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
 
@@ -286,6 +286,8 @@ def svgcircle2shapely(circle, n_points=64, factor=1.0):
     :type circle:       xml.etree.ElementTree.Element
     :param n_points:    circle resolution; nr of points to b e used to approximate a circle
     :type n_points:     int
+    :param factor:
+    :type factor:       float
     :return:            Shapely representation of the circle.
     :rtype:             shapely.geometry.polygon.LinearRing
     """
@@ -310,6 +312,8 @@ def svgellipse2shapely(ellipse, n_points=64, factor=1.0):
     :type ellipse:      xml.etree.ElementTree.Element
     :param n_points:    Number of discrete points in output.
     :type n_points:     int
+    :param factor:
+    :type factor:       float
     :return:            Shapely representation of the ellipse.
     :rtype:             shapely.geometry.polygon.LinearRing
     """

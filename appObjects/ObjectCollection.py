@@ -229,12 +229,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     """
 
     groups = [
-        ("gerber", "Gerber"),
-        ("excellon", "Excellon"),
-        ("geometry", "Geometry"),
+        ("gerber", _("Gerber")),
+        ("excellon", _("Excellon")),
+        ("geometry", _("Geometry")),
         ("cncjob", "CNC Job"),
-        ("script", "Scripts"),
-        ("document", "Document"),
+        ("script", _("Script")),
+        ("document", _("Document")),
     ]
 
     classdict = {
@@ -1090,14 +1090,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             def add_act(o_name):
                 obj_for_icon = self.get_by_name(o_name)
-                add_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
-                add_action.setCheckable(True)
-                add_action.setText(o_name)
-                add_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
-                add_action.triggered.connect(
-                    lambda: self.set_active(o_name) if add_action.isChecked() is True else
+                menu_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
+                menu_action.setCheckable(True)
+                menu_action.setText(o_name)
+                menu_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
+                menu_action.triggered.connect(
+                    lambda: self.set_active(o_name) if menu_action.isChecked() is True else
                     self.set_inactive(o_name))
-                self.app.ui.menuobjects.addAction(add_action)
+                self.app.ui.menuobjects.addAction(menu_action)
 
             for name in gerber_list:
                 add_act(name)

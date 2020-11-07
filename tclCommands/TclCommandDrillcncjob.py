@@ -235,7 +235,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 xy_toolchange = args["toolchangexy"]
             else:
                 if self.app.defaults["tools_drill_toolchangexy"]:
-                    xy_toolchange = self.app.defaults["tools_drill_toolchangexy"]
+                    xy_toolchange = str(self.app.defaults["tools_drill_toolchangexy"])
                 else:
                     xy_toolchange = '0, 0'
             if len(eval(xy_toolchange)) != 2:
@@ -249,7 +249,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 xy_end = args["endxy"]
             else:
                 if self.app.defaults["tools_drill_endxy"]:
-                    xy_end = self.app.defaults["tools_drill_endxy"]
+                    xy_end = str(self.app.defaults["tools_drill_endxy"])
                 else:
                     xy_end = '0, 0'
 
@@ -322,25 +322,27 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if "startz" in args and args["startz"] is not None:
                 job_obj.startz = float(args["startz"])
             else:
-                if self.app.defaults["excellon_startz"]:
+                if self.app.defaults["tools_drill_startz"]:
                     job_obj.startz = self.app.defaults["tools_drill_startz"]
                 else:
-                    job_obj.startz = (0, 0)
+                    job_obj.startz = self.app.defaults["tools_drill_travelz"]
 
             job_obj.endz = float(endz)
             job_obj.xy_end = xy_end
             job_obj.excellon_optimization_type = opt_type
+            job_obj.spindledir = self.app.defaults["tools_drill_spindledir"]
 
             ret_val = job_obj.generate_from_excellon_by_tool(obj, tools, use_ui=False)
             job_obj.source_file = ret_val
 
             if ret_val == 'fail':
                 return 'fail'
+            job_obj.gc_start = ret_val[1]
 
             for t_item in job_obj.exc_cnc_tools:
-                job_obj.exc_cnc_tools[t_item]['data']['offset'] = \
-                    float(job_obj.exc_cnc_tools[t_item]['offset']) + float(drillz)
-                job_obj.exc_cnc_tools[t_item]['data']['ppname_e'] = obj.options['ppname_e']
+                job_obj.exc_cnc_tools[t_item]['data']['tools_drill_offset'] = \
+                    float(job_obj.exc_cnc_tools[t_item]['offset_z']) + float(drillz)
+                job_obj.exc_cnc_tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
 
             job_obj.gcode_parse()
             job_obj.create_geometry()

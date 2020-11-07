@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -115,16 +115,16 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-9999.9999, 0.0000)
+        self.cutz_entry.set_range(-10000.0000, 0.0000)
         self.cutz_entry.setSingleStep(0.1)
 
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
 
         grid0.addWidget(cutzlabel, 5, 0)
@@ -139,7 +139,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.0001, 9999.9999)
+        self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.newdialabel, 6, 0)
@@ -181,7 +181,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -189,7 +189,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conventional'), 'value': 'cv'}])
         self.milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -244,11 +244,11 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.rest_cb.setObjectName("i_rest_machining")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will isolate outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to isolate the copper features that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper features to isolate or there are no more tools.\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
 
@@ -290,7 +290,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "- 'Polygon Selection' -> Isolate a selection of polygons.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
-        self.select_combo = FCComboBox()
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
@@ -338,7 +338,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                         {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+            _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 25, 0)

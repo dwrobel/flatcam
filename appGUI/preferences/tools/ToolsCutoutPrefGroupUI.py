@@ -47,7 +47,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
 
         self.cutout_tooldia_entry = FCDoubleSpinner()
-        self.cutout_tooldia_entry.set_range(0.000001, 9999.9999)
+        self.cutout_tooldia_entry.set_range(0.000001, 10000.0000)
         self.cutout_tooldia_entry.set_precision(self.decimals)
         self.cutout_tooldia_entry.setSingleStep(0.1)
 
@@ -66,9 +66,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.setRange(-9999.9999, 0.0000)
+            self.cutz_entry.setRange(-10000.0000, 0.0000)
         else:
-            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+            self.cutz_entry.setRange(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -88,7 +88,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
         self.maxdepth_entry = FCDoubleSpinner()
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.setRange(0, 9999.9999)
+        self.maxdepth_entry.setRange(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
@@ -97,11 +97,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.maxdepth_entry, 2, 1)
 
         # Object kind
-        kindlabel = FCLabel('%s:' % _('Object kind'))
+        kindlabel = FCLabel('%s:' % _('Kind'))
         kindlabel.setToolTip(
-            _("Choice of what kind the object we want to cutout is.<BR>"
-              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
-              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+            _("Choice of what kind the object we want to cutout is.\n"
+              "- Single: contain a single PCB Gerber outline object.\n"
+              "- Panel: a panel PCB Gerber object, which is made\n"
               "out of many individual PCB outlines.")
         )
 
@@ -120,7 +120,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
 
         self.cutout_margin_entry = FCDoubleSpinner()
-        self.cutout_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.cutout_margin_entry.set_range(-10000.0000, 10000.0000)
         self.cutout_margin_entry.set_precision(self.decimals)
         self.cutout_margin_entry.setSingleStep(0.1)
 
@@ -137,7 +137,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
 
         self.cutout_gap_entry = FCDoubleSpinner()
-        self.cutout_gap_entry.set_range(0.000001, 9999.9999)
+        self.cutout_gap_entry.set_range(0.000001, 10000.0000)
         self.cutout_gap_entry.set_precision(self.decimals)
         self.cutout_gap_entry.setSingleStep(0.1)
 
@@ -174,9 +174,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.thin_depth_entry = FCDoubleSpinner()
         self.thin_depth_entry.set_precision(self.decimals)
         if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.thin_depth_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
+            self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.thin_depth_label, 9, 0)

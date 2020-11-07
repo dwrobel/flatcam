@@ -306,8 +306,12 @@ class PlotCanvasLegacy(QtCore.QObject):
         # signal if there is a doubleclick
         self.is_dblclk = False
 
+        # HUD Display
         self.hud_enabled = False
         self.text_hud = self.Thud(plotcanvas=self)
+
+        if self.app.defaults['global_hud'] is True:
+            self.on_toggle_hud(state=True, silent=None)
 
         # enable Grid lines
         self.grid_lines_enabled = True
@@ -317,17 +321,21 @@ class PlotCanvasLegacy(QtCore.QObject):
         if self.app.defaults['global_workspace'] is True:
             self.draw_workspace(workspace_size=self.app.defaults["global_workspaceT"])
 
-        if self.app.defaults['global_hud'] is True:
-            self.on_toggle_hud(state=True)
-
         # Axis Display
         self.axis_enabled = True
 
         # enable Axis
-        self.on_toggle_axis(state=True)
+        self.on_toggle_axis(state=True, silent=True)
+        self.app.ui.axis_status_label.setStyleSheet("""
+                                                    QLabel
+                                                    {
+                                                        color: black;
+                                                        background-color: orange;
+                                                    }
+                                                    """)
 
-    def on_toggle_axis(self, signal=None, state=None):
-        if state is None:
+    def on_toggle_axis(self, signal=None, state=None, silent=None):
+        if not state:
             state = not self.axis_enabled
 
         if state:
@@ -343,7 +351,8 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                                 background-color: orange;
                                                             }
                                                             """)
-                self.app.inform[str, bool].emit(_("Axis enabled."), False)
+                if silent is None:
+                    self.app.inform[str, bool].emit(_("Axis enabled."), False)
         else:
             self.axis_enabled = False
             self.app.defaults['global_axis'] = False
@@ -351,11 +360,12 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.axes.lines.remove(self.h_line)
                 self.axes.lines.remove(self.v_line)
                 self.app.ui.axis_status_label.setStyleSheet("")
-                self.app.inform[str, bool].emit(_("Axis disabled."), False)
+                if silent is None:
+                    self.app.inform[str, bool].emit(_("Axis disabled."), False)
 
         self.canvas.draw()
 
-    def on_toggle_hud(self, signal=None, state=None):
+    def on_toggle_hud(self, signal=None, state=None, silent=None):
         if state is None:
             state = not self.hud_enabled
 
@@ -371,13 +381,15 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                     background-color: mediumpurple;
                                                 }
                                                 """)
-            self.app.inform[str, bool].emit(_("HUD enabled."), False)
+            if silent is None:
+                self.app.inform[str, bool].emit(_("HUD enabled."), False)
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
             self.app.defaults['global_hud'] = False
             self.app.ui.hud_label.setStyleSheet("")
-            self.app.inform[str, bool].emit(_("HUD disabled."), False)
+            if silent is None:
+                self.app.inform[str, bool].emit(_("HUD disabled."), False)
 
         self.canvas.draw()
 
@@ -440,7 +452,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             if self.hud_holder in self.p.axes.artists:
                 self.p.axes.artists.remove(self.hud_holder)
 
-    def on_toggle_grid_lines(self):
+    def on_toggle_grid_lines(self, signal=None, silent=None):
         state = not self.grid_lines_enabled
 
         if state:
@@ -451,7 +463,8 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.canvas.draw()
             except IndexError:
                 pass
-            self.app.inform[str, bool].emit(_("Grid enabled."), False)
+            if silent is None:
+                self.app.inform[str, bool].emit(_("Grid enabled."), False)
         else:
             self.app.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
@@ -460,7 +473,8 @@ class PlotCanvasLegacy(QtCore.QObject):
                 self.canvas.draw()
             except IndexError:
                 pass
-            self.app.inform[str, bool].emit(_("Grid disabled."), False)
+            if silent is None:
+                self.app.inform[str, bool].emit(_("Grid disabled."), False)
 
     def draw_workspace(self, workspace_size):
         """

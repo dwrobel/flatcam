@@ -266,7 +266,7 @@ class CutOut(AppTool):
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
         new_tools_dict = deepcopy(self.default_data)
         updated_tooldia = None
@@ -311,7 +311,7 @@ class CutOut(AppTool):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = "Rough"
+        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -389,7 +389,7 @@ class CutOut(AppTool):
 
     def on_tool_default_add(self, dia=None, muted=None):
 
-        dia = dia
+        dia = dia if dia else str(self.app.defaults["tools_cutout_tooldia"])
         self.default_data.update({
             "plot": True,
 
@@ -442,10 +442,10 @@ class CutOut(AppTool):
         })
 
         self.cut_tool_dict.update({
-            'tooldia': str(self.app.defaults["tools_cutout_tooldia"]),
+            'tooldia': dia,
             'offset': 'Path',
             'offset_value': 0.0,
-            'type': _('Rough'),
+            'type': 'Rough',
             'tool_type': 'C1',
             'data': deepcopy(self.default_data),
             'solid_geometry': []
@@ -462,7 +462,12 @@ class CutOut(AppTool):
         :return:
         """
 
-        if tool['data']['tool_target'] != _("Cutout"):
+        if tool['data']['tool_target'] not in [0, 6]:   # [General, Cutout Tool]
+            for idx in range(self.app.ui.plot_tab_area.count()):
+                if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.app.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.app.ui.plot_tab_area.removeTab(idx)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
             return
         tool_from_db = deepcopy(self.default_data)
@@ -525,7 +530,9 @@ class CutOut(AppTool):
             if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
-        self.app.on_tools_database(source='cutout')
+        ret_val = self.app.on_tools_database(source='cutout')
+        if ret_val == 'fail':
+            return
         self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.ui.buttons_frame.hide()
         self.app.tools_db_tab.ui.add_tool_from_db.show()
@@ -570,8 +577,8 @@ class CutOut(AppTool):
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                   "Fill in a correct value and retry. "))
+                                 _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
+                                   "Fill in a correct value and retry."))
             return
 
         # if cutout_obj.multigeo is True:
@@ -867,16 +874,18 @@ class CutOut(AppTool):
                     if not holes:
                         return 'fail'
 
-                    tools = {}
-                    tools[1] = {}
-                    tools[1]["tooldia"] = mb_dia
-                    tools[1]['drills'] = holes
-                    tools[1]['solid_geometry'] = []
+                    tools = {
+                        1: {
+                            "tooldia": mb_dia,
+                            "drills": holes,
+                            "solid_geometry": []
+                        }
+                    }
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
                     exc_obj.source_file = app_o.f_handlers.export_excellon(obj_name=exc_obj.options['name'],
-                                                                           local_use=exc_obj,filename=None,
+                                                                           local_use=exc_obj, filename=None,
                                                                            use_thread=False)
                     # calculate the bounds
                     xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
@@ -897,7 +906,7 @@ class CutOut(AppTool):
                         return
 
                     # cutout_obj.plot(plot_tool=1)
-                    app_obj.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
+                    app_obj.inform.emit('[success] %s' % _("Any-form Cutout operation finished."))
                     # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
@@ -942,9 +951,9 @@ class CutOut(AppTool):
             return
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Gaps value can be only one of: "
-                                                          "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                                          "Fill in a correct value and retry. "))
+            msg = '[WARNING_NOTCL] %s' % _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8.\n"
+                                           "Fill in a correct value and retry.")
+            self.app.inform.emit(msg)
             return
 
         # if cutout_obj.multigeo is True:
@@ -1237,11 +1246,13 @@ class CutOut(AppTool):
                     if not holes:
                         return 'fail'
 
-                    tools = {}
-                    tools[1] = {}
-                    tools[1]["tooldia"] = mb_dia
-                    tools[1]['drills'] = holes
-                    tools[1]['solid_geometry'] = []
+                    tools = {
+                        1: {
+                            "tooldia": mb_dia,
+                            "drills": holes,
+                            "solid_geometry": []
+                        }
+                    }
 
                     exc_obj.tools = tools
                     exc_obj.create_geometry()
@@ -1284,7 +1295,7 @@ class CutOut(AppTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
         if self.man_cutout_obj is None:
@@ -1316,7 +1327,7 @@ class CutOut(AppTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
         if self.app.is_legacy is False:
@@ -1413,7 +1424,7 @@ class CutOut(AppTool):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_geo() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Gerber object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
@@ -1459,7 +1470,7 @@ class CutOut(AppTool):
                     geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
                 else:
                     app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
-                        _("Geometry not supported for cutout"), type(geo_union)))
+                        _("Geometry not supported"), type(geo_union)))
                     return 'fail'
             else:
                 geo = geo_union
@@ -1595,11 +1606,13 @@ class CutOut(AppTool):
                             if not holes:
                                 return 'fail'
 
-                            tools = {}
-                            tools[1] = {}
-                            tools[1]["tooldia"] = mb_dia
-                            tools[1]['drills'] = holes
-                            tools[1]['solid_geometry'] = []
+                            tools = {
+                                1: {
+                                    "tooldia": mb_dia,
+                                    "drills": holes,
+                                    "solid_geometry": []
+                                }
+                            }
 
                             exc_obj.tools = tools
                             exc_obj.create_geometry()
@@ -1996,9 +2009,9 @@ class CutoutUI:
         # Object kind
         self.kindlabel = QtWidgets.QLabel('%s:' % _('Kind'))
         self.kindlabel.setToolTip(
-            _("Choice of what kind the object we want to cutout is.<BR>"
-              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
-              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+            _("Choice of what kind the object we want to cutout is.\n"
+              "- Single: contain a single PCB Gerber outline object.\n"
+              "- Panel: a panel PCB Gerber object, which is made\n"
               "out of many individual PCB outlines.")
         )
         self.obj_kind_combo = RadioSet([
@@ -2059,7 +2072,7 @@ class CutoutUI:
         # Tool Diameter
         self.dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia.set_precision(self.decimals)
-        self.dia.set_range(0.0000, 9999.9999)
+        self.dia.set_range(0.0000, 10000.0000)
 
         self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Dia"))
         self.dia_label.setToolTip(
@@ -2116,9 +2129,9 @@ class CutoutUI:
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.setRange(-9999.9999, -0.00001)
+            self.cutz_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+            self.cutz_entry.setRange(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -2138,7 +2151,7 @@ class CutoutUI:
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.setRange(0, 9999.9999)
+        self.maxdepth_entry.setRange(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(
@@ -2154,7 +2167,7 @@ class CutoutUI:
 
         # Margin
         self.margin = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin.set_range(-9999.9999, 9999.9999)
+        self.margin.set_range(-10000.0000, 10000.0000)
         self.margin.setSingleStep(0.1)
         self.margin.set_precision(self.decimals)
 
@@ -2212,9 +2225,9 @@ class CutoutUI:
         self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thin_depth_entry.set_precision(self.decimals)
         if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.thin_depth_entry.setRange(-10000.0000, -0.00001)
         else:
-            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
+            self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.thin_depth_label, 32, 0)

@@ -11,13 +11,11 @@
 # ##########################################################
 
 
-from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
-from shapely.ops import unary_union
+from shapely.geometry import Point, MultiLineString, LineString, LinearRing
 
 from appParsers.ParseGerber import Gerber
 from appObjects.FlatCAMObj import *
 
-import math
 import numpy as np
 from copy import deepcopy
 
@@ -210,9 +208,9 @@ class GerberObject(FlatCAMObj, Gerber):
                 pass
 
             self.apertures_row = 0
-            aper_no = self.apertures_row + 1
+
             sort = []
-            for k, v in list(self.apertures.items()):
+            for k in list(self.apertures.keys()):
                 sort.append(int(k))
             sorted_apertures = sorted(sort)
 
@@ -367,11 +365,11 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
 
         def buffer_task():
-            with self.app.proc_container.new('%s...' % _("Buffering")):
+            with self.app.proc_container.new('%s ...' % _("Buffering")):
                 output = self.app.pool.apply_async(self.buffer_handler, args=([self.solid_geometry]))
                 self.solid_geometry = output.get()
 
-                self.app.inform.emit('[success] %s.' % _("Done"))
+                self.app.inform.emit('[success] %s' % _("Done."))
                 self.plot_single_object.emit()
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
@@ -397,7 +395,7 @@ class GerberObject(FlatCAMObj, Gerber):
             non_copper = bounding_box.difference(self.solid_geometry)
 
             if non_copper is None or non_copper.is_empty:
-                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
             geo_obj.solid_geometry = non_copper
 
@@ -423,7 +421,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 bounding_box = bounding_box.envelope
 
             if bounding_box is None or bounding_box.is_empty:
-                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                app_obj.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
                 return "fail"
             geo_obj.solid_geometry = bounding_box
 
@@ -493,7 +491,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 geo_obj.solid_geometry = []
 
-                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                # transfer the Cut Z and Vtip and Vangle values in case that we use the V-Shape tool in Gerber UI
                 if geo_obj.tool_type.lower() == 'v':
                     new_cutz = self.app.defaults["tools_iso_tool_cutz"]
                     new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
@@ -532,17 +530,16 @@ class GerberObject(FlatCAMObj, Gerber):
                     "startz": self.app.defaults['geometry_startz']
                 })
 
-                geo_obj.tools = {}
-                geo_obj.tools['1'] = {}
+                geo_obj.tools = {'1': {}}
                 geo_obj.tools.update({
                     '1': {
-                        'tooldia': dia,
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': tool_type,
-                        'data': default_data,
-                        'solid_geometry': geo_obj.solid_geometry
+                        'tooldia':          dia,
+                        'offset':           'Path',
+                        'offset_value':     0.0,
+                        'type':             'Rough',
+                        'tool_type':        tool_type,
+                        'data':             default_data,
+                        'solid_geometry':   geo_obj.solid_geometry
                     }
                 })
 
@@ -555,7 +552,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                   follow=follow, nr_passes=nr_pass)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        if plot:
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
@@ -580,7 +578,9 @@ class GerberObject(FlatCAMObj, Gerber):
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
                 else:
-                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+                    if plot:
+                        app_obj.inform.emit('[success] %s: %s' %
+                                            (_("Isolation geometry created"), geo_obj.options["name"]))
 
                 # even if combine is checked, one pass is still single-geo
                 geo_obj.multigeo = True if passes > 1 else False
@@ -629,7 +629,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                   follow=follow, nr_passes=i)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        if plot:
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
@@ -675,17 +676,16 @@ class GerberObject(FlatCAMObj, Gerber):
                         "startz": self.app.defaults['geometry_startz']
                     })
 
-                    geo_obj.tools = {}
-                    geo_obj.tools['1'] = {}
+                    geo_obj.tools = {'1': {}}
                     geo_obj.tools.update({
                         '1': {
-                            'tooldia': dia,
-                            'offset': 'Path',
-                            'offset_value': 0.0,
-                            'type': _('Rough'),
-                            'tool_type': tool_type,
-                            'data': default_data,
-                            'solid_geometry': geo_obj.solid_geometry
+                            'tooldia':          dia,
+                            'offset':           'Path',
+                            'offset_value':     0.0,
+                            'type':             'Rough',
+                            'tool_type':        tool_type,
+                            'data':             default_data,
+                            'solid_geometry':   geo_obj.solid_geometry
                         }
                     })
 
@@ -706,8 +706,9 @@ class GerberObject(FlatCAMObj, Gerber):
                     if empty_cnt == len(geo_obj.solid_geometry):
                         raise ValidationError("Empty Geometry", None)
                     else:
-                        app_obj.inform.emit('[success] %s: %s' %
-                                            (_("Isolation geometry created"), geo_obj.options["name"]))
+                        if plot:
+                            app_obj.inform.emit('[success] %s: %s' %
+                                                (_("Isolation geometry created"), geo_obj.options["name"]))
                     geo_obj.multigeo = False
 
                     # ############################################################
@@ -771,7 +772,7 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             follow_name = outname
 
-        def follow_init(follow_obj, app):
+        def follow_init(follow_obj, app_obj):
             # Propagate options
             follow_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             follow_obj.solid_geometry = self.follow_geometry
@@ -849,7 +850,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         log.debug("FlatCAMObj.GerberObject.convert_units()")
 
-        factor = Gerber.convert_units(self, units)
+        Gerber.convert_units(self, units)
 
         # self.options['isotooldia'] = float(self.options['isotooldia']) * factor
         # self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
@@ -956,11 +957,12 @@ class GerberObject(FlatCAMObj, Gerber):
             log.debug("GerberObject.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, run_thread=False, **kwargs):
+    def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
 
-        :param run_thread: if True run the aperture plot as a thread in a worker
-        :param kwargs: color and face_color
+        :param only_flashes:    plot only flashed
+        :param run_thread:      if True run the aperture plot as a thread in a worker
+        :param kwargs:          color and face_color
         :return:
         """
 
@@ -989,35 +991,36 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             visibility = kwargs['visible']
 
-        with self.app.proc_container.new(_("Plotting Apertures")):
-
-            def job_thread(app_obj):
+        def job_thread(app_obj):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 try:
                     if aperture_to_plot_mark in self.apertures:
-                        for elem in self.apertures[aperture_to_plot_mark]['geometry']:
+                        for elem in app_obj.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
+                                if only_flashes and not isinstance(elem['follow'], Point):
+                                    continue
                                 geo = elem['solid']
                                 try:
                                     for el in geo:
-                                        shape_key = self.add_mark_shape(shape=el, color=color, face_color=color,
-                                                                        visible=visibility)
-                                        self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                        shape_key = app_obj.add_mark_shape(shape=el, color=color, face_color=color,
+                                                                           visible=visibility)
+                                        app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
                                 except TypeError:
-                                    shape_key = self.add_mark_shape(shape=geo, color=color, face_color=color,
-                                                                    visible=visibility)
-                                    self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                    shape_key = app_obj.add_mark_shape(shape=geo, color=color, face_color=color,
+                                                                       visible=visibility)
+                                    app_obj.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
 
-                    self.mark_shapes.redraw()
+                    app_obj.mark_shapes.redraw()
 
                 except (ObjectDeleted, AttributeError):
-                    self.clear_plot_apertures()
+                    app_obj.clear_plot_apertures()
                 except Exception as e:
                     log.debug("GerberObject.plot_aperture() --> %s" % str(e))
 
-            if run_thread:
-                self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
-            else:
-                job_thread(self)
+        if run_thread:
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+        else:
+            job_thread(self)
 
     def clear_plot_apertures(self, aperture='all'):
         """

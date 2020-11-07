@@ -9,9 +9,8 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 
 from camlib import distance, arc, FlatCAMRTreeStorage
-from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton
+from appGUI.GUIElements import FCEntry, FCComboBox2, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
-from appParsers.ParseExcellon import Excellon
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 import shapely.affinity as affinity
@@ -36,7 +35,191 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class FCDrillAdd(FCShapeTool):
+class SelectEditorExc(FCShapeTool):
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'drill_select'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception:
+            pass
+
+        self.draw_app = draw_app
+        self.storage = self.draw_app.storage_dict
+        # self.selected = self.draw_app.selected
+
+        # here we store the selected tools
+        self.sel_tools = set()
+
+        # here we store all shapes that were selected so we can search for the nearest to our click location
+        self.sel_storage = AppExcEditor.make_storage()
+
+        self.draw_app.ui.resize_frame.hide()
+        self.draw_app.ui.array_frame.hide()
+        self.draw_app.ui.slot_frame.hide()
+        self.draw_app.ui.slot_array_frame.hide()
+
+    def click(self, point):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            pass
+        else:
+            self.draw_app.selected = []
+
+    def click_release(self, pos):
+        self.draw_app.ui.tools_table_exc.clearSelection()
+        xmin, ymin, xmax, ymax = 0, 0, 0, 0
+
+        try:
+            for storage in self.draw_app.storage_dict:
+                # for sh in self.draw_app.storage_dict[storage].get_objects():
+                #     self.sel_storage.insert(sh)
+                _, st_closest_shape = self.draw_app.storage_dict[storage].nearest(pos)
+                self.sel_storage.insert(st_closest_shape)
+
+            _, closest_shape = self.sel_storage.nearest(pos)
+
+            # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
+            if isinstance(closest_shape.geo, MultiLineString):
+                x_coord, y_coord = closest_shape.geo[0].xy
+                delta = (x_coord[1] - x_coord[0])
+                # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
+                xmin = x_coord[0] - (0.7 * delta)
+                xmax = x_coord[0] + (1.7 * delta)
+                ymin = y_coord[0] - (0.7 * delta)
+                ymax = y_coord[0] + (1.7 * delta)
+            elif isinstance(closest_shape.geo, Polygon):
+                xmin, ymin, xmax, ymax = closest_shape.geo.bounds
+                dx = xmax - xmin
+                dy = ymax - ymin
+                delta = dx if dx > dy else dy
+                xmin -= 0.7 * delta
+                xmax += 0.7 * delta
+                ymin -= 0.7 * delta
+                ymax += 0.7 * delta
+        except StopIteration:
+            return ""
+
+        if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
+            self.draw_app.selected = []
+        else:
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+            if modifiers == QtCore.Qt.ShiftModifier:
+                mod_key = 'Shift'
+            elif modifiers == QtCore.Qt.ControlModifier:
+                mod_key = 'Control'
+            else:
+                mod_key = None
+
+            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                if closest_shape in self.draw_app.selected:
+                    self.draw_app.selected.remove(closest_shape)
+                else:
+                    self.draw_app.selected.append(closest_shape)
+            else:
+                self.draw_app.selected = []
+                self.draw_app.selected.append(closest_shape)
+
+            # select the diameter of the selected shape in the tool table
+            try:
+                self.draw_app.ui.tools_table_exc.cellPressed.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+            # if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            #     self.draw_app.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.sel_tools.clear()
+
+            for shape_s in self.draw_app.selected:
+                for storage in self.draw_app.storage_dict:
+                    if shape_s in self.draw_app.storage_dict[storage].get_objects():
+                        self.sel_tools.add(storage)
+
+            self.draw_app.ui.tools_table_exc.clearSelection()
+            for storage in self.sel_tools:
+                for k, v in self.draw_app.tool2tooldia.items():
+                    if v == storage:
+                        self.draw_app.ui.tools_table_exc.selectRow(int(k) - 1)
+                        self.draw_app.last_tool_selected = int(k)
+                        break
+
+            # self.draw_app.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+            self.draw_app.ui.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+
+        # delete whatever is in selection storage, there is no longer need for those shapes
+        self.sel_storage = AppExcEditor.make_storage()
+
+        return ""
+
+        # pos[0] and pos[1] are the mouse click coordinates (x, y)
+        # for storage in self.draw_app.storage_dict:
+        #     for obj_shape in self.draw_app.storage_dict[storage].get_objects():
+        #         minx, miny, maxx, maxy = obj_shape.geo.bounds
+        #         if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
+        #             over_shape_list.append(obj_shape)
+        #
+        # try:
+        #     # if there is no shape under our click then deselect all shapes
+        #     if not over_shape_list:
+        #         self.draw_app.selected = []
+        #         AppExcEditor.draw_shape_idx = -1
+        #         self.draw_app.ui.tools_table_exc.clearSelection()
+        #     else:
+        #         # if there are shapes under our click then advance through the list of them, one at the time in a
+        #         # circular way
+        #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
+        #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
+        #
+        #         if self.draw_app.app.defaults["global_mselect_key"] == 'Shift':
+        #             if self.draw_app.modifiers == Qt.ShiftModifier:
+        #                 if obj_to_add in self.draw_app.selected:
+        #                     self.draw_app.selected.remove(obj_to_add)
+        #                 else:
+        #                     self.draw_app.selected.append(obj_to_add)
+        #             else:
+        #                 self.draw_app.selected = []
+        #                 self.draw_app.selected.append(obj_to_add)
+        #         else:
+        #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
+        #             # in the selected list, we removed it. Therefore first click selects, second deselects.
+        #             if self.draw_app.modifiers == Qt.ControlModifier:
+        #                 if obj_to_add in self.draw_app.selected:
+        #                     self.draw_app.selected.remove(obj_to_add)
+        #                 else:
+        #                     self.draw_app.selected.append(obj_to_add)
+        #             else:
+        #                 self.draw_app.selected = []
+        #                 self.draw_app.selected.append(obj_to_add)
+        #
+        #     for storage in self.draw_app.storage_dict:
+        #         for shape in self.draw_app.selected:
+        #             if shape in self.draw_app.storage_dict[storage].get_objects():
+        #                 for key in self.draw_app.tool2tooldia:
+        #                     if self.draw_app.tool2tooldia[key] == storage:
+        #                         item = self.draw_app.ui.tools_table_exc.item((key - 1), 1)
+        #                         item.setSelected(True)
+        #                         # self.draw_app.ui.tools_table_exc.selectItem(key - 1)
+        #
+        # except Exception as e:
+        #     log.error("[ERROR] Something went bad. %s" % str(e))
+        #     raise
+
+    def clean_up(self):
+        pass
+
+
+class DrillAdd(FCShapeTool):
     """
     Resulting type: MultiLineString
     """
@@ -53,8 +236,8 @@ class FCDrillAdd(FCShapeTool):
 
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a drill first select a tool"))
             self.draw_app.select_tool("drill_select")
@@ -120,12 +303,12 @@ class FCDrillAdd(FCShapeTool):
         self.geometry = DrawToolShape(self.util_shape(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -134,7 +317,7 @@ class FCDrillAdd(FCShapeTool):
             pass
 
 
-class FCDrillArray(FCShapeTool):
+class DrillArray(FCShapeTool):
     """
     Resulting type: MultiLineString
     """
@@ -143,11 +326,11 @@ class FCDrillArray(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_array'
 
-        self.draw_app.e_ui.array_frame.show()
+        self.draw_app.ui.array_frame.show()
 
         self.selected_dia = None
         self.drill_axis = 'X'
-        self.drill_array = 'linear'
+        self.drill_array = 'linear'    # 'linear'
         self.drill_array_size = None
         self.drill_pitch = None
         self.drill_linear_angle = None
@@ -170,8 +353,8 @@ class FCDrillArray(FCShapeTool):
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Drill Array first select a tool in Tool Table"))
@@ -199,7 +382,7 @@ class FCDrillArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.drill_array == 'Linear':
+        if self.drill_array == 'linear':   # 'Linear'
             self.make()
             return
         else:
@@ -220,15 +403,15 @@ class FCDrillArray(FCShapeTool):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
-        self.drill_axis = self.draw_app.e_ui.drill_axis_radio.get_value()
-        self.drill_direction = self.draw_app.e_ui.drill_direction_radio.get_value()
-        self.drill_array = self.draw_app.e_ui.array_type_combo.get_value()
+        self.drill_axis = self.draw_app.ui.drill_axis_radio.get_value()
+        self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
+        self.drill_array = self.draw_app.ui.array_type_radio.get_value()
         try:
-            self.drill_array_size = int(self.draw_app.e_ui.drill_array_size_entry.get_value())
+            self.drill_array_size = int(self.draw_app.ui.drill_array_size_entry.get_value())
             try:
-                self.drill_pitch = float(self.draw_app.e_ui.drill_pitch_entry.get_value())
-                self.drill_linear_angle = float(self.draw_app.e_ui.linear_angle_spinner.get_value())
-                self.drill_angle = float(self.draw_app.e_ui.drill_angle_entry.get_value())
+                self.drill_pitch = float(self.draw_app.ui.drill_pitch_entry.get_value())
+                self.drill_linear_angle = float(self.draw_app.ui.linear_angle_spinner.get_value())
+                self.drill_angle = float(self.draw_app.ui.drill_angle_entry.get_value())
             except TypeError:
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
@@ -238,7 +421,7 @@ class FCDrillArray(FCShapeTool):
                                           (_("The value is mistyped. Check the value"), str(e)))
             return
 
-        if self.drill_array == 'Linear':
+        if self.drill_array == 'linear':   # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -271,7 +454,7 @@ class FCDrillArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
-        else:
+        elif self.drill_array == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -279,10 +462,66 @@ class FCDrillArray(FCShapeTool):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+                    temp_line = LineString(temp_points)
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug("DrillArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, angle):
+        self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
+        self.drill_angle = self.draw_app.ui.drill_angle_entry.get_value()
+
+        circular_geo = []
+        if self.drill_direction == 'CW':
+            for i in range(self.drill_array_size):
+                angle_radians = math.radians(self.drill_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+        else:
+            for i in range(self.drill_array_size):
+                angle_radians = math.radians(self.drill_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                # geo_sol = affinity.rotate(geo_sol, angle=(angle_radians - math.pi), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
 
     def util_shape(self, point):
         if point[0] is None and point[1] is None:
@@ -317,7 +556,7 @@ class FCDrillArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.drill_array == 'Linear':
+        if self.drill_array == 'linear':   # 'Linear'
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.drill_pitch * item)), self.points[1]))
@@ -331,36 +570,62 @@ class FCDrillArray(FCShapeTool):
                     )
 
                 self.geometry.append(DrawToolShape(geo))
-        else:
+        else:   # 'Circular'
             if (self.drill_angle * self.drill_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Too many drills for the selected spacing angle."))
+                                              _("Too many items for the selected spacing angle."))
                 self.draw_app.app.jump_signal.disconnect()
                 return
 
             radius = distance(self.destination, self.origin)
-            initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.drill_array_size):
-                angle_radians = math.radians(self.drill_angle * i)
-                if self.drill_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
 
-                geo = self.util_shape((x, y))
-                self.geometry.append(DrawToolShape(geo))
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
+            initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
+
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
-        self.draw_app.e_ui.array_frame.hide()
+        self.draw_app.ui.array_frame.hide()
 
         self.draw_app.app.jump_signal.disconnect()
 
+    def on_key(self, key):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == 'Control':
+            pass
+        elif mod_key is None:
+            # Toggle Drill Array Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.ui.drill_axis_radio.get_value() == 'X':
+                    self.draw_app.ui.drill_axis_radio.set_value('Y')
+                elif self.draw_app.ui.drill_axis_radio.get_value() == 'Y':
+                    self.draw_app.ui.drill_axis_radio.set_value('A')
+                elif self.draw_app.ui.drill_axis_radio.get_value() == 'A':
+                    self.draw_app.ui.drill_axis_radio.set_value('X')
+
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -369,7 +634,7 @@ class FCDrillArray(FCShapeTool):
             pass
 
 
-class FCSlot(FCShapeTool):
+class SlotAdd(FCShapeTool):
     """
     Resulting type: Polygon
     """
@@ -379,7 +644,7 @@ class FCSlot(FCShapeTool):
         self.name = 'slot_add'
         self.draw_app = draw_app
 
-        self.draw_app.e_ui.slot_frame.show()
+        self.draw_app.ui.slot_frame.show()
 
         self.selected_dia = None
         try:
@@ -388,8 +653,8 @@ class FCSlot(FCShapeTool):
 
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a slot first select a tool"))
             self.draw_app.select_tool("drill_select")
@@ -443,25 +708,25 @@ class FCSlot(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         try:
-            slot_length = float(self.draw_app.e_ui.slot_length_entry.get_value())
+            slot_length = float(self.draw_app.ui.slot_length_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                slot_length = float(self.draw_app.e_ui.slot_length_entry.get_value().replace(',', '.'))
-                self.draw_app.e_ui.slot_length_entry.set_value(slot_length)
+                slot_length = float(self.draw_app.ui.slot_length_entry.get_value().replace(',', '.'))
+                self.draw_app.ui.slot_length_entry.set_value(slot_length)
             except ValueError:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Value is missing or wrong format. Add it and retry."))
                 return
 
         try:
-            slot_angle = float(self.draw_app.e_ui.slot_angle_spinner.get_value())
+            slot_angle = float(self.draw_app.ui.slot_angle_spinner.get_value())
         except ValueError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("Value is missing or wrong format. Add it and retry."))
             return
 
-        if self.draw_app.e_ui.slot_axis_radio.get_value() == 'X':
+        if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
             self.half_width = slot_length / 2.0
             self.half_height = self.radius
         else:
@@ -502,7 +767,7 @@ class FCSlot(FCShapeTool):
                 geo.append(pt)
             geo.append(p4)
 
-            if self.draw_app.e_ui.slot_axis_radio.get_value() == 'A':
+            if self.draw_app.ui.slot_axis_radio.get_value() == 'A':
                 return affinity.rotate(geom=Polygon(geo), angle=-slot_angle)
             else:
                 return Polygon(geo)
@@ -543,7 +808,7 @@ class FCSlot(FCShapeTool):
         try:
             self.geometry = DrawToolShape(self.util_shape(self.points))
         except Exception as e:
-            log.debug("FCSlot.make() --> %s" % str(e))
+            log.debug("SlotAdd.make() --> %s" % str(e))
 
         # add the point to drills/slots if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -556,13 +821,25 @@ class FCSlot(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Slot completed."))
-        self.draw_app.e_ui.slot_frame.hide()
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+        self.draw_app.ui.slot_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
+
+    def on_key(self, key):
+        # Toggle Pad Direction
+        if key == QtCore.Qt.Key_Space:
+            if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
+                self.draw_app.ui.slot_axis_radio.set_value('Y')
+            elif self.draw_app.ui.slot_axis_radio.get_value() == 'Y':
+                self.draw_app.ui.slot_axis_radio.set_value('A')
+            elif self.draw_app.ui.slot_axis_radio.get_value() == 'A':
+                self.draw_app.ui.slot_axis_radio.set_value('X')
+            # ## Utility geometry (animated)
+            self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -571,7 +848,7 @@ class FCSlot(FCShapeTool):
             pass
 
 
-class FCSlotArray(FCShapeTool):
+class SlotArray(FCShapeTool):
     """
     Resulting type: MultiPolygon
     """
@@ -581,8 +858,8 @@ class FCSlotArray(FCShapeTool):
         self.name = 'slot_array'
         self.draw_app = draw_app
 
-        self.draw_app.e_ui.slot_frame.show()
-        self.draw_app.e_ui.slot_array_frame.show()
+        self.draw_app.ui.slot_frame.show()
+        self.draw_app.ui.slot_array_frame.show()
 
         self.selected_dia = None
         try:
@@ -590,8 +867,8 @@ class FCSlotArray(FCShapeTool):
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Slot Array first select a tool in Tool Table"))
@@ -611,7 +888,7 @@ class FCSlotArray(FCShapeTool):
         self.radius = float(self.selected_dia / 2.0)
 
         self.slot_axis = 'X'
-        self.slot_array = 'linear'
+        self.slot_array = 'linear'     # 'linear'
         self.slot_array_size = None
         self.slot_pitch = None
         self.slot_linear_angle = None
@@ -642,10 +919,10 @@ class FCSlotArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.slot_array == 'Linear':
+        if self.slot_array == 'linear':    # 'Linear'
             self.make()
             return
-        else:
+        else:   # 'Circular'
             if self.flag_for_circ_array is None:
                 self.draw_app.in_action = True
                 self.pt.append(point)
@@ -663,15 +940,15 @@ class FCSlotArray(FCShapeTool):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
-        self.slot_axis = self.draw_app.e_ui.slot_array_axis_radio.get_value()
-        self.slot_direction = self.draw_app.e_ui.slot_array_direction_radio.get_value()
-        self.slot_array = self.draw_app.e_ui.slot_array_type_combo.get_value()
+        self.slot_axis = self.draw_app.ui.slot_array_axis_radio.get_value()
+        self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
+        self.slot_array = self.draw_app.ui.slot_array_type_radio.get_value()
         try:
-            self.slot_array_size = int(self.draw_app.e_ui.slot_array_size_entry.get_value())
+            self.slot_array_size = int(self.draw_app.ui.slot_array_size_entry.get_value())
             try:
-                self.slot_pitch = float(self.draw_app.e_ui.slot_array_pitch_entry.get_value())
-                self.slot_linear_angle = float(self.draw_app.e_ui.slot_array_linear_angle_spinner.get_value())
-                self.slot_angle = float(self.draw_app.e_ui.slot_array_angle_entry.get_value())
+                self.slot_pitch = float(self.draw_app.ui.slot_array_pitch_entry.get_value())
+                self.slot_linear_angle = float(self.draw_app.ui.slot_array_linear_angle_spinner.get_value())
+                self.slot_angle = float(self.draw_app.ui.slot_array_angle_entry.get_value())
             except TypeError:
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
@@ -680,7 +957,7 @@ class FCSlotArray(FCShapeTool):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.slot_array == 'Linear':
+        if self.slot_array == 'linear':    # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -711,7 +988,7 @@ class FCSlotArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        else:
+        else:   # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -719,10 +996,72 @@ class FCSlotArray(FCShapeTool):
                 cdx = data[0]
                 cdy = data[1]
 
-            if len(self.pt) > 0:
-                temp_points = [x for x in self.pt]
-                temp_points.append([cdx, cdy])
-                return DrawToolUtilityShape(LineString(temp_points))
+            # if len(self.pt) > 0:
+            #     temp_points = [x for x in self.pt]
+            #     temp_points.append([cdx, cdy])
+            #     return DrawToolUtilityShape(LineString(temp_points))
+
+            utility_list = []
+
+            try:
+                radius = distance((cdx, cdy), self.origin)
+            except Exception:
+                radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
+
+            if len(self.pt) >= 1 and radius > 0:
+                try:
+                    if cdx < self.origin[0]:
+                        radius = -radius
+
+                    # draw the temp geometry
+                    initial_angle = math.asin((cdy - self.origin[1]) / radius)
+
+                    temp_circular_geo = self.circular_util_shape(radius, initial_angle)
+
+                    # draw the line
+                    temp_points = [x for x in self.pt]
+                    temp_points.append([cdx, cdy])
+                    temp_line = LineString(temp_points)
+
+                    for geo_shape in temp_circular_geo:
+                        utility_list.append(geo_shape.geo)
+                    utility_list.append(temp_line)
+
+                    return DrawToolUtilityShape(utility_list)
+                except Exception as e:
+                    log.debug("SlotArray.utility_geometry -- circular -> %s" % str(e))
+
+    def circular_util_shape(self, radius, angle):
+        self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
+        self.slot_angle = self.draw_app.ui.slot_array_angle_entry.get_value()
+        self.slot_array_size = self.draw_app.ui.slot_array_size_entry.get_value()
+
+        circular_geo = []
+        if self.slot_direction == 'CW':
+            for i in range(self.slot_array_size):
+                angle_radians = math.radians(self.slot_angle * i)
+                x = self.origin[0] + radius * math.cos(-angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(-angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo_sol, angle=(math.pi - angle_radians + angle), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+        else:
+            for i in range(self.slot_array_size):
+                angle_radians = math.radians(self.slot_angle * i)
+                x = self.origin[0] + radius * math.cos(angle_radians + angle)
+                y = self.origin[1] + radius * math.sin(angle_radians + angle)
+
+                geo_sol = self.util_shape((x, y))
+                geo_sol = affinity.rotate(geo_sol, angle=(angle_radians + angle - math.pi), use_radians=True)
+
+                circular_geo.append(DrawToolShape(geo_sol))
+
+        return circular_geo
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -731,25 +1070,25 @@ class FCSlotArray(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         try:
-            slot_length = float(self.draw_app.e_ui.slot_length_entry.get_value())
+            slot_length = float(self.draw_app.ui.slot_length_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                slot_length = float(self.draw_app.e_ui.slot_length_entry.get_value().replace(',', '.'))
-                self.draw_app.e_ui.slot_length_entry.set_value(slot_length)
+                slot_length = float(self.draw_app.ui.slot_length_entry.get_value().replace(',', '.'))
+                self.draw_app.ui.slot_length_entry.set_value(slot_length)
             except ValueError:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Value is missing or wrong format. Add it and retry."))
                 return
 
         try:
-            slot_angle = float(self.draw_app.e_ui.slot_angle_spinner.get_value())
+            slot_angle = float(self.draw_app.ui.slot_angle_spinner.get_value())
         except ValueError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("Value is missing or wrong format. Add it and retry."))
             return
 
-        if self.draw_app.e_ui.slot_axis_radio.get_value() == 'X':
+        if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
             self.half_width = slot_length / 2.0
             self.half_height = self.radius
         else:
@@ -816,7 +1155,7 @@ class FCSlotArray(FCShapeTool):
 
         # this function return one slot in the slot array and the following will rotate that one slot around it's
         # center if the radio value is "A".
-        if self.draw_app.e_ui.slot_axis_radio.get_value() == 'A':
+        if self.draw_app.ui.slot_axis_radio.get_value() == 'A':
             return affinity.rotate(Polygon(geo), -slot_angle)
         else:
             return Polygon(geo)
@@ -839,7 +1178,7 @@ class FCSlotArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.slot_array == 'Linear':
+        if self.slot_array == 'linear':    # 'Linear'
             for item in range(self.slot_array_size):
                 if self.slot_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.slot_pitch * item)), self.points[1]))
@@ -853,41 +1192,90 @@ class FCSlotArray(FCShapeTool):
                     )
 
                 self.geometry.append(DrawToolShape(geo))
-        else:
+        else:   # 'Circular'
             if (self.slot_angle * self.slot_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                              _("Too many Slots for the selected spacing angle."))
+                                              _("Too many items for the selected spacing angle."))
                 self.draw_app.app.jump_signal.disconnect()
                 return
 
+            # radius = distance(self.destination, self.origin)
+            # initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+            # for i in range(self.slot_array_size):
+            #     angle_radians = math.radians(self.slot_angle * i)
+            #     if self.slot_direction == 'CW':
+            #         x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
+            #         y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
+            #     else:
+            #         x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
+            #         y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+            #
+            #     geo = self.util_shape((x, y))
+            #     if self.slot_direction == 'CW':
+            #         geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
+            #     else:
+            #         geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+            #
+            #     self.geometry.append(DrawToolShape(geo))
+
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
+
+            if self.destination[0] < self.origin[0]:
+                radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
-            for i in range(self.slot_array_size):
-                angle_radians = math.radians(self.slot_angle * i)
-                if self.slot_direction == 'CW':
-                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
-                else:
-                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
-                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
 
-                geo = self.util_shape((x, y))
-                if self.slot_direction == 'CW':
-                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
-                else:
-                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+            circular_geo = self.circular_util_shape(radius, initial_angle)
+            self.geometry += circular_geo
 
-                self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Slot Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.in_action = False
-        self.draw_app.e_ui.slot_frame.hide()
-        self.draw_app.e_ui.slot_array_frame.hide()
+        self.draw_app.ui.slot_frame.hide()
+        self.draw_app.ui.slot_array_frame.hide()
         self.draw_app.app.jump_signal.disconnect()
+
+    def on_key(self, key):
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
+        if mod_key == 'Control':
+            # Toggle Pad Array Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.ui.slot_array_axis_radio.get_value() == 'X':
+                    self.draw_app.ui.slot_array_axis_radio.set_value('Y')
+                elif self.draw_app.ui.slot_array_axis_radio.get_value() == 'Y':
+                    self.draw_app.ui.slot_array_axis_radio.set_value('A')
+                elif self.draw_app.ui.slot_array_axis_radio.get_value() == 'A':
+                    self.draw_app.ui.slot_array_axis_radio.set_value('X')
+
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        elif mod_key is None:
+            # Toggle Pad Direction
+            if key == QtCore.Qt.Key_Space:
+                if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
+                    self.draw_app.ui.slot_axis_radio.set_value('Y')
+                elif self.draw_app.ui.slot_axis_radio.get_value() == 'Y':
+                    self.draw_app.ui.slot_axis_radio.set_value('A')
+                elif self.draw_app.ui.slot_axis_radio.get_value() == 'A':
+                    self.draw_app.ui.slot_axis_radio.set_value('X')
+                # ## Utility geometry (animated)
+                self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -896,14 +1284,14 @@ class FCSlotArray(FCShapeTool):
             pass
 
 
-class FCDrillResize(FCShapeTool):
+class ResizeEditorExc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_resize'
 
         self.draw_app.app.inform.emit(_("Click on the Drill(s) to resize ..."))
         self.resize_dia = None
-        self.draw_app.e_ui.resize_frame.show()
+        self.draw_app.ui.resize_frame.show()
         self.points = None
 
         # made this a set so there are no duplicates
@@ -913,8 +1301,8 @@ class FCDrillResize(FCShapeTool):
         self.geometry = []
         self.destination_storage = None
 
-        self.draw_app.resize_btn.clicked.connect(self.make)
-        self.draw_app.resdrill_entry.editingFinished.connect(self.make)
+        self.draw_app.ui.resize_btn.clicked.connect(self.make)
+        self.draw_app.ui.resdrill_entry.editingFinished.connect(self.make)
 
         # Switch notebook to Properties page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
@@ -923,12 +1311,12 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.is_modified = True
 
         try:
-            self.draw_app.e_ui.tools_table_exc.itemChanged.disconnect()
+            self.draw_app.ui.tools_table_exc.itemChanged.disconnect()
         except TypeError:
             pass
 
         try:
-            new_dia = self.draw_app.e_ui.resdrill_entry.get_value()
+            new_dia = self.draw_app.ui.resdrill_entry.get_value()
         except Exception:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("Resize drill(s) failed. Please enter a diameter for resize."))
@@ -944,11 +1332,11 @@ class FCDrillResize(FCShapeTool):
         else:
             self.destination_storage = self.draw_app.storage_dict[new_dia]
 
-        for index in self.draw_app.e_ui.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.e_ui.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.ui.tools_table_exc.item(row, 1).text()
             self.selected_dia_set.add(float(dia_on_row))
 
         # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
@@ -1106,18 +1494,16 @@ class FCDrillResize(FCShapeTool):
             self.geometry = []
 
             # we reactivate the signals after the after the tool editing
-            self.draw_app.e_ui.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
+            self.draw_app.ui.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
 
-            self.draw_app.app.inform.emit('[success] %s' %
-                                          _("Done. Drill/Slot Resize completed."))
+            self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         else:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("Cancelled. No drills/slots selected for resize ..."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
 
         # init this set() for another use perhaps
         self.selected_dia_set = set()
 
-        self.draw_app.e_ui.resize_frame.hide()
+        self.draw_app.ui.resize_frame.hide()
         self.complete = True
 
         # MS: always return to the Select Tool
@@ -1125,7 +1511,7 @@ class FCDrillResize(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -1134,7 +1520,7 @@ class FCDrillResize(FCShapeTool):
             pass
 
 
-class FCDrillMove(FCShapeTool):
+class MoveEditorExc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_move'
@@ -1146,19 +1532,14 @@ class FCDrillMove(FCShapeTool):
         self.selection_shape = self.selection_bbox()
         self.selected_dia_list = []
 
-        if self.draw_app.launched_from_shortcuts is True:
-            self.draw_app.launched_from_shortcuts = False
-            self.draw_app.app.inform.emit(_("Click on target location ..."))
-        else:
-            self.draw_app.app.inform.emit(_("Click on reference location ..."))
         self.current_storage = None
         self.geometry = []
 
-        for index in self.draw_app.e_ui.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.ui.tools_table_exc.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.e_ui.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.ui.tools_table_exc.item(row, 1).text()
             self.selected_dia_list.append(float(dia_on_row))
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
@@ -1166,11 +1547,22 @@ class FCDrillMove(FCShapeTool):
         # Switch notebook to Properties page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
+        if self.draw_app.launched_from_shortcuts is True:
+            self.draw_app.launched_from_shortcuts = False
+        else:
+            if not self.draw_app.get_selected():
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
+                self.draw_app.app.ui.select_drill_btn.setChecked(True)
+                self.draw_app.on_tool_select('drill_select')
+            else:
+                self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
     def set_origin(self, origin):
         self.origin = origin
 
     def click(self, point):
-        if len(self.draw_app.get_selected()) == 0:
+        if not self.draw_app.get_selected():
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected."))
             return "Nothing to move."
 
         if self.origin is None:
@@ -1207,8 +1599,11 @@ class FCDrillMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) Move completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except TypeError:
+            pass
 
     def selection_bbox(self):
         geo_list = []
@@ -1265,7 +1660,7 @@ class FCDrillMove(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -1274,9 +1669,9 @@ class FCDrillMove(FCShapeTool):
             pass
 
 
-class FCDrillCopy(FCDrillMove):
+class CopyEditorExc(MoveEditorExc):
     def __init__(self, draw_app):
-        FCDrillMove.__init__(self, draw_app)
+        MoveEditorExc.__init__(self, draw_app)
         self.name = 'drill_copy'
 
     def make(self):
@@ -1315,199 +1710,18 @@ class FCDrillCopy(FCDrillMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.e_ui.tools_table_exc.clearSelection()
+        self.draw_app.ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
-
-
-class FCDrillSelect(DrawTool):
-    def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
-        self.name = 'drill_select'
-
-        try:
-            QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception:
-            pass
-
-        self.exc_editor_app = draw_app
-        self.storage = self.exc_editor_app.storage_dict
-        # self.selected = self.exc_editor_app.selected
-
-        # here we store the selected tools
-        self.sel_tools = set()
-
-        # here we store all shapes that were selected so we can search for the nearest to our click location
-        self.sel_storage = AppExcEditor.make_storage()
-
-        self.exc_editor_app.e_ui.resize_frame.hide()
-        self.exc_editor_app.e_ui.array_frame.hide()
-        self.exc_editor_app.e_ui.slot_frame.hide()
-        self.exc_editor_app.e_ui.slot_array_frame.hide()
-
-    def click(self, point):
-        key_modifier = QtWidgets.QApplication.keyboardModifiers()
-
-        if key_modifier == QtCore.Qt.ShiftModifier:
-            mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
-            mod_key = 'Control'
-        else:
-            mod_key = None
-
-        if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-            pass
-        else:
-            self.exc_editor_app.selected = []
-
-    def click_release(self, pos):
-        self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-        xmin, ymin, xmax, ymax = 0, 0, 0, 0
-
-        try:
-            for storage in self.exc_editor_app.storage_dict:
-                # for sh in self.exc_editor_app.storage_dict[storage].get_objects():
-                #     self.sel_storage.insert(sh)
-                _, st_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
-                self.sel_storage.insert(st_closest_shape)
-
-            _, closest_shape = self.sel_storage.nearest(pos)
-
-            # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
-            if isinstance(closest_shape.geo, MultiLineString):
-                x_coord, y_coord = closest_shape.geo[0].xy
-                delta = (x_coord[1] - x_coord[0])
-                # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
-                xmin = x_coord[0] - (0.7 * delta)
-                xmax = x_coord[0] + (1.7 * delta)
-                ymin = y_coord[0] - (0.7 * delta)
-                ymax = y_coord[0] + (1.7 * delta)
-            elif isinstance(closest_shape.geo, Polygon):
-                xmin, ymin, xmax, ymax = closest_shape.geo.bounds
-                dx = xmax - xmin
-                dy = ymax - ymin
-                delta = dx if dx > dy else dy
-                xmin -= 0.7 * delta
-                xmax += 0.7 * delta
-                ymin -= 0.7 * delta
-                ymax += 0.7 * delta
-        except StopIteration:
-            return ""
-
-        if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-            self.exc_editor_app.selected = []
-        else:
-            modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-            if modifiers == QtCore.Qt.ShiftModifier:
-                mod_key = 'Shift'
-            elif modifiers == QtCore.Qt.ControlModifier:
-                mod_key = 'Control'
-            else:
-                mod_key = None
-
-            if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-                if closest_shape in self.exc_editor_app.selected:
-                    self.exc_editor_app.selected.remove(closest_shape)
-                else:
-                    self.exc_editor_app.selected.append(closest_shape)
-            else:
-                self.exc_editor_app.selected = []
-                self.exc_editor_app.selected.append(closest_shape)
-
-            # select the diameter of the selected shape in the tool table
-            try:
-                self.exc_editor_app.e_ui.tools_table_exc.cellPressed.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-            # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-            #     self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-            self.sel_tools.clear()
-
-            for shape_s in self.exc_editor_app.selected:
-                for storage in self.exc_editor_app.storage_dict:
-                    if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
-                        self.sel_tools.add(storage)
-
-            self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-            for storage in self.sel_tools:
-                for k, v in self.exc_editor_app.tool2tooldia.items():
-                    if v == storage:
-                        self.exc_editor_app.e_ui.tools_table_exc.selectRow(int(k) - 1)
-                        self.exc_editor_app.last_tool_selected = int(k)
-                        break
-
-            # self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-            self.exc_editor_app.e_ui.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
-
-        # delete whatever is in selection storage, there is no longer need for those shapes
-        self.sel_storage = AppExcEditor.make_storage()
-
-        return ""
-
-        # pos[0] and pos[1] are the mouse click coordinates (x, y)
-        # for storage in self.exc_editor_app.storage_dict:
-        #     for obj_shape in self.exc_editor_app.storage_dict[storage].get_objects():
-        #         minx, miny, maxx, maxy = obj_shape.geo.bounds
-        #         if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
-        #             over_shape_list.append(obj_shape)
-        #
-        # try:
-        #     # if there is no shape under our click then deselect all shapes
-        #     if not over_shape_list:
-        #         self.exc_editor_app.selected = []
-        #         AppExcEditor.draw_shape_idx = -1
-        #         self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
-        #     else:
-        #         # if there are shapes under our click then advance through the list of them, one at the time in a
-        #         # circular way
-        #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
-        #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
-        #
-        #         if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Shift':
-        #             if self.exc_editor_app.modifiers == Qt.ShiftModifier:
-        #                 if obj_to_add in self.exc_editor_app.selected:
-        #                     self.exc_editor_app.selected.remove(obj_to_add)
-        #                 else:
-        #                     self.exc_editor_app.selected.append(obj_to_add)
-        #             else:
-        #                 self.exc_editor_app.selected = []
-        #                 self.exc_editor_app.selected.append(obj_to_add)
-        #         else:
-        #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
-        #             # in the selected list, we removed it. Therefore first click selects, second deselects.
-        #             if self.exc_editor_app.modifiers == Qt.ControlModifier:
-        #                 if obj_to_add in self.exc_editor_app.selected:
-        #                     self.exc_editor_app.selected.remove(obj_to_add)
-        #                 else:
-        #                     self.exc_editor_app.selected.append(obj_to_add)
-        #             else:
-        #                 self.exc_editor_app.selected = []
-        #                 self.exc_editor_app.selected.append(obj_to_add)
-        #
-        #     for storage in self.exc_editor_app.storage_dict:
-        #         for shape in self.exc_editor_app.selected:
-        #             if shape in self.exc_editor_app.storage_dict[storage].get_objects():
-        #                 for key in self.exc_editor_app.tool2tooldia:
-        #                     if self.exc_editor_app.tool2tooldia[key] == storage:
-        #                         item = self.exc_editor_app.e_ui.tools_table_exc.item((key - 1), 1)
-        #                         item.setSelected(True)
-        #                         # self.exc_editor_app.e_ui.tools_table_exc.selectItem(key - 1)
-        #
-        # except Exception as e:
-        #     log.error("[ERROR] Something went bad. %s" % str(e))
-        #     raise
 
 
 class AppExcEditor(QtCore.QObject):
@@ -1528,52 +1742,12 @@ class AppExcEditor(QtCore.QObject):
         # Number of decimals used by tools in this class
         self.decimals = self.app.decimals
 
-        self.e_ui = AppExcEditorUI(app=self.app)
-        
-        # SIGNALS
-        self.e_ui.convert_slots_btn.clicked.connect(self.on_slots_conversion)
-        self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
-        self.e_ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.e_ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.e_ui.addtool_entry.editingFinished.connect(self.on_tool_add)
-        self.e_ui.deltool_btn.clicked.connect(self.on_tool_delete)
-        # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
-        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-
-        self.e_ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
-        self.e_ui.slot_array_type_combo.currentIndexChanged.connect(self.on_slot_array_type_combo)
-
-        self.e_ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
-        self.e_ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
-
-        self.e_ui.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
-
-        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
-        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
-
-        self.app.ui.exc_add_array_slot_menuitem.triggered.connect(self.exc_add_slot_array)
-        self.app.ui.exc_add_slot_menuitem.triggered.connect(self.exc_add_slot)
-
-        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
-        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
-        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
-
-        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
-        self.e_ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+        self.ui = AppExcEditorUI(app=self.app)
 
         self.exc_obj = None
 
         # ## Toolbar events and properties
-        self.tools_exc = {
-            "drill_select":     {"button": self.app.ui.select_drill_btn, "constructor": FCDrillSelect},
-            "drill_add":        {"button": self.app.ui.add_drill_btn, "constructor": FCDrillAdd},
-            "drill_array":      {"button": self.app.ui.add_drill_array_btn, "constructor": FCDrillArray},
-            "slot_add":         {"button": self.app.ui.add_slot_btn, "constructor": FCSlot},
-            "slot_array":       {"button": self.app.ui.add_slot_array_btn, "constructor": FCSlotArray},
-            "drill_resize":     {"button": self.app.ui.resize_drill_btn, "constructor": FCDrillResize},
-            "drill_copy":       {"button": self.app.ui.copy_drill_btn, "constructor": FCDrillCopy},
-            "drill_move":       {"button": self.app.ui.move_drill_btn, "constructor": FCDrillMove},
-        }
+        self.tools_exc = {}
 
         # ## Data
         self.active_tool = None
@@ -1650,15 +1824,6 @@ class AppExcEditor(QtCore.QObject):
 
         self.complete = False
 
-        def make_callback(thetool):
-            def f():
-                self.on_tool_select(thetool)
-            return f
-
-        for tool in self.tools_exc:
-            self.tools_exc[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools_exc[tool]["button"].setCheckable(True)  # Checkable
-
         self.options = {
             "global_gridx":     0.1,
             "global_gridy":     0.1,
@@ -1691,9 +1856,6 @@ class AppExcEditor(QtCore.QObject):
 
         self.tool_row = 0
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
-
         # def entry2option(option, entry):
         #     self.options[option] = float(entry.text())
 
@@ -1702,9 +1864,66 @@ class AppExcEditor(QtCore.QObject):
         self.mm = None
         self.mr = None
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
+        # #############################################################################################################
+        # ######################### Excellon Editor Signals ###########################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_exc_toolbar_signals()
+
+        self.ui.convert_slots_btn.clicked.connect(self.on_slots_conversion)
+        self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
+        self.ui.name_entry.returnPressed.connect(self.on_name_activate)
+        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
+        self.ui.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
+        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
+        self.ui.slot_array_type_radio.activated_custom.connect(self.on_slot_array_type_radio)
+
+        self.ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
+
+        self.ui.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
+
+        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
+        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
+
+        self.app.ui.exc_add_array_slot_menuitem.triggered.connect(self.exc_add_slot_array)
+        self.app.ui.exc_add_slot_menuitem.triggered.connect(self.exc_add_slot)
+
+        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
+        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
+
+        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
         log.debug("Initialization of the Excellon Editor is finished ...")
+
+    def make_callback(self, thetool):
+        def f():
+            self.on_tool_select(thetool)
+
+        return f
+
+    def connect_exc_toolbar_signals(self):
+        self.tools_exc.update({
+            "drill_select":     {"button": self.app.ui.select_drill_btn,    "constructor": SelectEditorExc},
+            "drill_add":        {"button": self.app.ui.add_drill_btn,       "constructor": DrillAdd},
+            "drill_array":      {"button": self.app.ui.add_drill_array_btn, "constructor": DrillArray},
+            "slot_add":         {"button": self.app.ui.add_slot_btn,        "constructor": SlotAdd},
+            "slot_array":       {"button": self.app.ui.add_slot_array_btn,  "constructor": SlotArray},
+            "drill_resize":     {"button": self.app.ui.resize_drill_btn,    "constructor": ResizeEditorExc},
+            "drill_copy":       {"button": self.app.ui.copy_drill_btn,      "constructor": CopyEditorExc},
+            "drill_move":       {"button": self.app.ui.move_drill_btn,      "constructor": MoveEditorExc},
+        })
+
+        for tool in self.tools_exc:
+            self.tools_exc[tool]["button"].triggered.connect(self.make_callback(tool))  # Events
+            self.tools_exc[tool]["button"].setCheckable(True)  # Checkable
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -1752,38 +1971,46 @@ class AppExcEditor(QtCore.QObject):
                 self.tool2tooldia[int(k)] = tool_dia
 
         # Init appGUI
-        self.e_ui.addtool_entry.set_value(float(self.app.defaults['excellon_editor_newdia']))
-        self.e_ui.drill_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
-        self.e_ui.drill_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
-        self.e_ui.drill_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
-        self.e_ui.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
-        self.e_ui.drill_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
-        self.e_ui.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+        self.ui.addtool_entry.set_value(float(self.app.defaults['excellon_editor_newdia']))
+        self.ui.drill_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
+        self.ui.drill_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
+        self.ui.drill_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
+        self.ui.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
+        self.ui.drill_array_dir_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
+        self.ui.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
 
-        self.e_ui.slot_length_entry.set_value(float(self.app.defaults['excellon_editor_slot_length']))
-        self.e_ui.slot_axis_radio.set_value(self.app.defaults['excellon_editor_slot_direction'])
-        self.e_ui.slot_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_angle']))
+        self.ui.slot_length_entry.set_value(float(self.app.defaults['excellon_editor_slot_length']))
+        self.ui.slot_axis_radio.set_value(self.app.defaults['excellon_editor_slot_direction'])
+        self.ui.slot_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_angle']))
 
-        self.e_ui.slot_array_size_entry.set_value(int(self.app.defaults['excellon_editor_slot_array_size']))
-        self.e_ui.slot_array_axis_radio.set_value(self.app.defaults['excellon_editor_slot_lin_dir'])
-        self.e_ui.slot_array_pitch_entry.set_value(float(self.app.defaults['excellon_editor_slot_lin_pitch']))
-        self.e_ui.slot_array_linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_lin_angle']))
-        self.e_ui.slot_array_direction_radio.set_value(self.app.defaults['excellon_editor_slot_circ_dir'])
-        self.e_ui.slot_array_angle_entry.set_value(float(self.app.defaults['excellon_editor_slot_circ_angle']))
+        self.ui.slot_array_size_entry.set_value(int(self.app.defaults['excellon_editor_slot_array_size']))
+        self.ui.slot_array_axis_radio.set_value(self.app.defaults['excellon_editor_slot_lin_dir'])
+        self.ui.slot_array_pitch_entry.set_value(float(self.app.defaults['excellon_editor_slot_lin_pitch']))
+        self.ui.slot_array_linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_lin_angle']))
+        self.ui.slot_array_direction_radio.set_value(self.app.defaults['excellon_editor_slot_circ_dir'])
+        self.ui.slot_array_angle_entry.set_value(float(self.app.defaults['excellon_editor_slot_circ_angle']))
 
-        self.e_ui.slot_array_circular_frame.hide()
-        self.e_ui.slot_array_linear_frame.show()
+        # make sure that th visibility of the various UI frame are updated
+        # according to the set Preferences already loaded
+        self.on_slot_angle_radio()
+
+        self.ui.array_type_radio.set_value('linear')
+        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+        self.ui.slot_array_type_radio.set_value('linear')
+        self.on_slot_array_type_radio(val=self.ui.slot_array_type_radio.get_value())
+        self.on_linear_angle_radio()
+        self.on_slot_array_linear_angle_radio()
 
     def build_ui(self, first_run=None):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.e_ui.tools_table_exc.itemChanged.disconnect()
+            self.ui.tools_table_exc.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
         try:
-            self.e_ui.tools_table_exc.cellPressed.disconnect()
+            self.ui.tools_table_exc.cellPressed.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -1792,7 +2019,7 @@ class AppExcEditor(QtCore.QObject):
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']
-        self.e_ui.name_entry.set_value(self.edited_obj_name)
+        self.ui.name_entry.set_value(self.edited_obj_name)
 
         sort_temp = []
 
@@ -1803,7 +2030,7 @@ class AppExcEditor(QtCore.QObject):
         # here, self.sorted_diameters will hold in a oblique way, the number of tools
         n = len(self.sorted_diameters)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
-        self.e_ui.tools_table_exc.setRowCount(n + 2)
+        self.ui.tools_table_exc.setRowCount(n + 2)
 
         self.tot_drill_cnt = 0
         self.tot_slot_cnt = 0
@@ -1848,7 +2075,7 @@ class AppExcEditor(QtCore.QObject):
 
             idd = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
             idd.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.e_ui.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
+            self.ui.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
             # There are no drill bits in MM with more than 2 decimals diameter
@@ -1867,9 +2094,9 @@ class AppExcEditor(QtCore.QObject):
                 slot_count = QtWidgets.QTableWidgetItem('')
             slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.e_ui.tools_table_exc.setItem(self.tool_row, 1, dia)  # Diameter
-            self.e_ui.tools_table_exc.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
-            self.e_ui.tools_table_exc.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
+            self.ui.tools_table_exc.setItem(self.tool_row, 1, dia)  # Diameter
+            self.ui.tools_table_exc.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
+            self.ui.tools_table_exc.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
 
             if first_run is True:
                 # set now the last tool selected
@@ -1879,10 +2106,10 @@ class AppExcEditor(QtCore.QObject):
 
         # make the diameter column editable
         for row in range(self.tool_row):
-            self.e_ui.tools_table_exc.item(row, 1).setFlags(
+            self.ui.tools_table_exc.item(row, 1).setFlags(
                 QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.e_ui.tools_table_exc.item(row, 2).setForeground(QtGui.QColor(0, 0, 0))
-            self.e_ui.tools_table_exc.item(row, 3).setForeground(QtGui.QColor(0, 0, 0))
+            self.ui.tools_table_exc.item(row, 2).setForeground(QtGui.QColor(0, 0, 0))
+            self.ui.tools_table_exc.item(row, 3).setForeground(QtGui.QColor(0, 0, 0))
 
         # add a last row with the Total number of drills
         # HACK: made the text on this cell '9999' such it will always be the one before last when sorting
@@ -1900,18 +2127,18 @@ class AppExcEditor(QtCore.QObject):
         label_tot_drill_count.setFlags(label_tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
         tot_drill_count.setFlags(tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
 
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 0, empty)
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_drill_count)
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 3, empty_b)
+        self.ui.tools_table_exc.setItem(self.tool_row, 0, empty)
+        self.ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_drill_count)
+        self.ui.tools_table_exc.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
+        self.ui.tools_table_exc.setItem(self.tool_row, 3, empty_b)
 
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
 
         for k in [1, 2]:
-            self.e_ui.tools_table_exc.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
-            self.e_ui.tools_table_exc.item(self.tool_row, k).setFont(font)
+            self.ui.tools_table_exc.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
+            self.ui.tools_table_exc.item(self.tool_row, k).setFont(font)
 
         self.tool_row += 1
 
@@ -1931,62 +2158,62 @@ class AppExcEditor(QtCore.QObject):
         label_tot_slot_count.setFlags(label_tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
         tot_slot_count.setFlags(tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
 
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 0, empty_2)
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_slot_count)
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 2, empty_3)
-        self.e_ui.tools_table_exc.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
+        self.ui.tools_table_exc.setItem(self.tool_row, 0, empty_2)
+        self.ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_slot_count)
+        self.ui.tools_table_exc.setItem(self.tool_row, 2, empty_3)
+        self.ui.tools_table_exc.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
 
         for kl in [1, 2, 3]:
-            self.e_ui.tools_table_exc.item(self.tool_row, kl).setFont(font)
-            self.e_ui.tools_table_exc.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
+            self.ui.tools_table_exc.item(self.tool_row, kl).setFont(font)
+            self.ui.tools_table_exc.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
 
         # all the tools are selected by default
-        self.e_ui.tools_table_exc.selectColumn(0)
+        self.ui.tools_table_exc.selectColumn(0)
         #
-        self.e_ui.tools_table_exc.resizeColumnsToContents()
-        self.e_ui.tools_table_exc.resizeRowsToContents()
+        self.ui.tools_table_exc.resizeColumnsToContents()
+        self.ui.tools_table_exc.resizeRowsToContents()
 
-        vertical_header = self.e_ui.tools_table_exc.verticalHeader()
+        vertical_header = self.ui.tools_table_exc.verticalHeader()
         # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         vertical_header.hide()
-        self.e_ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        horizontal_header = self.e_ui.tools_table_exc.horizontalHeader()
+        horizontal_header = self.ui.tools_table_exc.horizontalHeader()
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
-        # self.e_ui.tools_table_exc.setSortingEnabled(True)
+        # self.ui.tools_table_exc.setSortingEnabled(True)
         # sort by tool diameter
-        self.e_ui.tools_table_exc.sortItems(1)
+        self.ui.tools_table_exc.sortItems(1)
 
         # After sorting, to display also the number of drills in the right row we need to update self.initial_rows dict
         # with the new order. Of course the last 2 rows in the tool table are just for display therefore we don't
         # use them
         self.tool2tooldia.clear()
-        for row in range(self.e_ui.tools_table_exc.rowCount() - 2):
-            tool = int(self.e_ui.tools_table_exc.item(row, 0).text())
-            diameter = float(self.e_ui.tools_table_exc.item(row, 1).text())
+        for row in range(self.ui.tools_table_exc.rowCount() - 2):
+            tool = int(self.ui.tools_table_exc.item(row, 0).text())
+            diameter = float(self.ui.tools_table_exc.item(row, 1).text())
             self.tool2tooldia[tool] = diameter
 
-        self.e_ui.tools_table_exc.setMinimumHeight(self.e_ui.tools_table_exc.getHeight())
-        self.e_ui.tools_table_exc.setMaximumHeight(self.e_ui.tools_table_exc.getHeight())
+        self.ui.tools_table_exc.setMinimumHeight(self.ui.tools_table_exc.getHeight())
+        self.ui.tools_table_exc.setMaximumHeight(self.ui.tools_table_exc.getHeight())
 
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
-        self.e_ui.tools_table_exc.clearSelection()
+        self.ui.tools_table_exc.clearSelection()
 
         # Remove anything else in the GUI Selected Tab
         self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the GUI Properties Tab
-        self.app.ui.properties_scroll_area.setWidget(self.e_ui.exc_edit_widget)
+        self.app.ui.properties_scroll_area.setWidget(self.ui.exc_edit_widget)
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        self.e_ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
-        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
     def on_tool_add(self, tooldia=None):
         self.is_modified = True
@@ -1994,11 +2221,11 @@ class AppExcEditor(QtCore.QObject):
             tool_dia = tooldia
         else:
             try:
-                tool_dia = float(self.e_ui.addtool_entry.get_value())
+                tool_dia = float(self.ui.addtool_entry.get_value())
             except ValueError:
                 # try to convert comma to decimal point. if it's still not working error message and return
                 try:
-                    tool_dia = float(self.e_ui.addtool_entry.get_value().replace(',', '.'))
+                    tool_dia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
@@ -2031,7 +2258,7 @@ class AppExcEditor(QtCore.QObject):
                 self.last_tool_selected = int(key)
                 break
         try:
-            self.e_ui.tools_table_exc.selectRow(row_to_be_selected)
+            self.ui.tools_table_exc.selectRow(row_to_be_selected)
         except TypeError as e:
             log.debug("AppExcEditor.on_tool_add() --> %s" % str(e))
 
@@ -2041,10 +2268,11 @@ class AppExcEditor(QtCore.QObject):
 
         try:
             if dia is None or dia is False:
-                # deleted_tool_dia = float(self.e_ui.tools_table_exc.item(self.e_ui.tools_table_exc.currentRow(), 1).text())
-                for index in self.e_ui.tools_table_exc.selectionModel().selectedRows():
+                # deleted_tool_dia = float(
+                #     self.ui.tools_table_exc.item(self.ui.tools_table_exc.currentRow(), 1).text())
+                for index in self.ui.tools_table_exc.selectionModel().selectedRows():
                     row = index.row()
-                    deleted_tool_dia_list.append(float(self.e_ui.tools_table_exc.item(row, 1).text()))
+                    deleted_tool_dia_list.append(float(self.ui.tools_table_exc.item(row, 1).text()))
             else:
                 if isinstance(dia, list):
                     for dd in dia:
@@ -2092,26 +2320,26 @@ class AppExcEditor(QtCore.QObject):
     def on_tool_edit(self, item_changed):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         try:
-            self.e_ui.tools_table_exc.itemChanged.disconnect()
+            self.ui.tools_table_exc.itemChanged.disconnect()
         except TypeError:
             pass
 
         try:
-            self.e_ui.tools_table_exc.cellPressed.disconnect()
+            self.ui.tools_table_exc.cellPressed.disconnect()
         except TypeError:
             pass
-        # self.e_ui.tools_table_exc.selectionModel().currentChanged.disconnect()
+        # self.ui.tools_table_exc.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
         # new_dia = None
 
         try:
-            new_dia = float(self.e_ui.tools_table_exc.currentItem().text())
+            new_dia = float(self.ui.tools_table_exc.currentItem().text())
         except ValueError as e:
             log.debug("AppExcEditor.on_tool_edit() --> %s" % str(e))
             return
 
-        row_of_item_changed = self.e_ui.tools_table_exc.currentRow()
+        row_of_item_changed = self.ui.tools_table_exc.currentRow()
         # rows start with 0, tools start with 1 so we adjust the value by 1
         key_in_tool2tooldia = row_of_item_changed + 1
         old_dia = self.tool2tooldia[key_in_tool2tooldia]
@@ -2226,15 +2454,15 @@ class AppExcEditor(QtCore.QObject):
         self.on_tool_delete(dia=old_dia)
 
         # we reactivate the signals after the after the tool editing
-        self.e_ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
-        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
-        self.app.inform.emit('[success] %s' % _("Done. Tool edit completed."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
-        # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
 
     def on_name_activate(self):
-        self.edited_obj_name = self.e_ui.name_entry.get_value()
+        self.edited_obj_name = self.ui.name_entry.get_value()
 
     def activate(self):
         # adjust the status of the menu entries related to the editor
@@ -2285,11 +2513,8 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
-        # Tell the App that the editor is active
-        self.editor_active = True
-
         # show the UI
-        self.e_ui.drills_frame.show()
+        self.ui.drills_frame.show()
 
     def deactivate(self):
         try:
@@ -2320,9 +2545,6 @@ class AppExcEditor(QtCore.QObject):
         self.tool_shape.enabled = False
         # self.app.app_cursor.enabled = False
 
-        # Tell the app that the editor is no longer active
-        self.editor_active = False
-
         self.app.ui.exc_editor_menu.setDisabled(True)
         self.app.ui.exc_editor_menu.menuAction().setVisible(False)
 
@@ -2340,7 +2562,7 @@ class AppExcEditor(QtCore.QObject):
             self.exc_obj.visible = True
 
         # hide the UI
-        self.e_ui.drills_frame.hide()
+        self.ui.drills_frame.hide()
 
     def connect_canvas_event_handlers(self):
         # ## Canvas events
@@ -2563,8 +2785,8 @@ class AppExcEditor(QtCore.QObject):
         self.select_tool("drill_select")
 
         # reset the tool table
-        self.e_ui.tools_table_exc.clear()
-        self.e_ui.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
+        self.ui.tools_table_exc.clear()
+        self.ui.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.last_tool_selected = None
 
         self.set_ui()
@@ -2573,7 +2795,7 @@ class AppExcEditor(QtCore.QObject):
         self.build_ui(first_run=True)
 
         # we activate this after the initial build as we don't need to see the tool been populated
-        self.e_ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
 
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
@@ -2804,11 +3026,7 @@ class AppExcEditor(QtCore.QObject):
     def update_options(obj):
         try:
             if not obj.options:
-                obj.options = {}
-                obj.options['xmin'] = 0
-                obj.options['ymin'] = 0
-                obj.options['xmax'] = 0
-                obj.options['ymax'] = 0
+                obj.options = {'xmin': 0, 'ymin': 0, 'xmax': 0, 'ymax': 0}
                 return True
             else:
                 return False
@@ -2859,7 +3077,7 @@ class AppExcEditor(QtCore.QObject):
                                      )
             except Exception:
                 msg = '[ERROR] %s' % \
-                      _("An internal error has ocurred. See Shell.\n")
+                      _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return
@@ -2913,7 +3131,7 @@ class AppExcEditor(QtCore.QObject):
                     self.tools_exc[t]["button"].setChecked(False)
 
                 self.select_tool('drill_select')
-                self.active_tool = FCDrillSelect(self)
+                self.active_tool = SelectEditorExc(self)
 
     def on_row_selected(self, row, col):
         if col == 0:
@@ -2929,8 +3147,8 @@ class AppExcEditor(QtCore.QObject):
                 self.selected = []
 
             try:
-                selected_dia = self.tool2tooldia[self.e_ui.tools_table_exc.currentRow() + 1]
-                self.last_tool_selected = int(self.e_ui.tools_table_exc.currentRow()) + 1
+                selected_dia = self.tool2tooldia[self.ui.tools_table_exc.currentRow() + 1]
+                self.last_tool_selected = int(self.ui.tools_table_exc.currentRow()) + 1
                 for obj in self.storage_dict[selected_dia].get_objects():
                     self.selected.append(obj)
             except Exception as e:
@@ -2955,14 +3173,14 @@ class AppExcEditor(QtCore.QObject):
             # event_is_dragging = self.app.plotcanvas.is_dragging
             # right_button = 3
 
-        self.pos = self.canvas.translate_coords(event_pos)
-
-        if self.app.grid_status():
-            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-        else:
-            self.pos = (self.pos[0], self.pos[1])
-
         if event.button == 1:
+            self.pos = self.canvas.translate_coords(event_pos)
+
+            if self.app.grid_status():
+                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            else:
+                self.pos = (self.pos[0], self.pos[1])
+
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -2991,94 +3209,18 @@ class AppExcEditor(QtCore.QObject):
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
-                        # return to Select tool but not for FCDrillAdd or FCSlot
-                        if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCSlot):
+                        # return to Select tool but not for FCDrillAdd or SlotAdd
+                        if isinstance(self.active_tool, DrillAdd) or isinstance(self.active_tool, SlotAdd):
                             self.select_tool(self.active_tool.name)
                         else:
                             self.select_tool("drill_select")
                         return
 
-                if isinstance(self.active_tool, FCDrillSelect):
+                if isinstance(self.active_tool, SelectEditorExc):
                     # self.app.log.debug("Replotting after click.")
                     self.replot()
             else:
                 self.app.log.debug("No active tool to respond to click!")
-
-    def on_exc_shape_complete(self, storage):
-        self.app.log.debug("on_shape_complete()")
-
-        # Add shape
-        if type(storage) is list:
-            for item_storage in storage:
-                self.add_exc_shape(self.active_tool.geometry, item_storage)
-        else:
-            self.add_exc_shape(self.active_tool.geometry, storage)
-
-        # Remove any utility shapes
-        self.delete_utility_geometry()
-        self.tool_shape.clear(update=True)
-
-        # Replot and reset tool.
-        self.replot()
-        # self.active_tool = type(self.active_tool)(self)
-
-    def add_exc_shape(self, shape, storage):
-        """
-        Adds a shape to a specified shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :param storage:     object where to store the shapes
-        :return:            None
-        """
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_exc_shape(subshape, storage)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % str(type(shape))
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        else:
-            storage.insert(shape)  # TODO: Check performance
-
-    def add_shape(self, shape):
-        """
-        Adds a shape to the shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :return:            None
-        """
-
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_shape(subshape)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        # else:
-        #     self.storage.insert(shape)
 
     def on_exc_click_release(self, event):
         """
@@ -3116,14 +3258,14 @@ class AppExcEditor(QtCore.QObject):
                         QtGui.QGuiApplication.restoreOverrideCursor()
                     except Exception:
                         pass
-                    if self.active_tool.complete is False and not isinstance(self.active_tool, FCDrillSelect):
+                    if self.active_tool.complete is False and not isinstance(self.active_tool, SelectEditorExc):
                         self.active_tool.complete = True
                         self.in_action = False
                         self.delete_utility_geometry()
                         self.app.inform.emit('[success] %s' % _("Done."))
                         self.select_tool('drill_select')
                     else:
-                        if isinstance(self.active_tool, FCDrillAdd):
+                        if isinstance(self.active_tool, DrillAdd):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
@@ -3146,7 +3288,7 @@ class AppExcEditor(QtCore.QObject):
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
 
-                elif isinstance(self.active_tool, FCDrillSelect):
+                elif isinstance(self.active_tool, SelectEditorExc):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # if there are selected objects then plot them
@@ -3155,89 +3297,6 @@ class AppExcEditor(QtCore.QObject):
         except Exception as e:
             log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
-
-    def draw_selection_area_handler(self, start, end, sel_type):
-        """
-        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
-        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
-        event handler.
-        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
-
-        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
-        deselected.
-
-        :param start:       mouse position when the selection LMB click was done
-        :param end:         mouse position when the left mouse button is released
-        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :return:
-        """
-
-        start_pos = (start[0], start[1])
-        end_pos = (end[0], end[1])
-        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-        modifiers = None
-
-        # delete the selection shape that was just drawn, we no longer need it
-        self.app.delete_selection_shape()
-
-        # detect if a modifier key was pressed while the left mouse button was released
-        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.modifiers == QtCore.Qt.ShiftModifier:
-            modifiers = 'Shift'
-        elif self.modifiers == QtCore.Qt.ControlModifier:
-            modifiers = 'Control'
-
-        if modifiers == self.app.defaults["global_mselect_key"]:
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-
-                        if obj in self.selected:
-                            # remove the shape object from the selected shapes storage
-                            self.selected.remove(obj)
-                        else:
-                            # add the shape object to the selected shapes storage
-                            self.selected.append(obj)
-        else:
-            # clear the selection shapes storage
-            self.selected = []
-            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-                        self.selected.append(obj)
-
-        try:
-            self.e_ui.tools_table_exc.cellPressed.disconnect()
-        except Exception:
-            pass
-
-        # first deselect all rows (tools) in the Tools Table
-        self.e_ui.tools_table_exc.clearSelection()
-        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
-        self.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for storage in self.storage_dict:
-            for shape_s in self.selected:
-                if shape_s in self.storage_dict[storage].get_objects():
-                    for key_tool_nr in self.tool2tooldia:
-                        if self.tool2tooldia[key_tool_nr] == storage:
-                            row_to_sel = key_tool_nr - 1
-                            # item = self.e_ui.tools_table_exc.item(row_to_sel, 1)
-                            # self.e_ui.tools_table_exc.setCurrentItem(item)
-                            # item.setSelected(True)
-
-                            # if the row to be selected is not already in the selected rows then select it
-                            # otherwise don't do it as it seems that we have a toggle effect
-                            if row_to_sel not in set(index.row() for index in self.e_ui.tools_table_exc.selectedIndexes()):
-                                self.e_ui.tools_table_exc.selectRow(row_to_sel)
-                            self.last_tool_selected = int(key_tool_nr)
-
-        self.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-        self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-        self.replot()
 
     def on_canvas_move(self, event):
         """
@@ -3255,6 +3314,9 @@ class AppExcEditor(QtCore.QObject):
         :param event:       Event object dispatched by VisPy SceneCavas
         :return:            None
         """
+
+        if not self.app.plotcanvas.native.hasFocus():
+            self.app.plotcanvas.native.setFocus()
 
         if self.app.is_legacy is False:
             event_pos = event.pos
@@ -3321,10 +3383,10 @@ class AppExcEditor(QtCore.QObject):
 
         # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
-            # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
-            # can create strange issues. Also for FCSlot and FCSlotArray
-            if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray) or \
-                    isinstance(self.active_tool, FCSlot) or isinstance(self.active_tool, FCSlotArray):
+            # I make an exception for FCDrillAdd and DrillArray because clicking and dragging while making regions
+            # can create strange issues. Also for SlotAdd and SlotArray
+            if isinstance(self.active_tool, DrillAdd) or isinstance(self.active_tool, DrillArray) or \
+                    isinstance(self.active_tool, SlotAdd) or isinstance(self.active_tool, SlotArray):
                 self.app.selection_type = None
             else:
                 dx = pos[0] - self.pos[0]
@@ -3344,6 +3406,166 @@ class AppExcEditor(QtCore.QObject):
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                      edge_width=self.app.defaults["global_cursor_width"],
                                      size=self.app.defaults["global_cursor_size"])
+
+    def add_exc_shape(self, shape, storage):
+        """
+        Adds a shape to a specified shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :param storage:     object where to store the shapes
+        :return:            None
+        """
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_exc_shape(subshape, storage)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % str(type(shape))
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        else:
+            storage.insert(shape)  # TODO: Check performance
+
+    def add_shape(self, shape):
+        """
+        Adds a shape to the shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :return:            None
+        """
+
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_shape(subshape)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % type(shape)
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        # else:
+        #     self.storage.insert(shape)
+
+    def on_exc_shape_complete(self, storage):
+        self.app.log.debug("on_shape_complete()")
+
+        # Add shape
+        if type(storage) is list:
+            for item_storage in storage:
+                self.add_exc_shape(self.active_tool.geometry, item_storage)
+        else:
+            self.add_exc_shape(self.active_tool.geometry, storage)
+
+        # Remove any utility shapes
+        self.delete_utility_geometry()
+        self.tool_shape.clear(update=True)
+
+        # Replot and reset tool.
+        self.replot()
+        # self.active_tool = type(self.active_tool)(self)
+
+    def draw_selection_area_handler(self, start, end, sel_type):
+        """
+        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
+        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
+        event handler.
+        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
+
+        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
+        deselected.
+
+        :param start:       mouse position when the selection LMB click was done
+        :param end:         mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:
+        """
+
+        start_pos = (start[0], start[1])
+        end_pos = (end[0], end[1])
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+        modifiers = None
+
+        # delete the selection shape that was just drawn, we no longer need it
+        self.app.delete_selection_shape()
+
+        # detect if a modifier key was pressed while the left mouse button was released
+        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.modifiers == QtCore.Qt.ShiftModifier:
+            modifiers = 'Shift'
+        elif self.modifiers == QtCore.Qt.ControlModifier:
+            modifiers = 'Control'
+
+        if modifiers == self.app.defaults["global_mselect_key"]:
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+
+                        if obj in self.selected:
+                            # remove the shape object from the selected shapes storage
+                            self.selected.remove(obj)
+                        else:
+                            # add the shape object to the selected shapes storage
+                            self.selected.append(obj)
+        else:
+            # clear the selection shapes storage
+            self.selected = []
+            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        self.selected.append(obj)
+
+        try:
+            self.ui.tools_table_exc.cellPressed.disconnect()
+        except Exception:
+            pass
+
+        # first deselect all rows (tools) in the Tools Table
+        self.ui.tools_table_exc.clearSelection()
+        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for storage in self.storage_dict:
+            for shape_s in self.selected:
+                if shape_s in self.storage_dict[storage].get_objects():
+                    for key_tool_nr in self.tool2tooldia:
+                        if self.tool2tooldia[key_tool_nr] == storage:
+                            row_to_sel = key_tool_nr - 1
+                            # item = self.ui.tools_table_exc.item(row_to_sel, 1)
+                            # self.ui.tools_table_exc.setCurrentItem(item)
+                            # item.setSelected(True)
+
+                            # if the row to be selected is not already in the selected rows then select it
+                            # otherwise don't do it as it seems that we have a toggle effect
+                            if row_to_sel not in set(
+                                    index.row() for index in self.ui.tools_table_exc.selectedIndexes()):
+                                self.ui.tools_table_exc.selectRow(row_to_sel)
+                            self.last_tool_selected = int(key_tool_nr)
+
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.replot()
 
     def update_utility_geometry(self, data):
         # ### Utility geometry (animated) ###
@@ -3488,7 +3710,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit('[success] %s' % _("Done. Drill(s) deleted."))
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def delete_shape(self, del_shape):
         self.is_modified = True
@@ -3553,52 +3775,52 @@ class AppExcEditor(QtCore.QObject):
         if unsel_shape in self.selected:
             self.selected.remove(unsel_shape)
 
-    def on_array_type_combo(self):
-        if self.e_ui.array_type_combo.currentIndex() == 0:
-            self.e_ui.array_circular_frame.hide()
-            self.e_ui.array_linear_frame.show()
+    def on_array_type_radio(self, val):
+        if val == 'linear':
+            self.ui.array_circular_frame.hide()
+            self.ui.array_linear_frame.show()
         else:
             self.delete_utility_geometry()
-            self.e_ui.array_circular_frame.show()
-            self.e_ui.array_linear_frame.hide()
+            self.ui.array_circular_frame.show()
+            self.ui.array_linear_frame.hide()
             self.app.inform.emit(_("Click on the circular array Center position"))
 
-    def on_slot_array_type_combo(self):
-        if self.e_ui.slot_array_type_combo.currentIndex() == 0:
-            self.e_ui.slot_array_circular_frame.hide()
-            self.e_ui.slot_array_linear_frame.show()
+    def on_slot_array_type_radio(self, val):
+        if val == 'linear':
+            self.ui.slot_array_circular_frame.hide()
+            self.ui.slot_array_linear_frame.show()
         else:
             self.delete_utility_geometry()
-            self.e_ui.slot_array_circular_frame.show()
-            self.e_ui.slot_array_linear_frame.hide()
+            self.ui.slot_array_circular_frame.show()
+            self.ui.slot_array_linear_frame.hide()
             self.app.inform.emit(_("Click on the circular array Center position"))
 
     def on_linear_angle_radio(self):
-        val = self.e_ui.drill_axis_radio.get_value()
+        val = self.ui.drill_axis_radio.get_value()
         if val == 'A':
-            self.e_ui.linear_angle_spinner.show()
-            self.e_ui.linear_angle_label.show()
+            self.ui.linear_angle_spinner.show()
+            self.ui.linear_angle_label.show()
         else:
-            self.e_ui.linear_angle_spinner.hide()
-            self.e_ui.linear_angle_label.hide()
+            self.ui.linear_angle_spinner.hide()
+            self.ui.linear_angle_label.hide()
 
     def on_slot_array_linear_angle_radio(self):
-        val = self.e_ui.slot_array_axis_radio.get_value()
+        val = self.ui.slot_array_axis_radio.get_value()
         if val == 'A':
-            self.e_ui.slot_array_linear_angle_spinner.show()
-            self.e_ui.slot_array_linear_angle_label.show()
+            self.ui.slot_array_linear_angle_spinner.show()
+            self.ui.slot_array_linear_angle_label.show()
         else:
-            self.e_ui.slot_array_linear_angle_spinner.hide()
-            self.e_ui.slot_array_linear_angle_label.hide()
+            self.ui.slot_array_linear_angle_spinner.hide()
+            self.ui.slot_array_linear_angle_label.hide()
 
     def on_slot_angle_radio(self):
-        val = self.e_ui.slot_axis_radio.get_value()
+        val = self.ui.slot_axis_radio.get_value()
         if val == 'A':
-            self.e_ui.slot_angle_spinner.show()
-            self.e_ui.slot_angle_label.show()
+            self.ui.slot_angle_spinner.show()
+            self.ui.slot_angle_label.show()
         else:
-            self.e_ui.slot_angle_spinner.hide()
-            self.e_ui.slot_angle_label.hide()
+            self.ui.slot_angle_spinner.hide()
+            self.ui.slot_angle_label.hide()
 
     def exc_add_drill(self):
         self.select_tool('drill_add')
@@ -3631,7 +3853,7 @@ class AppExcEditor(QtCore.QObject):
     def on_slots_conversion(self):
         # selected rows
         selected_rows = set()
-        for it in self.e_ui.tools_table_exc.selectedItems():
+        for it in self.ui.tools_table_exc.selectedItems():
             selected_rows.add(it.row())
 
         # convert a Polygon (slot) to a MultiLineString (drill)
@@ -3647,7 +3869,7 @@ class AppExcEditor(QtCore.QObject):
         new_storage_dict = {}
 
         for row in selected_rows:
-            table_tooldia = self.dec_format(float(self.e_ui.tools_table_exc.item(row, 1).text()))
+            table_tooldia = self.dec_format(float(self.ui.tools_table_exc.item(row, 1).text()))
             for dict_dia, geo_dict in self.storage_dict.items():
                 if self.dec_format(float(dict_dia)) == table_tooldia:
                     storage_elem = AppGeoEditor.make_storage()
@@ -3687,515 +3909,555 @@ class AppExcEditorUI:
         self.drills_frame = QtWidgets.QFrame()
         self.drills_frame.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.drills_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.drills_frame.setLayout(self.tools_box)
 
-        # ## Page Title box (spacing between children)
+        # #############################################################################################################
+        # ######################## MAIN Grid ##########################################################################
+        # #############################################################################################################
+        self.ui_vertical_lay = QtWidgets.QVBoxLayout()
+        self.ui_vertical_lay.setContentsMargins(0, 0, 0, 0)
+        self.drills_frame.setLayout(self.ui_vertical_lay)
+
+        # Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(self.title_box)
+        self.ui_vertical_lay.addLayout(self.title_box)
 
-        # ## Page Title icon
+        # Page Title
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
-        self.icon = QtWidgets.QLabel()
+        self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
-        self.title_box.addWidget(self.icon, stretch=0)
 
-        # ## Title label
-        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Excellon Editor'))
+        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Excellon Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.title_box.addWidget(self.icon, stretch=0)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        # ## Object name
+        # Object name box
         self.name_box = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(self.name_box)
-        name_label = QtWidgets.QLabel(_("Name:"))
-        self.name_box.addWidget(name_label)
+        self.ui_vertical_lay.addLayout(self.name_box)
+
+        # Object Name
+        name_label = FCLabel(_("Name:"))
         self.name_entry = FCEntry()
+
+        self.name_box.addWidget(name_label)
         self.name_box.addWidget(self.name_entry)
 
-        # ### Tools Drills ## ##
-        self.tools_table_label = QtWidgets.QLabel("<b>%s</b>" % _('Tools Table'))
+        # Tools Drills Table Title
+        self.tools_table_label = FCLabel("<b>%s</b>" % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools in this Excellon object\n"
               "when are used for drilling.")
         )
-        self.tools_box.addWidget(self.tools_table_label)
+        self.ui_vertical_lay.addWidget(self.tools_table_label)
 
+        # #############################################################################################################
+        # ########################################## Drills TABLE #####################################################
+        # #############################################################################################################
         self.tools_table_exc = FCTable()
-        # delegate = SpinBoxDelegate(units=self.units)
-        # self.e_ui.tools_table_exc.setItemDelegateForColumn(1, delegate)
-
-        self.tools_box.addWidget(self.tools_table_exc)
-
         self.tools_table_exc.setColumnCount(4)
         self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.tools_table_exc.setSortingEnabled(False)
         self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
+        self.ui_vertical_lay.addWidget(self.tools_table_exc)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.tools_box.addWidget(separator_line)
+        self.ui_vertical_lay.addWidget(separator_line)
 
         self.convert_slots_btn = FCButton('%s' % _("Convert Slots"))
+        self.convert_slots_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/convert32.png'))
+
         self.convert_slots_btn.setToolTip(
             _("Convert the slots in the selected tools to drills.")
         )
-        self.tools_box.addWidget(self.convert_slots_btn)
+        self.ui_vertical_lay.addWidget(self.convert_slots_btn)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.tools_box.addWidget(separator_line)
+        self.ui_vertical_lay.addWidget(separator_line)
 
-        # ### Add a new Tool ## ##
-        self.addtool_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Tool'))
+        # Add a new Tool
+        self.addtool_label = FCLabel('<b>%s</b>' % _('Add/Delete Tool'))
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
               "for this Excellon object.")
         )
-        self.tools_box.addWidget(self.addtool_label)
+        self.ui_vertical_lay.addWidget(self.addtool_label)
 
+        # #############################################################################################################
+        # ######################## ADD New Tool Grid ##################################################################
+        # #############################################################################################################
         grid1 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
+        self.ui_vertical_lay.addLayout(grid1)
 
-        addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
+        # Tool Diameter Label
+        addtool_entry_lbl = FCLabel('%s:' % _('Tool Dia'))
         addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
 
         hlay = QtWidgets.QHBoxLayout()
-        self.addtool_entry = FCDoubleSpinner()
+        # Tool Diameter Entry
+        self.addtool_entry = FCDoubleSpinner(policy=False)
         self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.0000, 9999.9999)
+        self.addtool_entry.set_range(0.0000, 10000.0000)
 
         hlay.addWidget(self.addtool_entry)
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add Tool'))
+        # Tool Diameter Button
+        self.addtool_btn = FCButton(_('Add'))
+        self.addtool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the tool list\n"
               "with the diameter specified above.")
         )
-        self.addtool_btn.setFixedWidth(80)
         hlay.addWidget(self.addtool_btn)
 
         grid1.addWidget(addtool_entry_lbl, 0, 0)
         grid1.addLayout(hlay, 0, 1)
 
-        grid2 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid2)
-
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete Tool'))
+        # Delete Tool
+        self.deltool_btn = FCButton(_('Delete Tool'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.deltool_btn.setToolTip(
             _("Delete a tool in the tool list\n"
               "by selecting a row in the tool table.")
         )
-        grid2.addWidget(self.deltool_btn, 0, 1)
+        grid1.addWidget(self.deltool_btn, 2, 0, 1, 2)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 4, 0, 1, 2)
+
+        # #############################################################################################################
+        # ############################## Resize Tool Grid #############################################################
+        # #############################################################################################################
+        # add a frame and inside add a grid box layout. Inside this layout I add all the Drills widgets
         # this way I can hide/show the frame
         self.resize_frame = QtWidgets.QFrame()
         self.resize_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.resize_frame)
-        self.resize_box = QtWidgets.QVBoxLayout()
-        self.resize_box.setContentsMargins(0, 0, 0, 0)
-        self.resize_frame.setLayout(self.resize_box)
+        self.ui_vertical_lay.addWidget(self.resize_frame)
 
-        # ### Resize a  drill ## ##
-        self.emptyresize_label = QtWidgets.QLabel('')
-        self.resize_box.addWidget(self.emptyresize_label)
+        self.resize_grid = QtWidgets.QGridLayout()
+        self.resize_grid.setColumnStretch(0, 0)
+        self.resize_grid.setColumnStretch(1, 1)
+        self.resize_grid.setContentsMargins(0, 0, 0, 0)
+        self.resize_frame.setLayout(self.resize_grid)
 
-        self.drillresize_label = QtWidgets.QLabel('<b>%s</b>' % _("Resize Drill(s)"))
+        self.drillresize_label = FCLabel('<b>%s</b>' % _("Resize Tool"))
         self.drillresize_label.setToolTip(
             _("Resize a drill or a selection of drills.")
         )
-        self.resize_box.addWidget(self.drillresize_label)
+        self.resize_grid.addWidget(self.drillresize_label, 0, 0, 1, 2)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.resize_box.addLayout(grid3)
-
-        res_entry_lbl = QtWidgets.QLabel('%s:' % _('Resize Dia'))
+        # Resize Diameter
+        res_entry_lbl = FCLabel('%s:' % _('Resize Dia'))
         res_entry_lbl.setToolTip(
             _("Diameter to resize to.")
         )
-        grid3.addWidget(res_entry_lbl, 0, 0)
 
         hlay2 = QtWidgets.QHBoxLayout()
-        self.resdrill_entry = FCDoubleSpinner()
+        self.resdrill_entry = FCDoubleSpinner(policy=False)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.resdrill_entry.setSizePolicy(sizePolicy)
         self.resdrill_entry.set_precision(self.decimals)
-        self.resdrill_entry.set_range(0.0000, 9999.9999)
+        self.resdrill_entry.set_range(0.0000, 10000.0000)
 
         hlay2.addWidget(self.resdrill_entry)
 
-        self.resize_btn = QtWidgets.QPushButton(_('Resize'))
+        # Resize Button
+        self.resize_btn = FCButton(_('Resize'))
+        self.resize_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/resize16.png'))
         self.resize_btn.setToolTip(
             _("Resize drill(s)")
         )
-        self.resize_btn.setFixedWidth(80)
         hlay2.addWidget(self.resize_btn)
-        grid3.addLayout(hlay2, 0, 1)
+
+        self.resize_grid.addWidget(res_entry_lbl, 2, 0)
+        self.resize_grid.addLayout(hlay2, 2, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.resize_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         self.resize_frame.hide()
 
-        # ####################################
-        # ### Add DRILL Array ################
-        # ####################################
-
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
+        # #############################################################################################################
+        # ################################## Add DRILL Array ##########################################################
+        # #############################################################################################################
+        # add a frame and inside add a grid box layout. Inside this grid layout I add
         # all the add drill array  widgets
         # this way I can hide/show the frame
         self.array_frame = QtWidgets.QFrame()
         self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.array_frame)
-        self.array_box = QtWidgets.QVBoxLayout()
-        self.array_box.setContentsMargins(0, 0, 0, 0)
-        self.array_frame.setLayout(self.array_box)
+        self.ui_vertical_lay.addWidget(self.array_frame)
 
-        self.emptyarray_label = QtWidgets.QLabel('')
-        self.array_box.addWidget(self.emptyarray_label)
+        self.array_grid = QtWidgets.QGridLayout()
+        self.array_grid.setColumnStretch(0, 0)
+        self.array_grid.setColumnStretch(1, 1)
+        self.array_grid.setContentsMargins(0, 0, 0, 0)
+        self.array_frame.setLayout(self.array_grid)
 
-        self.drill_array_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Drill Array"))
+        # Type of Drill Array
+        self.drill_array_label = FCLabel('<b>%s</b>' % _("Add Drill Array"))
         self.drill_array_label.setToolTip(
             _("Add an array of drills (linear or circular array)")
         )
-        self.array_box.addWidget(self.drill_array_label)
+        
+        self.array_grid.addWidget(self.drill_array_label, 0, 0, 1, 2)
 
-        self.array_type_combo = FCComboBox()
-        self.array_type_combo.setToolTip(
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of drills array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItem(_("Linear"))
-        self.array_type_combo.addItem(_("Circular"))
 
-        self.array_box.addWidget(self.array_type_combo)
+        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                          {'label': _('Circular'), 'value': 'circular'}])
 
-        self.array_form = QtWidgets.QFormLayout()
-        self.array_box.addLayout(self.array_form)
+        self.array_grid.addWidget(array_type_lbl, 2, 0)
+        self.array_grid.addWidget(self.array_type_radio, 2, 1)
 
         # Set the number of drill holes in the drill array
-        self.drill_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of drills'))
+        self.drill_array_size_label = FCLabel('%s:' % _('Number'))
         self.drill_array_size_label.setToolTip(_("Specify how many drills to be in the array."))
-        self.drill_array_size_label.setMinimumWidth(100)
 
-        self.drill_array_size_entry = FCSpinner()
-        self.drill_array_size_entry.set_range(1, 9999)
-        self.array_form.addRow(self.drill_array_size_label, self.drill_array_size_entry)
+        self.drill_array_size_entry = FCSpinner(policy=False)
+        self.drill_array_size_entry.set_range(1, 10000)
 
+        self.array_grid.addWidget(self.drill_array_size_label, 4, 0)
+        self.array_grid.addWidget(self.drill_array_size_entry, 4, 1)
+
+        # #############################################################################################################
+        # ###################### LINEAR Drill Array ###################################################################
+        # #############################################################################################################
         self.array_linear_frame = QtWidgets.QFrame()
         self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_linear_frame)
-        self.linear_box = QtWidgets.QVBoxLayout()
-        self.linear_box.setContentsMargins(0, 0, 0, 0)
-        self.array_linear_frame.setLayout(self.linear_box)
-
-        self.linear_form = QtWidgets.QFormLayout()
-        self.linear_box.addLayout(self.linear_form)
+        self.array_grid.addWidget(self.array_linear_frame, 6, 0, 1, 2)
+        self.lin_grid = QtWidgets.QGridLayout()
+        self.lin_grid.setColumnStretch(0, 0)
+        self.lin_grid.setColumnStretch(1, 1)
+        self.lin_grid.setContentsMargins(0, 0, 0, 0)
+        self.array_linear_frame.setLayout(self.lin_grid)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.drill_axis_label = FCLabel('%s:' % _('Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the array inclination")
         )
-        self.drill_axis_label.setMinimumWidth(100)
 
         self.drill_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
                                           {'label': _('Y'), 'value': 'Y'},
                                           {'label': _('Angle'), 'value': 'A'}])
-        self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
+
+        self.lin_grid.addWidget(self.drill_axis_label, 0, 0)
+        self.lin_grid.addWidget(self.drill_axis_radio, 0, 1)
 
         # Linear Drill Array pitch distance
-        self.drill_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.drill_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
-        self.drill_pitch_label.setMinimumWidth(100)
 
-        self.drill_pitch_entry = FCDoubleSpinner()
+        self.drill_pitch_entry = FCDoubleSpinner(policy=False)
         self.drill_pitch_entry.set_precision(self.decimals)
-        self.drill_pitch_entry.set_range(0.0000, 9999.9999)
+        self.drill_pitch_entry.set_range(0.0000, 10000.0000)
 
-        self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
+        self.lin_grid.addWidget(self.drill_pitch_label, 2, 0)
+        self.lin_grid.addWidget(self.drill_pitch_entry, 2, 1)
 
         # Linear Drill Array angle
-        self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.linear_angle_label = FCLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
-        self.linear_angle_label.setMinimumWidth(100)
 
-        self.linear_angle_spinner = FCDoubleSpinner()
+        self.linear_angle_spinner = FCDoubleSpinner(policy=False)
         self.linear_angle_spinner.set_precision(self.decimals)
         self.linear_angle_spinner.setSingleStep(1.0)
         self.linear_angle_spinner.setRange(-360.00, 360.00)
-        self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
+        self.lin_grid.addWidget(self.linear_angle_label, 4, 0)
+        self.lin_grid.addWidget(self.linear_angle_spinner, 4, 1)
+
+        # #############################################################################################################
+        # ###################### CIRCULAR Drill Array #################################################################
+        # #############################################################################################################
         self.array_circular_frame = QtWidgets.QFrame()
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_circular_frame)
-        self.circular_box = QtWidgets.QVBoxLayout()
-        self.circular_box.setContentsMargins(0, 0, 0, 0)
-        self.array_circular_frame.setLayout(self.circular_box)
+        self.array_grid.addWidget(self.array_circular_frame, 8, 0, 1, 2)
 
-        self.drill_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
-        self.drill_direction_label.setToolTip(_("Direction for circular array."
+        self.circ_grid = QtWidgets.QGridLayout()
+        self.circ_grid.setColumnStretch(0, 0)
+        self.circ_grid.setColumnStretch(1, 1)
+        self.circ_grid.setContentsMargins(0, 0, 0, 0)
+        self.array_circular_frame.setLayout(self.circ_grid)
+
+        # Array Direction
+        self.drill_array_dir_lbl = FCLabel('%s:' % _('Direction'))
+        self.drill_array_dir_lbl.setToolTip(_("Direction for circular array.\n"
                                                 "Can be CW = clockwise or CCW = counter clockwise."))
-        self.drill_direction_label.setMinimumWidth(100)
 
-        self.circular_form = QtWidgets.QFormLayout()
-        self.circular_box.addLayout(self.circular_form)
-
-        self.drill_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+        self.drill_array_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                                {'label': _('CCW'), 'value': 'CCW'}])
-        self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
-        self.drill_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
-        self.drill_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
-        self.drill_angle_label.setMinimumWidth(100)
+        self.circ_grid.addWidget(self.drill_array_dir_lbl, 0, 0)
+        self.circ_grid.addWidget(self.drill_array_dir_radio, 0, 1)
 
-        self.drill_angle_entry = FCDoubleSpinner()
+        # Array Angle
+        self.drill_array_angle_lbl = FCLabel('%s:' % _('Angle'))
+        self.drill_array_angle_lbl.setToolTip(_("Angle at which each element in circular array is placed."))
+
+        self.drill_angle_entry = FCDoubleSpinner(policy=False)
         self.drill_angle_entry.set_precision(self.decimals)
         self.drill_angle_entry.setSingleStep(1.0)
         self.drill_angle_entry.setRange(-360.00, 360.00)
 
-        self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
+        self.circ_grid.addWidget(self.drill_array_angle_lbl, 2, 0)
+        self.circ_grid.addWidget(self.drill_angle_entry, 2, 1)
 
-        self.array_circular_frame.hide()
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.array_grid.addWidget(separator_line, 10, 0, 1, 2)
 
-        self.linear_angle_spinner.hide()
-        self.linear_angle_label.hide()
-
-        self.array_frame.hide()
-
-        # ######################################################
-        # ##### ADDING SLOTS ###################################
-        # ######################################################
-
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
+        # #############################################################################################################
+        # ################################### ADDING SLOTS ############################################################
+        # #############################################################################################################
+        # add a frame and inside add a grid box layout. Inside this grid layout I add
         # all the add slot  widgets
         # this way I can hide/show the frame
         self.slot_frame = QtWidgets.QFrame()
         self.slot_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.slot_frame)
-        self.slot_box = QtWidgets.QVBoxLayout()
-        self.slot_box.setContentsMargins(0, 0, 0, 0)
-        self.slot_frame.setLayout(self.slot_box)
+        self.ui_vertical_lay.addWidget(self.slot_frame)
 
-        self.emptyarray_label = QtWidgets.QLabel('')
-        self.slot_box.addWidget(self.emptyarray_label)
+        self.slot_grid = QtWidgets.QGridLayout()
+        self.slot_grid.setColumnStretch(0, 0)
+        self.slot_grid.setColumnStretch(1, 1)
+        self.slot_grid.setContentsMargins(0, 0, 0, 0)
+        self.slot_frame.setLayout(self.slot_grid)
 
-        self.slot_label = QtWidgets.QLabel('<b>%s</b>' % _("Slot Parameters"))
+        # Slot Tile Label
+        self.slot_label = FCLabel('<b>%s</b>' % _("Slot Parameters"))
         self.slot_label.setToolTip(
             _("Parameters for adding a slot (hole with oval shape)\n"
               "either single or as an part of an array.")
         )
-        self.slot_box.addWidget(self.slot_label)
-
-        self.slot_form = QtWidgets.QFormLayout()
-        self.slot_box.addLayout(self.slot_form)
+        self.slot_grid.addWidget(self.slot_label, 0, 0, 1, 2)
 
         # Slot length
-        self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
+        self.slot_length_label = FCLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
-            _("Length = The length of the slot.")
+            _("Length. The length of the slot.")
         )
-        self.slot_length_label.setMinimumWidth(100)
 
-        self.slot_length_entry = FCDoubleSpinner()
+        self.slot_length_entry = FCDoubleSpinner(policy=False)
         self.slot_length_entry.set_precision(self.decimals)
         self.slot_length_entry.setSingleStep(0.1)
-        self.slot_length_entry.setRange(0.0000, 9999.9999)
+        self.slot_length_entry.setRange(0.0000, 10000.0000)
 
-        self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
+        self.slot_grid.addWidget(self.slot_length_label, 2, 0)
+        self.slot_grid.addWidget(self.slot_length_entry, 2, 1)
 
         # Slot direction
-        self.slot_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.slot_axis_label = FCLabel('%s:' % _('Direction'))
         self.slot_axis_label.setToolTip(
             _("Direction on which the slot is oriented:\n"
               "- 'X' - horizontal axis \n"
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the slot inclination")
         )
-        self.slot_axis_label.setMinimumWidth(100)
 
         self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
                                          {'label': _('Y'), 'value': 'Y'},
                                          {'label': _('Angle'), 'value': 'A'}])
-        self.slot_form.addRow(self.slot_axis_label, self.slot_axis_radio)
+
+        self.slot_grid.addWidget(self.slot_axis_label, 4, 0)
+        self.slot_grid.addWidget(self.slot_axis_radio, 4, 1)
 
         # Slot custom angle
-        self.slot_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.slot_angle_label = FCLabel('%s:' % _('Angle'))
         self.slot_angle_label.setToolTip(
             _("Angle at which the slot is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
-        self.slot_angle_label.setMinimumWidth(100)
 
-        self.slot_angle_spinner = FCDoubleSpinner()
+        self.slot_angle_spinner = FCDoubleSpinner(policy=False)
         self.slot_angle_spinner.set_precision(self.decimals)
         self.slot_angle_spinner.setWrapping(True)
         self.slot_angle_spinner.setRange(-360.00, 360.00)
         self.slot_angle_spinner.setSingleStep(1.0)
-        self.slot_form.addRow(self.slot_angle_label, self.slot_angle_spinner)
 
-        self.slot_frame.hide()
+        self.slot_grid.addWidget(self.slot_angle_label, 6, 0)
+        self.slot_grid.addWidget(self.slot_angle_spinner, 6, 1)
 
-        # ######################################################
-        # ##### ADDING SLOT ARRAY  #############################
-        # ######################################################
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.slot_grid.addWidget(separator_line, 8, 0, 1, 2)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
-        # all the add slot  widgets
-        # this way I can hide/show the frame
+        # #############################################################################################################
+        # ##################################### ADDING SLOT ARRAY  ####################################################
+        # #############################################################################################################
         self.slot_array_frame = QtWidgets.QFrame()
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.slot_array_frame)
-        self.slot_array_box = QtWidgets.QVBoxLayout()
-        self.slot_array_box.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_frame.setLayout(self.slot_array_box)
+        self.ui_vertical_lay.addWidget(self.slot_array_frame)
 
-        self.emptyarray_label = QtWidgets.QLabel('')
-        self.slot_array_box.addWidget(self.emptyarray_label)
+        self.slot_array_grid = QtWidgets.QGridLayout()
+        self.slot_array_grid.setColumnStretch(0, 0)
+        self.slot_array_grid.setColumnStretch(1, 1)
+        self.slot_array_grid.setContentsMargins(0, 0, 0, 0)
+        self.slot_array_frame.setLayout(self.slot_array_grid)
 
-        self.slot_array_label = QtWidgets.QLabel('<b>%s</b>' % _("Slot Array Parameters"))
+        # Slot Array Title
+        self.slot_array_label = FCLabel('<b>%s</b>' % _("Slot Array Parameters"))
         self.slot_array_label.setToolTip(
             _("Parameters for the array of slots (linear or circular array)")
         )
-        self.slot_array_box.addWidget(self.slot_array_label)
 
-        self.l_form = QtWidgets.QFormLayout()
-        self.slot_array_box.addLayout(self.l_form)
+        self.slot_array_grid.addWidget(self.slot_array_label, 0, 0, 1, 2)
 
-        self.slot_array_type_combo = FCComboBox()
-        self.slot_array_type_combo.setToolTip(
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of slot array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.slot_array_type_combo.addItem(_("Linear"))
-        self.slot_array_type_combo.addItem(_("Circular"))
 
-        self.slot_array_box.addWidget(self.slot_array_type_combo)
+        self.slot_array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                               {'label': _('Circular'), 'value': 'circular'}])
 
-        self.slot_array_form = QtWidgets.QFormLayout()
-        self.slot_array_box.addLayout(self.slot_array_form)
+        self.slot_array_grid.addWidget(array_type_lbl, 2, 0)
+        self.slot_array_grid.addWidget(self.slot_array_type_radio, 2, 1)
 
         # Set the number of slot holes in the slot array
-        self.slot_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of slots'))
+        self.slot_array_size_label = FCLabel('%s:' % _('Number'))
         self.slot_array_size_label.setToolTip(_("Specify how many slots to be in the array."))
-        self.slot_array_size_label.setMinimumWidth(100)
 
-        self.slot_array_size_entry = FCSpinner()
-        self.slot_array_size_entry.set_range(0, 9999)
+        self.slot_array_size_entry = FCSpinner(policy=False)
+        self.slot_array_size_entry.set_range(0, 10000)
 
-        self.slot_array_form.addRow(self.slot_array_size_label, self.slot_array_size_entry)
+        self.slot_array_grid.addWidget(self.slot_array_size_label, 4, 0)
+        self.slot_array_grid.addWidget(self.slot_array_size_entry, 4, 1)
 
+        # #############################################################################################################
+        # ##################################### Linear SLOT ARRAY  ####################################################
+        # #############################################################################################################
         self.slot_array_linear_frame = QtWidgets.QFrame()
         self.slot_array_linear_frame.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_box.addWidget(self.slot_array_linear_frame)
-        self.slot_array_linear_box = QtWidgets.QVBoxLayout()
-        self.slot_array_linear_box.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_linear_frame.setLayout(self.slot_array_linear_box)
+        self.slot_array_grid.addWidget(self.slot_array_linear_frame, 6, 0, 1, 2)
 
-        self.slot_array_linear_form = QtWidgets.QFormLayout()
-        self.slot_array_linear_box.addLayout(self.slot_array_linear_form)
+        self.slot_array_lin_grid = QtWidgets.QGridLayout()
+        self.slot_array_lin_grid.setColumnStretch(0, 0)
+        self.slot_array_lin_grid.setColumnStretch(1, 1)
+        self.slot_array_lin_grid.setContentsMargins(0, 0, 0, 0)
+        self.slot_array_linear_frame.setLayout(self.slot_array_lin_grid)
 
         # Linear Slot Array direction
-        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.slot_array_axis_label = FCLabel('%s:' % _('Direction'))
         self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the array inclination")
         )
-        self.slot_array_axis_label.setMinimumWidth(100)
 
         self.slot_array_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
                                                {'label': _('Y'), 'value': 'Y'},
                                                {'label': _('Angle'), 'value': 'A'}])
-        self.slot_array_linear_form.addRow(self.slot_array_axis_label, self.slot_array_axis_radio)
+
+        self.slot_array_lin_grid.addWidget(self.slot_array_axis_label, 0, 0)
+        self.slot_array_lin_grid.addWidget(self.slot_array_axis_radio, 0, 1)
 
         # Linear Slot Array pitch distance
-        self.slot_array_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.slot_array_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.slot_array_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
-        self.slot_array_pitch_label.setMinimumWidth(100)
 
-        self.slot_array_pitch_entry = FCDoubleSpinner()
+        self.slot_array_pitch_entry = FCDoubleSpinner(policy=False)
         self.slot_array_pitch_entry.set_precision(self.decimals)
         self.slot_array_pitch_entry.setSingleStep(0.1)
-        self.slot_array_pitch_entry.setRange(0.0000, 9999.9999)
+        self.slot_array_pitch_entry.setRange(0.0000, 10000.0000)
 
-        self.slot_array_linear_form.addRow(self.slot_array_pitch_label, self.slot_array_pitch_entry)
+        self.slot_array_lin_grid.addWidget(self.slot_array_pitch_label, 2, 0)
+        self.slot_array_lin_grid.addWidget(self.slot_array_pitch_entry, 2, 1)
 
         # Linear Slot Array angle
-        self.slot_array_linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.slot_array_linear_angle_label = FCLabel('%s:' % _('Angle'))
         self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -360 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
-        self.slot_array_linear_angle_label.setMinimumWidth(100)
 
-        self.slot_array_linear_angle_spinner = FCDoubleSpinner()
+        self.slot_array_linear_angle_spinner = FCDoubleSpinner(policy=False)
         self.slot_array_linear_angle_spinner.set_precision(self.decimals)
         self.slot_array_linear_angle_spinner.setSingleStep(1.0)
         self.slot_array_linear_angle_spinner.setRange(-360.00, 360.00)
-        self.slot_array_linear_form.addRow(self.slot_array_linear_angle_label, self.slot_array_linear_angle_spinner)
 
+        self.slot_array_lin_grid.addWidget(self.slot_array_linear_angle_label, 4, 0)
+        self.slot_array_lin_grid.addWidget(self.slot_array_linear_angle_spinner, 4, 1)
+
+        # #############################################################################################################
+        # ##################################### Circular SLOT ARRAY  ##################################################
+        # #############################################################################################################
         self.slot_array_circular_frame = QtWidgets.QFrame()
         self.slot_array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_box.addWidget(self.slot_array_circular_frame)
-        self.slot_array_circular_box = QtWidgets.QVBoxLayout()
-        self.slot_array_circular_box.setContentsMargins(0, 0, 0, 0)
-        self.slot_array_circular_frame.setLayout(self.slot_array_circular_box)
+        self.slot_array_grid.addWidget(self.slot_array_circular_frame, 8, 0, 1, 2)
 
-        self.slot_array_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
-        self.slot_array_direction_label.setToolTip(_("Direction for circular array."
+        self.slot_array_circ_grid = QtWidgets.QGridLayout()
+        self.slot_array_circ_grid.setColumnStretch(0, 0)
+        self.slot_array_circ_grid.setColumnStretch(1, 1)
+        self.slot_array_circ_grid.setContentsMargins(0, 0, 0, 0)
+        self.slot_array_circular_frame.setLayout(self.slot_array_circ_grid)
+
+        # Slot Circular Array Direction
+        self.slot_array_direction_label = FCLabel('%s:' % _('Direction'))
+        self.slot_array_direction_label.setToolTip(_("Direction for circular array.\n"
                                                      "Can be CW = clockwise or CCW = counter clockwise."))
-        self.slot_array_direction_label.setMinimumWidth(100)
-
-        self.slot_array_circular_form = QtWidgets.QFormLayout()
-        self.slot_array_circular_box.addLayout(self.slot_array_circular_form)
 
         self.slot_array_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                                     {'label': _('CCW'), 'value': 'CCW'}])
-        self.slot_array_circular_form.addRow(self.slot_array_direction_label, self.slot_array_direction_radio)
 
-        self.slot_array_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.slot_array_circ_grid.addWidget(self.slot_array_direction_label, 0, 0)
+        self.slot_array_circ_grid.addWidget(self.slot_array_direction_radio, 0, 1)
+
+        # Slot Circular Array Angle
+        self.slot_array_angle_label = FCLabel('%s:' % _('Angle'))
         self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
-        self.slot_array_angle_label.setMinimumWidth(100)
 
-        self.slot_array_angle_entry = FCDoubleSpinner()
+        self.slot_array_angle_entry = FCDoubleSpinner(policy=False)
         self.slot_array_angle_entry.set_precision(self.decimals)
         self.slot_array_angle_entry.setSingleStep(1)
         self.slot_array_angle_entry.setRange(-360.00, 360.00)
 
-        self.slot_array_circular_form.addRow(self.slot_array_angle_label, self.slot_array_angle_entry)
+        self.slot_array_circ_grid.addWidget(self.slot_array_angle_label, 2, 0)
+        self.slot_array_circ_grid.addWidget(self.slot_array_angle_entry, 2, 1)
 
-        self.slot_array_linear_angle_spinner.hide()
-        self.slot_array_linear_angle_label.hide()
-
-        self.slot_array_frame.hide()
-
-        self.tools_box.addStretch()
-
-        layout.addStretch()
+        self.ui_vertical_lay.addStretch()
+        layout.addStretch(1)
 
         # Editor
-        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button = FCButton(_('Exit Editor'))
         self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
@@ -4207,6 +4469,21 @@ class AppExcEditorUI:
                                       }
                                       """)
         layout.addWidget(self.exit_editor_button)
+
+        # #############################################################################################################
+        # ###################### INIT Excellon Editor UI ##############################################################
+        # #############################################################################################################
+        self.linear_angle_spinner.hide()
+        self.linear_angle_label.hide()
+        self.array_linear_frame.hide()
+        self.array_circular_frame.hide()
+        self.array_frame.hide()
+
+        self.slot_frame.hide()
+        self.slot_array_linear_angle_spinner.hide()
+        self.slot_array_linear_angle_label.hide()
+        self.slot_array_frame.hide()
+
         # ############################ FINSIHED GUI ###################################
         # #############################################################################
 

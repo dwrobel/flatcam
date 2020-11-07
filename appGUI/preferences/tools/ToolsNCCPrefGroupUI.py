@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -98,16 +98,16 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-9999.9999, 0.0000)
+        self.cutz_entry.set_range(-10000.0000, 0.0000)
         self.cutz_entry.setSingleStep(0.1)
 
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
+             "In application units.")
         )
 
         grid0.addWidget(cutzlabel, 4, 0)
@@ -122,7 +122,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.0001, 9999.9999)
+        self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.newdialabel, 5, 0)
@@ -136,7 +136,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -144,7 +144,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conventional'), 'value': 'cv'}])
         self.milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
+            _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
@@ -183,8 +183,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         nccoverlabel.setToolTip(
            _("How much (percentage) of the tool width to overlap each tool pass.\n"
              "Adjust the value starting with lower values\n"
-             "and increasing it if areas that should be cleared are still \n"
-             "not cleared.\n"
+             "and increasing it if areas that should be processed are still \n"
+             "not processed.\n"
              "Lower values = faster processing, faster execution on CNC.\n"
              "Higher values = slow processing and slow execution on CNC\n"
              "due of too many paths.")
@@ -225,7 +225,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
         # ], orientation='vertical', stretch=False)
-        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
@@ -256,8 +256,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "from the copper features.")
         )
 
         grid0.addWidget(self.ncc_choice_offset_cb, 14, 0, 1, 2)
@@ -267,11 +266,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_offset_label.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0.0 and 9999.9 FlatCAM units.")
+              "from the copper features.")
         )
         self.ncc_offset_spinner = FCDoubleSpinner()
-        self.ncc_offset_spinner.set_range(0.00, 9999.9999)
+        self.ncc_offset_spinner.set_range(0.00, 10000.0000)
         self.ncc_offset_spinner.set_precision(self.decimals)
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setSingleStep(0.1)
@@ -288,11 +286,11 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest"))
         self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
 
@@ -304,7 +302,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #                                  {'label': _('Reference Object'), 'value': 'box'}],
         #                                 orientation='vertical',
         #                                 stretch=None)
-        self.select_combo = FCComboBox()
+        self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
         )
@@ -340,7 +338,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
                                         {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+            _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 21, 0)

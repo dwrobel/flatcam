@@ -2,16 +2,13 @@ from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
-# import re
-# import logging
 import traceback
 from copy import deepcopy
-# import sys
 
 from shapely.ops import unary_union, linemerge
-# from shapely.affinity import scale, translate
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
+from shapely.geometry import Point
 
 from lxml import etree as ET
 import ezdxf
@@ -296,6 +293,7 @@ class Gerber(Geometry):
 
         if apertureType in self.aperture_macros:
             self.apertures[apid] = {"type": "AM",
+                                    # "size": 0.0,
                                     "macro": self.aperture_macros[apertureType],
                                     "modifiers": paramList}
             return apid
@@ -315,12 +313,12 @@ class Gerber(Geometry):
 
         First is ``G54D11*`` and seconds is ``G36*``.
 
-        :param filename: Gerber file to parse.
-        :type filename: str
-        :param follow: If true, will not create polygons, just lines
-            following the gerber path.
-        :type follow: bool
-        :return: None
+        :param filename:        Gerber file to parse.
+        :type filename:         str
+        :param follow:          If true, will not create polygons, just lines
+                                following the gerber path.
+        :type follow:           bool
+        :return:                None
         """
 
         with open(filename, 'r') as gfile:
@@ -423,7 +421,7 @@ class Gerber(Geometry):
 
         s_tol = float(self.app.defaults["gerber_simp_tolerance"])
 
-        self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("lines")))
+        self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("Lines").lower()))
         try:
             for gline in glines:
                 if self.app.abort_flag:
@@ -955,36 +953,41 @@ class Gerber(Geometry):
                                 # Reset path starting point
                                 path = [[current_x, current_y]]
 
-                                # --- BUFFERED ---
-                                # Draw the flash
-                                # this treats the case when we are storing geometry as paths
-                                geo_dict = {}
-                                geo_flash = Point([current_x, current_y])
-                                follow_buffer.append(geo_flash)
-                                geo_dict['follow'] = geo_flash
+                                # treat the case when there is a flash inside a Gerber Region when the current_aperture
+                                # is None
+                                if current_aperture is None:
+                                    pass
+                                else:
+                                    # --- BUFFERED ---
+                                    # Draw the flash
+                                    # this treats the case when we are storing geometry as paths
+                                    geo_dict = {}
+                                    geo_flash = Point([current_x, current_y])
+                                    follow_buffer.append(geo_flash)
+                                    geo_dict['follow'] = geo_flash
 
-                                # this treats the case when we are storing geometry as solids
-                                flash = self.create_flash_geometry(
-                                    Point([current_x, current_y]),
-                                    self.apertures[current_aperture],
-                                    self.steps_per_circle
-                                )
-                                if not flash.is_empty:
-                                    if self.app.defaults['gerber_simplification']:
-                                        poly_buffer.append(flash.simplify(s_tol))
-                                    else:
-                                        poly_buffer.append(flash)
+                                    # this treats the case when we are storing geometry as solids
+                                    flash = self.create_flash_geometry(
+                                        Point([current_x, current_y]),
+                                        self.apertures[current_aperture],
+                                        self.steps_per_circle
+                                    )
+                                    if not flash.is_empty:
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(flash.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(flash)
 
-                                    if self.is_lpc is True:
-                                        geo_dict['clear'] = flash
-                                    else:
-                                        geo_dict['solid'] = flash
+                                        if self.is_lpc is True:
+                                            geo_dict['clear'] = flash
+                                        else:
+                                            geo_dict['solid'] = flash
 
-                                if current_aperture not in self.apertures:
-                                    self.apertures[current_aperture] = {}
-                                if 'geometry' not in self.apertures[current_aperture]:
-                                    self.apertures[current_aperture]['geometry'] = []
-                                self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
+                                    if current_aperture not in self.apertures:
+                                        self.apertures[current_aperture] = {}
+                                    if 'geometry' not in self.apertures[current_aperture]:
+                                        self.apertures[current_aperture]['geometry'] = []
+                                    self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
@@ -1837,12 +1840,10 @@ class Gerber(Geometry):
                 geos_length = 1
 
             if geos_length == 1:
-                geo_qrcode = []
-                geo_qrcode.append(Polygon(geos[0].exterior))
+                geo_qrcode = [Polygon(geos[0].exterior)]
                 for i_el in geos[0].interiors:
                     geo_qrcode.append(Polygon(i_el).buffer(0, resolution=res))
-                for poly in geo_qrcode:
-                    geos.append(poly)
+                geos = [poly for poly in geo_qrcode]
 
             if type(self.solid_geometry) == list:
                 self.solid_geometry += geos
@@ -1864,15 +1865,14 @@ class Gerber(Geometry):
             self.solid_geometry = [self.solid_geometry]
 
         if '0' not in self.apertures:
-            self.apertures['0'] = {}
-            self.apertures['0']['type'] = 'REG'
-            self.apertures['0']['size'] = 0.0
-            self.apertures['0']['geometry'] = []
+            self.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         for pol in self.solid_geometry:
-            new_el = {}
-            new_el['solid'] = pol
-            new_el['follow'] = pol.exterior
+            new_el = {'solid': pol, 'follow': pol.exterior}
             self.apertures['0']['geometry'].append(new_el)
 
     def import_dxf_as_gerber(self, filename, units='MM'):
@@ -1914,15 +1914,14 @@ class Gerber(Geometry):
 
         # create the self.apertures data structure
         if '0' not in self.apertures:
-            self.apertures['0'] = {}
-            self.apertures['0']['type'] = 'REG'
-            self.apertures['0']['size'] = 0.0
-            self.apertures['0']['geometry'] = []
+            self.apertures['0'] = {
+                'type': 'REG',
+                'size': 0.0,
+                'geometry': []
+            }
 
         for pol in flat_geo:
-            new_el = {}
-            new_el['solid'] = pol
-            new_el['follow'] = pol
+            new_el = {'solid': pol, 'follow': pol}
             self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
@@ -2043,7 +2042,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
@@ -2134,8 +2133,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Offset done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def mirror(self, axis, point):
@@ -2210,8 +2208,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Mirror done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def skew(self, angle_x, angle_y, point):
@@ -2285,7 +2282,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Skew done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point):
@@ -2347,7 +2344,7 @@ class Gerber(Geometry):
         except Exception as e:
             log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
 
     def buffer(self, distance, join=2, factor=None):

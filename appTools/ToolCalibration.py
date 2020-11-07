@@ -291,7 +291,7 @@ class ToolCalibration(AppTool):
         elif len(self.click_points) == 4:
             self.ui.top_right_coordx_tgt.set_value(self.click_points[3][0])
             self.ui.top_right_coordy_tgt.set_value(self.click_points[3][1])
-            self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
+            self.app.inform.emit('[success] %s' % _("Done."))
             self.disconnect_cal_events()
 
     def reset_calibration_points(self):
@@ -600,7 +600,7 @@ class ToolCalibration(AppTool):
             self.cal_object = model_index.internalPointer().obj
         except Exception as e:
             log.debug("ToolCalibration.on_cal_button_click() --> %s" % str(e))
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return 'fail'
 
         obj_name = self.cal_object.options["name"] + "_calibrated"
@@ -639,7 +639,7 @@ class ToolCalibration(AppTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
+                app.log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -649,7 +649,7 @@ class ToolCalibration(AppTool):
             except (AttributeError, TypeError):
                 pass
 
-        def initialize_gerber(obj_init, app):
+        def initialize_gerber(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
@@ -671,12 +671,12 @@ class ToolCalibration(AppTool):
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
 
             try:
-                obj_init.source_file = self.app.f_handlers.export_gerber(obj_name=obj_name, filename=None,
-                                                                         local_use=obj_init, use_thread=False)
+                obj_init.source_file = app_obj.f_handlers.export_gerber(obj_name=obj_name, filename=None,
+                                                                        local_use=obj_init, use_thread=False)
             except (AttributeError, TypeError):
                 pass
 
-        def initialize_excellon(obj_init, app):
+        def initialize_excellon(obj_init, app_obj):
             obj_init.tools = deepcopy(obj.tools)
 
             # drills are offset, so they need to be deep copied
@@ -689,14 +689,14 @@ class ToolCalibration(AppTool):
 
             obj_init.create_geometry()
 
-            obj_init.source_file = self.app.export.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
-                                                                   use_thread=False)
+            obj_init.source_file = app_obj.f_handlers.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
+                                                                      use_thread=False)
 
         obj = self.cal_object
         obj_name = obj_name
 
         if obj is None:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             log.debug("ToolCalibration.new_calibrated_object() --> No object to calibrate")
             return 'fail'
 
@@ -772,7 +772,7 @@ class CalibUI:
         )
 
         self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
 
@@ -786,7 +786,7 @@ class CalibUI:
         )
 
         self.verz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.verz_entry.set_range(-9999.9999, 9999.9999)
+        self.verz_entry.set_range(-10000.0000, 10000.0000)
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
 
@@ -809,7 +809,7 @@ class CalibUI:
         )
 
         self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.toolchangez_entry.set_range(0.0000, 9999.9999)
+        self.toolchangez_entry.set_range(0.0000, 10000.0000)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -851,8 +851,8 @@ class CalibUI:
               "- top-left -> the user will align the PCB vertically\n"
               "- bottom-right -> the user will align the PCB horizontally")
         )
-        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
-                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+        self.second_point_radio = RadioSet([{'label': _('Top Left'), 'value': 'tl'},
+                                            {'label': _('Bottom Right'), 'value': 'br'}],
                                            orientation='vertical')
 
         grid_lay.addWidget(second_point_lbl, 7, 0)
@@ -1164,7 +1164,7 @@ class CalibUI:
             _("Factor for Scale action over X axis.")
         )
         self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.scalex_entry.set_range(0, 9999.9999)
+        self.scalex_entry.set_range(0, 10000.0000)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
@@ -1176,7 +1176,7 @@ class CalibUI:
             _("Factor for Scale action over Y axis.")
         )
         self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.scaley_entry.set_range(0, 9999.9999)
+        self.scaley_entry.set_range(0, 10000.0000)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
@@ -1197,7 +1197,7 @@ class CalibUI:
 
         self.skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
         self.skewx_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1210,7 +1210,7 @@ class CalibUI:
 
         self.skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
         self.skewy_label.setToolTip(
-            _("Angle for Skew action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
         self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1245,7 +1245,7 @@ class CalibUI:
         #     _("Final factor for Scale action over X axis.")
         # )
         # self.fin_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.fin_scalex_entry.set_range(0, 9999.9999)
+        # self.fin_scalex_entry.set_range(0, 10000.0000)
         # self.fin_scalex_entry.set_precision(self.decimals)
         # self.fin_scalex_entry.setSingleStep(0.1)
         #
@@ -1257,7 +1257,7 @@ class CalibUI:
         #     _("Final factor for Scale action over Y axis.")
         # )
         # self.fin_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.fin_scaley_entry.set_range(0, 9999.9999)
+        # self.fin_scaley_entry.set_range(0, 10000.0000)
         # self.fin_scaley_entry.set_precision(self.decimals)
         # self.fin_scaley_entry.setSingleStep(0.1)
         #

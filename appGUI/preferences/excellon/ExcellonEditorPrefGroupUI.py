@@ -103,7 +103,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.drill_pitch_label.setMinimumWidth(100)
         self.drill_pitch_entry = FCDoubleSpinner()
-        self.drill_pitch_entry.set_range(0, 99999.9999)
+        self.drill_pitch_entry.set_range(0, 910000.0000)
         self.drill_pitch_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.drill_pitch_label, 5, 0)
@@ -161,7 +161,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # Slot length
         self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
-            _("Length = The length of the slot.")
+            _("Length. The length of the slot.")
         )
         self.slot_length_label.setMinimumWidth(100)
 
@@ -195,8 +195,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_angle_label.setToolTip(
             _("Angle at which the slot is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -359.99 degrees.\n"
-              "Max value is:  360.00 degrees.")
+              "Min value is: -360.00 degrees.\n"
+              "Max value is: 360.00 degrees.")
         )
         self.slot_angle_label.setMinimumWidth(100)
 

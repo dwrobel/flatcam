@@ -333,7 +333,7 @@ class PcbWizard(AppTool):
 
         if excellon_fileobj is not None and excellon_fileobj != '':
             if self.process_finished:
-                with self.app.proc_container.new(_("Importing Excellon.")):
+                with self.app.proc_container.new('%s ...' % _("Importing")):
 
                     # Object name
                     name = self.outname
@@ -412,7 +412,7 @@ class WizardUI:
         self.tools_table.setVisible(False)
 
         self.layout.addWidget(FCLabel(""))
-        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon format")))
+        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
         # Form Layout
         form_layout1 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout1)
@@ -450,8 +450,8 @@ class WizardUI:
         form_layout1.addRow(self.zeros_label, self.zeros_radio)
 
         # Units type
-        self.units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                     {'label': _('MM'), 'value': 'METRIC'}])
+        self.units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
+                                     {'label': _('mm'), 'value': 'METRIC'}])
         self.units_label = FCLabel("<b>%s:</b>" % _('Units'))
         self.units_label.setToolTip(
             _("The type of units that the coordinates and tool\n"
@@ -463,7 +463,7 @@ class WizardUI:
 
         self.import_button = QtWidgets.QPushButton(_("Import Excellon"))
         self.import_button.setToolTip(
-            _("Import in FlatCAM an Excellon file\n"
+            _("Import an Excellon file\n"
               "that store it's information's in 2 files.\n"
               "One usually has .DRL extension while\n"
               "the other has .INF extension.")

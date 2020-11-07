@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSettings
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -276,7 +276,89 @@ class FCTree(QtWidgets.QTreeWidget):
             header.resizeSection(column, width)
 
 
-class LengthEntry(QtWidgets.QLineEdit):
+class FCLineEdit(QtWidgets.QLineEdit):
+
+    def __init__(self, *args, **kwargs):
+        super(FCLineEdit, self).__init__(*args, **kwargs)
+
+        self.menu = None
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not self.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not self.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = self.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        self.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = self.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        self.insert(txt)
+
+
+class LengthEntry(FCLineEdit):
     def __init__(self, output_units='IN', decimals=None, parent=None):
         super(LengthEntry, self).__init__(parent)
 
@@ -345,7 +427,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FloatEntry(QtWidgets.QLineEdit):
+class FloatEntry(FCLineEdit):
     def __init__(self, decimals=None, parent=None):
         super(FloatEntry, self).__init__(parent)
         self.readyToEdit = True
@@ -398,7 +480,7 @@ class FloatEntry(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FloatEntry2(QtWidgets.QLineEdit):
+class FloatEntry2(FCLineEdit):
     def __init__(self, decimals=None, parent=None):
         super(FloatEntry2, self).__init__(parent)
         self.readyToEdit = True
@@ -441,7 +523,7 @@ class FloatEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class IntEntry(QtWidgets.QLineEdit):
+class IntEntry(FCLineEdit):
 
     def __init__(self, parent=None, allow_empty=False, empty_val=None):
         super(IntEntry, self).__init__(parent)
@@ -490,7 +572,7 @@ class IntEntry(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCEntry(QtWidgets.QLineEdit):
+class FCEntry(FCLineEdit):
     def __init__(self, decimals=None, alignment=None, border_color=None, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
@@ -574,7 +656,7 @@ class FCEntry3(FCEntry):
             return None
 
 
-class EvalEntry(QtWidgets.QLineEdit):
+class EvalEntry(FCLineEdit):
     def __init__(self, border_color=None, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
@@ -624,7 +706,7 @@ class EvalEntry(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class EvalEntry2(QtWidgets.QLineEdit):
+class EvalEntry2(FCLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry2, self).__init__(parent)
         self.readyToEdit = True
@@ -817,7 +899,7 @@ class FCSpinner(QtWidgets.QSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None, policy=True):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
 
@@ -840,8 +922,11 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.setSizePolicy(sizePolicy)
+        self.menu = None
+
+        if policy:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
@@ -884,6 +969,96 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.lineEdit().deselect()
             self.readyToEdit = True
             self.prev_readyToEdit = True
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        line_edit = self.lineEdit()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(line_edit.undo)
+        if line_edit.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(line_edit.redo)
+        if line_edit.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not line_edit.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not line_edit.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(line_edit.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(line_edit.selectAll)
+
+        self.menu.addSeparator()
+
+        # STEP UP
+        step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
+        self.menu.addAction(step_up_action)
+        step_up_action.triggered.connect(self.stepUp)
+
+        # STEP DOWN
+        step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
+        self.menu.addAction(step_down_action)
+        step_down_action.triggered.connect(self.stepDown)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        line_edit.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = clipboard.text()
+        line_edit.insert(txt)
 
     def valueFromText(self, text):
         txt = text.strip('%%')
@@ -986,7 +1161,7 @@ class FCDoubleSlider(QtWidgets.QSlider):
 
 class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
 
-    def __init__(self, min=0, max=9999.9999, step=1, precision=4, orientation='horizontal', **kwargs):
+    def __init__(self, min=0, max=10000.0000, step=1, precision=4, orientation='horizontal', **kwargs):
         super().__init__(**kwargs)
 
         self.slider = FCDoubleSlider(orientation=orientation)
@@ -1050,11 +1225,60 @@ class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_value(slider_value)
 
 
+class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=100, step=1, decimals=4, button_text='', button_icon=None, callback=None, **kwargs):
+        super().__init__(**kwargs)
+
+        self.button = QtWidgets.QToolButton()
+        if button_text != '':
+            self.button.setText(button_text)
+        if button_icon:
+            self.button.setIcon(button_icon)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_step(step)
+        self.spinner.set_precision(decimals)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.spinner)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
+        self.valueChanged = self.spinner.valueChanged
+
+        self._callback = callback
+        self.button.clicked.connect(self._callback)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def set_callback(self, callback):
+        self._callback = callback
+
+    def set_text(self, txt: str):
+        if txt:
+            self.button.setText(txt)
+
+    def set_icon(self, icon: QtGui.QIcon):
+        self.button.setIcon(icon)
+
+
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None, policy=True):
         """
 
         :param suffix:      a char added to the end of the value in the LineEdit; like a '%' or '$' etc
@@ -1089,8 +1313,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.setSizePolicy(sizePolicy)
+        self.menu = None
+
+        if policy:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -1128,6 +1355,96 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.lineEdit().deselect()
             self.readyToEdit = True
             self.prev_readyToEdit = True
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        line_edit = self.lineEdit()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(line_edit.undo)
+        if line_edit.isUndoAvailable() is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(line_edit.redo)
+        if line_edit.isRedoAvailable() is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if not line_edit.hasSelectedText():
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if not line_edit.hasSelectedText():
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(line_edit.del_)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(line_edit.selectAll)
+
+        self.menu.addSeparator()
+
+        # STEP UP
+        step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
+        self.menu.addAction(step_up_action)
+        step_up_action.triggered.connect(self.stepUp)
+
+        # STEP DOWN
+        step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
+        self.menu.addAction(step_down_action)
+        step_down_action.triggered.connect(self.stepDown)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        line_edit.del_()
+
+    def copy_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = line_edit.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        clipboard = QtWidgets.QApplication.clipboard()
+        line_edit = self.lineEdit()
+
+        txt = clipboard.text()
+        line_edit.insert(txt)
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')
@@ -1225,7 +1542,109 @@ class FCTextArea(QtWidgets.QPlainTextEdit):
             return QtCore.QSize(custom_sizehint, default_hint_size.height())
 
 
-class FCTextAreaRich(QtWidgets.QTextEdit):
+class FCTextEdit(QtWidgets.QTextEdit):
+
+    def __init__(self, *args, **kwargs):
+        super(FCTextEdit, self).__init__(*args, **kwargs)
+
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
+
+
+class FCTextAreaRich(FCTextEdit):
     def __init__(self, parent=None):
         super(FCTextAreaRich, self).__init__(parent)
 
@@ -1240,7 +1659,7 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCTextAreaExtended(QtWidgets.QTextEdit):
+class FCTextAreaExtended(FCTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -1320,9 +1739,9 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 clip_text = clipboard.text()
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
-
-        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
-            self.comment()
+        elif modifier & Qt.ControlModifier:
+            if key == Qt.Key_Slash:
+                self.comment()
 
         tc = self.textCursor()
         if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
@@ -1423,6 +1842,19 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
         self.completer_enable = False
 
+        self.menu = None
+        self.undo_flag = False
+        self.redo_flag = False
+
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, val):
+        self.undo_flag = val
+
+    def on_redo_available(self, val):
+        self.redo_flag = val
+
     def append(self, text):
         """
         Added this to make this subclass compatible with FCTextAreaExtended
@@ -1460,6 +1892,89 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         if self.completer:
             self.completer.setWidget(self)
         QtWidgets.QPlainTextEdit.focusInEvent(self, event)
+
+    def contextMenuEvent(self, event):
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        # UNDO
+        undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(undo_action)
+        undo_action.triggered.connect(self.undo)
+        if self.undo_flag is False:
+            undo_action.setDisabled(True)
+
+        # REDO
+        redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(redo_action)
+        redo_action.triggered.connect(self.redo)
+        if self.redo_flag is False:
+            redo_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        # CUT
+        cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(cut_action)
+        cut_action.triggered.connect(self.cut_text)
+        if txt == '':
+            cut_action.setDisabled(True)
+
+        # COPY
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        # PASTE
+        paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
+        self.menu.addAction(paste_action)
+        paste_action.triggered.connect(self.paste_text)
+
+        # DELETE
+        delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(delete_action)
+        delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # SELECT ALL
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
+
+        self.menu.exec_(event.globalPos())
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.deleteChar()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+    def paste_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = clipboard.text()
+        tcursor.insertText(txt)
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        tcursor.deleteChar()
 
     def set_value(self, val):
         self.setPlainText(val)
@@ -1566,7 +2081,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         """
         pos = self.textCursor().position()
         self.moveCursor(QtGui.QTextCursor.StartOfLine)
-        line_text = self.textCursor().block().text()
+        self.textCursor().block().text()
         if self.textCursor().block().text().startswith(" "):
             # skip the white space
             self.moveCursor(QtGui.QTextCursor.NextWord)
@@ -1588,7 +2103,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
 class FCComboBox(QtWidgets.QComboBox):
 
-    def __init__(self, parent=None, callback=None):
+    def __init__(self, parent=None, callback=None, policy=True):
         super(FCComboBox, self).__init__(parent)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.view = self.view()
@@ -1597,6 +2112,10 @@ class FCComboBox(QtWidgets.QComboBox):
 
         self._set_last = False
         self._obj_type = None
+
+        if policy is True:
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            self.setSizePolicy(sizePolicy)
 
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position
@@ -1618,6 +2137,9 @@ class FCComboBox(QtWidgets.QComboBox):
 
     def set_value(self, val):
         idx = self.findText(str(val))
+        if idx == -1:
+            self.setCurrentIndex(0)
+            return
         self.setCurrentIndex(idx)
 
     @property
@@ -1644,10 +2166,22 @@ class FCComboBox(QtWidgets.QComboBox):
             self.setCurrentIndex(first)
 
 
+class FCComboBox2(FCComboBox):
+    def __init__(self, parent=None, callback=None):
+        super(FCComboBox2, self).__init__(parent=parent, callback=callback)
+
+    def get_value(self):
+        return int(self.currentIndex())
+
+    def set_value(self, val):
+        self.setCurrentIndex(val)
+
+
 class FCInputDialog(QtWidgets.QInputDialog):
     def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
                  init_val=None):
         super(FCInputDialog, self).__init__(parent)
+
         self.allow_empty = ok
         self.empty_val = val
 
@@ -1687,6 +2221,154 @@ class FCInputDialog(QtWidgets.QInputDialog):
         pass
 
 
+class FCInputDoubleSpinner(QtWidgets.QDialog):
+    def __init__(self, parent=None, title=None, text=None,
+                 min=0.0, max=100.0000, step=1, decimals=4, init_val=None):
+        super(FCInputDoubleSpinner, self).__init__(parent)
+
+        self.val = 0.0
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min
+        self.max = max
+        self.step = step
+        self.decimals = decimals
+
+        self.lbl = FCLabel(self.text)
+
+        if title is None:
+            self.title = 'title'
+        else:
+            self.title = title
+        if text is None:
+            self.text = 'text'
+        else:
+            self.text = text
+
+        self.wdg = FCDoubleSpinner()
+        self.wdg.set_precision(self.decimals)
+        self.wdg.set_range(self.min, self.max)
+        self.wdg.set_step(self.step)
+        self.wdg.set_value(self.init_value)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_icon(self, icon):
+        self.setWindowIcon(icon)
+
+    def set_min(self, val):
+        self.wdg.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.set_step(val)
+
+    def set_value(self, val):
+        self.wdg.set_value(val)
+
+    def get_value(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return self.wdg.get_value(), True
+        else:
+            return None, False
+
+
+class FCInputSpinner(QtWidgets.QDialog):
+    def __init__(self, parent=None, title=None, text=None, min=None, max=None, decimals=4, step=1, init_val=None):
+        super().__init__(parent)
+
+        self.val = 0.0
+        self.ok = ''
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min if min else 0
+        self.max = max if max else 255
+        self.step = step if step else 1
+
+        self.lbl = FCLabel(self.text)
+
+        self.wdg = FCDoubleSpinner()
+        self.wdg.set_value(self.init_value)
+        self.wdg.set_range(self.min, self.max)
+        self.wdg.set_step(self.step)
+        self.wdg.set_precision(decimals)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.wdg.setSizePolicy(sizePolicy)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_min(self, val):
+        self.wdg.spinner.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.spinner.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.spinner.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.spinner.set_step(val)
+
+    def get_value(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return [self.wdg.get_value(), True]
+        else:
+            return [None, False]
+
+
 class FCInputDialogSlider(QtWidgets.QDialog):
 
     def __init__(self, parent=None, title=None, text=None, min=None, max=None, step=1, init_val=None):
@@ -1713,6 +2395,9 @@ class FCInputDialogSlider(QtWidgets.QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -1745,10 +2430,80 @@ class FCInputDialogSlider(QtWidgets.QDialog):
             return None, False
 
 
+class FCInputDialogSpinnerButton(QtWidgets.QDialog):
+
+    def __init__(self, parent=None, title=None, text=None, min=None, max=None, step=1, decimals=4, init_val=None,
+                 button_text='', button_icon=None, callback=None):
+        super().__init__(parent)
+
+        self.val = 0.0
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min if min else 0
+        self.max = max if max else 255
+        self.step = step if step else 1
+        self.decimals = decimals if decimals else 4
+
+        self.lbl = FCLabel(self.text)
+
+        self.wdg = FCButtonWithDoubleSpinner(min=self.min, max=self.max, step=self.step, decimals=decimals,
+                                             button_text=button_text, button_icon=button_icon, callback=callback)
+        self.wdg.set_value(self.init_value)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_icon(self, icon):
+        self.setWindowIcon(icon)
+
+    def set_min(self, val):
+        self.wdg.spinner.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.spinner.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.spinner.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.spinner.set_step(val)
+
+    def set_value(self, val):
+        self.wdg.spinner.set_value(val)
+
+    def get_results(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return self.wdg.get_value(), True
+        else:
+            return None, False
+
+
 class FCButton(QtWidgets.QPushButton):
     def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
         super(FCButton, self).__init__(text, parent)
-        if not checkable is None:
+        if checkable is not None:
             self.setCheckable(checkable)
 
         if not click_callback is None:
@@ -3047,6 +3802,9 @@ class DialogBoxRadio(QtWidgets.QDialog):
                                                      orientation=Qt.Horizontal, parent=self)
         self.form.addRow(self.button_box)
 
+        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
+        self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
 
@@ -3069,24 +3827,72 @@ class _BrowserTextEdit(QTextEdit):
         self.app = app
 
     def contextMenuEvent(self, event):
-        self.menu = self.createStandardContextMenu(event.pos())
+        # self.menu = self.createStandardContextMenu(event.pos())
+        self.menu = QtWidgets.QMenu()
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(copy_action)
+        copy_action.triggered.connect(self.copy_text)
+        if txt == '':
+            copy_action.setDisabled(True)
+
+        self.menu.addSeparator()
+
+        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(sel_all_action)
+        sel_all_action.triggered.connect(self.selectAll)
 
         if self.app:
-            save_action = QAction(_("Save Log"), self)
+            save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
+            # save_action.setShortcut(QKeySequence(Qt.Key_S))
             self.menu.addAction(save_action)
             save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
-        clear_action = QAction(_("Clear"), self)
-        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))  # it's not working, the shortcut
+        clear_action = QAction('%s\t%s' % (_("Clear All"), _('Del')), self)
+        # clear_action.setShortcut(QKeySequence(Qt.Key_Delete))
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
 
-        if self.app:
-            close_action = QAction(_("Close"), self)
-            self.menu.addAction(close_action)
-            close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
+        # if self.app:
+        #     close_action = QAction(_("Close"), self)
+        #     self.menu.addAction(close_action)
+        #     close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
 
         self.menu.exec_(event.globalPos())
+
+    def keyPressEvent(self, event) -> None:
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        key = event.key()
+
+        if modifiers == QtCore.Qt.ControlModifier:
+            # Select All
+            if key == QtCore.Qt.Key_A:
+                self.selectAll()
+            # Copy Text
+            elif key == QtCore.Qt.Key_C:
+                self.copy_text()
+            # Save Log
+            elif key == QtCore.Qt.Key_S:
+                if self.app:
+                    self.save_log(app=self.app)
+
+        elif modifiers == QtCore.Qt.NoModifier:
+            # Clear all
+            if key == QtCore.Qt.Key_Delete:
+                self.clear()
+            # Shell toggle
+            if key == QtCore.Qt.Key_S:
+                self.app.ui.toggle_shell_ui()
+
+    def copy_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
 
     def clear(self):
         QTextEdit.clear(self)
@@ -3106,7 +3912,7 @@ class _BrowserTextEdit(QTextEdit):
         app.save_to_file(content_to_save=html_content, txt_content=txt_content)
 
 
-class _ExpandableTextEdit(QTextEdit):
+class _ExpandableTextEdit(FCTextEdit):
     """
     Class implements edit line, which expands themselves automatically
     """
@@ -3115,7 +3921,7 @@ class _ExpandableTextEdit(QTextEdit):
     historyPrev = QtCore.pyqtSignal()
 
     def __init__(self, termwidget, *args):
-        QTextEdit.__init__(self, *args)
+        FCTextEdit.__init__(self, *args)
         self.setStyleSheet("font: 9pt \"Courier\";")
         self._fittedHeight = 1
         self.textChanged.connect(self._fit_to_document)
@@ -3466,7 +4272,7 @@ class FCJog(QtWidgets.QFrame):
         self.jog_origin_button = QtWidgets.QToolButton()
         self.jog_origin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/origin2_32.png'))
         self.jog_origin_button.setToolTip(
-            _("Move to Origin.")
+            '%s' % _("Move to Origin")
         )
 
         grbl_jog_grid.addWidget(self.jog_origin_button, 3, 1)
@@ -3827,23 +4633,23 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             # Open Project ...
             menu_openproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
-                                                 _('Open Project ...'), self)
+                                                 '%s ...' % _('Open Project'), self)
             self.menu_open.addAction(menu_openproject)
             self.menu_open.addSeparator()
 
             # Open Gerber ...
             menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                _('Open &Gerber ...\tCtrl+G'), self)
+                                                '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
             menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                  _('Open &Excellon ...\tCtrl+E'), self)
+                                                  '%s ...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...
             menu_opengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
-                                               _('Open G-&Code ...'), self)
+                                               '%s ...' % _('Open G-Code'), self)
             self.menu_open.addAction(menu_opengcode)
 
             self.menu_open.addSeparator()

@@ -12,21 +12,22 @@
 # ######################################################### ##
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt
 
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
-    FCDoubleSpinner, FCButton, FCInputDialog, FCTree, NumericalEvalTupleEntry
+    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry
 from appParsers.ParseFont import *
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
+from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm
+import logging
 
 from rtree import index as rtindex
 
@@ -39,6 +40,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class BufferSelectionTool(AppTool):
@@ -80,9 +83,9 @@ class BufferSelectionTool(AppTool):
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
-        self.buffer_distance_entry.set_range(0.0000, 999999.9999)
-        form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
-        self.buffer_corner_lbl = FCLabel(_("Buffer corner:"))
+        self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
+        form_layout.addRow('%S:' % _("Buffer distance"), self.buffer_distance_entry)
+        self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded for exterior buffer.\n"
@@ -435,14 +438,14 @@ class PaintOptionsTool(AppTool):
         grid.setColumnStretch(1, 1)
 
         # Tool dia
-        ptdlabel = FCLabel('%s:' % _('Tool dia'))
+        ptdlabel = FCLabel('%s:' % _('Tool Dia'))
         ptdlabel.setToolTip(
            _("Diameter of the tool to be used in the operation.")
         )
         grid.addWidget(ptdlabel, 0, 0)
 
         self.painttooldia_entry = FCDoubleSpinner()
-        self.painttooldia_entry.set_range(-9999.9999, 9999.9999)
+        self.painttooldia_entry.set_range(-10000.0000, 10000.0000)
         self.painttooldia_entry.set_precision(self.decimals)
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
@@ -451,8 +454,8 @@ class PaintOptionsTool(AppTool):
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -474,7 +477,7 @@ class PaintOptionsTool(AppTool):
              "be painted.")
         )
         self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_range(-10000.0000, 10000.0000)
         self.paintmargin_entry.set_precision(self.decimals)
 
         grid.addWidget(marginlabel, 2, 0)
@@ -579,7 +582,7 @@ class PaintOptionsTool(AppTool):
 
     def on_paint(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         tooldia = self.painttooldia_entry.get_value()
@@ -682,7 +685,7 @@ class TransformEditorTool(AppTool):
 
         self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
-            _("Angle for Rotation action, in degrees.\n"
+            _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
@@ -939,7 +942,7 @@ class TransformEditorTool(AppTool):
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
-        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+        self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
         self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(
@@ -1068,7 +1071,7 @@ class TransformEditorTool(AppTool):
 
     def template(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         self.draw_app.select_tool("select")
@@ -1263,7 +1266,7 @@ class TransformEditorTool(AppTool):
         """
         Rotate geometry
 
-        :param num:     Rotate with a known angle value, val
+        :param val:     Rotate with a known angle value, val
         :param point:   Reference point for rotation: tuple
         :return:
         """
@@ -1281,9 +1284,9 @@ class TransformEditorTool(AppTool):
                     sel_sha.rotate(-val, point=(px, py))
                     self.draw_app.replot()
 
-                self.app.inform.emit('[success] %s' % _("Done. Rotate completed."))
+                self.app.inform.emit('[success] %s' % _("Done."))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_flip(self, axis, point):
@@ -1309,20 +1312,21 @@ class TransformEditorTool(AppTool):
                 for sha in shape_list:
                     if axis == 'X':
                         sha.mirror('X', (px, py))
-                        self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Flip on Y axis done'))
                     elif axis == 'Y':
                         sha.mirror('Y', (px, py))
-                        self.app.inform.emit('[success] %s' % _('Flip on the X axis done'))
+                        self.app.inform.emit('[success] %s' % _('Flip on X axis done'))
                     self.draw_app.replot()
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_skew(self, axis, xval, yval, point):
         """
         Skew geometry
 
+        :param point:
         :param axis:    Axis on which to deform, skew
         :param xval:    Skew value on X axis
         :param yval:    Skew value on Y axis
@@ -1349,7 +1353,7 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -1383,7 +1387,7 @@ class TransformEditorTool(AppTool):
                 else:
                     self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_offset(self, axis, num):
@@ -1416,14 +1420,14 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed"), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
     def on_buffer_action(self, value, join, factor=None):
         shape_list = self.draw_app.selected
 
         if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
         else:
             with self.app.proc_container.new(_("Applying Buffer")):
@@ -1437,87 +1441,92 @@ class TransformEditorTool(AppTool):
 
                 except Exception as e:
                     self.app.log.debug("TransformEditorTool.on_buffer_action() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed, due of"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
     def on_rotate_key(self):
-        val_box = FCInputDialog(title=_("Rotate ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_rotate']))
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
+        val_box = FCInputDoubleSpinner(title=_("Rotate ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_rotate']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val, ref=1)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape rotate done"))
+            self.app.inform.emit('[success] %s...' % _("Rotate done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Geometry shape rotate cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate cancelled"))
 
     def on_offx_key(self):
         units = self.app.defaults['units'].lower()
 
-        val_box = FCInputDialog(title=_("Offset on X axis ..."),
-                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_x']))
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
+        val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
+                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
+                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_offset_x']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s' % _("Geometry shape offset on X axis done"))
+            self.app.inform.emit('[success] %s' % _("Offset on the X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Geometry shape offset X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset X cancelled"))
 
     def on_offy_key(self):
         units = self.app.defaults['units'].lower()
 
-        val_box = FCInputDialog(title=_("Offset on Y axis ..."),
-                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_offset_y']))
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
+        val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
+                                       text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
+                                       min=-10000.0000, max=10000.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_offset_y']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Offset on Y axis done"))
             return
         else:
-            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on Y axis canceled"))
+            self.app.inform.emit('[success] %s...' % _("Offset on the Y axis canceled"))
 
     def on_skewx_key(self):
-        val_box = FCInputDialog(title=_("Skew on X axis ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_x']))
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
+        val_box = FCInputDoubleSpinner(title=_("Skew on X axis ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_skew_x']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Skew on X axis done"))
             return
         else:
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on X axis canceled"))
+            self.app.inform.emit('[success] %s...' % _("Skew on X axis canceled"))
 
     def on_skewy_key(self):
-        val_box = FCInputDialog(title=_("Skew on Y axis ..."),
-                                text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=self.decimals,
-                                init_val=float(self.app.defaults['tools_transform_skew_y']))
-        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
+        val_box = FCInputDoubleSpinner(title=_("Skew on Y axis ..."),
+                                       text='%s:' % _('Enter an Angle Value (degrees)'),
+                                       min=-359.9999, max=360.0000, decimals=self.decimals,
+                                       init_val=float(self.app.defaults['tools_transform_skew_y']),
+                                       parent=self.app.ui)
+        val_box.set_icon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val, ref=3)
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Skew on Y axis done"))
             return
         else:
-            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on Y axis canceled"))
+            self.app.inform.emit('[success] %s...' % _("Skew on Y axis canceled"))
 
     @staticmethod
     def alt_bounds(shapelist):
@@ -1885,7 +1894,8 @@ class DrawTool(object):
     def utility_geometry(self, data=None):
         return None
 
-    def bounds(self, obj):
+    @staticmethod
+    def bounds(obj):
         def bounds_rec(o):
             if type(o) is list:
                 minx = np.Inf
@@ -1992,7 +2002,7 @@ class FCCircle(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2071,7 +2081,7 @@ class FCArc(FCShapeTool):
     def on_key(self, key):
         if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return _('Direction: %s') % self.direction.upper()
+            return '%s: %s' % (_('Direction'), self.direction.upper())
 
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
@@ -2232,7 +2242,7 @@ class FCArc(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2305,7 +2315,7 @@ class FCRectangle(FCShapeTool):
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2380,7 +2390,7 @@ class FCPolygon(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Polygon completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_key(self, key):
         # Jump to coords
@@ -2437,7 +2447,7 @@ class FCPath(FCPolygon):
 
         self.draw_app.app.jump_signal.disconnect()
 
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Path completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -2596,7 +2606,7 @@ class FCExplode(FCShapeTool):
 
         self.draw_app.active_tool = self
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' % _("No shape selected. Select a shape to explode"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
         else:
             self.make()
 
@@ -2629,7 +2639,7 @@ class FCExplode(FCShapeTool):
             geo_list.append(DrawToolShape(line))
         self.geometry = geo_list
         self.draw_app.on_shape_complete()
-        self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
+        self.draw_app.app.inform.emit('[success] %s...' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2660,16 +2670,15 @@ class FCMove(FCShapeTool):
         self.selection_shape = self.selection_bbox()
 
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                          _("MOVE: No shape selected. Select a shape to move"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
         else:
-            self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+            self.draw_app.app.inform.emit(_("Click on reference location ..."))
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
-        self.draw_app.app.inform.emit(_(" Click on destination point ..."))
+        self.draw_app.app.inform.emit(_("Click on destination point ..."))
         self.origin = origin
 
     def click(self, point):
@@ -2684,7 +2693,7 @@ class FCMove(FCShapeTool):
             # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
             self.select_shapes(point)
             self.draw_app.replot()
-            self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+            self.draw_app.app.inform.emit(_("Click on reference location ..."))
             return
 
         if self.origin is None:
@@ -2699,7 +2708,7 @@ class FCMove(FCShapeTool):
             return "Done."
 
     def make(self):
-        with self.draw_app.app.proc_container.new("Moving Geometry ..."):
+        with self.draw_app.app.proc_container.new(_("Moving ...")):
             # Create new geometry
             dx = self.destination[0] - self.origin[0]
             dy = self.destination[1] - self.origin[1]
@@ -2709,7 +2718,7 @@ class FCMove(FCShapeTool):
             # Delete old
             self.draw_app.delete_selected()
             self.complete = True
-            self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Move completed."))
+            self.draw_app.app.inform.emit('[success] %s' % _("Done."))
             try:
                 self.draw_app.app.jump_signal.disconnect()
             except TypeError:
@@ -2842,7 +2851,7 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -2915,7 +2924,7 @@ class FCText(FCShapeTool):
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit('[success]%s' % _(" Done. Adding Text completed."))
+        self.draw_app.app.inform.emit('[success]%s' % _("Done."))
 
     def utility_geometry(self, data=None):
         """
@@ -2963,7 +2972,7 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         try:
@@ -2987,11 +2996,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         try:
@@ -3015,11 +3024,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         try:
@@ -3030,7 +3039,7 @@ class FCBuffer(FCShapeTool):
                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
@@ -3043,7 +3052,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -3159,7 +3168,7 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
@@ -3314,22 +3323,7 @@ class AppGeoEditor(QtCore.QObject):
         self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # ## Toolbar events and properties
-        self.tools = {
-            "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
-            "arc": {"button": self.app.ui.geo_add_arc_btn, "constructor": FCArc},
-            "circle": {"button": self.app.ui.geo_add_circle_btn, "constructor": FCCircle},
-            "path": {"button": self.app.ui.geo_add_path_btn, "constructor": FCPath},
-            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn, "constructor": FCRectangle},
-            "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
-            "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
-            "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
-            "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
-            "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
-            "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
-            "transform": {"button": self.app.ui.geo_transform_btn, "constructor": FCTransform},
-            "copy": {"button": self.app.ui.geo_copy_btn, "constructor": FCCopy},
-            "explode": {"button": self.app.ui.geo_explode_btn, "constructor": FCExplode}
-        }
+        self.tools = {}
 
         # # ## Data
         self.active_tool = None
@@ -3385,15 +3379,6 @@ class AppGeoEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        def make_callback(thetool):
-            def f():
-                self.on_tool_select(thetool)
-            return f
-
-        for tool in self.tools:
-            self.tools[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools[tool]["button"].setCheckable(True)  # Checkable
-
         self.app.ui.grid_snap_btn.triggered.connect(self.on_grid_toggled)
         self.app.ui.corner_snap_btn.setCheckable(True)
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
@@ -3435,6 +3420,14 @@ class AppGeoEditor(QtCore.QObject):
         self.paint_tool = PaintOptionsTool(self.app, self)
         self.transform_tool = TransformEditorTool(self.app, self)
 
+        # #############################################################################################################
+        # ####################### GEOMETRY Editor Signals #############################################################
+        # #############################################################################################################
+
+        # connect the toolbar signals
+        self.connect_geo_toolbar_signals()
+
+        # connect Geometry Editor Menu signals
         self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
         self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
         self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
@@ -3468,9 +3461,35 @@ class AppGeoEditor(QtCore.QObject):
         self.mm = None
         self.mr = None
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
         log.debug("Initialization of the Geometry Editor is finished ...")
+
+    def make_callback(self, thetool):
+        def f():
+            self.on_tool_select(thetool)
+
+        return f
+
+    def connect_geo_toolbar_signals(self):
+        self.tools.update({
+            "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
+            "arc": {"button": self.app.ui.geo_add_arc_btn, "constructor": FCArc},
+            "circle": {"button": self.app.ui.geo_add_circle_btn, "constructor": FCCircle},
+            "path": {"button": self.app.ui.geo_add_path_btn, "constructor": FCPath},
+            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn, "constructor": FCRectangle},
+            "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
+            "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
+            "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
+            "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
+            "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
+            "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
+            "transform": {"button": self.app.ui.geo_transform_btn, "constructor": FCTransform},
+            "copy": {"button": self.app.ui.geo_copy_btn, "constructor": FCCopy},
+            "explode": {"button": self.app.ui.geo_explode_btn, "constructor": FCExplode}
+        })
+
+        for tool in self.tools:
+            self.tools[tool]["button"].triggered.connect(self.make_callback(tool))  # Events
+            self.tools[tool]["button"].setCheckable(True)  # Checkable
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3646,9 +3665,6 @@ class AppGeoEditor(QtCore.QObject):
         # for w in sel_tab_widget_list:
         #     w.setEnabled(False)
 
-        # Tell the App that the editor is active
-        self.editor_active = True
-
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
@@ -3678,7 +3694,6 @@ class AppGeoEditor(QtCore.QObject):
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         self.app.ui.corner_snap_btn.setVisible(False)
         self.app.ui.snap_magnet.setVisible(False)
 
@@ -3697,9 +3712,6 @@ class AppGeoEditor(QtCore.QObject):
 
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
-
-        # Tell the app that the editor is no longer active
-        self.editor_active = False
 
         self.app.ui.popmenu_disable.setVisible(True)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(True)
@@ -4397,7 +4409,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def on_copy_click(self):
         if not self.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No shape selected.")))
             return
 
         self.app.ui.geo_copy_btn.setChecked(True)
@@ -4791,7 +4803,7 @@ class AppGeoEditor(QtCore.QObject):
         except Exception as e:
             log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("A selection of at least 2 geo items is required to do Intersection."))
+                                 _("A selection of minimum two items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4826,7 +4838,7 @@ class AppGeoEditor(QtCore.QObject):
         except Exception as e:
             log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("A selection of at least 2 geo items is required to do Intersection."))
+                                 _("A selection of minimum two items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4921,13 +4933,11 @@ class AppGeoEditor(QtCore.QObject):
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
 
             # deselect everything
             self.selected = []
@@ -4975,11 +4985,11 @@ class AppGeoEditor(QtCore.QObject):
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4999,7 +5009,7 @@ class AppGeoEditor(QtCore.QObject):
 
         if not results:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed, the result is empty. Choose a smaller buffer value."))
+                                 _("Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -5024,13 +5034,11 @@ class AppGeoEditor(QtCore.QObject):
             return
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -5073,7 +5081,7 @@ class AppGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected for painting."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected."))
             return
 
         for param in [tooldia, overlap, margin]:
@@ -5149,7 +5157,7 @@ class AppGeoEditor(QtCore.QObject):
         # This is a dirty patch:
         for r in results:
             self.add_shape(DrawToolShape(r))
-        self.app.inform.emit('[success] %s' % _("Paint done."))
+        self.app.inform.emit('[success] %s' % _("Done."))
         self.replot()
 
     def flatten(self, geometry, orient_val=1, reset=True, pathonly=False):

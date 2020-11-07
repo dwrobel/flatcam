@@ -242,7 +242,7 @@ class AlignObjects(AppTool):
     def check_points(self):
         if len(self.clicked_points) == 1:
             self.app.inform.emit('%s: %s. %s' % (
-                _("First Point"), _("Click on the DESTINATION point."), _("Or right click to cancel.")))
+                _("First Point"), _("Click on the DESTINATION point ..."), _("Or right click to cancel.")))
             self.target_obj = self.aligner_obj
             self.reset_color()
             self.set_color()
@@ -264,7 +264,7 @@ class AlignObjects(AppTool):
 
         if len(self.clicked_points) == 3:
             self.app.inform.emit('%s: %s. %s' % (
-                _("Second Point"), _("Click on the DESTINATION point."), _("Or right click to cancel.")))
+                _("Second Point"), _("Click on the DESTINATION point ..."), _("Or right click to cancel.")))
             self.target_obj = self.aligner_obj
             self.reset_color()
             self.set_color()
@@ -383,7 +383,7 @@ class AlignUI:
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.aligned_label =FCLabel('<b>%s:</b>' % _("MOVING object"))
+        self.aligned_label = FCLabel('<b>%s:</b>' % _("MOVING object"))
         grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
 
         self.aligned_label.setToolTip(
@@ -478,7 +478,8 @@ class AlignUI:
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Buttons
-        self.align_object_button =FCButton(_("Align Object"))
+        self.align_object_button = FCButton(_("Align Object"))
+        self.align_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/align16.png'))
         self.align_object_button.setToolTip(
             _("Align the specified object to the aligner object.\n"
               "If only one point is used then it assumes translation.\n"

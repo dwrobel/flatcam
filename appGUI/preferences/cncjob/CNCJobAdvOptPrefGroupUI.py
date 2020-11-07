@@ -122,7 +122,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.ptravelz_entry = FCDoubleSpinner()
         self.ptravelz_entry.set_precision(self.decimals)
-        self.ptravelz_entry.set_range(0.0000, 9999.9999)
+        self.ptravelz_entry.set_range(0.0000, 10000.0000)
 
         grid0.addWidget(self.ptravelz_label, 14, 0)
         grid0.addWidget(self.ptravelz_entry, 14, 1)
@@ -135,7 +135,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.pdepth_entry = FCDoubleSpinner()
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+        self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
         grid0.addWidget(self.pdepth_label, 16, 0)
         grid0.addWidget(self.pdepth_entry, 16, 1)
@@ -147,7 +147,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0, 99999.9999)
+        self.feedrate_probe_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.feedrate_probe_label, 18, 0)
         grid0.addWidget(self.feedrate_probe_entry, 18, 1)
@@ -176,7 +176,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.jog_step_entry = FCDoubleSpinner()
         self.jog_step_entry.set_precision(self.decimals)
-        self.jog_step_entry.set_range(0, 99999.9999)
+        self.jog_step_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.jog_step_label, 24, 0)
         grid0.addWidget(self.jog_step_entry, 24, 1)
@@ -189,7 +189,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.jog_fr_entry = FCDoubleSpinner()
         self.jog_fr_entry.set_precision(self.decimals)
-        self.jog_fr_entry.set_range(0, 99999.9999)
+        self.jog_fr_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.jog_fr_label, 26, 0)
         grid0.addWidget(self.jog_fr_entry, 26, 1)
@@ -202,7 +202,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.jog_travelz_entry = FCDoubleSpinner()
         self.jog_travelz_entry.set_precision(self.decimals)
-        self.jog_travelz_entry.set_range(0, 99999.9999)
+        self.jog_travelz_entry.set_range(0, 910000.0000)
 
         grid0.addWidget(self.jog_travelz_label, 28, 0)
         grid0.addWidget(self.jog_travelz_entry, 28, 1)

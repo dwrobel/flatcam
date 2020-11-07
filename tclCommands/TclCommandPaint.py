@@ -102,7 +102,7 @@ class TclCommandPaint(TclCommand):
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
-            tooldia = float(self.app.defaults["tools_paint_overlap"])
+            tooldia = str(self.app.defaults["tools_paint_tooldia"])
 
         if 'overlap' in args:
             overlap = float(args['overlap']) / 100.0
@@ -202,13 +202,13 @@ class TclCommandPaint(TclCommand):
             "area_strategy":        self.app.defaults["geometry_area_strategy"],
             "area_overz":           float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia":              self.app.defaults["tools_paint_tooldia"],
-            "tools_paint_offset":   offset,
-            "tools_paint_method":    method,
-            "tools_paint_selectmethod":   select,
-            "tools_paint_connect":    connect,
-            "tools_paint_contour":   contour,
-            "tools_paint_overlap":   overlap
+            "tooldia":                  tooldia,
+            "tools_paint_offset":       offset,
+            "tools_paint_method":       method,
+            "tools_paint_selectmethod": select,
+            "tools_paint_connect":      connect,
+            "tools_paint_contour":      contour,
+            "tools_paint_overlap":      overlap
         })
         paint_tools = {}
 
@@ -217,7 +217,7 @@ class TclCommandPaint(TclCommand):
             tooluid += 1
             paint_tools.update({
                 int(tooluid): {
-                    'tooldia': float('%.*f' % (obj.decimals, tool)),
+                    'tooldia': self.app.dec_format(float(tool), self.app.decimals),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -226,7 +226,7 @@ class TclCommandPaint(TclCommand):
                     'solid_geometry': []
                 }
             })
-            paint_tools[int(tooluid)]['data']['tooldia'] = float('%.*f' % (obj.decimals, tool))
+            paint_tools[int(tooluid)]['data']['tooldia'] = self.app.dec_format(float(tool), self.app.decimals)
 
         if obj is None:
             return "Object not found: %s" % name
@@ -257,15 +257,17 @@ class TclCommandPaint(TclCommand):
                 x = coords_xy[0]
                 y = coords_xy[1]
 
-                self.app.paint_tool.paint_poly(obj=obj,
-                                               inside_pt=[x, y],
-                                               tooldia=tooldia,
-                                               order=order,
-                                               method=method,
-                                               outname=outname,
-                                               tools_storage=paint_tools,
-                                               plot=False,
-                                               run_threaded=False)
+                ret_val = self.app.paint_tool.paint_poly(obj=obj,
+                                                         inside_pt=[x, y],
+                                                         tooldia=tooldia,
+                                                         order=order,
+                                                         method=method,
+                                                         outname=outname,
+                                                         tools_storage=paint_tools,
+                                                         plot=False,
+                                                         run_threaded=False)
+                if ret_val == 'fail':
+                    return "Could not find a Polygon at the specified location."
             return
 
         # Paint all polygons found within the box object from the the painted object
@@ -280,7 +282,7 @@ class TclCommandPaint(TclCommand):
                 box_obj = self.app.collection.get_by_name(str(box_name))
             except Exception as e:
                 log.debug("TclCommandPaint.execute() --> %s" % str(e))
-                self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+                self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
                 return "Could not retrieve object: %s" % name
 
             self.app.paint_tool.paint_poly_ref(obj=obj,

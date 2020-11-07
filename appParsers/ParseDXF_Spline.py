@@ -400,7 +400,7 @@ class Vector(list):
 
     # ----------------------------------------------------------------------
     def __str__(self):
-        return "[%s]" % ", ".join([("%15g" % (x)).strip() for x in self])
+        return "[%s]" % ", ".join([("%15g" % x).strip() for x in self])
 
     # ----------------------------------------------------------------------
     def eq(self, v, acc=_accuracy):
@@ -805,7 +805,6 @@ class Vector(list):
 #
 #     #-----------------------------------------------------------------------
 #     def __call__(self, i, x):
-#         # FIXME should interpolate to find the interval
 #         C = self.coefficients(i)
 #         return ((C[0]*x + C[1])*x + C[2])*x + C[3]
 #

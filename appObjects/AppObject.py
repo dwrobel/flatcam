@@ -168,7 +168,7 @@ class AppObject(QtCore.QObject):
             return "fail"
 
         t2 = time.time()
-        msg = "New object with name: %s. %f seconds executing initialize()." % (name, (t2 - t1))
+        msg = "%s %s. %f seconds executing initialize()." % (_("New object with name:"), name, (t2 - t1))
         log.debug(msg)
         self.app.inform_shell.emit(msg)
 
@@ -256,7 +256,7 @@ class AppObject(QtCore.QObject):
                     'tooldia': float(app.defaults["geometry_cnctooldia"]),
                     'offset': 'Path',
                     'offset_value': 0.0,
-                    'type': _('Rough'),
+                    'type': 'Rough',
                     'tool_type': 'C1',
                     'data': deepcopy(default_data),
                     'solid_geometry': []
@@ -401,7 +401,6 @@ class AppObject(QtCore.QObject):
                 name=str(obj.options['name']), tx=_("created/selected"))
             )
 
-
         # ############################################################################################################
         # Set the colors for the objects that have geometry
         # ############################################################################################################
@@ -439,7 +438,7 @@ class AppObject(QtCore.QObject):
         # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object
         # #############################################################################################################
-        self.app.shell._edit.set_model_data(self.app.myKeywords)
+        self.app.shell.command_line().set_model_data(self.app.myKeywords)
 
         if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones
@@ -450,7 +449,7 @@ class AppObject(QtCore.QObject):
 
         # here it is done the object plotting
         def plotting_task(t_obj):
-            with self.app.proc_container.new(_("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 if t_obj.kind == 'cncjob':
                     t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
                 if t_obj.kind == 'gerber':

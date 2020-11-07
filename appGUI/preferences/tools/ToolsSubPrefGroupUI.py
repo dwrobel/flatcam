@@ -36,7 +36,13 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.sublabel)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the subtractor object."))
         self.layout.addWidget(self.close_paths_cb)
 
+        self.delete_sources_cb = FCCheckBox(_("Delete source"))
+        self.delete_sources_cb.setToolTip(
+            _("When checked will delete the source objects\n"
+              "after a successful operation.")
+        )
+        self.layout.addWidget(self.delete_sources_cb)
         self.layout.addStretch()

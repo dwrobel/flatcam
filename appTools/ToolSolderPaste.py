@@ -7,8 +7,8 @@
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
-from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
-    FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
+from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
+    FCInputSpinner
 from app_Main import log
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
@@ -119,9 +119,9 @@ class SolderPaste(AppTool):
         AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
     def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup = FCInputSpinner(title='%s...' % _("New Tool"),
+                                        text='%s:' % _('Enter a Tool Diameter'),
+                                        min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
         tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()
@@ -300,7 +300,7 @@ class SolderPaste(AppTool):
                 if int(tooluid_key) == tooluid:
                     self.set_form(deepcopy(tooluid_value['data']))
         except Exception as e:
-            log.debug("FlatCAMObj ---> update_ui() " + str(e))
+            log.debug("ToolSolderPaste ---> update_ui() " + str(e))
 
         self.ui_connect()
 
@@ -590,12 +590,12 @@ class SolderPaste(AppTool):
                     self.tooltable_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a Nozzle tool to delete."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit('[success] %s' % _("Nozzle tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tools deleted from Tool Table."))
         self.build_ui()
 
     def on_rmb_combo(self, pos, combo):
@@ -667,7 +667,7 @@ class SolderPaste(AppTool):
         :param use_thread: use thread, True or False
         :return: a Geometry type object
         """
-        proc = self.app.proc_container.new(_("Creating Solder Paste dispensing geometry."))
+        proc = self.app.proc_container.new(_("Working ..."))
         obj = work_object
 
         # Sort tools in descending order
@@ -806,7 +806,8 @@ class SolderPaste(AppTool):
                         if not geo_obj.tools[tooluid_key]['solid_geometry']:
                             a += 1
                     if a == len(geo_obj.tools):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _('Cancelled. Empty file, it has no geometry...'))
+                        msg = '[ERROR_NOTCL] %s' % '%s ...' % _('Cancelled. Empty file, it has no geometry')
+                        self.app.inform.emit(msg)
                         return 'fail'
 
                     app_obj.inform.emit('[success] %s...' % _("Solder Paste geometry generated successfully"))
@@ -890,7 +891,7 @@ class SolderPaste(AppTool):
             ymax = obj.options['ymax']
         except Exception as e:
             log.debug("SolderPaste.on_create_gcode() --> %s\n" % str(e))
-            msg = '[ERROR] %s' % _("An internal error has ocurred. See shell.\n")
+            msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
             msg += 'SolderPaste.on_create_gcode() --> %s' % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
@@ -956,7 +957,7 @@ class SolderPaste(AppTool):
         if use_thread:
             # To be run in separate thread
             def job_thread(app_obj):
-                with self.app.proc_container.new("Generating CNC Code"):
+                with self.app.proc_container.new('%s' % _("Working ...")):
                     if app_obj.app_obj.new_object("cncjob", name, job_init) != 'fail':
                         app_obj.inform.emit('[success] [success] %s: %s' %
                                             (_("ToolSolderPaste CNCjob created"), name))
@@ -1060,7 +1061,8 @@ class SolderPaste(AppTool):
             )
         except TypeError:
             filename, _f = FCFileSaveDialog.get_saved_filename(
-                caption=_("Export Code ..."), ext_filter=_filter_)
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
@@ -1176,7 +1178,7 @@ class SolderUI:
               "with solder paste, the app will issue a warning message box.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+            _("Tool Diameter. Its value\n"
               "is the width of the solder paste dispensed."))
 
         # ### Add a new Tool ## ##
@@ -1185,10 +1187,10 @@ class SolderUI:
 
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('New Nozzle Tool'))
         self.addtool_entry_lbl.setToolTip(
-            _("Diameter for the new Nozzle tool to add in the Tool Table")
+            _("Diameter for the new tool to add in the Tool Table")
         )
         self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.addtool_entry.set_range(0.0000001, 9999.9999)
+        self.addtool_entry.set_range(0.0000001, 10000.0000)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.setSingleStep(0.1)
 
@@ -1209,7 +1211,7 @@ class SolderUI:
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
 
         grid0.addWidget(self.addtool_btn, 0, 0)
@@ -1248,7 +1250,7 @@ class SolderUI:
 
         # Z dispense start
         self.z_start_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_start_entry.set_range(0.0000001, 9999.9999)
+        self.z_start_entry.set_range(0.0000001, 10000.0000)
         self.z_start_entry.set_precision(self.decimals)
         self.z_start_entry.setSingleStep(0.1)
 
@@ -1260,7 +1262,7 @@ class SolderUI:
 
         # Z dispense
         self.z_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.z_dispense_entry.set_range(0.0000001, 10000.0000)
         self.z_dispense_entry.set_precision(self.decimals)
         self.z_dispense_entry.setSingleStep(0.1)
 
@@ -1272,7 +1274,7 @@ class SolderUI:
 
         # Z dispense stop
         self.z_stop_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_stop_entry.set_range(0.0000001, 9999.9999)
+        self.z_stop_entry.set_range(0.0000001, 10000.0000)
         self.z_stop_entry.set_precision(self.decimals)
         self.z_stop_entry.setSingleStep(0.1)
 
@@ -1284,7 +1286,7 @@ class SolderUI:
 
         # Z travel
         self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_travel_entry.set_range(0.0000001, 9999.9999)
+        self.z_travel_entry.set_range(0.0000001, 10000.0000)
         self.z_travel_entry.set_precision(self.decimals)
         self.z_travel_entry.setSingleStep(0.1)
 
@@ -1297,7 +1299,7 @@ class SolderUI:
 
         # Z toolchange location
         self.z_toolchange_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.z_toolchange_entry.set_range(0.0000001, 9999.9999)
+        self.z_toolchange_entry.set_range(0.0000001, 10000.0000)
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
 
@@ -1318,7 +1320,7 @@ class SolderUI:
 
         # Feedrate X-Y
         self.frxy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.frxy_entry.set_range(0.0000, 99999.9999)
+        self.frxy_entry.set_range(0.0000, 910000.0000)
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
@@ -1330,7 +1332,7 @@ class SolderUI:
 
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.frz_entry.set_range(0.0000, 99999.9999)
+        self.frz_entry.set_range(0.0000, 910000.0000)
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
@@ -1343,14 +1345,14 @@ class SolderUI:
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.frz_dispense_entry.set_range(0.0000, 99999.9999)
+        self.frz_dispense_entry.set_range(0.0000, 910000.0000)
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
         self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
-              " to Dispense position (on Z plane).")
+              "to Dispense position (on Z plane).")
         )
         self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 
@@ -1368,7 +1370,7 @@ class SolderUI:
 
         # Dwell Forward
         self.dwellfwd_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dwellfwd_entry.set_range(0.0000001, 9999.9999)
+        self.dwellfwd_entry.set_range(0.0000001, 10000.0000)
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
 
@@ -1392,7 +1394,7 @@ class SolderUI:
 
         # Dwell Reverse
         self.dwellrev_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dwellrev_entry.set_range(0.0000001, 9999.9999)
+        self.dwellrev_entry.set_range(0.0000001, 10000.0000)
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)
 

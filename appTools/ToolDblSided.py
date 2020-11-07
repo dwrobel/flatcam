@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel
 
 from numpy import Inf
 
@@ -182,9 +182,9 @@ class DblSidedTool(AppTool):
             self.app.inform.emit(msg)
             return
 
-        tools = {}
-        tools[1] = {}
+        tools = {1: {}}
         tools[1]["tooldia"] = dia
+        tools[1]['drills'] = []
         tools[1]['solid_geometry'] = []
 
         # holes = self.alignment_holes.get_value()
@@ -198,9 +198,8 @@ class DblSidedTool(AppTool):
             point = Point(hole)
             point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
 
-            tools[1]['drills'] = [point, point_mirror]
-            tools[1]['solid_geometry'].append(point)
-            tools[1]['solid_geometry'].append(point_mirror)
+            tools[1]['drills'] += [point, point_mirror]
+            tools[1]['solid_geometry'] += [point, point_mirror]
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
@@ -210,9 +209,11 @@ class DblSidedTool(AppTool):
                                                                        filename=None,
                                                                        use_thread=False)
 
-        self.app.app_obj.new_object("excellon", "Alignment Drills", obj_init)
+        ret_val = self.app.app_obj.new_object("excellon", _("Alignment Drills"), obj_init)
         self.drill_values = ''
-        self.app.inform.emit('[success] %s' % _("Excellon object with alignment drills created..."))
+
+        if not ret_val == 'fail':
+            self.app.inform.emit('[success] %s' % _("Excellon object with alignment drills created..."))
 
     def on_pick_hole(self):
 
@@ -402,7 +403,7 @@ class DblSidedTool(AppTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
             return
 
         for obj in obj_list:
@@ -494,7 +495,7 @@ class DsidedUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -503,7 +504,7 @@ class DsidedUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -512,13 +513,13 @@ class DsidedUI:
         self.layout.addLayout(grid_lay)
 
         # Objects to be mirrored
-        self.m_objects_label = QtWidgets.QLabel("<b>%s:</b>" % _("Source Object"))
+        self.m_objects_label = FCLabel("<b>%s:</b>" % _("Source Object"))
         self.m_objects_label.setToolTip('%s.' % _("Objects to be mirrored"))
 
         grid_lay.addWidget(self.m_objects_label, 0, 0, 1, 2)
 
         # Type of object to be cutout
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Select the type of application object to be processed in this tool.")
         )
@@ -554,7 +555,7 @@ class DsidedUI:
         self.layout.addLayout(grid0)
 
         # ## Title Bounds Values
-        self.bv_label = QtWidgets.QLabel("<b>%s:</b>" % _('Bounds Values'))
+        self.bv_label = FCLabel("<b>%s:</b>" % _('Bounds Values'))
         self.bv_label.setToolTip(
             _("Select on canvas the object(s)\n"
               "for which to calculate bounds values.")
@@ -564,7 +565,7 @@ class DsidedUI:
         # Xmin value
         self.xmin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmin_entry.set_precision(self.decimals)
-        self.xmin_entry.set_range(-9999.9999, 9999.9999)
+        self.xmin_entry.set_range(-10000.0000, 10000.0000)
 
         self.xmin_btn = FCButton('%s:' % _("X min"))
         self.xmin_btn.setToolTip(
@@ -578,7 +579,7 @@ class DsidedUI:
         # Ymin value
         self.ymin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymin_entry.set_precision(self.decimals)
-        self.ymin_entry.set_range(-9999.9999, 9999.9999)
+        self.ymin_entry.set_range(-10000.0000, 10000.0000)
 
         self.ymin_btn = FCButton('%s:' % _("Y min"))
         self.ymin_btn.setToolTip(
@@ -592,7 +593,7 @@ class DsidedUI:
         # Xmax value
         self.xmax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmax_entry.set_precision(self.decimals)
-        self.xmax_entry.set_range(-9999.9999, 9999.9999)
+        self.xmax_entry.set_range(-10000.0000, 10000.0000)
 
         self.xmax_btn = FCButton('%s:' % _("X max"))
         self.xmax_btn.setToolTip(
@@ -606,7 +607,7 @@ class DsidedUI:
         # Ymax value
         self.ymax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymax_entry.set_precision(self.decimals)
-        self.ymax_entry.set_range(-9999.9999, 9999.9999)
+        self.ymax_entry.set_range(-10000.0000, 10000.0000)
 
         self.ymax_btn = FCButton('%s:' % _("Y max"))
         self.ymax_btn.setToolTip(
@@ -632,7 +633,7 @@ class DsidedUI:
         grid0.addWidget(self.center_entry, 12, 1)
 
         # Calculate Bounding box
-        self.calculate_bb_button = QtWidgets.QPushButton(_("Calculate Bounds Values"))
+        self.calculate_bb_button = FCButton(_("Calculate Bounds Values"))
         self.calculate_bb_button.setToolTip(
             _("Calculate the enveloping rectangular shape coordinates,\n"
               "for the selection of objects.\n"
@@ -659,13 +660,13 @@ class DsidedUI:
         grid1.setColumnStretch(1, 1)
         self.layout.addLayout(grid1)
 
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Mirror Operation"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Mirror Operation"))
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
 
         grid1.addWidget(self.param_label, 0, 0, 1, 2)
 
         # ## Axis
-        self.mirax_label = QtWidgets.QLabel('%s:' % _("Axis"))
+        self.mirax_label = FCLabel('%s:' % _("Axis"))
         self.mirax_label.setToolTip(_("Mirror vertically (X) or horizontally (Y)."))
         self.mirror_axis = RadioSet(
             [
@@ -680,7 +681,7 @@ class DsidedUI:
         grid1.addWidget(self.mirror_axis, 2, 1, 1, 2)
 
         # ## Axis Location
-        self.axloc_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.axloc_label = FCLabel('%s:' % _("Reference"))
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"
@@ -705,7 +706,8 @@ class DsidedUI:
         self.point_entry.setPlaceholderText(_("Point coordinates"))
 
         # Add a reference
-        self.add_point_button = QtWidgets.QPushButton(_("Add"))
+        self.add_point_button = FCButton(_("Add"))
+        self.add_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.add_point_button.setToolTip(
             _("Add the coordinates in format <b>(x, y)</b> through which the mirroring axis\n "
               "selected in 'MIRROR AXIS' pass.\n"
@@ -723,7 +725,7 @@ class DsidedUI:
         grid1.addWidget(self.point_entry, 7, 0, 1, 2)
         grid1.addWidget(self.add_point_button, 7, 2)
 
-        self.exc_hole_lbl = QtWidgets.QLabel('%s:' % _("Excellon"))
+        self.exc_hole_lbl = FCLabel('%s:' % _("Excellon"))
         self.exc_hole_lbl.setToolTip(
             _("Object that holds holes that can be picked as reference for mirroring.")
         )
@@ -756,7 +758,7 @@ class DsidedUI:
         grid_lay3.setColumnStretch(1, 1)
         grid1.addLayout(grid_lay3, 14, 0, 1, 3)
 
-        self.box_type_label = QtWidgets.QLabel('%s:' % _("Reference Object"))
+        self.box_type_label = FCLabel('%s:' % _("Reference Object"))
         self.box_type_label.setToolTip(
             _("It can be of type: Gerber or Excellon or Geometry.\n"
               "The coordinates of the center of the bounding box are used\n"
@@ -784,7 +786,8 @@ class DsidedUI:
 
         grid_lay3.addWidget(self.box_combo, 3, 0, 1, 2)
 
-        self.mirror_button = QtWidgets.QPushButton(_("Mirror"))
+        self.mirror_button = FCButton(_("Mirror"))
+        self.mirror_button.setIcon(QtGui.QIcon(self.app.resource_location + '/doubleside16.png'))
         self.mirror_button.setToolTip(
             _("Mirrors (flips) the specified object around \n"
               "the specified axis. Does not create a new \n"
@@ -812,7 +815,7 @@ class DsidedUI:
         self.layout.addLayout(grid4)
 
         # ## Alignment holes
-        self.alignment_label = QtWidgets.QLabel("<b>%s:</b>" % _('PCB Alignment'))
+        self.alignment_label = FCLabel("<b>%s:</b>" % _('PCB Alignment'))
         self.alignment_label.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"
@@ -821,7 +824,7 @@ class DsidedUI:
         grid4.addWidget(self.alignment_label, 0, 0, 1, 2)
 
         # ## Drill diameter for alignment holes
-        self.dt_label = QtWidgets.QLabel("%s:" % _('Drill Diameter'))
+        self.dt_label = FCLabel("%s:" % _('Drill Dia'))
         self.dt_label.setToolTip(
             _("Diameter of the drill for the alignment holes.")
         )
@@ -831,13 +834,13 @@ class DsidedUI:
             _("Diameter of the drill for the alignment holes.")
         )
         self.drill_dia.set_precision(self.decimals)
-        self.drill_dia.set_range(0.0000, 9999.9999)
+        self.drill_dia.set_range(0.0000, 10000.0000)
 
         grid4.addWidget(self.dt_label, 2, 0)
         grid4.addWidget(self.drill_dia, 2, 1)
 
         # ## Alignment Axis
-        self.align_ax_label = QtWidgets.QLabel('%s:' % _("Axis"))
+        self.align_ax_label = FCLabel('%s:' % _("Axis"))
         self.align_ax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
@@ -854,7 +857,7 @@ class DsidedUI:
         grid4.addWidget(self.align_axis_radio, 4, 1)
 
         # ## Alignment Reference Point
-        self.align_ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.align_ref_label = FCLabel('%s:' % _("Reference"))
         self.align_ref_label.setToolTip(
             _("The reference point used to create the second alignment drill\n"
               "from the first alignment drill, by doing mirror.\n"
@@ -876,7 +879,7 @@ class DsidedUI:
         self.layout.addLayout(grid5)
 
         # ## Alignment holes
-        self.ah_label = QtWidgets.QLabel("%s:" % _('Alignment Drill Coordinates'))
+        self.ah_label = FCLabel("%s:" % _('Alignment Drill Coordinates'))
         self.ah_label.setToolTip(
             _("Alignment holes (x1, y1), (x2, y2), ... "
               "on one side of the mirror axis. For each set of (x, y) coordinates\n"
@@ -892,6 +895,7 @@ class DsidedUI:
         grid5.addWidget(self.alignment_holes, 1, 0, 1, 2)
 
         self.add_drill_point_button = FCButton(_("Add"))
+        self.add_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.add_drill_point_button.setToolTip(
             _("Add alignment drill holes coordinates in the format: (x1, y1), (x2, y2), ... \n"
               "on one side of the alignment axis.\n\n"
@@ -909,6 +913,7 @@ class DsidedUI:
         #                 """)
 
         self.delete_drill_point_button = FCButton(_("Delete Last"))
+        self.delete_drill_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delete_drill_point_button.setToolTip(
             _("Delete the last coordinates tuple in the list.")
         )
@@ -920,7 +925,8 @@ class DsidedUI:
         grid5.addLayout(drill_hlay, 2, 0, 1, 2)
 
         # ## Buttons
-        self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
+        self.create_alignment_hole_button = FCButton(_("Create Excellon Object"))
+        self.create_alignment_hole_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
         self.create_alignment_hole_button.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"
@@ -937,7 +943,7 @@ class DsidedUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")

@@ -16,7 +16,6 @@ from appGUI.ObjectUI import *
 
 import tkinter as tk
 import sys
-from copy import deepcopy
 
 import gettext
 import appTranslation as fcTranslate
@@ -78,13 +77,9 @@ class ScriptObject(FlatCAMObj):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Basic"))
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _("Advanced"))
 
         self.script_editor_tab = AppTextEditor(app=self.app, plain_text=True, parent=self.app.ui)
 
@@ -131,7 +126,7 @@ class ScriptObject(FlatCAMObj):
         # ---------------------------------------------------- #
         # ----------- LOAD THE TEXT SOURCE FILE -------------- #
         # ---------------------------------------------------- #
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
         self.script_editor_tab.t_frame.hide()
 
         try:
@@ -219,7 +214,7 @@ class ScriptObject(FlatCAMObj):
             # it means that the script finished with an error
             result = self.app.shell.tcl.eval("set errorInfo")
             log.error("Exec command Exception: %s\n" % result)
-            self.app.shell.append_error('ERROR: %s\n '% result)
+            self.app.shell.append_error('ERROR: %s\n' % result)
 
         self.app.ui.fcinfo.lock_pmaps = False
         self.app.shell.close_processing()

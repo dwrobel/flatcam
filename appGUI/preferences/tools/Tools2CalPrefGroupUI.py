@@ -64,7 +64,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         )
 
         self.travelz_entry = FCDoubleSpinner()
-        self.travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
 
@@ -78,7 +78,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         )
 
         self.verz_entry = FCDoubleSpinner()
-        self.verz_entry.set_range(-9999.9999, 9999.9999)
+        self.verz_entry.set_range(-10000.0000, 10000.0000)
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
 
@@ -101,7 +101,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         )
 
         self.toolchangez_entry = FCDoubleSpinner()
-        self.toolchangez_entry.set_range(0.0000, 9999.9999)
+        self.toolchangez_entry.set_range(0.0000, 10000.0000)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -128,8 +128,8 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
               "- top-left -> the user will align the PCB vertically\n"
               "- bottom-right -> the user will align the PCB horizontally")
         )
-        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
-                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+        self.second_point_radio = RadioSet([{'label': _('Top Left'), 'value': 'tl'},
+                                            {'label': _('Bottom Right'), 'value': 'br'}],
                                            orientation='vertical')
 
         grid_lay.addWidget(second_point_lbl, 8, 0)

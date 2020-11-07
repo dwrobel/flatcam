@@ -13,8 +13,8 @@ from copy import deepcopy
 
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage, grace
-from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox, \
-    FCLabel
+from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
+    FCButton, FCComboBox, FCLabel, FCComboBox2
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import unary_union, linemerge
@@ -156,16 +156,14 @@ class ToolPaint(AppTool, Gerber):
             self.ui.paintmethod_combo.model().item(idx).setEnabled(True)
         else:
             self.ui.paintmethod_combo.model().item(idx).setEnabled(False)
-            if self.ui.paintmethod_combo.get_value() == _("Laser_lines"):
-                self.ui.paintmethod_combo.set_value(_("Lines"))
+            if self.ui.paintmethod_combo.get_value() == idx:    # if its Laser Lines
+                self.ui.paintmethod_combo.set_value(idx+1)
 
     def on_reference_combo_changed(self):
         obj_type = self.ui.reference_type_combo.currentIndex()
         self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.reference_combo.setCurrentIndex(0)
-        self.ui.reference_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ui.reference_type_combo.get_value()]
+        self.ui.reference_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
 
     def connect_signals_at_init(self):
         # #############################################################################
@@ -383,10 +381,11 @@ class ToolPaint(AppTool, Gerber):
         self.blockSignals(False)
 
     def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+        tool_add_popup = FCInputDoubleSpinner(title='%s...' % _("New Tool"),
+                                              text='%s:' % _('Enter a Tool Diameter'),
+                                              min=0.0000, max=99.9999, decimals=self.decimals,
+                                              parent=self.app.ui)
+        tool_add_popup.set_icon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()
         if ok:
@@ -413,7 +412,7 @@ class ToolPaint(AppTool, Gerber):
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else "Rough"
+            typ = 'Iso' if tt == 'V' else 'Rough'
 
             self.paint_tools[current_uid].update({
                 'type': typ,
@@ -542,9 +541,19 @@ class ToolPaint(AppTool, Gerber):
 
         self.ui.on_rest_machining_check(state=self.app.defaults["tools_paint_rest"])
 
-        # if the Paint Method is "Single" disable the tool table context menu
-        if self.default_data["tools_paint_selectmethod"] == "single":
+        # if the Paint Method is "Polygon Selection" disable the tool table context menu
+        if self.default_data["tools_paint_selectmethod"] == 1:
             self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
+
+        # make sure that we can't get selection of Laser Lines for Geometry even if it's set in the Preferences
+        # because we don't select the default object type in Preferences but here
+        idx = self.ui.paintmethod_combo.findText(_("Laser_lines"))
+        if self.ui.type_obj_radio.get_value().lower() == 'gerber':
+            self.ui.paintmethod_combo.model().item(idx).setEnabled(True)
+        else:
+            self.ui.paintmethod_combo.model().item(idx).setEnabled(False)
+            if self.ui.paintmethod_combo.get_value() == idx:  # if its Laser Lines
+                self.ui.paintmethod_combo.set_value(idx + 1)
 
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
@@ -658,7 +667,7 @@ class ToolPaint(AppTool, Gerber):
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
-        filename = self.app.data_path + '\\tools_db.FlatDB'
+        filename = self.app.tools_database_path()
 
         new_tools_dict = deepcopy(self.default_data)
         updated_tooldia = None
@@ -701,7 +710,7 @@ class ToolPaint(AppTool, Gerber):
                 tools = f.read()
         except IOError:
             self.app.log.error("Could not load tools DB file.")
-            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.app.inform.emit('[ERROR] %s' % _("Could not load the file."))
             self.blockSignals(False)
             self.on_tool_default_add(dia=tool_dia)
             return
@@ -721,7 +730,7 @@ class ToolPaint(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = "Rough"
+        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
@@ -986,7 +995,7 @@ class ToolPaint(AppTool, Gerber):
 
         self.sel_rect = []
 
-        obj_type = self.ui.type_obj_radio.get_value
+        obj_type = self.ui.type_obj_radio.get_value()
         self.circle_steps = int(self.app.defaults["gerber_circle_steps"]) if obj_type == 'gerber' else \
             int(self.app.defaults["geometry_circle_steps"])
         self.obj_name = self.ui.obj_combo.currentText()
@@ -996,16 +1005,16 @@ class ToolPaint(AppTool, Gerber):
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except Exception as e:
             log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object: %s"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return
 
         if self.paint_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), self.paint_obj))
             return
 
-        # test if the Geometry Object is multigeo and return Fail if True because
-        # for now Paint don't work on MultiGeo
-        if self.paint_obj.kind == 'geometry' and self.paint_obj.multigeo is True:
+        # test if the Geometry Object is multigeo with more than one tool and return Fail if True because
+        # for now Paint don't work on MultiGeo with more than one tools
+        if self.paint_obj.kind == 'geometry' and self.paint_obj.multigeo is True and len(self.paint_obj.tools) > 1:
             self.app.inform.emit('[ERROR_NOTCL] %s...' % _("Can't do Paint on MultiGeo geometries"))
             return 'Fail'
 
@@ -1032,10 +1041,10 @@ class ToolPaint(AppTool, Gerber):
             return
 
         self.select_method = self.ui.selectmethod_combo.get_value()
-        if self.select_method == _("All"):
+        if self.select_method == 0:  # _("All")
             self.paint_poly_all(self.paint_obj, tooldia=self.tooldia_list, outname=self.o_name)
 
-        elif self.select_method == _("Polygon Selection"):
+        elif self.select_method == 1:   # _("Polygon Selection")
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
@@ -1058,8 +1067,8 @@ class ToolPaint(AppTool, Gerber):
             # disconnect flags
             self.poly_sel_disconnect_flag = True
 
-        elif self.select_method == _("Area Selection"):
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the paint area."))
+        elif self.select_method == 2:   # _("Area Selection")
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -1077,7 +1086,7 @@ class ToolPaint(AppTool, Gerber):
             # disconnect flags
             self.area_sel_disconnect_flag = True
 
-        elif self.select_method == _("Reference Object"):
+        elif self.select_method == 3:   # _("Reference Object")
             self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
             try:
@@ -1125,7 +1134,7 @@ class ToolPaint(AppTool, Gerber):
                     self.app.inform.emit(
                         '%s: %d. %s' % (_("Added polygon"),
                                         int(len(self.poly_dict)),
-                                        _("Click to add next polygon or right click to start painting."))
+                                        _("Click to add next polygon or right click to start."))
                     )
                 else:
                     try:
@@ -1138,7 +1147,7 @@ class ToolPaint(AppTool, Gerber):
                         return
                     self.app.inform.emit(
                         '%s. %s' % (_("Removed polygon"),
-                                    _("Click to add/remove next polygon or right click to start painting."))
+                                    _("Click to add/remove next polygon or right click to start."))
                     )
 
                 self.app.tool_shapes.redraw()
@@ -1453,7 +1462,7 @@ class ToolPaint(AppTool, Gerber):
 
         cpoly = None
 
-        if paint_method == _("Standard"):
+        if paint_method == 0:   # _("Standard")
             try:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cpoly = self.clear_polygon(polyg,
@@ -1467,7 +1476,7 @@ class ToolPaint(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Standard --> %s" % str(ee))
-        elif paint_method == _("Seed"):
+        elif paint_method == 1:  # _("Seed")
             try:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cpoly = self.clear_polygon2(polyg,
@@ -1481,7 +1490,7 @@ class ToolPaint(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Seed --> %s" % str(ee))
-        elif paint_method == _("Lines"):
+        elif paint_method == 2:  # _("Lines")
             try:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cpoly = self.clear_polygon3(polyg,
@@ -1495,7 +1504,7 @@ class ToolPaint(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Lines --> %s" % str(ee))
-        elif paint_method == _("Laser_lines"):
+        elif paint_method == 3:  # _("Laser_lines")
             try:
                 # line = None
                 # aperture_size = None
@@ -1544,7 +1553,7 @@ class ToolPaint(AppTool, Gerber):
 
                 # process the flashes found in the selected polygon with the 'lines' method for rectangular
                 # flashes and with _("Seed") for oblong and circular flashes
-                # and pads (flahes) need the contour therefore I override the GUI settings with always True
+                # and pads (flashes) need the contour therefore I override the GUI settings with always True
                 for ap_type in flash_el_dict:
                     for elem in flash_el_dict[ap_type]:
                         if 'solid' in elem:
@@ -1558,7 +1567,7 @@ class ToolPaint(AppTool, Gerber):
                                                           connect=conn,
                                                           prog_plot=prog_plot)
                                 pads_lines_list += [p for p in f_o.get_objects() if p]
-
+                            # this is the same as above but I keep it in case I will modify something in the future
                             elif ap_type == 'O':
                                 f_o = self.clear_polygon2(elem['solid'],
                                                           tooldia=tooldiameter,
@@ -1646,7 +1655,7 @@ class ToolPaint(AppTool, Gerber):
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Laser Lines --> %s" % str(ee))
-        elif paint_method == _("Combo"):
+        elif paint_method == 4:  # _("Combo")
             try:
                 self.app.inform.emit(_("Painting polygon with method: lines."))
                 cpoly = self.clear_polygon3(polyg,
@@ -1851,7 +1860,7 @@ class ToolPaint(AppTool, Gerber):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different strategy of paint"), str(e))
+                                                 "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
                     continue
 
@@ -2060,7 +2069,7 @@ class ToolPaint(AppTool, Gerber):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     msg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                "Or a different strategy of paint"), str(e))
+                                                "Or a different method of Paint"), str(e))
                     self.app.inform.emit(msg)
                     continue
 
@@ -2173,18 +2182,18 @@ class ToolPaint(AppTool, Gerber):
             proc.done()
 
             if ret == 'fail':
-                self.app.inform.emit('[ERROR] %s' % _("Paint failed."))
+                self.app.inform.emit('[ERROR] %s' % _("Failed."))
                 return
 
             # focus on Properties Tab
             # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
-            self.app.inform.emit('[success] %s' % _("Paint Done."))
+            self.app.inform.emit('[success] %s' % _("Done."))
 
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        proc = self.app.proc_container.new(_("Painting..."))
+        proc = self.app.proc_container.new(_("Painting ..."))
 
         if run_threaded:
             # Background
@@ -2234,7 +2243,9 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
 
         if inside_pt and poly_list is None:
-            polygon_list = [self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)]
+            polygon_list = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
+            if polygon_list:
+                polygon_list = [polygon_list]
         elif (inside_pt is None and poly_list) or (inside_pt and poly_list):
             polygon_list = poly_list
         else:
@@ -2244,7 +2255,7 @@ class ToolPaint(AppTool, Gerber):
         if polygon_list is None:
             self.app.log.warning('No polygon found.')
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
-            return
+            return "fail"
 
         self.paint_geo(obj, polygon_list, tooldia=tooldia, order=order, method=method, outname=outname,
                        tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)
@@ -2616,7 +2627,12 @@ class ToolPaint(AppTool, Gerber):
         """
         tool_from_db = deepcopy(tool)
 
-        if tool['data']['tool_target'] != _("Paint"):
+        if tool['data']['tool_target'] not in [0, 4]:   # [General, Paint]
+            for idx in range(self.app.ui.plot_tab_area.count()):
+                if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.app.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.app.ui.plot_tab_area.removeTab(idx)
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
             return
 
@@ -2664,7 +2680,7 @@ class ToolPaint(AppTool, Gerber):
             max_uid = max(tool_uid_list)
         tooluid = max_uid + 1
 
-        tooldia = float('%.*f' % (self.decimals, tooldia))
+        tooldia = self.app.dec_format(tooldia, self.decimals)
 
         tool_dias = []
         for k, v in self.paint_tools.items():
@@ -2715,7 +2731,9 @@ class ToolPaint(AppTool, Gerber):
             if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
-        self.app.on_tools_database(source='paint')
+        ret_val = self.app.on_tools_database(source='paint')
+        if ret_val == 'fail':
+            return
         self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.ui.buttons_frame.hide()
         self.app.tools_db_tab.ui.add_tool_from_db.show()
@@ -2824,7 +2842,7 @@ class PaintUI:
               "this function will not be able to create painting geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units) \n"
+            _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
@@ -2887,7 +2905,7 @@ class PaintUI:
         )
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.set_range(0.000, 10000.0000)
         self.new_tooldia_entry.setObjectName('p_tool_dia')
 
         self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
@@ -2927,7 +2945,7 @@ class PaintUI:
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-              "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
@@ -2956,8 +2974,8 @@ class PaintUI:
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be painted are still \n"
-              "not painted.\n"
+              "and increasing it if areas that should be processed are still \n"
+              "not processed.\n"
               "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
@@ -2981,7 +2999,7 @@ class PaintUI:
         )
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName('p_offset')
 
         grid4.addWidget(self.offset_label, 2, 0)
@@ -2999,19 +3017,8 @@ class PaintUI:
               "- Combo: In case of failure a new method will be picked from the above\n"
               "in the order specified.")
         )
-        # self.paintmethod_combo = RadioSet([
-        #     {"label": _("Standard"), "value": "standard"},
-        #     {"label": _("Seed-based"), "value": _("Seed")},
-        #     {"label": _("Straight lines"), "value": _("Lines")},
-        #     {"label": _("Laser lines"), "value": _("Laser_lines")},
-        #     {"label": _("Combo"), "value": _("Combo")}
-        # ], orientation='vertical', stretch=False)
 
-        # for choice in self.paintmethod_combo.choices:
-        #     if choice['value'] == _("Laser_lines"):
-        #         choice["radio"].setEnabled(False)
-
-        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo = FCComboBox2()
         self.paintmethod_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
@@ -3070,11 +3077,11 @@ class PaintUI:
         self.rest_cb.setObjectName('p_rest_machining')
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will process copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n\n"
+              "from bigger to smaller, to process the copper features that\n"
+              "could not be processed by previous tool, until there is\n"
+              "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
         grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
@@ -3088,7 +3095,7 @@ class PaintUI:
         )
         self.rest_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rest_offset_entry.set_precision(self.decimals)
-        self.rest_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.rest_offset_entry.set_range(-10000.0000, 10000.0000)
 
         grid4.addWidget(self.rest_offset_label, 17, 0)
         grid4.addWidget(self.rest_offset_entry, 17, 1)
@@ -3104,58 +3111,36 @@ class PaintUI:
               "- 'Reference Object' - will process the area specified by another object.")
         )
 
-        # grid3 = QtWidgets.QGridLayout()
-        # self.selectmethod_combo = RadioSet([
-        #     {"label": _("Polygon Selection"), "value": "single"},
-        #     {"label": _("Area Selection"), "value": "area"},
-        #     {"label": _("All Polygons"), "value": "all"},
-        #     {"label": _("Reference Object"), "value": "ref"}
-        # ], orientation='vertical', stretch=False)
-        # self.selectmethod_combo.setObjectName('p_selection')
-        # self.selectmethod_combo.setToolTip(
-        #     _("How to select Polygons to be painted.\n"
-        #       "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
-        #       "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-        #       "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-        #       "- 'All Polygons' - the Paint will start after click.\n"
-        #       "- 'Reference Object' - will do non copper clearing within the area\n"
-        #       "specified by another object.")
-        # )
-
-        self.selectmethod_combo = FCComboBox()
+        self.selectmethod_combo = FCComboBox2()
         self.selectmethod_combo.addItems(
-            [_("Polygon Selection"), _("Area Selection"), _("All"), _("Reference Object")]
+            [_("All"), _("Polygon Selection"), _("Area Selection"), _("Reference Object")]
         )
         self.selectmethod_combo.setObjectName('p_selection')
 
         grid4.addWidget(selectlabel, 18, 0)
         grid4.addWidget(self.selectmethod_combo, 18, 1)
 
-        form1 = QtWidgets.QFormLayout()
-        grid4.addLayout(form1, 20, 0, 1, 2)
-
-        self.reference_type_label = FCLabel('%s:' % _("Ref. Type"))
+        # Type of Reference Object
+        self.reference_type_label = FCLabel('%s:' % _("Type"))
         self.reference_type_label.setToolTip(
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.reference_type_combo = FCComboBox()
+        self.reference_type_combo = FCComboBox2()
         self.reference_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        form1.addRow(self.reference_type_label, self.reference_type_combo)
+        grid4.addWidget(self.reference_type_label, 20, 0)
+        grid4.addWidget(self.reference_type_combo, 20, 1)
 
-        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
-        self.reference_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
+        # Reference Object
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
-        form1.addRow(self.reference_combo_label, self.reference_combo)
+
+        grid4.addWidget(self.reference_combo, 22, 0, 1, 2)
 
         self.reference_combo.hide()
-        self.reference_combo_label.hide()
         self.reference_type_combo.hide()
         self.reference_type_label.hide()
 
@@ -3168,8 +3153,8 @@ class PaintUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid4.addWidget(self.area_shape_label, 21, 0)
-        grid4.addWidget(self.area_shape_radio, 21, 1)
+        grid4.addWidget(self.area_shape_label, 24, 0)
+        grid4.addWidget(self.area_shape_radio, 24, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -3229,31 +3214,29 @@ class PaintUI:
     def on_selection(self):
         sel_combo = self.selectmethod_combo.get_value()
 
-        if sel_combo == _("Reference Object"):
+        if sel_combo == 3:  # _("Reference Object")
             self.reference_combo.show()
-            self.reference_combo_label.show()
             self.reference_type_combo.show()
             self.reference_type_label.show()
         else:
             self.reference_combo.hide()
-            self.reference_combo_label.hide()
             self.reference_type_combo.hide()
             self.reference_type_label.hide()
 
-        if sel_combo == _("Polygon Selection"):
+        if sel_combo == 1:  # _("Polygon Selection")
             # disable rest-machining for single polygon painting
             # self.ui.rest_cb.set_value(False)
             # self.ui.rest_cb.setDisabled(True)
             pass
 
-        if sel_combo == _("Area Selection"):
+        if sel_combo == 2:  # _("Area Selection") index 2 in combobox (FCComboBox2() returns index instead of text)
             # disable rest-machining for area painting
             # self.ui.rest_cb.set_value(False)
             # self.ui.rest_cb.setDisabled(True)
 
             self.area_shape_label.show()
             self.area_shape_radio.show()
-        else:
+        else:   # All = index 0 in combobox
             self.new_tooldia_entry.setDisabled(False)
             self.add_newtool_button.setDisabled(False)
             self.deltool_btn.setDisabled(False)

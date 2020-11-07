@@ -7,6 +7,235 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.11.2020
+
+- fixed a small issue in Excellon Editor that reset the delta coordinates on right mouse button click too, which was incorrect. Only left mouse button click should reset the delta coordinates.
+- In Gerber Editor upgraded the UI
+- in Gerber Editor made sure that trying to add a Circular Pad array with null radius will fail
+- in Gerber Editor when the radius is zero the utility geometry is deleted
+- in Excellon Editor made sure that trying to add a Circular Drill/Slot array with null radius will fail
+- in Excellon Editor when the radius is zero the utility geometry is deleted
+- in Gerber Editor fixed an error in the Eraser tool trying to disconnect the Jump signal
+- small UI change in the Isolation Tool for the Reference Object selection
+- small UI changes in NCC Tool and in Paint Tool for the Reference Object selection
+- language strings recompiled to make sure that the .MO files are well optimized
+RELEASE 8.994
+
+6.11.2020
+
+- in Gerber Editor made the selection multithreaded in a bid to get more performance but until Shapely will start working on vectorized geometry this don't yield too much improvement
+- in Gerber Editor, for selection now the intersection of the click point and the geometry is determined for chunks of the original geometry, each chunk gets done in a separate process
+- updated the French translation (by Olivier Cornet)
+- fixed the new InputDialog widget to set its passed values in the constructor
+- in Gerber Editor fixed the Add circular array capability
+- in Gerber Editor remade the utility geometry generation for Circular Pad Array to show the array updated in real time and also fixed the adding of array in negative quadrants
+- in Excellon Editor remade the utility geometry generation for Circular Drill/Slot Array to show the array updated in real time and also fixed the adding of array in negative quadrants
+- Turkish language strings updated (by Mehmet Kaya)
+- both for Excellon and Gerber editor fixed the direction of slots/pads when adding a circular array
+- in Gerber editor added the G key shortcut to toggle the grid snapping
+- made some changes in the Region Tool from the Gerber Editor
+
+5.11.2020
+
+- fixed the annotation plotting in the CNCJob object
+- created a new InputDialog widget that has the buttons and the context menu translated and replaced the old widget throughout the app
+- updated the translation strings
+- Turkish language strings updated
+- set some policy rules back the way they were for the combo boxes in Geometry Object properties
+- updated the Italian translation (by Massimiliano Golfetto)
+- finished the Google-translation of the German language strings
+
+4.11.2020
+
+- updated all the translation files
+- fixed issue with arrays of items could not be added in the Gerber/Excellon Editor when a translation is used
+- fixed issue in the Excellon Editor where the Space key did not toggle the direction of the array of drills
+- combed the application strings all over the app and trimmed them up until those starting with letter 'O'
+- updated the translation strings
+- fixed the UI layout in Excellon Editor and made sure that after changing a value in the Notebook side after the mouse is inside the canvas, the canvas takes the focus allowing the key shortcuts to work
+- Turkish language strings updated (by Mehmet Kaya)
+- in Gerber Editor added the shortcut key 'Space' to change the direction of the array of pads
+- updated all the translation languages. Translated by Google the Spanish, Russian. Romanian translation updated.
+- refactored the name of the classes from the Gerber Editor
+- added more icons in the Gerber and Excellon Editors for the buttons
+
+3.11.2020
+
+- fixed an issue in Tool Isolation used with tools from the Tools Database: the set offset value was not used
+- updated the Tools Database to include all the Geometry keys in the every tool from database
+- made sure that the Operation Type values ('Iso', 'Rough' and 'Finish') are not translated as this may create issues all over the application
+- fix an older issue that made that only the Custom choice created an effect when changing the Offset in the Geometry Object Tool Table
+- trying to optimize Gerber Editor selection with the mouse
+- optimized some of the strings
+- fixed the project context save functionality to work in the new program configuration
+- updated Turkish translation (by Mehmet Kaya)
+- in NCC and Isolation Tools, the Validity Checking of the tools is now multithreaded when the Check Validity UI control is checked
+- translation strings updated
+- fixed an error in Gerber parser, when it encounter a pen-up followed by pen-down move while in a region
+- trimmed the application strings
+- updated the Italian translation (by Massimiliano Golfetto)
+- fixed a series of issues in Gerber Editor tools when the user is trying to use the tools by preselecting a aperture without size (aperture macro)
+- moved all the UI stuff out of the Gerber Editor class in its own class
+- in the Excellon Editor, added shortcut keys Space and Ctrl+Space for toggling the direction of the Slots, respectively for the Array of Slots
+- updated the translation strings to the latest changes in the app strings
+
+2.11.2020
+
+- fixed the Tcl Command AlignDrill
+- fixed the Tcl Command AlignDrillGrid
+- fixed the Tcl COmmand Panelize, Excellon panelization section
+- Fixed an issue in Tool Calibration export_excellon method call
+- PEP8 corrections all over the app
+- made sure that the object selection will not work while in Editors or in the App Tools
+- some minor changes to strings and icons
+- in Corner Markers Tool - the new Gerber object will have also follow_geometry
+- upgraded the Fiducials Tool to create new objects instead of updating in place the source objects
+- upgraded the Copper Thieving Tool to create new objects instead of updating in place the source objects
+- in Copper Thieving Tool added a new parameter to filter areas too small to be desired in the copper thieving; added it to Preferences too
+- Copper Thieving Tool added a new parameter to select what extra geometry to include in the Pattern Plating Mask; added it to the Preferences
+- made a wide change on the spinners GUI ranges: from 9999.9999 all values to 10000.0000
+- fixed some late issues in Corner Markers Tool new feature (messages)
+- upgraded Calculator Tool and added the new parameter is the Preferences
+- updated translation strings
+- fixed borderline bug in Gerber editor when the edited Gerber object last aperture is a aperture without size (Aperture Macro)
+- improved the loading of a Gerber object in the Gerber Editor
+- updated translation strings
+
+1.11.2020
+
+- updated the French Translation (by Olivier Cornet)
+- fixed issue in Corner Markers Tool that crashed the app if only one corner was checked
+- fixed issue in Isolation Tool where Area Isolation selection was not working 
+- added to the translatable strings the category labels in the Project Tab and also updated the translations
+- fixed a small issue (messages) in Corner Markers Tool
+- in Corners Markers Tool added a new feature: possibility to use cross shape markers
+- in Corner Marker Tool add new feature: ability to create an Excellon object with drill holes in the corner markes
+- in Corner Marker Tool, will no longer update the current object with the marker geometry but create a new Gerber object
+- in Join Excellon functionality made sure that the new Combo Exellon object will have copied the data from source objects and not just references, therefore will survive the delete of its parents
+- updated Turkish translation (by Mehmet Kaya)
+- updated all the languages except Turkish
+- in the Tool PDF fixed the creation of Excellon objects to the current Excellon object data structure
+
+31.10.2020
+
+- adapted HPGL importer to work within the new app
+- in Gerber Editor fixed an error when using the Distance Tool with "Snap to center" option active: if clicking not on a pad Distance Tool was not working
+- updated the Turkish translation strings (by Mehmet Kaya)
+- typo fixed in Copper Thieving Tool (due of recent changes)
+- fixed issue #457; wrong reference when saving a project
+- fixed issue in Excellon Editor that crashed the app if using the Resize Drill feature by clicking in menu/toolbar
+- fixed issue in Excellon Editor when using the menu links to Move or Copy Drills/Slots
+- updated the strings 
+- updated the Turkish translation strings (by Mehmet Kaya)
+- added a parent to some of the FCInputDialog widgets used in the app such that those pop-up windows will b displayed in the center of the app main window as opposed to the center of the screen
+- finished the Google-translation of not translated strings in Russian language
+
+30.10.2020
+
+- fixed the Punch Gerber Tool bug that did not allowed the projects to be loaded or to create a new project. Fixed issue #456
+- in Tool Subtract added an option to delete the source objects after a successful operation. Fixed issue #455
+- when entering into an Editor now the Project tab is disabled and the Properties tab where the Editor is installed change the text to 'Editor' and the color is set in Red. After exiting the Tab text is reverted to previous state.
+- fixed and issue where the Tab color that was changed in various states of the app was reverted back to a default color 'black'. Now it reverts to whatever color had before therefore being compatible with an usage of black theme
+- fixed bug that did not allow joining of any object to a Geometry object
+- working on solving the lost triggered signals for the Editor Toolbars buttons after changing the layout
+- fixed issue #454; trigger signals for Editor Toolbars lost after changing the layout
+- updated the translation strings
+- more bugs that were introduced by recent changes done to solve other bugs and so on: fixed issues with the Editors and Delete shortcut
+- fixed an error in the Gerber Editor
+
+29.10.2020
+
+- added icons in most application Tools
+- updated Punch Gerber Tool such that the aperture table is updated upon clicking of the checboxes in Processed Pads Type
+- updated Punch Gerber Tool: the Excellon method now takes into consideration the pads choice 
+- minor change for the FCComboBox UI element by setting its size policy as ignored so it will not expand the notebook when the name of one of its items is very long
+- added a protection on opening the tools database UI if the tools DB file is not loaded
+- fixed NCC Tool not working with the new changes; the check for not having complete isolation is just a Warning
+- fixed the sizePolicy for the FCComboBox widgets in the Preferences that holds the preprocessors
+- fixed issue with how the preamble / postamble GCode were inserted into the final GCode
+- fixed a small issue in GCode Editor where the signals for the buttons were attached again at each launch of the GCode Editor
+- fixed issues in the Tools Database due of recent changes in how the data structure is created
+- made sure that the right tools go only to the intended use, in Tools Database otherwise an error status message is created and Tools DB is closed on adding a wrong tool
+- fixed the usage for Tools Database in Unix-like OS's; fixed issue #453
+- done some modest refactoring
+- fixed the Search and Add feature in Geometry Object UI
+- fixed issue with preamble not being inserted when used alone
+- modified the way that the start GCode is stored such that now the bug in GCode Editor that did not allowed selection of the first tool is now solved
+- in Punch Gerber Tool added a column in the apertures table that allow marking of the selected aperture so the user can see what apertures are selected
+- improvements in the Punch Gerber Tool aperture markings
+- improved the Geometry Object functionality in regards of Tools DB, deleting a tool and adding a tool
+- when using the 'T' shortcut key with Properties Tab in focus and populated with the properties of a Geometry Object made the popped up spinner to have the value autoselected
+- optimized the UI in Extract Drills Tool
+- added some more icons for buttons
+
+28.10.2020
+
+- a series of PEP8 corrections in the FlatCAMGeometry.py
+- in Geometry UI finished a very basic way for the Polish feature (this will be upgraded in the future, for now is very rough)
+- added some new GUI elements by subclassing some widgets for the dialog pop-ups
+- in NCC Tool and Isolation Tool, pressing the shortcut key 'T' will bring the add new tool pop up in which now it is included the button to get the optimal diameter
+- in Geometry UI and for Solderpaste Tool replaced the pop up window that is launched when using shortcut key with one that has the context menu translated
+- some UI cleanup in the Geometry UI
+- updated the translation strings except Russian which could be in the works
+- fixed an error that did not allowed for the older preferences to be deleted when installing a different version of the software
+- in Legacy Mode fixed a small issue: the status bar icon for the Grid axis was not colored on app start
+- added a new string to the translatable strings
+- fixed an error that sometime showed in Legacy Mode when moving the mouse outside canvas
+- reactivated the shortcut key 'S' in TCL Shell, to close the shell dock when it was open (of course the focus has to be not on the command line)
+- brought up-to-date and fixed the Tcl Command Drillcncjob and Cncjob
+- fixed Tcl command Isolate to not print messages on message bar in case it is run headless
+- fixed Tcl command Copper Clear (NCC)
+- fixed Tcl command Paint
+- temporary fix for comboboxes not finding the the value in the items when setting themselves with a value by defaulting to the first item in the list
+- fix in Tool Subtract where there was a typo
+- upgraded the punch Gerber Tool
+- updated the Turkish translation strings (by Mehmet Kaya)
+- fixed an issue in Isolation Tool when running the app in Basic mode;
+- fixed Paint, Isolation and NCC Tools such the translated comboboxes values are now stored as indexes instead of translated words as before
+- in Geometry Object made sure that the widgets in the Tool Table gets populated regardless of encountering non-recognizable translated values
+- in Paint Tool found a small bug and fixed it
+- fixed the Tool Subtractor algorithms
+
+27.10.2020
+
+- created custom classes derived from TextEdit and from LineEdit where I overloaded the context menu and I made all the other classes that were inheriting from them to inherit from those new classes
+- minor fix in ToolsDB2UI
+- updated the Turkish translation strings (by Mehmet Kaya)
+- fixed a bug in conversion of any to Gerber in the section of Excellon conversion
+- some PEP8 fixes
+- fixed a bug due of recent chagnes in FileMenuHandlers class
+- fixed an issue in Tools Database (ToolsDB2 class) that did not made the Tab name in Red color when adding/deleting a tool by using the context menu
+- optimized the Tools Database
+- small string change
+
+26.10.2020
+
+- added a new menu entry and functionality in the View category: enable all non-selected (shortcut key ALT+3)
+- fixed shortcut keys for a number of functionality and in some cases added some new
+- fixed the enable/disable all plots functionality
+- fixed issue with the app window restored in a shifted position after doing Fullscreen
+- fixed issue with coords, delta_coords and status toolbars being disabled when entering fullscreen mode and remaining disabled after restore to normal mode
+- changed some of the strings (added a few in the How To section)
+- more strings updated
+- modified the shortcut strings and the way the shortcuts were listed in the Shortcut keys list such that it will allow a future Shortcuts Manager
+- updated all the language strings according to the modifications done above
+- fixed a small issue with using the shortcut key for toggling the display of Properties tab
+- fixed issue with not updating the model view on the model used in the Project tab when using the shortcut keys 1, 2, 3 which made the color of the tree element not reflect the change in status
+- minor string fix; removed the 'Close' menu entry on the context menu for the TCL Shell
+- overloaded the context menu in the Tcl Shell and added key shortcuts; the menu entries are now translatable
+- overloaded the context menu in several classes from GUI Elements such that the menus are now translated
+- fixed a formatting issue in the MainGUI.py file
+- updated the translations for the new strings that were added
+- another GUI element for which I've overloaded the context menu to make it translatable: _ExpandableTextEdit
+- overloaded the context menu for FCSpinner and for FCDoubleSpinner
+- added new strings and therefore updated the translation strings
+- fixed some minor issues when doing a project save
+
+25.10.2020
+
+- updated the Italian translation (by Massimiliano Golfetto)
+- finished the update of the Spanish translation (Google translate)
+
 24.10.2020
 
 - added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
@@ -2895,7 +3124,7 @@ RELEASE 8.993
 - added all the tools from Gerber Editor to the the contextual menu
 - added the menu entry "Edit" in the Project contextual menu for Gerber objects
 - started to work in adding slots and slots array in Excellon Editor
-- in FCSlot finished the utility geometry and the GUI for it
+- in SlotAdd finished the utility geometry and the GUI for it
 
 12.08.2019
 
@@ -3183,7 +3412,7 @@ RELEASE 8.993
 
 23.05.2019
 
-- fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored
+- fixed bug in Gerber editor FCDisk and DiscSemiEditorGrb that the resulting geometry was not stored into the '0' aperture where all the solids are stored
 - fixed minor issue in Gerber Editor where apertures were included in the saved object even if there was no geometric data for that aperture
 - some PEP8 cleanup in FlatCAMApp.py
 
@@ -3258,7 +3487,7 @@ RELEASE 8.993
 - made the Feedrate Rapids parameter to depend on the type of preprocessor choosed. It will be showed only for a preprocessor which the name contain 'marlin' and for any preprocessor's that have 'custom' in the name
 - fixed the camlib.Gerber functions of mirror, scale, offset, skew and rotate to work with the new data structure for apertures geometry
 - fixed Gerber Editor selection to work with the new Gerber data structure in self.apertures
-- fixed Gerber Editor FCPad class to work with the new Gerber data structure in self.apertures
+- fixed Gerber Editor PadEditorGrb class to work with the new Gerber data structure in self.apertures
 - fixed camlib.Gerber issues related to what happen after parsing rectangular apertures 
 - wip in camblib.Gerber
 - completely converted the Gerber editor to the new data structure

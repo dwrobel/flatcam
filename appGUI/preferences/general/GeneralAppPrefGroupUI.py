@@ -61,7 +61,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.precision_metric_entry, 1, 1)
 
         # Precision Inch
-        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision INCH'))
+        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision Inch'))
         self.precision_inch_label.setToolTip(
             _("The number of decimals used throughout the application\n"
               "when the set units are in INCH system.\n"
@@ -316,7 +316,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Top Margin value
         self.tmargin_entry = FCDoubleSpinner()
         self.tmargin_entry.set_precision(self.decimals)
-        self.tmargin_entry.set_range(0.0000, 9999.9999)
+        self.tmargin_entry.set_range(0.0000, 10000.0000)
 
         self.tmargin_label = QtWidgets.QLabel('%s:' % _("Top Margin"))
         self.tmargin_label.setToolTip(
@@ -329,7 +329,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Bottom Margin value
         self.bmargin_entry = FCDoubleSpinner()
         self.bmargin_entry.set_precision(self.decimals)
-        self.bmargin_entry.set_range(0.0000, 9999.9999)
+        self.bmargin_entry.set_range(0.0000, 10000.0000)
 
         self.bmargin_label = QtWidgets.QLabel('%s:' % _("Bottom Margin"))
         self.bmargin_label.setToolTip(
@@ -342,7 +342,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Left Margin value
         self.lmargin_entry = FCDoubleSpinner()
         self.lmargin_entry.set_precision(self.decimals)
-        self.lmargin_entry.set_range(0.0000, 9999.9999)
+        self.lmargin_entry.set_range(0.0000, 10000.0000)
 
         self.lmargin_label = QtWidgets.QLabel('%s:' % _("Left Margin"))
         self.lmargin_label.setToolTip(
@@ -355,7 +355,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Right Margin value
         self.rmargin_entry = FCDoubleSpinner()
         self.rmargin_entry.set_precision(self.decimals)
-        self.rmargin_entry.set_range(0.0000, 9999.9999)
+        self.rmargin_entry.set_range(0.0000, 10000.0000)
 
         self.rmargin_label = QtWidgets.QLabel('%s:' % _("Right Margin"))
         self.rmargin_label.setToolTip(

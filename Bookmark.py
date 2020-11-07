@@ -240,7 +240,7 @@ class BookmarkManager(QtWidgets.QWidget):
             index_list.append(index)
             title_to_remove = self.table_widget.item(model_index.row(), 1).text()
 
-            if title_to_remove == 'FlatCAM' or title_to_remove == 'Backup Site':
+            if title_to_remove == 'FlatCAM' or title_to_remove == _('Backup Site'):
                 self.app.inform.emit('[WARNING_NOTCL] %s.' % _("This bookmark can not be removed"))
                 self.build_bm_ui()
                 return
@@ -287,12 +287,12 @@ class BookmarkManager(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Bookmarks"),
-                                                           directory='{l_save}/{n}_{date}'.format(
-                                                                l_save=str(self.app.get_last_save_folder()),
-                                                                n=_("Bookmarks"),
-                                                                date=date),
-                                                           ext_filter=filter__)
+        filename, _f = FCFileSaveDialog.get_saved_filename(
+            caption=_("Export Bookmarks"),
+            directory='{l_save}/{n}_{date}'.format(l_save=str(self.app.get_last_save_folder()),
+                                                   n=_("Bookmarks"),
+                                                   date=date),
+            ext_filter=filter__)
 
         filename = str(filename)
 
@@ -314,9 +314,9 @@ class BookmarkManager(QtWidgets.QWidget):
                 f.close()
             except Exception:
                 e = sys.exc_info()[0]
-                self.app.log.error("Could not load defaults file.")
+                self.app.log.error("Could not load the file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             # Save Bookmarks to a file
@@ -346,7 +346,7 @@ class BookmarkManager(QtWidgets.QWidget):
                     bookmarks = f.readlines()
             except IOError:
                 self.app.log.error("Could not load bookmarks file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
             for line in bookmarks:

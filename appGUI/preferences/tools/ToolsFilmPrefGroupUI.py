@@ -65,7 +65,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # Film Border
         self.film_boundary_entry = FCDoubleSpinner()
         self.film_boundary_entry.set_precision(self.decimals)
-        self.film_boundary_entry.set_range(0, 9999.9999)
+        self.film_boundary_entry.set_range(0, 10000.0000)
         self.film_boundary_entry.setSingleStep(0.1)
 
         self.film_boundary_label = FCLabel('%s:' % _("Border"))
@@ -84,7 +84,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.film_scale_stroke_entry = FCDoubleSpinner()
         self.film_scale_stroke_entry.set_precision(self.decimals)
-        self.film_scale_stroke_entry.set_range(0, 9999.9999)
+        self.film_scale_stroke_entry.set_range(0, 10000.0000)
         self.film_scale_stroke_entry.setSingleStep(0.1)
 
         self.film_scale_stroke_label = FCLabel('%s:' % _("Scale Stroke"))
@@ -198,7 +198,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
         grid0.addWidget(self.film_mirror_axis_label, 13, 0)
         grid0.addWidget(self.film_mirror_axis, 13, 1)
@@ -213,7 +213,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], stretch=False)
 
-        self.file_type_label = FCLabel(_("Film Type:"))
+        self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
             _("The file type of the saved film. Can be:\n"
               "- 'SVG' -> open-source vectorial format\n"

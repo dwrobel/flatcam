@@ -190,9 +190,9 @@ class ToolEtchCompensation(AppTool):
 
         # update the apertures attributes (keys in the apertures dict)
         for ap in new_apertures:
-            type = new_apertures[ap]['type']
+            ap_type = new_apertures[ap]['type']
             for k in new_apertures[ap]:
-                if type == 'R' or type == 'O':
+                if ap_type == 'R' or ap_type == 'O':
                     if k == 'width' or k == 'height':
                         new_apertures[ap][k] += offset
                 else:
@@ -207,9 +207,9 @@ class ToolEtchCompensation(AppTool):
         # in case of 'R' or 'O' aperture type we need to update the aperture 'size' after
         # the 'width' and 'height' keys were updated
         for ap in new_apertures:
-            type = new_apertures[ap]['type']
+            ap_type = new_apertures[ap]['type']
             for k in new_apertures[ap]:
-                if type == 'R' or type == 'O':
+                if ap_type == 'R' or ap_type == 'O':
                     if k == 'size':
                         new_apertures[ap][k] = math.sqrt(
                             new_apertures[ap]['width'] ** 2 + new_apertures[ap]['height'] ** 2)
@@ -233,8 +233,8 @@ class ToolEtchCompensation(AppTool):
             new_obj.apertures = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
-            new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=new_obj,
-                                                                    use_thread=False)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=new_obj,
+                                                                   use_thread=False)
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -366,8 +366,7 @@ class EtchUI:
         )
         self.thick_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thick_entry.set_precision(self.decimals)
-        self.thick_entry.set_range(0.0000, 9999.9999)
-        self.thick_entry.setObjectName(_("Thickness"))
+        self.thick_entry.set_range(0.0000, 10000.0000)
 
         grid0.addWidget(self.thick_label, 12, 0)
         grid0.addWidget(self.thick_entry, 12, 1)
@@ -394,21 +393,19 @@ class EtchUI:
             _("A list of etchants.")
         )
         self.etchants_combo = FCComboBox(callback=self.confirmation_message)
-        self.etchants_combo.setObjectName(_("Etchants"))
         self.etchants_combo.addItems(["CuCl2", "Fe3Cl", _("Alkaline baths")])
 
         grid0.addWidget(self.etchants_label, 18, 0)
         grid0.addWidget(self.etchants_combo, 18, 1)
 
         # Etch Factor
-        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch factor'))
+        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch Factor'))
         self.factor_label.setToolTip(
             _("The ratio between depth etch and lateral etch .\n"
               "Accepts real numbers and formulas using the operators: /,*,+,-,%")
         )
         self.factor_entry = NumericalEvalEntry(border_color='#0069A9')
         self.factor_entry.setPlaceholderText(_("Real number or formula"))
-        self.factor_entry.setObjectName(_("Etch_factor"))
 
         grid0.addWidget(self.factor_label, 19, 0)
         grid0.addWidget(self.factor_entry, 19, 1)
@@ -421,8 +418,7 @@ class EtchUI:
         )
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
-        self.offset_entry.setObjectName(_("Offset"))
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(self.offset_label, 20, 0)
         grid0.addWidget(self.offset_entry, 20, 1)
@@ -441,6 +437,7 @@ class EtchUI:
         grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         self.compensate_btn = FCButton(_('Compensate'))
+        self.compensate_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/etch_32.png'))
         self.compensate_btn.setToolTip(
             _("Will increase the copper features thickness to compensate the lateral etch.")
         )

@@ -30,7 +30,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         # ## Advanced Gerber Parameters
         self.adv_param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
         self.adv_param_label.setToolTip(
-            _("A list of Gerber advanced parameters.\n"
+            _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
               "Advanced App. Level.")
         )

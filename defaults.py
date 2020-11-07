@@ -31,9 +31,9 @@ class FlatCAMDefaults:
         "global_stats": dict(),
         "global_tabs_detachable": True,
 
-        "global_coords_show": True,
-        "global_delta_coords_show": False,
-        "global_status_show": True,
+        "global_coordsbar_show": True,
+        "global_delta_coordsbar_show": False,
+        "global_statusbar_show": True,
 
         "global_jump_ref": 'abs',
         "global_locate_pt": 'bl',
@@ -124,7 +124,7 @@ class FlatCAMDefaults:
         "global_project_autohide": True,
 
         # General App Settings
-        "global_grid_show": True,
+        "global_gridbar_show": True,
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -345,8 +345,10 @@ class FlatCAMDefaults:
         "geometry_polish": False,
         "geometry_polish_dia": 10.0,
         "geometry_polish_pressure": -1.0,
-        "geometry_polish_overlap": 1.0,
-        "geometry_polish_method": _("Standard"),
+        "geometry_polish_travelz": 2.0,
+        "geometry_polish_margin": 0.0,
+        "geometry_polish_overlap": 5,
+        "geometry_polish_method": 0,
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
@@ -420,7 +422,7 @@ class FlatCAMDefaults:
         "tools_iso_combine_passes": True,
         "tools_iso_check_valid":    False,
         "tools_iso_isoexcept":      False,
-        "tools_iso_selection":      _("All"),
+        "tools_iso_selection":      0,
         "tools_iso_poly_ints":      False,
         "tools_iso_force":          True,
         "tools_iso_area_shape":     "square",
@@ -469,13 +471,13 @@ class FlatCAMDefaults:
         "tools_ncc_operation": 'clear',
         "tools_ncc_overlap": 40,
         "tools_ncc_margin": 1.0,
-        "tools_ncc_method": _("Seed"),
+        "tools_ncc_method": 1,  # SEED
         "tools_ncc_connect": True,
         "tools_ncc_contour": True,
         "tools_ncc_rest": False,
         "tools_ncc_offset_choice": False,
         "tools_ncc_offset_value": 0.0000,
-        "tools_ncc_ref": _('Itself'),
+        "tools_ncc_ref": 0,     # ITSELF
         "tools_ncc_area_shape": "square",
         "tools_ncc_milling_type": 'cl',
         "tools_ncc_tool_type": 'C1',
@@ -507,8 +509,8 @@ class FlatCAMDefaults:
         "tools_paint_order": 'rev',
         "tools_paint_overlap": 20,
         "tools_paint_offset": 0.0,
-        "tools_paint_method": _("Seed"),
-        "tools_paint_selectmethod": _("All"),
+        "tools_paint_method": 0,
+        "tools_paint_selectmethod": 0,
         "tools_paint_area_shape": "square",
         "tools_paint_connect": True,
         "tools_paint_contour": True,
@@ -562,6 +564,7 @@ class FlatCAMDefaults:
         "tools_calc_vshape_cut_z": 0.05,
         "tools_calc_electro_length": 10.0,
         "tools_calc_electro_width": 10.0,
+        "tools_calc_electro_area": 100.0,
         "tools_calc_electro_cdensity": 13.0,
         "tools_calc_electro_growth": 10.0,
 
@@ -606,6 +609,7 @@ class FlatCAMDefaults:
 
         # Subtract Tool
         "tools_sub_close_paths": True,
+        "tools_sub_delete_sources": False,
 
         # Distance Tool
         "tools_dist_snap_center": False,
@@ -614,6 +618,8 @@ class FlatCAMDefaults:
         "tools_corners_thickness": 0.1,
         "tools_corners_length": 3.0,
         "tools_corners_margin": 0.0,
+        "tools_corners_type": 's',
+        "tools_corners_drill_dia": 0.5,
 
         # ########################################################################################################
         # ################################ TOOLS 2 ###############################################################
@@ -659,6 +665,7 @@ class FlatCAMDefaults:
         # Copper Thieving Tool
         "tools_copper_thieving_clearance": 0.25,
         "tools_copper_thieving_margin": 1.0,
+        "tools_copper_thieving_area": 0.1,
         "tools_copper_thieving_reference": 'itself',
         "tools_copper_thieving_box_type": 'rect',
         "tools_copper_thieving_circle_steps": 64,
@@ -672,6 +679,7 @@ class FlatCAMDefaults:
         "tools_copper_thieving_rb_margin": 1.0,
         "tools_copper_thieving_rb_thickness": 1.0,
         "tools_copper_thieving_mask_clearance": 0.0,
+        "tools_copper_thieving_geo_choice": 'b',
 
         # Fiducials Tool
         "tools_fiducials_dia": 1.0,
@@ -776,14 +784,14 @@ class FlatCAMDefaults:
             with open(file_path, "r") as file:
                 f_defaults = simplejson.loads(file.read())
 
-                # if the file is not empty
-                if f_defaults:
-                    # if it has the same version do nothing
-                    if str(f_defaults['version']) == str(version):
-                        return
-                    # if the versions differ then remove the file
-                    os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-                    os.remove(file_path)
+            # if the file is not empty
+            if f_defaults:
+                # if it has the same version do nothing
+                if str(f_defaults['version']) == str(version):
+                    return
+                # if the versions differ then remove the file
+                os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                os.remove(file_path)
 
         cls.factory_defaults['version'] = version
 
@@ -859,7 +867,7 @@ class FlatCAMDefaults:
             f.close()
         except IOError:
             log.error("Could not load defaults file.")
-            inform.emit('[ERROR] %s' % _("Could not load defaults file."))
+            inform.emit('[ERROR] %s' % _("Could not load the file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
             return

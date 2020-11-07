@@ -142,7 +142,7 @@ class ToolOptimal(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber objects can be evaluated."))
             return
 
-        proc = self.app.proc_container.new(_("Working..."))
+        proc = self.app.proc_container.new(_("Working ..."))
 
         def job_thread(app_obj):
             app_obj.inform.emit(_("Optimal Tool. Started to search for the minimum distance between copper features."))
@@ -573,6 +573,7 @@ class OptimalUI:
 
         # GO button
         self.calculate_button = FCButton(_("Find Minimum"))
+        self.calculate_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
               "this will allow the determination of the right tool to\n"

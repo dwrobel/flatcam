@@ -30,7 +30,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Create CNC Job
-        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNC Job'))
+        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNCJob'))
         self.cncjob_label.setToolTip(
             _("Parameters used to create a CNC Job object\n"
               "for this drill object.")
@@ -84,7 +84,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         self.mill_dia_entry = FCDoubleSpinner()
         self.mill_dia_entry.set_precision(self.decimals)
-        self.mill_dia_entry.set_range(0.0000, 9999.9999)
+        self.mill_dia_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.mill_dia_label, 2, 0)
         grid2.addWidget(self.mill_dia_entry, 2, 1)

@@ -78,7 +78,7 @@ class TclCommandScale(TclCommand):
             obj_to_scale = self.app.collection.get_by_name(name)
         except Exception as e:
             log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
-            self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+            self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         if 'origin' not in args:
@@ -104,10 +104,9 @@ class TclCommandScale(TclCommand):
                         raise Exception
                 except Exception as e:
                     self.raise_tcl_error('%s\n%s' % (_("Expected -origin <origin> or "
-                                                  "-origin <min_bounds> or "
-                                                  "-origin <center> or "
-                                                  "- origin 3.0,4.2."), str(e))
-                                         )
+                                                       "-origin <min_bounds> or "
+                                                       "-origin <center> or "
+                                                       "- origin 3.0,4.2."), str(e)))
                     return 'fail'
 
         if 'factor' in args:

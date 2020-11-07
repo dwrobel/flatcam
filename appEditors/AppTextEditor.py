@@ -251,7 +251,9 @@ class AppTextEditor(QtWidgets.QWidget):
                 ext_filter=_filter_
             )[0])
         except TypeError:
-            filename = str(FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)[0])
+            filename = str(FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)[0])
 
         if filename == "":
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -330,7 +332,7 @@ class AppTextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
             self.code_editor.moveCursor(QtGui.QTextCursor.Start)
-            r = self.code_editor.find(str(text_to_be_found), flags)
+            self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
 

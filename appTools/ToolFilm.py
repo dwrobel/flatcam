@@ -156,19 +156,19 @@ class Film(AppTool):
         try:
             name = self.ui.tf_object_combo.currentText()
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Film and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' %
+                                 (_("No object is selected."), _("Load an object for Film and retry.")))
             return
 
         try:
             boxname = self.ui.tf_box_combo.currentText()
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Box and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' %
+                                 (_("No object is selected."), _("Load an object for Box and retry.")))
             return
 
         if name == '' or boxname == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         scale_stroke_width = float(self.ui.film_scale_stroke_entry.get_value())
@@ -232,7 +232,9 @@ class Film(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 ext_filter=filter_ext)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export positive film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export positive film"),
+                ext_filter=filter_ext)
 
         filename = str(filename)
 
@@ -289,7 +291,7 @@ class Film(AppTool):
                 if film_obj.apertures[apid]['type'] == 'C':
                     if punch_size >= float(film_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole film because the punch hole size"
+                                             _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -301,7 +303,7 @@ class Film(AppTool):
                     if punch_size >= float(film_obj.apertures[apid]['width']) or \
                             punch_size >= float(film_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not generate punched hole film because the punch hole size"
+                                             _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -319,7 +321,7 @@ class Film(AppTool):
 
             if punched_solid_geometry == temp_solid_geometry:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Could not generate punched hole film because the newly created object geometry "
+                                     _("Failed. The new object geometry "
                                        "is the same as the one in the source object geometry..."))
                 return 'fail'
 
@@ -378,7 +380,9 @@ class Film(AppTool):
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 ext_filter=filter_ext)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export negative film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export negative film"),
+                ext_filter=filter_ext)
 
         filename = str(filename)
 
@@ -609,7 +613,8 @@ class Film(AppTool):
                     drawing = svg2rlg(doc_final)
 
                     p_size = self.ui.pagesize_combo.get_value()
-                    if p_size == 'Bounds':                        renderPDF.drawToFile(drawing, filename)
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
                     else:
                         if self.ui.orientation_radio.get_value() == 'p':
                             page_size = portrait(self.ui.pagesize[p_size])
@@ -950,7 +955,7 @@ class FilmUI:
         self.tf_type_box_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_box_combo_label = FCLabel(_("Box Type:"))
+        self.tf_type_box_combo_label = FCLabel('%s:' % _("Box Type"))
         self.tf_type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
               "film creation. It can be: Gerber or Geometry type."
@@ -1103,7 +1108,7 @@ class FilmUI:
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
         grid0.addWidget(self.film_mirror_axis_label, 16, 0)
         grid0.addWidget(self.film_mirror_axis, 16, 1)
@@ -1142,7 +1147,7 @@ class FilmUI:
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
                                   stretch=False)
-        self.film_type_label = FCLabel(_("Film Type:"))
+        self.film_type_label = FCLabel('%s:' % _("Film Type"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
               "Positive means that it will print the features\n"
@@ -1254,7 +1259,7 @@ class FilmUI:
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], stretch=False)
 
-        self.file_type_label = FCLabel(_("Film Type:"))
+        self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
             _("The file type of the saved film. Can be:\n"
               "- 'SVG' -> open-source vectorial format\n"

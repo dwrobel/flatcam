@@ -188,8 +188,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.mm = None
         self.mr = None
 
-        self.append_snippet = ''
         self.prepend_snippet = ''
+        self.append_snippet = ''
         self.gc_header = self.gcode_header()
         self.gc_start = ''
         self.gc_end = ''
@@ -372,7 +372,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
-            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset']) + self.z_cut))
+            try:
+                offset_val = self.app.dec_format(float(dia_value['offset']), self.decimals) + self.z_cut
+            except KeyError:
+                offset_val = self.app.dec_format(float(dia_value['offset_z']), self.decimals) + self.z_cut
+
+            cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
 
             t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -527,7 +532,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.append_snippet = self.app.defaults['cncjob_append']
         self.prepend_snippet = self.app.defaults['cncjob_prepend']
 
-        if self.append_snippet != '' or self.prepend_snippet:
+        if self.append_snippet != '' or self.prepend_snippet != '':
             self.ui.snippets_cb.set_value(True)
 
         # Fill form fields only on object create
@@ -638,16 +643,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Basic"))
 
             self.ui.sal_btn.hide()
             self.ui.sal_btn.setChecked(False)
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _("Advanced"))
+
             if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name or 'hpgl' in \
                     self.pp_geometry_name:
                 self.ui.sal_btn.hide()
@@ -656,8 +658,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.ui.sal_btn.show()
                 self.ui.sal_btn.setChecked(self.app.defaults["cncjob_al_status"])
 
-        preamble = self.append_snippet
-        postamble = self.prepend_snippet
+        preamble = self.prepend_snippet
+        postamble = self.append_snippet
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         self.source_file = gc.getvalue()
 
@@ -1648,7 +1650,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
@@ -1675,7 +1679,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 return 'fail'
 
     def on_edit_probing_gcode(self):
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
 
         gco = self.probing_gcode_text
         if gco is None or gco == '':
@@ -1838,7 +1842,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     ext_filter=_filter_
                 )
             except TypeError:
-                filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+                filename, _f = FCFileSaveDialog.get_saved_filename(
+                    caption=_("Export Code ..."),
+                    ext_filter=_filter_)
 
             if filename == '':
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
@@ -1882,7 +1888,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         kind = self.ui.cncplot_method_combo.get_value()
 
         def worker_task():
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 self.plot(kind=kind)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
@@ -1916,7 +1922,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                ext_filter=_filter_)
 
         self.export_gcode_handler(filename, is_gcode=save_gcode)
 
@@ -1939,8 +1947,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         try:
             if self.ui.snippets_cb.get_value():
-                preamble = self.append_snippet
-                postamble = self.prepend_snippet
+                preamble = self.prepend_snippet
+                postamble = self.append_snippet
             gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
         except Exception as err:
             log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
@@ -1954,18 +1962,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
-    def on_review_code_click(self, *args):
+    def on_review_code_click(self):
         """
         Handler activated by a button clicked when reviewing GCode.
 
-        :param args:
         :return:
         """
 
-        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.app.proc_container.view.set_busy('%s...' % _("Loading"))
 
-        preamble = self.append_snippet
-        postamble = self.prepend_snippet
+        preamble = self.prepend_snippet
+        postamble = self.append_snippet
 
         gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         if gco == 'fail':
@@ -2154,7 +2161,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if preamble == '':
             preamble = self.app.defaults["cncjob_prepend"]
         if postamble == '':
-            preamble = self.app.defaults["cncjob_append"]
+            postamble = self.app.defaults["cncjob_append"]
 
         try:
             if self.special_group:
@@ -2180,7 +2187,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         gcode = ''
         if include_header is False:
-            g = preamble
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
                 for tooluid_key in self.cnc_tools:
@@ -2191,7 +2197,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             else:
                 gcode += self.gcode
 
-            g = g + gcode + postamble
+            g = preamble + '\n' + gcode + '\n' + postamble
         else:
             # search for the GCode beginning which is usually a G20 or G21
             # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
@@ -2241,39 +2247,52 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             break
 
             if hpgl:
-                processed_gcode = ''
+                processed_body_gcode = ''
                 pa_re = re.compile(r"^PA\s*(-?\d+\.\d*),?\s*(-?\d+\.\d*)*;?$")
+
+                # process body gcode
                 for gline in gcode.splitlines():
                     match = pa_re.search(gline)
                     if match:
                         x_int = int(float(match.group(1)))
                         y_int = int(float(match.group(2)))
                         new_line = 'PA%d,%d;\n' % (x_int, y_int)
-                        processed_gcode += new_line
+                        processed_body_gcode += new_line
                     else:
-                        processed_gcode += gline + '\n'
+                        processed_body_gcode += gline + '\n'
 
-                gcode = processed_gcode
-                g = self.gc_header + '\n' + preamble + '\n' + gcode + postamble + end_gcode
+                gcode = processed_body_gcode
+                g = self.gc_header + '\n' + self.gc_start + '\n' + preamble + '\n' + \
+                    gcode + '\n' + postamble + end_gcode
             else:
-                try:
-                    g_idx = gcode.index('G94')
-                    if preamble != '' and postamble != '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                            gcode[(g_idx + 3):] + postamble + end_gcode
-                    elif preamble == '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
-                            gcode[(g_idx + 3):] + postamble + end_gcode
-                    elif postamble == '':
-                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
-                            gcode[(g_idx + 3):] + end_gcode
-                    else:
-                        g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("G-code does not have a G94 code.\n"
-                                           "Append Code snippet will not be used.."))
-                    g = self.gc_header + '\n' + gcode + postamble + end_gcode
+                # try:
+                #     g_idx = gcode.index('G94')
+                #     if preamble != '' and postamble != '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                #             gcode[(g_idx + 3):] + postamble + end_gcode
+                #     elif preamble == '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
+                #             gcode[(g_idx + 3):] + postamble + end_gcode
+                #     elif postamble == '':
+                #         g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                #             gcode[(g_idx + 3):] + end_gcode
+                #     else:
+                #         g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
+                # except ValueError:
+                #     self.app.inform.emit('[ERROR_NOTCL] %s' %
+                #                          _("G-code does not have a G94 code.\n"
+                #                            "Append Code snippet will not be used.."))
+                #     g = self.gc_header + '\n' + gcode + postamble + end_gcode
+                g = ''
+                if preamble != '' and postamble != '':
+                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + \
+                        postamble + '\n' + end_gcode
+                if preamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+                if postamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
+                if preamble == '' and postamble == '':
+                    g = self.gc_header + self.gc_start + '\n' + gcode + '\n' + end_gcode
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         # if self.ui.toolchange_cb.get_value() is True:
@@ -2490,10 +2509,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
 
-        # Annotaions shapes plotting
+        # Annotations shapes plotting
         try:
             if self.app.is_legacy is False:
-                if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                if self.ui.annotation_cb.get_value() and visible:
                     self.plot_annotations(obj=self, visible=True)
                 else:
                     self.plot_annotations(obj=self, visible=False)
@@ -2502,20 +2521,28 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
 
-    def on_annotation_change(self):
+    def on_annotation_change(self, val):
         """
         Handler for toggling the annotation display by clicking a checkbox.
         :return:
         """
 
         if self.app.is_legacy is False:
-            if self.ui.annotation_cb.get_value():
-                self.text_col.enabled = True
-            else:
-                self.text_col.enabled = False
-            # kind = self.ui.cncplot_method_combo.get_value()
-            # self.plot(kind=kind)
-            self.annotation.redraw()
+            # self.text_col.visible = True if val == 2 else False
+            # self.plot(kind=self.ui.cncplot_method_combo.get_value())
+            # Annotations shapes plotting
+            try:
+                if self.app.is_legacy is False:
+                    if val and self.ui.plot_cb.get_value():
+                        self.plot_annotations(obj=self, visible=True)
+                    else:
+                        self.plot_annotations(obj=self, visible=False)
+
+            except (ObjectDeleted, AttributeError):
+                if self.app.is_legacy is False:
+                    self.annotation.clear(update=True)
+
+            # self.annotation.redraw()
         else:
             kind = self.ui.cncplot_method_combo.get_value()
             self.plot(kind=kind)

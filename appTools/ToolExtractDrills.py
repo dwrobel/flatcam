@@ -381,35 +381,35 @@ class ToolExtractDrills(AppTool):
 
     def on_hole_size_toggle(self, val):
         if val == "fixed":
-            self.ui.fixed_label.setDisabled(False)
-            self.ui.dia_entry.setDisabled(False)
-            self.ui.dia_label.setDisabled(False)
+            self.ui.fixed_label.setVisible(True)
+            self.ui.dia_entry.setVisible(True)
+            self.ui.dia_label.setVisible(True)
 
-            self.ui.ring_frame.setDisabled(True)
+            self.ui.ring_frame.setVisible(False)
 
-            self.ui.prop_label.setDisabled(True)
-            self.ui.factor_label.setDisabled(True)
-            self.ui.factor_entry.setDisabled(True)
+            self.ui.prop_label.setVisible(False)
+            self.ui.factor_label.setVisible(False)
+            self.ui.factor_entry.setVisible(False)
         elif val == "ring":
-            self.ui.fixed_label.setDisabled(True)
-            self.ui.dia_entry.setDisabled(True)
-            self.ui.dia_label.setDisabled(True)
+            self.ui.fixed_label.setVisible(False)
+            self.ui.dia_entry.setVisible(False)
+            self.ui.dia_label.setVisible(False)
 
-            self.ui.ring_frame.setDisabled(False)
+            self.ui.ring_frame.setVisible(True)
 
-            self.ui.prop_label.setDisabled(True)
-            self.ui.factor_label.setDisabled(True)
-            self.ui.factor_entry.setDisabled(True)
+            self.ui.prop_label.setVisible(False)
+            self.ui.factor_label.setVisible(False)
+            self.ui.factor_entry.setVisible(False)
         elif val == "prop":
-            self.ui.fixed_label.setDisabled(True)
-            self.ui.dia_entry.setDisabled(True)
-            self.ui.dia_label.setDisabled(True)
+            self.ui.fixed_label.setVisible(False)
+            self.ui.dia_entry.setVisible(False)
+            self.ui.dia_label.setVisible(False)
 
-            self.ui.ring_frame.setDisabled(True)
+            self.ui.ring_frame.setVisible(False)
 
-            self.ui.prop_label.setDisabled(False)
-            self.ui.factor_label.setDisabled(False)
-            self.ui.factor_entry.setDisabled(False)
+            self.ui.prop_label.setVisible(True)
+            self.ui.factor_label.setVisible(True)
+            self.ui.factor_entry.setVisible(True)
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -530,8 +530,8 @@ class ExtractDrillsUI:
         self.hole_size_radio = RadioSet(
             [
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
-                {'label': _("Fixed Annular Ring"), 'value': 'ring'},
-                {'label': _("Proportional"), 'value': 'prop'}
+                {'label': _("Proportional"), 'value': 'prop'},
+                {'label': _("Fixed Annular Ring"), 'value': 'ring'}
             ],
             orientation='vertical',
             stretch=False)
@@ -552,7 +552,7 @@ class ExtractDrillsUI:
         # Diameter value
         self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.set_range(0.0000, 9999.9999)
+        self.dia_entry.set_range(0.0000, 10000.0000)
 
         self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.dia_label.setToolTip(
@@ -561,11 +561,6 @@ class ExtractDrillsUI:
 
         grid1.addWidget(self.dia_label, 8, 0)
         grid1.addWidget(self.dia_entry, 8, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid1.addWidget(separator_line, 9, 0, 1, 2)
 
         self.ring_frame = QtWidgets.QFrame()
         self.ring_frame.setContentsMargins(0, 0, 0, 0)
@@ -598,7 +593,7 @@ class ExtractDrillsUI:
 
         self.circular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.circular_ring_entry.set_precision(self.decimals)
-        self.circular_ring_entry.set_range(0.0000, 9999.9999)
+        self.circular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.circular_ring_label, 1, 0)
         grid2.addWidget(self.circular_ring_entry, 1, 1)
@@ -611,7 +606,7 @@ class ExtractDrillsUI:
 
         self.oblong_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.oblong_ring_entry.set_precision(self.decimals)
-        self.oblong_ring_entry.set_range(0.0000, 9999.9999)
+        self.oblong_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.oblong_ring_label, 2, 0)
         grid2.addWidget(self.oblong_ring_entry, 2, 1)
@@ -624,7 +619,7 @@ class ExtractDrillsUI:
 
         self.square_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_ring_entry.set_precision(self.decimals)
-        self.square_ring_entry.set_range(0.0000, 9999.9999)
+        self.square_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.square_ring_label, 3, 0)
         grid2.addWidget(self.square_ring_entry, 3, 1)
@@ -637,7 +632,7 @@ class ExtractDrillsUI:
 
         self.rectangular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rectangular_ring_entry.set_precision(self.decimals)
-        self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
+        self.rectangular_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.rectangular_ring_label, 4, 0)
         grid2.addWidget(self.rectangular_ring_entry, 4, 1)
@@ -650,7 +645,7 @@ class ExtractDrillsUI:
 
         self.other_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.other_ring_entry.set_precision(self.decimals)
-        self.other_ring_entry.set_range(0.0000, 9999.9999)
+        self.other_ring_entry.set_range(0.0000, 10000.0000)
 
         grid2.addWidget(self.other_ring_label, 5, 0)
         grid2.addWidget(self.other_ring_entry, 5, 1)
@@ -659,11 +654,6 @@ class ExtractDrillsUI:
         self.layout.addLayout(grid3)
         grid3.setColumnStretch(0, 0)
         grid3.setColumnStretch(1, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid3.addWidget(separator_line, 1, 0, 1, 2)
 
         # Annular Ring value
         self.prop_label = QtWidgets.QLabel('<b>%s</b>' % _("Proportional Diameter"))
@@ -684,8 +674,14 @@ class ExtractDrillsUI:
         grid3.addWidget(self.factor_label, 3, 0)
         grid3.addWidget(self.factor_entry, 3, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid3.addWidget(separator_line, 5, 0, 1, 2)
+
         # Extract drills from Gerber apertures flashes (pads)
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
+        self.e_drills_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
         self.e_drills_button.setToolTip(
             _("Extract drills from a given Gerber file.")
         )
@@ -719,12 +715,12 @@ class ExtractDrillsUI:
         self.rectangular_ring_entry.setEnabled(False)
         self.other_ring_entry.setEnabled(False)
 
-        self.dia_entry.setDisabled(True)
-        self.dia_label.setDisabled(True)
-        self.factor_label.setDisabled(True)
-        self.factor_entry.setDisabled(True)
+        self.dia_entry.setVisible(False)
+        self.dia_label.setVisible(False)
+        self.factor_label.setVisible(False)
+        self.factor_entry.setVisible(False)
 
-        self.ring_frame.setDisabled(True)
+        self.ring_frame.setVisible(False)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
 

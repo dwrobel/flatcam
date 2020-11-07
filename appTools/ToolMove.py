@@ -137,7 +137,7 @@ class ToolMove(AppTool):
                 else:
                     self.point2 = copy(self.point1)
                     self.point1 = pos
-                self.app.inform.emit(_("MOVE: Click on the Destination point ..."))
+                self.app.inform.emit(_("Click on the DESTINATION point ..."))
 
             if self.clicked_move == 1:
                 try:
@@ -160,10 +160,11 @@ class ToolMove(AppTool):
                                 if obj.options['plot'] and obj.visible is True]
 
                     def job_move(app_obj):
-                        with self.app.proc_container.new(_("Moving...")) as proc:
+                        with self.app.proc_container.new(_("Moving ...")):
 
                             if not obj_list:
-                                app_obj.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
+                                app_obj.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."),
+                                                                                 _("No object is selected.")))
                                 return "fail"
 
                             try:
@@ -206,8 +207,8 @@ class ToolMove(AppTool):
 
                         # delete the selection bounding box
                         self.delete_shape()
-                        self.app.inform.emit('[success] %s %s' %
-                                             (str(sel_obj.kind).capitalize(), 'object was moved ...'))
+                        self.app.inform.emit('[success] %s %s ...' %
+                                             (str(sel_obj.kind).capitalize(), _('object was moved')))
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
@@ -217,8 +218,7 @@ class ToolMove(AppTool):
 
                 except TypeError as e:
                     log.debug("ToolMove.on_left_click() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] ToolMove.on_left_click() --> %s' %
-                                         _('Error when mouse left click.'))
+                    self.app.inform.emit('[ERROR_NOTCL] ToolMove. %s' % _('Error when mouse left click.'))
                     return
 
             self.clicked_move = 1
@@ -226,7 +226,7 @@ class ToolMove(AppTool):
     def replot(self, obj_list):
 
         def worker_task():
-            with self.app.proc_container.new('%s...' % _("Plotting")):
+            with self.app.proc_container.new('%s ...' % _("Plotting")):
                 for sel_obj in obj_list:
                     sel_obj.plot()
 

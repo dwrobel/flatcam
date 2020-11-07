@@ -71,10 +71,10 @@ class BilinearInterpolation(object):
         self.y_length = y_length
         self.extrapolate = True
 
-        #slopes = self.slopes = []
-        #for j in range(y_length):
-            #intervals = zip(x_index, x_index[1:], values[j], values[j][1:])
-            #slopes.append([(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intervals])
+        # slopes = self.slopes = []
+        # for j in range(y_length):
+        #     intervals = zip(x_index, x_index[1:], values[j], values[j][1:])
+        #     slopes.append([(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intervals])
 
     def __call__(self, x, y):
         # local lookups

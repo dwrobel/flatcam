@@ -33,7 +33,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
         self.exc_label.setToolTip(
-            _("A list of Excellon advanced parameters.\n"
+            _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
               "Advanced App. Level.")
         )
