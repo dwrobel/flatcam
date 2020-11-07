@@ -821,7 +821,6 @@ class ToolIsolation(AppTool, Gerber):
 
         if val == 0:    # ALl
             self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.hide()
@@ -832,7 +831,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.rest_cb.setDisabled(False)
         elif val == 1:  # Area Selection
             self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.show()
@@ -844,7 +842,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.rest_cb.setDisabled(True)
         elif val == 2:  # Polygon Selection
             self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
             self.ui.reference_combo_type.hide()
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.hide()
@@ -852,7 +849,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.poly_int_cb.show()
         else:   # Reference Object
             self.ui.reference_combo.show()
-            self.ui.reference_combo_label.show()
             self.ui.reference_combo_type.show()
             self.ui.reference_combo_type_label.show()
             self.ui.area_shape_label.hide()
@@ -3487,31 +3483,23 @@ class IsoUI:
         self.grid3.addWidget(self.select_label, 34, 0)
         self.grid3.addWidget(self.select_combo, 34, 1)
 
-        self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
-        self.reference_combo_type_label.setToolTip(
-            _("The type of FlatCAM object to be used as non copper clearing reference.\n"
-              "It can be Gerber, Excellon or Geometry.")
-        )
+        # Reference Type
+        self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
+
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
         self.grid3.addWidget(self.reference_combo_type_label, 36, 0)
         self.grid3.addWidget(self.reference_combo_type, 36, 1)
 
-        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
-        self.reference_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo_label, 38, 0)
-        self.grid3.addWidget(self.reference_combo, 38, 1)
+        self.grid3.addWidget(self.reference_combo, 38, 0, 1, 2)
 
         self.reference_combo.hide()
-        self.reference_combo_label.hide()
         self.reference_combo_type.hide()
         self.reference_combo_type_label.hide()
 

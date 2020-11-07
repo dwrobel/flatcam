@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - in Excellon Editor made sure that trying to add a Circular Drill/Slot array with null radius will fail
 - in Excellon Editor when the radius is zero the utility geometry is deleted
 - in Gerber Editor fixed an error in the Eraser tool trying to disconnect the Jump signal
+- small UI change in the Isolation Tool for the Reference Object selection
+RELEASE 8.994
 
 6.11.2020
 
