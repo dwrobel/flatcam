@@ -1788,7 +1788,7 @@ class App(QtCore.QObject):
                         run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_project,
                         #                        'params': [project_name, run_from_arg]})
-                        self.open_project(filename=project_name, run_from_arg=run_from_arg)
+                        self.f_handlers.open_project(filename=project_name, run_from_arg=run_from_arg)
                 except Exception as e:
                     self.log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
@@ -1803,7 +1803,7 @@ class App(QtCore.QObject):
                         run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_config_file,
                         #                        'params': [file_name, run_from_arg]})
-                        self.open_config_file(file_name, run_from_arg=run_from_arg)
+                        self.f_handlers.open_config_file(file_name, run_from_arg=run_from_arg)
                 except Exception as e:
                     self.log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
@@ -1816,9 +1816,9 @@ class App(QtCore.QObject):
                             self.inform.emit(_("Open Script file failed."))
                     else:
                         if silent is False:
-                            self.on_fileopenscript(name=file_name)
+                            self.f_handlers.on_fileopenscript(name=file_name)
                             self.ui.plot_tab_area.setCurrentWidget(self.ui.plot_tab)
-                        self.on_filerunscript(name=file_name)
+                        self.f_handlers.on_filerunscript(name=file_name)
                 except Exception as e:
                     self.log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
@@ -1841,7 +1841,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Excellon file failed."))
                         else:
-                            self.on_fileopenexcellon(name=file_name, signal=None)
+                            self.f_handlers.on_fileopenexcellon(name=file_name, signal=None)
                             return
 
                 gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
@@ -1854,7 +1854,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open GCode file failed."))
                         else:
-                            self.on_fileopengcode(name=file_name, signal=None)
+                            self.f_handlers.on_fileopengcode(name=file_name, signal=None)
                             return
 
                 grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
@@ -1867,7 +1867,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Gerber file failed."))
                         else:
-                            self.on_fileopengerber(name=file_name, signal=None)
+                            self.f_handlers.on_fileopengerber(name=file_name, signal=None)
                             return
 
         # if it reached here without already returning then the app was registered with a file that it does not
