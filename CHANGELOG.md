@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.11.2020
+
+- fixed a small issue in Excellon Editor that reset the delta coordinates on right mouse button click too, which was incorrect. Only left mouse button click should reset the delta coordinates.
+
 6.11.2020
 
 - in Gerber Editor made the selection multithreaded in a bid to get more performance but until Shapely will start working on vectorized geometry this don't yield too much improvement

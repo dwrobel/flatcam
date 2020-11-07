@@ -3153,14 +3153,14 @@ class AppExcEditor(QtCore.QObject):
             # event_is_dragging = self.app.plotcanvas.is_dragging
             # right_button = 3
 
-        self.pos = self.canvas.translate_coords(event_pos)
-
-        if self.app.grid_status():
-            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-        else:
-            self.pos = (self.pos[0], self.pos[1])
-
         if event.button == 1:
+            self.pos = self.canvas.translate_coords(event_pos)
+
+            if self.app.grid_status():
+                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            else:
+                self.pos = (self.pos[0], self.pos[1])
+                
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3201,82 +3201,6 @@ class AppExcEditor(QtCore.QObject):
                     self.replot()
             else:
                 self.app.log.debug("No active tool to respond to click!")
-
-    def on_exc_shape_complete(self, storage):
-        self.app.log.debug("on_shape_complete()")
-
-        # Add shape
-        if type(storage) is list:
-            for item_storage in storage:
-                self.add_exc_shape(self.active_tool.geometry, item_storage)
-        else:
-            self.add_exc_shape(self.active_tool.geometry, storage)
-
-        # Remove any utility shapes
-        self.delete_utility_geometry()
-        self.tool_shape.clear(update=True)
-
-        # Replot and reset tool.
-        self.replot()
-        # self.active_tool = type(self.active_tool)(self)
-
-    def add_exc_shape(self, shape, storage):
-        """
-        Adds a shape to a specified shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :param storage:     object where to store the shapes
-        :return:            None
-        """
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_exc_shape(subshape, storage)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % str(type(shape))
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        else:
-            storage.insert(shape)  # TODO: Check performance
-
-    def add_shape(self, shape):
-        """
-        Adds a shape to the shape storage.
-
-        :param shape:       Shape to be added.
-        :type shape:        DrawToolShape
-        :return:            None
-        """
-
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_shape(subshape)
-            return
-
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
-
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        # else:
-        #     self.storage.insert(shape)
 
     def on_exc_click_release(self, event):
         """
@@ -3353,90 +3277,6 @@ class AppExcEditor(QtCore.QObject):
         except Exception as e:
             log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
-
-    def draw_selection_area_handler(self, start, end, sel_type):
-        """
-        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
-        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
-        event handler.
-        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
-
-        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
-        deselected.
-
-        :param start:       mouse position when the selection LMB click was done
-        :param end:         mouse position when the left mouse button is released
-        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :return:
-        """
-
-        start_pos = (start[0], start[1])
-        end_pos = (end[0], end[1])
-        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-        modifiers = None
-
-        # delete the selection shape that was just drawn, we no longer need it
-        self.app.delete_selection_shape()
-
-        # detect if a modifier key was pressed while the left mouse button was released
-        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.modifiers == QtCore.Qt.ShiftModifier:
-            modifiers = 'Shift'
-        elif self.modifiers == QtCore.Qt.ControlModifier:
-            modifiers = 'Control'
-
-        if modifiers == self.app.defaults["global_mselect_key"]:
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-
-                        if obj in self.selected:
-                            # remove the shape object from the selected shapes storage
-                            self.selected.remove(obj)
-                        else:
-                            # add the shape object to the selected shapes storage
-                            self.selected.append(obj)
-        else:
-            # clear the selection shapes storage
-            self.selected = []
-            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
-            for storage in self.storage_dict:
-                for obj in self.storage_dict[storage].get_objects():
-                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
-                        self.selected.append(obj)
-
-        try:
-            self.ui.tools_table_exc.cellPressed.disconnect()
-        except Exception:
-            pass
-
-        # first deselect all rows (tools) in the Tools Table
-        self.ui.tools_table_exc.clearSelection()
-        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for storage in self.storage_dict:
-            for shape_s in self.selected:
-                if shape_s in self.storage_dict[storage].get_objects():
-                    for key_tool_nr in self.tool2tooldia:
-                        if self.tool2tooldia[key_tool_nr] == storage:
-                            row_to_sel = key_tool_nr - 1
-                            # item = self.ui.tools_table_exc.item(row_to_sel, 1)
-                            # self.ui.tools_table_exc.setCurrentItem(item)
-                            # item.setSelected(True)
-
-                            # if the row to be selected is not already in the selected rows then select it
-                            # otherwise don't do it as it seems that we have a toggle effect
-                            if row_to_sel not in set(
-                                    index.row() for index in self.ui.tools_table_exc.selectedIndexes()):
-                                self.ui.tools_table_exc.selectRow(row_to_sel)
-                            self.last_tool_selected = int(key_tool_nr)
-
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
-        self.replot()
 
     def on_canvas_move(self, event):
         """
@@ -3546,6 +3386,166 @@ class AppExcEditor(QtCore.QObject):
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                      edge_width=self.app.defaults["global_cursor_width"],
                                      size=self.app.defaults["global_cursor_size"])
+
+    def add_exc_shape(self, shape, storage):
+        """
+        Adds a shape to a specified shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :param storage:     object where to store the shapes
+        :return:            None
+        """
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_exc_shape(subshape, storage)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % str(type(shape))
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        else:
+            storage.insert(shape)  # TODO: Check performance
+
+    def add_shape(self, shape):
+        """
+        Adds a shape to the shape storage.
+
+        :param shape:       Shape to be added.
+        :type shape:        DrawToolShape
+        :return:            None
+        """
+
+        # List of DrawToolShape?
+        if isinstance(shape, list):
+            for subshape in shape:
+                self.add_shape(subshape)
+            return
+
+        assert isinstance(shape, DrawToolShape), \
+            "Expected a DrawToolShape, got %s" % type(shape)
+
+        assert shape.geo is not None, \
+            "Shape object has empty geometry (None)"
+
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
+
+        if isinstance(shape, DrawToolUtilityShape):
+            self.utility.append(shape)
+        # else:
+        #     self.storage.insert(shape)
+
+    def on_exc_shape_complete(self, storage):
+        self.app.log.debug("on_shape_complete()")
+
+        # Add shape
+        if type(storage) is list:
+            for item_storage in storage:
+                self.add_exc_shape(self.active_tool.geometry, item_storage)
+        else:
+            self.add_exc_shape(self.active_tool.geometry, storage)
+
+        # Remove any utility shapes
+        self.delete_utility_geometry()
+        self.tool_shape.clear(update=True)
+
+        # Replot and reset tool.
+        self.replot()
+        # self.active_tool = type(self.active_tool)(self)
+
+    def draw_selection_area_handler(self, start, end, sel_type):
+        """
+        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
+        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
+        event handler.
+        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
+
+        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
+        deselected.
+
+        :param start:       mouse position when the selection LMB click was done
+        :param end:         mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:
+        """
+
+        start_pos = (start[0], start[1])
+        end_pos = (end[0], end[1])
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+        modifiers = None
+
+        # delete the selection shape that was just drawn, we no longer need it
+        self.app.delete_selection_shape()
+
+        # detect if a modifier key was pressed while the left mouse button was released
+        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.modifiers == QtCore.Qt.ShiftModifier:
+            modifiers = 'Shift'
+        elif self.modifiers == QtCore.Qt.ControlModifier:
+            modifiers = 'Control'
+
+        if modifiers == self.app.defaults["global_mselect_key"]:
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+
+                        if obj in self.selected:
+                            # remove the shape object from the selected shapes storage
+                            self.selected.remove(obj)
+                        else:
+                            # add the shape object to the selected shapes storage
+                            self.selected.append(obj)
+        else:
+            # clear the selection shapes storage
+            self.selected = []
+            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        self.selected.append(obj)
+
+        try:
+            self.ui.tools_table_exc.cellPressed.disconnect()
+        except Exception:
+            pass
+
+        # first deselect all rows (tools) in the Tools Table
+        self.ui.tools_table_exc.clearSelection()
+        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for storage in self.storage_dict:
+            for shape_s in self.selected:
+                if shape_s in self.storage_dict[storage].get_objects():
+                    for key_tool_nr in self.tool2tooldia:
+                        if self.tool2tooldia[key_tool_nr] == storage:
+                            row_to_sel = key_tool_nr - 1
+                            # item = self.ui.tools_table_exc.item(row_to_sel, 1)
+                            # self.ui.tools_table_exc.setCurrentItem(item)
+                            # item.setSelected(True)
+
+                            # if the row to be selected is not already in the selected rows then select it
+                            # otherwise don't do it as it seems that we have a toggle effect
+                            if row_to_sel not in set(
+                                    index.row() for index in self.ui.tools_table_exc.selectedIndexes()):
+                                self.ui.tools_table_exc.selectRow(row_to_sel)
+                            self.last_tool_selected = int(key_tool_nr)
+
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.replot()
 
     def update_utility_geometry(self, data):
         # ### Utility geometry (animated) ###
