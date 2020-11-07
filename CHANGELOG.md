@@ -10,6 +10,11 @@ CHANGELOG for FlatCAM beta
 7.11.2020
 
 - fixed a small issue in Excellon Editor that reset the delta coordinates on right mouse button click too, which was incorrect. Only left mouse button click should reset the delta coordinates.
+- In Gerber Editor upgraded the UI
+- in Gerber Editor made sure that trying to add a Circular Pad array with null radius will fail
+- in Gerber Editor when the radius is zero the utility geometry is deleted
+- in Excellon Editor made sure that trying to add a Circular Drill/Slot array with null radius will fail
+- in Excellon Editor when the radius is zero the utility geometry is deleted
 
 6.11.2020
 

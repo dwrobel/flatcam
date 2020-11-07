@@ -330,7 +330,7 @@ class DrillArray(FCShapeTool):
 
         self.selected_dia = None
         self.drill_axis = 'X'
-        self.drill_array = 0    # 'linear'
+        self.drill_array = 'linear'    # 'linear'
         self.drill_array_size = None
         self.drill_pitch = None
         self.drill_linear_angle = None
@@ -382,7 +382,7 @@ class DrillArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             self.make()
             return
         else:
@@ -405,7 +405,7 @@ class DrillArray(FCShapeTool):
     def utility_geometry(self, data=None, static=None):
         self.drill_axis = self.draw_app.ui.drill_axis_radio.get_value()
         self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
-        self.drill_array = self.draw_app.ui.array_type_combo.get_value()
+        self.drill_array = self.draw_app.ui.array_type_radio.get_value()
         try:
             self.drill_array_size = int(self.draw_app.ui.drill_array_size_entry.get_value())
             try:
@@ -421,7 +421,7 @@ class DrillArray(FCShapeTool):
                                           (_("The value is mistyped. Check the value"), str(e)))
             return
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -454,7 +454,7 @@ class DrillArray(FCShapeTool):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
-        elif self.drill_array == 1:  # 'Circular'
+        elif self.drill_array == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -468,6 +468,9 @@ class DrillArray(FCShapeTool):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -553,7 +556,7 @@ class DrillArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.drill_array == 0:   # 'Linear'
+        if self.drill_array == 'linear':   # 'Linear'
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.drill_pitch * item)), self.points[1]))
@@ -575,6 +578,12 @@ class DrillArray(FCShapeTool):
                 return
 
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
+
             if self.destination[0] < self.origin[0]:
                 radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
@@ -879,7 +888,7 @@ class SlotArray(FCShapeTool):
         self.radius = float(self.selected_dia / 2.0)
 
         self.slot_axis = 'X'
-        self.slot_array = 0     # 'linear'
+        self.slot_array = 'linear'     # 'linear'
         self.slot_array_size = None
         self.slot_pitch = None
         self.slot_linear_angle = None
@@ -910,7 +919,7 @@ class SlotArray(FCShapeTool):
 
     def click(self, point):
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             self.make()
             return
         else:   # 'Circular'
@@ -933,7 +942,7 @@ class SlotArray(FCShapeTool):
     def utility_geometry(self, data=None, static=None):
         self.slot_axis = self.draw_app.ui.slot_array_axis_radio.get_value()
         self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
-        self.slot_array = self.draw_app.ui.slot_array_type_combo.get_value()
+        self.slot_array = self.draw_app.ui.slot_array_type_radio.get_value()
         try:
             self.slot_array_size = int(self.draw_app.ui.slot_array_size_entry.get_value())
             try:
@@ -948,7 +957,7 @@ class SlotArray(FCShapeTool):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -998,6 +1007,9 @@ class SlotArray(FCShapeTool):
                 radius = distance((cdx, cdy), self.origin)
             except Exception:
                 radius = 0
+
+            if radius == 0:
+                self.draw_app.delete_utility_geometry()
 
             if len(self.pt) >= 1 and radius > 0:
                 try:
@@ -1166,7 +1178,7 @@ class SlotArray(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
 
-        if self.slot_array == 0:    # 'Linear'
+        if self.slot_array == 'linear':    # 'Linear'
             for item in range(self.slot_array_size):
                 if self.slot_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.slot_pitch * item)), self.points[1]))
@@ -1207,6 +1219,12 @@ class SlotArray(FCShapeTool):
             #     self.geometry.append(DrawToolShape(geo))
 
             radius = distance(self.destination, self.origin)
+            if radius == 0:
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                self.draw_app.delete_utility_geometry()
+                self.draw_app.select_tool('drill_select')
+                return
+
             if self.destination[0] < self.origin[0]:
                 radius = -radius
             initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
@@ -1862,8 +1880,8 @@ class AppExcEditor(QtCore.QObject):
         # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
-        self.ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
-        self.ui.slot_array_type_combo.currentIndexChanged.connect(self.on_slot_array_type_combo)
+        self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
+        self.ui.slot_array_type_radio.activated_custom.connect(self.on_slot_array_type_radio)
 
         self.ui.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
         self.ui.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
@@ -1976,8 +1994,10 @@ class AppExcEditor(QtCore.QObject):
         # according to the set Preferences already loaded
         self.on_slot_angle_radio()
 
-        self.on_array_type_combo()
-        self.on_slot_array_type_combo()
+        self.ui.array_type_radio.set_value('linear')
+        self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
+        self.ui.slot_array_type_radio.set_value('linear')
+        self.on_slot_array_type_radio(val=self.ui.slot_array_type_radio.get_value())
         self.on_linear_angle_radio()
         self.on_slot_array_linear_angle_radio()
 
@@ -3160,7 +3180,7 @@ class AppExcEditor(QtCore.QObject):
                 self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             else:
                 self.pos = (self.pos[0], self.pos[1])
-                
+
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3755,8 +3775,8 @@ class AppExcEditor(QtCore.QObject):
         if unsel_shape in self.selected:
             self.selected.remove(unsel_shape)
 
-    def on_array_type_combo(self):
-        if self.ui.array_type_combo.currentIndex() == 0:
+    def on_array_type_radio(self, val):
+        if val == 'linear':
             self.ui.array_circular_frame.hide()
             self.ui.array_linear_frame.show()
         else:
@@ -3765,8 +3785,8 @@ class AppExcEditor(QtCore.QObject):
             self.ui.array_linear_frame.hide()
             self.app.inform.emit(_("Click on the circular array Center position"))
 
-    def on_slot_array_type_combo(self):
-        if self.ui.slot_array_type_combo.currentIndex() == 0:
+    def on_slot_array_type_radio(self, val):
+        if val == 'linear':
             self.ui.slot_array_circular_frame.hide()
             self.ui.slot_array_linear_frame.show()
         else:
@@ -3897,11 +3917,11 @@ class AppExcEditorUI:
         self.ui_vertical_lay.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.ui_vertical_lay)
 
-        # ## Page Title box (spacing between children)
+        # Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         self.ui_vertical_lay.addLayout(self.title_box)
 
-        # ## Page Title
+        # Page Title
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
         self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
@@ -3912,17 +3932,18 @@ class AppExcEditorUI:
         self.title_box.addWidget(self.icon, stretch=0)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        # ## Object name
+        # Object name box
         self.name_box = QtWidgets.QHBoxLayout()
         self.ui_vertical_lay.addLayout(self.name_box)
 
+        # Object Name
         name_label = FCLabel(_("Name:"))
         self.name_entry = FCEntry()
 
         self.name_box.addWidget(name_label)
         self.name_box.addWidget(self.name_entry)
 
-        # ### Tools Drills ## ##
+        # Tools Drills Table Title
         self.tools_table_label = FCLabel("<b>%s</b>" % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools in this Excellon object\n"
@@ -3930,7 +3951,9 @@ class AppExcEditorUI:
         )
         self.ui_vertical_lay.addWidget(self.tools_table_label)
 
-        # Drills TABLE
+        # #############################################################################################################
+        # ########################################## Drills TABLE #####################################################
+        # #############################################################################################################
         self.tools_table_exc = FCTable()
         self.tools_table_exc.setColumnCount(4)
         self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
@@ -3957,7 +3980,7 @@ class AppExcEditorUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.ui_vertical_lay.addWidget(separator_line)
 
-        # ### Add a new Tool ## ##
+        # Add a new Tool
         self.addtool_label = FCLabel('<b>%s</b>' % _('Add/Delete Tool'))
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
@@ -4089,16 +4112,20 @@ class AppExcEditorUI:
             _("Add an array of drills (linear or circular array)")
         )
         
-        # Special Combo - it works by indexes as opposed to the items Text
-        self.array_type_combo = FCComboBox2()
-        self.array_type_combo.setToolTip(
+        self.array_grid.addWidget(self.drill_array_label, 0, 0, 1, 2)
+
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of drills array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.array_type_combo.addItems([_("Linear"), _("Circular")])
 
-        self.array_grid.addWidget(self.drill_array_label, 0, 0, 1, 2)
-        self.array_grid.addWidget(self.array_type_combo, 2, 0, 1, 2)
+        self.array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                          {'label': _('Circular'), 'value': 'circular'}])
+
+        self.array_grid.addWidget(array_type_lbl, 2, 0)
+        self.array_grid.addWidget(self.array_type_radio, 2, 1)
 
         # Set the number of drill holes in the drill array
         self.drill_array_size_label = FCLabel('%s:' % _('Number'))
@@ -4289,9 +4316,6 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ##################################### ADDING SLOT ARRAY  ####################################################
         # #############################################################################################################
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
-        # all the add slot  widgets
-        # this way I can hide/show the frame
         self.slot_array_frame = QtWidgets.QFrame()
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_array_frame)
@@ -4310,15 +4334,18 @@ class AppExcEditorUI:
 
         self.slot_array_grid.addWidget(self.slot_array_label, 0, 0, 1, 2)
 
-        # Special type of Combobox that get_value() by indexes and not by items text
-        self.slot_array_type_combo = FCComboBox2()
-        self.slot_array_type_combo.setToolTip(
+        # Array Type
+        array_type_lbl = FCLabel('%s:' % _("Type"))
+        array_type_lbl.setToolTip(
             _("Select the type of slot array to create.\n"
               "It can be Linear X(Y) or Circular")
         )
-        self.slot_array_type_combo.addItems([_("Linear"), _("Circular")])
 
-        self.slot_array_grid.addWidget(self.slot_array_type_combo, 2, 0, 1, 2)
+        self.slot_array_type_radio = RadioSet([{'label': _('Linear'), 'value': 'linear'},
+                                               {'label': _('Circular'), 'value': 'circular'}])
+
+        self.slot_array_grid.addWidget(array_type_lbl, 2, 0)
+        self.slot_array_grid.addWidget(self.slot_array_type_radio, 2, 1)
 
         # Set the number of slot holes in the slot array
         self.slot_array_size_label = FCLabel('%s:' % _('Number'))
