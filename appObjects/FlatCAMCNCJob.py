@@ -2489,7 +2489,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 if self.origin_kind == "excellon":
                     if self.exc_cnc_tools:
                         for tooldia_key in self.exc_cnc_tools:
-                            tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
+                            tooldia = self.app.dec_format(float(tooldia_key), self.decimals)
                             gcode_parsed = self.exc_cnc_tools[tooldia_key]['gcode_parsed']
                             if not gcode_parsed:
                                 continue
@@ -2499,7 +2499,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     # multiple tools usage
                     if self.cnc_tools:
                         for tooluid_key in self.cnc_tools:
-                            tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
+                            tooldia = self.app.dec_format(float(self.cnc_tools[tooluid_key]['tooldia']), self.decimals)
                             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 

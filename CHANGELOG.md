@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed some issues with not finding the methods when treating the startup arguments
 - set the app to "Unstable" status
+- fixed an if/else selection in the AppObject.on_object_created() that made the plotting of CNCJob objects to be done twice and second time will disregard the Plot Kind Preference value
 
 7.11.2020
 

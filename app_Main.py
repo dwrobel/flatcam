@@ -8197,7 +8197,7 @@ class App(QtCore.QObject):
         """
         dec_nr = dec if dec is not None else self.decimals
 
-        return float('%.*f' % (dec_nr, val))
+        return float('%.*f' % (dec_nr, float(val)))
 
 
 class ArgsThread(QtCore.QObject):

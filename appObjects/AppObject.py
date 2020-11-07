@@ -452,7 +452,7 @@ class AppObject(QtCore.QObject):
             with self.app.proc_container.new('%s ...' % _("Plotting")):
                 if t_obj.kind == 'cncjob':
                     t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
-                if t_obj.kind == 'gerber':
+                elif t_obj.kind == 'gerber':
                     t_obj.plot(color=t_obj.outline_color, face_color=t_obj.fill_color)
                 else:
                     t_obj.plot()

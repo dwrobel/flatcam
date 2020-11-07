@@ -6795,8 +6795,7 @@ class CNCjob(Geometry):
                         try:
                             # if the geos are travel lines
                             if geo['kind'][0] == 'T':
-                                poly = geo['geom'].buffer(distance=(tooldia / 1.99999999),
-                                                          resolution=self.steps_per_circle)
+                                poly = geo['geom'].buffer((tooldia / 1.99999999), self.steps_per_circle)
                             else:
                                 poly = Polygon(geo['geom'])
 
@@ -6806,9 +6805,10 @@ class CNCjob(Geometry):
                             continue
                     else:
                         # plot the geometry of any objects other than Excellon
-                        poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        poly = geo['geom'].buffer((tooldia / 1.99999999), self.steps_per_circle)
                         poly = poly.simplify(tool_tolerance)
 
+                    # Plotting the shapes
                     if kind == 'all':
                         obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
                                       visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
