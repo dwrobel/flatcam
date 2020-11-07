@@ -47,7 +47,8 @@ class AppGCodeEditor(QtCore.QObject):
         # ################### SIGNALS #####################################################
         # #################################################################################
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.ui.update_gcode_button.clicked.connect(self.insert_gcode)
+        self.ui.update_gcode_button.clicked.connect(self.insert_code_snippet_1)
+        self.ui.update_gcode_sec_button.clicked.connect(self.insert_code_snippet_2)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         log.debug("Initialization of the GCode Editor is finished ...")
@@ -138,19 +139,19 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.cnc_tools_table.setRowCount(n)
 
         # add the All Gcode selection
-        allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
+        allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All"))
         allgcode_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, allgcode_item)
         row_no += 1
 
         # add the Header Gcode selection
-        header_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        header_item = QtWidgets.QTableWidgetItem('%s' % _("Header"))
         header_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, header_item)
         row_no += 1
 
         # add the Start Gcode selection
-        start_item = QtWidgets.QTableWidgetItem('%s' % _("Start GCode"))
+        start_item = QtWidgets.QTableWidgetItem('%s' % _("Start"))
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, start_item)
 
@@ -545,13 +546,21 @@ class AppGCodeEditor(QtCore.QObject):
         self.buttonSave.setStyleSheet("QPushButton {color: red;}")
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
 
-    def insert_gcode(self):
+    def insert_code_snippet_1(self):
         """
 
         :return:
         :rtype:
         """
-        pass
+        text = self.ui.prepend_text.toPlainText() + '\n'
+        my_text_cursor = self.edit_area.textCursor()
+        my_text_cursor.insertText(text)
+
+    def insert_code_snippet_2(self):
+
+        text = self.ui.append_text.toPlainText() + '\n'
+        my_text_cursor = self.edit_area.textCursor()
+        my_text_cursor.insertText(text)
 
     def edit_fcgcode(self, cnc_obj):
         """
@@ -684,7 +693,7 @@ class AppGCodeEditorUI:
 
         self.cnc_tools_table.setColumnCount(6)
         self.cnc_tools_table.setColumnWidth(0, 20)
-        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), ''])
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('GCode'), _('Offset'), _('Type'), _('TT'), ''])
         self.cnc_tools_table.setColumnHidden(5, True)
 
         # CNC Tools Table when made out of Excellon
@@ -695,7 +704,7 @@ class AppGCodeEditorUI:
 
         self.exc_cnc_tools_table.setColumnCount(6)
         self.exc_cnc_tools_table.setColumnWidth(0, 20)
-        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Drills'), _('Slots'), '', _("Cut Z")])
+        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('GCode'), _('Drills'), _('Slots'), '', _("Cut Z")])
         self.exc_cnc_tools_table.setColumnHidden(4, True)
 
         separator_line = QtWidgets.QFrame()

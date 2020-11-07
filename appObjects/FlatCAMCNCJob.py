@@ -2068,7 +2068,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.app.inform.emit('[ERROR_NOTCL] %s %s...' % (_('Failed.'), _('CNC Machine Code could not be updated')))
             return
         else:
-            self.source_file = gco
+            self.source_file = gco.getvalue()
             self.app.inform.emit('[success] %s...' % _('CNC Machine Code was updated'))
 
     def gcode_header(self, comment_start_symbol=None, comment_stop_symbol=None):
