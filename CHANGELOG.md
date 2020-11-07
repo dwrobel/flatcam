@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor when the radius is zero the utility geometry is deleted
 - in Excellon Editor made sure that trying to add a Circular Drill/Slot array with null radius will fail
 - in Excellon Editor when the radius is zero the utility geometry is deleted
+- in Gerber Editor fixed an error in the Eraser tool trying to disconnect the Jump signal
 
 6.11.2020
 

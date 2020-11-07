@@ -1361,6 +1361,8 @@ class TrackEditorGrb(ShapeToolEditorGrb):
 
         self.temp_points = []
 
+        self.current_point = None
+
         self.final_click = False
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1378,21 +1380,25 @@ class TrackEditorGrb(ShapeToolEditorGrb):
     def click(self, point):
         self.draw_app.in_action = True
 
-        if not self.points:
-            self.points.append(point)
-        elif point != self.points[-1]:
+        self.current_point = point
+
+        if not self.points or point != self.points[-1]:
             self.points.append(point)
         else:
             return
 
-        new_geo_el = {}
-
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = Point(self.temp_points)
+            point_geo = Point(self.temp_points[0])
+            new_geo_el = {
+                'solid': point_geo.buffer(self.buf_val, int(self.steps_per_circle)),
+                'follow': point_geo
+            }
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = LineString(self.temp_points)
+            line_geo = LineString(self.temp_points)
+            new_geo_el = {
+                'solid': line_geo.buffer(self.buf_val, int(self.steps_per_circle)),
+                'follow': line_geo
+            }
 
         self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
                                        self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry'])
@@ -1414,10 +1420,11 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             return
 
         self.update_grid_info()
-        new_geo_el = {}
 
         if not self.points:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val, int(self.steps_per_circle))
+            new_geo_el = {
+                'solid': Point(data).buffer(self.buf_val, int(self.steps_per_circle))
+            }
             return DrawToolUtilityShape(new_geo_el)
         else:
             old_x = self.points[-1][0]
@@ -1473,28 +1480,35 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                     pass
 
             self.temp_points.append(data)
-            if len(self.temp_points) == 1:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-                return DrawToolUtilityShape(new_geo_el)
 
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+            if len(self.temp_points) == 1:
+                new_geo_el = {
+                    'solid': Point(self.temp_points[0]).buffer(self.buf_val, int(self.steps_per_circle))
+                }
+            else:
+                new_geo_el = {
+                    'solid': LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+                }
+
             return DrawToolUtilityShape(new_geo_el)
 
     def make(self):
-        new_geo_el = {}
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['follow'] = Point(self.temp_points)
+            follow_geo = Point(self.temp_points[0])
+            solid_geo = follow_geo.buffer(self.buf_val, int(self.steps_per_circle))
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
-            new_geo_el['solid'] = new_geo_el['solid'].buffer(0)     # try to clean the geometry
-            new_geo_el['follow'] = LineString(self.temp_points)
+            follow_geo = LineString(self.temp_points)
+            solid_geo = follow_geo.buffer(self.buf_val, int(self.steps_per_circle))
+            solid_geo = solid_geo.buffer(0)     # try to clean the geometry
 
+        new_geo_el = {
+            'solid': solid_geo,
+            'follow': follow_geo
+        }
         self.geometry = DrawToolShape(new_geo_el)
 
         self.draw_app.in_action = False
         self.complete = True
-
         self.draw_app.app.jump_signal.disconnect()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
@@ -2482,7 +2496,10 @@ class EraserEditorGrb(ShapeToolEditorGrb):
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except TypeError:
+            pass
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -4468,6 +4485,7 @@ class AppGerberEditor(QtCore.QObject):
                             else:
                                 self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
                                 self.active_tool.make()
+
                             if self.active_tool.complete:
                                 self.on_grb_shape_complete()
                                 self.app.inform.emit('[success] %s' % _("Done."))
