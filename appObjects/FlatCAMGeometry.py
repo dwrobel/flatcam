@@ -244,6 +244,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setItem(row_idx, 5, tool_uid_item)  # Tool unique ID
 
             # -------------------- PLOT       ------------------------------------- #
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 6, empty_plot_item)
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
@@ -602,12 +605,16 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
+        # #############################################################################################################
+        # ################################ Signals Connection #########################################################
+        # #############################################################################################################
         self.builduiSig.connect(self.build_ui)
 
         self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
             self.ui.e_cut_entry.setDisabled(True)
         self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
+        # Plot state signals
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
@@ -618,11 +625,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
 
+        # Buttons Signals
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
+
+        # Postprocessor change
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
 
+        # V tool shape params changed
         self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
         self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
 
@@ -639,7 +650,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
+        # Tools Table signals
         self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         self.launch_job.connect(self.mtool_gen_cncjob)
 
@@ -748,13 +761,12 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.on_tooltable_cellwidget_change)
 
         self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
-
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
+        # Tools Table
         self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
-
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
+
         self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -820,10 +832,6 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         try:
             self.ui.geo_tools_table.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 

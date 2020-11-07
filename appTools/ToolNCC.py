@@ -675,23 +675,27 @@ class NonCopperClear(AppTool, Gerber):
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
 
+                    # ------------------------ Tool ID ----------------------------------------------------------------
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     flags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
                     id_.setFlags(flags)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_)  # Tool name/id
 
+                    # ------------------------ Tool Diameter ----------------------------------------------------------
                     # Make sure that the drill diameter when in MM is with no more than self.decimals decimals
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
                     self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
 
+                    # ------------------------ Tool Shape -------------------------------------------------------------
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
                     self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
+                    # ------------------------ Tool UID - NOT Visible -------------------------------------------------
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
                     # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                     self.ui.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID

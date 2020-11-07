@@ -220,13 +220,16 @@ class GerberObject(FlatCAMObj, Gerber):
             for ap_code in sorted_apertures:
                 ap_code = str(ap_code)
 
+                # ------------------------ Aperture ID ----------------------------------------------------------------
                 ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
                 ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                 self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
+                # ------------------------ Aperture CODE --------------------------------------------------------------
                 ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
                 ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+                # ------------------------ Aperture TYPE --------------------------------------------------------------
                 ap_type_item = QtWidgets.QTableWidgetItem(str(self.apertures[ap_code]['type']))
                 ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -247,6 +250,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     ap_dim_item = QtWidgets.QTableWidgetItem('')
                     ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+                # ------------------------ Aperture SIZE --------------------------------------------------------------
                 try:
                     if self.apertures[ap_code]['size'] is not None:
                         ap_size_item = QtWidgets.QTableWidgetItem(
@@ -257,6 +261,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     ap_size_item = QtWidgets.QTableWidgetItem('')
                 ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+                # ------------------------ Aperture MARK --------------------------------------------------------------
                 mark_item = FCCheckBox()
                 mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
                 # if self.ui.aperture_table_visibility_cb.isChecked():
