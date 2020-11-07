@@ -217,8 +217,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.solid_geo = None
         self.grbl_ser_port = None
 
-        self.pressed_button = None
-
+        # Shapes container for the Voronoi cells in Autolevelling
         if self.app.is_legacy is False:
             self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
@@ -529,12 +528,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             "al_grbl_jog_fr":   self.ui.jog_fr_entry,
         })
 
-        self.append_snippet = self.app.defaults['cncjob_append']
-        self.prepend_snippet = self.app.defaults['cncjob_prepend']
-
-        if self.append_snippet != '' or self.prepend_snippet != '':
-            self.ui.snippets_cb.set_value(True)
-
         # Fill form fields only on object create
         self.to_form()
 
@@ -544,7 +537,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.ui.t_distance_label.show()
                 self.ui.t_distance_entry.setVisible(True)
                 self.ui.t_distance_entry.setDisabled(True)
-                self.ui.t_distance_entry.set_value('%.*f' % (self.decimals, float(self.travel_distance)))
+                self.ui.t_distance_entry.set_value(self.app.dec_format(self.travel_distance, self.decimals))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
 
@@ -553,11 +546,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.ui.t_time_entry.setDisabled(True)
                 # if time is more than 1 then we have minutes, else we have seconds
                 if self.routing_time > 1:
-                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(self.routing_time))))
+                    time_r = self.app.dec_format(math.ceil(float(self.routing_time)), self.decimals)
+                    self.ui.t_time_entry.set_value(time_r)
                     self.ui.units_time_label.setText('min')
                 else:
                     time_r = self.routing_time * 60
-                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(time_r))))
+                    time_r = self.app.dec_format(math.ceil(float(time_r)), self.decimals)
+                    self.ui.t_time_entry.set_value(time_r)
                     self.ui.units_time_label.setText('sec')
                 self.ui.units_time_label.setDisabled(True)
         except AttributeError:
@@ -573,6 +568,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
+        # #############################################################################################################
+        # ##################################### SIGNALS CONNECTIONS ###################################################
+        # #############################################################################################################
+
+        # annotation signal
         try:
             self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
         except (TypeError, AttributeError):
@@ -582,7 +582,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # set if to display text annotations
         self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
+        # update plot button - active only for SingleGeo type objects
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
+
+        # Plot Kind
+        self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
+
+        # Export/REview GCode buttons signals
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.review_gcode_button.clicked.connect(self.on_review_code_click)
 
@@ -592,6 +598,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Properties
         self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
+
+        # Include CNC Job Snippets changed
+        self.ui.snippets_cb.toggled.connect(self.on_update_source_file)
 
         # autolevelling signals
         self.ui.sal_btn.toggled.connect(self.on_toggle_autolevelling)
@@ -636,10 +645,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.grbl_save_height_map_button.clicked.connect(self.on_grbl_heightmap_save)
 
         self.build_al_table_sig.connect(self.build_al_table)
-
-        # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
-
-        self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
+        # ###################################### END Signal connections ###############################################
+        # #############################################################################################################
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -658,9 +665,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.ui.sal_btn.show()
                 self.ui.sal_btn.setChecked(self.app.defaults["cncjob_al_status"])
 
-        preamble = self.prepend_snippet
-        postamble = self.append_snippet
+        self.append_snippet = self.app.defaults['cncjob_append']
+        self.prepend_snippet = self.app.defaults['cncjob_prepend']
+
+        if self.append_snippet != '' or self.prepend_snippet != '':
+            self.ui.snippets_cb.set_value(True)
+
+        # On CNCJob object creation, generate the GCode
+        preamble = ''
+        postamble = ''
+        if self.append_snippet != '' or self.prepend_snippet != '':
+            preamble = self.prepend_snippet
+            postamble = self.append_snippet
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+
+        # set the Source File attribute with the calculated GCode
         self.source_file = gc.getvalue()
 
         self.ui.al_mode_radio.set_value(self.options['al_mode'])
@@ -668,12 +687,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.on_mode_radio(val=self.options['al_mode'])
         self.on_method_radio(val=self.options['al_method'])
-
-    # def on_cnc_custom_parameters(self, signal_text):
-    #     if signal_text == 'Parameters':
-    #         return
-    #     else:
-    #         self.ui.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
@@ -1945,17 +1958,40 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.name_entry.set_value(new_name)
         self.on_name_activate(silent=True)
 
-        try:
-            if self.ui.snippets_cb.get_value():
-                preamble = self.prepend_snippet
-                postamble = self.append_snippet
-            gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
-        except Exception as err:
-            log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
-            gc = self.export_gcode(filename)
+        # try:
+        #     if self.ui.snippets_cb.get_value():
+        #         preamble = self.prepend_snippet
+        #         postamble = self.append_snippet
+        #     gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        # except Exception as err:
+        #     log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
+        #     gc = self.export_gcode(filename)
+        #
+        # if gc == 'fail':
+        #     return
 
-        if gc == 'fail':
+        if self.source_file == '':
+            return 'fail'
+
+        try:
+            force_windows_line_endings = self.app.defaults['cncjob_line_ending']
+            if force_windows_line_endings and sys.platform != 'win32':
+                with open(filename, 'w', newline='\r\n') as f:
+                    for line in self.source_file:
+                        f.write(line)
+            else:
+                with open(filename, 'w') as f:
+                    for line in self.source_file:
+                        f.write(line)
+        except FileNotFoundError:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No such file or directory"))
             return
+        except PermissionError:
+            self.app.inform.emit(
+                '[WARNING] %s' % _("Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible.")
+            )
+            return 'fail'
 
         if self.app.defaults["global_open_style"] is False:
             self.app.file_opened.emit("gcode", filename)
@@ -1971,14 +2007,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.app.proc_container.view.set_busy('%s...' % _("Loading"))
 
-        preamble = self.prepend_snippet
-        postamble = self.append_snippet
-
-        gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        if gco == 'fail':
-            return
-        else:
-            self.app.gcode_edited = gco
+        # preamble = self.prepend_snippet
+        # postamble = self.append_snippet
+        #
+        # gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        # if gco == 'fail':
+        #     return
+        # else:
+        #     self.app.gcode_edited = gco
+        self.app.gcode_edited = self.source_file
 
         self.gcode_editor_tab = AppTextEditor(app=self.app, plain_text=True)
 
@@ -1999,7 +2036,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
-            self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
+            # self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
+            self.gcode_editor_tab.load_text(self.app.gcode_edited, move_to_start=True, clear_text=True)
         except Exception as e:
             log.debug('FlatCAMCNCJob.on_review_code_click() -->%s' % str(e))
             return
@@ -2019,7 +2057,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 
     def on_update_source_file(self):
-        self.source_file = self.gcode_editor_tab.code_editor.toPlainText()
+        preamble = ''
+        postamble = ''
+        if self.ui.snippets_cb.get_value():
+            preamble = self.prepend_snippet
+            postamble = self.append_snippet
+
+        gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        if gco == 'fail':
+            self.app.inform.emit('[ERROR_NOTCL] %s %s...' % (_('Failed.'), _('CNC Machine Code could not be updated')))
+            return
+        else:
+            self.source_file = gco
+            self.app.inform.emit('[success] %s...' % _('CNC Machine Code was updated'))
 
     def gcode_header(self, comment_start_symbol=None, comment_stop_symbol=None):
         """
