@@ -34,14 +34,11 @@ class TclCommandSplitGeometry(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Runs a merge operation (join) on the Geometry objects.\n"
-                "The names of the Geometry objects to be merged will be entered after the outname,\n"
-                "separated by spaces. See the example below.\n"
-                "WARNING: if the name of an Geometry objects has spaces, enclose the name with quotes.",
+        'main': "Creates a new geometry for every tool and fills it with the tools geometry data",
         'args': collections.OrderedDict([
-            ('source_name', 'Name of the new Geometry Object made by joining of other Geometry objects. Required'),
+            ('source_name', 'Name of the source Geometry Object. Required'),
         ]),
-        'examples': ['join_geometry merged_new_geo geo_name_1 "geo name_2"']
+        'examples': ['split_geometry my_geometry']
     }
 
     def execute(self, args, unnamed_args):
