@@ -64,6 +64,7 @@ import tclCommands.TclCommandSetOrigin
 import tclCommands.TclCommandSetPath
 import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSkew
+import tclCommands.TclCommandSplitGeometry
 import tclCommands.TclCommandSubtractPoly
 import tclCommands.TclCommandSubtractRectangle
 import tclCommands.TclCommandVersion
