@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed an if/else selection in the AppObject.on_object_created() that made the plotting of CNCJob objects to be done twice and second time will disregard the Plot Kind Preference value
 - updated the GCode generation section. Now the GCode is generated only once, when a CNCJob object was created. If the user chose to use the GCode Editor the GCode is only updated. If the user chose to include or remove the CNC Code Snippets, only then the GCode is regenerated. This has a higher impact on CNCJobs with very complex and long GCode.
 - in GCode Editor added handlers for the Insert Code buttons
+- in Project tab, when selecting multiple CNCJob objects, in the context menu the name of the Save entry change to Batch Save and those objects are all saved each in its own file
 
 7.11.2020
 

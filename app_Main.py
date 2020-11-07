@@ -7100,12 +7100,13 @@ class App(QtCore.QObject):
                         caption=_("Export Code ..."),
                         ext_filter=_filter_)
 
-                filename = filename.rpartition('/')[0]
+                path = filename.rpartition('/')[0]
+                file_extension = filename.rpartition('.')[2]
 
                 for ob in sel_objects:
                     ob.read_form()
-                    fname = '%s/%s' % (filename, ob.options['name'])
-                    ob.export_gcode_handler(fname, is_gcode=True)
+                    fname = os.path.join(path, '%s.%s' % (ob.options['name'], file_extension))
+                    ob.export_gcode_handler(fname, is_gcode=True, rename_object=False)
                 return
 
         obj = self.collection.get_active()

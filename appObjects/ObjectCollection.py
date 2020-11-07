@@ -373,7 +373,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.app.ui.menuprojectcopy.setEnabled(sel)
         self.app.ui.menuprojectedit.setEnabled(sel)
+
+        # #############################################
         self.app.ui.menuprojectdelete.setEnabled(sel)
+        self.app.ui.menuprojectsave.setText(_('Save'))
+        # #############################################
+
         self.app.ui.menuprojectsave.setEnabled(sel)
         self.app.ui.menuprojectproperties.setEnabled(sel)
 
@@ -384,25 +389,33 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectviewsource.setVisible(True)
             self.app.ui.menuprojectcolor.setEnabled(False)
 
-            for obj in self.get_selected():
-                if type(obj) == GerberObject or type(obj) == ExcellonObject:
+            obj_selection = self.get_selected()
+
+            for obj in obj_selection:
+                if obj.kind == 'gerber' or obj.kind == 'excellon':
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
-                if type(obj) != GeometryObject:
+                if obj.kind == 'geometry':
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
-                # if type(obj) != GeometryObject and type(obj) != ExcellonObject and type(obj) != GerberObject or \
-                #         type(obj) != CNCJobObject:
-                #     self.app.ui.menuprojectedit.setVisible(False)
-                if type(obj) != GerberObject and type(obj) != ExcellonObject and type(obj) != CNCJobObject:
+                if obj.kind != 'gerber' and obj.kind != 'excellon' and obj.kind != 'cncjob':
                     self.app.ui.menuprojectviewsource.setVisible(False)
-                if type(obj) != GerberObject and type(obj) != GeometryObject and type(obj) != ExcellonObject and \
-                        type(obj) != CNCJobObject:
+                if obj.kind != 'gerber' and obj.kind != 'geometry' and obj.kind != 'excellon' and obj.kind != 'cncjob':
                     # meaning for Scripts and for Document type of FlatCAM object
                     self.app.ui.menuprojectenable.setVisible(False)
                     self.app.ui.menuprojectdisable.setVisible(False)
                     self.app.ui.menuprojectedit.setVisible(False)
                     self.app.ui.menuprojectproperties.setVisible(False)
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
+
+            len_objects = len(obj_selection)
+            cnt = 0
+            if len_objects > 1:
+                for o in obj_selection:
+                    if o.kind == 'cncjob':
+                        cnt += 1
+
+                if len_objects == cnt:
+                    self.app.ui.menuprojectsave.setText(_('Batch Save'))
         else:
             self.app.ui.menuprojectgeneratecnc.setVisible(False)
 

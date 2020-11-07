@@ -1941,7 +1941,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.export_gcode_handler(filename, is_gcode=save_gcode)
 
-    def export_gcode_handler(self, filename, is_gcode=True):
+    def export_gcode_handler(self, filename, is_gcode=True, rename_object=True):
         preamble = ''
         postamble = ''
         filename = str(filename)
@@ -1954,9 +1954,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 used_extension = filename.rpartition('.')[2]
                 self.update_filters(last_ext=used_extension, filter_string='cncjob_save_filters')
 
-        new_name = os.path.split(str(filename))[1].rpartition('.')[0]
-        self.ui.name_entry.set_value(new_name)
-        self.on_name_activate(silent=True)
+        if rename_object:
+            new_name = os.path.split(str(filename))[1].rpartition('.')[0]
+            self.ui.name_entry.set_value(new_name)
+            self.on_name_activate(silent=True)
 
         # try:
         #     if self.ui.snippets_cb.get_value():
