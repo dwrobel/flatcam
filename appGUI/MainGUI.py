@@ -2720,6 +2720,10 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
                     webbrowser.open(self.app.manual_url)
 
+                # Rename Objects in the Project Tab
+                if key == QtCore.Qt.Key_F2:
+                    self.app.collection.view.edit(self.app.collection.view.currentIndex())
+
                 # Show shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
@@ -4405,6 +4409,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>'%s'</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -4512,6 +4520,7 @@ class ShortcutsTab(QtWidgets.QWidget):
 
                     # F keys section
                     _('F1'), _("Open Online Manual"),
+                    _('F2'), _("Rename Objects"),
                     _('F4'), _("Open Online Tutorials"),
                     _('F5'), _("Refresh Plots"),
                     _('Del'), _("Delete Object"),
