@@ -1,29 +1,49 @@
-#!/bin/sh
-apt-get install python3-pip
-apt-get install python3-pyqt5
-apt-get install python3-pyqt5.qtopengl
-apt-get install libpng-dev
-apt-get install libfreetype6 libfreetype6-dev
-apt-get install python3-dev
-apt-get install python3-simplejson
-apt-get install python3-numpy python3-scipy
-apt-get install libgeos-dev
-apt-get install python3-shapely
-apt-get install python3-rtree
-apt-get install python3-tk
-apt-get install libspatialindex-dev
-apt-get install python3-gdal
-apt-get install python3-lxml
-pip3 install --upgrade dill
-pip3 install --upgrade Shapely
-pip3 install --upgrade vispy
-pip3 install --upgrade rtree
-pip3 install --upgrade pyopengl
-pip3 install --upgrade setuptools
-pip3 install --upgrade svg.path
-pip3 install --upgrade ortools
-pip3 install --upgrade freetype-py
-pip3 install --upgrade fontTools
-pip3 install --upgrade rasterio
-pip3 install --upgrade lxml
-pip3 install --upgrade ezdxf
+#!/bin/sh -e
+
+# Ubuntu packages
+
+sudo apt-get install -y \
+	libfreetype6 \
+	libfreetype6-dev \
+	libgeos-dev \
+	libpng-dev \
+	libspatialindex-dev \
+	qt5-style-plugins \
+	python3-dev \
+	python3-gdal \
+	python3-pip \
+	python3-pyqt5 \
+	python3-pyqt5.qtopengl \
+	python3-simplejson \
+	python3-tk
+
+
+# Python packages
+
+sudo -H python3 -m pip install --upgrade \
+	pip \
+	numpy \
+	shapely \
+	rtree \
+	tk \
+	lxml \
+	cycler \
+	python-dateutil \
+	kiwisolver \
+	dill \
+	vispy \
+	pyopengl \
+	setuptools \
+	svg.path \
+	ortools \
+	freetype-py \
+	fontTools \
+	rasterio \
+	ezdxf \
+	matplotlib \
+	qrcode \
+	pyqt5 \
+	reportlab \
+	svglib
+
+sudo -H easy_install -U distribute

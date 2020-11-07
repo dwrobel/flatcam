@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import Geometry
+
+import collections
 
 
 class TclCommandInteriors(TclCommandSignaled):
@@ -9,6 +11,9 @@ class TclCommandInteriors(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['interiors']
+
+    description = '%s %s' % ("--", "Create a new Geometry object with the 'interiors' geo "
+                                   "elements of the source object.")
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -25,12 +30,13 @@ class TclCommandInteriors(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Get interiors of polygons.",
+        'main': "Create a new Geometry object with the 'interiors' geometric elements of "
+                "the specified source Geometry object.",
         'args':  collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
+            ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': []
+        'examples': ['interiors my_geo_name -outname "outputed_geo"']
     }
 
     def execute(self, args, unnamed_args):
@@ -61,4 +67,4 @@ class TclCommandInteriors(TclCommandSignaled):
             geo_obj.solid_geometry = obj_interiors
 
         obj_interiors = obj.get_interiors()
-        self.app.new_object('geometry', outname, geo_init)
+        self.app.app_obj.new_object('geometry', outname, geo_init)

@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandNew(TclCommand):
@@ -9,6 +10,8 @@ class TclCommandNew(TclCommand):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['new']
+
+    description = '%s %s' % ("--", "Starts a new project. Clears objects from memory.")
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict()
@@ -23,7 +26,7 @@ class TclCommandNew(TclCommand):
     help = {
         'main': "Starts a new project. Clears objects from memory.",
         'args': collections.OrderedDict(),
-        'examples': []
+        'examples': ['new']
     }
 
     def execute(self, args, unnamed_args):
@@ -36,4 +39,4 @@ class TclCommandNew(TclCommand):
         :return: None or exception
         """
 
-        self.app.on_file_new()
+        self.app.on_file_new(cli=True)

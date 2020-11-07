@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandOpenExcellon(TclCommandSignaled):
@@ -9,6 +10,8 @@ class TclCommandOpenExcellon(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_excellon']
+
+    description = '%s %s' % ("--", "Opens an Excellon file, parse it and create a Excellon object from it.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -27,12 +30,15 @@ class TclCommandOpenExcellon(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens an Excellon file.",
+        'main': "Opens an Excellon file, parse it and create a Excellon object from it.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
             ('outname', 'Name of the resulting Excellon object.')
         ]),
-        'examples': []
+        'examples': ['open_excellon D:\\my_excellon_file.DRL',
+                     'open_excellon "D:\\my_excellon_file with spaces in the name.DRL"',
+                     'open_excellon path_to_file']
     }
 
     def execute(self, args, unnamed_args):
@@ -47,4 +53,10 @@ class TclCommandOpenExcellon(TclCommandSignaled):
 
         filename = args.pop('filename')
 
-        self.app.open_excellon(filename, **args)
+        # if ' ' in filename:
+        #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
+        #            "Please enclose the path within quotes."
+
+        args['plot'] = False
+        args['from_tcl'] = True
+        self.app.f_handlers.open_excellon(filename, **args)

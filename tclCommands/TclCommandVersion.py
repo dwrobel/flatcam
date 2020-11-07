@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandVersion(TclCommand):
@@ -12,6 +13,8 @@ class TclCommandVersion(TclCommand):
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['version']
+
+    description = '%s %s' % ("--", "Checks the program version.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -32,7 +35,7 @@ class TclCommandVersion(TclCommand):
         'args': collections.OrderedDict([
 
         ]),
-        'examples': []
+        'examples': ['version']
     }
 
     def execute(self, args, unnamed_args):
@@ -44,4 +47,3 @@ class TclCommandVersion(TclCommand):
         """
 
         self.app.version_check()
-

@@ -1,7 +1,12 @@
-from ObjectCollection import *
-from copy import copy,deepcopy
-
 from tclCommands.TclCommand import TclCommand
+
+import shapely.affinity as affinity
+
+import logging
+from copy import deepcopy
+import collections
+
+log = logging.getLogger('base')
 
 
 class TclCommandPanelize(TclCommand):
@@ -13,7 +18,10 @@ class TclCommandPanelize(TclCommand):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['panelize','pan', 'panel']
+    aliases = ['panelize', 'pan', 'panel']
+
+    description = '%s %s' % ("--", "Create a new object with an array of duplicates of the original geometry, "
+                                   "arranged in a grid.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -28,15 +36,15 @@ class TclCommandPanelize(TclCommand):
         ('spacing_rows', float),
         ('box', str),
         ('outname', str),
-        ('threaded', int)
+        ('use_thread', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name', 'rows', 'columns']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Rectangular panelizing.',
+        'main': 'Create a new object with an array of duplicates of the original geometry, arranged in a grid.',
         'args': collections.OrderedDict([
             ('name', 'Name of the object to panelize.'),
             ('box', 'Name of object which acts as box (cutout for example.)'
@@ -46,9 +54,16 @@ class TclCommandPanelize(TclCommand):
             ('columns', 'Number of columns.'),
             ('rows', 'Number of rows;'),
             ('outname', 'Name of the new geometry object.'),
-            ('threaded', '0 = non-threaded || 1 = threaded')
+            ('use_thread', 'False (0) = non-threaded execution or True (1) = threaded execution')
         ]),
-        'examples': []
+        'examples': [
+            'panelize obj_name',
+
+            'panel obj_name -rows 2 -columns 2 -spacing_columns 0.4 -spacing_rows 1.3 -box box_obj_name '
+            '-outname panelized_name',
+
+            'panel obj_name -columns 2 -box box_obj_name -outname panelized_name',
+        ]
     }
 
     def execute(self, args, unnamed_args):
@@ -64,7 +79,7 @@ class TclCommandPanelize(TclCommand):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -74,36 +89,47 @@ class TclCommandPanelize(TclCommand):
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
-            except:
+            except Exception:
                 return "Could not retrieve object: %s" % name
         else:
             box = obj
 
-        if 'columns' not in args or 'rows' not in args:
-            return "ERROR: Specify -columns and -rows"
+        if 'columns' in args:
+            columns = int(args['columns'])
+        else:
+            columns = int(0)
+
+        if 'rows' in args:
+            rows = int(args['rows'])
+        else:
+            rows = int(0)
+
+        if 'columns' not in args and 'rows' not in args:
+            return "ERROR: Specify either -columns or -rows. The one not specified it will assumed to be 0"
 
         if 'outname' in args:
             outname = args['outname']
         else:
             outname = name + '_panelized'
 
-        if 'threaded' in args:
-            threaded = args['threaded']
+        if 'use_thread' in args:
+            try:
+                par = args['use_thread'].capitalize()
+            except AttributeError:
+                par = args['use_thread']
+            threaded = bool(eval(par))
         else:
-            threaded = 1
+            threaded = False
 
         if 'spacing_columns' in args:
-            spacing_columns = args['spacing_columns']
+            spacing_columns = int(args['spacing_columns'])
         else:
             spacing_columns = 5
 
         if 'spacing_rows' in args:
-            spacing_rows = args['spacing_rows']
+            spacing_rows = int(args['spacing_rows'])
         else:
             spacing_rows = 5
-
-        rows = args['rows']
-        columns = args['columns']
 
         xmin, ymin, xmax, ymax = box.bounds()
         lenghtx = xmax - xmin + spacing_columns
@@ -126,12 +152,12 @@ class TclCommandPanelize(TclCommand):
         #         objs.append(obj_init)
         #
         #     def initialize_geometry(obj_init, app):
-        #         FlatCAMGeometry.merge(objs, obj_init)
+        #         GeometryObject.merge(objs, obj_init)
         #
         #     def initialize_excellon(obj_init, app):
         #         # merge expects tools to exist in the target object
         #         obj_init.tools = obj.tools.copy()
-        #         FlatCAMExcellon.merge(objs, obj_init)
+        #         ExcellonObject.merge(objs, obj_init)
         #
         #     objs = []
         #     if obj is not None:
@@ -140,20 +166,21 @@ class TclCommandPanelize(TclCommand):
         #             currentx = 0
         #             for col in range(columns):
         #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
-        #                 if isinstance(obj, FlatCAMExcellon):
-        #                     self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
+        #                 if isinstance(obj, ExcellonObject):
+        #                     self.app.app_obj.new_object("excellon", local_outname, initialize_local_excellon,
+        #                                           plot=False,
         #                                         autoselected=False)
         #                 else:
-        #                     self.app.new_object("geometry", local_outname, initialize_local, plot=False,
+        #                     self.app.app_obj.new_object("geometry", local_outname, initialize_local, plot=False,
         #                                         autoselected=False)
         #
         #                 currentx += lenghtx
         #             currenty += lenghty
         #
-        #         if isinstance(obj, FlatCAMExcellon):
-        #             self.app.new_object("excellon", outname, initialize_excellon)
+        #         if isinstance(obj, ExcellonObject):
+        #             self.app.app_obj.new_object("excellon", outname, initialize_excellon)
         #         else:
-        #             self.app.new_object("geometry", outname, initialize_geometry)
+        #             self.app.app_obj.new_object("geometry", outname, initialize_geometry)
         #
         #         # deselect all  to avoid  delete selected object when run  delete  from  shell
         #         self.app.collection.set_all_inactive()
@@ -171,45 +198,38 @@ class TclCommandPanelize(TclCommand):
             if obj is not None:
                 self.app.inform.emit("Generating panel ... Please wait.")
 
-                self.app.progress.emit(0)
-
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
-                    self.app.progress.emit(10)
+
                     obj_fin.tools = obj.tools.copy()
-                    obj_fin.drills = []
-                    obj_fin.slots = []
-                    obj_fin.solid_geometry = []
+                    if 'drills' not in obj_fin.tools:
+                        obj_fin.tools['drills'] = []
+                    if 'slots' not in obj_fin.tools:
+                        obj_fin.tools['slots'] = []
+                    if 'solid_geometry' not in obj_fin.tools:
+                        obj_fin.tools['solid_geometry'] = []
 
                     for option in obj.options:
-                        if option is not 'name':
+                        if option != 'name':
                             try:
                                 obj_fin.options[option] = obj.options[option]
-                            except:
-                                log.warning("Failed to copy option.", option)
+                            except Exception as e:
+                                app_obj.log.warning("Failed to copy option: %s" % str(option))
+                                app_obj.log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
 
                     for row in range(rows):
                         currentx = 0.0
                         for col in range(columns):
-                            if obj.drills:
-                                for tool_dict in obj.drills:
-                                    point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
-                                    obj_fin.drills.append(
-                                        {
-                                            "point": point_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
-                                    )
-                            if obj.slots:
-                                for tool_dict in obj.slots:
-                                    start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
-                                    stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
-                                    obj_fin.slots.append(
-                                        {
-                                            "start": start_offseted,
-                                            "stop": stop_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
+                            if 'drills' in obj.tools:
+                                for drill_pt in obj.tools['drills']:
+                                    point_offseted = affinity.translate(drill_pt, currentx, currenty)
+                                    obj_fin.tools['drills'].append(point_offseted)
+                            if 'slots' in obj.tools:
+                                for slot_tuple in obj.tools['slots']:
+                                    start_offseted = affinity.translate(slot_tuple[0], currentx, currenty)
+                                    stop_offseted = affinity.translate(slot_tuple[1], currentx, currenty)
+                                    obj_fin.tools['slots'].append(
+                                        (start_offseted, stop_offseted)
                                     )
                             currentx += lenghtx
                         currenty += lenghty
@@ -224,7 +244,7 @@ class TclCommandPanelize(TclCommand):
 
                     def translate_recursion(geom):
                         if type(geom) == list:
-                            geoms = list()
+                            geoms = []
                             for local_geom in geom:
                                 geoms.append(translate_recursion(local_geom))
                             return geoms
@@ -233,19 +253,18 @@ class TclCommandPanelize(TclCommand):
 
                     obj_fin.solid_geometry = []
 
-                    if isinstance(obj, FlatCAMGeometry):
+                    if obj.kind == 'geometry':
                         obj_fin.multigeo = obj.multigeo
                         obj_fin.tools = deepcopy(obj.tools)
                         if obj.multigeo is True:
                             for tool in obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
 
-                    self.app.progress.emit(0)
                     for row in range(rows):
                         currentx = 0.0
 
                         for col in range(columns):
-                            if isinstance(obj, FlatCAMGeometry):
+                            if obj.kind == 'geometry':
                                 if obj.multigeo is True:
                                     for tool in obj.tools:
                                         obj_fin.tools[tool]['solid_geometry'].append(translate_recursion(
@@ -263,28 +282,24 @@ class TclCommandPanelize(TclCommand):
                             currentx += lenghtx
                         currenty += lenghty
 
-                if isinstance(obj, FlatCAMExcellon):
-                    self.app.progress.emit(50)
-                    self.app.new_object("excellon", outname, job_init_excellon, plot=True, autoselected=True)
+                if obj.kind == 'excellon':
+                    self.app.app_obj.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
                 else:
-                    self.app.progress.emit(50)
-                    self.app.new_object("geometry", outname, job_init_geometry, plot=True, autoselected=True)
+                    self.app.app_obj.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
-        if threaded == 1:
-            proc = self.app.proc_container.new("Generating panel ... Please wait.")
+        if threaded is True:
+            self.app.proc_container.new(_("Working ..."))
 
             def job_thread(app_obj):
                 try:
                     panelize_2()
-                    self.app.inform.emit("[success] Panel created successfully.")
-                except Exception as e:
-                    proc.done()
-                    log.debug(str(e))
+                    app_obj.inform.emit('[success]' % _("Done."))
+                except Exception as ee:
+                    log.debug(str(ee))
                     return
-                proc.done()
 
             self.app.collection.promise(outname)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             panelize_2()
-            self.app.inform.emit("[success] Panel created successfully.")
+            self.app.inform.emit('[success]' % _("Done."))

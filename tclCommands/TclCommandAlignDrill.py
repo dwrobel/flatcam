@@ -1,5 +1,8 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommandSignaled
+
+from shapely.geometry import Point
+import shapely.affinity as affinity
 
 
 class TclCommandAlignDrill(TclCommandSignaled):
@@ -10,6 +13,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrill']
+
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -29,6 +34,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         ('axisoffset', float),
         ('dia', float),
         ('dist', float),
+        ('outname', str),
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -36,20 +42,24 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create excellon with drills for aligment.",
+        'main': "Create an Excellon object with drills for alignment.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
             ('dia', 'Tool diameter'),
             ('box', 'Name of object which act as box (cutout for example.)'),
+            ('holes', 'Tuple of tuples where each tuple it is a set of x, y coordinates. '
+                      'E.g: (x0, y0), (x1, y1), ... '),
             ('grid', 'Aligning to grid, for those, who have aligning pins'
                      'inside table in grid (-5,0),(5,0),(15,0)...'),
             ('gridoffset', 'offset of grid from 0 position.'),
             ('minoffset', 'min and max distance between align hole and pcb.'),
             ('axisoffset', 'Offset on second axis before aligment holes'),
             ('axis', 'Mirror axis parallel to the X or Y axis.'),
-            ('dist', 'Distance of the mirror axis to the X or Y axis.')
+            ('dist', 'Distance of the mirror axis to the X or Y axis.'),
+            ('outname', 'Name of the resulting Excellon object.'),
         ]),
-        'examples': []
+        'examples': ['aligndrill my_object -axis X -box my_object -dia 3.125 -grid 1 '
+                     '-gridoffset 0 -minoffset 2 -axisoffset 2']
     }
 
     def execute(self, args, unnamed_args):
@@ -64,18 +74,21 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
         name = args['name']
 
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = name + "_aligndrill"
+
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
             return "Object not found: %s" % name
 
-        if not isinstance(obj, FlatCAMGeometry) and \
-                not isinstance(obj, FlatCAMGerber) and \
-                not isinstance(obj, FlatCAMExcellon):
+        if obj.kind != "geometry" and obj.kind != 'gerber' and obj.kind != 'excellon':
             return "ERROR: Only Gerber, Geometry and Excellon objects can be used."
 
         # Axis
@@ -95,8 +108,10 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        tooldia = args['dia']
+
         # Tools
-        tools = {"1": {"C": args['dia']}}
+        # tools = {"1": {"C": args['dia']}}
 
         def alligndrill_init_me(init_obj, app_obj):
             """
@@ -113,8 +128,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 for hole in holes:
                     point = Point(hole)
                     point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                    drills.append({"point": point, "tool": "1"})
-                    drills.append({"point": point_mirror, "tool": "1"})
+                    drills.append(point)
+                    drills.append(point_mirror)
             else:
                 if 'box' not in args:
                     return "ERROR: -grid can be used only for -box"
@@ -154,18 +169,24 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 for hole in localholes:
                     point = Point(hole)
                     point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                    drills.append({"point": point, "tool": "1"})
-                    drills.append({"point": point_mirror, "tool": "1"})
+                    drills.append(point)
+                    drills.append(point_mirror)
 
-            init_obj.tools = tools
-            init_obj.drills = drills
+            init_obj.tools = {
+                '1': {
+                    'tooldia': tooldia,
+                    'drills': drills,
+                    'solid_geometry': []
+                }
+            }
+
             init_obj.create_geometry()
 
         # Box
         if 'box' in args:
             try:
                 box = self.app.collection.get_by_name(args['box'])
-            except:
+            except Exception:
                 return "Could not retrieve object box: %s" % args['box']
 
             if box is None:
@@ -176,9 +197,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 px = 0.5 * (xmin + xmax)
                 py = 0.5 * (ymin + ymax)
 
-                obj.app.new_object("excellon",
-                                   name + "_aligndrill",
-                                   alligndrill_init_me)
+                obj.app.app_obj.new_object("excellon", outname, alligndrill_init_me, plot=False)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -194,8 +213,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
             try:
                 px = dist
                 py = dist
-                obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
+                obj.app.app_obj.new_object("excellon", outname, alligndrill_init_me, plot=False)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-        return 'Ok'
+        return 'Ok. Align Drills Excellon object created'

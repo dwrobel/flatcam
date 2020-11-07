@@ -1,3 +1,10 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 8/17/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from tclCommands.TclCommand import *
 
 
@@ -11,6 +18,8 @@ class TclCommandListSys(TclCommand):
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['list_sys', 'listsys']
+
+    description = '%s %s' % ("--", "Outputs in Tcl Shell the list with the names of system variables.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -33,7 +42,7 @@ class TclCommandListSys(TclCommand):
                 "of the system variable.\n"
                 "In that case it will list only the system variables that starts with that string.\n"
                 "Main categories start with: gerber or excellon or geometry or cncjob or global.\n"
-                "Note: Use get_sys TclCommand to get the value and set_sys TclCommand to set it.\n",
+                "Note: Use 'get_sys system variable' to get the value and 'set_sys system variable value' to set it.\n",
         'args': collections.OrderedDict([
         ]),
         'examples': ['list_sys',
@@ -53,4 +62,6 @@ class TclCommandListSys(TclCommand):
             argument = args['selection']
             return str([k for k in self.app.defaults.keys() if str(k).startswith(str(argument))])
         else:
-            return str([*self.app.defaults])
+            ret_val = list(self.app.defaults.keys())
+            return str(ret_val)
+            # return str([*self.app.defaults])

@@ -4,7 +4,7 @@
 import sys
 sys.path.append('../../')
 
-from camlib import *
+from flatcamParsers.ParseGerber import *
 
 log = logging.getLogger('base2')
 log.setLevel(logging.WARNING)

@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import CNCjob
+
+import collections
 
 
 class TclCommandExportGcode(TclCommandSignaled):
@@ -11,7 +13,7 @@ class TclCommandExportGcode(TclCommandSignaled):
     promises and send to background if there are promises.
 
 
-    This export may be captured and passed as preable
+    This export may be captured and passed as preamble
     to another "export_gcode" or "write_gcode" call to join G-Code.
 
     example:
@@ -29,11 +31,13 @@ class TclCommandExportGcode(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['export_gcode']
 
+    description = '%s %s' % ("--", "Return Gcode into console output.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
         ('preamble', str),
-        ('postamble', str)
+        ('postamble', str),
     ])
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
@@ -46,11 +50,11 @@ class TclCommandExportGcode(TclCommandSignaled):
     help = {
         'main': "Export gcode into console output.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
-            ('preamble', 'Prepend GCODE.'),
-            ('postamble', 'Append GCODE.')
+            ('name', 'Name of the source Geometry object. Required.'),
+            ('preamble', 'Prepend GCode to the original GCode.'),
+            ('postamble', 'Append GCode o the original GCode.'),
         ]),
-        'examples': []
+        'examples': ['export_gcode geo_name -preamble "G01 X10 Y10" -postamble "G00 X20 Y20\nM04"']
     }
 
     def execute(self, args, unnamed_args):
@@ -76,4 +80,5 @@ class TclCommandExportGcode(TclCommandSignaled):
             self.raise_tcl_error('!!!Promises exists, but should not here!!!')
 
         del args['name']
-        return obj.get_gcode(**args)
+        obj.get_gcode(**args)
+        return

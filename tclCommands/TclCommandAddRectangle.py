@@ -1,5 +1,4 @@
-from ObjectCollection import *
-from tclCommands.TclCommand import TclCommandSignaled
+from tclCommands.TclCommand import *
 
 
 class TclCommandAddRectangle(TclCommandSignaled):
@@ -9,6 +8,8 @@ class TclCommandAddRectangle(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['add_rectangle']
+
+    description = '%s %s' % ("--", "Creates a rectangle in the given Geometry object.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -31,13 +32,13 @@ class TclCommandAddRectangle(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Add a rectange to the given Geometry object.",
+        'main': "Creates a rectangle in the given Geometry object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the Geometry object in which to add the rectangle.'),
             ('x0 y0', 'Bottom left corner coordinates.'),
             ('x1 y1', 'Top right corner coordinates.')
         ]),
-        'examples': []
+        'examples': ["add_rectangle geo_name 0 0 10 10"]
     }
 
     def execute(self, args, unnamed_args):
@@ -50,17 +51,23 @@ class TclCommandAddRectangle(TclCommandSignaled):
         :return: None or exception
         """
 
-        obj_name = args['name']
+        name = args['name']
         x0 = args['x0']
         y0 = args['y0']
         x1 = args['x1']
         y1 = args['y1']
 
+        if unnamed_args:
+            self.raise_tcl_error(
+                "Too many arguments. Correct format: %s" % '["add_rectangle geo_name xmin ymin xmax ymax"]')
+
         try:
-            obj = self.app.collection.get_by_name(str(obj_name))
-        except:
-            return "Could not retrieve object: %s" % obj_name
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception:
+            return "Could not retrieve object: %s" % name
         if obj is None:
-            return "Object not found: %s" % obj_name
+            return "Object not found: %s" % name
+        if obj.kind != 'geometry':
+            self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         obj.add_polygon([(x0, y0), (x1, y0), (x1, y1), (x0, y1)])

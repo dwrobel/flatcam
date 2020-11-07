@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandNewGeometry(TclCommandSignaled):
@@ -9,6 +10,8 @@ class TclCommandNewGeometry(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['new_geometry']
+
+    description = '%s %s' % ("--", "Creates a new empty Geometry object.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -23,15 +26,16 @@ class TclCommandNewGeometry(TclCommandSignaled):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a new empty geometry object.",
+        'main': "Creates a new empty Geometry object.",
         'args': collections.OrderedDict([
             ('name', 'New object name.'),
         ]),
-        'examples': []
+        'examples': ['new_geometry\n'
+                     'new_geometry my_new_geo']
     }
 
     def execute(self, args, unnamed_args):
@@ -43,7 +47,9 @@ class TclCommandNewGeometry(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
+        if 'name' in args:
+            name = args['name']
+        else:
+            name = 'new_geo'
 
-        name = args['name']
-
-        self.app.new_object('geometry', str(name), lambda x, y: None)
+        self.app.app_obj.new_object('geometry', str(name), lambda x, y: None, plot=False)

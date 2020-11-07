@@ -1,4 +1,4 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommand
 
 
@@ -12,6 +12,8 @@ class TclCommandAddCircle(TclCommand):
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['add_circle']
+
+    description = '%s %s' % ("--", "Creates a circle in the given Geometry object.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -38,7 +40,7 @@ class TclCommandAddCircle(TclCommand):
             ('center_y', 'Y coordinates of the center of the circle.'),
             ('radius', 'Radius of the circle.')
         ]),
-        'examples': []
+        'examples': ['add_circle geo_name 1.0 2.0 3']
     }
 
     def execute(self, args, unnamed_args):
@@ -49,17 +51,18 @@ class TclCommandAddCircle(TclCommand):
         :return:
         """
 
-        obj_name = args['name']
+        name = args['name']
         center_x = args['center_x']
         center_y = args['center_y']
         radius = args['radius']
 
         try:
-            obj = self.app.collection.get_by_name(str(obj_name))
-        except:
-            return "Could not retrieve object: %s" % obj_name
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception:
+            return "Could not retrieve object: %s" % name
         if obj is None:
-            return "Object not found: %s" % obj_name
+            return "Object not found: %s" % name
+        if obj.kind != 'geometry':
+            self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         obj.add_circle([float(center_x), float(center_y)], float(radius))
-

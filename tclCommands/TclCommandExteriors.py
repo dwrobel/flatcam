@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import Geometry
+
+import collections
 
 
 class TclCommandExteriors(TclCommandSignaled):
@@ -9,6 +11,9 @@ class TclCommandExteriors(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['exteriors', 'ext']
+
+    description = '%s %s' % ("--", "Get exteriors of polygons from a Geometry object and "
+                                   "from them create a new Geometry object.")
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -25,12 +30,12 @@ class TclCommandExteriors(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Get exteriors of polygons.",
+        'main': "Get exteriors of polygons from a Geometry object and from them create a new Geometry object.",
         'args':  collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
+            ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': []
+        'examples': ['ext geo_source_name -outname "final_geo"']
     }
 
     def execute(self, args, unnamed_args):
@@ -61,4 +66,4 @@ class TclCommandExteriors(TclCommandSignaled):
             geo_obj.solid_geometry = obj_exteriors
 
         obj_exteriors = obj.get_exteriors()
-        self.app.new_object('geometry', outname, geo_init)
+        self.app.app_obj.new_object('geometry', outname, geo_init, plot=False)

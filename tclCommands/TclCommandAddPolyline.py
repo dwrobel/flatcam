@@ -1,5 +1,4 @@
-from ObjectCollection import *
-from tclCommands.TclCommand import TclCommandSignaled
+from tclCommands.TclCommand import *
 
 
 class TclCommandAddPolyline(TclCommandSignaled):
@@ -9,6 +8,8 @@ class TclCommandAddPolyline(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['add_polyline']
+
+    description = '%s %s' % ("--", "Creates a polyline in the given Geometry object.")
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -49,13 +50,13 @@ class TclCommandAddPolyline(TclCommandSignaled):
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, Geometry):
+        if obj.kind != 'geometry':
             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         if len(unnamed_args) % 2 != 0:
             self.raise_tcl_error("Incomplete coordinates.")
 
-        points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(len(unnamed_args)/2)]
+        nr_points = int(len(unnamed_args) / 2)
+        points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(nr_points)]
 
         obj.add_polyline(points)
-        obj.plot()

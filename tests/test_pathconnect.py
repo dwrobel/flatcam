@@ -1,7 +1,7 @@
 import unittest
 
 from shapely.geometry import LineString, Polygon
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import unary_union
 from matplotlib.pyplot import plot, subplot, show, cla, clf, xlim, ylim, title
 from camlib import *
 from random import random
@@ -83,6 +83,7 @@ class PathConnectTest1(unittest.TestCase):
         self.assertEqual(len(result), 2)
         matches = [p for p in result if p.equals(LineString([[0, 0], [1, 1], [2, 1]]))]
         self.assertEqual(len(matches), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

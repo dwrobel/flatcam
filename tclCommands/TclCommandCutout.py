@@ -1,7 +1,12 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
-from shapely.ops import cascaded_union
+
+import collections
+import logging
+
+from shapely.ops import unary_union
 from shapely.geometry import LineString
+
+log = logging.getLogger('base')
 
 
 class TclCommandCutout(TclCommand):
@@ -16,6 +21,8 @@ class TclCommandCutout(TclCommand):
     # names for backward compatibility (add_poly, add_polygon)
     aliases = ['cutout']
 
+    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) with a rectangular shape.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -27,7 +34,8 @@ class TclCommandCutout(TclCommand):
         ('dia', float),
         ('margin', float),
         ('gapsize', float),
-        ('gaps', str)
+        ('gaps', str),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -35,15 +43,16 @@ class TclCommandCutout(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Creates board cutout from an object (Gerber or Geometry) with a rectangular shape',
+        'main': 'Creates board cutout from an object (Gerber or Geometry) with a rectangular shape.',
         'args': collections.OrderedDict([
             ('name', 'Name of the object.'),
-            ('dia', 'Tool diameter. Default = 0.1'),
-            ('margin', 'Margin over bounds. Default = 0.001'),
-            ('gapsize', 'Size of gap. Default = 0.1'),
-            ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side. Default = 4"),
+            ('dia', 'Tool diameter.'),
+            ('margin', 'Margin over bounds.'),
+            ('gapsize', 'Size of gap.'),
+            ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side."),
+            ('outname', 'Name of the object to create.')
         ]),
-        'examples': []
+        'examples': ['cutout new_geo -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" -outname cut_geo']
     }
 
     def execute(self, args, unnamed_args):
@@ -62,24 +71,29 @@ class TclCommandCutout(TclCommand):
             return
 
         if 'margin' in args:
-            margin_par = args['margin']
+            margin_par = float(args['margin'])
         else:
-            margin_par = 0.001
+            margin_par = float(self.app.defaults["tools_cutout_margin"])
 
         if 'dia' in args:
-            dia_par = args['dia']
+            dia_par = float(args['dia'])
         else:
-            dia_par = 0.1
+            dia_par = float(self.app.defaults["tools_cutout_tooldia"])
 
         if 'gaps' in args:
             gaps_par = args['gaps']
         else:
-            gaps_par = 4
+            gaps_par = str(self.app.defaults["tools_cutout_gaps_ff"])
 
         if 'gapsize' in args:
-            gapsize_par = args['gapsize']
+            gapsize_par = float(args['gapsize'])
         else:
-            gapsize_par = 0.1
+            gapsize_par = float(self.app.defaults["tools_cutout_gapsize"])
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = name + "_cutout"
 
         try:
             obj = self.app.collection.get_by_name(str(name))
@@ -120,10 +134,10 @@ class TclCommandCutout(TclCommand):
                            [pts[6], pts[7], pts[8]],
                            [pts[9], pts[10], pts[11]]]}
             cuts = cases[gaps_par]
-            geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
+            geo_obj.solid_geometry = unary_union([LineString(segment) for segment in cuts])
 
         try:
-            self.app.new_object("geometry", name + "_cutout", geo_init_me)
+            self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)
             self.app.inform.emit("[success] Rectangular-form Cutout operation finished.")
         except Exception as e:
             return "Operation failed: %s" % str(e)

@@ -1,6 +1,7 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommandSignaled
 
+from shapely.geometry import Point
 
 class TclCommandAlignDrillGrid(TclCommandSignaled):
     """
@@ -14,10 +15,12 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrillgrid']
 
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment arranged in a grid.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('outname', str)
+
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
@@ -29,17 +32,17 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
         ('gridy', float),
         ('gridoffsety', float),
         ('columns', int),
-        ('rows', int)
+        ('rows', int),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['outname', 'gridx', 'gridy', 'columns', 'rows']
+    required = ['gridx', 'gridy', 'columns', 'rows']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create excellon with drills for aligment grid.",
+        'main': "Create an Excellon object with drills for alignment arranged in a grid.",
         'args': collections.OrderedDict([
-            ('outname', 'Name of the object to create.'),
             ('dia', 'Tool diameter.'),
             ('gridx', 'Grid size in X axis.'),
             ('gridoffsetx', 'Move grid  from origin.'),
@@ -47,8 +50,9 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             ('gridoffsety', 'Move grid  from origin.'),
             ('colums', 'Number of grid holes on X axis.'),
             ('rows', 'Number of grid holes on Y axis.'),
+            ('outname', 'Name of the object to create.')
         ]),
-        'examples': []
+        'examples': ['aligndrillgrid -rows 2 -columns 2 -gridoffsetx 10 -gridoffsety 10 -gridx 2.54 -gridy 5.08']
     }
 
     def execute(self, args, unnamed_args):
@@ -61,6 +65,11 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
         :return: None or exception
         """
 
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = "new_aligndrill_grid"
+
         if 'gridoffsetx' not in args:
             gridoffsetx = 0
         else:
@@ -71,8 +80,9 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
         else:
             gridoffsety = args['gridoffsety']
 
+        tooldia = args['dia']
         # Tools
-        tools = {"1": {"C": args['dia']}}
+        # tools = {"1": {"C": args['dia']}}
 
         def aligndrillgrid_init_me(init_obj, app_obj):
             """
@@ -92,14 +102,19 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
 
                 for col in range(args['columns']):
                     point = Point(currentx + gridoffsetx, currenty + gridoffsety)
-                    drills.append({"point": point, "tool": "1"})
+                    drills.append(point)
                     currentx = currentx + args['gridx']
 
                 currenty = currenty + args['gridy']
 
-            init_obj.tools = tools
-            init_obj.drills = drills
+            init_obj.tools = {
+                '1': {
+                    'tooldia': tooldia,
+                    'drills': drills,
+                    'solid_geometry': []
+                }
+            }
             init_obj.create_geometry()
 
         # Create the new object
-        self.app.new_object("excellon", args['outname'], aligndrillgrid_init_me)
+        self.app.app_obj.new_object("excellon", outname, aligndrillgrid_init_me, plot=False)

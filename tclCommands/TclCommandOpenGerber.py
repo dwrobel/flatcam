@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import ParseError
+
+import collections
 
 
 class TclCommandOpenGerber(TclCommandSignaled):
@@ -9,6 +11,8 @@ class TclCommandOpenGerber(TclCommandSignaled):
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_gerber']
+
+    description = '%s %s' % ("--", "Opens an Gerber file, parse it and create a Gerber object from it.")
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -27,10 +31,12 @@ class TclCommandOpenGerber(TclCommandSignaled):
     help = {
         'main': "Opens a Gerber file.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
             ('outname', 'Name of the resulting Gerber object.')
         ]),
-        'examples': []
+        'examples': ["open_gerber gerber_object_path -outname bla",
+                     'open_gerber "D:\\my_gerber_file with spaces in the name.GRB"']
     }
 
     def execute(self, args, unnamed_args):
@@ -43,50 +49,17 @@ class TclCommandOpenGerber(TclCommandSignaled):
         :return: None or exception
         """
 
-        # How the object should be initialized
-        def obj_init(gerber_obj, app_obj):
+        if 'follow' in args:
+            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' "
+                                 "parameter for the Tcl Command isolate()")
 
-            if not isinstance(gerber_obj, Geometry):
-                self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (outname, type(gerber_obj)))
-
-            # Opening the file happens here
-            self.app.progress.emit(30)
-            try:
-                gerber_obj.parse_file(filename)
-
-            except IOError:
-                app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: %s " % filename)
-                app_obj.progress.emit(0)
-                self.raise_tcl_error('Failed to open file: %s' % filename)
-
-            except ParseError as e:
-                app_obj.inform.emit("[ERROR_NOTCL] Failed to parse file: %s, %s " % (filename, str(e)))
-                app_obj.progress.emit(0)
-                self.log.error(str(e))
-                return
-
-            # Further parsing
-            app_obj.progress.emit(70)
-
-        filename = args['filename']
+        filename = args.pop('filename')
 
         if 'outname' in args:
-            outname = args['outname']
+            outname = args.pop('outname')
         else:
             outname = filename.split('/')[-1].split('\\')[-1]
 
-        if 'follow' in args:
-            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' parameter for the Tcl Command isolate()")
-
-        with self.app.proc_container.new("Opening Gerber"):
-
-            # Object creation
-            self.app.new_object("gerber", outname, obj_init)
-
-            # Register recent file
-            self.app.file_opened.emit("gerber", filename)
-
-            self.app.progress.emit(100)
-
-            # GUI feedback
-            self.app.inform.emit("[success] Opened: " + filename)
+        args['plot'] = False
+        args['from_tcl'] = True
+        self.app.f_handlers.open_gerber(filename, outname, **args)

@@ -2,6 +2,7 @@ import sys
 from PyQt5.Qt import *
 from PyQt5 import QtGui, QtWidgets
 
+
 class MyPopup(QWidget):
     def __init__(self):
         QWidget.__init__(self)
@@ -30,6 +31,7 @@ class MyPopup(QWidget):
     #     dc.drawLine(0, 0, 100, 100)
     #     dc.drawLine(100, 0, 0, 100)
 
+
 class MainWindow(QMainWindow):
     def __init__(self, *args):
         QtWidgets.QMainWindow.__init__(self, *args)
@@ -46,6 +48,7 @@ class MainWindow(QMainWindow):
         self.w.setGeometry(QRect(100, 100, 400, 200))
         self.w.show()
 
+
 class App(QApplication):
     def __init__(self, *args):
         QtWidgets.QApplication.__init__(self, *args)
@@ -56,10 +59,12 @@ class App(QApplication):
     def byebye(self):
         self.exit(0)
 
+
 def main(args):
     global app
     app = App(args)
     app.exec_()
+
 
 if __name__ == "__main__":
     main(sys.argv)
