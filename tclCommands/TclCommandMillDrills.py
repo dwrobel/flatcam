@@ -93,8 +93,8 @@ class TclCommandMillDrills(TclCommandSignaled):
         else:
             args['use_thread'] = False
 
-        if not obj.drills:
-            self.raise_tcl_error("The Excellon object has no drills: %s" % name)
+        # if not obj.drills:
+        #    self.raise_tcl_error("The Excellon object has no drills: %s" % name)
 
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':

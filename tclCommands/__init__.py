@@ -45,6 +45,7 @@ import tclCommands.TclCommandNewGerber
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenDXF
 import tclCommands.TclCommandOpenExcellon
+import tclCommands.TclCommandOpenFolder
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandOpenProject
@@ -63,6 +64,7 @@ import tclCommands.TclCommandSetOrigin
 import tclCommands.TclCommandSetPath
 import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSkew
+import tclCommands.TclCommandSplitGeometry
 import tclCommands.TclCommandSubtractPoly
 import tclCommands.TclCommandSubtractRectangle
 import tclCommands.TclCommandVersion
@@ -93,7 +95,8 @@ def register_all_commands(app, commands):
     :return: None
     """
 
-    tcl_modules = {k: v for k, v in list(sys.modules.items()) if k.startswith('tclCommands.TclCommand')}
+    tcl_modules = {k: v for k, v in list(
+        sys.modules.items()) if k.startswith('tclCommands.TclCommand')}
 
     for key, mod in list(tcl_modules.items()):
         if key != 'tclCommands.TclCommand':
