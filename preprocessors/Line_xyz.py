@@ -1,15 +1,15 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
-# File Author: Matthieu Berthomé                           #
-# Date: 5/26/2017                                          #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
 
 from appPreProcessor import *
 
 
-class grbl_11(PreProc):
+class Line_xyz(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -18,9 +18,8 @@ class grbl_11(PreProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        end_coords_xy = p['xy_end']
-        gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware.)\n'
-        gcode += '(It is configured to be compatible with almost any version of GRBL firmware.)\n\n'
+        end_coords_xy = p['end_xy']
+        gcode = ''
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -102,36 +101,48 @@ class grbl_11(PreProc):
 
         gcode += '(Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
 
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
-        gcode += 'G17\n'
         gcode += 'G94\n'
 
         return gcode
 
     def startz_code(self, p):
         if p.startz is not None:
-            return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.startz)
+            g = 'G00 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
+                ' Y' + self.coordinate_format % (p.coords_decimals, p.y) + \
+                ' Z' + self.coordinate_format % (p.coords_decimals, p.startz)
+            return g
         else:
             return ''
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        g = 'G00 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
+            ' Y' + self.coordinate_format % (p.coords_decimals, p.y) + \
+            ' Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        return g
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
+        g = 'G01 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
+            ' Y' + self.coordinate_format % (p.coords_decimals, p.y) + \
+            ' Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
+        return g
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
-        toolchangexy = p.xy_toolchange
+        xy_toolchange = p.xy_toolchange
         f_plunge = p.f_plunge
 
-        if toolchangexy is not None:
-            x_toolchange = toolchangexy[0]
-            y_toolchange = toolchangexy[1]
+        if xy_toolchange is not None:
+            x_toolchange = xy_toolchange[0]
+            y_toolchange = xy_toolchange[1]
         else:
-            x_toolchange = 0.0
-            y_toolchange = 0.0
+            if str(p['options']['type']) == 'Excellon':
+                x_toolchange = p.oldx
+                y_toolchange = p.oldy
+            else:
+                x_toolchange = p.x
+                y_toolchange = p.y
 
         no_drills = 1
 
@@ -144,95 +155,73 @@ class grbl_11(PreProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-
-            if toolchangexy is not None:
-                gcode = """
-M5             
-G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
+            gcode = """
+M5      
+G00 X{x_toolchange} Y{x_toolchange} Z{z_toolchange}
 T{tool}
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0
-G00 Z{z_toolchange}
-""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-           tool=int(p.tool),
-           t_drills=no_drills,
-           toolC=toolC_formatted)
-            else:
-                gcode = """
-M5             
-G00 Z{z_toolchange}               
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0
-G00 Z{z_toolchange}
-""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-           tool=int(p.tool),
-           t_drills=no_drills,
-           toolC=toolC_formatted)
+M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+             tool=int(p.tool),
+             t_drills=no_drills,
+             toolC=toolC_formatted)
 
             if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+                gcode += """\nG00 X{x_toolchange} Y{x_toolchange} Z{z_move}""".format(
+                    x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+                    y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+                    z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
             return gcode
-
         else:
-            if toolchangexy is not None:
-                gcode = """
-M5             
-G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
+            gcode = """
+M5
+G00 X{x_toolchange} Y{x_toolchange} Z{z_toolchange}
 T{tool}
-M6
+M6    
 (MSG, Change to Tool Dia = {toolC})
-M0
-G00 Z{z_toolchange}
-""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-           tool=int(p.tool),
-           toolC=toolC_formatted)
-            else:
-                gcode = """
-M5             
-G00 Z{z_toolchange}              
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC})
-M0
-G00 Z{z_toolchange}
-""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-           tool=int(p.tool),
-           toolC=toolC_formatted)
+M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
 
             if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+                gcode += """\nG00 X{x_toolchange} Y{x_toolchange} Z{z_move}""".format(
+                    x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+                    y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+                    z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
             return gcode
 
     def up_to_zero_code(self, p):
-        return 'G01 Z0'
+        g = 'G01 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
+            ' Y' + self.coordinate_format % (p.coords_decimals, p.y) + \
+            ' Z0'
+        return g
 
     def position_code(self, p):
         return ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
                (p.coords_decimals, p.x, p.coords_decimals, p.y)
 
     def rapid_code(self, p):
-        return ('G00 ' + self.position_code(p)).format(**p)
+        g = ('G00 ' + self.position_code(p)).format(**p)
+        g += ' Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        return g
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + \
-               ' F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
+        g = ('G01 ' + self.position_code(p)).format(**p)
+        g += ' Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
+        return g
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
-
         if coords_xy and coords_xy != '':
-            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
-        return gcode
+            g = 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+        else:
+            g = ('G00 ' + self.position_code(p)).format(**p)
+        g += ' Z' + self.coordinate_format % (p.coords_decimals, p.z_end)
+        return g
 
     def feedrate_code(self, p):
         return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))

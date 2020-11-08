@@ -56,8 +56,8 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.t_ui = DrillingUI(layout=self.layout, app=self.app)
-        self.toolName = self.t_ui.toolName
+        self.ui = DrillingUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -130,41 +130,41 @@ class ToolDrilling(AppTool, Excellon):
         self.tools_db_dict = None
 
         self.tool_form_fields = {
-            "tools_drill_cutz":             self.t_ui.cutz_entry,
-            "tools_drill_multidepth":       self.t_ui.mpass_cb,
-            "tools_drill_depthperpass":     self.t_ui.maxdepth_entry,
-            "tools_drill_travelz":          self.t_ui.travelz_entry,
-            "tools_drill_feedrate_z":       self.t_ui.feedrate_z_entry,
-            "tools_drill_feedrate_rapid":   self.t_ui.feedrate_rapid_entry,
+            "tools_drill_cutz":             self.ui.cutz_entry,
+            "tools_drill_multidepth":       self.ui.mpass_cb,
+            "tools_drill_depthperpass":     self.ui.maxdepth_entry,
+            "tools_drill_travelz":          self.ui.travelz_entry,
+            "tools_drill_feedrate_z":       self.ui.feedrate_z_entry,
+            "tools_drill_feedrate_rapid":   self.ui.feedrate_rapid_entry,
 
-            "tools_drill_spindlespeed":     self.t_ui.spindlespeed_entry,
-            "tools_drill_dwell":            self.t_ui.dwell_cb,
-            "tools_drill_dwelltime":        self.t_ui.dwelltime_entry,
+            "tools_drill_spindlespeed":     self.ui.spindlespeed_entry,
+            "tools_drill_dwell":            self.ui.dwell_cb,
+            "tools_drill_dwelltime":        self.ui.dwelltime_entry,
 
-            "tools_drill_offset":           self.t_ui.offset_entry,
+            "tools_drill_offset":           self.ui.offset_entry,
 
-            "tools_drill_drill_slots":      self.t_ui.drill_slots_cb,
-            "tools_drill_drill_overlap":    self.t_ui.drill_overlap_entry,
-            "tools_drill_last_drill":       self.t_ui.last_drill_cb
+            "tools_drill_drill_slots":      self.ui.drill_slots_cb,
+            "tools_drill_drill_overlap":    self.ui.drill_overlap_entry,
+            "tools_drill_last_drill":       self.ui.last_drill_cb
         }
 
         self.general_form_fields = {
-            "tools_drill_toolchange":       self.t_ui.toolchange_cb,
-            "tools_drill_toolchangez":      self.t_ui.toolchangez_entry,
-            "tools_drill_startz":           self.t_ui.estartz_entry,
+            "tools_drill_toolchange":       self.ui.toolchange_cb,
+            "tools_drill_toolchangez":      self.ui.toolchangez_entry,
+            "tools_drill_startz":           self.ui.estartz_entry,
 
-            "tools_drill_endz":             self.t_ui.endz_entry,
-            "tools_drill_endxy":            self.t_ui.endxy_entry,
+            "tools_drill_endz":             self.ui.endz_entry,
+            "tools_drill_endxy":            self.ui.endxy_entry,
 
-            "tools_drill_z_pdepth":         self.t_ui.pdepth_entry,
-            "tools_drill_feedrate_probe":   self.t_ui.feedrate_probe_entry,
+            "tools_drill_z_pdepth":         self.ui.pdepth_entry,
+            "tools_drill_feedrate_probe":   self.ui.feedrate_probe_entry,
 
-            "tools_drill_ppname_e":         self.t_ui.pp_excellon_name_cb,
+            "tools_drill_ppname_e":         self.ui.pp_excellon_name_cb,
 
-            "tools_drill_area_exclusion":   self.t_ui.exclusion_cb,
-            "tools_drill_area_strategy":    self.t_ui.strategy_radio,
-            "tools_drill_area_overz":       self.t_ui.over_z_entry,
-            "tools_drill_area_shape":       self.t_ui.area_shape_radio
+            "tools_drill_area_exclusion":   self.ui.exclusion_cb,
+            "tools_drill_area_strategy":    self.ui.strategy_radio,
+            "tools_drill_area_overz":       self.ui.over_z_entry,
+            "tools_drill_area_shape":       self.ui.area_shape_radio
         }
 
         self.name2option = {
@@ -240,7 +240,7 @@ class ToolDrilling(AppTool, Excellon):
         # self.build_tool_ui()
 
         # all the tools are selected by default
-        self.t_ui.tools_table.selectAll()
+        self.ui.tools_table.selectAll()
 
         self.app.ui.notebook.setTabText(2, _("Drilling Tool"))
 
@@ -249,24 +249,24 @@ class ToolDrilling(AppTool, Excellon):
         # ############################ SIGNALS ########################################
         # #############################################################################
 
-        self.t_ui.search_load_db_btn.clicked.connect(self.on_tool_db_load)
+        self.ui.search_load_db_btn.clicked.connect(self.on_tool_db_load)
 
-        self.t_ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-        self.t_ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
-        self.t_ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
+        self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
         # Exclusion areas signals
-        self.t_ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
-        self.t_ui.exclusion_table.lost_focus.connect(self.clear_selection)
-        self.t_ui.exclusion_table.itemClicked.connect(self.draw_sel_shape)
-        self.t_ui.add_area_button.clicked.connect(self.on_add_area_click)
-        self.t_ui.delete_area_button.clicked.connect(self.on_clear_area_click)
-        self.t_ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
-        self.t_ui.strategy_radio.activated_custom.connect(self.on_strategy)
+        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
+        self.ui.exclusion_table.lost_focus.connect(self.clear_selection)
+        self.ui.exclusion_table.itemClicked.connect(self.draw_sel_shape)
+        self.ui.add_area_button.clicked.connect(self.on_add_area_click)
+        self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
+        self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
+        self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
-        self.t_ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
+        self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
 
-        self.t_ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
@@ -278,44 +278,46 @@ class ToolDrilling(AppTool, Excellon):
             selected_obj = self.app.collection.get_active()
             if selected_obj.kind == 'excellon':
                 current_name = selected_obj.options['name']
-                self.t_ui.object_combo.set_value(current_name)
+                self.ui.object_combo.set_value(current_name)
         except Exception:
             pass
 
         # reset the Excellon preprocessor combo
-        self.t_ui.pp_excellon_name_cb.clear()
+        self.ui.pp_excellon_name_cb.clear()
         # populate Excellon preprocessor combobox list
-        for name in list(self.app.preprocessors.keys()):
+        pp_list = []
+        for name in self.app.preprocessors.keys():
             # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
             if name == 'hpgl':
                 continue
-            self.t_ui.pp_excellon_name_cb.addItem(name)
-        # add tooltips
-        for it in range(self.t_ui.pp_excellon_name_cb.count()):
-            self.t_ui.pp_excellon_name_cb.setItemData(
-                it, self.t_ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+            pp_list.append(name)
+        pp_list.sort()
+        if 'default' in pp_list:
+            pp_list.remove('default')
+            pp_list.insert(0, 'default')
+        self.ui.pp_excellon_name_cb.addItems(pp_list)
 
-        # update the changes in UI depending on the selected preprocessor in Preferences
-        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
-        # self.t_ui.pp_excellon_name_cb combobox
-        self.on_pp_changed()
+        # add tooltips
+        for it in range(self.ui.pp_excellon_name_cb.count()):
+            self.ui.pp_excellon_name_cb.setItemData(
+                it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         app_mode = self.app.defaults["global_app_level"]
         # Show/Hide Advanced Options
         if app_mode == 'b':
-            self.t_ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-            self.t_ui.estartz_label.hide()
-            self.t_ui.estartz_entry.hide()
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.ui.estartz_label.hide()
+            self.ui.estartz_entry.hide()
         else:
-            self.t_ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-            self.t_ui.estartz_label.show()
-            self.t_ui.estartz_entry.show()
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.ui.estartz_label.show()
+            self.ui.estartz_entry.show()
 
-        self.t_ui.tools_frame.show()
+        self.ui.tools_frame.show()
 
-        self.t_ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
+        self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
 
-        loaded_obj = self.app.collection.get_by_name(self.t_ui.object_combo.get_value())
+        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         if loaded_obj:
             outname = loaded_obj.options['name']
         else:
@@ -390,9 +392,9 @@ class ToolDrilling(AppTool, Excellon):
         # #######3 TEMP SETTINGS #################
         # ########################################
 
-        self.t_ui.tools_table.setRowCount(2)
-        self.t_ui.tools_table.setMinimumHeight(self.t_ui.tools_table.getHeight())
-        self.t_ui.tools_table.setMaximumHeight(self.t_ui.tools_table.getHeight())
+        self.ui.tools_table.setRowCount(2)
+        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
+        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
         # make sure to update the UI on init
         try:
@@ -407,56 +409,63 @@ class ToolDrilling(AppTool, Excellon):
         # ####### Fill in the parameters #########
         # ########################################
         # ########################################
-        self.t_ui.cutz_entry.set_value(self.app.defaults["tools_drill_cutz"])
-        self.t_ui.mpass_cb.set_value(self.app.defaults["tools_drill_multidepth"])
-        self.t_ui.maxdepth_entry.set_value(self.app.defaults["tools_drill_depthperpass"])
-        self.t_ui.travelz_entry.set_value(self.app.defaults["tools_drill_travelz"])
-        self.t_ui.feedrate_z_entry.set_value(self.app.defaults["tools_drill_feedrate_z"])
-        self.t_ui.feedrate_rapid_entry.set_value(self.app.defaults["tools_drill_feedrate_rapid"])
-        self.t_ui.spindlespeed_entry.set_value(self.app.defaults["tools_drill_spindlespeed"])
-        self.t_ui.dwell_cb.set_value(self.app.defaults["tools_drill_dwell"])
-        self.t_ui.dwelltime_entry.set_value(self.app.defaults["tools_drill_dwelltime"])
-        self.t_ui.offset_entry.set_value(self.app.defaults["tools_drill_offset"])
-        self.t_ui.toolchange_cb.set_value(self.app.defaults["tools_drill_toolchange"])
-        self.t_ui.toolchangez_entry.set_value(self.app.defaults["tools_drill_toolchangez"])
-        self.t_ui.estartz_entry.set_value(self.app.defaults["tools_drill_startz"])
-        self.t_ui.endz_entry.set_value(self.app.defaults["tools_drill_endz"])
-        self.t_ui.endxy_entry.set_value(self.app.defaults["tools_drill_endxy"])
-        self.t_ui.pdepth_entry.set_value(self.app.defaults["tools_drill_z_pdepth"])
-        self.t_ui.feedrate_probe_entry.set_value(self.app.defaults["tools_drill_feedrate_probe"])
+        self.ui.cutz_entry.set_value(self.app.defaults["tools_drill_cutz"])
+        self.ui.mpass_cb.set_value(self.app.defaults["tools_drill_multidepth"])
+        self.ui.maxdepth_entry.set_value(self.app.defaults["tools_drill_depthperpass"])
+        self.ui.travelz_entry.set_value(self.app.defaults["tools_drill_travelz"])
+        self.ui.feedrate_z_entry.set_value(self.app.defaults["tools_drill_feedrate_z"])
+        self.ui.feedrate_rapid_entry.set_value(self.app.defaults["tools_drill_feedrate_rapid"])
+        self.ui.spindlespeed_entry.set_value(self.app.defaults["tools_drill_spindlespeed"])
+        self.ui.dwell_cb.set_value(self.app.defaults["tools_drill_dwell"])
+        self.ui.dwelltime_entry.set_value(self.app.defaults["tools_drill_dwelltime"])
+        self.ui.offset_entry.set_value(self.app.defaults["tools_drill_offset"])
+        self.ui.toolchange_cb.set_value(self.app.defaults["tools_drill_toolchange"])
+        self.ui.toolchangez_entry.set_value(self.app.defaults["tools_drill_toolchangez"])
+        self.ui.estartz_entry.set_value(self.app.defaults["tools_drill_startz"])
+        self.ui.endz_entry.set_value(self.app.defaults["tools_drill_endz"])
+        self.ui.endxy_entry.set_value(self.app.defaults["tools_drill_endxy"])
+        self.ui.pdepth_entry.set_value(self.app.defaults["tools_drill_z_pdepth"])
+        self.ui.feedrate_probe_entry.set_value(self.app.defaults["tools_drill_feedrate_probe"])
 
-        self.t_ui.exclusion_cb.set_value(self.app.defaults["tools_drill_area_exclusion"])
-        self.t_ui.strategy_radio.set_value(self.app.defaults["tools_drill_area_strategy"])
-        self.t_ui.over_z_entry.set_value(self.app.defaults["tools_drill_area_overz"])
-        self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_shape"])
+        self.ui.pp_excellon_name_cb.set_value(self.app.defaults["tools_drill_ppname_e"])
+
+        self.ui.exclusion_cb.set_value(self.app.defaults["tools_drill_area_exclusion"])
+        self.ui.strategy_radio.set_value(self.app.defaults["tools_drill_area_strategy"])
+        self.ui.over_z_entry.set_value(self.app.defaults["tools_drill_area_overz"])
+        self.ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_shape"])
 
         # Drill slots - part of the Advanced Excellon params
-        self.t_ui.drill_overlap_entry.set_value(self.app.defaults["tools_drill_drill_overlap"])
-        self.t_ui.last_drill_cb.set_value(self.app.defaults["tools_drill_last_drill"])
-        self.t_ui.drill_overlap_label.hide()
-        self.t_ui.drill_overlap_entry.hide()
-        self.t_ui.last_drill_cb.hide()
+        self.ui.drill_overlap_entry.set_value(self.app.defaults["tools_drill_drill_overlap"])
+        self.ui.last_drill_cb.set_value(self.app.defaults["tools_drill_last_drill"])
+        self.ui.drill_overlap_label.hide()
+        self.ui.drill_overlap_entry.hide()
+        self.ui.last_drill_cb.hide()
 
         # if the app mode is Basic then disable this feature
         if app_mode == 'b':
-            self.t_ui.drill_slots_cb.set_value(False)
-            self.t_ui.drill_slots_cb.hide()
+            self.ui.drill_slots_cb.set_value(False)
+            self.ui.drill_slots_cb.hide()
         else:
-            self.t_ui.drill_slots_cb.show()
-            self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
+            self.ui.drill_slots_cb.show()
+            self.ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
 
         try:
-            self.t_ui.object_combo.currentTextChanged.disconnect()
+            self.ui.object_combo.currentTextChanged.disconnect()
         except (AttributeError, TypeError):
             pass
-        self.t_ui.object_combo.currentTextChanged.connect(self.on_object_changed)
+        self.ui.object_combo.currentTextChanged.connect(self.on_object_changed)
+
+        # update the changes in UI depending on the selected preprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_excellon_name_cb combobox
+        self.on_pp_changed()
 
     def rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
-        for row in range(self.t_ui.tools_table.rowCount()):
+        for row in range(self.ui.tools_table.rowCount()):
             try:
-                uid = int(self.t_ui.tools_table.item(row, 3).text())
+                uid = int(self.ui.tools_table.item(row, 3).text())
                 current_uid_list.append(uid)
             except AttributeError:
                 continue
@@ -482,7 +491,7 @@ class ToolDrilling(AppTool, Excellon):
         for k, v in self.excellon_tools.items():
             sorted_tools.append(self.dec_format(float(v['tooldia'])))
 
-        order = self.t_ui.order_radio.get_value()
+        order = self.ui.order_radio.get_value()
         if order == 'fwd':
             sorted_tools.sort(reverse=False)
         elif order == 'rev':
@@ -502,16 +511,16 @@ class ToolDrilling(AppTool, Excellon):
         self.excellon_tools = new_tools
 
         if self.excellon_obj and self.excellon_tools:
-            self.t_ui.exc_param_frame.setDisabled(False)
+            self.ui.exc_param_frame.setDisabled(False)
             tools = [k for k in self.excellon_tools]
         else:
-            self.t_ui.exc_param_frame.setDisabled(True)
-            self.t_ui.tools_table.setRowCount(2)
+            self.ui.exc_param_frame.setDisabled(True)
+            self.ui.tools_table.setRowCount(2)
             tools = []
 
         n = len(tools)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
-        self.t_ui.tools_table.setRowCount(n + 2)
+        self.ui.tools_table.setRowCount(n + 2)
         self.tool_row = 0
 
         tot_drill_cnt = 0
@@ -536,29 +545,29 @@ class ToolDrilling(AppTool, Excellon):
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
             exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
-            self.t_ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
+            self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
             dia_item = QtWidgets.QTableWidgetItem(str(self.dec_format(self.excellon_tools[tool_no]['tooldia'])))
             dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
-            self.t_ui.tools_table.setItem(self.tool_row, 1, dia_item)
+            self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
             # Number of drills per tool
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
             drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
-            self.t_ui.tools_table.setItem(self.tool_row, 2, drill_count_item)
+            self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)
 
             # Tool unique ID
             tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tool_no)))
             # ## REMEMBER: THIS COLUMN IS HIDDEN in UI
-            self.t_ui.tools_table.setItem(self.tool_row, 3, tool_uid_item)
+            self.ui.tools_table.setItem(self.tool_row, 3, tool_uid_item)
 
             # Number of slots per tool
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
-            self.t_ui.tools_table.setItem(self.tool_row, 4, slot_count_item)
+            self.ui.tools_table.setItem(self.tool_row, 4, slot_count_item)
 
             self.tool_row += 1
 
@@ -574,18 +583,18 @@ class ToolDrilling(AppTool, Excellon):
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % tot_drill_cnt)
         tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-        self.t_ui.tools_table.setItem(self.tool_row, 0, empty_1)
-        self.t_ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
-        self.t_ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
-        self.t_ui.tools_table.setItem(self.tool_row, 4, empty_1_1)
+        self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
+        self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
+        self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_1)
 
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
 
         for k in [1, 2]:
-            self.t_ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
-            self.t_ui.tools_table.item(self.tool_row, k).setFont(font)
+            self.ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
+            self.ui.tools_table.item(self.tool_row, k).setFont(font)
 
         self.tool_row += 1
 
@@ -600,29 +609,29 @@ class ToolDrilling(AppTool, Excellon):
         label_tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
         tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-        self.t_ui.tools_table.setItem(self.tool_row, 0, empty_2)
-        self.t_ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
-        self.t_ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
-        self.t_ui.tools_table.setItem(self.tool_row, 4, tot_slot_count)  # Total number of slots
+        self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
+        self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
+        self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
+        self.ui.tools_table.setItem(self.tool_row, 4, tot_slot_count)  # Total number of slots
 
         for kl in [1, 2, 4]:
-            self.t_ui.tools_table.item(self.tool_row, kl).setFont(font)
-            self.t_ui.tools_table.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
+            self.ui.tools_table.item(self.tool_row, kl).setFont(font)
+            self.ui.tools_table.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
 
         # make the diameter column editable
-        # for row in range(self.t_ui.tools_table.rowCount() - 2):
-        #     self.t_ui.tools_table.item(row, 1).setFlags(
+        # for row in range(self.ui.tools_table.rowCount() - 2):
+        #     self.ui.tools_table.item(row, 1).setFlags(
         #         QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-        self.t_ui.tools_table.resizeColumnsToContents()
-        self.t_ui.tools_table.resizeRowsToContents()
+        self.ui.tools_table.resizeColumnsToContents()
+        self.ui.tools_table.resizeRowsToContents()
 
-        vertical_header = self.t_ui.tools_table.verticalHeader()
+        vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.t_ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        horizontal_header = self.t_ui.tools_table.horizontalHeader()
-        self.t_ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        horizontal_header = self.ui.tools_table.horizontalHeader()
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
@@ -633,17 +642,17 @@ class ToolDrilling(AppTool, Excellon):
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
 
-        self.t_ui.tools_table.setSortingEnabled(False)
+        self.ui.tools_table.setSortingEnabled(False)
 
-        self.t_ui.tools_table.setMinimumHeight(self.t_ui.tools_table.getHeight())
-        self.t_ui.tools_table.setMaximumHeight(self.t_ui.tools_table.getHeight())
+        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
+        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
         # all the tools are selected by default
-        self.t_ui.tools_table.selectAll()
+        self.ui.tools_table.selectAll()
 
         # Build Exclusion Areas section
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
-        self.t_ui.exclusion_table.setRowCount(e_len)
+        self.ui.exclusion_table.setRowCount(e_len)
 
         area_id = 0
 
@@ -654,28 +663,28 @@ class ToolDrilling(AppTool, Excellon):
 
             area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
             area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.t_ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
+            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
 
             object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
             object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.t_ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
+            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
 
             strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
             strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.t_ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
 
             overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
             overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.t_ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
 
-        self.t_ui.exclusion_table.resizeColumnsToContents()
-        self.t_ui.exclusion_table.resizeRowsToContents()
+        self.ui.exclusion_table.resizeColumnsToContents()
+        self.ui.exclusion_table.resizeRowsToContents()
 
-        area_vheader = self.t_ui.exclusion_table.verticalHeader()
+        area_vheader = self.ui.exclusion_table.verticalHeader()
         area_vheader.hide()
-        self.t_ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        area_hheader = self.t_ui.exclusion_table.horizontalHeader()
+        area_hheader = self.ui.exclusion_table.horizontalHeader()
         area_hheader.setMinimumSectionSize(10)
         area_hheader.setDefaultSectionSize(70)
 
@@ -686,28 +695,28 @@ class ToolDrilling(AppTool, Excellon):
         area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
 
         # area_hheader.setStretchLastSection(True)
-        self.t_ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.t_ui.exclusion_table.setColumnWidth(0, 20)
+        self.ui.exclusion_table.setColumnWidth(0, 20)
 
-        self.t_ui.exclusion_table.setMinimumHeight(self.t_ui.exclusion_table.getHeight())
-        self.t_ui.exclusion_table.setMaximumHeight(self.t_ui.exclusion_table.getHeight())
+        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
+        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
 
         self.ui_connect()
 
         # set the text on tool_data_label after loading the object
         sel_rows = set()
-        sel_items = self.t_ui.tools_table.selectedItems()
+        sel_items = self.ui.tools_table.selectedItems()
         for it in sel_items:
             sel_rows.add(it.row())
         if len(sel_rows) > 1:
-            self.t_ui.tool_data_label.setText(
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
         elif len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form
-            toolnr = int(self.t_ui.tools_table.item(list(sel_rows)[0], 0).text())
-            self.t_ui.tool_data_label.setText(
+            toolnr = int(self.ui.tools_table.item(list(sel_rows)[0], 0).text())
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), toolnr)
             )
 
@@ -717,7 +726,7 @@ class ToolDrilling(AppTool, Excellon):
         self.units = self.app.defaults['units'].upper()
 
         # load the Excellon object
-        self.obj_name = self.t_ui.object_combo.currentText()
+        self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
         try:
@@ -728,11 +737,11 @@ class ToolDrilling(AppTool, Excellon):
 
         if self.excellon_obj is None:
             self.excellon_tools = {}
-            self.t_ui.exc_param_frame.setDisabled(True)
+            self.ui.exc_param_frame.setDisabled(True)
             self.set_tool_ui()
         else:
             self.app.collection.set_active(self.obj_name)
-            self.t_ui.exc_param_frame.setDisabled(False)
+            self.ui.exc_param_frame.setDisabled(False)
 
             if self.app.defaults["excellon_autoload_db"]:
                 self.excellon_tools = self.excellon_obj.tools
@@ -743,18 +752,18 @@ class ToolDrilling(AppTool, Excellon):
                 self.build_tool_ui()
 
         sel_rows = set()
-        table_items = self.t_ui.tools_table.selectedItems()
+        table_items = self.ui.tools_table.selectedItems()
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
 
         if not sel_rows or len(sel_rows) == 0:
-            self.t_ui.generate_cnc_button.setDisabled(True)
-            self.t_ui.tool_data_label.setText(
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
         else:
-            self.t_ui.generate_cnc_button.setDisabled(False)
+            self.ui.generate_cnc_button.setDisabled(False)
 
     def ui_connect(self):
 
@@ -768,8 +777,8 @@ class ToolDrilling(AppTool, Excellon):
         self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
         # rows selected
-        self.t_ui.tools_table.clicked.connect(self.on_row_selection_change)
-        self.t_ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        self.ui.tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # Tool Parameters
         for opt in self.tool_form_fields:
@@ -799,24 +808,24 @@ class ToolDrilling(AppTool, Excellon):
             elif isinstance(current_widget2, NumericalEvalTupleEntry):
                 current_widget2.editingFinished.connect(self.form_to_storage)
 
-        self.t_ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
         # rows selected
         try:
-            self.t_ui.tools_table.clicked.disconnect(self.on_row_selection_change)
+            self.ui.tools_table.clicked.disconnect(self.on_row_selection_change)
         except (TypeError, AttributeError):
             pass
         try:
-            self.t_ui.tools_table.horizontalHeader().sectionClicked.disconnect(self.on_toggle_all_rows)
+            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect(self.on_toggle_all_rows)
         except (TypeError, AttributeError):
             pass
 
         # tool table widgets
-        for row in range(self.t_ui.tools_table.rowCount()):
+        for row in range(self.ui.tools_table.rowCount()):
 
             try:
-                self.t_ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+                self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -878,7 +887,7 @@ class ToolDrilling(AppTool, Excellon):
                 except (TypeError, ValueError):
                     pass
         try:
-            self.t_ui.order_radio.activated_custom[str].disconnect()
+            self.ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
             pass
 
@@ -966,7 +975,7 @@ class ToolDrilling(AppTool, Excellon):
 
         :return:
         """
-        sel_model = self.t_ui.tools_table.selectionModel()
+        sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -974,24 +983,24 @@ class ToolDrilling(AppTool, Excellon):
         for idx in sel_indexes:
             sel_rows.add(idx.row())
 
-        if len(sel_rows) == self.t_ui.tools_table.rowCount():
-            self.t_ui.tools_table.clearSelection()
-            self.t_ui.exc_param_frame.setDisabled(True)
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
+            self.ui.exc_param_frame.setDisabled(True)
 
-            self.t_ui.generate_cnc_button.setDisabled(True)
-            self.t_ui.tool_data_label.setText(
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
         else:
-            self.t_ui.tools_table.selectAll()
-            self.t_ui.exc_param_frame.setDisabled(False)
-            self.t_ui.generate_cnc_button.setDisabled(False)
-            self.t_ui.tool_data_label.setText(
+            self.ui.tools_table.selectAll()
+            self.ui.exc_param_frame.setDisabled(False)
+            self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
 
     def on_row_selection_change(self):
-        sel_model = self.t_ui.tools_table.selectionModel()
+        sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -1008,39 +1017,39 @@ class ToolDrilling(AppTool, Excellon):
         self.blockSignals(True)
 
         sel_rows = set()
-        table_items = self.t_ui.tools_table.selectedItems()
+        table_items = self.ui.tools_table.selectedItems()
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
-            # sel_rows = sorted(set(index.row() for index in self.t_ui.tools_table.selectedIndexes()))
+            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
 
         if not sel_rows or len(sel_rows) == 0:
-            self.t_ui.generate_cnc_button.setDisabled(True)
-            self.t_ui.exc_param_frame.setDisabled(True)
-            self.t_ui.tool_data_label.setText(
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.exc_param_frame.setDisabled(True)
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
             self.blockSignals(False)
             return
         else:
-            self.t_ui.generate_cnc_button.setDisabled(False)
-            self.t_ui.exc_param_frame.setDisabled(False)
+            self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.exc_param_frame.setDisabled(False)
 
         if len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form
-            tooluid = int(self.t_ui.tools_table.item(list(sel_rows)[0], 0).text())
-            self.t_ui.tool_data_label.setText(
+            tooluid = int(self.ui.tools_table.item(list(sel_rows)[0], 0).text())
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
             )
         else:
-            self.t_ui.tool_data_label.setText(
+            self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
 
         for c_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
             try:
-                item = self.t_ui.tools_table.item(c_row, 3)
+                item = self.ui.tools_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = int(item.text())
                     self.storage_to_form(self.excellon_tools[tooluid]['data'])
@@ -1079,7 +1088,7 @@ class ToolDrilling(AppTool, Excellon):
         :return:    None
         :rtype:
         """
-        if self.t_ui.tools_table.rowCount() == 2:
+        if self.ui.tools_table.rowCount() == 2:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             # Excellon Tool Table has 2 rows by default
             return
@@ -1090,12 +1099,12 @@ class ToolDrilling(AppTool, Excellon):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-        # row = self.t_ui.tools_table.currentRow()
-        rows = sorted(list(set(index.row() for index in self.t_ui.tools_table.selectedIndexes())))
+        # row = self.ui.tools_table.currentRow()
+        rows = sorted(list(set(index.row() for index in self.ui.tools_table.selectedIndexes())))
         for row in rows:
             if row < 0:
                 row = 0
-            tooluid_item = int(self.t_ui.tools_table.item(row, 3).text())
+            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
 
             # update tool parameters
             for tooluid_key, tooluid_val in self.excellon_tools.items():
@@ -1128,7 +1137,7 @@ class ToolDrilling(AppTool, Excellon):
         :rtype:     list
         """
 
-        return [str(x.text()) for x in self.t_ui.tools_table.selectedItems()]
+        return [str(x.text()) for x in self.ui.tools_table.selectedItems()]
 
     def get_selected_tools_table_items(self):
         """
@@ -1140,46 +1149,46 @@ class ToolDrilling(AppTool, Excellon):
         table_tools_items = []
 
         rows = set()
-        for x in self.t_ui.tools_table.selectedItems():
+        for x in self.ui.tools_table.selectedItems():
             rows.add(x.row())
 
         for row in rows:
             txt = ''
             elem = []
 
-            for column in range(self.t_ui.tools_table.columnCount()):
+            for column in range(self.ui.tools_table.columnCount()):
                 if column == 3:
                     # disregard this column since it's the toolID
                     continue
 
                 try:
-                    txt = self.t_ui.tools_table.item(row, column).text()
+                    txt = self.ui.tools_table.item(row, column).text()
                 except AttributeError:
                     try:
-                        txt = self.t_ui.tools_table.cellWidget(row, column).currentText()
+                        txt = self.ui.tools_table.cellWidget(row, column).currentText()
                     except AttributeError:
                         pass
                 elem.append(txt)
             table_tools_items.append(deepcopy(elem))
-            # table_tools_items.append([self.t_ui.tools_table.item(x.row(), column).text()
-            #                           for column in range(0, self.t_ui.tools_table.columnCount() - 1)])
+            # table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
+            #                           for column in range(0, self.ui.tools_table.columnCount() - 1)])
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
 
     def on_apply_param_to_all_clicked(self):
-        if self.t_ui.tools_table.rowCount() == 0:
+        if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
 
-        row = self.t_ui.tools_table.currentRow()
+        row = self.ui.tools_table.currentRow()
         if row < 0:
             row = 0
 
-        tooluid_item = int(self.t_ui.tools_table.item(row, 3).text())
+        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
         temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.excellon_tools.items():
@@ -1204,11 +1213,11 @@ class ToolDrilling(AppTool, Excellon):
         assert isinstance(cw, QtWidgets.QComboBox), \
             "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
 
-        cw_index = self.t_ui.tools_table.indexAt(cw.pos())
+        cw_index = self.ui.tools_table.indexAt(cw.pos())
         cw_row = cw_index.row()
         cw_col = cw_index.column()
 
-        current_uid = int(self.t_ui.tools_table.item(cw_row, 3).text())
+        current_uid = int(self.ui.tools_table.item(cw_row, 3).text())
 
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
@@ -1221,97 +1230,97 @@ class ToolDrilling(AppTool, Excellon):
             })
 
     def on_pp_changed(self):
-        current_pp = self.t_ui.pp_excellon_name_cb.get_value()
+        current_pp = self.ui.pp_excellon_name_cb.get_value()
 
         if "toolchange_probe" in current_pp.lower():
-            self.t_ui.pdepth_entry.setVisible(True)
-            self.t_ui.pdepth_label.show()
+            self.ui.pdepth_entry.setVisible(True)
+            self.ui.pdepth_label.show()
 
-            self.t_ui.feedrate_probe_entry.setVisible(True)
-            self.t_ui.feedrate_probe_label.show()
+            self.ui.feedrate_probe_entry.setVisible(True)
+            self.ui.feedrate_probe_label.show()
         else:
-            self.t_ui.pdepth_entry.setVisible(False)
-            self.t_ui.pdepth_label.hide()
+            self.ui.pdepth_entry.setVisible(False)
+            self.ui.pdepth_label.hide()
 
-            self.t_ui.feedrate_probe_entry.setVisible(False)
-            self.t_ui.feedrate_probe_label.hide()
+            self.ui.feedrate_probe_entry.setVisible(False)
+            self.ui.feedrate_probe_label.hide()
 
         if 'marlin' in current_pp.lower():
-            self.t_ui.feedrate_rapid_label.show()
-            self.t_ui.feedrate_rapid_entry.show()
+            self.ui.feedrate_rapid_label.show()
+            self.ui.feedrate_rapid_entry.show()
         else:
-            self.t_ui.feedrate_rapid_label.hide()
-            self.t_ui.feedrate_rapid_entry.hide()
+            self.ui.feedrate_rapid_label.hide()
+            self.ui.feedrate_rapid_entry.hide()
 
         if 'laser' in current_pp.lower():
-            self.t_ui.cutzlabel.hide()
-            self.t_ui.cutz_entry.hide()
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_entry.hide()
             try:
-                self.t_ui.mpass_cb.hide()
-                self.t_ui.maxdepth_entry.hide()
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
             except AttributeError:
                 pass
 
             if 'marlin' in current_pp.lower():
-                self.t_ui.travelzlabel.setText('%s:' % _("Focus Z"))
-                self.t_ui.travelzlabel.show()
-                self.t_ui.travelz_entry.show()
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.travelzlabel.show()
+                self.ui.travelz_entry.show()
 
-                self.t_ui.endz_label.show()
-                self.t_ui.endz_entry.show()
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
             else:
-                self.t_ui.travelzlabel.hide()
-                self.t_ui.travelz_entry.hide()
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
 
-                self.t_ui.endz_label.hide()
-                self.t_ui.endz_entry.hide()
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
 
             try:
-                self.t_ui.frzlabel.hide()
-                self.t_ui.feedrate_z_entry.hide()
+                self.ui.frzlabel.hide()
+                self.ui.feedrate_z_entry.hide()
             except AttributeError:
                 pass
 
-            self.t_ui.dwell_cb.hide()
-            self.t_ui.dwelltime_entry.hide()
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
 
-            self.t_ui.spindle_label.setText('%s:' % _("Laser Power"))
+            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
 
             try:
-                self.t_ui.tool_offset_label.hide()
-                self.t_ui.offset_entry.hide()
+                self.ui.tool_offset_label.hide()
+                self.ui.offset_entry.hide()
             except AttributeError:
                 pass
         else:
-            self.t_ui.cutzlabel.show()
-            self.t_ui.cutz_entry.show()
+            self.ui.cutzlabel.show()
+            self.ui.cutz_entry.show()
             try:
-                self.t_ui.mpass_cb.show()
-                self.t_ui.maxdepth_entry.show()
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
             except AttributeError:
                 pass
 
-            self.t_ui.travelzlabel.setText('%s:' % _('Travel Z'))
+            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
 
-            self.t_ui.travelzlabel.show()
-            self.t_ui.travelz_entry.show()
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
 
-            self.t_ui.endz_label.show()
-            self.t_ui.endz_entry.show()
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
 
             try:
-                self.t_ui.frzlabel.show()
-                self.t_ui.feedrate_z_entry.show()
+                self.ui.frzlabel.show()
+                self.ui.feedrate_z_entry.show()
             except AttributeError:
                 pass
-            self.t_ui.dwell_cb.show()
-            self.t_ui.dwelltime_entry.show()
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
 
-            self.t_ui.spindle_label.setText('%s:' % _('Spindle speed'))
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
 
             try:
-                self.t_ui.tool_offset_label.show()
-                self.t_ui.offset_entry.show()
+                self.ui.tool_offset_label.show()
+                self.ui.offset_entry.show()
             except AttributeError:
                 pass
 
@@ -1360,10 +1369,10 @@ class ToolDrilling(AppTool, Excellon):
             self.delete_tool_selection_shape()
 
     def on_add_area_click(self):
-        shape_button = self.t_ui.area_shape_radio
-        overz_button = self.t_ui.over_z_entry
-        strategy_radio = self.t_ui.strategy_radio
-        cnc_button = self.t_ui.generate_cnc_button
+        shape_button = self.ui.area_shape_radio
+        overz_button = self.ui.over_z_entry
+        strategy_radio = self.ui.strategy_radio
+        cnc_button = self.ui.generate_cnc_button
         solid_geo = self.excellon_obj.solid_geometry
         obj_type = self.excellon_obj.kind
 
@@ -1380,7 +1389,7 @@ class ToolDrilling(AppTool, Excellon):
         self.app.exc_areas.e_shape_modified.emit()
 
     def on_delete_sel_areas(self):
-        sel_model = self.t_ui.exclusion_table.selectionModel()
+        sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -1397,7 +1406,7 @@ class ToolDrilling(AppTool, Excellon):
         self.app.exc_areas.e_shape_modified.emit()
 
     def draw_sel_shape(self):
-        sel_model = self.t_ui.exclusion_table.selectionModel()
+        sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -1423,24 +1432,24 @@ class ToolDrilling(AppTool, Excellon):
 
     def clear_selection(self):
         self.app.delete_selection_shape()
-        # self.t_ui.exclusion_table.clearSelection()
+        # self.ui.exclusion_table.clearSelection()
 
     def delete_sel_shape(self):
         self.app.delete_selection_shape()
 
     def update_exclusion_table(self):
-        self.exclusion_area_cb_is_checked = True if self.t_ui.exclusion_cb.isChecked() else False
+        self.exclusion_area_cb_is_checked = True if self.ui.exclusion_cb.isChecked() else False
 
         self.build_tool_ui()
-        self.t_ui.exclusion_cb.set_value(self.exclusion_area_cb_is_checked)
+        self.ui.exclusion_cb.set_value(self.exclusion_area_cb_is_checked)
 
     def on_strategy(self, val):
         if val == 'around':
-            self.t_ui.over_z_label.setDisabled(True)
-            self.t_ui.over_z_entry.setDisabled(True)
+            self.ui.over_z_label.setDisabled(True)
+            self.ui.over_z_entry.setDisabled(True)
         else:
-            self.t_ui.over_z_label.setDisabled(False)
-            self.t_ui.over_z_entry.setDisabled(False)
+            self.ui.over_z_label.setDisabled(False)
+            self.ui.over_z_entry.setDisabled(False)
 
     def exclusion_table_toggle_all(self):
         """
@@ -1448,7 +1457,7 @@ class ToolDrilling(AppTool, Excellon):
 
         :return:
         """
-        sel_model = self.t_ui.exclusion_table.selectionModel()
+        sel_model = self.ui.exclusion_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -1457,10 +1466,10 @@ class ToolDrilling(AppTool, Excellon):
             sel_rows.add(idx.row())
 
         if sel_rows:
-            self.t_ui.exclusion_table.clearSelection()
+            self.ui.exclusion_table.clearSelection()
             self.delete_sel_shape()
         else:
-            self.t_ui.exclusion_table.selectAll()
+            self.ui.exclusion_table.selectAll()
             self.draw_sel_shape()
 
     @staticmethod
@@ -1486,7 +1495,7 @@ class ToolDrilling(AppTool, Excellon):
         return drills_list
 
     def is_valid_excellon(self):
-        slots_as_drills = self.t_ui.drill_slots_cb.get_value()
+        slots_as_drills = self.ui.drill_slots_cb.get_value()
 
         has_drills = None
         for tool_key, tool_dict in self.excellon_tools.items():
@@ -1510,8 +1519,8 @@ class ToolDrilling(AppTool, Excellon):
         Return a list of the selected tools UID from the Tool Table
         """
         selected_uid = set()
-        for sel_it in self.t_ui.tools_table.selectedItems():
-            uid = int(self.t_ui.tools_table.item(sel_it.row(), 3).text())
+        for sel_it in self.ui.tools_table.selectedItems():
+            uid = int(self.ui.tools_table.item(sel_it.row(), 3).text())
             selected_uid.add(uid)
         return list(selected_uid)
 
@@ -1534,13 +1543,13 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################################################
 
         # convert slots to a sequence of drills and add them to drill points
-        should_add_last_pt = self.t_ui.last_drill_cb.get_value()
+        should_add_last_pt = self.ui.last_drill_cb.get_value()
 
         for tool_key, tl_dict in self.excellon_tools.items():
             convert_slots = tl_dict['data']['tools_drill_drill_slots']
             if convert_slots:
                 if tool_key in selected_tools:
-                    overlap = 1 - (self.t_ui.drill_overlap_entry.get_value() / 100.0)
+                    overlap = 1 - (self.ui.drill_overlap_entry.get_value() / 100.0)
                     drill_overlap = 0.0
                     for i in selected_sorted_tools:
                         if i[0] == tool_key:
@@ -1572,8 +1581,8 @@ class ToolDrilling(AppTool, Excellon):
         return False
 
     def on_cnc_button_click(self):
-        obj_name = self.t_ui.object_combo.currentText()
-        toolchange = self.t_ui.toolchange_cb.get_value()
+        obj_name = self.ui.object_combo.currentText()
+        toolchange = self.ui.toolchange_cb.get_value()
 
         # Get source object.
         try:
@@ -1592,7 +1601,7 @@ class ToolDrilling(AppTool, Excellon):
         ymax = obj.options['ymax']
 
         job_name = obj.options["name"] + "_cnc"
-        obj.pp_excellon_name = self.t_ui.pp_excellon_name_cb.get_value()
+        obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
 
         if self.is_valid_excellon() is False:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -1606,8 +1615,8 @@ class ToolDrilling(AppTool, Excellon):
             # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
             # tool number) it means that there are 3 rows (1 tool and 2 totals).
             # in this case regardless of the selection status of that tool, use it.
-            if self.t_ui.tools_table.rowCount() >= 3:
-                selected_tools_id.append(int(self.t_ui.tools_table.item(0, 3).text()))
+            if self.ui.tools_table.rowCount() >= 3:
+                selected_tools_id.append(int(self.ui.tools_table.item(0, 3).text()))
             else:
                 msg = '[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again.")
                 self.app.inform.emit(msg)
@@ -1624,7 +1633,7 @@ class ToolDrilling(AppTool, Excellon):
         for tool_as_key, v in list(self.excellon_tools.items()):
             all_tools.append((int(tool_as_key), float(v['tooldia'])))
 
-        order = self.t_ui.order_radio.get_value()
+        order = self.ui.order_radio.get_value()
         if order == 'fwd':
             sorted_tools = sorted(all_tools, key=lambda t1: t1[1])
         elif order == 'rev':
@@ -1753,7 +1762,7 @@ class ToolDrilling(AppTool, Excellon):
             # #########################################################################################################
             # #########################################################################################################
             # Preprocessor
-            job_obj.pp_excellon_name = self.t_ui.pp_excellon_name_cb.get_value()
+            job_obj.pp_excellon_name = self.ui.pp_excellon_name_cb.get_value()
             job_obj.pp_excellon = self.app.preprocessors[job_obj.pp_excellon_name]
 
             # get the tool_table items in a list of row items

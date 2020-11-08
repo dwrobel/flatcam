@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.11.2020
+
+- preprocessors are no longer ordered in the comboboxes so I had to sort them manually
+
 7.11.2020
 
 - fixed some issues with not finding the methods when treating the startup arguments

@@ -6426,7 +6426,7 @@ class CNCjob(Geometry):
                 elif 'laser' in self.pp_excellon_name or 'laser' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
-                    if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':
+                    if self.pp_geometry_name == 'Line_xyz' or self.pp_excellon_name == 'Line_xyz':
                         pass
                     else:
                         log.warning("Non-orthogonal motion: From %s" % str(current))
@@ -6598,7 +6598,7 @@ class CNCjob(Geometry):
                 elif 'laser' in self.pp_excellon_name or 'laser' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
-                    if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':
+                    if self.pp_geometry_name == 'Line_xyz' or self.pp_excellon_name == 'Line_xyz':
                         pass
                     else:
                         log.warning("Non-orthogonal motion: From %s" % str(current))

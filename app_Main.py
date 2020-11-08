@@ -560,18 +560,18 @@ class App(QtCore.QObject):
 
         # make sure that always the 'default' preprocessor is the first item in the dictionary
         if 'default' in self.preprocessors.keys():
-            new_ppp_dict = {}
-
             # add the 'default' name first in the dict after removing from the preprocessor's dictionary
             default_pp = self.preprocessors.pop('default')
-            new_ppp_dict['default'] = default_pp
+            new_ppp_dict = {
+                'default': default_pp
+            }
 
             # then add the rest of the keys
             for name, val_class in self.preprocessors.items():
                 new_ppp_dict[name] = val_class
 
             # and now put back the ordered dict with 'default' key first
-            self.preprocessors = new_ppp_dict
+            self.preprocessors = deepcopy(new_ppp_dict)
 
         # populate the Preprocessor ComboBoxes in the PREFERENCES
         for name in list(self.preprocessors.keys()):
@@ -808,8 +808,8 @@ class App(QtCore.QObject):
                                  'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
                                  'dwelltime', 'extracut_length', 'endxy', 'enz', 'f', 'feedrate',
-                                 'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
-                                 'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
+                                 'feedrate_z', 'GRBL_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'has_offset', 'holes', 'hpgl', 'iso_type', 'Line_xyz', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',

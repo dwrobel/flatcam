@@ -420,8 +420,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         # make sure the preprocessor combobox is clear
         self.ui.pp_geometry_name_cb.clear()
         # populate preprocessor names in the combobox
+        pp_list = []
         for name in list(self.app.preprocessors.keys()):
-            self.ui.pp_geometry_name_cb.addItem(name)
+            pp_list.append(name)
+        pp_list.sort()
+        if 'default' in pp_list:
+            pp_list.remove('default')
+            pp_list.insert(0, 'default')
+        self.ui.pp_geometry_name_cb.addItems(pp_list)
         # add tooltips
         for it in range(self.ui.pp_geometry_name_cb.count()):
             self.ui.pp_geometry_name_cb.setItemData(
