@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.11.2020
+
+- some refactoring in signal connections in App.__init__()
+- fixed issue with conenctiong twice the signals for the File Toolbar on the first execution of the program
+
 8.11.2020
 
 - preprocessors are no longer ordered in the comboboxes so I had to sort them manually

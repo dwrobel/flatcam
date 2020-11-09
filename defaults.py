@@ -810,6 +810,7 @@ class FlatCAMDefaults:
 
     def __init__(self, callback=lambda x: None, beta=True, version=8.9):
         """
+        Class that holds the default parameters used throughout the app.
 
         :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
         """

@@ -747,6 +747,7 @@ class App(QtCore.QObject):
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
+
         self.worker_task.connect(self.workers.add_task)
         self.log.debug("Finished creating Workers crew.")
 
@@ -1307,7 +1308,7 @@ class App(QtCore.QObject):
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             self.log.debug("-> First Run: Setting up the first Layout")
             initial_lay = 'minimal'
-            self.on_layout(lay=initial_lay)
+            self.on_layout(lay=initial_lay, connect_signals=False)
 
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
@@ -1369,167 +1370,37 @@ class App(QtCore.QObject):
         # when the defaults dictionary values change
         self.defaults.defaults.set_change_callback(callback=self.on_properties_tab_click)
 
+        # ###########################################################################################################
         # ########################################## Standard signals ###############################################
-        # ### Menu
-        self.ui.menufilenewproject.triggered.connect(self.f_handlers.on_file_new_click)
-        self.ui.menufilenewgeo.triggered.connect(self.app_obj.new_geometry_object)
-        self.ui.menufilenewgrb.triggered.connect(self.app_obj.new_gerber_object)
-        self.ui.menufilenewexc.triggered.connect(self.app_obj.new_excellon_object)
-        self.ui.menufilenewdoc.triggered.connect(self.app_obj.new_document_object)
+        # ###########################################################################################################
+        # File Signals
+        self.connect_filemenu_signals()
 
-        self.ui.menufileopengerber.triggered.connect(self.f_handlers.on_fileopengerber)
-        self.ui.menufileopenexcellon.triggered.connect(self.f_handlers.on_fileopenexcellon)
-        self.ui.menufileopengcode.triggered.connect(self.f_handlers.on_fileopengcode)
-        self.ui.menufileopenproject.triggered.connect(self.f_handlers.on_file_openproject)
-        self.ui.menufileopenconfig.triggered.connect(self.f_handlers.on_file_openconfig)
+        # Edit Signals
+        self.connect_editmenu_signals()
 
-        self.ui.menufilenewscript.triggered.connect(self.f_handlers.on_filenewscript)
-        self.ui.menufileopenscript.triggered.connect(self.f_handlers.on_fileopenscript)
-        self.ui.menufileopenscriptexample.triggered.connect(self.f_handlers.on_fileopenscript_example)
+        # Options Signals
+        self.connect_optionsmenu_signals()
 
-        self.ui.menufilerunscript.triggered.connect(self.f_handlers.on_filerunscript)
+        # View Signals
+        self.connect_menuview_signals()
 
-        self.ui.menufileimportsvg.triggered.connect(lambda: self.f_handlers.on_file_importsvg("geometry"))
-        self.ui.menufileimportsvg_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importsvg("gerber"))
-
-        self.ui.menufileimportdxf.triggered.connect(lambda: self.f_handlers.on_file_importdxf("geometry"))
-        self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importdxf("gerber"))
-        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(self.f_handlers.on_fileopenhpgl2)
-        self.ui.menufileexportsvg.triggered.connect(self.f_handlers.on_file_exportsvg)
-        self.ui.menufileexportpng.triggered.connect(self.f_handlers.on_file_exportpng)
-        self.ui.menufileexportexcellon.triggered.connect(self.f_handlers.on_file_exportexcellon)
-        self.ui.menufileexportgerber.triggered.connect(self.f_handlers.on_file_exportgerber)
-
-        self.ui.menufileexportdxf.triggered.connect(self.f_handlers.on_file_exportdxf)
-
-        self.ui.menufile_print.triggered.connect(lambda: self.f_handlers.on_file_save_objects_pdf(use_thread=True))
-
-        self.ui.menufilesaveproject.triggered.connect(self.f_handlers.on_file_saveproject)
-        self.ui.menufilesaveprojectas.triggered.connect(self.f_handlers.on_file_saveprojectas)
-        # self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
-        self.ui.menufilesavedefaults.triggered.connect(self.f_handlers.on_file_savedefaults)
-
-        self.ui.menufileexportpref.triggered.connect(self.f_handlers.on_export_preferences)
-        self.ui.menufileimportpref.triggered.connect(self.f_handlers.on_import_preferences)
-
-        self.ui.menufile_exit.triggered.connect(self.final_save)
-
-        self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
-        self.ui.menueditok.triggered.connect(lambda: self.editor2object())
-
-        self.ui.menuedit_join2geo.triggered.connect(self.on_edit_join)
-        self.ui.menuedit_join_exc2exc.triggered.connect(self.on_edit_join_exc)
-        self.ui.menuedit_join_grb2grb.triggered.connect(self.on_edit_join_grb)
-
-        self.ui.menuedit_convert_sg2mg.triggered.connect(self.on_convert_singlegeo_to_multigeo)
-        self.ui.menuedit_convert_mg2sg.triggered.connect(self.on_convert_multigeo_to_singlegeo)
-
-        self.ui.menueditdelete.triggered.connect(self.on_delete)
-
-        self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
-        self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
-        self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
-        self.ui.menueditconvert_any2excellon.triggered.connect(self.convert_any2excellon)
-
-        self.ui.menueditorigin.triggered.connect(self.on_set_origin)
-        self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
-
-        self.ui.menueditjump.triggered.connect(self.on_jump_to)
-        self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
-
-        self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
-        self.ui.menueditselectall.triggered.connect(self.on_selectall)
-        self.ui.menueditpreferences.triggered.connect(self.on_preferences)
-
-        # self.ui.menuoptions_transfer_a2o.triggered.connect(self.on_options_app2object)
-        # self.ui.menuoptions_transfer_a2p.triggered.connect(self.on_options_app2project)
-        # self.ui.menuoptions_transfer_o2a.triggered.connect(self.on_options_object2app)
-        # self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
-        # self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
-        # self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
-
-        self.ui.menuoptions_transform_rotate.triggered.connect(self.on_rotate)
-
-        self.ui.menuoptions_transform_skewx.triggered.connect(self.on_skewx)
-        self.ui.menuoptions_transform_skewy.triggered.connect(self.on_skewy)
-
-        self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
-        self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
-        self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
-        self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
-
-        self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
-        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
-        self.ui.menuviewenableother.triggered.connect(self.enable_other_plots)
-        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
-
-        self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
-        self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
-        self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
-        self.ui.menuview_replot.triggered.connect(self.plot_all)
-
-        self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
-        self.ui.menuview_toggle_fscreen.triggered.connect(self.ui.on_fullscreen)
-        self.ui.menuview_toggle_parea.triggered.connect(self.ui.on_toggle_plotarea)
-        self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
-        self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
-        self.ui.menuview_toggle_grid.triggered.connect(self.ui.on_toggle_grid)
-        self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
-
-        self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
-        self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
-        self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
-
+        # Tool Signals
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
+        # the rest are autoinserted
 
-        self.ui.menuhelp_about.triggered.connect(self.on_about)
-        self.ui.menuhelp_readme.triggered.connect(self.on_howto)
-        self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
-        self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
-        self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
-        self.ui.menuhelp_gerber_spec.triggered.connect(lambda: webbrowser.open(self.gerber_spec_url))
-        self.ui.menuhelp_videohelp.triggered.connect(lambda: webbrowser.open(self.video_url))
-        self.ui.menuhelp_shortcut_list.triggered.connect(self.on_shortcut_list)
+        # Help Signals
+        self.connect_menuhelp_signals()
 
-        self.ui.menuprojectenable.triggered.connect(self.on_enable_sel_plots)
-        self.ui.menuprojectdisable.triggered.connect(self.on_disable_sel_plots)
-        self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
-        self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
-
-        self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
-        self.ui.menuprojectedit.triggered.connect(self.object2editor)
-
-        self.ui.menuprojectdelete.triggered.connect(self.on_delete)
-        self.ui.menuprojectsave.triggered.connect(self.on_project_context_save)
-        self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
+        # Project Context Menu Signals
+        self.connect_project_context_signals()
 
         # ToolBar signals
         self.connect_toolbar_signals()
 
-        # Context Menu
-        self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
-        self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
+        # Canvas Context Menu
+        self.connect_canvas_context_signals()
 
-        self.ui.popmenu_new_geo.triggered.connect(self.app_obj.new_geometry_object)
-        self.ui.popmenu_new_grb.triggered.connect(self.app_obj.new_gerber_object)
-        self.ui.popmenu_new_exc.triggered.connect(self.app_obj.new_excellon_object)
-        self.ui.popmenu_new_prj.triggered.connect(self.f_handlers.on_file_new)
-
-        self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
-        self.ui.clearplot.triggered.connect(self.clear_plots)
-        self.ui.replot.triggered.connect(self.plot_all)
-
-        self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
-        self.ui.popmenu_delete.triggered.connect(self.on_delete)
-        self.ui.popmenu_edit.triggered.connect(self.object2editor)
-        self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
-        self.ui.popmenu_move.triggered.connect(self.obj_move)
-
-        self.ui.popmenu_properties.triggered.connect(self.obj_properties)
-
-        # Project Context Menu -> Color Setting
-        for act in self.ui.menuprojectcolor.actions():
-            act.triggered.connect(self.on_set_color_action_triggered)
 
         # Notebook tab clicking
         self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
@@ -2110,6 +1981,168 @@ class App(QtCore.QObject):
     #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
     #                            'params': []})
 
+    def connect_filemenu_signals(self):
+        # ### Menu
+        self.ui.menufilenewproject.triggered.connect(self.f_handlers.on_file_new_click)
+        self.ui.menufilenewgeo.triggered.connect(self.app_obj.new_geometry_object)
+        self.ui.menufilenewgrb.triggered.connect(self.app_obj.new_gerber_object)
+        self.ui.menufilenewexc.triggered.connect(self.app_obj.new_excellon_object)
+        self.ui.menufilenewdoc.triggered.connect(self.app_obj.new_document_object)
+
+        self.ui.menufileopengerber.triggered.connect(self.f_handlers.on_fileopengerber)
+        self.ui.menufileopenexcellon.triggered.connect(self.f_handlers.on_fileopenexcellon)
+        self.ui.menufileopengcode.triggered.connect(self.f_handlers.on_fileopengcode)
+        self.ui.menufileopenproject.triggered.connect(self.f_handlers.on_file_openproject)
+        self.ui.menufileopenconfig.triggered.connect(self.f_handlers.on_file_openconfig)
+
+        self.ui.menufilenewscript.triggered.connect(self.f_handlers.on_filenewscript)
+        self.ui.menufileopenscript.triggered.connect(self.f_handlers.on_fileopenscript)
+        self.ui.menufileopenscriptexample.triggered.connect(self.f_handlers.on_fileopenscript_example)
+
+        self.ui.menufilerunscript.triggered.connect(self.f_handlers.on_filerunscript)
+
+        self.ui.menufileimportsvg.triggered.connect(lambda: self.f_handlers.on_file_importsvg("geometry"))
+        self.ui.menufileimportsvg_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importsvg("gerber"))
+
+        self.ui.menufileimportdxf.triggered.connect(lambda: self.f_handlers.on_file_importdxf("geometry"))
+        self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.f_handlers.on_file_importdxf("gerber"))
+        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(self.f_handlers.on_fileopenhpgl2)
+        self.ui.menufileexportsvg.triggered.connect(self.f_handlers.on_file_exportsvg)
+        self.ui.menufileexportpng.triggered.connect(self.f_handlers.on_file_exportpng)
+        self.ui.menufileexportexcellon.triggered.connect(self.f_handlers.on_file_exportexcellon)
+        self.ui.menufileexportgerber.triggered.connect(self.f_handlers.on_file_exportgerber)
+
+        self.ui.menufileexportdxf.triggered.connect(self.f_handlers.on_file_exportdxf)
+
+        self.ui.menufile_print.triggered.connect(lambda: self.f_handlers.on_file_save_objects_pdf(use_thread=True))
+
+        self.ui.menufilesaveproject.triggered.connect(self.f_handlers.on_file_saveproject)
+        self.ui.menufilesaveprojectas.triggered.connect(self.f_handlers.on_file_saveprojectas)
+        # self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
+        self.ui.menufilesavedefaults.triggered.connect(self.f_handlers.on_file_savedefaults)
+
+        self.ui.menufileexportpref.triggered.connect(self.f_handlers.on_export_preferences)
+        self.ui.menufileimportpref.triggered.connect(self.f_handlers.on_import_preferences)
+
+    def connect_editmenu_signals(self):
+        self.ui.menufile_exit.triggered.connect(self.final_save)
+
+        self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
+        self.ui.menueditok.triggered.connect(lambda: self.editor2object())
+
+        self.ui.menuedit_join2geo.triggered.connect(self.on_edit_join)
+        self.ui.menuedit_join_exc2exc.triggered.connect(self.on_edit_join_exc)
+        self.ui.menuedit_join_grb2grb.triggered.connect(self.on_edit_join_grb)
+
+        self.ui.menuedit_convert_sg2mg.triggered.connect(self.on_convert_singlegeo_to_multigeo)
+        self.ui.menuedit_convert_mg2sg.triggered.connect(self.on_convert_multigeo_to_singlegeo)
+
+        self.ui.menueditdelete.triggered.connect(self.on_delete)
+
+        self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
+        self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
+        self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
+        self.ui.menueditconvert_any2excellon.triggered.connect(self.convert_any2excellon)
+
+        self.ui.menueditorigin.triggered.connect(self.on_set_origin)
+        self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
+
+        self.ui.menueditjump.triggered.connect(self.on_jump_to)
+        self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
+
+        self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
+        self.ui.menueditselectall.triggered.connect(self.on_selectall)
+        self.ui.menueditpreferences.triggered.connect(self.on_preferences)
+
+    def connect_optionsmenu_signals(self):
+        # self.ui.menuoptions_transfer_a2o.triggered.connect(self.on_options_app2object)
+        # self.ui.menuoptions_transfer_a2p.triggered.connect(self.on_options_app2project)
+        # self.ui.menuoptions_transfer_o2a.triggered.connect(self.on_options_object2app)
+        # self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
+        # self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
+        # self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
+
+        self.ui.menuoptions_transform_rotate.triggered.connect(self.on_rotate)
+
+        self.ui.menuoptions_transform_skewx.triggered.connect(self.on_skewx)
+        self.ui.menuoptions_transform_skewy.triggered.connect(self.on_skewy)
+
+        self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
+        self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
+        self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
+        self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
+
+    def connect_menuview_signals(self):
+        self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
+        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
+        self.ui.menuviewenableother.triggered.connect(self.enable_other_plots)
+        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
+
+        self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
+        self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
+        self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
+        self.ui.menuview_replot.triggered.connect(self.plot_all)
+
+        self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
+        self.ui.menuview_toggle_fscreen.triggered.connect(self.ui.on_fullscreen)
+        self.ui.menuview_toggle_parea.triggered.connect(self.ui.on_toggle_plotarea)
+        self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
+        self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
+        self.ui.menuview_toggle_grid.triggered.connect(self.ui.on_toggle_grid)
+        self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
+
+        self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
+        self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
+        self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
+
+    def connect_menuhelp_signals(self):
+        self.ui.menuhelp_about.triggered.connect(self.on_about)
+        self.ui.menuhelp_readme.triggered.connect(self.on_howto)
+        self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
+        self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
+        self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
+        self.ui.menuhelp_gerber_spec.triggered.connect(lambda: webbrowser.open(self.gerber_spec_url))
+        self.ui.menuhelp_videohelp.triggered.connect(lambda: webbrowser.open(self.video_url))
+        self.ui.menuhelp_shortcut_list.triggered.connect(self.on_shortcut_list)
+
+    def connect_project_context_signals(self):
+        self.ui.menuprojectenable.triggered.connect(self.on_enable_sel_plots)
+        self.ui.menuprojectdisable.triggered.connect(self.on_disable_sel_plots)
+        self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
+        self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
+
+        self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
+        self.ui.menuprojectedit.triggered.connect(self.object2editor)
+
+        self.ui.menuprojectdelete.triggered.connect(self.on_delete)
+        self.ui.menuprojectsave.triggered.connect(self.on_project_context_save)
+        self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
+
+        # Project Context Menu -> Color Setting
+        for act in self.ui.menuprojectcolor.actions():
+            act.triggered.connect(self.on_set_color_action_triggered)
+
+    def connect_canvas_context_signals(self):
+        self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
+        self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
+
+        self.ui.popmenu_new_geo.triggered.connect(self.app_obj.new_geometry_object)
+        self.ui.popmenu_new_grb.triggered.connect(self.app_obj.new_gerber_object)
+        self.ui.popmenu_new_exc.triggered.connect(self.app_obj.new_excellon_object)
+        self.ui.popmenu_new_prj.triggered.connect(self.f_handlers.on_file_new)
+
+        self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
+        self.ui.clearplot.triggered.connect(self.clear_plots)
+        self.ui.replot.triggered.connect(self.plot_all)
+
+        self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
+        self.ui.popmenu_delete.triggered.connect(self.on_delete)
+        self.ui.popmenu_edit.triggered.connect(self.object2editor)
+        self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
+        self.ui.popmenu_move.triggered.connect(self.obj_move)
+
+        self.ui.popmenu_properties.triggered.connect(self.obj_properties)
+
     def connect_tools_signals_to_toolbar(self):
         self.log.debug(" -> Connecting Tools Toolbar Signals")
 
@@ -2203,7 +2236,7 @@ class App(QtCore.QObject):
         except Exception as err:
             self.log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
 
-    def on_layout(self, index=None, lay=None):
+    def on_layout(self, index=None, lay=None, connect_signals=True):
         """
         Set the toolbars layout (location)
 
@@ -2329,7 +2362,8 @@ class App(QtCore.QObject):
 
         try:
             # reconnect all the signals to the toolbar actions
-            self.connect_toolbar_signals()
+            if connect_signals is True:
+                self.connect_toolbar_signals()
         except Exception as e:
             self.log.debug(
                 "App.on_layout() - connect toolbar signals -> %s" % str(e))
@@ -8268,8 +8302,10 @@ class ArgsThread(QtCore.QObject):
 
 
 class MenuFileHandlers(QtCore.QObject):
-
     def __init__(self, app):
+        """
+        A class that holds all the menu -> file handlers
+        """
         super().__init__()
 
         self.app = app

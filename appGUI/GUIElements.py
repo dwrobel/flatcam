@@ -4611,6 +4611,14 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
     """
 
     def __init__(self, app, icon, headless=None, parent=None):
+        """
+        Class that constructs the system tray
+
+        :param app:         Main Application
+        :param icon:        The used icon in the sys tray
+        :param headless:    Boolean; if it will be used in a headless situation
+        :param parent:
+        """
         # QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
         super().__init__(icon, parent=parent)
         self.app = app

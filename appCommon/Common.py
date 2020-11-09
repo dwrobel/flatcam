@@ -226,6 +226,11 @@ class ExclusionAreas(QtCore.QObject):
     e_shape_modified = QtCore.pyqtSignal()
 
     def __init__(self, app):
+        """
+        A class that create interdiction areas that need to be avoided by GCode
+
+        :param app: The main application
+        """
         super().__init__()
 
         self.app = app
