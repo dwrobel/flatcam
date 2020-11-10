@@ -1347,17 +1347,46 @@ class CutOut(AppTool):
                                  _("There is no object selected for Cutout.\nSelect one and try again."))
             return
 
-        cut_geo = unary_union(obj.solid_geometry).buffer(margin, join_style=2).exterior
-        geo_length = cut_geo.length
+        cut_geo_solid = unary_union(obj.solid_geometry)
 
         drill_list = []
-        dist = 0
-        while dist <= geo_length:
-            drill_list.append(cut_geo.interpolate(dist))
-            dist += pitch
+        try:
+            for geo in cut_geo_solid:
+                if isinstance(geo, LineString):
+                    cut_geo = geo.parallel_offset(margin, side='left')
+                elif isinstance(geo, Polygon):
+                    cut_geo = geo.buffer(margin).exterior
+                else:
+                    self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("Could not add drills.")))
+                    return
 
-        if dist < geo_length:
-            drill_list.append(Point(list(cut_geo.coords)[-1]))
+                geo_length = cut_geo.length
+
+                dist = 0
+                while dist <= geo_length:
+                    drill_list.append(cut_geo.interpolate(dist))
+                    dist += pitch
+
+                if dist < geo_length:
+                    drill_list.append(Point(list(cut_geo.coords)[-1]))
+        except TypeError:
+            if isinstance(cut_geo_solid, LineString):
+                cut_geo = cut_geo_solid.parallel_offset(margin, side='left')
+            elif isinstance(cut_geo_solid, Polygon):
+                cut_geo = cut_geo_solid.buffer(margin).exterior
+            else:
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("Could not add drills.")))
+                return
+
+            geo_length = cut_geo.length
+
+            dist = 0
+            while dist <= geo_length:
+                drill_list.append(cut_geo.interpolate(dist))
+                dist += pitch
+
+            if dist < geo_length:
+                drill_list.append(Point(list(cut_geo.coords)[-1]))
 
         if not drill_list:
             self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("Could not add drills.")))
