@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - updated the Extract Tool - new functionality added: Extract Cutout Gerber from a given Gerber object; added parameters in Preferences
 - updated the UI for Cutout Tool
 - fixed Paint Tcl command; fixes issue #437
+- updated the setup_ubuntu.sh script
 
 9.11.2020
 
