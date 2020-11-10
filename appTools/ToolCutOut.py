@@ -111,6 +111,8 @@ class CutOut(AppTool):
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.ui.cutout_type_radio.activated_custom.connect(self.on_cutout_type)
+
         self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
         self.ui.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -245,6 +247,9 @@ class CutOut(AppTool):
         tool_dia = float(self.app.defaults["tools_cutout_tooldia"])
         self.on_tool_add(custom_dia=tool_dia)
 
+        self.ui.cutout_type_radio.set_value('a')
+        self.on_cutout_type(val='a')
+
     def update_ui(self, tool_dict):
         self.ui.obj_kind_combo.set_value(self.default_data["tools_cutout_kind"])
         self.ui.big_cursor_cb.set_value(self.default_data['tools_cutout_big_cursor'])
@@ -262,6 +267,32 @@ class CutOut(AppTool):
         self.ui.cutz_entry.set_value(float(tool_dict["tools_cutout_z"]))
         self.ui.mpass_cb.set_value(float(tool_dict["tools_cutout_mdepth"]))
         self.ui.maxdepth_entry.set_value(float(tool_dict["tools_cutout_depthperpass"]))
+
+    def on_cutout_type(self, val):
+        if val == 'a':
+            self.ui.gaps_label.show()
+            self.ui.gaps.show()
+            self.ui.ff_cutout_object_btn.show()
+            self.ui.rect_cutout_object_btn.show()
+
+            self.ui.big_cursor_label.hide()
+            self.ui.big_cursor_cb.hide()
+            self.ui.man_geo_creation_btn.hide()
+            self.ui.man_object_combo.hide()
+            self.ui.man_object_label.hide()
+            self.ui.man_gaps_creation_btn.hide()
+        else:
+            self.ui.gaps_label.hide()
+            self.ui.gaps.hide()
+            self.ui.ff_cutout_object_btn.hide()
+            self.ui.rect_cutout_object_btn.hide()
+
+            self.ui.big_cursor_label.show()
+            self.ui.big_cursor_cb.show()
+            self.ui.man_geo_creation_btn.show()
+            self.ui.man_object_combo.show()
+            self.ui.man_object_label.show()
+            self.ui.man_gaps_creation_btn.show()
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -691,12 +722,13 @@ class CutOut(AppTool):
             return proc_geometry, rest_geometry
 
         with self.app.proc_container.new("Generating Cutout ..."):
-            outname = cutout_obj.options["name"] + "_cutout"
+            formatted_name = cutout_obj.options["name"].rpartition('.')[0]
+            outname = "%s_cutout" % formatted_name
             self.app.collection.promise(outname)
 
             has_mouse_bites = True if self.ui.gaptype_radio.get_value() == 'mb' else False
 
-            outname_exc = cutout_obj.options["name"] + "_mouse_bites"
+            outname_exc = "%s_mouse_bites" % formatted_name
             if has_mouse_bites is True:
                 self.app.collection.promise(outname_exc)
 
@@ -1032,7 +1064,8 @@ class CutOut(AppTool):
             return proc_geometry
 
         with self.app.proc_container.new("Generating Cutout ..."):
-            outname = cutout_obj.options["name"] + "_cutout"
+            formatted_name = cutout_obj.options["name"].rpartition('.')[0]
+            outname = "%s_cutout" % formatted_name
             self.app.collection.promise(outname)
 
             has_mouse_bites = True if self.ui.gaptype_radio.get_value() == 'mb' else False
@@ -2254,12 +2287,28 @@ class CutoutUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 38, 0, 1, 2)
 
-        # Title2
-        title_param_label = FCLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
-        title_param_label.setToolTip(
-            _("This section handle creation of automatic bridge gaps.")
+        # ##############################################################################################################
+        # ######################################## Type of CUTOUT ######################################################
+        # ##############################################################################################################
+        self.cutout_type_label = FCLabel('%s:' % _("Bridge Gaps"))
+        self.cutout_type_label.setToolTip(
+            _("Selection of the type of cutout.")
         )
-        grid0.addWidget(title_param_label, 40, 0, 1, 2)
+
+        self.cutout_type_radio = RadioSet([
+            {"label": _("Automatic"), "value": "a"},
+            {"label": _("Manual"), "value": "m"},
+        ])
+
+        grid0.addWidget(self.cutout_type_label, 40, 0)
+        grid0.addWidget(self.cutout_type_radio, 40, 1)
+
+        # # Title2
+        # title_param_label = FCLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
+        # title_param_label.setToolTip(
+        #     _("This section handle creation of automatic bridge gaps.")
+        # )
+        # grid0.addWidget(title_param_label, 40, 0, 1, 2)
 
         # Gaps
         # How gaps wil be rendered:
@@ -2269,8 +2318,8 @@ class CutoutUI:
         # 2lr   - 2*left + 2*right
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
-        gaps_label = FCLabel('%s:' % _('Gaps'))
-        gaps_label.setToolTip(
+        self.gaps_label = FCLabel('%s:' % _('Gaps'))
+        self.gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
               "The choices are:\n"
@@ -2289,7 +2338,7 @@ class CutoutUI:
         for it in gaps_items:
             self.gaps.addItem(it)
             # self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        grid0.addWidget(gaps_label, 42, 0)
+        grid0.addWidget(self.gaps_label, 42, 0)
         grid0.addWidget(self.gaps, 42, 1)
 
         # Buttons
@@ -2324,27 +2373,27 @@ class CutoutUI:
                                 """)
         grid0.addWidget(self.rect_cutout_object_btn, 46, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 48, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # grid0.addWidget(separator_line, 48, 0, 1, 2)
 
-        # MANUAL BRIDGE GAPS
-        title_manual_label = FCLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
-        title_manual_label.setToolTip(
-            _("This section handle creation of manual bridge gaps.\n"
-              "This is done by mouse clicking on the perimeter of the\n"
-              "Geometry object that is used as a cutout object. ")
-        )
-        grid0.addWidget(title_manual_label, 50, 0, 1, 2)
+        # # MANUAL BRIDGE GAPS
+        # title_manual_label = FCLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
+        # title_manual_label.setToolTip(
+        #     _("This section handle creation of manual bridge gaps.\n"
+        #       "This is done by mouse clicking on the perimeter of the\n"
+        #       "Geometry object that is used as a cutout object. ")
+        # )
+        # grid0.addWidget(title_manual_label, 50, 0, 1, 2)
 
         # Big Cursor
-        big_cursor_label = FCLabel('%s:' % _("Big cursor"))
-        big_cursor_label.setToolTip(
+        self.big_cursor_label = FCLabel('%s:' % _("Big cursor"))
+        self.big_cursor_label.setToolTip(
             _("Use a big cursor when adding manual gaps."))
         self.big_cursor_cb = FCCheckBox()
 
-        grid0.addWidget(big_cursor_label, 52, 0)
+        grid0.addWidget(self.big_cursor_label, 52, 0)
         grid0.addWidget(self.big_cursor_cb, 52, 1)
 
         # Generate a surrounding Geometry object
