@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - renamed the Extract Drills Tool to Extract Tool and enhanced the tool to extract a Soldermask Gerber from a given Gerber object
 - updated the language strings files
 - changed the icon for Extract Tool
+- in Cutout Tool added the UI for a new feature: Cut by Drilling
 
 9.11.2020
 

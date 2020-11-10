@@ -1193,9 +1193,9 @@ class CutOut(AppTool):
                                 except TypeError:
                                     mouse_bites_geo.append(self.subtract_geo(mb_geom_struct, c_geo))
                         elif cutout_obj.kind == 'gerber' and margin < 0:
-                            msg = '[WARNING_NOTCL] %s' % \
+                            msg2 = '[WARNING_NOTCL] %s' % \
                                   _("Rectangular cutout with negative margin is not possible.")
-                            app_obj.inform.emit(msg)
+                            app_obj.inform.emit(msg2)
                             return "fail"
 
                     # list of Shapely Points to mark the drill points centers
@@ -1983,7 +1983,7 @@ class CutoutUI:
         self.layout = layout
 
         # Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -1993,7 +1993,7 @@ class CutoutUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(''))
+        self.layout.addWidget(FCLabel(''))
 
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
@@ -2001,13 +2001,13 @@ class CutoutUI:
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
+        self.object_label = FCLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip('%s.' % _("Object to be cutout"))
 
         grid0.addWidget(self.object_label, 0, 0, 1, 2)
 
         # Object kind
-        self.kindlabel = QtWidgets.QLabel('%s:' % _('Kind'))
+        self.kindlabel = FCLabel('%s:' % _('Kind'))
         self.kindlabel.setToolTip(
             _("Choice of what kind the object we want to cutout is.\n"
               "- Single: contain a single PCB Gerber outline object.\n"
@@ -2027,7 +2027,7 @@ class CutoutUI:
             {"label": _("Geometry"), "value": "geo"},
         ])
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -2048,7 +2048,7 @@ class CutoutUI:
 
         # Convex Shape
         # Surrounding convex box shape
-        self.convex_box_label = QtWidgets.QLabel('%s:' % _("Convex Shape"))
+        self.convex_box_label = FCLabel('%s:' % _("Convex Shape"))
         self.convex_box_label.setToolTip(
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
@@ -2074,7 +2074,7 @@ class CutoutUI:
         self.dia.set_precision(self.decimals)
         self.dia.set_range(0.0000, 10000.0000)
 
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Dia"))
+        self.dia_label = FCLabel('%s:' % _("Tool Dia"))
         self.dia_label.setToolTip(
             _("Diameter of the tool used to cutout\n"
               "the PCB shape out of the surrounding material.")
@@ -2114,16 +2114,14 @@ class CutoutUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 18, 0, 1, 2)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _("Tool Parameters"))
+        self.param_label = FCLabel('<b>%s:</b>' % _("Tool Parameters"))
         grid0.addWidget(self.param_label, 20, 0, 1, 2)
 
         # Cut Z
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
-            _(
-                "Cutting depth (negative)\n"
-                "below the copper surface."
-            )
+            _("Cutting depth (negative)\n"
+              "below the copper surface.")
         )
         self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
@@ -2141,12 +2139,10 @@ class CutoutUI:
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
         self.mpass_cb.setToolTip(
-            _(
-                "Use multiple passes to limit\n"
-                "the cut depth in each pass. Will\n"
-                "cut multiple times until Cut Z is\n"
-                "reached."
-            )
+            _("Use multiple passes to limit\n"
+              "the cut depth in each pass. Will\n"
+              "cut multiple times until Cut Z is\n"
+              "reached.")
         )
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -2154,11 +2150,7 @@ class CutoutUI:
         self.maxdepth_entry.setRange(0, 10000.0000)
         self.maxdepth_entry.setSingleStep(0.1)
 
-        self.maxdepth_entry.setToolTip(
-            _(
-                "Depth of each pass (positive)."
-            )
-        )
+        self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
 
         grid0.addWidget(self.mpass_cb, 24, 0)
         grid0.addWidget(self.maxdepth_entry, 24, 1)
@@ -2171,7 +2163,7 @@ class CutoutUI:
         self.margin.setSingleStep(0.1)
         self.margin.set_precision(self.decimals)
 
-        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label = FCLabel('%s:' % _("Margin"))
         self.margin_label.setToolTip(
             _("Margin over bounds. A positive value here\n"
               "will make the cutout of the PCB further from\n"
@@ -2181,7 +2173,7 @@ class CutoutUI:
         grid0.addWidget(self.margin, 26, 1)
 
         # Gapsize
-        self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))
+        self.gapsize_label = FCLabel('%s:' % _("Gap size"))
         self.gapsize_label.setToolTip(
             _("The size of the bridge gaps in the cutout\n"
               "used to keep the board connected to\n"
@@ -2263,7 +2255,7 @@ class CutoutUI:
         grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Title2
-        title_param_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
+        title_param_label = FCLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
         title_param_label.setToolTip(
             _("This section handle creation of automatic bridge gaps.")
         )
@@ -2277,7 +2269,7 @@ class CutoutUI:
         # 2lr   - 2*left + 2*right
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
-        gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
+        gaps_label = FCLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
@@ -2338,7 +2330,7 @@ class CutoutUI:
         grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # MANUAL BRIDGE GAPS
-        title_manual_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
+        title_manual_label = FCLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
         title_manual_label.setToolTip(
             _("This section handle creation of manual bridge gaps.\n"
               "This is done by mouse clicking on the perimeter of the\n"
@@ -2347,7 +2339,7 @@ class CutoutUI:
         grid0.addWidget(title_manual_label, 50, 0, 1, 2)
 
         # Big Cursor
-        big_cursor_label = QtWidgets.QLabel('%s:' % _("Big cursor"))
+        big_cursor_label = FCLabel('%s:' % _("Big cursor"))
         big_cursor_label.setToolTip(
             _("Use a big cursor when adding manual gaps."))
         self.big_cursor_cb = FCCheckBox()
@@ -2379,7 +2371,7 @@ class CutoutUI:
         self.man_object_combo.is_last = True
         self.man_object_combo.obj_type = "Geometry"
 
-        self.man_object_label = QtWidgets.QLabel('%s:' % _("Manual cutout Geometry"))
+        self.man_object_label = FCLabel('%s:' % _("Manual cutout Geometry"))
         self.man_object_label.setToolTip(
             _("Geometry object used to create the manual cutout.")
         )
@@ -2404,6 +2396,90 @@ class CutoutUI:
                                 }
                                 """)
         grid0.addWidget(self.man_gaps_creation_btn, 58, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 60, 0, 1, 2)
+
+        grid0.addWidget(FCLabel(""), 62, 0, 1, 2)
+
+        # Cut by Drilling Title
+        title_drillcut_label = FCLabel("<b>%s</b>:" % _('Cut by Drilling'))
+        title_drillcut_label.setToolTip(
+            _("Create a series of drill holes following a geometry line.")
+        )
+        grid0.addWidget(title_drillcut_label, 64, 0, 1, 2)
+
+        # Drilling Geo Object Label
+        self.drillcut_object_lbl = FCLabel('%s:' % _("Geometry"))
+        self.drillcut_object_lbl.setToolTip(
+            _("Geometry object used to create the manual cutout.")
+        )
+
+        grid0.addWidget(self.drillcut_object_lbl, 66, 0, 1, 2)
+
+        # Drilling Geo Object
+        self.drillcut_object_combo = FCComboBox()
+        self.drillcut_object_combo.setModel(self.app.collection)
+        self.drillcut_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.drillcut_object_combo.is_last = True
+        self.drillcut_object_combo.obj_type = "Geometry"
+
+        grid0.addWidget(self.drillcut_object_combo, 68, 0, 1, 2)
+
+        # Drill Tool Diameter
+        self.drill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_dia_entry.set_precision(self.decimals)
+        self.drill_dia_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
+        self.drill_dia_label.setToolTip(
+            _("Diameter of the tool used to cutout\n"
+              "the PCB by drilling.")
+        )
+        grid0.addWidget(self.drill_dia_label, 70, 0)
+        grid0.addWidget(self.drill_dia_entry, 70, 1)
+
+        # Drill Tool Pitch
+        self.drill_pitch_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_pitch_entry.set_precision(self.decimals)
+        self.drill_pitch_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_pitch_label = FCLabel('%s:' % _("Pitch"))
+        self.drill_pitch_label.setToolTip(
+            _("Distance between the center of\n"
+              "two neighboring drill holes.")
+        )
+        grid0.addWidget(self.drill_pitch_label, 72, 0)
+        grid0.addWidget(self.drill_pitch_entry, 72, 1)
+
+        # Drill Tool Margin
+        self.drill_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_margin_entry.set_precision(self.decimals)
+        self.drill_margin_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_margin_label = FCLabel('%s:' % _("Margin"))
+        self.drill_margin_label.setToolTip(
+            _("Margin over bounds. A positive value here\n"
+              "will make the cutout of the PCB further from\n"
+              "the actual PCB border")
+        )
+        grid0.addWidget(self.drill_margin_label, 74, 0)
+        grid0.addWidget(self.drill_margin_entry, 74, 1)
+
+        self.drillcut_btn = FCButton(_("Cut by Drilling"))
+        self.drillcut_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
+        self.drillcut_btn.setToolTip(
+            _("Create a series of drill holes following a geometry line.")
+        )
+        self.drillcut_btn.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        grid0.addWidget(self.drillcut_btn, 76, 0, 1, 2)
 
         self.layout.addStretch()
 
