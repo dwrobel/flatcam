@@ -437,6 +437,10 @@ class PreferencesUIManager:
             "tools_cutout_mb_dia":          self.ui.tools_defaults_form.tools_cutout_group.mb_dia_entry,
             "tools_cutout_mb_spacing":      self.ui.tools_defaults_form.tools_cutout_group.mb_spacing_entry,
 
+            "tools_cutout_drill_dia":       self.ui.tools_defaults_form.tools_cutout_group.drill_dia_entry,
+            "tools_cutout_drill_pitch":     self.ui.tools_defaults_form.tools_cutout_group.drill_pitch_entry,
+            "tools_cutout_drill_margin":    self.ui.tools_defaults_form.tools_cutout_group.drill_margin_entry,
+
             # Paint Area Tool
             "tools_paint_tooldia":       self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
             "tools_paint_order":         self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,

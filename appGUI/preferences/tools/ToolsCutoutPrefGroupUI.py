@@ -242,4 +242,45 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             _("Use a big cursor when adding manual gaps."))
         grid0.addWidget(self.big_cursor_cb, 19, 0, 1, 2)
 
+        # Drill Cut
+        # Drill Tool Diameter
+        self.drill_dia_entry = FCDoubleSpinner()
+        self.drill_dia_entry.set_precision(self.decimals)
+        self.drill_dia_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
+        self.drill_dia_label.setToolTip(
+            _("Diameter of the tool used to cutout\n"
+              "the PCB by drilling.")
+        )
+        grid0.addWidget(self.drill_dia_label, 21, 0)
+        grid0.addWidget(self.drill_dia_entry, 21, 1)
+
+        # Drill Tool Pitch
+        self.drill_pitch_entry = FCDoubleSpinner()
+        self.drill_pitch_entry.set_precision(self.decimals)
+        self.drill_pitch_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_pitch_label = FCLabel('%s:' % _("Pitch"))
+        self.drill_pitch_label.setToolTip(
+            _("Distance between the center of\n"
+              "two neighboring drill holes.")
+        )
+        grid0.addWidget(self.drill_pitch_label, 23, 0)
+        grid0.addWidget(self.drill_pitch_entry, 23, 1)
+
+        # Drill Tool Margin
+        self.drill_margin_entry = FCDoubleSpinner()
+        self.drill_margin_entry.set_precision(self.decimals)
+        self.drill_margin_entry.set_range(0.0000, 10000.0000)
+
+        self.drill_margin_label = FCLabel('%s:' % _("Margin"))
+        self.drill_margin_label.setToolTip(
+            _("Margin over bounds. A positive value here\n"
+              "will make the cutout of the PCB further from\n"
+              "the actual PCB border")
+        )
+        grid0.addWidget(self.drill_margin_label, 25, 0)
+        grid0.addWidget(self.drill_margin_entry, 25, 1)
+
         self.layout.addStretch()

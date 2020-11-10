@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - updated the UI for Cutout Tool
 - fixed Paint Tcl command; fixes issue #437
 - updated the setup_ubuntu.sh script
+- finished adding new feature in Cutout Tool: cut a geometry by drilling along its path
 
 9.11.2020
 

@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
     FCLabel
 
-from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
+from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 
@@ -115,6 +115,7 @@ class CutOut(AppTool):
 
         self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
         self.ui.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
+        self.ui.drillcut_btn.clicked.connect(self.on_drill_cut_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_changed(self, val):
@@ -249,6 +250,10 @@ class CutOut(AppTool):
 
         self.ui.cutout_type_radio.set_value('a')
         self.on_cutout_type(val='a')
+
+        self.ui.drill_dia_entry.set_value(float(self.app.defaults["tools_cutout_drill_dia"]))
+        self.ui.drill_pitch_entry.set_value(float(self.app.defaults["tools_cutout_drill_pitch"]))
+        self.ui.drill_margin_entry.set_value(float(self.app.defaults["tools_cutout_drill_margin"]))
 
     def update_ui(self, tool_dict):
         self.ui.obj_kind_combo.set_value(self.default_data["tools_cutout_kind"])
@@ -1319,6 +1324,75 @@ class CutOut(AppTool):
                     log.debug(str(ee))
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def on_drill_cut_click(self):
+        log.debug("Cutout.on_drill_cut_click() was launched ...")
+
+        margin = self.ui.drill_margin_entry.get_value()
+        pitch = self.ui.drill_pitch_entry.get_value()
+        drill_dia = self.ui.drill_dia_entry.get_value()
+
+        name = self.ui.drillcut_object_combo.currentText()
+
+        # Get source object.
+        try:
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception as e:
+            log.debug("CutOut.on_freeform_cutout() --> %s" % str(e))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
+            return "Could not retrieve object: %s" % name
+
+        if obj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("There is no object selected for Cutout.\nSelect one and try again."))
+            return
+
+        cut_geo = unary_union(obj.solid_geometry).buffer(margin, join_style=2).exterior
+        geo_length = cut_geo.length
+
+        drill_list = []
+        dist = 0
+        while dist <= geo_length:
+            drill_list.append(cut_geo.interpolate(dist))
+            dist += pitch
+
+        if dist < geo_length:
+            drill_list.append(Point(list(cut_geo.coords)[-1]))
+
+        if not drill_list:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("Could not add drills.")))
+            return
+
+        tools = {
+            1: {
+                "tooldia": drill_dia,
+                "drills": drill_list,
+                "slots": [],
+                "solid_geometry": []
+            }
+        }
+
+        formatted_name = obj.options['name'].rpartition('.')[0]
+        if formatted_name == '':
+            formatted_name = obj.options['name']
+        outname = '%s_drillcut' % formatted_name
+
+        def obj_init(obj_inst, app_inst):
+            obj_inst.tools = deepcopy(tools)
+            obj_inst.create_geometry()
+            obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=outname, local_use=obj_inst,
+                                                                       filename=None,
+                                                                       use_thread=False)
+
+        with self.app.proc_container.new(_("Working ...")):
+            try:
+                ret = self.app.app_obj.new_object("excellon", outname, obj_init)
+            except Exception as e:
+                log.error("Error on Drill Cutting Excellon object creation: %s" % str(e))
+                return
+
+            if ret != 'fail':
+                self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_manual_gap_click(self):
         name = self.ui.man_object_combo.currentText()
@@ -2451,7 +2525,7 @@ class CutoutUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 60, 0, 1, 2)
 
-        grid0.addWidget(FCLabel(""), 62, 0, 1, 2)
+        # grid0.addWidget(FCLabel(""), 62, 0, 1, 2)
 
         # Cut by Drilling Title
         title_drillcut_label = FCLabel("<b>%s</b>:" % _('Cut by Drilling'))

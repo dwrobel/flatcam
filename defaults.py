@@ -503,6 +503,9 @@ class FlatCAMDefaults:
         "tools_cutout_gap_depth": -1.0,
         "tools_cutout_mb_dia": 0.6,
         "tools_cutout_mb_spacing": 0.3,
+        "tools_cutout_drill_dia": 1.0,
+        "tools_cutout_drill_pitch": 1.0,
+        "tools_cutout_drill_margin": 0.0,
 
         # Paint Tool
         "tools_paint_tooldia": 0.3,

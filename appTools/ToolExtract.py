@@ -159,7 +159,6 @@ class ToolExtract(AppTool):
 
         prop_factor = self.ui.factor_entry.get_value() / 100.0
 
-        drills = []
         tools = {}
 
         selection_index = self.ui.gerber_object_combo.currentIndex()
@@ -401,7 +400,6 @@ class ToolExtract(AppTool):
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
-            obj_inst.drills = drills
             obj_inst.create_geometry()
             obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=outname, local_use=obj_inst,
                                                                        filename=None,
