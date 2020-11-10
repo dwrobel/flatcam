@@ -646,6 +646,8 @@ class PreferencesUIManager:
             "tools_extract_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
             "tools_extract_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
             "tools_extract_sm_clearance": self.ui.tools2_defaults_form.tools2_edrills_group.clearance_entry,
+            "tools_extract_cut_margin": self.ui.tools2_defaults_form.tools2_edrills_group.margin_cut_entry,
+            "tools_extract_cut_thickness": self.ui.tools2_defaults_form.tools2_edrills_group.thick_cut_entry,
 
             # Punch Gerber Tool
             "tools_punch_hole_type": self.ui.tools2_defaults_form.tools2_punch_group.hole_size_radio,

@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in Cutout Tool added the UI for a new feature: Cut by Drilling
 - fixed a bug in Extract Tool, when extracting drills some of the drills were lost; added a new UI control to select/deselect all apertures
 - updated the Extract Tool - Extract Soldermask functionality, such that the selection of apertures will control the final SolderMask Gerber content
+- updated the Extract Tool - new functionality added: Extract Cutout Gerber from a given Gerber object; added parameters in Preferences
 
 9.11.2020
 

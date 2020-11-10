@@ -713,6 +713,8 @@ class FlatCAMDefaults:
         "tools_extract_rectangular": False,
         "tools_extract_others": False,
         "tools_extract_sm_clearance": 0.1,
+        "tools_extract_cut_margin": 0.1,
+        "tools_extract_cut_thickness": 0.1,
 
         # Punch Gerber Tool
         "tools_punch_hole_type": 'exc',

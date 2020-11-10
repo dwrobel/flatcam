@@ -10,7 +10,8 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel
 
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPolygon, Polygon, box
+from shapely.ops import unary_union
 
 from copy import deepcopy
 
@@ -40,9 +41,6 @@ class ToolExtract(AppTool):
 
         # ## Signals
         self.ui.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
-        self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
-        self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.ui.circular_cb.stateChanged.connect(
             lambda state:
@@ -71,6 +69,11 @@ class ToolExtract(AppTool):
         )
 
         self.ui.all_cb.stateChanged.connect(self.on_select_all)
+
+        self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
+        self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
+        self.ui.e_cut_button.clicked.connect(self.on_extract_cutout_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
@@ -123,7 +126,12 @@ class ToolExtract(AppTool):
 
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_extract_hole_prop_factor"]))
 
+        # Extract Soldermask
         self.ui.clearance_entry.set_value(float(self.app.defaults["tools_extract_sm_clearance"]))
+
+        # Extract Cutout
+        self.ui.margin_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_margin"]))
+        self.ui.thick_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_thickness"]))
 
     def on_select_all(self, state):
 
@@ -435,7 +443,7 @@ class ToolExtract(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        outname = '%s_sm' % obj.options['name'].rpartition('.')[0]
+        outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
 
         new_apertures = deepcopy(obj.apertures)
         new_solid_geometry = []
@@ -509,6 +517,81 @@ class ToolExtract(AppTool):
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
                 log.error("Error on Extracted Soldermask Gerber object creation: %s" % str(e))
+                return
+
+    def on_extract_cutout_click(self):
+        margin = self.ui.margin_cut_entry.get_value()
+        thickness = self.ui.thick_cut_entry.get_value()
+
+        buff_radius = thickness / 2.0
+
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            obj = model_index.internalPointer().obj
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return
+
+        outname = '%s_ecut' % obj.options['name'].rpartition('.')[0]
+
+        cut_solid_geometry = obj.solid_geometry
+        if isinstance(obj.solid_geometry, list):
+            cut_solid_geometry = MultiPolygon(obj.solid_geometry)
+
+        if isinstance(cut_solid_geometry, (MultiPolygon, Polygon)):
+            x0, y0, x1, y1 = cut_solid_geometry.bounds
+            object_geo = box(x0, y0, x1, y1)
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            return
+
+        try:
+            geo_buf = object_geo.buffer(margin)
+            new_geo_follow = geo_buf.exterior
+            new_geo_solid = new_geo_follow.buffer(buff_radius)
+        except Exception as e:
+            log.debug("ToolExtrct.on_extrct_cutout_click() -> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            return
+
+        if not new_geo_solid.is_valid or new_geo_solid.is_empty:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            return
+
+        new_apertures = {
+            '10': {
+                'type': 'C',
+                'size': thickness,
+                'geometry': [
+                    {
+                        'solid': deepcopy(new_geo_solid),
+                        'follow': deepcopy(new_geo_follow)
+                    }
+                ]
+            }
+        }
+
+        def obj_init(new_obj, app_obj):
+            new_obj.multitool = False
+            new_obj.multigeo = False
+            new_obj.follow = False
+            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.solid_geometry = [deepcopy(new_geo_solid)]
+            new_obj.follow_geometry = [deepcopy(new_geo_follow)]
+
+            try:
+                new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                       local_use=new_obj, use_thread=False)
+            except (AttributeError, TypeError):
+                pass
+
+        with self.app.proc_container.new(_("Working ...")):
+            try:
+                self.app.app_obj.new_object("gerber", outname, obj_init)
+            except Exception as e:
+                log.error("Error on Extracted Cutout Gerber object creation: %s" % str(e))
                 return
 
     def on_hole_size_toggle(self, val):
@@ -663,14 +746,14 @@ class ExtractUI:
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
 
-        grid1.addWidget(FCLabel(""), 0, 0, 1, 2)
+        # grid1.addWidget(FCLabel(""), 0, 0, 1, 2)
 
         self.extract_drills_label = FCLabel('<b>%s</b>' % _("Extract Drills").upper())
         self.extract_drills_label.setToolTip(
             _("Extract an Excellon object from the Gerber pads."))
         grid1.addWidget(self.extract_drills_label, 1, 0, 1, 2)
 
-        self.method_label = FCLabel('<b>%s</b>' % _("Method"))
+        self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
         self.method_label.setToolTip(
             _("The method for processing pads. Can be:\n"
               "- Fixed Diameter -> all holes will have a set size\n"
@@ -850,7 +933,7 @@ class ExtractUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid3.addWidget(separator_line, 14, 0, 1, 2)
 
-        grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
+        # grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
 
         # EXTRACT SOLDERMASK
         self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Soldermask").upper())
@@ -890,6 +973,59 @@ class ExtractUI:
                                         }
                                         """)
         grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
+
+        # EXTRACT CUTOUT
+        self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Cutout").upper())
+        self.extract_sm_label.setToolTip(
+            _("Extract a cutout from a given Gerber file."))
+        grid3.addWidget(self.extract_sm_label, 26, 0, 1, 2)
+
+        # Margin
+        self.margin_cut_label = FCLabel('%s:' % _("Margin"))
+        self.margin_cut_label.setToolTip(
+            _("Margin over bounds. A positive value here\n"
+              "will make the cutout of the PCB further from\n"
+              "the actual PCB border")
+        )
+        self.margin_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.margin_cut_entry.set_range(-10000.0000, 10000.0000)
+        self.margin_cut_entry.set_precision(self.decimals)
+        self.margin_cut_entry.setSingleStep(0.1)
+
+        grid3.addWidget(self.margin_cut_label, 28, 0)
+        grid3.addWidget(self.margin_cut_entry, 28, 1)
+
+        # Thickness
+        self.thick_cut_label = FCLabel('%s:' % _("Thickness"))
+        self.thick_cut_label.setToolTip(
+            _("The thickness of the line that makes the cutout geometry.")
+        )
+        self.thick_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.thick_cut_entry.set_range(0.0000, 10000.0000)
+        self.thick_cut_entry.set_precision(self.decimals)
+        self.thick_cut_entry.setSingleStep(0.1)
+
+        grid3.addWidget(self.thick_cut_label, 30, 0)
+        grid3.addWidget(self.thick_cut_entry, 30, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid3.addWidget(separator_line, 32, 0, 1, 2)
+
+        # Extract cutout from Gerber apertures flashes (pads)
+        self.e_cut_button = QtWidgets.QPushButton(_("Extract Cutout"))
+        self.e_cut_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
+        self.e_cut_button.setToolTip(
+            _("Extract soldermask from a given Gerber file.")
+        )
+        self.e_cut_button.setStyleSheet("""
+                                               QPushButton
+                                               {
+                                                   font-weight: bold;
+                                               }
+                                               """)
+        grid3.addWidget(self.e_cut_button, 34, 0, 1, 2)
 
         self.layout.addStretch()
 

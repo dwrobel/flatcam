@@ -247,5 +247,39 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(self.clearance_label, 24, 0)
         grid_lay.addWidget(self.clearance_entry, 24, 1)
+
+        # EXTRACT CUTOUT
+        self.extract_cut_label = FCLabel('<b>%s</b>' % _("Extract Cutout"))
+        self.extract_cut_label.setToolTip(
+            _("Extract a cutout from a given Gerber file."))
+        grid_lay.addWidget(self.extract_cut_label, 26, 0, 1, 2)
+
+        # Margin Cutout
+        self.margin_cut_label = FCLabel('%s:' % _("Margin"))
+        self.margin_cut_label.setToolTip(
+            _("Margin over bounds. A positive value here\n"
+              "will make the cutout of the PCB further from\n"
+              "the actual PCB border")
+        )
+        self.margin_cut_entry = FCDoubleSpinner()
+        self.margin_cut_entry.set_range(-10000.0000, 10000.0000)
+        self.margin_cut_entry.set_precision(self.decimals)
+        self.margin_cut_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.margin_cut_label, 28, 0)
+        grid_lay.addWidget(self.margin_cut_entry, 28, 1)
+
+        # Thickness Cutout
+        self.thick_cut_label = FCLabel('%s:' % _("Thickness"))
+        self.thick_cut_label.setToolTip(
+            _("The thickness of the line that makes the cutout geometry.")
+        )
+        self.thick_cut_entry = FCDoubleSpinner()
+        self.thick_cut_entry.set_range(0.0000, 10000.0000)
+        self.thick_cut_entry.set_precision(self.decimals)
+        self.thick_cut_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.thick_cut_label, 30, 0)
+        grid_lay.addWidget(self.thick_cut_entry, 30, 1)
         
         self.layout.addStretch()
