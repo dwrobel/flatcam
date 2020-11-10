@@ -1040,7 +1040,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
 
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
@@ -2209,7 +2209,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
 
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))

@@ -1043,7 +1043,7 @@ class App(QtCore.QObject):
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
-        self.edrills_tool = None
+        self.extract_tool = None
         self.align_objects_tool = None
         self.punch_tool = None
         self.invert_tool = None
@@ -1827,8 +1827,8 @@ class App(QtCore.QObject):
         self.align_objects_tool = AlignObjects(self)
         self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
 
-        self.edrills_tool = ToolExtract(self)
-        self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)
+        self.extract_tool = ToolExtract(self)
+        self.extract_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract32.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
@@ -2149,7 +2149,7 @@ class App(QtCore.QObject):
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
         self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
-        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+        self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
 
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))

@@ -813,7 +813,7 @@ class ExtractUI:
 
         # Extract solderemask from Gerber apertures flashes (pads)
         self.e_sm_button = QtWidgets.QPushButton(_("Extract Soldermask"))
-        self.e_sm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
+        self.e_sm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_sm_button.setToolTip(
             _("Extract soldermask from a given Gerber file.")
         )
