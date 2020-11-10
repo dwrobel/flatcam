@@ -13,11 +13,13 @@ CHANGELOG for FlatCAM beta
 - updated the language strings files
 - changed the icon for Extract Tool
 - in Cutout Tool added the UI for a new feature: Cut by Drilling
+- fixed a bug in Extract Tool, when extracting drills some of the drills were lost; added a new UI control to select/deselect all apertures
+- updated the Extract Tool - Extract Soldermask functionality, such that the selection of apertures will control the final SolderMask Gerber content
 
 9.11.2020
 
 - some refactoring in signal connections in App.__init__()
-- fixed issue with conenctiong twice the signals for the File Toolbar on the first execution of the program
+- fixed issue with connecting twice the signals for the File Toolbar on the first execution of the program
 
 8.11.2020
 

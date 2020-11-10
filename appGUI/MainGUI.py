@@ -2620,7 +2620,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Extract Drills  Tool
                 if key == QtCore.Qt.Key_E:
                     # self.app.cal_exc_tool.run(toggle=True)
-                    self.app.edrills_tool.run(toggle=True)
+                    self.app.extract_tool.run(toggle=True)
                     return
 
                 # Fiducials Tool

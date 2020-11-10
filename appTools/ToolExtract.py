@@ -70,6 +70,8 @@ class ToolExtract(AppTool):
             self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
         )
 
+        self.ui.all_cb.stateChanged.connect(self.on_select_all)
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
@@ -122,6 +124,21 @@ class ToolExtract(AppTool):
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_extract_hole_prop_factor"]))
 
         self.ui.clearance_entry.set_value(float(self.app.defaults["tools_extract_sm_clearance"]))
+
+    def on_select_all(self, state):
+
+        if state:
+            self.ui.circular_cb.setChecked(True)
+            self.ui.oblong_cb.setChecked(True)
+            self.ui.square_cb.setChecked(True)
+            self.ui.rectangular_cb.setChecked(True)
+            self.ui.other_cb.setChecked(True)
+        else:
+            self.ui.circular_cb.setChecked(False)
+            self.ui.oblong_cb.setChecked(False)
+            self.ui.square_cb.setChecked(False)
+            self.ui.rectangular_cb.setChecked(False)
+            self.ui.other_cb.setChecked(False)
 
     def on_extract_drills_click(self):
 
@@ -186,7 +203,7 @@ class ToolExtract(AppTool):
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         tools[1]["drills"].append(geo_el['follow'])
                         if 'solid_geometry' not in tools[1]:
-                            tools[1]['solid_geometry'] = []
+                            tools[1]['solid_geometry'] = [geo_el['follow']]
                         else:
                             tools[1]['solid_geometry'].append(geo_el['follow'])
 
@@ -270,7 +287,7 @@ class ToolExtract(AppTool):
                         tools[tool_in_drills]['drills'].append(geo_el['follow'])
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = []
+                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 
@@ -360,7 +377,7 @@ class ToolExtract(AppTool):
                         tools[tool_in_drills]['drills'].append(geo_el['follow'])
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = []
+                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 
@@ -390,7 +407,24 @@ class ToolExtract(AppTool):
                 return
 
     def on_extract_soldermask_click(self):
+
         clearance = self.ui.clearance_entry.get_value()
+
+        circ = self.ui.circular_cb.get_value()
+        oblong = self.ui.oblong_cb.get_value()
+        square = self.ui.square_cb.get_value()
+        rect = self.ui.rectangular_cb.get_value()
+        other = self.ui.other_cb.get_value()
+
+        allowed_apertures = []
+        if circ:
+            allowed_apertures.append('C')
+        if oblong:
+            allowed_apertures.append('O')
+        if square or rect:
+            allowed_apertures.append('R')
+        if other:
+            allowed_apertures.append('ELSE')
 
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
@@ -408,6 +442,25 @@ class ToolExtract(AppTool):
         new_follow_geometry = []
 
         for apid, apid_value in obj.apertures.items():
+            ap_type = apid_value['type']
+
+            if ap_type not in allowed_apertures:
+                new_apertures.pop(apid, None)
+                continue
+
+            if ap_type == 'R':
+                width = float(apid_value['width'])
+                height = float(apid_value['height'])
+
+                # if the height == width (float numbers so the reason for the following)
+                if round(width, self.decimals) == round(height, self.decimals):
+                    if square is False:
+                        new_apertures.pop(apid, None)
+                        continue
+                elif rect is False:
+                    new_apertures.pop(apid, None)
+                    continue
+
             if 'geometry' in apid_value:
                 new_aper_geo = []
                 for geo_el in apid_value['geometry']:
@@ -535,7 +588,7 @@ class ExtractUI:
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
-        grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
+        grid_lay.addWidget(self.gerber_object_combo, 2, 0, 1, 2)
 
         self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
         self.padt_label.setToolTip(
@@ -544,7 +597,7 @@ class ExtractUI:
               "disable the Rectangular aperture.")
         )
 
-        grid_lay.addWidget(self.padt_label, 2, 0, 1, 2)
+        grid_lay.addWidget(self.padt_label, 4, 0, 1, 2)
 
         # Circular Aperture Selection
         self.circular_cb = FCCheckBox('%s' % _("Circular"))
@@ -552,7 +605,7 @@ class ExtractUI:
             _("Process Circular Pads.")
         )
 
-        grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
+        grid_lay.addWidget(self.circular_cb, 6, 0, 1, 2)
 
         # Oblong Aperture Selection
         self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
@@ -560,7 +613,7 @@ class ExtractUI:
             _("Process Oblong Pads.")
         )
 
-        grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
+        grid_lay.addWidget(self.oblong_cb, 8, 0, 1, 2)
 
         # Square Aperture Selection
         self.square_cb = FCCheckBox('%s' % _("Square"))
@@ -568,7 +621,7 @@ class ExtractUI:
             _("Process Square Pads.")
         )
 
-        grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
+        grid_lay.addWidget(self.square_cb, 10, 0, 1, 2)
 
         # Rectangular Aperture Selection
         self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
@@ -576,7 +629,7 @@ class ExtractUI:
             _("Process Rectangular Pads.")
         )
 
-        grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
+        grid_lay.addWidget(self.rectangular_cb, 12, 0, 1, 2)
 
         # Others type of Apertures Selection
         self.other_cb = FCCheckBox('%s' % _("Others"))
@@ -584,12 +637,25 @@ class ExtractUI:
             _("Process pads not in the categories above.")
         )
 
-        grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
+        grid_lay.addWidget(self.other_cb, 14, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line, 8, 0, 1, 2)
+        grid_lay.addWidget(separator_line, 16, 0, 1, 2)
+
+        # All Aperture Selection
+        self.all_cb = FCCheckBox('%s' % _("All"))
+        self.all_cb.setToolTip(
+            _("Process all Pads.")
+        )
+
+        grid_lay.addWidget(self.all_cb, 18, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Grid Layout
         grid1 = QtWidgets.QGridLayout()
