@@ -105,9 +105,9 @@ class TclCommandPaint(TclCommand):
             tooldia = str(self.app.defaults["tools_paint_tooldia"])
 
         if 'overlap' in args:
-            overlap = float(args['overlap']) / 100.0
+            overlap = float(args['overlap'])
         else:
-            overlap = float(self.app.defaults["tools_paint_overlap"]) / 100.0
+            overlap = float(self.app.defaults["tools_paint_overlap"])
 
         if 'order' in args:
             order = args['order']
@@ -122,15 +122,18 @@ class TclCommandPaint(TclCommand):
         if 'method' in args:
             method = args['method']
             if method == "standard":
-                method = _("Standard")
+                method = 0
             elif method == "seed":
-                method = _("Seed")
+                method = 1
             elif method == "lines":
-                method = _("Lines")
+                method = 2
             elif method == "laser_lines":
-                method = _("Laser_lines")
+                method = 3
+            elif method == "combo":
+                method = 4
             else:
-                method = _("Combo")
+                return "Method not supported or typo.\n" \
+                       "Supported methods are: 'standard', 'seed', 'lines', 'laser_lines' and 'combo'."
         else:
             method = str(self.app.defaults["tools_paint_method"])
 
@@ -158,12 +161,12 @@ class TclCommandPaint(TclCommand):
             outname = name + "_paint"
 
         # used only to have correct information's in the obj.tools[tool]['data'] dict
-        if "all" in args:
-            select = _("All")
-        elif "single" in args:
-            select = _("Polygon Selection")
+        if "single" in args:
+            select = 1      # _("Polygon Selection")
+        elif 'box' in args:
+            select = 3      # _("Reference Object")
         else:
-            select = _("Reference Object")
+            select = 0      # _("All")
 
         try:
             tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
@@ -232,7 +235,7 @@ class TclCommandPaint(TclCommand):
             return "Object not found: %s" % name
 
         # Paint all polygons in the painted object
-        if 'all' in args:
+        if select == 0:     # 'all' in args
             self.app.paint_tool.paint_poly_all(obj=obj,
                                                tooldia=tooldia,
                                                order=order,
@@ -244,7 +247,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint single polygon in the painted object
-        if 'single' in args:
+        if select == 1:     # 'single' in args
             if not args['single'] or args['single'] == '':
                 self.raise_tcl_error('%s Got: %s' %
                                      (_("Expected a tuple value like -single 3.2,0.1."), str(args['single'])))
@@ -271,7 +274,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint all polygons found within the box object from the the painted object
-        if 'box' in args:
+        if select == 3:     # 'box' in args
             box_name = args['box']
 
             if box_name is None:

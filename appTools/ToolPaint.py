@@ -1700,7 +1700,7 @@ class ToolPaint(AppTool, Gerber):
             return None
 
     def paint_geo(self, obj, geometry, tooldia=None, order=None, method=None, outname=None,
-                  tools_storage=None, plot=True, run_threaded=True):
+                  tools_storage=None, plot=True, rest=None, run_threaded=True):
         """
         Paints a given geometry.
 
@@ -1725,6 +1725,7 @@ class ToolPaint(AppTool, Gerber):
         name = outname if outname is not None else self.obj_name + "_paint"
         order = order if order is not None else self.ui.order_radio.get_value()
         tools_storage = self.paint_tools if tools_storage is None else tools_storage
+        use_rest_strategy = rest if rest is not None else self.ui.rest_cb.get_value()
 
         sorted_tools = []
         if tooldia is not None:
@@ -2167,7 +2168,7 @@ class ToolPaint(AppTool, Gerber):
 
         def job_thread(app_obj):
             try:
-                if self.ui.rest_cb.get_value():
+                if use_rest_strategy:
                     ret = app_obj.app_obj.new_object("geometry", name, job_rest_clear, plot=plot)
                 else:
                     ret = app_obj.app_obj.new_object("geometry", name, job_normal_clear, plot=plot)

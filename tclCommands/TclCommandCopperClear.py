@@ -126,8 +126,11 @@ class TclCommandCopperClear(TclCommand):
                 method_data = 0
             elif method == "seed":
                 method_data = 1
-            else:
+            elif method == "lines":
                 method_data = 2
+            else:
+                return "Method not supported or typo.\n" \
+                       "Supported methods are: 'standard', 'seed' and 'lines'."
         else:
             method = str(self.app.defaults["tools_ncc_method"])
             method_data = method
@@ -250,7 +253,7 @@ class TclCommandCopperClear(TclCommand):
             ncc_tools[int(tooluid)]['data']['tooldia'] = self.app.dec_format(tool, obj.decimals)
 
         # Non-Copper clear all polygons in the non-copper clear object
-        if 'all' in args:
+        if select == 0:     # 'all' in args
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
                                                    select_method=0,     # ITSELF
                                                    ncctooldia=tooldia,
@@ -270,7 +273,7 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
-        if 'box' in args:   # Reference Object
+        if select == 2:   # Reference Object 'box' in args
             box_name = args['box']
 
             # Get box source object.
