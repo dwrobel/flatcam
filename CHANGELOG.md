@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.11.2020
+
+- renamed the Extract Drills Tool to Extract Tool and enhanced the tool to extract a Soldermask Gerber from a given Gerber object
+- updated the language strings files
+
 9.11.2020
 
 - some refactoring in signal connections in App.__init__()

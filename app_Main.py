@@ -1827,7 +1827,7 @@ class App(QtCore.QObject):
         self.align_objects_tool = AlignObjects(self)
         self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
 
-        self.edrills_tool = ToolExtractDrills(self)
+        self.edrills_tool = ToolExtract(self)
         self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
@@ -1875,8 +1875,8 @@ class App(QtCore.QObject):
                                     before=self.sub_tool.menuAction, separator=True)
 
         self.drilling_tool = ToolDrilling(self)
-        self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), pos=self.ui.menutool,
-                                   before=self.sub_tool.menuAction, separator=True)
+        self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
+                                   pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
@@ -4477,8 +4477,8 @@ class App(QtCore.QObject):
             "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
 
             # Drills Extraction Tool
-            "tools_edrills_hole_fixed_dia", "tools_edrills_circular_ring", "tools_edrills_oblong_ring",
-            "tools_edrills_square_ring", "tools_edrills_rectangular_ring", "tools_edrills_others_ring",
+            "tools_extract_hole_fixed_dia", "tools_extract_circular_ring", "tools_extract_oblong_ring",
+            "tools_extract_square_ring", "tools_extract_rectangular_ring", "tools_extract_others_ring",
 
             # Punch Gerber Tool
             "tools_punch_hole_fixed_dia", "tools_punch_circular_ring", "tools_punch_oblong_ring",

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,13 +33,13 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
-        self.padt_label = QtWidgets.QLabel("<b>%s:</b>" % _("Processed Pads Type"))
+        self.padt_label = FCLabel("%s:" % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -93,8 +93,8 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay.addWidget(separator_line, 8, 0, 1, 2)
 
-        # ## Axis
-        self.hole_size_radio = RadioSet(
+        # Method of extraction
+        self.method_radio = RadioSet(
             [
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
                 {'label': _("Fixed Annular Ring"), 'value': 'ring'},
@@ -102,17 +102,17 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
             ],
             orientation='vertical',
             stretch=False)
-        self.hole_size_label = QtWidgets.QLabel('<b>%s:</b>' % _("Method"))
-        self.hole_size_label.setToolTip(
+        self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
+        self.method_label.setToolTip(
             _("The method for processing pads. Can be:\n"
               "- Fixed Diameter -> all holes will have a set size\n"
               "- Fixed Annular Ring -> all holes will have a set annular ring\n"
               "- Proportional -> each hole size will be a fraction of the pad size"))
 
-        grid_lay.addWidget(self.hole_size_label, 9, 0)
-        grid_lay.addWidget(self.hole_size_radio, 9, 1)
+        grid_lay.addWidget(self.method_label, 9, 0)
+        grid_lay.addWidget(self.method_radio, 9, 1)
 
-        # grid_lay1.addWidget(QtWidgets.QLabel(''))
+        # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -120,7 +120,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(separator_line, 10, 0, 1, 2)
 
         # Annular Ring
-        self.fixed_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Diameter"))
+        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
         grid_lay.addWidget(self.fixed_label, 11, 0, 1, 2)
 
         # Diameter value
@@ -128,7 +128,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.set_range(0.0000, 10000.0000)
 
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.dia_label = FCLabel('%s:' % _("Value"))
         self.dia_label.setToolTip(
             _("Fixed hole diameter.")
         )
@@ -137,7 +137,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.dia_entry, 12, 1)
 
         # Annular Ring value
-        self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
@@ -146,7 +146,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.ring_label, 13, 0, 1, 2)
 
         # Circular Annular Ring Value
-        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
+        self.circular_ring_label = FCLabel('%s:' % _("Circular"))
         self.circular_ring_label.setToolTip(
             _("The size of annular ring for circular pads.")
         )
@@ -159,7 +159,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.circular_ring_entry, 14, 1)
 
         # Oblong Annular Ring Value
-        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label = FCLabel('%s:' % _("Oblong"))
         self.oblong_ring_label.setToolTip(
             _("The size of annular ring for oblong pads.")
         )
@@ -172,7 +172,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.oblong_ring_entry, 15, 1)
 
         # Square Annular Ring Value
-        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
+        self.square_ring_label = FCLabel('%s:' % _("Square"))
         self.square_ring_label.setToolTip(
             _("The size of annular ring for square pads.")
         )
@@ -185,7 +185,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.square_ring_entry, 16, 1)
 
         # Rectangular Annular Ring Value
-        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
+        self.rectangular_ring_label = FCLabel('%s:' % _("Rectangular"))
         self.rectangular_ring_label.setToolTip(
             _("The size of annular ring for rectangular pads.")
         )
@@ -198,7 +198,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.rectangular_ring_entry, 17, 1)
 
         # Others Annular Ring Value
-        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
+        self.other_ring_label = FCLabel('%s:' % _("Others"))
         self.other_ring_label.setToolTip(
             _("The size of annular ring for other pads.")
         )
@@ -210,7 +210,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.other_ring_label, 18, 0)
         grid_lay.addWidget(self.other_ring_entry, 18, 1)
 
-        self.prop_label = QtWidgets.QLabel('<b>%s</b>' % _("Proportional Diameter"))
+        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
         grid_lay.addWidget(self.prop_label, 19, 0, 1, 2)
 
         # Factor value
@@ -219,7 +219,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         self.factor_entry.set_range(0.0000, 100.0000)
         self.factor_entry.setSingleStep(0.1)
 
-        self.factor_label = QtWidgets.QLabel('%s:' % _("Factor"))
+        self.factor_label = FCLabel('%s:' % _("Factor"))
         self.factor_label.setToolTip(
             _("Proportional Diameter.\n"
               "The hole diameter will be a fraction of the pad size.")
@@ -228,4 +228,24 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.factor_label, 20, 0)
         grid_lay.addWidget(self.factor_entry, 20, 1)
 
+        # EXTRACT SOLDERMASK
+        self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Soldermask"))
+        self.extract_sm_label.setToolTip(
+            _("Extract soldermask from a given Gerber file."))
+        grid_lay.addWidget(self.extract_sm_label, 22, 0, 1, 2)
+
+        # CLEARANCE soldermask extraction
+        self.clearance_label = FCLabel('%s:' % _("Clearance"))
+        self.clearance_label.setToolTip(
+            _("This set how much the soldermask extends\n"
+              "beyond the margin of the pads.")
+        )
+        self.clearance_entry = FCDoubleSpinner()
+        self.clearance_entry.set_range(0.0000, 10000.0000)
+        self.clearance_entry.set_precision(self.decimals)
+        self.clearance_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.clearance_label, 24, 0)
+        grid_lay.addWidget(self.clearance_entry, 24, 1)
+        
         self.layout.addStretch()

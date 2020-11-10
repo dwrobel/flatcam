@@ -3,7 +3,7 @@ from PyQt5.QtCore import QSettings
 
 from appGUI.preferences.tools.Tools2InvertPrefGroupUI import Tools2InvertPrefGroupUI
 from appGUI.preferences.tools.Tools2PunchGerberPrefGroupUI import Tools2PunchGerberPrefGroupUI
-from appGUI.preferences.tools.Tools2EDrillsPrefGroupUI import Tools2EDrillsPrefGroupUI
+from appGUI.preferences.tools.Tools2ExtractPrefGroupUI import Tools2EDrillsPrefGroupUI
 from appGUI.preferences.tools.Tools2CalPrefGroupUI import Tools2CalPrefGroupUI
 from appGUI.preferences.tools.Tools2FiducialsPrefGroupUI import Tools2FiducialsPrefGroupUI
 from appGUI.preferences.tools.Tools2CThievingPrefGroupUI import Tools2CThievingPrefGroupUI

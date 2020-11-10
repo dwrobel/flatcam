@@ -1040,7 +1040,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Tool"))
 
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
@@ -1051,7 +1051,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.drill_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(
@@ -2209,7 +2209,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.align_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Tool"))
 
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
@@ -2220,7 +2220,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.drill_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(
@@ -4485,7 +4485,7 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _('Alt+A'), _("Align Objects Tool"),
                     _('Alt+C'), _("Calculators Tool"),
                     _('Alt+D'), _("2-Sided PCB Tool"),
-                    _('Alt+E'), _("Extract Drills Tool"),
+                    _('Alt+E'), _("Extract Tool"),
                     _('Alt+F'), _("Fiducials Tool"),
                     _('Alt+G'), _("Invert Gerber Tool"),
                     _('Alt+H'), _("Punch Gerber Tool"),

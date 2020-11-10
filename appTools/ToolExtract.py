@@ -8,9 +8,11 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel
 
 from shapely.geometry import Point
+
+from copy import deepcopy
 
 import logging
 import gettext
@@ -24,7 +26,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolExtractDrills(AppTool):
+class ToolExtract(AppTool):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
@@ -33,12 +35,13 @@ class ToolExtractDrills(AppTool):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = ExtractDrillsUI(layout=self.layout, app=self.app)
+        self.ui = ExtractUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
 
         # ## Signals
         self.ui.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
         self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
+        self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.ui.circular_cb.stateChanged.connect(
@@ -95,28 +98,30 @@ class ToolExtractDrills(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Extract Drills Tool"))
+        self.app.ui.notebook.setTabText(2, _("Extract Tool"))
 
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.ui.hole_size_radio.set_value(self.app.defaults["tools_edrills_hole_type"])
+        self.ui.hole_size_radio.set_value(self.app.defaults["tools_extract_hole_type"])
 
-        self.ui.dia_entry.set_value(float(self.app.defaults["tools_edrills_hole_fixed_dia"]))
+        self.ui.dia_entry.set_value(float(self.app.defaults["tools_extract_hole_fixed_dia"]))
 
-        self.ui.circular_ring_entry.set_value(float(self.app.defaults["tools_edrills_circular_ring"]))
-        self.ui.oblong_ring_entry.set_value(float(self.app.defaults["tools_edrills_oblong_ring"]))
-        self.ui.square_ring_entry.set_value(float(self.app.defaults["tools_edrills_square_ring"]))
-        self.ui.rectangular_ring_entry.set_value(float(self.app.defaults["tools_edrills_rectangular_ring"]))
-        self.ui.other_ring_entry.set_value(float(self.app.defaults["tools_edrills_others_ring"]))
+        self.ui.circular_ring_entry.set_value(float(self.app.defaults["tools_extract_circular_ring"]))
+        self.ui.oblong_ring_entry.set_value(float(self.app.defaults["tools_extract_oblong_ring"]))
+        self.ui.square_ring_entry.set_value(float(self.app.defaults["tools_extract_square_ring"]))
+        self.ui.rectangular_ring_entry.set_value(float(self.app.defaults["tools_extract_rectangular_ring"]))
+        self.ui.other_ring_entry.set_value(float(self.app.defaults["tools_extract_others_ring"]))
 
-        self.ui.circular_cb.set_value(self.app.defaults["tools_edrills_circular"])
-        self.ui.oblong_cb.set_value(self.app.defaults["tools_edrills_oblong"])
-        self.ui.square_cb.set_value(self.app.defaults["tools_edrills_square"])
-        self.ui.rectangular_cb.set_value(self.app.defaults["tools_edrills_rectangular"])
-        self.ui.other_cb.set_value(self.app.defaults["tools_edrills_others"])
+        self.ui.circular_cb.set_value(self.app.defaults["tools_extract_circular"])
+        self.ui.oblong_cb.set_value(self.app.defaults["tools_extract_oblong"])
+        self.ui.square_cb.set_value(self.app.defaults["tools_extract_square"])
+        self.ui.rectangular_cb.set_value(self.app.defaults["tools_extract_rectangular"])
+        self.ui.other_cb.set_value(self.app.defaults["tools_extract_others"])
 
-        self.ui.factor_entry.set_value(float(self.app.defaults["tools_edrills_hole_prop_factor"]))
+        self.ui.factor_entry.set_value(float(self.app.defaults["tools_extract_hole_prop_factor"]))
+
+        self.ui.clearance_entry.set_value(float(self.app.defaults["tools_extract_sm_clearance"]))
 
     def on_extract_drills_click(self):
 
@@ -377,7 +382,81 @@ class ToolExtractDrills(AppTool):
                                                                        filename=None,
                                                                        use_thread=False)
 
-        self.app.app_obj.new_object("excellon", outname, obj_init)
+        with self.app.proc_container.new(_("Working ...")):
+            try:
+                self.app.app_obj.new_object("excellon", outname, obj_init)
+            except Exception as e:
+                log.error("Error on Extracted Excellon object creation: %s" % str(e))
+                return
+
+    def on_extract_soldermask_click(self):
+        clearance = self.ui.clearance_entry.get_value()
+
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            obj = model_index.internalPointer().obj
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return
+
+        outname = '%s_sm' % obj.options['name'].rpartition('.')[0]
+
+        new_apertures = deepcopy(obj.apertures)
+        new_solid_geometry = []
+        new_follow_geometry = []
+
+        for apid, apid_value in obj.apertures.items():
+            if 'geometry' in apid_value:
+                new_aper_geo = []
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el:
+                        if isinstance(geo_el['follow'], Point) and ('clear' not in geo_el or not geo_el['clear']):
+                            new_follow_geometry.append(geo_el['follow'])
+                            if 'solid' in geo_el:
+                                buffered_solid = geo_el['solid'].buffer(clearance)
+                                new_solid_geometry.append(buffered_solid)
+
+                                new_geo_el = {
+                                    'solid': buffered_solid,
+                                    'follow': geo_el['follow']
+                                }
+                                new_aper_geo.append(deepcopy(new_geo_el))
+                new_apertures[apid]['geometry'] = deepcopy(new_aper_geo)
+
+        has_geometry = False
+        for apid in list(new_apertures.keys()):
+            if 'geometry' in new_apertures[apid]:
+                if new_apertures[apid]['geometry']:
+                    has_geometry = True
+                else:
+                    new_apertures.pop(apid, None)
+
+        if not has_geometry:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No soldermask extracted.")))
+            return
+
+        def obj_init(new_obj, app_obj):
+            new_obj.multitool = False
+            new_obj.multigeo = False
+            new_obj.follow = False
+            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.solid_geometry = deepcopy(new_solid_geometry)
+            new_obj.follow_geometry = deepcopy(new_follow_geometry)
+
+            try:
+                new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                       local_use=new_obj, use_thread=False)
+            except (AttributeError, TypeError):
+                pass
+
+        with self.app.proc_container.new(_("Working ...")):
+            try:
+                self.app.app_obj.new_object("gerber", outname, obj_init)
+            except Exception as e:
+                log.error("Error on Extracted Soldermask Gerber object creation: %s" % str(e))
+                return
 
     def on_hole_size_toggle(self, val):
         if val == "fixed":
@@ -416,9 +495,9 @@ class ToolExtractDrills(AppTool):
         self.ui.gerber_object_combo.setCurrentIndex(0)
 
 
-class ExtractDrillsUI:
+class ExtractUI:
 
-    toolName = _("Extract Drills")
+    toolName = _("Extract Tool")
 
     def __init__(self, layout, app):
         self.app = app
@@ -426,7 +505,7 @@ class ExtractDrillsUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -436,7 +515,7 @@ class ExtractDrillsUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -451,14 +530,14 @@ class ExtractDrillsUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.grb_label.setToolTip('%s.' % _("Gerber from which to extract drill holes"))
+        self.grb_label = FCLabel("<b>%s:</b>" % _("GERBER"))
+        self.grb_label.setToolTip('%s.' % _("Gerber object from which to extract drill holes or soldermask."))
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
         grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
 
-        self.padt_label = QtWidgets.QLabel("<b>%s</b>" % _("Processed Pads Type"))
+        self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -518,7 +597,14 @@ class ExtractDrillsUI:
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
 
-        self.method_label = QtWidgets.QLabel('<b>%s</b>' % _("Method"))
+        grid1.addWidget(FCLabel(""), 0, 0, 1, 2)
+
+        self.extract_drills_label = FCLabel('<b>%s</b>' % _("Extract Drills").upper())
+        self.extract_drills_label.setToolTip(
+            _("Extract an Excellon object from the Gerber pads."))
+        grid1.addWidget(self.extract_drills_label, 1, 0, 1, 2)
+
+        self.method_label = FCLabel('<b>%s</b>' % _("Method"))
         self.method_label.setToolTip(
             _("The method for processing pads. Can be:\n"
               "- Fixed Diameter -> all holes will have a set size\n"
@@ -538,29 +624,12 @@ class ExtractDrillsUI:
 
         grid1.addWidget(self.hole_size_radio, 3, 0, 1, 2)
 
-        # grid_lay1.addWidget(QtWidgets.QLabel(''))
+        # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid1.addWidget(separator_line, 5, 0, 1, 2)
-
-        # Annular Ring
-        self.fixed_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Diameter"))
-        grid1.addWidget(self.fixed_label, 6, 0, 1, 2)
-
-        # Diameter value
-        self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.set_range(0.0000, 10000.0000)
-
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
-        self.dia_label.setToolTip(
-            _("Fixed hole diameter.")
-        )
-
-        grid1.addWidget(self.dia_label, 8, 0)
-        grid1.addWidget(self.dia_entry, 8, 1)
 
         self.ring_frame = QtWidgets.QFrame()
         self.ring_frame.setContentsMargins(0, 0, 0, 0)
@@ -577,7 +646,7 @@ class ExtractDrillsUI:
         self.ring_box.addLayout(grid2)
 
         # Annular Ring value
-        self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
@@ -586,7 +655,7 @@ class ExtractDrillsUI:
         grid2.addWidget(self.ring_label, 0, 0, 1, 2)
 
         # Circular Annular Ring Value
-        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
+        self.circular_ring_label = FCLabel('%s:' % _("Circular"))
         self.circular_ring_label.setToolTip(
             _("The size of annular ring for circular pads.")
         )
@@ -599,7 +668,7 @@ class ExtractDrillsUI:
         grid2.addWidget(self.circular_ring_entry, 1, 1)
 
         # Oblong Annular Ring Value
-        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label = FCLabel('%s:' % _("Oblong"))
         self.oblong_ring_label.setToolTip(
             _("The size of annular ring for oblong pads.")
         )
@@ -612,7 +681,7 @@ class ExtractDrillsUI:
         grid2.addWidget(self.oblong_ring_entry, 2, 1)
 
         # Square Annular Ring Value
-        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
+        self.square_ring_label = FCLabel('%s:' % _("Square"))
         self.square_ring_label.setToolTip(
             _("The size of annular ring for square pads.")
         )
@@ -625,7 +694,7 @@ class ExtractDrillsUI:
         grid2.addWidget(self.square_ring_entry, 3, 1)
 
         # Rectangular Annular Ring Value
-        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
+        self.rectangular_ring_label = FCLabel('%s:' % _("Rectangular"))
         self.rectangular_ring_label.setToolTip(
             _("The size of annular ring for rectangular pads.")
         )
@@ -638,7 +707,7 @@ class ExtractDrillsUI:
         grid2.addWidget(self.rectangular_ring_entry, 4, 1)
 
         # Others Annular Ring Value
-        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
+        self.other_ring_label = FCLabel('%s:' % _("Others"))
         self.other_ring_label.setToolTip(
             _("The size of annular ring for other pads.")
         )
@@ -655,9 +724,26 @@ class ExtractDrillsUI:
         grid3.setColumnStretch(0, 0)
         grid3.setColumnStretch(1, 1)
 
-        # Annular Ring value
-        self.prop_label = QtWidgets.QLabel('<b>%s</b>' % _("Proportional Diameter"))
-        grid3.addWidget(self.prop_label, 2, 0, 1, 2)
+        # Fixed Diameter
+        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
+        grid3.addWidget(self.fixed_label, 2, 0, 1, 2)
+
+        # Diameter value
+        self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.dia_entry.set_precision(self.decimals)
+        self.dia_entry.set_range(0.0000, 10000.0000)
+
+        self.dia_label = FCLabel('%s:' % _("Value"))
+        self.dia_label.setToolTip(
+            _("Fixed hole diameter.")
+        )
+
+        grid3.addWidget(self.dia_label, 4, 0)
+        grid3.addWidget(self.dia_entry, 4, 1)
+
+        # Proportional Diameter
+        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
+        grid3.addWidget(self.prop_label, 6, 0, 1, 2)
 
         # Diameter value
         self.factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
@@ -665,19 +751,19 @@ class ExtractDrillsUI:
         self.factor_entry.set_range(0.0000, 100.0000)
         self.factor_entry.setSingleStep(0.1)
 
-        self.factor_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.factor_label = FCLabel('%s:' % _("Value"))
         self.factor_label.setToolTip(
             _("Proportional Diameter.\n"
               "The hole diameter will be a fraction of the pad size.")
         )
 
-        grid3.addWidget(self.factor_label, 3, 0)
-        grid3.addWidget(self.factor_entry, 3, 1)
+        grid3.addWidget(self.factor_label, 8, 0)
+        grid3.addWidget(self.factor_entry, 8, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid3.addWidget(separator_line, 5, 0, 1, 2)
+        grid3.addWidget(separator_line, 10, 0, 1, 2)
 
         # Extract drills from Gerber apertures flashes (pads)
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
@@ -691,7 +777,53 @@ class ExtractDrillsUI:
                                             font-weight: bold;
                                         }
                                         """)
-        self.layout.addWidget(self.e_drills_button)
+        grid3.addWidget(self.e_drills_button, 12, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid3.addWidget(separator_line, 14, 0, 1, 2)
+
+        grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
+
+        # EXTRACT SOLDERMASK
+        self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Soldermask").upper())
+        self.extract_sm_label.setToolTip(
+            _("Extract soldermask from a given Gerber file."))
+        grid3.addWidget(self.extract_sm_label, 18, 0, 1, 2)
+        
+        # CLEARANCE
+        self.clearance_label = FCLabel('%s:' % _("Clearance"))
+        self.clearance_label.setToolTip(
+            _("This set how much the soldermask extends\n"
+              "beyond the margin of the pads.")
+        )
+        self.clearance_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_entry.set_range(0.0000, 10000.0000)
+        self.clearance_entry.set_precision(self.decimals)
+        self.clearance_entry.setSingleStep(0.1)
+
+        grid3.addWidget(self.clearance_label, 20, 0)
+        grid3.addWidget(self.clearance_entry, 20, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid3.addWidget(separator_line, 22, 0, 1, 2)
+
+        # Extract solderemask from Gerber apertures flashes (pads)
+        self.e_sm_button = QtWidgets.QPushButton(_("Extract Soldermask"))
+        self.e_sm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
+        self.e_sm_button.setToolTip(
+            _("Extract soldermask from a given Gerber file.")
+        )
+        self.e_sm_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
 
         self.layout.addStretch()
 
