@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.11.2020
+
+- removed the forcing of multigeo geometry usage when creating CNCJobs
+
 10.11.2020
 
 - renamed the Extract Drills Tool to Extract Tool and enhanced the tool to extract a Soldermask Gerber from a given Gerber object

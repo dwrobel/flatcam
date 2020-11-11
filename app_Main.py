@@ -4240,13 +4240,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Select a Geometry Object and try again."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, GeometryObject):
-            self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                             (_("Expected a GeometryObject, got"), type(obj)))
+            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Expected a GeometryObject, got"), type(obj)))
             return
 
         obj.multigeo = False
@@ -4260,8 +4258,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-        self.inform.emit('[success] %s' %
-                         _("A Geometry object was converted to SingleGeo type."))
+        self.inform.emit('[success] %s' % _("A Geometry object was converted to SingleGeo type."))
 
     def on_defaults_dict_change(self, field):
         """

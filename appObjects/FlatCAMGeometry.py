@@ -2103,7 +2103,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.app.inform.emit(msg)
             return
 
-        self.multigeo = True
+        # force everything as MULTI-GEO
+        # self.multigeo = True
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
