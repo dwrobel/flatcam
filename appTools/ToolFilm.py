@@ -27,6 +27,7 @@ from svglib.svglib import svg2rlg
 from xml.dom.minidom import parseString as parse_xml_string
 from lxml import etree as ET
 from io import StringIO
+import re
 
 import gettext
 import appTranslation as fcTranslate
@@ -585,7 +586,7 @@ class Film(AppTool):
                     with open(filename, 'w') as fp:
                         fp.write(doc_final)
                 except PermissionError:
-                    self.app.inform.emit('[WARNING] %s' %
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _("Permission denied, saving not possible.\n"
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
@@ -599,32 +600,61 @@ class Film(AppTool):
                     #     renderPM.drawToFile(drawing, filename, 'PNG')
                     # else:
                     #     renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
+                except PermissionError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
                 except Exception as e:
                     log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
                     return 'fail'
-            else:
+            else:   # PDF
                 try:
-                    if self.units == 'INCH':
+                    if self.units == 'IN':
                         unit = inch
                     else:
                         unit = mm
 
+                    p_size = self.ui.pagesize_combo.get_value()
+                    if p_size == 'Bounds':
+                        page_size = None
+                    elif self.ui.orientation_radio.get_value() == 'p':
+                        page_size = portrait(self.ui.pagesize[p_size])
+                    else:
+                        page_size = landscape(self.ui.pagesize[p_size])
+
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    if page_size:
+                        page_xmax, page_ymax = (
+                            page_size[0] / mm,
+                            page_size[1] / mm
+                        )
+                    else:
+                        page_xmax, page_ymax = xmax, ymax
+
+                    if xmax < 0 or ymax < 0 or xmin > page_xmax or ymin > page_ymax:
+                        err_msg = '[ERROR_NOTCL] %s %s' % \
+                                  (_("Failed."),
+                                   _("The artwork has to be within the selected page size in order to be visible.\n"
+                                     "For 'Bounds' page size, it needs to be in the first quadrant."))
+                        self.app.inform.emit(err_msg)
+                        return 'fail'
+
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
 
-                    p_size = self.ui.pagesize_combo.get_value()
                     if p_size == 'Bounds':
                         renderPDF.drawToFile(drawing, filename)
                     else:
-                        if self.ui.orientation_radio.get_value() == 'p':
-                            page_size = portrait(self.ui.pagesize[p_size])
-                        else:
-                            page_size = landscape(self.ui.pagesize[p_size])
-
                         my_canvas = canvas.Canvas(filename, pagesize=page_size)
                         my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
                         renderPDF.draw(drawing, my_canvas, 0, 0)
                         my_canvas.save()
+                except PermissionError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
                 except Exception as e:
                     log.debug("FilmTool.export_negative() --> PDF output --> %s" % str(e))
                     return 'fail'
@@ -835,7 +865,7 @@ class Film(AppTool):
                     with open(filename, 'w') as fp:
                         fp.write(doc_final)
                 except PermissionError:
-                    self.app.inform.emit('[WARNING] %s' %
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _("Permission denied, saving not possible.\n"
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
@@ -844,6 +874,11 @@ class Film(AppTool):
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
                     renderPM.drawToFile(drawing, filename, 'PNG')
+                except PermissionError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'
@@ -854,21 +889,45 @@ class Film(AppTool):
                     else:
                         unit = mm
 
+                    if p_size == 'Bounds':
+                        page_size = None
+                    elif orientation == 'p':
+                        page_size = portrait(self.ui.pagesize[p_size])
+                    else:
+                        page_size = landscape(self.ui.pagesize[p_size])
+
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    if page_size:
+                        page_xmax, page_ymax = (
+                            page_size[0] / mm,
+                            page_size[1] / mm
+                        )
+                    else:
+                        page_xmax, page_ymax = xmax, ymax
+
+                    if xmax < 0 or ymax < 0 or xmin > page_xmax or ymin > page_ymax:
+                        err_msg = '[ERROR_NOTCL] %s %s' % \
+                                  (_("Failed."),
+                                   _("The artwork has to be within the selected page size in order to be visible.\n"
+                                     "For 'Bounds' page size, it needs to be in the first quadrant."))
+                        self.app.inform.emit(err_msg)
+                        return 'fail'
+
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
 
                     if p_size == 'Bounds':
                         renderPDF.drawToFile(drawing, filename)
                     else:
-                        if orientation == 'p':
-                            page_size = portrait(self.ui.pagesize[p_size])
-                        else:
-                            page_size = landscape(self.ui.pagesize[p_size])
-
                         my_canvas = canvas.Canvas(filename, pagesize=page_size)
                         my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
                         renderPDF.draw(drawing, my_canvas, 0, 0)
                         my_canvas.save()
+                except PermissionError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PDF output --> %s" % str(e))
                     return 'fail'
@@ -1288,59 +1347,56 @@ class FilmUI:
 
         self.pagesize_combo = FCComboBox()
 
-        self.pagesize = {}
-        self.pagesize.update(
-            {
-                'Bounds': None,
-                'A0': (841 * mm, 1189 * mm),
-                'A1': (594 * mm, 841 * mm),
-                'A2': (420 * mm, 594 * mm),
-                'A3': (297 * mm, 420 * mm),
-                'A4': (210 * mm, 297 * mm),
-                'A5': (148 * mm, 210 * mm),
-                'A6': (105 * mm, 148 * mm),
-                'A7': (74 * mm, 105 * mm),
-                'A8': (52 * mm, 74 * mm),
-                'A9': (37 * mm, 52 * mm),
-                'A10': (26 * mm, 37 * mm),
+        self.pagesize = {
+            'Bounds': None,
+            'A0': (841 * mm, 1189 * mm),
+            'A1': (594 * mm, 841 * mm),
+            'A2': (420 * mm, 594 * mm),
+            'A3': (297 * mm, 420 * mm),
+            'A4': (210 * mm, 297 * mm),
+            'A5': (148 * mm, 210 * mm),
+            'A6': (105 * mm, 148 * mm),
+            'A7': (74 * mm, 105 * mm),
+            'A8': (52 * mm, 74 * mm),
+            'A9': (37 * mm, 52 * mm),
+            'A10': (26 * mm, 37 * mm),
 
-                'B0': (1000 * mm, 1414 * mm),
-                'B1': (707 * mm, 1000 * mm),
-                'B2': (500 * mm, 707 * mm),
-                'B3': (353 * mm, 500 * mm),
-                'B4': (250 * mm, 353 * mm),
-                'B5': (176 * mm, 250 * mm),
-                'B6': (125 * mm, 176 * mm),
-                'B7': (88 * mm, 125 * mm),
-                'B8': (62 * mm, 88 * mm),
-                'B9': (44 * mm, 62 * mm),
-                'B10': (31 * mm, 44 * mm),
+            'B0': (1000 * mm, 1414 * mm),
+            'B1': (707 * mm, 1000 * mm),
+            'B2': (500 * mm, 707 * mm),
+            'B3': (353 * mm, 500 * mm),
+            'B4': (250 * mm, 353 * mm),
+            'B5': (176 * mm, 250 * mm),
+            'B6': (125 * mm, 176 * mm),
+            'B7': (88 * mm, 125 * mm),
+            'B8': (62 * mm, 88 * mm),
+            'B9': (44 * mm, 62 * mm),
+            'B10': (31 * mm, 44 * mm),
 
-                'C0': (917 * mm, 1297 * mm),
-                'C1': (648 * mm, 917 * mm),
-                'C2': (458 * mm, 648 * mm),
-                'C3': (324 * mm, 458 * mm),
-                'C4': (229 * mm, 324 * mm),
-                'C5': (162 * mm, 229 * mm),
-                'C6': (114 * mm, 162 * mm),
-                'C7': (81 * mm, 114 * mm),
-                'C8': (57 * mm, 81 * mm),
-                'C9': (40 * mm, 57 * mm),
-                'C10': (28 * mm, 40 * mm),
+            'C0': (917 * mm, 1297 * mm),
+            'C1': (648 * mm, 917 * mm),
+            'C2': (458 * mm, 648 * mm),
+            'C3': (324 * mm, 458 * mm),
+            'C4': (229 * mm, 324 * mm),
+            'C5': (162 * mm, 229 * mm),
+            'C6': (114 * mm, 162 * mm),
+            'C7': (81 * mm, 114 * mm),
+            'C8': (57 * mm, 81 * mm),
+            'C9': (40 * mm, 57 * mm),
+            'C10': (28 * mm, 40 * mm),
 
-                # American paper sizes
-                'LETTER': (8.5 * inch, 11 * inch),
-                'LEGAL': (8.5 * inch, 14 * inch),
-                'ELEVENSEVENTEEN': (11 * inch, 17 * inch),
+            # American paper sizes
+            'LETTER': (8.5 * inch, 11 * inch),
+            'LEGAL': (8.5 * inch, 14 * inch),
+            'ELEVENSEVENTEEN': (11 * inch, 17 * inch),
 
-                # From https://en.wikipedia.org/wiki/Paper_size
-                'JUNIOR_LEGAL': (5 * inch, 8 * inch),
-                'HALF_LETTER': (5.5 * inch, 8 * inch),
-                'GOV_LETTER': (8 * inch, 10.5 * inch),
-                'GOV_LEGAL': (8.5 * inch, 13 * inch),
-                'LEDGER': (17 * inch, 11 * inch),
-            }
-        )
+            # From https://en.wikipedia.org/wiki/Paper_size
+            'JUNIOR_LEGAL': (5 * inch, 8 * inch),
+            'HALF_LETTER': (5.5 * inch, 8 * inch),
+            'GOV_LETTER': (8 * inch, 10.5 * inch),
+            'GOV_LEGAL': (8.5 * inch, 13 * inch),
+            'LEDGER': (17 * inch, 11 * inch),
+        }
 
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)

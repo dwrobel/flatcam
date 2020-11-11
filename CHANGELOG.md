@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 11.11.2020
 
 - removed the forcing of multigeo geometry usage when creating CNCJobs
+- in Film Tool added messages to warn the user that it can't save a film to file due of existing locked file, if the file needs to overwrite another file who is opened in another application
+- in Film Tool warn the user if it tries to save a film to file but the artwork is outside the page size therefore invisible
 
 10.11.2020
 
