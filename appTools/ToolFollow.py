@@ -1,14 +1,14 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # File by:  Marius Adrian Stanciu (c)                      #
-# Date:     5/25/2020                                      #
+# Date:     11/12/2020                                     #
 # License:  MIT Licence                                    #
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, FCComboBox2
+from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel
 from appParsers.ParseGerber import Gerber
 
 from copy import deepcopy
@@ -16,7 +16,7 @@ from copy import deepcopy
 import numpy as np
 
 from shapely.ops import unary_union
-from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
+from shapely.geometry import Polygon
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -311,7 +311,6 @@ class ToolFollow(AppTool, Gerber):
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         try:
@@ -683,7 +682,7 @@ class FollowUI:
                                 }
                                 """)
         self.tools_box.addWidget(self.reset_button)
-        # ############################ FINSIHED GUI ###################################
+        # ############################ FINISHED GUI ###################################
         # #############################################################################
 
     def on_selection(self, val):
