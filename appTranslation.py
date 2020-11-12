@@ -211,7 +211,7 @@ def restart_program(app, ask=None):
         msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+        msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()

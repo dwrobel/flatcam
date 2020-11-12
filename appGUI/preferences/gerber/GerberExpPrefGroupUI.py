@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCSpinner
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Plot options
-        self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
+        self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Gerber menu entry.")
@@ -39,7 +39,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(form)
 
         # Gerber Units
-        self.gerber_units_label = QtWidgets.QLabel('%s:' % _('Units'))
+        self.gerber_units_label = FCLabel('%s:' % _('Units'))
         self.gerber_units_label.setToolTip(
             _("The units used in the Gerber file.")
         )
@@ -53,7 +53,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.gerber_units_label, self.gerber_units_radio)
 
         # Gerber format
-        self.digits_label = QtWidgets.QLabel("%s:" % _("Int/Decimals"))
+        self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The number of digits in the whole part of the number\n"
               "and in the fractional part of the number.")
@@ -73,7 +73,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
 
-        gerber_separator_label = QtWidgets.QLabel(':')
+        gerber_separator_label = FCLabel(':')
         gerber_separator_label.setFixedWidth(5)
         hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignLeft)
 
@@ -93,7 +93,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.digits_label, hlay1)
 
         # Gerber Zeros
-        self.zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
+        self.zeros_label = FCLabel('%s:' % _('Zeros'))
         self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Gerber zeros.\n"

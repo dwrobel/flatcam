@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCSpinner
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -27,7 +27,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Plot options
-        self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
+        self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Excellon menu entry.")
@@ -38,7 +38,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(form)
 
         # Excellon Units
-        self.excellon_units_label = QtWidgets.QLabel('%s:' % _('Units'))
+        self.excellon_units_label = FCLabel('%s:' % _('Units'))
         self.excellon_units_label.setToolTip(
             _("The units used in the Excellon file.")
         )
@@ -52,7 +52,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.excellon_units_label, self.excellon_units_radio)
 
         # Excellon non-decimal format
-        self.digits_label = QtWidgets.QLabel("%s:" % _("Int/Decimals"))
+        self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -71,7 +71,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
 
-        excellon_separator_label = QtWidgets.QLabel(':')
+        excellon_separator_label = FCLabel(':')
         excellon_separator_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignLeft)
 
@@ -88,7 +88,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.digits_label, hlay1)
 
         # Select the Excellon Format
-        self.format_label = QtWidgets.QLabel("%s:" % _("Format"))
+        self.format_label = FCLabel("%s:" % _("Format"))
         self.format_label.setToolTip(
             _("Select the kind of coordinates format used.\n"
               "Coordinates can be saved with decimal point or without.\n"
@@ -111,7 +111,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.format_label, self.format_radio)
 
         # Excellon Zeros
-        self.zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
+        self.zeros_label = FCLabel('%s:' % _('Zeros'))
         self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Excellon zeros.\n"
@@ -134,7 +134,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.zeros_label, self.zeros_radio)
 
         # Slot type
-        self.slot_type_label = QtWidgets.QLabel('%s:' % _('Slot type'))
+        self.slot_type_label = FCLabel('%s:' % _('Slot type'))
         self.slot_type_label.setAlignment(QtCore.Qt.AlignLeft)
         self.slot_type_label.setToolTip(
             _("This sets how the slots will be exported.\n"

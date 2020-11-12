@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCButton, FCTextArea, FCEntry
+from appGUI.GUIElements import FCButton, FCTextArea, FCEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -38,7 +38,7 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
         hlay0.addWidget(self.del_all_btn)
 
         # ## Gerber associations
-        self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Keywords list"))
+        self.grb_list_label = FCLabel("<b>%s:</b>" % _("Keywords list"))
         self.grb_list_label.setToolTip(
             _("List of keywords used by\n"
               "the autocompleter in FlatCAM.\n"
@@ -61,7 +61,7 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
         font.setPointSize(tb_fsize)
         self.kw_list_text.setFont(font)
 
-        self.kw_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.kw_label = FCLabel('%s:' % _("Extension"))
         self.kw_label.setToolTip(_("A keyword to be added or deleted to the list."))
         self.kw_entry = FCEntry()
 

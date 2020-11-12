@@ -1,7 +1,8 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry, \
+    FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -27,7 +28,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         grid0 = QtWidgets.QGridLayout()
@@ -44,7 +45,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # ###################################################################
         # Number of circle steps for circular aperture linear approximation #
         # ###################################################################
-        self.steps_per_circle_label = QtWidgets.QLabel('%s:' % _("Circle Steps"))
+        self.steps_per_circle_label = FCLabel('%s:' % _("Circle Steps"))
         self.steps_per_circle_label.setToolTip(
             _("The number of circle steps for <b>GCode</b> \n"
               "circle and arc shapes linear approximation.")
@@ -55,7 +56,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.steps_per_circle_entry, 3, 1)
 
         # Tool dia for plot
-        tdlabel = QtWidgets.QLabel('%s:' % _('Travel dia'))
+        tdlabel = FCLabel('%s:' % _('Travel dia'))
         tdlabel.setToolTip(
             _("The width of the travel lines to be\n"
               "rendered in the plot.")
@@ -70,10 +71,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tooldia_entry, 4, 1)
 
         # add a space
-        grid0.addWidget(QtWidgets.QLabel('<b>%s:</b>' % _("G-code Decimals")), 5, 0, 1, 2)
+        grid0.addWidget(FCLabel('<b>%s:</b>' % _("G-code Decimals")), 5, 0, 1, 2)
 
         # Number of decimals to use in GCODE coordinates
-        cdeclabel = QtWidgets.QLabel('%s:' % _('Coordinates'))
+        cdeclabel = FCLabel('%s:' % _('Coordinates'))
         cdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
@@ -86,7 +87,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.coords_dec_entry, 6, 1)
 
         # Number of decimals to use in GCODE feedrate
-        frdeclabel = QtWidgets.QLabel('%s:' % _('Feedrate'))
+        frdeclabel = FCLabel('%s:' % _('Feedrate'))
         frdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the Feedrate parameter in CNC code (GCODE, etc.)")
@@ -99,7 +100,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.fr_dec_entry, 7, 1)
 
         # The type of coordinates used in the Gcode: Absolute or Incremental
-        coords_type_label = QtWidgets.QLabel('%s:' % _('Coordinates type'))
+        coords_type_label = FCLabel('%s:' % _('Coordinates type'))
         coords_type_label.setToolTip(
             _("The type of coordinates to be used in Gcode.\n"
               "Can be:\n"
@@ -132,11 +133,11 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 12, 0, 1, 2)
 
         # Travel Line Color
-        self.travel_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Travel Line Color'))
+        self.travel_color_label = FCLabel('<b>%s</b>' % _('Travel Line Color'))
         grid0.addWidget(self.travel_color_label, 13, 0, 1, 2)
 
         # Plot Line Color
-        self.tline_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.tline_color_label = FCLabel('%s:' % _('Outline'))
         self.tline_color_label.setToolTip(
             _("Set the travel line color for plotted objects.")
         )
@@ -146,7 +147,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tline_color_entry, 14, 1)
 
         # Plot Fill Color
-        self.tfill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.tfill_color_label = FCLabel('%s:' % _('Fill'))
         self.tfill_color_label.setToolTip(
             _("Set the fill color for plotted objects.\n"
               "First 6 digits are the color and the last 2\n"
@@ -158,7 +159,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tfill_color_entry, 15, 1)
 
         # Plot Fill Transparency Level
-        self.cncjob_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.cncjob_alpha_label = FCLabel('%s:' % _('Alpha'))
         self.cncjob_alpha_label.setToolTip(
             _("Set the fill transparency for plotted objects.")
         )
@@ -173,11 +174,11 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 17, 0, 1, 2)
 
         # CNCJob Object Color
-        self.cnc_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
+        self.cnc_color_label = FCLabel('<b>%s</b>' % _('Object Color'))
         grid0.addWidget(self.cnc_color_label, 18, 0, 1, 2)
 
         # Plot Line Color
-        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label = FCLabel('%s:' % _('Outline'))
         self.line_color_label.setToolTip(
             _("Set the color for plotted objects.")
         )
@@ -187,7 +188,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.line_color_entry, 19, 1)
 
         # Plot Fill Color
-        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.fill_color_label = FCLabel('%s:' % _('Fill'))
         self.fill_color_label.setToolTip(
             _("Set the fill color for plotted objects.\n"
               "First 6 digits are the color and the last 2\n"

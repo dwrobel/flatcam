@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox
+from appGUI.GUIElements import FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Subtractor Tool Parameters
-        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.sublabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.sublabel.setToolTip(
             _("A tool to substract one Gerber or Geometry object\n"
               "from another of the same type.")

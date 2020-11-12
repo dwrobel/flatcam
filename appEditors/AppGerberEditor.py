@@ -19,7 +19,7 @@ import logging
 
 from camlib import distance, arc, three_point_circle
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
-    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
+    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel
 from appTool import AppTool
 
 import numpy as np
@@ -54,7 +54,7 @@ class DrawToolShape(object):
         the object can be a Polygon, Not a polygon, or a list
         of such. Search is done recursively.
 
-        :param: geometric object
+        :param o: geometric object
         :return: List of points
         :rtype: list
         """
@@ -64,7 +64,6 @@ class DrawToolShape(object):
         try:
             for sub_o in o:
                 pts += DrawToolShape.get_pts(sub_o)
-
         # Non-iterable
         except TypeError:
             if o is not None:
@@ -487,7 +486,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
     def click(self, point):
 
-        if self.draw_app.ui.array_type_radio.get_value() == 0:     # 'Linear'
+        if self.draw_app.ui.array_type_radio.get_value() == 0:  # 'Linear'
             self.make()
             return
         else:
@@ -538,7 +537,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
-        if self.pad_array == 'linear':     # 'Linear'
+        if self.pad_array == 'linear':  # 'Linear'
             if data[0] is None and data[1] is None:
                 dx = self.draw_app.x
                 dy = self.draw_app.y
@@ -582,7 +581,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             self.last_dx = dx
             self.last_dy = dy
             return DrawToolUtilityShape(geo_el_list)
-        elif self.pad_array == 'circular':   # 'Circular'
+        elif self.pad_array == 'circular':  # 'Circular'
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
                 cdy = self.draw_app.y
@@ -776,7 +775,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
         self.draw_app.current_storage = self.storage_obj
 
-        if self.pad_array == 'linear':     # 'Linear'
+        if self.pad_array == 'linear':  # 'Linear'
             for item in range(self.pad_array_size):
                 if self.pad_axis == 'X':
                     geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
@@ -790,7 +789,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
                     )
 
                 self.geometry.append(DrawToolShape(geo))
-        else:   # 'Circular'
+        else:  # 'Circular'
             if (self.pad_angle * self.pad_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many items for the selected spacing angle."))
@@ -1331,6 +1330,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
     """
     Resulting type: Polygon
     """
+
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'track'
@@ -1441,24 +1441,24 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 if self.draw_app.bend_mode == 1:
                     if x > old_x:
                         if mx > my:
-                            self.temp_points.append((old_x + self.gridx_size*(mx-my), old_y))
+                            self.temp_points.append((old_x + self.gridx_size * (mx - my), old_y))
                         if mx < my:
                             if y < old_y:
-                                self.temp_points.append((old_x, old_y - self.gridy_size * (my-mx)))
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (my - mx)))
                             else:
-                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx-my)))
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx - my)))
                     if x < old_x:
                         if mx > my:
-                            self.temp_points.append((old_x - self.gridx_size*(mx-my), old_y))
+                            self.temp_points.append((old_x - self.gridx_size * (mx - my), old_y))
                         if mx < my:
                             if y < old_y:
-                                self.temp_points.append((old_x, old_y - self.gridy_size * (my-mx)))
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (my - mx)))
                             else:
-                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx-my)))
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx - my)))
                 elif self.draw_app.bend_mode == 2:
                     if x > old_x:
                         if mx > my:
-                            self.temp_points.append((old_x + self.gridx_size*my, y))
+                            self.temp_points.append((old_x + self.gridx_size * my, y))
                         if mx < my:
                             if y < old_y:
                                 self.temp_points.append((x, old_y - self.gridy_size * mx))
@@ -1499,7 +1499,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         else:
             follow_geo = LineString(self.temp_points)
             solid_geo = follow_geo.buffer(self.buf_val, int(self.steps_per_circle))
-            solid_geo = solid_geo.buffer(0)     # try to clean the geometry
+            solid_geo = solid_geo.buffer(0)  # try to clean the geometry
 
         new_geo_el = {
             'solid': solid_geo,
@@ -2739,7 +2739,6 @@ class TransformEditorGrb(ShapeToolEditorGrb):
 
 
 class AppGerberEditor(QtCore.QObject):
-
     draw_shape_idx = -1
     # plot_finished = QtCore.pyqtSignal()
     mp_finished = QtCore.pyqtSignal(list)
@@ -2852,16 +2851,16 @@ class AppGerberEditor(QtCore.QObject):
         self.launched_from_shortcuts = False
 
         def_tol_val = float(self.app.defaults["global_tolerance"])
-        self.tolerance = def_tol_val if self.units == 'MM'else def_tol_val / 20
+        self.tolerance = def_tol_val if self.units == 'MM' else def_tol_val / 20
 
         # options of this widget (AppGerberEditor class is a widget)
         self.options = {
-            "global_gridx":     0.1,
-            "global_gridy":     0.1,
-            "snap_max":         0.05,
-            "grid_snap":        True,
-            "corner_snap":      False,
-            "grid_gap_link":    True
+            "global_gridx": 0.1,
+            "global_gridy": 0.1,
+            "snap_max": 0.05,
+            "grid_snap": True,
+            "corner_snap": False,
+            "grid_gap_link": True
         }
         # fill it with the application options (application preferences)
         self.options.update(self.app.options)
@@ -2959,21 +2958,21 @@ class AppGerberEditor(QtCore.QObject):
 
     def connect_grb_toolbar_signals(self):
         self.tools_gerber.update({
-            "select": {"button": self.app.ui.grb_select_btn,            "constructor": SelectEditorGrb},
-            "pad": {"button": self.app.ui.grb_add_pad_btn,              "constructor": PadEditorGrb},
-            "array": {"button": self.app.ui.add_pad_ar_btn,             "constructor": PadArrayEditorGrb},
-            "track": {"button": self.app.ui.grb_add_track_btn,          "constructor": TrackEditorGrb},
-            "region": {"button": self.app.ui.grb_add_region_btn,        "constructor": RegionEditorGrb},
-            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,  "constructor": PoligonizeEditorGrb},
-            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,    "constructor": DiscSemiEditorGrb},
-            "disc": {"button": self.app.ui.grb_add_disc_btn,            "constructor": DiscEditorGrb},
-            "buffer": {"button": self.app.ui.aperture_buffer_btn,       "constructor": BufferEditorGrb},
-            "scale": {"button": self.app.ui.aperture_scale_btn,         "constructor": ScaleEditorGrb},
-            "markarea": {"button": self.app.ui.aperture_markarea_btn,   "constructor": MarkEditorGrb},
-            "eraser": {"button": self.app.ui.aperture_eraser_btn,       "constructor": EraserEditorGrb},
-            "copy": {"button": self.app.ui.aperture_copy_btn,           "constructor": CopyEditorGrb},
-            "transform": {"button": self.app.ui.grb_transform_btn,      "constructor": TransformEditorGrb},
-            "move": {"button": self.app.ui.aperture_move_btn,           "constructor": MoveEditorGrb},
+            "select": {"button": self.app.ui.grb_select_btn, "constructor": SelectEditorGrb},
+            "pad": {"button": self.app.ui.grb_add_pad_btn, "constructor": PadEditorGrb},
+            "array": {"button": self.app.ui.add_pad_ar_btn, "constructor": PadArrayEditorGrb},
+            "track": {"button": self.app.ui.grb_add_track_btn, "constructor": TrackEditorGrb},
+            "region": {"button": self.app.ui.grb_add_region_btn, "constructor": RegionEditorGrb},
+            "poligonize": {"button": self.app.ui.grb_convert_poly_btn, "constructor": PoligonizeEditorGrb},
+            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn, "constructor": DiscSemiEditorGrb},
+            "disc": {"button": self.app.ui.grb_add_disc_btn, "constructor": DiscEditorGrb},
+            "buffer": {"button": self.app.ui.aperture_buffer_btn, "constructor": BufferEditorGrb},
+            "scale": {"button": self.app.ui.aperture_scale_btn, "constructor": ScaleEditorGrb},
+            "markarea": {"button": self.app.ui.aperture_markarea_btn, "constructor": MarkEditorGrb},
+            "eraser": {"button": self.app.ui.aperture_eraser_btn, "constructor": EraserEditorGrb},
+            "copy": {"button": self.app.ui.aperture_copy_btn, "constructor": CopyEditorGrb},
+            "transform": {"button": self.app.ui.grb_transform_btn, "constructor": TransformEditorGrb},
+            "move": {"button": self.app.ui.aperture_move_btn, "constructor": MoveEditorGrb},
         })
 
         for tool in self.tools_gerber:
@@ -3020,7 +3019,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apdim_entry.set_value(self.app.defaults["gerber_editor_newdim"])
 
         # PAD Array
-        self.ui.array_type_radio.set_value('linear')   # Linear
+        self.ui.array_type_radio.set_value('linear')  # Linear
         self.on_array_type_radio(val=self.ui.array_type_radio.get_value())
         self.ui.pad_array_size_entry.set_value(int(self.app.defaults["gerber_editor_array_size"]))
 
@@ -3290,7 +3289,7 @@ class AppGerberEditor(QtCore.QObject):
                 break
         self.ui.apertures_table.selectRow(row_to_be_selected)
 
-    def on_aperture_delete(self, ap_code=None):
+    def on_aperture_delete(self, ap_code: str = None):
         """
         Called for aperture deletion.
 
@@ -3316,7 +3315,7 @@ class AppGerberEditor(QtCore.QObject):
                     row = index.row()
                     deleted_apcode_list.append(self.ui.apertures_table.item(row, 1).text())
         except Exception as exc:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Select an aperture in Aperture Table -->", str(exc))))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Select an aperture in Aperture Table -->"), str(exc)))
             return
 
         if deleted_apcode_list:
@@ -3446,7 +3445,7 @@ class AppGerberEditor(QtCore.QObject):
 
                     self.add_gerber_shape(geometry, self.storage_dict[val_edited])
 
-                    self.on_aperture_delete(apcode=ap_code_old)
+                    self.on_aperture_delete(ap_code=ap_code_old)
 
         # In case we edited the Size of the Aperture therefore the val_edited holds the new Aperture Size
         # It will happen only for the Aperture Type == 'C' - I make sure of that in the self.build_ui()
@@ -4354,7 +4353,7 @@ class AppGerberEditor(QtCore.QObject):
         assert shape_element.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert(isinstance(shape_element.geo, list) and len(shape_element.geo) > 0) or not \
+        assert (isinstance(shape_element.geo, list) and len(shape_element.geo) > 0) or not \
             isinstance(shape_element.geo, list), "Shape objects has empty geometry ([])"
 
         if isinstance(shape_element, DrawToolUtilityShape):
@@ -6187,7 +6186,7 @@ class TransformEditorTool(AppTool):
             self.point_entry.hide()
             self.point_button.hide()
 
-        elif index == 2:    # "Point" reference
+        elif index == 2:  # "Point" reference
             self.point_label.show()
             self.point_entry.show()
             self.point_button.show()
@@ -6198,7 +6197,7 @@ class TransformEditorTool(AppTool):
         else:
             ref_val = self.ref_combo.currentIndex()
 
-        if ref_val == 0:    # "Origin" reference
+        if ref_val == 0:  # "Origin" reference
             return 0, 0
         elif ref_val == 1:  # "Selection" reference
             sel_list = self.draw_app.selected
@@ -6223,13 +6222,13 @@ class TransformEditorTool(AppTool):
             if sel_list:
                 xmin, ymin, xmax, ymax = self.alt_bounds(sel_list)
                 if ref_val == 3:
-                    return xmin, ymin   # lower left corner
+                    return xmin, ymin  # lower left corner
                 elif ref_val == 4:
-                    return xmax, ymin   # lower right corner
+                    return xmax, ymin  # lower right corner
                 elif ref_val == 5:
-                    return xmax, ymax   # upper right corner
+                    return xmax, ymax  # upper right corner
                 else:
-                    return xmin, ymax   # upper left corner
+                    return xmin, ymax  # upper left corner
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No shape selected."))
                 return "fail"

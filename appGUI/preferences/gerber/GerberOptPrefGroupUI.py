@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCComboBox
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -29,7 +29,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber Options")))
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Non-copper regions"))
+        self.clearcopper_label = FCLabel("<b>%s:</b>" % _("Non-copper regions"))
         self.clearcopper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
@@ -43,7 +43,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid1)
 
         # Margin
-        bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
+        bmlabel = FCLabel('%s:' % _('Boundary Margin'))
         bmlabel.setToolTip(
             _("Specify the edge of the PCB\n"
               "by drawing a box around all\n"
@@ -70,13 +70,13 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Bounding box
-        self.boundingbox_label = QtWidgets.QLabel('<b>%s:</b>' % _('Bounding Box'))
+        self.boundingbox_label = FCLabel('<b>%s:</b>' % _('Bounding Box'))
         self.layout.addWidget(self.boundingbox_label)
 
         grid2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid2)
 
-        bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
+        bbmargin = FCLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
             _("Distance of the edges of the box\n"
               "to the nearest polygon.")

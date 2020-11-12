@@ -441,7 +441,7 @@ class QRCode(AppTool):
         # flatten the svg geometry for the case when the QRCode SVG is added into a Gerber object
         solid_geometry = list(self.flatten_list(geos))
 
-        geos_text = getsvgtext(svg_root, object_type, units=units)
+        geos_text = getsvgtext(svg_root, object_type, app=self.app, units=units)
         if geos_text is not None:
             geos_text_f = []
             if flip:

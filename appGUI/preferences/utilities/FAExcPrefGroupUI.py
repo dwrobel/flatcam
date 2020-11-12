@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import VerticalScrollArea, FCButton, FCTextArea, FCEntry
+from appGUI.GUIElements import VerticalScrollArea, FCButton, FCTextArea, FCEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -48,7 +48,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         self.vertical_lay.addLayout(hlay0)
 
         # # ## Excellon associations
-        list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        list_label = FCLabel("<b>%s:</b>" % _("Extensions list"))
         list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")
@@ -70,7 +70,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
 
         self.vertical_lay.addWidget(self.exc_list_text)
 
-        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label = FCLabel('%s:' % _("Extension"))
         self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
         self.ext_entry = FCEntry()
 

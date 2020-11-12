@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.clearcopper_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
@@ -38,7 +38,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
 
-        ncctdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        ncctdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ncctdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -50,7 +50,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
         # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
+        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
         self.tool_type_label.setToolTip(
             _("Default tool type:\n"
               "- 'V-shape'\n"
@@ -69,7 +69,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tool_type_radio, 1, 1)
 
         # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
@@ -81,7 +81,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipdia_entry, 2, 1)
 
         # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
@@ -95,7 +95,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipangle_entry, 3, 1)
 
         # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
            _("Depth of cut into material. Negative value.\n"
              "In application units.")
@@ -114,7 +114,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cutz_entry, 4, 1)
 
         # New Diameter
-        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
+        self.newdialabel = FCLabel('%s:' % _('New Dia'))
         self.newdialabel.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
@@ -134,7 +134,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -153,7 +153,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.milling_type_radio, 7, 1)
 
         # Tool order Radio Button
-        self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.ncc_order_label = FCLabel('%s:' % _('Tool order'))
         self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -179,7 +179,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Overlap Entry
-        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        nccoverlabel = FCLabel('%s:' % _('Overlap'))
         nccoverlabel.setToolTip(
            _("How much (percentage) of the tool width to overlap each tool pass.\n"
              "Adjust the value starting with lower values\n"
@@ -199,7 +199,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_overlap_entry, 10, 1)
 
         # Margin entry
-        nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        nccmarginlabel = FCLabel('%s:' % _('Margin'))
         nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
@@ -212,7 +212,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_margin_entry, 11, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel = FCLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for copper clearing:\n"
               "- Standard: Fixed step inwards.\n"
@@ -262,7 +262,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_choice_offset_cb, 14, 0, 1, 2)
 
         # ## NCC Offset value
-        self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
+        self.ncc_offset_label = FCLabel('%s:' % _("Offset value"))
         self.ncc_offset_label.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
@@ -306,7 +306,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
         )
-        select_label = QtWidgets.QLabel('%s:' % _("Selection"))
+        select_label = FCLabel('%s:' % _("Selection"))
         select_label.setToolTip(
             _("Selection of area to be processed.\n"
               "- 'Itself' - the processing extent is based on the object that is processed.\n "
@@ -317,7 +317,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(select_label, 18, 0)
         grid0.addWidget(self.select_combo, 18, 1)
 
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -336,7 +336,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
                                         {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
+        plotting_label = FCLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")

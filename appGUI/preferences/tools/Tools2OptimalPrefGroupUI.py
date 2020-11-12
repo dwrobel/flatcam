@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner
+from appGUI.GUIElements import FCSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Parameters
-        self.optlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.optlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.optlabel.setToolTip(
             _("A tool to find the minimum distance between\n"
               "every two Gerber geometric elements")
@@ -45,7 +45,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
         self.precision_sp.set_step(1)
         self.precision_sp.setWrapping(True)
 
-        self.precision_lbl = QtWidgets.QLabel('%s:' % _("Precision"))
+        self.precision_lbl = FCLabel('%s:' % _("Precision"))
         self.precision_lbl.setToolTip(
             _("Number of decimals for the distances and coordinates in this tool.")
         )

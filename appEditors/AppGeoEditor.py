@@ -24,6 +24,7 @@ from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, M
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
+from shapely.geometry.base import BaseGeometry
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm
@@ -84,7 +85,7 @@ class BufferSelectionTool(AppTool):
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
-        form_layout.addRow('%S:' % _("Buffer distance"), self.buffer_distance_entry)
+        form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
         self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
@@ -1605,7 +1606,7 @@ class DrawToolShape(object):
                 return
         return pts
 
-    def __init__(self, geo=[]):
+    def __init__(self, geo: (BaseGeometry, list)):
 
         # Shapely type or list of such
         self.geo = geo
@@ -1854,7 +1855,7 @@ class DrawToolUtilityShape(DrawToolShape):
     point is clicked and the final geometry is created.
     """
 
-    def __init__(self, geo=[]):
+    def __init__(self, geo: (BaseGeometry, list)):
         super(DrawToolUtilityShape, self).__init__(geo=geo)
         self.utility = True
 
@@ -2439,7 +2440,7 @@ class FCPath(FCPolygon):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.draw_app.in_action = False
@@ -3040,7 +3041,7 @@ class FCBuffer(FCShapeTool):
                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
+                                              _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
@@ -4456,11 +4457,11 @@ class AppGeoEditor(QtCore.QObject):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
             # Polygon: Descend into exterior and each interior.
-            if type(geometry) == Polygon:
+            if isinstance(geometry, Polygon):
                 plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
 
-            if type(geometry) == LineString or type(geometry) == LinearRing:
+            if isinstance(geometry, (LineString, LinearRing)):
                 plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0,
                                                      tolerance=self.fcgeometry.drawing_tolerance,
                                                      linewidth=linewidth))

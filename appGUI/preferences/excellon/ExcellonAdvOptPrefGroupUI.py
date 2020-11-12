@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCCheckBox, NumericalEvalTupleEntry, NumericalEvalEntry
+from appGUI.GUIElements import FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -31,7 +31,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         # ## ADVANCED OPTIONS ###
         # #######################
 
-        self.exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
+        self.exc_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.exc_label.setToolTip(
             _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"

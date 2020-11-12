@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
-    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea
+    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea, FCLabel
 
 import gettext
 import appTranslation as fcTranslate
@@ -43,13 +43,13 @@ class BasicOptionUI(OptionUI):
         self.label_widget = self.build_label_widget()
         self.entry_widget = self.build_entry_widget()
 
-    def build_label_widget(self) -> QtWidgets.QLabel:
+    def build_label_widget(self) -> FCLabel:
         fmt = "%s:"
         if self.label_bold:
             fmt = "<b>%s</b>" % fmt
         if self.label_color:
             fmt = "<span style=\"color:%s;\">%s</span>" % (self.label_color, fmt)
-        label_widget = QtWidgets.QLabel(fmt % _(self.label_text))
+        label_widget = FCLabel(fmt % _(self.label_text))
         if self.label_tooltip is not None:
             label_widget.setToolTip(_(self.label_tooltip))
         return label_widget
@@ -98,7 +98,7 @@ class TextAreaOptionUI(OptionUI):
         self.textarea_widget = self.build_textarea_widget()
 
     def build_label_widget(self):
-        label = QtWidgets.QLabel("%s:" % _(self.label_text))
+        label = FCLabel("%s:" % _(self.label_text))
         label.setToolTip(_(self.label_tooltip))
         return label
 
@@ -274,7 +274,7 @@ class HeadingOptionUI(OptionUI):
         self.label_tooltip = label_tooltip
 
     def build_heading_widget(self):
-        heading = QtWidgets.QLabel('<b>%s</b>' % _(self.label_text))
+        heading = FCLabel('<b>%s</b>' % _(self.label_text))
         heading.setToolTip(_(self.label_tooltip))
         return heading
 

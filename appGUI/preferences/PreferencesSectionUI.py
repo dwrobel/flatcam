@@ -1,5 +1,5 @@
 from typing import Dict
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 
 from appGUI.ColumnarFlowLayout import ColumnarFlowLayout
 from appGUI.preferences.OptionUI import OptionUI

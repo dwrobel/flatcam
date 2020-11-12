@@ -1,5 +1,5 @@
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCComboBox, FCSpinner, FCColorEntry, FCLabel, FCDoubleSpinner, RadioSet
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -32,7 +32,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # ## Export G-Code
-        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
@@ -40,7 +40,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.export_gcode_label, 0, 0, 1, 2)
 
         # Annotation Font Size
-        self.annotation_fontsize_label = QtWidgets.QLabel('%s:' % _("Annotation Size"))
+        self.annotation_fontsize_label = FCLabel('%s:' % _("Annotation Size"))
         self.annotation_fontsize_label.setToolTip(
             _("The font size of the annotation text. In pixels.")
         )
@@ -51,7 +51,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.annotation_fontsize_sp, 2, 1)
 
         # Annotation Font Color
-        self.annotation_color_label = QtWidgets.QLabel('%s:' % _('Annotation Color'))
+        self.annotation_color_label = FCLabel('%s:' % _('Annotation Color'))
         self.annotation_color_label.setToolTip(
             _("Set the font color for the annotation texts.")
         )
@@ -61,7 +61,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.annotation_fontcolor_entry, 4, 1)
 
         # ## Autolevelling
-        self.autolevelling_gcode_label = QtWidgets.QLabel("<b>%s</b>" % _("Autolevelling"))
+        self.autolevelling_gcode_label = FCLabel("<b>%s</b>" % _("Autolevelling"))
         self.autolevelling_gcode_label.setToolTip(
             _("Parameters for the autolevelling.")
         )
@@ -98,7 +98,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         # ## Columns
         self.al_columns_entry = FCSpinner()
 
-        self.al_columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
+        self.al_columns_label = FCLabel('%s:' % _("Columns"))
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
@@ -108,7 +108,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         # ## Rows
         self.al_rows_entry = FCSpinner()
 
-        self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
+        self.al_rows_label = FCLabel('%s:' % _("Rows"))
         self.al_rows_label.setToolTip(
             _("The number of grid rows.")
         )
@@ -116,7 +116,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.al_rows_entry, 12, 1)
 
         # Travel Z Probe
-        self.ptravelz_label = QtWidgets.QLabel('%s:' % _("Probe Z travel"))
+        self.ptravelz_label = FCLabel('%s:' % _("Probe Z travel"))
         self.ptravelz_label.setToolTip(
             _("The safe Z for probe travelling between probe points.")
         )
@@ -128,7 +128,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ptravelz_entry, 14, 1)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -141,7 +141,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pdepth_entry, 16, 1)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Probe Feedrate"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Probe Feedrate"))
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )

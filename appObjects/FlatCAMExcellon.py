@@ -249,8 +249,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # add the data dictionary for each tool with the default values
             self.tools[tool_no]['data'] = deepcopy(new_options)
 
-            drill_cnt = 0  # variable to store the nr of drills per tool
-            slot_cnt = 0  # variable to store the nr of slots per tool
+            # drill_cnt = 0  # variable to store the nr of drills per tool
+            # slot_cnt = 0  # variable to store the nr of slots per tool
 
             # Find no of drills for the current tool
             try:
@@ -907,7 +907,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.app.defaults["geometry_multidepth"]
+            geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1007,7 +1007,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.app.defaults["geometry_multidepth"]
+            geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution

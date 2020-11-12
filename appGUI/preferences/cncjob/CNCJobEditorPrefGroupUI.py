@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCTextArea
+from appGUI.GUIElements import FCTextArea, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class CNCJobEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Editor Parameters
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Editor parameters.")
         )
@@ -43,7 +43,7 @@ class CNCJobEditorPrefGroupUI(OptionsGroupUI):
         font.setPointSize(tb_fsize)
 
         # Prepend to G-Code
-        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to G-Code'))
+        prependlabel = FCLabel('%s:' % _('Prepend to G-Code'))
         prependlabel.setToolTip(
             _("Type here any G-Code commands you would\n"
               "like to add at the beginning of the G-Code file.")
@@ -59,7 +59,7 @@ class CNCJobEditorPrefGroupUI(OptionsGroupUI):
         self.prepend_text.setFont(font)
 
         # Append text to G-Code
-        appendlabel = QtWidgets.QLabel('%s:' % _('Append to G-Code'))
+        appendlabel = FCLabel('%s:' % _('Append to G-Code'))
         appendlabel.setToolTip(
             _("Type here any G-Code commands you would\n"
               "like to append to the generated file.\n"

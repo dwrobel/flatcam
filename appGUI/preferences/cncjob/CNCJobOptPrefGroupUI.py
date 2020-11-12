@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Export G-Code
-        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export G-Code"))
+        self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Export G-Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
@@ -49,7 +49,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Plot Kind
-        self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind"))
+        self.cncplot_method_label = FCLabel('%s:' % _("Plot kind"))
         self.cncplot_method_label.setToolTip(
             _("This selects the kind of geometries on the canvas to plot.\n"
               "Those can be either of type 'Travel' which means the moves\n"
@@ -65,7 +65,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.cncplot_method_label, 1, 0)
         grid0.addWidget(self.cncplot_method_radio, 1, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
+        grid0.addWidget(FCLabel(''), 1, 2)
 
         # Display Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))

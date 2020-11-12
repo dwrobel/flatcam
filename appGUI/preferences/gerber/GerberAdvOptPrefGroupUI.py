@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCSpinner, OptionalInputSection
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, OptionalInputSection
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Advanced Gerber Parameters
-        self.adv_param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
+        self.adv_param_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.adv_param_label.setToolTip(
             _("A list of advanced parameters.\n"
               "Those parameters are available only for\n"
@@ -61,7 +61,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         # Buffering Type
-        buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
+        buffering_label = FCLabel('%s:' % _('Buffering'))
         buffering_label.setToolTip(
             _("Buffering type:\n"
               "- None --> best performance, fast file loading but no so good display\n"
@@ -90,7 +90,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.simplify_cb, 11, 0, 1, 2)
 
         # Simplification tolerance
-        self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
+        self.simplification_tol_label = FCLabel(_('Tolerance'))
         self.simplification_tol_label.setToolTip(_("Tolerance for polygon simplification."))
 
         self.simplification_tol_spinner = FCDoubleSpinner()

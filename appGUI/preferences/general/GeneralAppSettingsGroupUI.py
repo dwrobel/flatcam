@@ -1,6 +1,4 @@
-
 from PyQt5 import QtCore
-from PyQt5.QtCore import QSettings
 from appGUI.GUIElements import OptionalInputSection
 from appGUI.preferences import settings
 from appGUI.preferences.OptionUI import *

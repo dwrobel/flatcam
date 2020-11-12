@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Theme selection
-        self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
+        self.theme_label = FCLabel('%s:' % _('Theme'))
         self.theme_label.setToolTip(
             _("Select a theme for the application.\n"
               "It will theme the plot area.")
@@ -70,7 +70,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 3, 0, 1, 2)
 
         # Layout selection
-        self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
+        self.layout_label = FCLabel('%s:' % _('Layout'))
         self.layout_label.setToolTip(
             _("Select a layout for the application.\n"
               "It is applied immediately.")
@@ -92,7 +92,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.layout_combo.setCurrentIndex(idx)
 
         # Style selection
-        self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
+        self.style_label = FCLabel('%s:' % _('Style'))
         self.style_label.setToolTip(
             _("Select a style for the application.\n"
               "It will be applied at the next app start.")
@@ -148,10 +148,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Plot Selection (left - right) Color
-        self.sel_lr_label = QtWidgets.QLabel('<b>%s</b>' % _('Left-Right Selection Color'))
+        self.sel_lr_label = FCLabel('<b>%s</b>' % _('Left-Right Selection Color'))
         grid0.addWidget(self.sel_lr_label, 15, 0, 1, 2)
 
-        self.sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.sl_color_label = FCLabel('%s:' % _('Outline'))
         self.sl_color_label.setToolTip(
             _("Set the line color for the 'left to right' selection box.")
         )
@@ -160,7 +160,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sl_color_label, 16, 0)
         grid0.addWidget(self.sl_color_entry, 16, 1)
 
-        self.sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.sf_color_label = FCLabel('%s:' % _('Fill'))
         self.sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from left to right.\n"
@@ -173,7 +173,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sf_color_entry, 17, 1)
 
         # Plot Selection (left - right) Fill Transparency Level
-        self.left_right_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.left_right_alpha_label = FCLabel('%s:' % _('Alpha'))
         self.left_right_alpha_label.setToolTip(
             _("Set the fill transparency for the 'left to right' selection box.")
         )
@@ -188,11 +188,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # Plot Selection (left - right) Color
-        self.sel_rl_label = QtWidgets.QLabel('<b>%s</b>' % _('Right-Left Selection Color'))
+        self.sel_rl_label = FCLabel('<b>%s</b>' % _('Right-Left Selection Color'))
         grid0.addWidget(self.sel_rl_label, 20, 0, 1, 2)
 
         # Plot Selection (right - left) Line Color
-        self.alt_sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.alt_sl_color_label = FCLabel('%s:' % _('Outline'))
         self.alt_sl_color_label.setToolTip(
             _("Set the line color for the 'right to left' selection box.")
         )
@@ -202,7 +202,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.alt_sl_color_entry, 21, 1)
 
         # Plot Selection (right - left) Fill Color
-        self.alt_sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.alt_sf_color_label = FCLabel('%s:' % _('Fill'))
         self.alt_sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from right to left.\n"
@@ -215,7 +215,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.alt_sf_color_entry, 22, 1)
 
         # Plot Selection (right - left) Fill Transparency Level
-        self.right_left_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.right_left_alpha_label = FCLabel('%s:' % _('Alpha'))
         self.right_left_alpha_label.setToolTip(
             _("Set the fill transparency for selection 'right to left' box.")
         )
@@ -233,11 +233,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # ----------------------- Editor Color -----------------------------
         # ------------------------------------------------------------------
 
-        self.editor_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Editor Color'))
+        self.editor_color_label = FCLabel('<b>%s</b>' % _('Editor Color'))
         grid0.addWidget(self.editor_color_label, 25, 0, 1, 2)
 
         # Editor Draw Color
-        self.draw_color_label = QtWidgets.QLabel('%s:' % _('Drawing'))
+        self.draw_color_label = FCLabel('%s:' % _('Drawing'))
         self.alt_sf_color_label.setToolTip(
             _("Set the color for the shape.")
         )
@@ -247,7 +247,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.draw_color_entry, 26, 1)
 
         # Editor Draw Selection Color
-        self.sel_draw_color_label = QtWidgets.QLabel('%s:' % _('Selection'))
+        self.sel_draw_color_label = FCLabel('%s:' % _('Selection'))
         self.sel_draw_color_label.setToolTip(
             _("Set the color of the shape when selected.")
         )
@@ -265,11 +265,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------
 
-        self.proj_settings_label = QtWidgets.QLabel('<b>%s</b>' % _('Project Items Color'))
+        self.proj_settings_label = FCLabel('<b>%s</b>' % _('Project Items Color'))
         grid0.addWidget(self.proj_settings_label, 29, 0, 1, 2)
 
         # Project Tab items color
-        self.proj_color_label = QtWidgets.QLabel('%s:' % _('Enabled'))
+        self.proj_color_label = FCLabel('%s:' % _('Enabled'))
         self.proj_color_label.setToolTip(
             _("Set the color of the items in Project Tab Tree.")
         )
@@ -278,7 +278,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.proj_color_label, 30, 0)
         grid0.addWidget(self.proj_color_entry, 30, 1)
 
-        self.proj_color_dis_label = QtWidgets.QLabel('%s:' % _('Disabled'))
+        self.proj_color_dis_label = FCLabel('%s:' % _('Disabled'))
         self.proj_color_dis_label.setToolTip(
             _("Set the color of the items in Project Tab Tree,\n"
               "for the case when the items are disabled.")
@@ -299,7 +299,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.project_autohide_cb, 32, 0, 1, 2)
 
         # Just to add empty rows
-        grid0.addWidget(QtWidgets.QLabel(''), 33, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 33, 0, 1, 2)
 
         self.layout.addStretch()
 

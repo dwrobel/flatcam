@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         grid0 = QtWidgets.QGridLayout()
@@ -56,7 +56,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # Number of circle steps for circular aperture linear approximation
-        self.circle_steps_label = QtWidgets.QLabel('%s:' % _("Circle Steps"))
+        self.circle_steps_label = FCLabel('%s:' % _("Circle Steps"))
         self.circle_steps_label.setToolTip(
             _("The number of circle steps for Gerber \n"
               "circular aperture linear approximation.")
@@ -67,10 +67,10 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_label, 1, 0)
         grid0.addWidget(self.circle_steps_entry, 1, 1, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 3)
+        grid0.addWidget(FCLabel(''), 2, 0, 1, 3)
 
         # Default format for Gerber
-        self.gerber_default_label = QtWidgets.QLabel('<b>%s:</b>' % _('Default Values'))
+        self.gerber_default_label = FCLabel('<b>%s:</b>' % _('Default Values'))
         self.gerber_default_label.setToolTip(
             _("Those values will be used as fallback values\n"
               "in case that they are not found in the Gerber file.")
@@ -79,7 +79,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gerber_default_label, 3, 0, 1, 3)
 
         # Gerber Units
-        self.gerber_units_label = QtWidgets.QLabel('%s:' % _('Units'))
+        self.gerber_units_label = FCLabel('%s:' % _('Units'))
         self.gerber_units_label.setToolTip(
             _("The units used in the Gerber file.")
         )
@@ -94,7 +94,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gerber_units_radio, 4, 1, 1, 2)
 
         # Gerber Zeros
-        self.gerber_zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
+        self.gerber_zeros_label = FCLabel('%s:' % _('Zeros'))
         self.gerber_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.gerber_zeros_label.setToolTip(
             _("This sets the type of Gerber zeros.\n"
@@ -162,11 +162,11 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 13, 0, 1, 3)
 
         # Gerber Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
+        self.gerber_color_label = FCLabel('<b>%s</b>' % _('Object Color'))
         grid0.addWidget(self.gerber_color_label, 15, 0, 1, 3)
 
         # Plot Line Color
-        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label = FCLabel('%s:' % _('Outline'))
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
@@ -176,7 +176,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.line_color_entry, 17, 1, 1, 2)
 
         # Plot Fill Color
-        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.fill_color_label = FCLabel('%s:' % _('Fill'))
         self.fill_color_label.setToolTip(
             _("Set the fill color for plotted objects.\n"
               "First 6 digits are the color and the last 2\n"
@@ -188,7 +188,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.fill_color_entry, 20, 1, 1, 2)
 
         # Plot Fill Transparency Level
-        self.gerber_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.gerber_alpha_label = FCLabel('%s:' % _('Alpha'))
         self.gerber_alpha_label.setToolTip(
             _("Set the fill transparency for plotted objects.")
         )

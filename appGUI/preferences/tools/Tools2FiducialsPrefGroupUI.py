@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,14 +33,14 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # DIAMETER #
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.dia_label = FCLabel('%s:' % _("Size"))
         self.dia_label.setToolTip(
             _("This set the fiducial diameter if fiducial type is circular,\n"
               "otherwise is the size of the fiducial.\n"
@@ -56,7 +56,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.dia_entry, 1, 1)
 
         # MARGIN #
-        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label = FCLabel('%s:' % _("Margin"))
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
@@ -73,7 +73,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             {'label': _('Auto'), 'value': 'auto'},
             {"label": _("Manual"), "value": "manual"}
         ], stretch=False)
-        self.mode_label = QtWidgets.QLabel('%s:' % _("Mode"))
+        self.mode_label = FCLabel('%s:' % _("Mode"))
         self.mode_label.setToolTip(
             _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")
@@ -87,7 +87,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             {"label": _("Down"), "value": "down"},
             {"label": _("None"), "value": "no"}
         ], stretch=False)
-        self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
+        self.pos_label = FCLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
               "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
@@ -109,7 +109,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
             {"label": _("Chess"), "value": "chess"}
         ], stretch=False)
 
-        self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
+        self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
               "- 'Circular' - this is the regular fiducial.\n"
@@ -120,7 +120,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.fid_type_radio, 6, 1)
 
         # Line Thickness #
-        self.line_thickness_label = QtWidgets.QLabel('%s:' % _("Line thickness"))
+        self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
         self.line_thickness_label.setToolTip(
             _("Bounding box margin.")
         )

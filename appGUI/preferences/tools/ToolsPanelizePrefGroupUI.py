@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Board cuttout
-        self.panelize_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.panelize_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.panelize_label.setToolTip(
             _("Create an object that contains an array of (x, y) elements,\n"
               "each element is a copy of the source object spaced\n"
@@ -47,7 +47,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.pspacing_columns.set_precision(self.decimals)
         self.pspacing_columns.setSingleStep(0.1)
 
-        self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
+        self.spacing_columns_label = FCLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
               "In current units.")
@@ -61,7 +61,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.pspacing_rows.set_precision(self.decimals)
         self.pspacing_rows.setSingleStep(0.1)
 
-        self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
+        self.spacing_rows_label = FCLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
               "In current units.")
@@ -74,7 +74,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.pcolumns.set_range(1, 1000)
         self.pcolumns.set_step(1)
 
-        self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
+        self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
         )
@@ -86,7 +86,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.prows.set_range(1, 1000)
         self.prows.set_step(1)
 
-        self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
+        self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
         )
@@ -96,7 +96,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         # ## Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
                                           {'label': _('Geo'), 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel('%s:' % _("Panel Type"))
+        self.panel_type_label = FCLabel('%s:' % _("Panel Type"))
         self.panel_type_label.setToolTip(
            _("Choose the type of object for the panel object:\n"
              "- Gerber\n"
@@ -132,7 +132,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.px_width_entry.set_precision(self.decimals)
         self.px_width_entry.setSingleStep(0.1)
 
-        self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
+        self.x_width_lbl = FCLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
@@ -145,7 +145,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.py_height_entry.set_precision(self.decimals)
         self.py_height_entry.setSingleStep(0.1)
 
-        self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
+        self.y_height_lbl = FCLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")

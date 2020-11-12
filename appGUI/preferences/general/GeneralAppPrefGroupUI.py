@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCCheckBox, FCComboBox, FCButton, OptionalInputSection, \
-    FCDoubleSpinner
+    FCDoubleSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -36,7 +36,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Units for FlatCAM
-        self.unitslabel = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
+        self.unitslabel = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "FlatCAM is started."))
@@ -47,7 +47,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.units_radio, 0, 1)
 
         # Precision Metric
-        self.precision_metric_label = QtWidgets.QLabel('%s:' % _('Precision MM'))
+        self.precision_metric_label = FCLabel('%s:' % _('Precision MM'))
         self.precision_metric_label.setToolTip(
             _("The number of decimals used throughout the application\n"
               "when the set units are in METRIC system.\n"
@@ -61,7 +61,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.precision_metric_entry, 1, 1)
 
         # Precision Inch
-        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision Inch'))
+        self.precision_inch_label = FCLabel('%s:' % _('Precision Inch'))
         self.precision_inch_label.setToolTip(
             _("The number of decimals used throughout the application\n"
               "when the set units are in INCH system.\n"
@@ -75,7 +75,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.precision_inch_entry, 2, 1)
 
         # Graphic Engine for FlatCAM
-        self.ge_label = QtWidgets.QLabel('<b>%s:</b>' % _('Graphic Engine'))
+        self.ge_label = FCLabel('<b>%s:</b>' % _('Graphic Engine'))
         self.ge_label.setToolTip(_("Choose what graphic engine to use in FlatCAM.\n"
                                    "Legacy(2D) -> reduced functionality, slow performance but enhanced compatibility.\n"
                                    "OpenGL(3D) -> full functionality, high performance\n"
@@ -95,7 +95,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Application Level for FlatCAM
-        self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APPLICATION LEVEL'))
+        self.app_level_label = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('APPLICATION LEVEL'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
                                           "BASIC level -> reduced functionality, best for beginner's.\n"
                                           "ADVANCED level -> full functionality.\n\n"
@@ -122,7 +122,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Languages for FlatCAM
-        self.languagelabel = QtWidgets.QLabel('<b>%s</b>' % _('Languages'))
+        self.languagelabel = FCLabel('<b>%s</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.language_cb = FCComboBox()
 
@@ -144,7 +144,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # ----------- APPLICATION STARTUP SETTINGS ------------------
         # -----------------------------------------------------------
 
-        self.startup_label = QtWidgets.QLabel('<b>%s</b>' % _('Startup Settings'))
+        self.startup_label = FCLabel('<b>%s</b>' % _('Startup Settings'))
         grid0.addWidget(self.startup_label, 17, 0, 1, 2)
 
         # Splash Screen
@@ -211,7 +211,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 24, 0, 1, 2)
 
         # Worker Numbers
-        self.worker_number_label = QtWidgets.QLabel('%s:' % _('Workers number'))
+        self.worker_number_label = FCLabel('%s:' % _('Workers number'))
         self.worker_number_label.setToolTip(
             _("The number of Qthreads made available to the App.\n"
               "A bigger number may finish the jobs more quickly but\n"
@@ -227,7 +227,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.worker_number_sb, 25, 1)
 
         # Geometric tolerance
-        tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
+        tol_label = FCLabel('%s:' % _("Geo Tolerance"))
         tol_label.setToolTip(_(
             "This value can counter the effect of the Circle Steps\n"
             "parameter. Default value is 0.005.\n"
@@ -249,7 +249,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 27, 0, 1, 2)
 
         # Save Settings
-        self.save_label = QtWidgets.QLabel('<b>%s</b>' % _("Save Settings"))
+        self.save_label = FCLabel('<b>%s</b>' % _("Save Settings"))
         grid0.addWidget(self.save_label, 28, 0, 1, 2)
 
         # Save compressed project CB
@@ -264,7 +264,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Project LZMA Comppression Level
         self.compress_spinner = FCSpinner()
         self.compress_spinner.set_range(0, 9)
-        self.compress_label = QtWidgets.QLabel('%s:' % _('Compression'))
+        self.compress_label = FCLabel('%s:' % _('Compression'))
         self.compress_label.setToolTip(
             _("The level of compression used when saving\n"
               "a FlatCAM project. Higher value means better compression\n"
@@ -289,7 +289,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Auto Save Timeout Interval
         self.autosave_entry = FCSpinner()
         self.autosave_entry.set_range(0, 9999999)
-        self.autosave_label = QtWidgets.QLabel('%s:' % _('Interval'))
+        self.autosave_label = FCLabel('%s:' % _('Interval'))
         self.autosave_label.setToolTip(
             _("Time interval for autosaving. In milliseconds.\n"
               "The application will try to save periodically but only\n"
@@ -307,7 +307,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 33, 0, 1, 2)
 
-        self.pdf_param_label = QtWidgets.QLabel('<B>%s:</b>' % _("Text to PDF parameters"))
+        self.pdf_param_label = FCLabel('<B>%s:</b>' % _("Text to PDF parameters"))
         self.pdf_param_label.setToolTip(
             _("Used when saving text in Code Editor or in FlatCAM Document objects.")
         )
@@ -318,7 +318,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tmargin_entry.set_precision(self.decimals)
         self.tmargin_entry.set_range(0.0000, 10000.0000)
 
-        self.tmargin_label = QtWidgets.QLabel('%s:' % _("Top Margin"))
+        self.tmargin_label = FCLabel('%s:' % _("Top Margin"))
         self.tmargin_label.setToolTip(
             _("Distance between text body and the top of the PDF file.")
         )
@@ -331,7 +331,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.bmargin_entry.set_precision(self.decimals)
         self.bmargin_entry.set_range(0.0000, 10000.0000)
 
-        self.bmargin_label = QtWidgets.QLabel('%s:' % _("Bottom Margin"))
+        self.bmargin_label = FCLabel('%s:' % _("Bottom Margin"))
         self.bmargin_label.setToolTip(
             _("Distance between text body and the bottom of the PDF file.")
         )
@@ -344,7 +344,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.lmargin_entry.set_precision(self.decimals)
         self.lmargin_entry.set_range(0.0000, 10000.0000)
 
-        self.lmargin_label = QtWidgets.QLabel('%s:' % _("Left Margin"))
+        self.lmargin_label = FCLabel('%s:' % _("Left Margin"))
         self.lmargin_label.setToolTip(
             _("Distance between text body and the left of the PDF file.")
         )
@@ -357,7 +357,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.rmargin_entry.set_precision(self.decimals)
         self.rmargin_entry.set_range(0.0000, 10000.0000)
 
-        self.rmargin_label = QtWidgets.QLabel('%s:' % _("Right Margin"))
+        self.rmargin_label = FCLabel('%s:' % _("Right Margin"))
         self.rmargin_label.setToolTip(
             _("Distance between text body and the right of the PDF file.")
         )

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -30,7 +30,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Paint area
         # ------------------------------
-        self.paint_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.paint_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.paint_label.setToolTip(
             _("Creates tool paths to cover the\n"
               "whole area of a polygon.")
@@ -43,7 +43,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Tool dia
-        ptdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        ptdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ptdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -57,7 +57,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
         # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
+        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
         self.tool_type_label.setToolTip(
             _("Default tool type:\n"
               "- 'V-shape'\n"
@@ -73,7 +73,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tool_type_radio, 1, 1)
 
         # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
@@ -86,7 +86,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipdia_entry, 2, 1)
 
         # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
@@ -100,7 +100,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipangle_entry, 3, 1)
 
         # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
             _("Depth of cut into material. Negative value.\n"
               "In application units.")
@@ -118,7 +118,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cutz_entry, 4, 1)
 
         # ### Tool Diameter ####
-        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
+        self.newdialabel = FCLabel('%s:' % _('New Dia'))
         self.newdialabel.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
@@ -137,7 +137,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 6, 0, 1, 2)
 
-        self.paint_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.paint_order_label = FCLabel('%s:' % _('Tool order'))
         self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                             "'No' --> means that the used order is the one in the tool table\n"
                                             "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -158,7 +158,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        ovlabel = FCLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -178,7 +178,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.paintoverlap_entry, 9, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        marginlabel = FCLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -193,7 +193,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.paintmargin_entry, 10, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel = FCLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for painting:\n"
               "- Standard: Fixed step inwards.\n"
@@ -253,7 +253,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.rest_cb, 14, 0, 1, 2)
 
         # Polygon selection
-        selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
+        selectlabel = FCLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
             _("Selection of area to be processed.\n"
               "- 'Polygon Selection' - left mouse click to add/remove polygons to be processed.\n"
@@ -281,7 +281,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(selectlabel, 15, 0)
         grid0.addWidget(self.selectmethod_combo, 15, 1)
 
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -300,7 +300,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
                                               {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
+        plotting_label = FCLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")

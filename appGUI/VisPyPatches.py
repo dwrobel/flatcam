@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from vispy.visuals import markers, LineVisual, InfiniteLineVisual
+from vispy.visuals import markers, InfiniteLineVisual
 from vispy.visuals.axis import Ticker, _get_ticks_talbot
 from vispy.scene.widgets import Grid
 import numpy as np

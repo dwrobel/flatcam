@@ -8,7 +8,6 @@ from copy import deepcopy
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
-from shapely.geometry import Point
 
 from lxml import etree as ET
 import ezdxf

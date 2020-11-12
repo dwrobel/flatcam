@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -27,7 +27,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Check Rules Tool Options")))
         self.decimals = decimals
 
-        self.crlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.crlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(
             _("A tool to check if Gerber files are within a set\n"
               "of Manufacturing Rules.")
@@ -51,7 +51,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.trace_size_entry.set_precision(self.decimals)
         self.trace_size_entry.setSingleStep(0.1)
 
-        self.trace_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.trace_size_lbl = FCLabel('%s:' % _("Min value"))
         self.trace_size_lbl.setToolTip(
             _("Minimum acceptable trace size.")
         )
@@ -71,7 +71,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_copper2copper_entry.set_precision(self.decimals)
         self.clearance_copper2copper_entry.setSingleStep(0.1)
 
-        self.clearance_copper2copper_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_copper2copper_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_copper2copper_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -91,7 +91,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_copper2ol_entry.set_precision(self.decimals)
         self.clearance_copper2ol_entry.setSingleStep(0.1)
 
-        self.clearance_copper2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_copper2ol_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_copper2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -111,7 +111,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_silk2silk_entry.set_precision(self.decimals)
         self.clearance_silk2silk_entry.setSingleStep(0.1)
 
-        self.clearance_silk2silk_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2silk_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2silk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -131,7 +131,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_silk2sm_entry.set_precision(self.decimals)
         self.clearance_silk2sm_entry.setSingleStep(0.1)
 
-        self.clearance_silk2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2sm_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -151,7 +151,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_silk2ol_entry.set_precision(self.decimals)
         self.clearance_silk2ol_entry.setSingleStep(0.1)
 
-        self.clearance_silk2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2ol_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -171,7 +171,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_sm2sm_entry.set_precision(self.decimals)
         self.clearance_sm2sm_entry.setSingleStep(0.1)
 
-        self.clearance_sm2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_sm2sm_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_sm2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
@@ -191,13 +191,13 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.ring_integrity_entry.set_precision(self.decimals)
         self.ring_integrity_entry.setSingleStep(0.1)
 
-        self.ring_integrity_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.ring_integrity_lbl = FCLabel('%s:' % _("Min value"))
         self.ring_integrity_lbl.setToolTip(
             _("Minimum acceptable ring value.")
         )
         self.form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
 
-        self.form_layout_1.addRow(QtWidgets.QLabel(""))
+        self.form_layout_1.addRow(FCLabel(""))
 
         # Hole2Hole clearance
         self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
@@ -213,7 +213,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.clearance_d2d_entry.set_precision(self.decimals)
         self.clearance_d2d_entry.setSingleStep(0.1)
 
-        self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_d2d_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_d2d_lbl.setToolTip(
             _("Minimum acceptable drill size.")
         )
@@ -233,7 +233,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.drill_size_entry.set_precision(self.decimals)
         self.drill_size_entry.setSingleStep(0.1)
 
-        self.drill_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.drill_size_lbl = FCLabel('%s:' % _("Min value"))
         self.drill_size_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )

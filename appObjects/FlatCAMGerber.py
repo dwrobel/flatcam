@@ -434,7 +434,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.app_obj.new_object("geometry", name, geo_init)
 
     def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
-                milling_type=None, follow=None, plot=True):
+                milling_type=None, plot=True):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -446,13 +446,12 @@ class GerberObject(FlatCAMObj, Gerber):
         :param outname:         Base name of the output object
         :param combine:         Boolean: if to combine passes in one resulting object in case of multiple passes
         :param milling_type:    type of milling: conventional or climbing
-        :param follow: Boolean: if to generate a 'follow' geometry
         :param plot: Boolean:   if to plot the resulting geometry object
         :return:                None
         """
 
         if geometry is None:
-            work_geo = self.follow_geometry if follow is True else self.solid_geometry
+            work_geo = self.solid_geometry
         else:
             work_geo = geometry
 
@@ -555,7 +554,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
                     geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow, nr_passes=nr_pass)
+                                                  nr_passes=nr_pass)
 
                     if geom == 'fail':
                         if plot:
@@ -631,8 +630,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
-                    geom = self.generate_envelope(offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow, nr_passes=i)
+                    geom = self.generate_envelope(offset, mill_dir, geometry=work_geo, env_iso_type=iso_t, nr_passes=i)
 
                     if geom == 'fail':
                         if plot:
@@ -726,7 +724,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
-    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
+    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, nr_passes=0):
         # isolation_geometry produces an envelope that is going on the left of the geometry
         # (the copper features). To leave the least amount of burrs on the features
         # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -734,14 +732,11 @@ class GerberObject(FlatCAMObj, Gerber):
         # the other passes overlap preceding ones and cut the left over copper. It is better for them
         # to cut on the right side of the left over copper i.e on the left side of the features.
 
-        if follow:
-            geom = self.isolation_geometry(offset, geometry=geometry, follow=follow)
-        else:
-            try:
-                geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
-            except Exception as e:
-                log.debug('GerberObject.isolate().generate_envelope() --> %s' % str(e))
-                return 'fail'
+        try:
+            geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
+        except Exception as e:
+            log.debug('GerberObject.isolate().generate_envelope() --> %s' % str(e))
+            return 'fail'
 
         if invert:
             try:
@@ -783,7 +778,6 @@ class GerberObject(FlatCAMObj, Gerber):
             follow_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             follow_obj.solid_geometry = self.follow_geometry
 
-        # TODO: Do something if this is None. Offer changing name?
         try:
             self.app.app_obj.new_object("geometry", follow_name, follow_init)
         except Exception as e:

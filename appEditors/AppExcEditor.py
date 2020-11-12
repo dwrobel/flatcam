@@ -9,7 +9,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 
 from camlib import distance, arc, FlatCAMRTreeStorage
-from appGUI.GUIElements import FCEntry, FCComboBox2, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel
+from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -3575,8 +3575,8 @@ class AppExcEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-    def on_canvas_key_release(self, event):
-        self.key = None
+    # def on_canvas_key_release(self, event):
+    #     self.key = None
 
     def draw_utility_geometry(self, geo):
         # Add the new utility shape
@@ -3671,11 +3671,11 @@ class AppExcEditor(QtCore.QObject):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
             # ## Polygon: Descend into exterior and each interior.
-            if type(geometry) == Polygon:
+            if isinstance(geometry, Polygon):
                 plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
 
-            if type(geometry) == LineString or type(geometry) == LinearRing:
+            if isinstance(geometry, (LineString, LinearRing)):
                 plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0, tolerance=self.tolerance))
 
             if type(geometry) == Point:
@@ -4211,7 +4211,7 @@ class AppExcEditorUI:
         # Array Direction
         self.drill_array_dir_lbl = FCLabel('%s:' % _('Direction'))
         self.drill_array_dir_lbl.setToolTip(_("Direction for circular array.\n"
-                                                "Can be CW = clockwise or CCW = counter clockwise."))
+                                              "Can be CW = clockwise or CCW = counter clockwise."))
 
         self.drill_array_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                                {'label': _('CCW'), 'value': 'CCW'}])

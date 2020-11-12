@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 from shapely.affinity import rotate
 from ezdxf.math.vector import Vector as ezdxf_vector
 

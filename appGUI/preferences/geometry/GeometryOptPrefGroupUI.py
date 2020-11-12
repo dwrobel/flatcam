@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCSpinner, FCComboBox, \
-    NumericalEvalTupleEntry
+    NumericalEvalTupleEntry, FCLabel
 from appGUI.preferences import machinist_setting
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -32,7 +32,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Create CNC Job
         # ------------------------------
-        self.cncjob_label = QtWidgets.QLabel('<b>%s:</b>' % _('Create CNCJob'))
+        self.cncjob_label = FCLabel('<b>%s:</b>' % _('Create CNCJob'))
         self.cncjob_label.setToolTip(
             _("Create a CNC Job object\n"
               "tracing the contours of this\n"
@@ -46,7 +46,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.setColumnStretch(1, 1)
 
         # Cut Z
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
             _("Cutting depth (negative)\n"
               "below the copper surface.")
@@ -78,7 +78,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.multidepth_cb, 1, 0)
 
         # Depth/pass
-        dplabel = QtWidgets.QLabel('%s:' % _('Depth/Pass'))
+        dplabel = FCLabel('%s:' % _('Depth/Pass'))
         dplabel.setToolTip(
             _("The depth to cut on each pass,\n"
               "when multidepth is enabled.\n"
@@ -99,7 +99,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
 
         # Travel Z
-        travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        travelzlabel = FCLabel('%s:' % _('Travel Z'))
         travelzlabel.setToolTip(
             _("Height of the tool when\n"
               "moving without cutting.")
@@ -129,7 +129,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.toolchange_cb, 4, 0, 1, 2)
 
         # Toolchange Z
-        toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
+        toolchangezlabel = FCLabel('%s:' % _('Toolchange Z'))
         toolchangezlabel.setToolTip(
             _(
                 "Z-axis position (height) for\n"
@@ -151,7 +151,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.toolchangez_entry, 5, 1)
 
         # End move Z
-        endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        endz_label = FCLabel('%s:' % _('End move Z'))
         endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
@@ -171,7 +171,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.endz_entry, 6, 1)
 
         # End Move X,Y
-        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
         endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
@@ -183,7 +183,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.endxy_entry, 7, 1)
 
         # Feedrate X-Y
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
+        frlabel = FCLabel('%s:' % _('Feedrate X-Y'))
         frlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
@@ -198,7 +198,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.cncfeedrate_entry, 8, 1)
 
         # Feedrate Z (Plunge)
-        frz_label = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        frz_label = FCLabel('%s:' % _('Feedrate Z'))
         frz_label.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute.\n"
@@ -214,7 +214,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.feedrate_z_entry, 9, 1)
 
         # Spindle Speed
-        spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        spdlabel = FCLabel('%s:' % _('Spindle speed'))
         spdlabel.setToolTip(
             _(
                 "Speed of the spindle in RPM (optional).\n"
@@ -235,7 +235,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
+        dwelltime = FCLabel('%s:' % _('Duration'))
         dwelltime.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
@@ -252,7 +252,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # preprocessor selection
-        pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_label = FCLabel('%s:' % _("Preprocessor"))
         pp_label.setToolTip(
             _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")

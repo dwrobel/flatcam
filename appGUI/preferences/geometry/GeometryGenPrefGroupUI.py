@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet
+from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import platform
@@ -30,7 +30,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         plot_hlay = QtWidgets.QHBoxLayout()
@@ -56,7 +56,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Number of circle steps for circular aperture linear approximation
-        self.circle_steps_label = QtWidgets.QLabel('%s:' % _("Circle Steps"))
+        self.circle_steps_label = FCLabel('%s:' % _("Circle Steps"))
         self.circle_steps_label.setToolTip(
             _("The number of circle steps for <b>Geometry</b> \n"
               "circle and arc shapes linear approximation.")
@@ -68,11 +68,11 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
         # Tools
-        self.tools_label = QtWidgets.QLabel("<b>%s:</b>" % _("Tools"))
+        self.tools_label = FCLabel("<b>%s:</b>" % _("Tools"))
         grid0.addWidget(self.tools_label, 2, 0, 1, 2)
 
         # Tooldia
-        tdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        tdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         tdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -88,10 +88,10 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
-        self.opt_label = QtWidgets.QLabel("<b>%s:</b>" % _("Path Optimization"))
+        self.opt_label = FCLabel("<b>%s:</b>" % _("Path Optimization"))
         grid0.addWidget(self.opt_label, 10, 0, 1, 2)
 
-        self.opt_algorithm_label = QtWidgets.QLabel(_('Algorithm:'))
+        self.opt_algorithm_label = FCLabel(_('Algorithm:'))
         self.opt_algorithm_label.setToolTip(
             _("This sets the path optimization algorithm.\n"
               "- Rtre -> Rtree algorithm\n"
@@ -114,7 +114,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.opt_algorithm_label, 12, 0)
         grid0.addWidget(self.opt_algorithm_radio, 12, 1)
 
-        self.optimization_time_label = QtWidgets.QLabel('%s:' % _('Duration'))
+        self.optimization_time_label = FCLabel('%s:' % _('Duration'))
         self.optimization_time_label.setToolTip(
             _("When OR-Tools Metaheuristic (MH) is enabled there is a\n"
               "maximum threshold for how much time is spent doing the\n"
@@ -135,7 +135,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Fuse Tools
-        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Option'))
+        self.join_geo_label = FCLabel('<b>%s</b>:' % _('Join Option'))
         grid0.addWidget(self.join_geo_label, 18, 0, 1, 2)
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
@@ -151,11 +151,11 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         # Geometry Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>:' % _('Object Color'))
+        self.gerber_color_label = FCLabel('<b>%s</b>:' % _('Object Color'))
         grid0.addWidget(self.gerber_color_label, 24, 0, 1, 2)
 
         # Plot Line Color
-        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label = FCLabel('%s:' % _('Outline'))
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )

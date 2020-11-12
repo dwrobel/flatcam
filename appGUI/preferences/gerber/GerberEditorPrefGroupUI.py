@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCEntry, RadioSet, NumericalEvalTupleEntry
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCLabel, RadioSet, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Advanced Gerber Parameters
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Gerber Editor parameters.")
         )
@@ -38,7 +38,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Selection Limit
-        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
         self.sel_limit_label.setToolTip(
             _("Set the number of selected Gerber geometry\n"
               "items above which the utility geometry\n"
@@ -53,7 +53,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         # New aperture code
-        self.addcode_entry_lbl = QtWidgets.QLabel('%s:' % _('New Aperture code'))
+        self.addcode_entry_lbl = FCLabel('%s:' % _('New Aperture code'))
         self.addcode_entry_lbl.setToolTip(
             _("Code for the new aperture")
         )
@@ -66,7 +66,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.addcode_entry, 1, 1)
 
         # New aperture size
-        self.addsize_entry_lbl = QtWidgets.QLabel('%s:' % _('New Aperture size'))
+        self.addsize_entry_lbl = FCLabel('%s:' % _('New Aperture size'))
         self.addsize_entry_lbl.setToolTip(
             _("Size for the new aperture")
         )
@@ -79,7 +79,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.addsize_entry, 2, 1)
 
         # New aperture type
-        self.addtype_combo_lbl = QtWidgets.QLabel('%s:' % _('New Aperture type'))
+        self.addtype_combo_lbl = FCLabel('%s:' % _('New Aperture type'))
         self.addtype_combo_lbl.setToolTip(
             _("Type for the new aperture.\n"
               "Can be 'C', 'R' or 'O'.")
@@ -92,7 +92,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.addtype_combo, 3, 1)
 
         # Number of pads in a pad array
-        self.grb_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of pads'))
+        self.grb_array_size_label = FCLabel('%s:' % _('Nr of pads'))
         self.grb_array_size_label.setToolTip(
             _("Specify how many pads to be in the array.")
         )
@@ -103,7 +103,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_array_size_label, 4, 0)
         grid0.addWidget(self.grb_array_size_entry, 4, 1)
 
-        self.adddim_label = QtWidgets.QLabel('%s:' % _('Aperture Dimensions'))
+        self.adddim_label = FCLabel('%s:' % _('Aperture Dimensions'))
         self.adddim_label.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -114,11 +114,11 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.adddim_label, 5, 0)
         grid0.addWidget(self.adddim_entry, 5, 1)
 
-        self.grb_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Pad Array'))
+        self.grb_array_linear_label = FCLabel('<b>%s:</b>' % _('Linear Pad Array'))
         grid0.addWidget(self.grb_array_linear_label, 6, 0, 1, 2)
 
         # Linear Pad Array direction
-        self.grb_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
+        self.grb_axis_label = FCLabel('%s:' % _('Linear Direction'))
         self.grb_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -134,7 +134,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_axis_radio, 7, 1)
 
         # Linear Pad Array pitch distance
-        self.grb_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.grb_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.grb_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -146,7 +146,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_pitch_entry, 8, 1)
 
         # Linear Pad Array custom angle
-        self.grb_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.grb_angle_label = FCLabel('%s:' % _('Angle'))
         self.grb_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -158,11 +158,11 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_angle_label, 9, 0)
         grid0.addWidget(self.grb_angle_entry, 9, 1)
 
-        self.grb_array_circ_label = QtWidgets.QLabel('<b>%s:</b>' % _('Circular Pad Array'))
+        self.grb_array_circ_label = FCLabel('<b>%s:</b>' % _('Circular Pad Array'))
         grid0.addWidget(self.grb_array_circ_label, 10, 0, 1, 2)
 
         # Circular Pad Array direction
-        self.grb_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
+        self.grb_circular_direction_label = FCLabel('%s:' % _('Circular Direction'))
         self.grb_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -175,7 +175,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_circular_dir_radio, 11, 1)
 
         # Circular Pad Array Angle
-        self.grb_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
+        self.grb_circular_angle_label = FCLabel('%s:' % _('Circular Angle'))
         self.grb_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -188,11 +188,11 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_circular_angle_label, 12, 0)
         grid0.addWidget(self.grb_circular_angle_entry, 12, 1)
 
-        self.grb_array_tools_b_label = QtWidgets.QLabel('<b>%s:</b>' % _('Buffer Tool'))
+        self.grb_array_tools_b_label = FCLabel('<b>%s:</b>' % _('Buffer Tool'))
         grid0.addWidget(self.grb_array_tools_b_label, 13, 0, 1, 2)
 
         # Buffer Distance
-        self.grb_buff_label = QtWidgets.QLabel('%s:' % _('Buffer distance'))
+        self.grb_buff_label = FCLabel('%s:' % _('Buffer distance'))
         self.grb_buff_label.setToolTip(
             _("Distance at which to buffer the Gerber element.")
         )
@@ -203,11 +203,11 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_buff_label, 14, 0)
         grid0.addWidget(self.grb_buff_entry, 14, 1)
 
-        self.grb_array_tools_s_label = QtWidgets.QLabel('<b>%s:</b>' % _('Scale Tool'))
+        self.grb_array_tools_s_label = FCLabel('<b>%s:</b>' % _('Scale Tool'))
         grid0.addWidget(self.grb_array_tools_s_label, 15, 0, 1, 2)
 
         # Scale Factor
-        self.grb_scale_label = QtWidgets.QLabel('%s:' % _('Scale factor'))
+        self.grb_scale_label = FCLabel('%s:' % _('Scale factor'))
         self.grb_scale_label.setToolTip(
             _("Factor to scale the Gerber element.")
         )
@@ -218,11 +218,11 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_scale_label, 16, 0)
         grid0.addWidget(self.grb_scale_entry, 16, 1)
 
-        self.grb_array_tools_ma_label = QtWidgets.QLabel('<b>%s:</b>' % _('Mark Area Tool'))
+        self.grb_array_tools_ma_label = FCLabel('<b>%s:</b>' % _('Mark Area Tool'))
         grid0.addWidget(self.grb_array_tools_ma_label, 17, 0, 1, 2)
 
         # Mark area Tool low threshold
-        self.grb_ma_low_label = QtWidgets.QLabel('%s:' % _('Threshold low'))
+        self.grb_ma_low_label = FCLabel('%s:' % _('Threshold low'))
         self.grb_ma_low_label.setToolTip(
             _("Threshold value under which the apertures are not marked.")
         )
@@ -234,7 +234,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_ma_low_entry, 18, 1)
 
         # Mark area Tool high threshold
-        self.grb_ma_high_label = QtWidgets.QLabel('%s:' % _('Threshold high'))
+        self.grb_ma_high_label = FCLabel('%s:' % _('Threshold high'))
         self.grb_ma_high_label.setToolTip(
             _("Threshold value over which the apertures are not marked.")
         )

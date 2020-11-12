@@ -1,7 +1,8 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
+    FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -27,7 +28,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Clear non-copper regions
-        self.iso_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.iso_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.iso_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
@@ -38,7 +39,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Tool Dias
-        isotdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
+        isotdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         isotdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -51,7 +52,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tool_dia_entry, 0, 1, 1, 2)
 
         # Tool order Radio Button
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -67,7 +68,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.order_radio, 1, 1, 1, 2)
 
         # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
+        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
         self.tool_type_label.setToolTip(
             _("Default tool type:\n"
               "- 'V-shape'\n"
@@ -86,7 +87,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tool_type_radio, 2, 1, 1, 2)
 
         # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
@@ -98,7 +99,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipdia_entry, 3, 1, 1, 2)
 
         # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degrees."))
@@ -112,7 +113,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tipangle_entry, 4, 1, 1, 2)
 
         # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
            _("Depth of cut into material. Negative value.\n"
              "In application units.")
@@ -131,7 +132,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cutz_entry, 5, 1, 1, 2)
 
         # New Diameter
-        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
+        self.newdialabel = FCLabel('%s:' % _('New Dia'))
         self.newdialabel.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
@@ -151,7 +152,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 7, 0, 1, 3)
 
         # Passes
-        passlabel = QtWidgets.QLabel('%s:' % _('Passes'))
+        passlabel = FCLabel('%s:' % _('Passes'))
         passlabel.setToolTip(
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
@@ -164,7 +165,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.passes_entry, 8, 1, 1, 2)
 
         # Overlap Entry
-        overlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        overlabel = FCLabel('%s:' % _('Overlap'))
         overlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.")
         )
@@ -179,7 +180,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.overlap_entry, 9, 1, 1, 2)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -198,7 +199,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.milling_type_radio, 10, 1, 1, 2)
 
         # Isolation Type
-        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
             _("Choose how the isolation will be executed:\n"
               "- 'Full' -> complete isolation of polygons\n"
@@ -265,7 +266,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.valid_cb, 18, 0, 1, 3)
 
         # Isolation Scope
-        self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
+        self.select_label = FCLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
@@ -283,7 +284,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.select_combo, 20, 1, 1, 2)
 
         # Area Shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -319,7 +320,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
                                         {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
+        plotting_label = FCLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")

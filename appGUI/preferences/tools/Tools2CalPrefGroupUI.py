@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,14 +33,14 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # Calibration source
-        self.cal_source_lbl = QtWidgets.QLabel("<b>%s:</b>" % _("Source Type"))
+        self.cal_source_lbl = FCLabel("<b>%s:</b>" % _("Source Type"))
         self.cal_source_lbl.setToolTip(_("The source of calibration points.\n"
                                          "It can be:\n"
                                          "- Object -> click a hole geo for Excellon or a pad for Gerber\n"
@@ -58,7 +58,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # Travel Z entry
-        travelz_lbl = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        travelz_lbl = FCLabel('%s:' % _("Travel Z"))
         travelz_lbl.setToolTip(
             _("Height (Z) for travelling between the points.")
         )
@@ -72,7 +72,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.travelz_entry, 3, 1, 1, 2)
 
         # Verification Z entry
-        verz_lbl = QtWidgets.QLabel('%s:' % _("Verification Z"))
+        verz_lbl = FCLabel('%s:' % _("Verification Z"))
         verz_lbl.setToolTip(
             _("Height (Z) for checking the point.")
         )
@@ -95,7 +95,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.zeroz_cb, 5, 0, 1, 3)
 
         # Toochange Z entry
-        toolchangez_lbl = QtWidgets.QLabel('%s:' % _("Toolchange Z"))
+        toolchangez_lbl = FCLabel('%s:' % _("Toolchange Z"))
         toolchangez_lbl.setToolTip(
             _("Height (Z) for mounting the verification probe.")
         )
@@ -109,7 +109,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.toolchangez_entry, 6, 1, 1, 2)
 
         # Toolchange X-Y entry
-        toolchangexy_lbl = QtWidgets.QLabel('%s:' % _('Toolchange X-Y'))
+        toolchangexy_lbl = FCLabel('%s:' % _('Toolchange X-Y'))
         toolchangexy_lbl.setToolTip(
             _("Toolchange X,Y position.\n"
               "If no value is entered then the current\n"
@@ -122,7 +122,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.toolchange_xy_entry, 7, 1, 1, 2)
 
         # Second point choice
-        second_point_lbl = QtWidgets.QLabel('%s:' % _("Second point"))
+        second_point_lbl = FCLabel('%s:' % _("Second point"))
         second_point_lbl.setToolTip(
             _("Second point in the Gcode verification can be:\n"
               "- top-left -> the user will align the PCB vertically\n"

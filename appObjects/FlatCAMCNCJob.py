@@ -10,7 +10,6 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from copy import deepcopy
 from io import StringIO
 from datetime import datetime
 
@@ -22,7 +21,7 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import CNCjob
 
 from shapely.ops import unary_union
-from shapely.geometry import Point, MultiPoint, Polygon, LineString, box
+from shapely.geometry import Point, MultiPoint, box
 import shapely.affinity as affinity
 try:
     from shapely.ops import voronoi_diagram
@@ -1910,7 +1909,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         """
         Handler activated by a button clicked when exporting GCode.
 
-        :param args:
         :return:
         """
         self.app.defaults.report_usage("cncjob_on_exportgcode_button")
@@ -1942,8 +1940,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.export_gcode_handler(filename, is_gcode=save_gcode)
 
     def export_gcode_handler(self, filename, is_gcode=True, rename_object=True):
-        preamble = ''
-        postamble = ''
+        # preamble = ''
+        # postamble = ''
         filename = str(filename)
 
         if filename == '':

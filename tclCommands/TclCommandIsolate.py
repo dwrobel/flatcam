@@ -32,7 +32,6 @@ class TclCommandIsolate(TclCommandSignaled):
         ('overlap', float),
         ('combine', str),
         ('outname', str),
-        ('follow', str),
         ('iso_type', int)
 
     ])
@@ -51,7 +50,6 @@ class TclCommandIsolate(TclCommandSignaled):
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('combine', 'Combine all passes into one geometry. Can be True (1) or False (0)'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('follow', 'Create a Geometry that follows the Gerber path. Can be True (1) or False (0).'),
             ('iso_type', 'A value of 0 will isolate exteriors, a value of 1 will isolate interiors '
                          'and a value of 2 will do full isolation.')
         ]),
@@ -77,9 +75,6 @@ class TclCommandIsolate(TclCommandSignaled):
         #     timeout = args['timeout']
         # else:
         #     timeout = 10000
-
-        if 'follow' not in args:
-            args['follow'] = None
 
         # evaluate this parameter so True, False, 0 and 1 works
         if 'combine' in args:

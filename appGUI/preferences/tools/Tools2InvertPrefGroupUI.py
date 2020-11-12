@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Subtractor Tool Parameters
-        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.sublabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.sublabel.setToolTip(
             _("A tool to invert Gerber geometry from positive to negative\n"
               "and in revers.")
@@ -42,7 +42,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Margin
-        self.margin_label = QtWidgets.QLabel('%s:' % _('Margin'))
+        self.margin_label = FCLabel('%s:' % _('Margin'))
         self.margin_label.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the Gerber object.")
@@ -55,7 +55,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.margin_label, 2, 0, 1, 2)
         grid0.addWidget(self.margin_entry, 3, 0, 1, 2)
 
-        self.join_label = QtWidgets.QLabel('%s:' % _("Lines Join Style"))
+        self.join_label = FCLabel('%s:' % _("Lines Join Style"))
         self.join_label.setToolTip(
             _("The way that the lines in the object outline will be joined.\n"
               "Can be:\n"

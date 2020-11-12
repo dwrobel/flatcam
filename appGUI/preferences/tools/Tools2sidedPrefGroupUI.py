@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Board cuttout
-        self.dblsided_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.dblsided_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.dblsided_label.setToolTip(
             _("A tool to help in creating a double sided\n"
               "PCB using alignment holes.")
@@ -44,7 +44,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.drill_dia_entry.set_precision(self.decimals)
         self.drill_dia_entry.setSingleStep(0.1)
 
-        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill Dia"))
+        self.dd_label = FCLabel('%s:' % _("Drill Dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
@@ -53,7 +53,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Alignment Axis
-        self.align_ax_label = QtWidgets.QLabel('%s:' % _("Align Axis"))
+        self.align_ax_label = FCLabel('%s:' % _("Align Axis"))
         self.align_ax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
@@ -66,7 +66,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                            {'label': 'Y', 'value': 'Y'}])
-        self.mirax_label = QtWidgets.QLabel('%s:' % _("Mirror Axis"))
+        self.mirax_label = FCLabel('%s:' % _("Mirror Axis"))
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
@@ -87,7 +87,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
                 {'label': _('Hole Snap'), 'value': 'hole'},
             ]
         )
-        self.axloc_label = QtWidgets.QLabel('%s:' % _("Axis Ref"))
+        self.axloc_label = FCLabel('%s:' % _("Axis Ref"))
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Transformations
-        self.transform_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.transform_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.transform_label.setToolTip(
             _("Various transformations that can be applied\n"
               "on a application object.")
@@ -41,7 +41,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Reference Type
-        ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        ref_label = FCLabel('%s:' % _("Reference"))
         ref_label.setToolTip(
             _("The reference point for Rotate, Skew, Scale, Mirror.\n"
               "Can be:\n"
@@ -57,7 +57,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(ref_label, 0, 0)
         grid0.addWidget(self.ref_combo, 0, 1)
 
-        self.point_label = QtWidgets.QLabel('%s:' % _("Point"))
+        self.point_label = FCLabel('%s:' % _("Point"))
         self.point_label.setToolTip(
             _("A point of reference in format X,Y.")
         )
@@ -67,7 +67,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.point_entry, 1, 1)
 
         # Type of object to be used as reference
-        self.type_object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.type_object_label = FCLabel('%s:' % _("Object"))
         self.type_object_label.setToolTip(
             _("The type of object used as reference.")
         )
@@ -85,7 +85,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.type_obj_combo, 3, 1)
 
         # ## Rotate Angle
-        rotate_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Rotate"))
+        rotate_title_lbl = FCLabel('<b>%s</b>' % _("Rotate"))
         grid0.addWidget(rotate_title_lbl, 4, 0, 1, 2)
 
         self.rotate_entry = FCDoubleSpinner()
@@ -93,7 +93,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.rotate_entry.set_precision(self.decimals)
         self.rotate_entry.setSingleStep(15)
 
-        self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
+        self.rotate_label = FCLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.\n"
@@ -104,7 +104,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.rotate_entry, 6, 1)
 
         # ## Skew/Shear Angle on X axis
-        skew_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
+        skew_title_lbl = FCLabel('<b>%s</b>' % _("Skew"))
         grid0.addWidget(skew_title_lbl, 8, 0)
 
         # ## Link Skew factors
@@ -121,7 +121,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
 
-        self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
+        self.skewx_label = FCLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
@@ -135,7 +135,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
 
-        self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
+        self.skewy_label = FCLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
@@ -144,7 +144,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.skewy_entry, 10, 1)
 
         # ## Scale
-        scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
+        scale_title_lbl = FCLabel('<b>%s</b>' % _("Scale"))
         grid0.addWidget(scale_title_lbl, 12, 0)
 
         # ## Link Scale factors
@@ -159,7 +159,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
-        self.scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
+        self.scalex_label = FCLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
@@ -172,7 +172,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
-        self.scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
+        self.scaley_label = FCLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
@@ -180,7 +180,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.scaley_entry, 16, 1)
 
         # ## Offset
-        offset_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Offset"))
+        offset_title_lbl = FCLabel('<b>%s</b>' % _("Offset"))
         grid0.addWidget(offset_title_lbl, 20, 0, 1, 2)
 
         self.offx_entry = FCDoubleSpinner()
@@ -188,7 +188,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setSingleStep(0.1)
 
-        self.offx_label = QtWidgets.QLabel('%s:' % _("X val"))
+        self.offx_label = FCLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
            _("Distance to offset on X axis. In current units.")
         )
@@ -201,7 +201,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setSingleStep(0.1)
 
-        self.offy_label = QtWidgets.QLabel('%s:' % _("Y val"))
+        self.offy_label = FCLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
@@ -209,7 +209,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.offy_entry, 24, 1)
 
         # ## Buffer
-        buffer_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Buffer"))
+        buffer_title_lbl = FCLabel('<b>%s</b>' % _("Buffer"))
         grid0.addWidget(buffer_title_lbl, 26, 0)
 
         self.buffer_rounded_cb = FCCheckBox()
@@ -223,7 +223,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.buffer_rounded_cb, 26, 1)
 
-        self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
+        self.buffer_label = FCLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
             _("A positive value will create the effect of dilation,\n"
               "while a negative value will create the effect of erosion.\n"
@@ -240,7 +240,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.buffer_label, 28, 0)
         grid0.addWidget(self.buffer_entry, 28, 1)
 
-        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.buffer_factor_label = FCLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
             _("A positive value will create the effect of dilation,\n"
               "while a negative value will create the effect of erosion.\n"

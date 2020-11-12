@@ -1201,7 +1201,7 @@ class Geometry(object):
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
 
-        geos_text = getsvgtext(svg_root, object_type, units=units)
+        geos_text = getsvgtext(svg_root, object_type, app=self.app, units=units)
         if geos_text is not None:
             geos_text_f = []
             if flip:
@@ -3016,7 +3016,8 @@ class CNCjob(Geometry):
         return optimized_path
         # ############################################# ##
 
-    def optimized_travelling_salesman(self, points, start=None):
+    @staticmethod
+    def optimized_travelling_salesman(points, start=None):
         """
         As solving the problem in the brute force way is too slow,
         this function implements a simple heuristic: always
@@ -3026,10 +3027,10 @@ class CNCjob(Geometry):
         giving a solution only about 25%% longer than the optimal one (cit. Wikipedia),
         and runs very fast in O(N^2) time complexity.
 
-        >>> optimized_travelling_salesman([[i,j] for i in range(5) for j in range(5)])
+        optimized_travelling_salesman([[i,j] for i in range(5) for j in range(5)])
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 3], [1, 2], [1, 1], [1, 0], [2, 0], [2, 1], [2, 2],
         [2, 3], [2, 4], [3, 4], [3, 3], [3, 2], [3, 1], [3, 0], [4, 0], [4, 1], [4, 2], [4, 3], [4, 4]]
-        >>> optimized_travelling_salesman([[0,0],[10,0],[6,0]])
+        optimized_travelling_salesman([[0,0],[10,0],[6,0]])
         [[0, 0], [6, 0], [10, 0]]
 
         :param points:  List of tuples with x, y coordinates
@@ -7619,10 +7620,11 @@ class CNCjob(Geometry):
         given factor. Tool sizes, feedrates, or Z-axis dimensions are
         not altered.
 
-        :param factor:  Number by which to scale the object.
-        :type factor:   float
+
+        :param yfactor: scale factor on the X axis; float
+        :param xfactor: scale factor on the Y axis; float
         :param point:   the (x,y) coords for the point of origin of scale
-        :type           tuple of floats
+        :type  point:   tuple
         :return:        None
         :rtype:         None
         """

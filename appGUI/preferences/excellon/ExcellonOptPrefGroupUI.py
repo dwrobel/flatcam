@@ -1,9 +1,8 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCEntry, FCSpinner, OptionalInputSection, \
-    FCComboBox, NumericalEvalTupleEntry
-from appGUI.preferences import machinist_setting
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCLabel
+# from appGUI.preferences import machinist_setting
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -30,7 +29,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Create CNC Job
-        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNCJob'))
+        self.cncjob_label = FCLabel('<b>%s</b>' % _('Create CNCJob'))
         self.cncjob_label.setToolTip(
             _("Parameters used to create a CNC Job object\n"
               "for this drill object.")
@@ -43,7 +42,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.setColumnStretch(1, 1)
 
         # Operation Type
-        self.operation_label = QtWidgets.QLabel('<b>%s:</b>' % _('Operation'))
+        self.operation_label = FCLabel('<b>%s:</b>' % _('Operation'))
         self.operation_label.setToolTip(
             _("Operation type:\n"
               "- Drilling -> will drill the drills/slots associated with this tool\n"
@@ -59,7 +58,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.operation_label, 0, 0)
         grid2.addWidget(self.operation_radio, 0, 1)
 
-        self.mill_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.mill_type_label = FCLabel('%s:' % _('Milling Type'))
         self.mill_type_label.setToolTip(
             _("Milling type:\n"
               "- Drills -> will mill the drills associated with this tool\n"
@@ -77,7 +76,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.mill_type_label, 1, 0)
         grid2.addWidget(self.milling_type_radio, 1, 1)
 
-        self.mill_dia_label = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
+        self.mill_dia_label = FCLabel('%s:' % _('Milling Diameter'))
         self.mill_dia_label.setToolTip(
             _("The diameter of the tool who will do the milling")
         )
@@ -90,13 +89,13 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.mill_dia_entry, 2, 1)
 
         # ### Milling Holes ## ##
-        self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Mill Holes'))
+        self.mill_hole_label = FCLabel('<b>%s</b>' % _('Mill Holes'))
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.")
         )
         grid2.addWidget(self.mill_hole_label, 16, 0, 1, 2)
 
-        tdlabel = QtWidgets.QLabel('%s:' % _('Drill Tool dia'))
+        tdlabel = FCLabel('%s:' % _('Drill Tool dia'))
         tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
@@ -107,7 +106,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(tdlabel, 18, 0)
         grid2.addWidget(self.tooldia_entry, 18, 1)
 
-        stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
+        stdlabel = FCLabel('%s:' % _('Slot Tool dia'))
         stdlabel.setToolTip(
             _("Diameter of the cutting tool\n"
               "when milling slots.")

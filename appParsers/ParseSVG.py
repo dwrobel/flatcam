@@ -500,11 +500,12 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
     return geo
 
 
-def getsvgtext(node, object_type, units='MM'):
+def getsvgtext(node, object_type, app, units='MM'):
     """
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
 
+    :param app:         Main App
     :param node:        xml.etree.ElementTree.Element
     :param object_type:
     :param units:       FlatCAM units
@@ -517,7 +518,7 @@ def getsvgtext(node, object_type, units='MM'):
     # Recurse
     if len(node) > 0:
         for child in node:
-            subgeo = getsvgtext(child, object_type, units=units)
+            subgeo = getsvgtext(child, object_type, app=app, units=units)
             if subgeo is not None:
                 geo += subgeo
 
@@ -538,7 +539,7 @@ def getsvgtext(node, object_type, units='MM'):
             pos_y = float(current_attrib['y'])
 
             # should have used the instance from FlatCAMApp.App but how? without reworking everything ...
-            pf = ParseFont()
+            pf = ParseFont(app=app)
             pf.get_fonts_by_types()
             font_name = style_dict['font-family'].replace("'", '')
 

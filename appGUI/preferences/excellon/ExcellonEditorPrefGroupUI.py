@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -27,7 +27,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Excellon Editor Parameters
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Excellon Editor parameters.")
         )
@@ -37,7 +37,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Selection Limit
-        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
         self.sel_limit_label.setToolTip(
             _("Set the number of selected Excellon geometry\n"
               "items above which the utility geometry\n"
@@ -52,7 +52,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         # New Diameter
-        self.addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('New Dia'))
+        self.addtool_entry_lbl = FCLabel('%s:' % _('New Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
@@ -65,7 +65,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.addtool_entry, 1, 1)
 
         # Number of drill holes in a drill array
-        self.drill_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of drills'))
+        self.drill_array_size_label = FCLabel('%s:' % _('Nr of drills'))
         self.drill_array_size_label.setToolTip(
             _("Specify how many drills to be in the array.")
         )
@@ -77,11 +77,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_array_size_label, 2, 0)
         grid0.addWidget(self.drill_array_size_entry, 2, 1)
 
-        self.drill_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Drill Array'))
+        self.drill_array_linear_label = FCLabel('<b>%s:</b>' % _('Linear Drill Array'))
         grid0.addWidget(self.drill_array_linear_label, 3, 0, 1, 2)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
+        self.drill_axis_label = FCLabel('%s:' % _('Linear Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -97,7 +97,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_axis_radio, 4, 1)
 
         # Linear Drill Array pitch distance
-        self.drill_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.drill_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -110,7 +110,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_pitch_entry, 5, 1)
 
         # Linear Drill Array custom angle
-        self.drill_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.drill_angle_label = FCLabel('%s:' % _('Angle'))
         self.drill_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -123,11 +123,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_angle_label, 6, 0)
         grid0.addWidget(self.drill_angle_entry, 6, 1)
 
-        self.drill_array_circ_label = QtWidgets.QLabel('<b>%s:</b>' % _('Circular Drill Array'))
+        self.drill_array_circ_label = FCLabel('<b>%s:</b>' % _('Circular Drill Array'))
         grid0.addWidget(self.drill_array_circ_label, 7, 0, 1, 2)
 
         # Circular Drill Array direction
-        self.drill_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
+        self.drill_circular_direction_label = FCLabel('%s:' % _('Circular Direction'))
         self.drill_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -140,7 +140,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_circular_dir_radio, 8, 1)
 
         # Circular Drill Array Angle
-        self.drill_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
+        self.drill_circular_angle_label = FCLabel('%s:' % _('Circular Angle'))
         self.drill_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -155,11 +155,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
 
         # ##### SLOTS #####
         # #################
-        self.drill_array_circ_label = QtWidgets.QLabel('<b>%s:</b>' % _('Slots'))
+        self.drill_array_circ_label = FCLabel('<b>%s:</b>' % _('Slots'))
         grid0.addWidget(self.drill_array_circ_label, 10, 0, 1, 2)
 
         # Slot length
-        self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
+        self.slot_length_label = FCLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
             _("Length. The length of the slot.")
         )
@@ -175,7 +175,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_length_entry, 11, 1)
 
         # Slot direction
-        self.slot_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
+        self.slot_axis_label = FCLabel('%s:' % _('Direction'))
         self.slot_axis_label.setToolTip(
             _("Direction on which the slot is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -191,7 +191,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_axis_radio, 12, 1)
 
         # Slot custom angle
-        self.slot_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.slot_angle_label = FCLabel('%s:' % _('Angle'))
         self.slot_angle_label.setToolTip(
             _("Angle at which the slot is placed.\n"
               "The precision is of max 2 decimals.\n"
@@ -212,11 +212,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # #### SLOTS ARRAY #######
         # ########################
 
-        self.slot_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Slot Array'))
+        self.slot_array_linear_label = FCLabel('<b>%s:</b>' % _('Linear Slot Array'))
         grid0.addWidget(self.slot_array_linear_label, 14, 0, 1, 2)
 
         # Number of slot holes in a drill array
-        self.slot_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of slots'))
+        self.slot_array_size_label = FCLabel('%s:' % _('Nr of slots'))
         self.drill_array_size_label.setToolTip(
             _("Specify how many slots to be in the array.")
         )
@@ -229,7 +229,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_size_entry, 15, 1)
 
         # Linear Slot Array direction
-        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
+        self.slot_array_axis_label = FCLabel('%s:' % _('Linear Direction'))
         self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -245,7 +245,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_axis_radio, 16, 1)
 
         # Linear Slot Array pitch distance
-        self.slot_array_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.slot_array_pitch_label = FCLabel('%s:' % _('Pitch'))
         self.slot_array_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -260,7 +260,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_pitch_entry, 17, 1)
 
         # Linear Slot Array custom angle
-        self.slot_array_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.slot_array_angle_label = FCLabel('%s:' % _('Angle'))
         self.slot_array_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -273,11 +273,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_angle_label, 18, 0)
         grid0.addWidget(self.slot_array_angle_entry, 18, 1)
 
-        self.slot_array_circ_label = QtWidgets.QLabel('<b>%s:</b>' % _('Circular Slot Array'))
+        self.slot_array_circ_label = FCLabel('<b>%s:</b>' % _('Circular Slot Array'))
         grid0.addWidget(self.slot_array_circ_label, 19, 0, 1, 2)
 
         # Circular Slot Array direction
-        self.slot_array_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
+        self.slot_array_circular_direction_label = FCLabel('%s:' % _('Circular Direction'))
         self.slot_array_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -290,7 +290,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_circular_dir_radio, 20, 1)
 
         # Circular Slot Array Angle
-        self.slot_array_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
+        self.slot_array_circular_angle_label = FCLabel('%s:' % _('Circular Angle'))
         self.slot_array_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )

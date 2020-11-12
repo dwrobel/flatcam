@@ -1,6 +1,5 @@
 from PyQt5 import QtCore
 from appWorker import Worker
-import multiprocessing
 
 
 class WorkerStack(QtCore.QObject):

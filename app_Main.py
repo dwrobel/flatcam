@@ -1877,7 +1877,7 @@ class App(QtCore.QObject):
 
         self.follow_tool = ToolFollow(self)
         self.follow_tool.install(icon=QtGui.QIcon(self.resource_location + '/follow32.png'), pos=self.ui.menutool,
-                                    before=self.sub_tool.menuAction, separator=True)
+                                 before=self.sub_tool.menuAction, separator=True)
 
         self.drilling_tool = ToolDrilling(self)
         self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
@@ -2247,9 +2247,10 @@ class App(QtCore.QObject):
         """
         Set the toolbars layout (location)
 
+        :param connect_signals: Useful when used in the App.__init__(); bool
         :param index:
-        :param lay:     Type of layout to be set on the toolbard
-        :return:        None
+        :param lay:             Type of layout to be set on the toolbard
+        :return:                None
         """
 
         self.defaults.report_usage("on_layout()")

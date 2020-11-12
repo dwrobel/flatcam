@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner, RadioSet
+from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Editor Parameters
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Editor parameters.")
         )
@@ -38,7 +38,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Selection Limit
-        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
         self.sel_limit_label.setToolTip(
             _("Set the number of selected geometry\n"
               "items above which the utility geometry\n"
@@ -53,7 +53,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         # Milling Type
-        milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        milling_type_label = FCLabel('%s:' % _('Milling Type'))
         milling_type_label.setToolTip(
             _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"

@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
-    FCColorEntry
+    FCColorEntry, FCLabel
 from appGUI.preferences import settings
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -46,11 +46,11 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # GRID Settings
-        self.grid_label = QtWidgets.QLabel('<b>%s</b>' % _('Grid Settings'))
+        self.grid_label = FCLabel('<b>%s</b>' % _('Grid Settings'))
         grid0.addWidget(self.grid_label, 0, 0, 1, 2)
 
         # Grid X Entry
-        self.gridx_label = QtWidgets.QLabel('%s:' % _('X value'))
+        self.gridx_label = FCLabel('%s:' % _('X value'))
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
@@ -62,7 +62,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gridx_entry, 1, 1)
 
         # Grid Y Entry
-        self.gridy_label = QtWidgets.QLabel('%s:' % _('Y value'))
+        self.gridy_label = FCLabel('%s:' % _('Y value'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
@@ -74,7 +74,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gridy_entry, 2, 1)
 
         # Snap Max Entry
-        self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
+        self.snap_max_label = FCLabel('%s:' % _('Snap Max'))
         self.snap_max_label.setToolTip(_("Max. magnet distance"))
         self.snap_max_dist_entry = FCDoubleSpinner()
         self.snap_max_dist_entry.set_precision(self.decimals)
@@ -89,7 +89,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Workspace
-        self.workspace_label = QtWidgets.QLabel('<b>%s</b>' % _('Workspace Settings'))
+        self.workspace_label = FCLabel('<b>%s</b>' % _('Workspace Settings'))
         grid0.addWidget(self.workspace_label, 5, 0, 1, 2)
 
         self.workspace_cb = FCCheckBox('%s' % _('Active'))
@@ -100,7 +100,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.workspace_cb, 6, 0, 1, 2)
 
-        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Size'))
+        self.workspace_type_lbl = FCLabel('%s:' % _('Size'))
         self.workspace_type_lbl.setToolTip(
            _("Select the type of rectangle to be used on canvas,\n"
              "as valid workspace.")
@@ -168,7 +168,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.wk_cb.addItems(page_size_list)
 
         # Page orientation
-        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Orientation"))
+        self.wk_orientation_label = FCLabel('%s:' % _("Orientation"))
         self.wk_orientation_label.setToolTip(_("Can be:\n"
                                                "- Portrait\n"
                                                "- Landscape"))
@@ -186,11 +186,11 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Font Size
-        self.font_size_label = QtWidgets.QLabel('<b>%s</b>' % _('Font Size'))
+        self.font_size_label = FCLabel('<b>%s</b>' % _('Font Size'))
         grid0.addWidget(self.font_size_label, 10, 0, 1, 2)
 
         # Notebook Font Size
-        self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('Notebook'))
+        self.notebook_font_size_label = FCLabel('%s:' % _('Notebook'))
         self.notebook_font_size_label.setToolTip(
             _("This sets the font size for the elements found in the Notebook.\n"
               "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -211,7 +211,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.notebook_font_size_spinner, 11, 1)
 
         # Axis Font Size
-        self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis'))
+        self.axis_font_size_label = FCLabel('%s:' % _('Axis'))
         self.axis_font_size_label.setToolTip(
             _("This sets the font size for canvas axis.")
         )
@@ -230,7 +230,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.axis_font_size_spinner, 12, 1)
 
         # TextBox Font Size
-        self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox'))
+        self.textbox_font_size_label = FCLabel('%s:' % _('Textbox'))
         self.textbox_font_size_label.setToolTip(
             _("This sets the font size for the Textbox GUI\n"
               "elements that are used in the application.")
@@ -250,7 +250,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.textbox_font_size_spinner, 13, 1)
 
         # HUD Font Size
-        self.hud_font_size_label = QtWidgets.QLabel('%s:' % _('HUD'))
+        self.hud_font_size_label = FCLabel('%s:' % _('HUD'))
         self.hud_font_size_label.setToolTip(
             _("This sets the font size for the Heads Up Display.")
         )
@@ -277,11 +277,11 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # -------------- MOUSE SETTINGS -----------------------------
         # -----------------------------------------------------------
 
-        self.mouse_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Mouse Settings'))
+        self.mouse_lbl = FCLabel('<b>%s</b>' % _('Mouse Settings'))
         grid0.addWidget(self.mouse_lbl, 21, 0, 1, 2)
 
         # Mouse Cursor Shape
-        self.cursor_lbl = QtWidgets.QLabel('%s:' % _('Cursor Shape'))
+        self.cursor_lbl = FCLabel('%s:' % _('Cursor Shape'))
         self.cursor_lbl.setToolTip(
            _("Choose a mouse cursor shape.\n"
              "- Small -> with a customizable size.\n"
@@ -297,7 +297,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cursor_radio, 22, 1)
 
         # Mouse Cursor Size
-        self.cursor_size_lbl = QtWidgets.QLabel('%s:' % _('Cursor Size'))
+        self.cursor_size_lbl = FCLabel('%s:' % _('Cursor Size'))
         self.cursor_size_lbl.setToolTip(
            _("Set the size of the mouse cursor, in pixels.")
         )
@@ -310,7 +310,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cursor_size_entry, 23, 1)
 
         # Cursor Width
-        self.cursor_width_lbl = QtWidgets.QLabel('%s:' % _('Cursor Width'))
+        self.cursor_width_lbl = FCLabel('%s:' % _('Cursor Width'))
         self.cursor_width_lbl.setToolTip(
            _("Set the line width of the mouse cursor, in pixels.")
         )
@@ -330,7 +330,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mouse_cursor_color_cb, 25, 0, 1, 2)
 
         # Cursor Color
-        self.mouse_color_label = QtWidgets.QLabel('%s:' % _('Cursor Color'))
+        self.mouse_color_label = FCLabel('%s:' % _('Cursor Color'))
         self.mouse_color_label.setToolTip(
             _("Set the color of the mouse cursor.")
         )
@@ -347,7 +347,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             ]
         )
         # Select mouse pan button
-        self.panbuttonlabel = QtWidgets.QLabel('%s:' % _('Pan Button'))
+        self.panbuttonlabel = FCLabel('%s:' % _('Pan Button'))
         self.panbuttonlabel.setToolTip(
             _("Select the mouse button to use for panning:\n"
               "- MMB --> Middle Mouse Button\n"
@@ -360,7 +360,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pan_button_radio, 27, 1)
 
         # Multiple Selection Modifier Key
-        self.mselectlabel = QtWidgets.QLabel('%s:' % _('Multiple Selection'))
+        self.mselectlabel = FCLabel('%s:' % _('Multiple Selection'))
         self.mselectlabel.setToolTip(
             _("Select the key used for multiple selection.")
         )
@@ -426,7 +426,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
         self.bm_limit_spinner.set_range(0, 9999)
-        self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
+        self.bm_limit_label = FCLabel('%s:' % _('Bookmarks limit'))
         self.bm_limit_label.setToolTip(
             _("The maximum number of bookmarks that may be installed in the menu.\n"
               "The number of bookmarks in the bookmark manager may be greater\n"
@@ -437,7 +437,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.bm_limit_spinner, 35, 1)
 
         # Activity monitor icon
-        self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
+        self.activity_label = FCLabel('%s:' % _("Activity Icon"))
         self.activity_label.setToolTip(
             _("Select the GIF that show activity when FlatCAM is active.")
         )

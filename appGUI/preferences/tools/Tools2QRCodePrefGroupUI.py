@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCEntry, FCColorEntry
+from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Parameters
-        self.qrlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.qrlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.qrlabel.setToolTip(
             _("A tool to create a QRCode that can be inserted\n"
               "into a selected Gerber file, or it can be exported as a file.")
@@ -42,7 +42,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.setColumnStretch(1, 1)
 
         # VERSION #
-        self.version_label = QtWidgets.QLabel('%s:' % _("Version"))
+        self.version_label = FCLabel('%s:' % _("Version"))
         self.version_label.setToolTip(
             _("QRCode version can have values from 1 (21x21 boxes)\n"
               "to 40 (177x177 boxes).")
@@ -55,7 +55,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.version_entry, 1, 1)
 
         # ERROR CORRECTION #
-        self.error_label = QtWidgets.QLabel('%s:' % _("Error correction"))
+        self.error_label = FCLabel('%s:' % _("Error correction"))
         self.error_label.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
               "L = maximum 7%% errors can be corrected\n"
@@ -78,7 +78,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.error_radio, 2, 1)
 
         # BOX SIZE #
-        self.bsize_label = QtWidgets.QLabel('%s:' % _("Box Size"))
+        self.bsize_label = FCLabel('%s:' % _("Box Size"))
         self.bsize_label.setToolTip(
             _("Box size control the overall size of the QRcode\n"
               "by adjusting the size of each box in the code.")
@@ -91,7 +91,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.bsize_entry, 3, 1)
 
         # BORDER SIZE #
-        self.border_size_label = QtWidgets.QLabel('%s:' % _("Border Size"))
+        self.border_size_label = FCLabel('%s:' % _("Border Size"))
         self.border_size_label.setToolTip(
             _("Size of the QRCode border. How many boxes thick is the border.\n"
               "Default value is 4. The width of the clearance around the QRCode.")
@@ -104,7 +104,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.border_size_entry, 4, 1)
 
         # Text box
-        self.text_label = QtWidgets.QLabel('%s:' % _("QRCode Data"))
+        self.text_label = FCLabel('%s:' % _("QRCode Data"))
         self.text_label.setToolTip(
             _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
         )
@@ -116,7 +116,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
 
         # POLARITY CHOICE #
-        self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))
+        self.pol_label = FCLabel('%s:' % _("Polarity"))
         self.pol_label.setToolTip(
             _("Choose the polarity of the QRCode.\n"
               "It can be drawn in a negative way (squares are clear)\n"
@@ -134,7 +134,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.pol_radio, 7, 1)
 
         # BOUNDING BOX TYPE #
-        self.bb_label = QtWidgets.QLabel('%s:' % _("Bounding Box"))
+        self.bb_label = FCLabel('%s:' % _("Bounding Box"))
         self.bb_label.setToolTip(
             _("The bounding box, meaning the empty space that surrounds\n"
               "the QRCode geometry, can have a rounded or a square shape.")
@@ -149,7 +149,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.bb_radio, 8, 1)
 
         # FILL COLOR #
-        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill Color'))
+        self.fill_color_label = FCLabel('%s:' % _('Fill Color'))
         self.fill_color_label.setToolTip(
             _("Set the QRCode fill color (squares color).")
         )
@@ -159,7 +159,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.fill_color_entry, 9, 1)
 
         # BACK COLOR #
-        self.back_color_label = QtWidgets.QLabel('%s:' % _('Back Color'))
+        self.back_color_label = FCLabel('%s:' % _('Back Color'))
         self.back_color_label.setToolTip(
             _("Set the QRCode background color.")
         )
@@ -169,7 +169,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.back_color_entry, 10, 1)
 
         # Selection Limit
-        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
         self.sel_limit_label.setToolTip(
             _("Set the number of selected geometry\n"
               "items above which the utility geometry\n"

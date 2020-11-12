@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - added the "follow" functionality in the Follow Tool and added the new feature of allowing to perform "follow" on an area selection
 - fixed bug that inversed mouse cursor movement versus the real movement on Y axis when Grid lines are Off
 - updated the language strings
+- PEP8 changes and PyCharm suggestions
 
 11.11.2020
 

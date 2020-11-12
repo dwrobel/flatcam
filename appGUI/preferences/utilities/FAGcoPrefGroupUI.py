@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCButton, FCTextArea, FCEntry
+from appGUI.GUIElements import FCButton, FCTextArea, FCEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -38,7 +38,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         hlay0.addWidget(self.del_all_btn)
 
         # ## G-Code associations
-        self.gco_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        self.gco_list_label = FCLabel("<b>%s:</b>" % _("Extensions list"))
         self.gco_list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")
@@ -60,7 +60,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
         self.layout.addWidget(self.gco_list_text)
 
-        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label = FCLabel('%s:' % _("Extension"))
         self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
         self.ext_entry = FCEntry()
 
