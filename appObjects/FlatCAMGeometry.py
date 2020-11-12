@@ -330,20 +330,18 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.set_tool_offset_visibility(selected_row)
 
-        # -----------------------------
-        # Build Exclusion Areas section
-        # -----------------------------
+        # #############################################################################################################
+        # ################################### Build Exclusion Areas section ###########################################
+        # #############################################################################################################
+        self.ui_disconnect()
+
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
         self.ui.exclusion_table.setRowCount(e_len)
 
-        area_id = 0
-
         for area in range(e_len):
-            area_id += 1
-
             area_dict = self.app.exc_areas.exclusion_areas_storage[area]
 
-            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
+            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_dict["idx"]))
             area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
 
@@ -351,13 +349,27 @@ class GeometryObject(FlatCAMObj, Geometry):
             object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
 
-            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+            # strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
+            # strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            strategy_item = FCComboBox2(policy=False)
+            strategy_item.addItems([_("Around"), _("Over")])
+            idx = 0 if area_dict["strategy"] == 'around' else 1
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                strategy_item.setCurrentIndex(0)
+            else:
+                strategy_item.setCurrentIndex(idx)
+            self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
 
             overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
             overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+
+        # make the Overz column editable
+        for row in range(e_len):
+            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
+                                                          QtCore.Qt.ItemIsEditable |
+                                                          QtCore.Qt.ItemIsEnabled)
 
         self.ui.exclusion_table.resizeColumnsToContents()
         self.ui.exclusion_table.resizeRowsToContents()
@@ -575,6 +587,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             log.debug("Expected a GeometryObjectUI, got %s" % type(self.ui))
             return
 
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
         self.ui.geo_tools_table.setupContextMenu()
         self.ui.geo_tools_table.addContextMenu(
             _("Pick from DB"), self.on_tool_add_from_db_clicked,
@@ -585,6 +600,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.geo_tools_table.addContextMenu(
             _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
+
+        # #############################################################################################################
+        # ############################## EXCLUSION TABLE context menu #################################################
+        # #############################################################################################################
+        self.ui.exclusion_table.setupContextMenu()
+        self.ui.exclusion_table.addContextMenu(
+            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        )
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -779,6 +802,12 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
+        # Exclusion Table widgets connect
+        for row in range(self.ui.exclusion_table.rowCount()):
+            self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_exclusion_table_strategy)
+
+        self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
+
         # common parameters update
         self.ui.toolchangeg_cb.stateChanged.connect(self.update_common_param_in_storage)
         self.ui.toolchangez_entry.editingFinished.connect(self.update_common_param_in_storage)
@@ -818,6 +847,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except TypeError:
                     pass
 
+        # disconnect FCCombobox widgets in the Tool Table
         for row in range(self.ui.geo_tools_table.rowCount()):
             for col in [2, 3, 4]:
                 try:
@@ -882,12 +912,26 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.pp_geometry_name_cb.currentIndexChanged.disconnect(self.update_common_param_in_storage)
         except (TypeError, AttributeError):
             pass
+
+        try:
+            self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+
         try:
             self.ui.exclusion_cb.stateChanged.disconnect(self.update_common_param_in_storage)
         except (TypeError, AttributeError):
             pass
+
+        # Exclusion Table widgets disconnect
+        for row in range(self.ui.exclusion_table.rowCount()):
+            try:
+                self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
         try:
-            self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+            self.ui.exclusion_table.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -3062,6 +3106,57 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.exclusion_table.selectAll()
             self.on_draw_sel_shape()
+
+    def on_exclusion_table_overz(self, current_item):
+        self.ui_disconnect()
+
+        current_row = current_item.row()
+        try:
+            d = float(self.ui.exclusion_table.item(current_row, 3).text())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                d = float(self.ui.exclusion_table.item(current_row, 3).text().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
+                return
+        except AttributeError:
+            self.ui_connect()
+            return
+
+        overz = self.app.dec_format(d, self.decimals)
+        idx = int(self.ui.exclusion_table.item(current_row, 0).text())
+
+        for area_dict in self.app.exc_areas.exclusion_areas_storage:
+            if area_dict['idx'] == idx:
+                area_dict['overz'] = overz
+
+        self.app.inform.emit('[success] %s' % _("Value edited in Exclusion Table."))
+        self.ui_connect()
+        self.builduiSig.emit()
+
+    def on_exclusion_table_strategy(self):
+        cw = self.sender()
+        cw_index = self.ui.exclusion_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        idx = int(self.ui.exclusion_table.item(cw_row, 0).text())
+
+        for area_dict in self.app.exc_areas.exclusion_areas_storage:
+            if area_dict['idx'] == idx:
+                strategy = self.ui.exclusion_table.cellWidget(cw_row, 2).currentIndex()
+                area_dict['strategy'] = "around" if strategy == 0 else 'overz'
+
+        self.app.inform.emit('[success] %s' % _("Value edited in Exclusion Table."))
+        self.ui_connect()
+        self.builduiSig.emit()
+
+    def area_disconnect(self):
+        try:
+            self.app.exc_areas.area_disconnect()
+            if not self.app.exc_areas.exclusion_areas_storage:
+                self.app.exc_areas.clear_shapes()
+        except Exception as err:
+            log.debug('GeometryObject.area_disconnect() -> %s' % str(err))
 
     def plot_element(self, element, color=None, visible=None):
 

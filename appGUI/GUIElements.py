@@ -2167,8 +2167,8 @@ class FCComboBox(QtWidgets.QComboBox):
 
 
 class FCComboBox2(FCComboBox):
-    def __init__(self, parent=None, callback=None):
-        super(FCComboBox2, self).__init__(parent=parent, callback=callback)
+    def __init__(self, parent=None, callback=None, policy=True):
+        super(FCComboBox2, self).__init__(parent=parent, callback=callback, policy=policy)
 
     def get_value(self):
         return int(self.currentIndex())

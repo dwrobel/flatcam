@@ -5340,25 +5340,25 @@ class App(QtCore.QObject):
                 app_obj.debug("on_copy_command() --> no excellon tools")
                 return 'fail'
 
-        def initialize_script(obj_init, app_obj):
-            obj_init.source_file = deepcopy(obj.source_file)
+        def initialize_script(new_obj, app_obj):
+            new_obj.source_file = deepcopy(obj.source_file)
 
-        def initialize_document(obj_init, app_obj):
-            obj_init.source_file = deepcopy(obj.source_file)
+        def initialize_document(new_obj, app_obj):
+            new_obj.source_file = deepcopy(obj.source_file)
 
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, ExcellonObject):
+                if obj.kind == 'excellon':
                     self.app_obj.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
-                elif isinstance(obj, GerberObject):
+                elif obj.kind == 'gerber':
                     self.app_obj.new_object("gerber", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, GeometryObject):
+                elif obj.kind == 'geometry':
                     self.app_obj.new_object("geometry", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, ScriptObject):
+                elif obj.kind == 'script':
                     self.app_obj.new_object("script", str(obj_name) + "_copy", initialize_script)
-                elif isinstance(obj, DocumentObject):
+                elif obj.kind == 'document':
                     self.app_obj.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)

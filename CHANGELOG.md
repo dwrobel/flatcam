@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - fixed bug that inversed mouse cursor movement versus the real movement on Y axis when Grid lines are Off
 - updated the language strings
 - PEP8 changes and PyCharm suggestions
+- in Geometry UI and in Drilling Tool added ability to edit existing Exclusion Areas and change the Strategy and OverZ parameters for each of them
+- in Geometry UI and in Drilling Tool added a Delete menu entry in the Exclusion Area Table context menu
 
 11.11.2020
 

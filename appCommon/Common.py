@@ -379,10 +379,11 @@ class ExclusionAreas(QtCore.QObject):
                     #     "overz":      float < - self.over_z_button
                     # }
                     new_el = {
+                        "idx":      len(self.exclusion_areas_storage) + 1,
                         "obj_type": self.obj_type,
-                        "shape": new_rectangle,
+                        "shape":    new_rectangle,
                         "strategy": self.strategy_button.get_value(),
-                        "overz": self.over_z_button.get_value()
+                        "overz":    self.over_z_button.get_value()
                     }
                     self.exclusion_areas_storage.append(new_el)
 
@@ -442,10 +443,11 @@ class ExclusionAreas(QtCore.QObject):
                             }
                             """
                             new_el = {
+                                "idx":      len(self.exclusion_areas_storage) + 1,
                                 "obj_type": self.obj_type,
-                                "shape": pol,
+                                "shape":    pol,
                                 "strategy": self.strategy_button.get_value(),
-                                "overz": self.over_z_button.get_value()
+                                "overz":    self.over_z_button.get_value()
                             }
                             self.exclusion_areas_storage.append(new_el)
 
