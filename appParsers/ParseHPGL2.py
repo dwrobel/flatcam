@@ -105,7 +105,6 @@ class HPGL2:
             "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
             "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
             "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
             "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
 
             "tools_iso_rest":           self.app.defaults["tools_iso_rest"],

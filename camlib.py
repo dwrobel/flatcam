@@ -398,7 +398,7 @@ class ApertureMacro:
         nrings = val[5]
         cross_th = val[6]
         cross_len = val[7]
-        angle = val[8]
+        # angle = val[8]
 
         r = dia / 2 - thickness / 2
         result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
@@ -441,7 +441,7 @@ class ApertureMacro:
         dout = val[2]
         din = val[3]
         t = val[4]
-        angle = val[5]
+        # angle = val[5]
 
         ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
         hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)
@@ -1036,8 +1036,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, follow=None, passes=0,
-                           prog_plot=False):
+    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, passes=0, prog_plot=False):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -1048,7 +1047,6 @@ class Geometry(object):
         :param iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :param corner:      type of corner for the isolation:
                             0 = round; 1 = square; 2= beveled (line that connects the ends)
-        :param follow:      whether the geometry to be isolated is a follow_geometry
         :param passes:      current pass out of possible multiple passes for which the isolation is done
         :param prog_plot:   type of plotting: "normal" or "progressive"
         :return:            The buffered geometry.
@@ -1060,9 +1058,6 @@ class Geometry(object):
             raise grace
 
         geo_iso = []
-
-        if follow:
-            return geometry
 
         if geometry:
             working_geo = geometry
@@ -1123,7 +1118,7 @@ class Geometry(object):
             ret_geo = self.get_exteriors(geo_iso)
         elif iso_type == 1:
             self.app.proc_container.update_view_text(' %s' % _("Get Interiors"))
-            ret_geo =  self.get_interiors(geo_iso)
+            ret_geo = self.get_interiors(geo_iso)
         else:
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
             return "fail"
@@ -1186,8 +1181,8 @@ class Geometry(object):
         merged_lines = linemerge(geos_lines)
         geos = geos_polys
         try:
-            for l in merged_lines:
-                geos.append(l)
+            for ml in merged_lines:
+                geos.append(ml)
         except TypeError:
             geos.append(merged_lines)
             
@@ -1264,8 +1259,8 @@ class Geometry(object):
 
         merged_lines = linemerge(geos_lines)
         geos = geos_polys
-        for l in merged_lines:
-            geos.append(l)
+        for ml in merged_lines:
+            geos.append(ml)
 
         # Add to object
         if self.solid_geometry is None:
@@ -2401,7 +2396,6 @@ class Geometry(object):
             self.app.inform.emit('[success] %s...' % _('Object was mirrored'))
         except AttributeError:
             self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
-
 
         self.app.proc_container.new_text = ''
 
@@ -3661,7 +3655,7 @@ class CNCjob(Geometry):
 
         geo_storage = {}
         for geo in temp_solid_geometry:
-            if not geo is None:
+            if geo is not None:
                 geo_storage[geo.coords[0]] = geo
         locations = list(geo_storage.keys())
 
@@ -3862,7 +3856,7 @@ class CNCjob(Geometry):
             if self.z_cut == 'fail':
                 return 'fail'
         # multidepth use this
-        old_zcut = deepcopy(self.z_cut)
+        # old_zcut = deepcopy(self.z_cut)
 
         # XY_toolchange parameter
         try:
@@ -4183,8 +4177,8 @@ class CNCjob(Geometry):
                             drill.y
                         )
                         optimized_path.append(unoptimized_coords)
-                # #########################################################################################################
-                # #########################################################################################################
+                # #####################################################################################################
+                # #####################################################################################################
 
                 # Only if there are locations to drill
                 if not optimized_path:
@@ -5290,19 +5284,19 @@ class CNCjob(Geometry):
         self.z_cut = float(z_cut) if z_cut else None
         self.z_move = float(z_move) if z_move is not None else None
 
-        self.feedrate = float(feedrate) if feedrate else  self.app.defaults["geometry_feedrate"]
+        self.feedrate = float(feedrate) if feedrate else self.app.defaults["geometry_feedrate"]
         self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else self.app.defaults["geometry_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime else  self.app.defaults["geometry_dwelltime"]
+        self.dwelltime = float(dwelltime) if dwelltime else self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else  self.app.defaults["geometry_startz"]
-        self.z_end = float(endz) if endz is not None else  self.app.defaults["geometry_endz"]
+        self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
+        self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
 
-        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else  self.app.defaults["geometry_endxy"]
+        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else self.app.defaults["geometry_endxy"]
 
         if self.xy_end and self.xy_end != '':
             self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
@@ -6937,8 +6931,7 @@ class CNCjob(Geometry):
                 else:
                     dd = d / 2
                 other = dim ^ 1
-                return (line[0][dim] + dd * sign, line[0][other] + \
-                        dd * (line[1][other] - line[0][other]) / d)
+                return line[0][dim] + dd * sign, line[0][other] + dd * (line[1][other] - line[0][other]) / d
             return None
 
         # recursively breaks down a given line until it is within the
@@ -7545,16 +7538,16 @@ class CNCjob(Geometry):
                 cmaxx = -np.Inf
                 cmaxy = -np.Inf
 
-                for k in obj:
-                    if type(k) is dict:
-                        for key in k:
-                            minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
+                for oo in obj:
+                    if type(oo) is dict:
+                        for key in oo:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(oo[key])
                             cminx = min(cminx, minx_)
                             cminy = min(cminy, miny_)
                             cmaxx = max(cmaxx, maxx_)
                             cmaxy = max(cmaxy, maxy_)
                     else:
-                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(oo)
                         cminx = min(cminx, minx_)
                         cminy = min(cminy, miny_)
                         cmaxx = max(cmaxx, maxx_)
@@ -7744,7 +7737,7 @@ class CNCjob(Geometry):
 
                 temp_gcode += line
             lines.close()
-            header_stop = False
+            # header_stop = False
             return temp_gcode
 
         if self.multitool is False:

@@ -1050,6 +1050,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
+        self.follow_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
         self.drill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()
@@ -2219,6 +2221,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
+        self.follow_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
         self.drill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()

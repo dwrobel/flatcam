@@ -398,10 +398,21 @@ class GerberObjectUI(ObjectUI):
         #                 """)
         grid0.addWidget(self.generate_cutout_button, 20, 0, 1, 3)
 
+        # Follow Tool
+        self.generate_follow_button = FCButton(_('Follow Tool'))
+        self.generate_follow_button.setIcon(QtGui.QIcon(self.app.resource_location + '/follow32.png'))
+        self.generate_follow_button.setToolTip(
+            _("Generate a 'Follow' geometry.\n"
+              "This means that it will cut through\n"
+              "the middle of the trace."))
+        # self.generate_cutout_button.setStyleSheet("""
+
+        grid0.addWidget(self.generate_follow_button, 22, 0, 1, 3)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 3)
+        grid0.addWidget(separator_line, 24, 0, 1, 3)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
@@ -413,12 +424,12 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.util_button, 24, 0, 1, 3)
+        grid0.addWidget(self.util_button, 26, 0, 1, 3)
 
         # UTILITIES Frame
         self.util_frame = QtWidgets.QFrame()
         self.util_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.util_frame, 25, 0, 1, 3)
+        grid0.addWidget(self.util_frame, 28, 0, 1, 3)
         self.util_box = QtWidgets.QVBoxLayout()
         self.util_box.setContentsMargins(0, 0, 0, 0)
         self.util_frame.setLayout(self.util_box)

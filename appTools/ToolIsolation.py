@@ -136,7 +136,6 @@ class ToolIsolation(AppTool, Gerber):
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
             "tools_iso_milling_type":   self.ui.milling_type_radio,
             "tools_iso_combine":        self.ui.combine_passes_cb,
-            "tools_iso_follow":         self.ui.follow_cb,
             "tools_iso_isotype":        self.ui.iso_type_radio
         }
 
@@ -145,7 +144,6 @@ class ToolIsolation(AppTool, Gerber):
             "i_overlap":        "tools_iso_overlap",
             "i_milling_type":   "tools_iso_milling_type",
             "i_combine":        "tools_iso_combine",
-            "i_follow":         "tools_iso_follow",
             "i_iso_type":       "tools_iso_isotype"
         }
 
@@ -253,10 +251,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.iso_type_radio.set_value('full')
             self.ui.iso_type_radio.hide()
 
-            self.ui.follow_cb.set_value(False)
-            self.ui.follow_cb.hide()
-            self.ui.follow_label.hide()
-
             self.ui.rest_cb.set_value(False)
             self.ui.rest_cb.hide()
             self.ui.forced_rest_iso_cb.hide()
@@ -279,10 +273,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.iso_type_label.show()
             self.ui.iso_type_radio.set_value(self.app.defaults["tools_iso_isotype"])
             self.ui.iso_type_radio.show()
-
-            self.ui.follow_cb.set_value(self.app.defaults["tools_iso_follow"])
-            self.ui.follow_cb.show()
-            self.ui.follow_label.show()
 
             self.ui.rest_cb.set_value(self.app.defaults["tools_iso_rest"])
             self.ui.rest_cb.show()
@@ -373,7 +363,6 @@ class ToolIsolation(AppTool, Gerber):
             "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
             "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
             "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
             "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
 
             "tools_iso_rest":           self.app.defaults["tools_iso_rest"],
@@ -1477,41 +1466,6 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': [self.grb_obj]})
 
-    def follow_geo(self, followed_obj, outname):
-        """
-        Creates a geometry object "following" the gerber paths.
-
-        :param followed_obj:    Gerber object for which to generate the follow geometry
-        :type followed_obj:     AppObjects.FlatCAMGerber.GerberObject
-        :param outname:         Nme of the resulting Geometry object
-        :type outname:          str
-        :return: None
-        """
-
-        def follow_init(follow_obj, app_obj):
-            # Propagate options
-            follow_obj.options["cnctooldia"] = str(tooldia)
-            follow_obj.solid_geometry = self.grb_obj.follow_geometry
-            app_obj.inform.emit('[success] %s.' % _("Following geometry was generated"))
-
-        # in the end toggle the visibility of the origin object so we can see the generated Geometry
-        followed_obj.ui.plot_cb.set_value(False)
-        follow_name = outname
-
-        for tool in self.iso_tools:
-            tooldia = self.iso_tools[tool]['tooldia']
-            new_name = "%s_%.*f" % (follow_name, self.decimals, tooldia)
-
-            follow_state = self.iso_tools[tool]['data']['tools_iso_follow']
-            if follow_state:
-                ret = self.app.app_obj.new_object("geometry", new_name, follow_init)
-                if ret == 'fail':
-                    self.app.inform.emit("[ERROR_NOTCL] %s: %.*f" % (
-                        _("Failed to create Follow Geometry with tool diameter"), self.decimals, tooldia))
-                else:
-                    self.app.inform.emit("[success] %s: %.*f" % (
-                        _("Follow Geometry was created with tool diameter"), self.decimals, tooldia))
-
     def isolate_handler(self, isolated_obj):
         """
         Creates a geometry object with paths around the gerber features.
@@ -1623,11 +1577,10 @@ class ToolIsolation(AppTool, Gerber):
 
             for tool in sorted_tools:
                 tool_data = tools_storage[tool]['data']
-                to_follow = tool_data['tools_iso_follow']
 
                 work_geo = geometry
                 if work_geo is None:
-                    work_geo = isolated_obj.follow_geometry if to_follow else isolated_obj.solid_geometry
+                    work_geo = isolated_obj.solid_geometry
 
                 iso_t = {
                     'ext': 0,
@@ -1670,7 +1623,7 @@ class ToolIsolation(AppTool, Gerber):
                     mill_dir = 1 if milling_type == 'cl' else 0
 
                     iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                     follow=to_follow, nr_passes=i, prog_plot=prog_plot)
+                                                     nr_passes=i, prog_plot=prog_plot)
                     if iso_geo == 'fail':
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         continue
@@ -1996,13 +1949,9 @@ class ToolIsolation(AppTool, Gerber):
             tool_cut_type = tools_storage[tool]['type']
             tool_data = tools_storage[tool]['data']
 
-            to_follow = tool_data['tools_iso_follow']
-
-            # TODO what to do when the iso2geo param is not None but the Follow cb is checked
-            # for the case when limited area is used .... the follow geo should be clipped too
             work_geo = geometry
             if work_geo is None:
-                work_geo = iso_obj.follow_geometry if to_follow else iso_obj.solid_geometry
+                work_geo = iso_obj.solid_geometry
 
             iso_t = {
                 'ext': 0,
@@ -2040,7 +1989,7 @@ class ToolIsolation(AppTool, Gerber):
                 mill_dir = 1 if milling_type == 'cl' else 0
 
                 iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                 follow=to_follow, nr_passes=nr_pass, prog_plot=prog_plot)
+                                                 nr_passes=nr_pass, prog_plot=prog_plot)
                 if iso_geo == 'fail':
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     continue
@@ -2097,15 +2046,12 @@ class ToolIsolation(AppTool, Gerber):
             if len(tools_storage) > 1:
                 geo_obj.multigeo = True
             else:
-                if to_follow:
-                    geo_obj.multigeo = False
-                else:
-                    passes_no = 1
-                    for ky in tools_storage.keys():
-                        passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
-                        geo_obj.multigeo = True
-                        break
+                passes_no = 1
+                for ky in tools_storage.keys():
+                    passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
                     geo_obj.multigeo = True
+                    break
+                geo_obj.multigeo = True
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
             # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2789,7 +2735,7 @@ class ToolIsolation(AppTool, Gerber):
     def poly2ints(poly):
         return [interior for interior in poly.interiors]
 
-    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0,
+    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, nr_passes=0,
                           prog_plot=False):
         """
         Isolation_geometry produces an envelope that is going on the left of the geometry
@@ -2807,8 +2753,6 @@ class ToolIsolation(AppTool, Gerber):
         :type geometry:
         :param env_iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :type env_iso_type:     int
-        :param follow:          If the kind of isolation is a "follow" one
-        :type follow:           bool
         :param nr_passes:       Number of passes
         :type nr_passes:        int
         :param prog_plot:       Type of plotting: "normal" or "progressive"
@@ -2817,16 +2761,12 @@ class ToolIsolation(AppTool, Gerber):
         :rtype:                 MultiPolygon or Polygon
         """
 
-        if follow:
-            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow, prog_plot=prog_plot)
-            return geom
-        else:
-            try:
-                geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
-                                                       passes=nr_passes, prog_plot=prog_plot)
-            except Exception as e:
-                log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
-                return 'fail'
+        try:
+            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
+                                                   passes=nr_passes, prog_plot=prog_plot)
+        except Exception as e:
+            log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
+            return 'fail'
 
         if invert:
             try:
@@ -3091,9 +3031,9 @@ class IsoUI:
 
         self.tools_box.addWidget(self.obj_combo_label)
 
-        # ################################################
-        # ##### The object to be copper cleaned ##########
-        # ################################################
+        # #############################################################################################################
+        # ################################ The object to be isolated ##################################################
+        # #############################################################################################################
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -3320,23 +3260,6 @@ class IsoUI:
 
         self.grid3.addWidget(self.milling_type_label, 15, 0)
         self.grid3.addWidget(self.milling_type_radio, 15, 1)
-
-        # Follow
-        self.follow_label = FCLabel('%s:' % _('Follow'))
-        self.follow_label.setToolTip(
-            _("Generate a 'Follow' geometry.\n"
-              "This means that it will cut through\n"
-              "the middle of the trace.")
-        )
-
-        self.follow_cb = FCCheckBox()
-        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                    "This means that it will cut through\n"
-                                    "the middle of the trace."))
-        self.follow_cb.setObjectName("i_follow")
-
-        self.grid3.addWidget(self.follow_label, 16, 0)
-        self.grid3.addWidget(self.follow_cb, 16, 1)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))

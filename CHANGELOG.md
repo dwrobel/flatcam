@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.11.2020
+
+- some fixes in the app_Main class
+- removed the "follow" functionality from the Isolation Tool
+- created a new application Tool named Follow Tool
+- added the "follow" functionality in the Follow Tool and added the new feature of allowing to perform "follow" on an area selection
+
 11.11.2020
 
 - removed the forcing of multigeo geometry usage when creating CNCJobs

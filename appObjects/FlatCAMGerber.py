@@ -156,6 +156,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
         self.ui.generate_ncc_button.clicked.connect(self.app.ncclear_tool.run)
         self.ui.generate_cutout_button.clicked.connect(self.app.cutout_tool.run)
+        self.ui.generate_follow_button.clicked.connect(self.app.follow_tool.run)
 
         # Utilties
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)

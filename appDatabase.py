@@ -869,23 +869,6 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.iso_milling_type_label, 4, 0)
         self.grid4.addWidget(self.iso_milling_type_radio, 4, 1)
 
-        # Follow
-        self.follow_label = FCLabel('%s:' % _('Follow'))
-        self.follow_label.setToolTip(
-            _("Generate a 'Follow' geometry.\n"
-              "This means that it will cut through\n"
-              "the middle of the trace.")
-        )
-
-        self.iso_follow_cb = FCCheckBox()
-        self.iso_follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                        "This means that it will cut through\n"
-                                        "the middle of the trace."))
-        self.iso_follow_cb.setObjectName("gdb_i_follow")
-
-        self.grid4.addWidget(self.follow_label, 6, 0)
-        self.grid4.addWidget(self.iso_follow_cb, 6, 1)
-
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
@@ -1493,7 +1476,6 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_iso_passes":         self.ui.iso_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
             "tools_iso_milling_type":   self.ui.iso_milling_type_radio,
-            "tools_iso_follow":         self.ui.iso_follow_cb,
             "tools_iso_isotype":        self.ui.iso_type_radio,
 
             # Drilling
@@ -1577,7 +1559,6 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_i_passes":         "tools_iso_passes",
             "gdb_i_overlap":        "tools_iso_overlap",
             "gdb_i_milling_type":   "tools_iso_milling_type",
-            "gdb_i_follow":         "tools_iso_follow",
             "gdb_i_iso_type":       "tools_iso_isotype",
 
             # Drilling
@@ -1951,7 +1932,6 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_iso_passes":         int(self.app.defaults["tools_iso_passes"]),
             "tools_iso_overlap":        float(self.app.defaults["tools_iso_overlap"]),
             "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
             "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
 
             # Drilling
@@ -2519,8 +2499,6 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.db_tool_dict[tool_id]['data']['tools_iso_overlap'] = val
             elif wdg_name == "gdb_i_milling_type":
                 self.db_tool_dict[tool_id]['data']['tools_iso_milling_type'] = val
-            elif wdg_name == "gdb_i_follow":
-                self.db_tool_dict[tool_id]['data']['tools_iso_follow'] = val
             elif wdg_name == "gdb_i_iso_type":
                 self.db_tool_dict[tool_id]['data']['tools_iso_isotype'] = val
 

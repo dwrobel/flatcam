@@ -551,7 +551,7 @@ class App(QtCore.QObject):
 
         # ----------------------------------------- WARNING --------------------------------------------------------
         # Preprocessors need to be loaded before the Preferences Manager builds the Preferences
-        # That's because the number of preprocessors can vary and here the comboboxes are populated
+        # That's because the number of preprocessors can vary and here the combobox is populated
         # -----------------------------------------------------------------------------------------------------------
 
         # a dictionary that have as keys the name of the preprocessor files and the value is the class from
@@ -718,7 +718,6 @@ class App(QtCore.QObject):
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()  # debug
-        self.plotcanvas = None
 
         self.app_cursor = None
         self.hover_shapes = None
@@ -726,7 +725,9 @@ class App(QtCore.QObject):
         self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
 
         # setup the PlotCanvas
-        self.on_plotcanvas_setup()
+        self.plotcanvas = self.on_plotcanvas_setup()
+        if self.plotcanvas == 'fail':
+            return
 
         end_plot_time = time.time()
         self.used_time = end_plot_time - start_plot_time
@@ -1031,6 +1032,7 @@ class App(QtCore.QObject):
         self.ncclear_tool = None
         self.paint_tool = None
         self.isolation_tool = None
+        self.follow_tool = None
         self.drilling_tool = None
 
         self.optimal_tool = None
@@ -1400,7 +1402,6 @@ class App(QtCore.QObject):
 
         # Canvas Context Menu
         self.connect_canvas_context_signals()
-
 
         # Notebook tab clicking
         self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
@@ -1874,6 +1875,10 @@ class App(QtCore.QObject):
         self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menutool,
                                     before=self.sub_tool.menuAction, separator=True)
 
+        self.follow_tool = ToolFollow(self)
+        self.follow_tool.install(icon=QtGui.QIcon(self.resource_location + '/follow32.png'), pos=self.ui.menutool,
+                                    before=self.sub_tool.menuAction, separator=True)
+
         self.drilling_tool = ToolDrilling(self)
         self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
                                    pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
@@ -2155,6 +2160,8 @@ class App(QtCore.QObject):
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
         self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
+        self.ui.follow_btn.triggered.connect(lambda: self.follow_tool.run(toggle=True))
+
         self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
 
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
@@ -7733,10 +7740,10 @@ class App(QtCore.QObject):
         if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
             self.is_legacy = True
             self.defaults["global_graphic_engine"] = "2D"
-            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
+            plotcanvas = PlotCanvasLegacy(plot_container, self)
         else:
             try:
-                self.plotcanvas = PlotCanvas(plot_container, self)
+                plotcanvas = PlotCanvas(plot_container, self)
             except Exception as er:
                 msg_txt = traceback.format_exc()
                 self.log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
@@ -7749,25 +7756,25 @@ class App(QtCore.QObject):
                 return 'fail'
 
         # So it can receive key presses
-        self.plotcanvas.native.setFocus()
+        plotcanvas.native.setFocus()
 
         if self.is_legacy is False:
             pan_button = 2 if self.defaults["global_pan_button"] == '2' else 3
             # Set the mouse button for panning
-            self.plotcanvas.view.camera.pan_button_setting = pan_button
+            plotcanvas.view.camera.pan_button_setting = pan_button
 
-        self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.mr = self.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.mdc = self.plotcanvas.graph_event_connect('mouse_double_click', self.on_mouse_double_click_over_plot)
+        self.mm = plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.mp = plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.mr = plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.mdc = plotcanvas.graph_event_connect('mouse_double_click', self.on_mouse_double_click_over_plot)
 
         # Keys over plot enabled
-        self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
+        self.kp = plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
         if self.defaults['global_cursor_type'] == 'small':
-            self.app_cursor = self.plotcanvas.new_cursor()
+            self.app_cursor = plotcanvas.new_cursor()
         else:
-            self.app_cursor = self.plotcanvas.new_cursor(big=True)
+            self.app_cursor = plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
@@ -7775,10 +7782,12 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = False
 
         if self.is_legacy is False:
-            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            self.hover_shapes = ShapeCollection(parent=plotcanvas.view.scene, layers=1)
         else:
             # will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
+
+        return plotcanvas
 
     def on_zoom_fit(self):
         """

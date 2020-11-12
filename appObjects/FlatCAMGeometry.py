@@ -2302,7 +2302,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     'tooldia': tooldia_val
                 })
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    tools_dict[tooluid_key]['data']["optimization_type"] = self.app.defaults["geometry_optimization_type"]
+                    tools_dict[tooluid_key]['data']["optimization_type"] = \
+                        self.app.defaults["geometry_optimization_type"]
 
                 # find the tool_dia associated with the tooluid_key
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
@@ -2574,7 +2575,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
                     app_obj.app_obj.new_object("cncjob", outname, job_init, plot=plot)
-                    app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created")), outname)
+                    app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
             # Create a promise with the name
             self.app.collection.promise(outname)

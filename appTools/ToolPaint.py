@@ -68,7 +68,6 @@ class ToolPaint(AppTool, Gerber):
         self.tooldia_list = []
         self.tooldia = None
 
-        self.sel_rect = None
         self.o_name = None
         self.overlap = None
         self.connect = None
@@ -2406,7 +2405,7 @@ class ToolPaint(AppTool, Gerber):
 
             return self.flat_geometry
 
-        # this is were heavy lifting is done and creating the geometry to be painted
+        # this is where heavy lifting is done and creating the geometry to be painted
         target_geo = MultiPolygon(obj.solid_geometry)
         if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!

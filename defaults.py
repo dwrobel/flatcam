@@ -415,7 +415,6 @@ class FlatCAMDefaults:
         "tools_iso_passes": 1,
         "tools_iso_overlap": 10,
         "tools_iso_milling_type": "cl",
-        "tools_iso_follow": False,
         "tools_iso_isotype": "full",
 
         "tools_iso_rest":           False,

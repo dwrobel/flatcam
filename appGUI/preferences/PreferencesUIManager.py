@@ -347,7 +347,6 @@ class PreferencesUIManager:
             "tools_iso_passes":         self.ui.tools_defaults_form.tools_iso_group.passes_entry,
             "tools_iso_overlap":        self.ui.tools_defaults_form.tools_iso_group.overlap_entry,
             "tools_iso_milling_type":   self.ui.tools_defaults_form.tools_iso_group.milling_type_radio,
-            "tools_iso_follow":         self.ui.tools_defaults_form.tools_iso_group.follow_cb,
             "tools_iso_isotype":        self.ui.tools_defaults_form.tools_iso_group.iso_type_radio,
 
             "tools_iso_rest":           self.ui.tools_defaults_form.tools_iso_group.rest_cb,

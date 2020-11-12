@@ -7,7 +7,6 @@
 # Modified by Marius Stanciu (2020)                         #
 # ###########################################################
 
-from PyQt5 import QtCore
 from appObjects.ObjectCollection import *
 from appObjects.FlatCAMCNCJob import CNCJobObject
 from appObjects.FlatCAMDocument import DocumentObject
@@ -56,7 +55,8 @@ class AppObject(QtCore.QObject):
         self.object_plotted.connect(self.on_object_plotted)
         self.plots_updated.connect(self.app.on_plots_updated)
 
-    def new_object(self, kind, name, initialize, plot=True, autoselected=True, callback=None, callback_params=None):
+    def new_object(self, kind, name, initialize: object, plot=True, autoselected=True, callback=None,
+                   callback_params=None):
         """
         Creates a new specialized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
@@ -74,7 +74,7 @@ class AppObject(QtCore.QObject):
         :param initialize:      Function to run after creation of the object but before it is attached to the
                                 application.
                                 The function is called with 2 parameters: the new object and the App instance.
-        :type initialize:       function
+        :type initialize:       object
         :param plot:            If to plot the resulting object
         :param autoselected:    if the resulting object is autoselected in the Project tab and therefore in the
                                 self.collection

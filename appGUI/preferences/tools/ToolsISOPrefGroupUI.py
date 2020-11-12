@@ -197,23 +197,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.milling_type_label, 10, 0)
         grid0.addWidget(self.milling_type_radio, 10, 1, 1, 2)
 
-        # Follow
-        self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
-        self.follow_label.setToolTip(
-            _("Generate a 'Follow' geometry.\n"
-              "This means that it will cut through\n"
-              "the middle of the trace.")
-        )
-
-        self.follow_cb = FCCheckBox()
-        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                    "This means that it will cut through\n"
-                                    "the middle of the trace."))
-        self.follow_cb.setObjectName("i_follow")
-
-        grid0.addWidget(self.follow_label, 11, 0)
-        grid0.addWidget(self.follow_cb, 11, 1, 1, 2)
-
         # Isolation Type
         self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
