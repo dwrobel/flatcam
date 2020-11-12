@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - removed the "follow" functionality from the Isolation Tool
 - created a new application Tool named Follow Tool
 - added the "follow" functionality in the Follow Tool and added the new feature of allowing to perform "follow" on an area selection
+- fixed bug that inversed mouse cursor movement versus the real movement on Y axis when Grid lines are Off
 
 11.11.2020
 

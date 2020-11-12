@@ -276,16 +276,29 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
     def on_toggle_grid_lines(self, signal=None, silent=None):
         state = not self.grid_lines_enabled
 
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            color = 'dimgray'
+        else:
+            color = '#dededeff'
+
         if state:
             self.fcapp.defaults['global_grid_lines'] = True
             self.grid_lines_enabled = True
-            self.grid.parent = self.view.scene
+            # self.grid.parent = self.view.scene
+            self.grid._grid_color_fn['color'] = Color(color).rgba
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
         else:
             self.fcapp.defaults['global_grid_lines'] = False
             self.grid_lines_enabled = False
-            self.grid.parent = None
+            # self.grid.parent = None
+            self.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("Grid disabled."), False)
 
