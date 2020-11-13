@@ -5970,7 +5970,8 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
                 return
 
-            obj.on_tool_from_db_inserted(tool=tool_from_db)
+            # obj.on_tool_from_db_inserted(tool=tool_from_db)
+            self.milling_tool.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):

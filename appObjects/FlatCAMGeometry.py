@@ -643,7 +643,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
         # Plot state signals
-        self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
+        # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
         # Editor Signal

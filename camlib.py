@@ -792,6 +792,8 @@ class Geometry(object):
 
             for tool in self.tools:
                 working_geo = self.tools[tool]['solid_geometry']
+                if not working_geo:
+                    continue
 
                 if flatten:
                     self.flatten(geometry=working_geo, reset=True)

@@ -25,6 +25,8 @@ CHANGELOG for FlatCAM beta
 - added a message warning the user that the file is no longer available when it tries to open a file from the Menu -> Recent files, that was moved or deleted
 - fixed a tooltip in the Extract Tool for the Extract Cutout button
 - Milling Tool - added plot awareness and connection to the Plot button in the tool; updated translation strings
+- Milling Tool - finished adding the add tool, copy tool, delete tool and tool plot when the target object is Geometry
+- in camlib.py fixed the bounds() method for the Geometry objects such that tools in an Geometry object with no geometry will be now ignored for calculating the bounds
 
 12.11.2020
 

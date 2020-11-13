@@ -13,6 +13,8 @@ from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, F
 from appParsers.ParseExcellon import Excellon
 
 from copy import deepcopy
+import simplejson as json
+import sys
 
 from appObjects.FlatCAMObj import FlatCAMObj
 # import numpy as np
@@ -42,6 +44,7 @@ else:
 
 
 class ToolMilling(AppTool, Excellon):
+    builduiSig = QtCore.pyqtSignal()
 
     def __init__(self, app):
         self.app = app
@@ -173,6 +176,11 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+        self.builduiSig.connect(self.build_ui)
+
+        self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
+        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
         self.ui.operation_type_combo.currentIndexChanged.connect(self.on_operation_changed)
@@ -380,6 +388,20 @@ class ToolMilling(AppTool, Excellon):
 
         # handle the Plot checkbox
         self.plot_cb_handler()
+
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
+        self.ui.geo_tools_table.setupContextMenu()
+        self.ui.geo_tools_table.addContextMenu(
+            _("Pick from DB"), self.on_tool_add_from_db_clicked,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Copy"), self.on_tool_copy,
+            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
     def plot_cb_handler(self):
         # load the Milling object
@@ -909,6 +931,10 @@ class ToolMilling(AppTool, Excellon):
         # then connect it to the current build_ui() method
         self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
+        # connect the Tool Table Plot items
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            self.ui.geo_tools_table.cellWidget(row, 4).clicked.connect(self.on_plot_cb_click_table)
+
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
@@ -943,6 +969,13 @@ class ToolMilling(AppTool, Excellon):
 
             try:
                 self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+        # Tool Table Plot itesm
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            try:
+                self.ui.geo_tools_table.cellWidget(row, 4).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -1197,7 +1230,7 @@ class ToolMilling(AppTool, Excellon):
         cw_row = cw_index.row()
         cw_col = cw_index.column()
 
-        current_uid = int(self.ui.tools_table.item(cw_row, 3).text())
+        current_uid = int(self.ui.geo_tools_table.item(cw_row, 3).text())
 
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
@@ -1208,6 +1241,475 @@ class ToolMilling(AppTool, Excellon):
                 'type': typ,
                 'tool_type': tt,
             })
+
+    def on_tool_add(self, clicked_state, dia=None, new_geo=None):
+        log.debug("GeometryObject.on_add_tool()")
+
+        self.ui_disconnect()
+
+        filename = self.app.tools_database_path()
+
+        tool_dia = dia if dia is not None else self.ui.addtool_entry.get_value()
+
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.target_obj.tools]
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
+        tooluid = int(max_uid) + 1
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        # determine the new tool diameter
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                        "in Float format."))
+            self.ui_connect()
+            return
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.ui_connect()
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.ui_connect()
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        tool_found = 0
+
+        offset = 'Path'
+        offset_val = 0.0
+        typ = 'Rough'
+        tool_type = 'C1'
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Milling Tool (Geometry Object)
+            if db_tool_val['data']['tool_target'] != 1:     # _('Milling')
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_mill_') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_mill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_mill') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add(dia=tool_dia, new_geo=new_geo)
+            self.ui_connect()
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.ui_connect()
+            return
+
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
+        self.target_obj.tools.update({
+            tooluid: {
+                'tooldia':          new_tdia,
+                'offset':           deepcopy(offset),
+                'offset_value':     deepcopy(offset_val),
+                'type':             deepcopy(typ),
+                'tool_type':        deepcopy(tool_type),
+                'data':             deepcopy(new_tools_dict),
+                'solid_geometry':   self.target_obj.solid_geometry
+            }
+        })
+        self.ui_connect()
+        self.build_ui()
+
+        # select the tool just added
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            if int(self.ui.geo_tools_table.item(row, 3).text()) == tooluid:
+                self.ui.geo_tools_table.selectRow(row)
+                break
+
+        # update the UI form
+        self.update_ui()
+
+        # if there is at least one tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.param_frame.setDisabled(False)
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, new_geo=None, muted=None):
+        self.ui_disconnect()
+
+        tooldia = dia if dia is not None else self.ui.addtool_entry.get_value()
+
+        if tooldia == 0.0:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                        "in Float format."))
+            self.ui_connect()
+            return 'fail'
+
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.target_obj.tools]
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = max(tool_uid_list) if tool_uid_list else 0
+        self.tooluid = int(max_uid) + 1
+
+        tooldia = self.app.dec_format(tooldia, self.decimals)
+
+        # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
+        # otherwise we add a tool with data copied from last tool
+        if self.target_obj.tools:
+            last_data = self.target_obj.tools[max_uid]['data']
+            last_offset = self.target_obj.tools[max_uid]['offset']
+            last_offset_value = self.target_obj.tools[max_uid]['offset_value']
+            last_type = self.target_obj.tools[max_uid]['type']
+            last_tool_type = self.target_obj.tools[max_uid]['tool_type']
+
+            last_solid_geometry = self.target_obj.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
+
+            # if previous geometry was empty (it may happen for the first tool added)
+            # then copy the object.solid_geometry
+            if not last_solid_geometry:
+                last_solid_geometry = self.target_obj.solid_geometry
+
+            self.target_obj.tools.update({
+                self.tooluid: {
+                    'tooldia':          tooldia,
+                    'offset':           last_offset,
+                    'offset_value':     last_offset_value,
+                    'type':             last_type,
+                    'tool_type':        last_tool_type,
+                    'data':             deepcopy(last_data),
+                    'solid_geometry':   deepcopy(last_solid_geometry)
+                }
+            })
+        else:
+            self.target_obj.tools.update({
+                self.tooluid: {
+                    'tooldia':          tooldia,
+                    'offset':           'Path',
+                    'offset_value':     0.0,
+                    'type':             'Rough',
+                    'tool_type':        'C1',
+                    'data':             deepcopy(self.default_data),
+                    'solid_geometry':   self.solid_geometry
+                }
+            })
+
+        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.options['name'])
+
+        # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
+        try:
+            self.target_obj.ser_attrs.remove('tools')
+        except TypeError:
+            pass
+        self.target_obj.ser_attrs.append('tools')
+
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
+        self.ui_connect()
+        self.build_ui()
+
+        # if there is at least one tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.param_frame.setDisabled(False)
+
+    def on_tool_add_from_db_clicked(self):
+        """
+        Called when the user wants to add a new tool from Tools Database. It will create the Tools Database object
+        and display the Tools Database tab in the form needed for the Tool adding
+        :return: None
+        """
+
+        # if the Tools Database is already opened focus on it
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
+                break
+        ret_val = self.app.on_tools_database()
+        if ret_val == 'fail':
+            return
+        self.app.tools_db_tab.ok_to_add = True
+        self.app.tools_db_tab.ui.buttons_frame.hide()
+        self.app.tools_db_tab.ui.add_tool_from_db.show()
+        self.app.tools_db_tab.ui.cancel_tool_from_db.show()
+
+    def on_tool_from_db_inserted(self, tool):
+        """
+        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        :param tool: a dict with the tool data
+        :return: None
+        """
+
+        self.ui_disconnect()
+        self.units = self.app.defaults['units'].upper()
+
+        tooldia = float(tool['tooldia'])
+
+        # construct a list of all 'tooluid' in the self.tools
+        tool_uid_list = []
+        for tooluid_key in self.target_obj.tools:
+            tool_uid_item = int(tooluid_key)
+            tool_uid_list.append(tool_uid_item)
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        if not tool_uid_list:
+            max_uid = 0
+        else:
+            max_uid = max(tool_uid_list)
+        self.tooluid = max_uid + 1
+
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        self.target_obj.tools.update({
+            self.tooluid: {
+                'tooldia': tooldia,
+                'offset': tool['offset'],
+                'offset_value': float(tool['offset_value']),
+                'type': tool['type'],
+                'tool_type': tool['tool_type'],
+                'data': deepcopy(tool['data']),
+                'solid_geometry': self.target_obj.solid_geometry
+            }
+        })
+
+        self.target_obj.tools[self.tooluid]['data']['name'] = deepcopy(self.target_obj.options['name'])
+
+        # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
+        try:
+            self.target_obj.ser_attrs.remove('tools')
+        except TypeError:
+            pass
+        self.target_obj.ser_attrs.append('tools')
+
+        self.ui_connect()
+        self.build_ui()
+
+        # if there is no tool left in the Tools Table, enable the parameters appGUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.param_frame.setDisabled(False)
+
+    def on_tool_edit(self, current_item):
+        self.ui_disconnect()
+
+        current_row = current_item.row()
+        try:
+            d = float(self.ui.geo_tools_table.item(current_row, 1).text())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
+                return
+        except AttributeError:
+            self.ui_connect()
+            return
+
+        tool_dia = self.app.dec_format(d, self.decimals)
+        tooluid = int(self.ui.geo_tools_table.item(current_row, 3).text())
+
+        self.target_obj.tools[tooluid]['tooldia'] = tool_dia
+
+        try:
+            self.target_obj.ser_attrs.remove('tools')
+            self.target_obj.ser_attrs.append('tools')
+        except (TypeError, ValueError):
+            pass
+
+        self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
+        self.ui_connect()
+        self.builduiSig.emit()
+
+    def on_tool_copy(self, all_tools=None):
+        self.ui_disconnect()
+
+        # find the tool_uid maximum value in the self.tools
+        uid_list = []
+        for key in self.target_obj.tools:
+            uid_list.append(int(key))
+        try:
+            max_uid = max(uid_list, key=int)
+        except ValueError:
+            max_uid = 0
+
+        if all_tools is None:
+            if self.ui.geo_tools_table.selectedItems():
+                for current_row in self.ui.geo_tools_table.selectedItems():
+                    # sometime the header get selected and it has row number -1
+                    # we don't want to do anything with the header :)
+                    if current_row.row() < 0:
+                        continue
+                    try:
+                        tooluid_copy = int(self.ui.geo_tools_table.item(current_row.row(), 3).text())
+                        max_uid += 1
+                        self.target_obj.tools[int(max_uid)] = deepcopy(self.target_obj.tools[tooluid_copy])
+                    except AttributeError:
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                        self.ui_connect()
+                        self.builduiSig.emit()
+                        return
+                    except Exception as e:
+                        log.debug("on_tool_copy() --> " + str(e))
+                # deselect the table
+                # self.ui.geo_tools_table.clearSelection()
+            else:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                self.ui_connect()
+                self.builduiSig.emit()
+                return
+        else:
+            # we copy all tools in geo_tools_table
+            try:
+                temp_tools = deepcopy(self.target_obj.tools)
+                max_uid += 1
+                for tooluid in temp_tools:
+                    self.target_obj.tools[int(max_uid)] = deepcopy(temp_tools[tooluid])
+                temp_tools.clear()
+            except Exception as e:
+                log.debug("on_tool_copy() --> " + str(e))
+
+        # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
+        try:
+            self.target_obj.ser_attrs.remove('tools')
+        except ValueError:
+            pass
+        self.target_obj.ser_attrs.append('tools')
+
+        self.ui_connect()
+        self.builduiSig.emit()
+        self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
+
+    def on_tool_delete(self, clicked_signal, all_tools=None):
+        """
+        It's important to keep the not clicked_signal parameter otherwise the signal will go to the all_tools
+        parameter and I might get all the tool deleted
+        """
+        self.ui_disconnect()
+
+        if all_tools is None:
+            if self.ui.geo_tools_table.selectedItems():
+                for current_row in self.ui.geo_tools_table.selectedItems():
+                    # sometime the header get selected and it has row number -1
+                    # we don't want to do anything with the header :)
+                    if current_row.row() < 0:
+                        continue
+                    try:
+                        tooluid_del = int(self.ui.geo_tools_table.item(current_row.row(), 3).text())
+
+                        temp_tools = deepcopy(self.target_obj.tools)
+                        for tooluid_key in self.target_obj.tools:
+                            if int(tooluid_key) == tooluid_del:
+                                # if the self.tools has only one tool and we delete it then we move the solid_geometry
+                                # as a property of the object otherwise there will be nothing to hold it
+                                if len(self.target_obj.tools) == 1:
+                                    self.target_obj.solid_geometry = deepcopy(
+                                        self.target_obj.tools[tooluid_key]['solid_geometry']
+                                    )
+                                temp_tools.pop(tooluid_del, None)
+                        self.target_obj.tools = deepcopy(temp_tools)
+                        temp_tools.clear()
+                    except AttributeError:
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                        self.ui_connect()
+                        self.builduiSig.emit()
+                        return
+                    except Exception as e:
+                        log.debug("on_tool_delete() --> " + str(e))
+                # deselect the table
+                # self.ui.geo_tools_table.clearSelection()
+            else:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                self.ui_connect()
+                self.builduiSig.emit()
+                return
+        else:
+            # we delete all tools in geo_tools_table
+            self.target_obj.tools.clear()
+
+        self.app.plot_all()
+
+        # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
+        try:
+            self.target_obj.ser_attrs.remove('tools')
+        except TypeError:
+            pass
+        self.target_obj.ser_attrs.append('tools')
+
+        self.ui_connect()
+        self.build_ui()
+        self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))
+
+        obj_active = self.target_obj
+        # if the object was MultiGeo and now it has no tool at all (therefore no geometry)
+        # we make it back SingleGeo
+        if self.ui.geo_tools_table.rowCount() <= 0:
+            obj_active.multigeo = False
+            obj_active.options['xmin'] = 0
+            obj_active.options['ymin'] = 0
+            obj_active.options['xmax'] = 0
+            obj_active.options['ymax'] = 0
+
+        if obj_active.multigeo is True:
+            try:
+                xmin, ymin, xmax, ymax = obj_active.bounds()
+                obj_active.options['xmin'] = xmin
+                obj_active.options['ymin'] = ymin
+                obj_active.options['xmax'] = xmax
+                obj_active.options['ymax'] = ymax
+            except Exception:
+                obj_active.options['xmin'] = 0
+                obj_active.options['ymin'] = 0
+                obj_active.options['xmax'] = 0
+                obj_active.options['ymax'] = 0
+
+        # if there is no tool left in the Tools Table, disable the parameters appGUI
+        if self.ui.geo_tools_table.rowCount() == 0:
+            self.ui.param_frame.setDisabled(True)
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
@@ -1636,6 +2138,62 @@ class ToolMilling(AppTool, Excellon):
 
     def drilling_handler(self, obj):
         pass
+
+    def on_plot_cb_click(self):
+        self.target_obj.plot()
+
+        self.ui_disconnect()
+        cb_flag = self.ui.plot_cb.isChecked()
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            table_cb = self.ui.geo_tools_table.cellWidget(row, 4)
+            if cb_flag:
+                table_cb.setChecked(True)
+            else:
+                table_cb.setChecked(False)
+        self.ui_connect()
+
+    def on_plot_cb_click_table(self):
+        # self.ui.cnc_tools_table.cellWidget(row, 2).widget().setCheckState(QtCore.Qt.Unchecked)
+        self.ui_disconnect()
+        # cw = self.sender()
+        # cw_index = self.ui.geo_tools_table.indexAt(cw.pos())
+        # cw_row = cw_index.row()
+        check_row = 0
+
+        self.target_obj.shapes.clear(update=True)
+
+        for tooluid_key in self.target_obj.tools:
+            solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']
+
+            # find the geo_tool_table row associated with the tooluid_key
+            for row in range(self.ui.geo_tools_table.rowCount()):
+                tooluid_item = int(self.ui.geo_tools_table.item(row, 3).text())
+                if tooluid_item == int(tooluid_key):
+                    check_row = row
+                    break
+
+            if self.ui.geo_tools_table.cellWidget(check_row, 4).isChecked():
+                try:
+                    color = self.target_obj.tools[tooluid_key]['data']['override_color']
+                    self.target_obj.plot_element(element=solid_geometry, visible=True, color=color)
+                except KeyError:
+                    self.target_obj.plot_element(element=solid_geometry, visible=True)
+        self.target_obj.shapes.redraw()
+
+        # make sure that the general plot is disabled if one of the row plot's are disabled and
+        # if all the row plot's are enabled also enable the general plot checkbox
+        cb_cnt = 0
+        total_row = self.ui.geo_tools_table.rowCount()
+        for row in range(total_row):
+            if self.ui.geo_tools_table.cellWidget(row, 4).isChecked():
+                cb_cnt += 1
+            else:
+                cb_cnt -= 1
+        # if cb_cnt == total_row:
+        #     self.ui.plot_cb.setChecked(True)
+        # elif cb_cnt == 0:
+        #     self.ui.plot_cb.setChecked(False)
+        self.ui_connect()
 
     def on_key_press(self, event):
         # modifiers = QtWidgets.QApplication.keyboardModifiers()
