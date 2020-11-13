@@ -132,6 +132,20 @@ class ToolMilling(AppTool, Excellon):
         self.poly_drawn = False
         self.connect_signals_at_init()
 
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
+        self.ui.geo_tools_table.setupContextMenu()
+        self.ui.geo_tools_table.addContextMenu(
+            _("Pick from DB"), self.on_tool_add_from_db_clicked,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Copy"), self.on_tool_copy,
+            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
 
@@ -388,20 +402,6 @@ class ToolMilling(AppTool, Excellon):
 
         # handle the Plot checkbox
         self.plot_cb_handler()
-
-        # #############################################################################################################
-        # ############################### TOOLS TABLE context menu ####################################################
-        # #############################################################################################################
-        self.ui.geo_tools_table.setupContextMenu()
-        self.ui.geo_tools_table.addContextMenu(
-            _("Pick from DB"), self.on_tool_add_from_db_clicked,
-            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Copy"), self.on_tool_copy,
-            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
     def plot_cb_handler(self):
         # load the Milling object
@@ -867,6 +867,10 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.add_tool_frame.show()
 
+        # set the object as active so the Properties is populated by whatever object is selected
+        self.app.collection.set_all_inactive()
+        self.obj_name = self.ui.object_combo.currentText()
+        self.app.collection.set_active(self.obj_name)
         self.build_ui()
 
     def on_object_changed(self):
@@ -888,7 +892,9 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.ui.param_frame.setDisabled(False)
             self.obj_tools = self.target_obj.tools
-
+            # set the object as active so the Properties is populated by whatever object is selected
+            self.app.collection.set_all_inactive()
+            self.app.collection.set_active(self.obj_name)
             self.build_ui()
 
     def on_operation_changed(self, idx):
@@ -939,6 +945,9 @@ class ToolMilling(AppTool, Excellon):
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
+        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+
         # Tool Parameters
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
@@ -961,6 +970,15 @@ class ToolMilling(AppTool, Excellon):
             pass
         try:
             self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.geo_tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -1014,26 +1032,57 @@ class ToolMilling(AppTool, Excellon):
 
         :return:
         """
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
+        if self.ui.target_radio.get_value() == 'exc':
+            # #########################################################################################################
+            # Excellon Tool Table
+            # #########################################################################################################
+            sel_model = self.ui.tools_table.selectionModel()
+            sel_indexes = sel_model.selectedIndexes()
 
-        if len(sel_rows) == self.ui.tools_table.rowCount():
-            self.ui.tools_table.clearSelection()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            sel_rows = set()
+            for idx in sel_indexes:
+                sel_rows.add(idx.row())
+
+            if len(sel_rows) == self.ui.tools_table.rowCount():
+                self.ui.tools_table.clearSelection()
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+                )
+            else:
+                self.ui.tools_table.selectAll()
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
         else:
-            self.ui.tools_table.selectAll()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
+            # #########################################################################################################
+            # Geometry Tool Table
+            # #########################################################################################################
+            sel_model = self.ui.geo_tools_table.selectionModel()
+            sel_indexes = sel_model.selectedIndexes()
+
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            sel_rows = set()
+            for idx in sel_indexes:
+                sel_rows.add(idx.row())
+
+            if len(sel_rows) == self.ui.geo_tools_table.rowCount():
+                self.ui.geo_tools_table.clearSelection()
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+                )
+            else:
+                self.ui.geo_tools_table.selectAll()
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
 
     def on_row_selection_change(self):
+
+        # #############################################################################################################
+        # Excellon Tool Table
+        # #############################################################################################################
         sel_model = self.ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
@@ -1047,11 +1096,47 @@ class ToolMilling(AppTool, Excellon):
         if len(sel_rows) == 1:
             self.update_ui()
 
+        # #############################################################################################################
+        # Geometry Tool Table
+        # #############################################################################################################
+        sel_model = self.ui.geo_tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+        # for the rows other that the current one (first selected)
+        if len(sel_rows) == 1:
+            self.update_ui()
+
+        # synchronize selection in the Geometry Milling Tool Table with the selection in the Geometry UI Tool Table
+        self.target_obj.ui.geo_tools_table.clearSelection()
+        current_selection_mode = self.target_obj.ui.geo_tools_table.selectionMode()
+        self.target_obj.ui.geo_tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for row in range(self.target_obj.ui.geo_tools_table.rowCount()):
+            if row in sel_rows:
+                self.target_obj.ui.geo_tools_table.selectRow(row)
+        self.target_obj.ui.geo_tools_table.setSelectionMode(current_selection_mode)
+
+        # mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
+        # for index in sel_indexes:
+        #     sel_model.select(index, mode)
+
+
     def update_ui(self):
         self.blockSignals(True)
 
         sel_rows = set()
-        table_items = self.ui.tools_table.selectedItems()
+        if self.ui.target_radio.get_value() == 'exc':
+            tool_table = self.ui.tools_table
+        else:
+            tool_table = self.ui.geo_tools_table
+
+        table_items = tool_table.selectedItems()
+
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
@@ -1069,7 +1154,7 @@ class ToolMilling(AppTool, Excellon):
 
         if len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form
-            tooluid = int(self.ui.tools_table.item(list(sel_rows)[0], 0).text())
+            tooluid = int(tool_table.item(list(sel_rows)[0], 0).text())
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
             )
@@ -1081,10 +1166,12 @@ class ToolMilling(AppTool, Excellon):
         for c_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
             try:
-                item = self.ui.tools_table.item(c_row, 3)
+                item = tool_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = item.text()
-                    self.storage_to_form(self.obj_tools[str(tooluid)]['data'])
+                    if self.ui.target_radio.get_value() == 'geo':
+                        tooluid = int(tooluid)
+                    self.storage_to_form(self.obj_tools[tooluid]['data'])
                 else:
                     self.blockSignals(False)
                     return
@@ -1129,7 +1216,11 @@ class ToolMilling(AppTool, Excellon):
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
+        try:
+            option_changed = self.name2option[wdg_objname]
+        except KeyError:
+            log.debug("ToolMilling.form_to_storage() --> Key not in self.name2option: %s" % str(wdg_objname))
+            return
 
         # row = self.ui.tools_table.currentRow()
         rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
@@ -1365,6 +1456,7 @@ class ToolMilling(AppTool, Excellon):
         })
         self.ui_connect()
         self.build_ui()
+        self.target_obj.build_ui()
 
         # select the tool just added
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -1453,6 +1545,7 @@ class ToolMilling(AppTool, Excellon):
             self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
         self.ui_connect()
         self.build_ui()
+        self.target_obj.build_ui()
 
         # if there is at least one tool left in the Tools Table, enable the parameters GUI
         if self.ui.geo_tools_table.rowCount() != 0:
@@ -1564,6 +1657,7 @@ class ToolMilling(AppTool, Excellon):
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
         self.ui_connect()
         self.builduiSig.emit()
+        self.target_obj.build_ui()
 
     def on_tool_copy(self, all_tools=None):
         self.ui_disconnect()
@@ -1682,6 +1776,7 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui_connect()
         self.build_ui()
+        self.target_obj.build_ui()
         self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))
 
         obj_active = self.target_obj

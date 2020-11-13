@@ -2416,6 +2416,7 @@ class App(QtCore.QObject):
             pass
         else:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber, Excellon or CNCJob Object to edit."))
+            self.ui.menuobjects.setDisabled(False)
             return
 
         if isinstance(edited_object, GeometryObject):
@@ -2426,16 +2427,22 @@ class App(QtCore.QObject):
             # self.ui.splitter.setSizes([0, 1])
 
             if edited_object.multigeo is True:
-                sel_rows = [item.row() for item in edited_object.ui.geo_tools_table.selectedItems()]
+                sel_rows = set()
+                for item in edited_object.ui.geo_tools_table.selectedItems():
+                    sel_rows.add(item.row())
+                sel_rows = list(sel_rows)
 
                 if len(sel_rows) > 1:
                     self.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Simultaneous editing of tools geometry in a MultiGeo Geometry "
                                        "is not possible.\n"
                                        "Edit only one geometry at a time."))
+                    self.ui.menuobjects.setDisabled(False)
+                    return
 
                 if not sel_rows:
                     self.inform.emit('[WARNING_NOTCL] %s.' % _("No Tool Selected"))
+                    self.ui.menuobjects.setDisabled(False)
                     return
 
                 # determine the tool dia of the selected tool

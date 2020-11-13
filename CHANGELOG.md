@@ -27,6 +27,9 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - added plot awareness and connection to the Plot button in the tool; updated translation strings
 - Milling Tool - finished adding the add tool, copy tool, delete tool and tool plot when the target object is Geometry
 - in camlib.py fixed the bounds() method for the Geometry objects such that tools in an Geometry object with no geometry will be now ignored for calculating the bounds
+- in Milling Tool - synchronized the Tool Table for Geometry Object with the Geometry UI Table (in Properties)
+- in Milling Tool - the Tools Table selection works now as expected (still have to store the changed parameters/update the parameters UI)
+- fixed an error in the app that allowed editing of Geometry objects with multiple tools selected and of type MultiGeo; also reverted some changes in case of error in this section
 
 12.11.2020
 
