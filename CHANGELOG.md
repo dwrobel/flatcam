@@ -14,6 +14,8 @@ CHANGELOG for FlatCAM beta
 - fixed the Subtract sub-tool in the Geometry Editor
 - added an alternative Subtract sub-tool in the Geometry Editor, one that do not delete the subtracting shapes
 - added some not-so-good icons for the Subtract Alt sub-tool in Geometry Editor
+- minimized the number of tools present in the Tools Toolbar to the bare minimum
+- fixed an error in the Follow Tool
 
 12.11.2020
 

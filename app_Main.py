@@ -2151,35 +2151,37 @@ class App(QtCore.QObject):
     def connect_tools_signals_to_toolbar(self):
         self.log.debug(" -> Connecting Tools Toolbar Signals")
 
-        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
-        self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
-        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
-        self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
-
-        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
-        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
-        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
-        self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
-        self.ui.follow_btn.triggered.connect(lambda: self.follow_tool.run(toggle=True))
-
         self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
 
+        self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
+        self.ui.follow_btn.triggered.connect(lambda: self.follow_tool.run(toggle=True))
+        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
+        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
+
+        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
-        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
-        self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
-        self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
+        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
 
-        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
-        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
-        self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
-        self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
-        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
-        self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
         self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
-        self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
+        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
+        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
+
+        # self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        # self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        # self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
+        #
+        # self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
+        # self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+        # self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
+        # self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
+        #
+        # self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
+        # self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
+        # self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
+        # self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
+        # self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
 
     def connect_editors_toolbar_signals(self):
         self.log.debug(" -> Connecting Editors Toolbar Signals")

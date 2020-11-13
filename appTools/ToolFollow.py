@@ -125,7 +125,7 @@ class ToolFollow(AppTool, Gerber):
             return "Could not retrieve object: %s with error: %s" % (obj_name, str(e))
 
         if obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
         formatted_name = obj_name.rpartition('.')[0]
