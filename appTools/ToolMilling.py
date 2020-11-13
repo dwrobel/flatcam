@@ -493,12 +493,20 @@ class ToolMilling(AppTool, Excellon):
 
         self.units = self.app.defaults['units']
 
+        if self.target_obj:
+            self.ui.param_frame.setDisabled(False)
+
+            tools_dict = self.target_obj.tools
+
+        else:
+            tools_dict = {}
+
         row_idx = 0
 
-        n = len(self.target_obj.tools)
+        n = len(tools_dict)
         self.ui.geo_tools_table.setRowCount(n)
 
-        for tooluid_key, tooluid_value in self.target_obj.tools.items():
+        for tooluid_key, tooluid_value in tools_dict.items():
 
             # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
@@ -602,10 +610,10 @@ class ToolMilling(AppTool, Excellon):
 
         # disable the Plot column in Tool Table if the geometry is SingleGeo as it is not needed
         # and can create some problems
-        if self.target_obj.multigeo is False:
-            self.ui.geo_tools_table.setColumnHidden(4, True)
-        else:
+        if self.target_obj and self.target_obj.multigeo is True:
             self.ui.geo_tools_table.setColumnHidden(4, False)
+        else:
+            self.ui.geo_tools_table.setColumnHidden(4, True)
 
         self.ui_connect()
 

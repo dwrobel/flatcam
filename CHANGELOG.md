@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed an error in the Follow Tool
 - started to work in Milling Tool - designing the Tool UI
 - Milling Tool - finished the UI and also the button handlers in the Geometry and Excellon objects Properties UI
+- Milling Tool - fixed the situation when launching the Tool but there is no object loaded
 
 12.11.2020
 
