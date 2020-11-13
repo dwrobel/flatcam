@@ -20,6 +20,7 @@ import re
 import time
 import logging
 import traceback
+import os
 
 import gettext
 import appTranslation as fcTranslate
@@ -106,6 +107,10 @@ class ToolPDF(AppTool):
                                                'params': [filename]})
 
     def open_pdf(self, filename):
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
+
         short_name = filename.split('/')[-1].split('\\')[-1]
         self.parsing_promises.append(short_name)
 

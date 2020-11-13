@@ -10,6 +10,8 @@ from PyQt5 import QtGui, QtWidgets
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 
+import os
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -128,6 +130,9 @@ class ToolImage(AppTool):
         """
 
         self.app.defaults.report_usage("import_image()")
+        if not os.path.exists(filename):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         if mask is None:
             mask = [250, 250, 250, 250]

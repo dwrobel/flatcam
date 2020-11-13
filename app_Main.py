@@ -10099,6 +10099,9 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         self.app.log.debug("App.import_svg()")
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -10149,6 +10152,9 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
         self.app.log.debug(" ********* Importing DXF as: %s ********* " % geo_type.capitalize())
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -10235,6 +10241,9 @@ class MenuFileHandlers(QtCore.QObject):
                 return "fail"
 
         self.app.log.debug("open_gerber()")
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         with self.app.proc_container.new(_("Opening ...")):
             # Object name
@@ -10270,6 +10279,9 @@ class MenuFileHandlers(QtCore.QObject):
         """
 
         self.app.log.debug("open_excellon()")
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
@@ -10332,6 +10344,9 @@ class MenuFileHandlers(QtCore.QObject):
         :return:                None
         """
         self.app.log.debug("open_gcode()")
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         # How the object should be initialized
         def obj_init(job_obj, app_obj_):
@@ -10486,6 +10501,9 @@ class MenuFileHandlers(QtCore.QObject):
                 return "fail"
 
         self.app.log.debug("open_script()")
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         with self.app.proc_container.new(_("Opening ...")):
 
@@ -10570,6 +10588,9 @@ class MenuFileHandlers(QtCore.QObject):
         :return:                None
         """
         self.app.log.debug("Opening project: " + filename)
+        if not os.path.exists(filename):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
+            return
 
         # block autosaving while a project is loaded
         self.app.block_autosave = True

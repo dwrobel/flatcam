@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - made sure that on target object change the UI is build again
 - Geo Editor - Text sub-tool - fixed font size control not shown; fixes issue #470
 - Geo Editor - fixed an issue with having a translatable text empty; updated the translation strings from sources
+- added a message warning the user that the file is no longer available when it tries to open a file from the recent file, that was moved or deleted
 
 12.11.2020
 
