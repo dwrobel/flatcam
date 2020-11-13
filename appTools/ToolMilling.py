@@ -378,6 +378,32 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui.offset_type_combo.set_value(0)  # 'Path'
 
+        # handle the Plot checkbox
+        self.plot_cb_handler()
+
+    def plot_cb_handler(self):
+        # load the Milling object
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return
+
+        try:
+            self.ui.plot_cb.stateChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        self.ui.plot_cb.stateChanged.connect(self.on_plot_clicked)
+        if self.target_obj is not None:
+            self.ui.plot_cb.set_value(self.target_obj.options['plot'])
+
+    def on_plot_clicked(self, state):
+        self.target_obj.options['plot'] = True if state else False
+
     def rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
@@ -391,8 +417,6 @@ class ToolMilling(AppTool, Excellon):
         for current_uid in current_uid_list:
             new_tools[new_uid] = deepcopy(self.iso_tools[current_uid])
             new_uid += 1
-
-        self.iso_tools = new_tools
 
         # the tools table changed therefore we need to rebuild it
         QtCore.QTimer.singleShot(20, self.build_ui)
@@ -766,6 +790,9 @@ class ToolMilling(AppTool, Excellon):
         self.ui_connect()
 
     def on_target_changed(self, val):
+        # handle the Plot checkbox
+        self.plot_cb_handler()
+
         obj_type = 1 if val == 'exc' else 2
         self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.object_combo.setCurrentIndex(0)
@@ -821,6 +848,9 @@ class ToolMilling(AppTool, Excellon):
         self.build_ui()
 
     def on_object_changed(self):
+        # handle the Plot checkbox
+        self.plot_cb_handler()
+        
         # load the Milling object
         self.obj_name = self.ui.object_combo.currentText()
 

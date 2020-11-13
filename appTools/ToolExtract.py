@@ -973,10 +973,10 @@ class ExtractUI:
         grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
 
         # EXTRACT CUTOUT
-        self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Cutout").upper())
-        self.extract_sm_label.setToolTip(
+        self.extract_cut_label = FCLabel('<b>%s</b>' % _("Extract Cutout").upper())
+        self.extract_cut_label.setToolTip(
             _("Extract a cutout from a given Gerber file."))
-        grid3.addWidget(self.extract_sm_label, 26, 0, 1, 2)
+        grid3.addWidget(self.extract_cut_label, 26, 0, 1, 2)
 
         # Margin
         self.margin_cut_label = FCLabel('%s:' % _("Margin"))
@@ -1015,7 +1015,7 @@ class ExtractUI:
         self.e_cut_button = QtWidgets.QPushButton(_("Extract Cutout"))
         self.e_cut_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_cut_button.setToolTip(
-            _("Extract soldermask from a given Gerber file.")
+            _("Extract a cutout from a given Gerber file.")
         )
         self.e_cut_button.setStyleSheet("""
                                                QPushButton
