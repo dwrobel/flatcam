@@ -818,6 +818,8 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.add_tool_frame.show()
 
+        self.build_ui()
+
     def on_object_changed(self):
         # load the Milling object
         self.obj_name = self.ui.object_combo.currentText()
