@@ -286,7 +286,10 @@ class TextInputTool(AppTool):
         #         pass
 
         # Font size
-        self.font_size_cb = FCComboBox()
+
+        hlay = QtWidgets.QHBoxLayout()
+
+        self.font_size_cb = FCComboBox(policy=False)
         self.font_size_cb.setEditable(True)
         self.font_size_cb.setMinimumContentsLength(3)
         self.font_size_cb.setMaximumWidth(70)
@@ -296,11 +299,9 @@ class TextInputTool(AppTool):
                       '32', '36', '40', '44', '48', '54', '60', '66',
                       '72', '80', '88', '96']
 
-        for i in font_sizes:
-            self.font_size_cb.addItem(i)
+        self.font_size_cb.addItems(font_sizes)
         self.font_size_cb.setCurrentIndex(4)
 
-        hlay = QtWidgets.QHBoxLayout()
         hlay.addWidget(self.font_size_cb)
         hlay.addStretch()
 

@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - finished the UI and also the button handlers in the Geometry and Excellon objects Properties UI
 - Milling Tool - fixed the situation when launching the Tool but there is no object loaded
 - Milling Tool - made sure that on target object change the UI is build again
+- Geo Editor - Text sub-tool - fixed font size control not shown; fixes issue #470
 
 12.11.2020
 
