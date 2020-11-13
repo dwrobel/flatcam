@@ -667,7 +667,7 @@ class MainGUI(QtWidgets.QMainWindow):
         )
         self.geo_subtract_alt_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract16.png'),
-            '%s\t%s' % (_('Alt Subtraction'), _(''))
+            '%s\t%s' % (_('Alt Subtraction'), '')
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
