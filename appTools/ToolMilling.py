@@ -13,6 +13,7 @@ from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, F
 from appParsers.ParseExcellon import Excellon
 
 from copy import deepcopy
+import math
 import simplejson as json
 import sys
 
@@ -199,6 +200,10 @@ class ToolMilling(AppTool, Excellon):
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
         self.ui.operation_type_combo.currentIndexChanged.connect(self.on_operation_changed)
         self.ui.offset_type_combo.currentIndexChanged.connect(self.on_offset_type_changed)
+
+        # V tool shape params changed
+        self.ui.tipdia_entry.valueChanged.connect(self.on_update_cutz)
+        self.ui.tipangle_entry.valueChanged.connect(self.on_update_cutz)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
@@ -868,9 +873,10 @@ class ToolMilling(AppTool, Excellon):
             self.ui.add_tool_frame.show()
 
         # set the object as active so the Properties is populated by whatever object is selected
-        self.app.collection.set_all_inactive()
         self.obj_name = self.ui.object_combo.currentText()
-        self.app.collection.set_active(self.obj_name)
+        if self.obj_name and self.obj_name != '':
+            self.app.collection.set_all_inactive()
+            self.app.collection.set_active(self.obj_name)
         self.build_ui()
 
     def on_object_changed(self):
@@ -893,8 +899,9 @@ class ToolMilling(AppTool, Excellon):
             self.ui.param_frame.setDisabled(False)
             self.obj_tools = self.target_obj.tools
             # set the object as active so the Properties is populated by whatever object is selected
-            self.app.collection.set_all_inactive()
-            self.app.collection.set_active(self.obj_name)
+            if self.obj_name and self.obj_name != '':
+                self.app.collection.set_all_inactive()
+                self.app.collection.set_active(self.obj_name)
             self.build_ui()
 
     def on_operation_changed(self, idx):
@@ -937,16 +944,20 @@ class ToolMilling(AppTool, Excellon):
         # then connect it to the current build_ui() method
         self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
-        # connect the Tool Table Plot items
+        # connect Tool Table Widgets
         for row in range(self.ui.geo_tools_table.rowCount()):
+            self.ui.geo_tools_table.cellWidget(row, 2).currentIndexChanged.connect(
+                self.on_tooltable_cellwidget_change)
             self.ui.geo_tools_table.cellWidget(row, 4).clicked.connect(self.on_plot_cb_click_table)
 
-        # rows selected
+        # # Geo Tool Table - rows selected
+        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+
+        # Excellon Tool Table - rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
-
-        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # Tool Parameters
         for opt in self.form_fields:
@@ -963,7 +974,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
-        # rows selected
+        # Excellon Tool Table - rows selected
         try:
             self.ui.tools_table.clicked.disconnect()
         except (TypeError, AttributeError):
@@ -973,8 +984,13 @@ class ToolMilling(AppTool, Excellon):
         except (TypeError, AttributeError):
             pass
 
+        # Geo Tool Table
         try:
             self.ui.geo_tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.geo_tools_table.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
@@ -982,16 +998,13 @@ class ToolMilling(AppTool, Excellon):
         except (TypeError, AttributeError):
             pass
 
-        # tool table widgets
-        for row in range(self.ui.tools_table.rowCount()):
-
+        # Geometry Tool table widgets
+        for row in range(self.ui.geo_tools_table.rowCount()):
             try:
-                self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+                self.ui.geo_tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
-        # Tool Table Plot itesm
-        for row in range(self.ui.geo_tools_table.rowCount()):
             try:
                 self.ui.geo_tools_table.cellWidget(row, 4).clicked.disconnect()
             except (TypeError, AttributeError):
@@ -1079,52 +1092,51 @@ class ToolMilling(AppTool, Excellon):
                 )
 
     def on_row_selection_change(self):
+        if self.ui.target_radio.get_value() == 'exc':
+            # #########################################################################################################
+            # Excellon Tool Table
+            # ########################################################################################################
+            sel_model = self.ui.tools_table.selectionModel()
+            sel_indexes = sel_model.selectedIndexes()
 
-        # #############################################################################################################
-        # Excellon Tool Table
-        # #############################################################################################################
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            sel_rows = set()
+            for idx in sel_indexes:
+                sel_rows.add(idx.row())
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
+            # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+            # for the rows other that the current one (first selected)
+            if len(sel_rows) == 1:
+                self.update_ui()
+        else:
+            # #########################################################################################################
+            # Geometry Tool Table
+            # #########################################################################################################
+            sel_model = self.ui.geo_tools_table.selectionModel()
+            sel_indexes = sel_model.selectedIndexes()
 
-        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
-        # for the rows other that the current one (first selected)
-        if len(sel_rows) == 1:
-            self.update_ui()
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            sel_rows = set()
+            for idx in sel_indexes:
+                sel_rows.add(idx.row())
 
-        # #############################################################################################################
-        # Geometry Tool Table
-        # #############################################################################################################
-        sel_model = self.ui.geo_tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
+            # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+            # for the rows other that the current one (first selected)
+            if len(sel_rows) == 1:
+                self.update_ui()
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
+            # synchronize selection in the Geometry Milling Tool Table with the selection in the Geometry UI Tool Table
+            self.target_obj.ui.geo_tools_table.clearSelection()
+            current_selection_mode = self.target_obj.ui.geo_tools_table.selectionMode()
+            self.target_obj.ui.geo_tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            for row in range(self.target_obj.ui.geo_tools_table.rowCount()):
+                if row in sel_rows:
+                    self.target_obj.ui.geo_tools_table.selectRow(row)
+            self.target_obj.ui.geo_tools_table.setSelectionMode(current_selection_mode)
 
-        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
-        # for the rows other that the current one (first selected)
-        if len(sel_rows) == 1:
-            self.update_ui()
-
-        # synchronize selection in the Geometry Milling Tool Table with the selection in the Geometry UI Tool Table
-        self.target_obj.ui.geo_tools_table.clearSelection()
-        current_selection_mode = self.target_obj.ui.geo_tools_table.selectionMode()
-        self.target_obj.ui.geo_tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for row in range(self.target_obj.ui.geo_tools_table.rowCount()):
-            if row in sel_rows:
-                self.target_obj.ui.geo_tools_table.selectRow(row)
-        self.target_obj.ui.geo_tools_table.setSelectionMode(current_selection_mode)
-
-        # mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
-        # for index in sel_indexes:
-        #     sel_model.select(index, mode)
-
+            # mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
+            # for index in sel_indexes:
+            #     sel_model.select(index, mode)
 
     def update_ui(self):
         self.blockSignals(True)
@@ -1162,6 +1174,36 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
+
+        if self.ui.target_radio.get_value() == 'geo':
+            sel_model = self.ui.geo_tools_table.selectionModel()
+            sel_indexes = sel_model.selectedIndexes()
+
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            sel_rows = set()
+            for idx in sel_indexes:
+                sel_rows.add(idx.row())
+            sel_rows = list(sel_rows)
+
+            # the last selected row is the current row
+            current_row = sel_rows[-1]
+
+            # #########################################################################################################
+            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+            # #########################################################################################################
+            try:
+                item = self.ui.geo_tools_table.cellWidget(current_row, 2)
+                if item is not None:
+                    tool_type_txt = item.currentText()
+                    self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                else:
+                    self.blockSignals(False)
+                    return
+            except Exception as e:
+                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                self.blockSignals(False)
+                return
 
         for c_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
@@ -1239,6 +1281,75 @@ class ToolMilling(AppTool, Excellon):
 
         self.blockSignals(False)
 
+    def on_tooltable_cellwidget_change(self):
+        cw = self.sender()
+        cw_index = self.ui.geo_tools_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        cw_col = cw_index.column()
+        # current_uid = int(self.ui.geo_tools_table.item(cw_row, 3).text())
+
+        if cw_col == 2:
+            tool_type = self.ui.geo_tools_table.cellWidget(cw_row, 2).currentText()
+            self.ui_update_v_shape(tool_type)
+
+    def ui_update_v_shape(self, tool_type_txt):
+        if tool_type_txt == 'V':
+            self.ui.tipdialabel.show()
+            self.ui.tipdia_entry.show()
+            self.ui.tipanglelabel.show()
+            self.ui.tipangle_entry.show()
+            self.ui.cutz_entry.setDisabled(True)
+            self.ui.cutzlabel.setToolTip(
+                _("Disabled because the tool is V-shape.\n"
+                  "For V-shape tools the depth of cut is\n"
+                  "calculated from other parameters like:\n"
+                  "- 'V-tip Angle' -> angle at the tip of the tool\n"
+                  "- 'V-tip Dia' -> diameter at the tip of the tool \n"
+                  "- Tool Dia -> 'Dia' column found in the Tool Table\n"
+                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'")
+            )
+            self.on_update_cutz()
+        else:
+            self.ui.tipdialabel.hide()
+            self.ui.tipdia_entry.hide()
+            self.ui.tipanglelabel.hide()
+            self.ui.tipangle_entry.hide()
+            self.ui.cutz_entry.setDisabled(False)
+            self.ui.cutzlabel.setToolTip(
+                _("Cutting depth (negative)\n"
+                  "below the copper surface.")
+            )
+            self.ui.cutz_entry.setToolTip('')
+
+    def on_update_cutz(self):
+        vdia = float(self.ui.tipdia_entry.get_value())
+        half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
+
+        row = self.ui.geo_tools_table.currentRow()
+        tool_uid_item = self.ui.geo_tools_table.item(row, 3)
+        if tool_uid_item is None:
+            return
+        tool_uid = int(tool_uid_item.text())
+
+        tool_dia_item = self.ui.geo_tools_table.item(row, 1)
+        if tool_dia_item is None:
+            return
+        tooldia = float(tool_dia_item.text())
+
+        try:
+            new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
+        except ZeroDivisionError:
+            new_cutz = self.old_cutz
+
+        new_cutz = self.app.dec_format(new_cutz, self.decimals) * -1.0   # this value has to be negative
+
+        self.ui.cutz_entry.set_value(new_cutz)
+
+        # store the new CutZ value into storage (self.tools)
+        for tooluid_key, tooluid_value in self.target_obj.tools.items():
+            if int(tooluid_key) == tool_uid:
+                tooluid_value['data']['cutz'] = new_cutz
+
     def get_selected_tools_list(self):
         """
         Returns the keys to the self.tools dictionary corresponding
@@ -1311,27 +1422,6 @@ class ToolMilling(AppTool, Excellon):
     def on_order_changed(self, order):
         if order != 'no':
             self.build_ui()
-
-    def on_tooltable_cellwidget_change(self):
-        cw = self.sender()
-        assert isinstance(cw, QtWidgets.QComboBox), \
-            "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
-
-        cw_index = self.ui.tools_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
-        cw_col = cw_index.column()
-
-        current_uid = int(self.ui.geo_tools_table.item(cw_row, 3).text())
-
-        # if the sender is in the column with index 2 then we update the tool_type key
-        if cw_col == 2:
-            tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else 'Rough'
-
-            self.iso_tools[current_uid].update({
-                'type': typ,
-                'tool_type': tt,
-            })
 
     def on_tool_add(self, clicked_state, dia=None, new_geo=None):
         log.debug("GeometryObject.on_add_tool()")
@@ -1631,11 +1721,11 @@ class ToolMilling(AppTool, Excellon):
 
         current_row = current_item.row()
         try:
-            d = float(self.ui.geo_tools_table.item(current_row, 1).text())
+            dia = float(self.ui.geo_tools_table.item(current_row, 1).text())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
+                dia = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
@@ -1643,10 +1733,14 @@ class ToolMilling(AppTool, Excellon):
             self.ui_connect()
             return
 
-        tool_dia = self.app.dec_format(d, self.decimals)
+        tool_dia = self.app.dec_format(dia, self.decimals)
         tooluid = int(self.ui.geo_tools_table.item(current_row, 3).text())
 
+        # update Tool dia
         self.target_obj.tools[tooluid]['tooldia'] = tool_dia
+
+        # update Cut Z if V shape tool
+        self.on_update_cutz()
 
         try:
             self.target_obj.ser_attrs.remove('tools')
@@ -2898,6 +2992,44 @@ class MillingUI:
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid1.addWidget(separator_line2, 18, 0, 1, 2)
 
+        # Tip Dia
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _(
+                "The tip diameter for V-Shape Tool"
+            )
+        )
+        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.00001, 10000.0000)
+        self.tipdia_entry.setSingleStep(0.1)
+        self.tipdia_entry.setObjectName("mill_tipdia")
+
+        self.grid1.addWidget(self.tipdialabel, 20, 0)
+        self.grid1.addWidget(self.tipdia_entry, 20, 1)
+
+        # Tip Angle
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _(
+                "The tip angle for V-Shape Tool.\n"
+                "In degree."
+            )
+        )
+        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(1.0, 180.0)
+        self.tipangle_entry.setSingleStep(1)
+        self.tipangle_entry.setObjectName("mill_tipangle")
+
+        self.grid1.addWidget(self.tipanglelabel, 22, 0)
+        self.grid1.addWidget(self.tipangle_entry, 22, 1)
+
+        self.tipdialabel.hide()
+        self.tipdia_entry.hide()
+        self.tipanglelabel.hide()
+        self.tipangle_entry.hide()
+
         # Cut Z
         self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
@@ -2916,8 +3048,8 @@ class MillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("mill_cutz")
 
-        self.grid1.addWidget(self.cutzlabel, 20, 0)
-        self.grid1.addWidget(self.cutz_entry, 20, 1)
+        self.grid1.addWidget(self.cutzlabel, 24, 0)
+        self.grid1.addWidget(self.cutz_entry, 24, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -2941,8 +3073,8 @@ class MillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        self.grid1.addWidget(self.mpass_cb, 22, 0)
-        self.grid1.addWidget(self.maxdepth_entry, 22, 1)
+        self.grid1.addWidget(self.mpass_cb, 26, 0)
+        self.grid1.addWidget(self.maxdepth_entry, 26, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -2962,8 +3094,8 @@ class MillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("mill_travelz")
 
-        self.grid1.addWidget(self.travelzlabel, 24, 0)
-        self.grid1.addWidget(self.travelz_entry, 24, 1)
+        self.grid1.addWidget(self.travelzlabel, 28, 0)
+        self.grid1.addWidget(self.travelz_entry, 28, 1)
 
         # Feedrate X-Y
         self.frxylabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -2977,8 +3109,8 @@ class MillingUI:
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
-        self.grid1.addWidget(self.frxylabel, 26, 0)
-        self.grid1.addWidget(self.xyfeedrate_entry, 26, 1)
+        self.grid1.addWidget(self.frxylabel, 30, 0)
+        self.grid1.addWidget(self.xyfeedrate_entry, 30, 1)
 
         self.frxylabel.hide()
         self.xyfeedrate_entry.hide()
@@ -2997,8 +3129,8 @@ class MillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("mill_feedratez")
 
-        self.grid1.addWidget(self.frzlabel, 28, 0)
-        self.grid1.addWidget(self.feedrate_z_entry, 28, 1)
+        self.grid1.addWidget(self.frzlabel, 32, 0)
+        self.grid1.addWidget(self.feedrate_z_entry, 32, 1)
 
         # Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -3015,8 +3147,8 @@ class MillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
-        self.grid1.addWidget(self.feedrate_rapid_label, 30, 0)
-        self.grid1.addWidget(self.feedrate_rapid_entry, 30, 1)
+        self.grid1.addWidget(self.feedrate_rapid_label, 34, 0)
+        self.grid1.addWidget(self.feedrate_rapid_entry, 34, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -3050,8 +3182,8 @@ class MillingUI:
         self.extracut_cb.hide()
         self.e_cut_entry.hide()
 
-        self.grid1.addWidget(self.extracut_cb, 32, 0)
-        self.grid1.addWidget(self.e_cut_entry, 32, 1)
+        self.grid1.addWidget(self.extracut_cb, 36, 0)
+        self.grid1.addWidget(self.e_cut_entry, 36, 1)
 
         # Spindlespeed
         self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
@@ -3065,8 +3197,8 @@ class MillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
-        self.grid1.addWidget(self.spindle_label, 34, 0)
-        self.grid1.addWidget(self.spindlespeed_entry, 34, 1)
+        self.grid1.addWidget(self.spindle_label, 38, 0)
+        self.grid1.addWidget(self.spindlespeed_entry, 38, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -3086,13 +3218,13 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        self.grid1.addWidget(self.dwell_cb, 36, 0)
-        self.grid1.addWidget(self.dwelltime_entry, 36, 1)
+        self.grid1.addWidget(self.dwell_cb, 40, 0)
+        self.grid1.addWidget(self.dwelltime_entry, 40, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # #################################################################
-        # ################# GRID LAYOUT 5   ###############################
+        # ################# GRID LAYOUT 3   ###############################
         # #################################################################
         # ################# COMMON PARAMETERS #############################
 

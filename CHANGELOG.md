@@ -30,6 +30,8 @@ CHANGELOG for FlatCAM beta
 - in Milling Tool - synchronized the Tool Table for Geometry Object with the Geometry UI Table (in Properties)
 - in Milling Tool - the Tools Table selection works now as expected (still have to store the changed parameters/update the parameters UI)
 - fixed an error in the app that allowed editing of Geometry objects with multiple tools selected and of type MultiGeo; also reverted some changes in case of error in this section
+- in Milling Tool for Geometry object added the V-tip dia and V-tip angle parameters and linked their visibility to the TT column in Tool Table 
+- in Milling Tool the Edit tool method now works and also updates the Cut Z if the shape of the edited tool is V-shape
 
 12.11.2020
 
