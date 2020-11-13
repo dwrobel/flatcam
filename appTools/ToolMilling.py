@@ -59,7 +59,7 @@ class ToolMilling(AppTool, Excellon):
         # ########################## VARIABLES ########################################
         # #############################################################################
         self.units = ''
-        self.excellon_tools = {}
+        self.obj_tools = {}
         self.tooluid = 0
 
         # dict that holds the object names and the option name
@@ -71,7 +71,7 @@ class ToolMilling(AppTool, Excellon):
         self.default_data = {}
 
         self.obj_name = ""
-        self.excellon_obj = None
+        self.target_obj = None
 
         self.first_click = False
         self.cursor_pos = None
@@ -117,11 +117,11 @@ class ToolMilling(AppTool, Excellon):
         self.poly_sel_disconnect_flag = False
 
         self.form_fields = {
-            "excellon_milling_type":   self.ui.milling_type_radio,
+            "tools_mill_milling_type":   self.ui.milling_type_radio,
         }
 
         self.name2option = {
-            "e_milling_type":   "excellon_milling_type",
+            "milling_type":   "tools_mill_milling_type",
         }
 
         self.old_tool_dia = None
@@ -132,8 +132,8 @@ class ToolMilling(AppTool, Excellon):
         AppTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
 
     def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolDrilling()")
-        log.debug("ToolDrilling().run() was launched ...")
+        self.app.defaults.report_usage("ToolMilling()")
+        log.debug("ToolMilling().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -158,7 +158,7 @@ class ToolMilling(AppTool, Excellon):
         self.set_tool_ui()
 
         # reset those objects on a new run
-        self.excellon_obj = None
+        self.target_obj = None
         self.obj_name = ''
 
         self.build_ui()
@@ -166,12 +166,14 @@ class ToolMilling(AppTool, Excellon):
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
-        self.app.ui.notebook.setTabText(2, _("Drilling Tool"))
+        self.app.ui.notebook.setTabText(2, _("Milling Tool"))
 
     def connect_signals_at_init(self):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+
+        self.ui.target_radio.activated_custom.connect(self.on_target_changed)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
@@ -185,11 +187,6 @@ class ToolMilling(AppTool, Excellon):
         self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
         self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
-
-        self.on_operation_type(val='drill')
-        self.ui.operation_radio.activated_custom.connect(self.on_operation_type)
-
-        self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
@@ -210,7 +207,6 @@ class ToolMilling(AppTool, Excellon):
 
         self.form_fields.update({
 
-            "operation": self.ui.operation_radio,
             "milling_type": self.ui.milling_type_radio,
 
             "milling_dia": self.ui.mill_dia_entry,
@@ -221,8 +217,7 @@ class ToolMilling(AppTool, Excellon):
             "feedrate_z": self.ui.feedrate_z_entry,
             "feedrate": self.ui.xyfeedrate_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
-            # "tooldia": self.ui.tooldia_entry,
-            # "slot_tooldia": self.ui.slot_tooldia_entry,
+
             "toolchange": self.ui.toolchange_cb,
             "toolchangez": self.ui.toolchangez_entry,
             "extracut": self.ui.extracut_cb,
@@ -232,13 +227,11 @@ class ToolMilling(AppTool, Excellon):
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
 
-            "startz": self.ui.estartz_entry,
             "endz": self.ui.endz_entry,
             "endxy": self.ui.endxy_entry,
 
             "offset": self.ui.offset_entry,
 
-            "ppname_e": self.ui.pp_excellon_name_cb,
             "ppname_g": self.ui.pp_geo_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
@@ -250,31 +243,23 @@ class ToolMilling(AppTool, Excellon):
         })
 
         self.name2option = {
-            "e_operation": "operation",
-            "e_milling_type": "milling_type",
-            "e_milling_dia": "milling_dia",
-            "e_cutz": "cutz",
-            "e_multidepth": "multidepth",
-            "e_depthperpass": "depthperpass",
+            "milling_type": "milling_type",
+            "milling_dia": "milling_dia",
+            "mill_cutz": "cutz",
+            "mill_multidepth": "multidepth",
+            "mill_depthperpass": "depthperpass",
 
-            "e_travelz": "travelz",
-            "e_feedratexy": "feedrate",
-            "e_feedratez": "feedrate_z",
-            "e_fr_rapid": "feedrate_rapid",
-            "e_extracut": "extracut",
-            "e_extracut_length": "extracut_length",
-            "e_spindlespeed": "spindlespeed",
-            "e_dwell": "dwell",
-            "e_dwelltime": "dwelltime",
-            "e_offset": "offset",
+            "mill_travelz": "travelz",
+            "mill_feedratexy": "feedrate",
+            "mill_feedratez": "feedrate_z",
+            "mill_fr_rapid": "feedrate_rapid",
+            "mill_extracut": "extracut",
+            "mill_extracut_length": "extracut_length",
+            "mill_spindlespeed": "spindlespeed",
+            "mill_dwell": "dwell",
+            "mill_dwelltime": "dwelltime",
+            "mill_offset": "offset",
         }
-
-        # populate Excellon preprocessor combobox list
-        for name in list(self.app.preprocessors.keys()):
-            # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
-            if name == 'hpgl':
-                continue
-            self.ui.pp_excellon_name_cb.addItem(name)
 
         # populate Geometry (milling) preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
@@ -292,8 +277,6 @@ class ToolMilling(AppTool, Excellon):
         # Show/Hide Advanced Options
         if app_mode == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-            self.ui.estartz_label.hide()
-            self.ui.estartz_entry.hide()
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
             self.ui.pdepth_label.hide()
@@ -306,8 +289,8 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui.tools_frame.show()
 
-        self.ui.order_radio.set_value(self.app.defaults["excellon_tool_order"])
-        self.ui.milling_type_radio.set_value(self.app.defaults["excellon_milling_type"])
+        self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
+        self.ui.milling_type_radio.set_value(self.app.defaults["tools_mill_milling_type"])
 
         loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         if loaded_obj:
@@ -366,7 +349,7 @@ class ToolMilling(AppTool, Excellon):
                 self.default_data[opt_key] = deepcopy(opt_val)
 
         self.obj_name = ""
-        self.excellon_obj = None
+        self.target_obj = None
 
         self.first_click = False
         self.cursor_pos = None
@@ -377,11 +360,11 @@ class ToolMilling(AppTool, Excellon):
         # ########################################
         # #######3 TEMP SETTINGS #################
         # ########################################
-        self.ui.operation_radio.set_value("drill")
-        self.ui.operation_radio.setEnabled(False)
+
+        self.ui.target_radio.set_value("geo")
 
         self.on_object_changed()
-        if self.excellon_obj:
+        if self.target_obj:
             self.build_ui()
 
         try:
@@ -412,6 +395,81 @@ class ToolMilling(AppTool, Excellon):
     def build_ui(self):
         self.ui_disconnect()
 
+        if self.ui.target_radio.get_value() == 'geo':
+            self.build_ui_mill()
+        else:
+            self.build_ui_exc()
+
+        # Build Exclusion Areas section
+        e_len = len(self.app.exc_areas.exclusion_areas_storage)
+        self.ui.exclusion_table.setRowCount(e_len)
+
+        area_id = 0
+
+        for area in range(e_len):
+            area_id += 1
+
+            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
+
+            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
+            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
+
+            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
+            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
+
+            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
+            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+
+            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
+            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+
+        self.ui.exclusion_table.resizeColumnsToContents()
+        self.ui.exclusion_table.resizeRowsToContents()
+
+        area_vheader = self.ui.exclusion_table.verticalHeader()
+        area_vheader.hide()
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        area_hheader = self.ui.exclusion_table.horizontalHeader()
+        area_hheader.setMinimumSectionSize(10)
+        area_hheader.setDefaultSectionSize(70)
+
+        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        area_hheader.resizeSection(0, 20)
+        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+
+        # area_hheader.setStretchLastSection(True)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exclusion_table.setColumnWidth(0, 20)
+
+        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
+        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
+
+        self.ui_connect()
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = set()
+        sel_items = self.ui.tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.add(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
+    def build_ui_mill(self):
+        pass
+
+    def build_ui_exc(self):
+        self.ui_disconnect()
+
         # updated units
         self.units = self.app.defaults['units'].upper()
 
@@ -419,15 +477,15 @@ class ToolMilling(AppTool, Excellon):
 
         # Get source object.
         try:
-            self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
 
-        if self.excellon_obj:
-            self.ui.exc_param_frame.setDisabled(False)
+        if self.target_obj:
+            self.ui.param_frame.setDisabled(False)
 
-            tools = [k for k in self.excellon_tools]
+            tools = [k for k in self.obj_tools]
 
         else:
             tools = []
@@ -444,14 +502,14 @@ class ToolMilling(AppTool, Excellon):
 
             # Find no of drills for the current tool
             try:
-                drill_cnt = len(self.excellon_tools[tool_no]["drills"])
+                drill_cnt = len(self.obj_tools[tool_no]["drills"])
             except KeyError:
                 drill_cnt = 0
             self.tot_drill_cnt += drill_cnt
 
             # Find no of slots for the current tool
             try:
-                slot_cnt = len(self.excellon_tools[tool_no]["slots"])
+                slot_cnt = len(self.obj_tools[tool_no]["slots"])
             except KeyError:
                 slot_cnt = 0
             self.tot_slot_cnt += slot_cnt
@@ -462,7 +520,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.excellon_tools[tool_no]['tooldia']))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.obj_tools[tool_no]['tooldia']))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
@@ -564,69 +622,15 @@ class ToolMilling(AppTool, Excellon):
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
-        # Build Exclusion Areas section
-        e_len = len(self.app.exc_areas.exclusion_areas_storage)
-        self.ui.exclusion_table.setRowCount(e_len)
-
-        area_id = 0
-
-        for area in range(e_len):
-            area_id += 1
-
-            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
-
-            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
-            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
-
-            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
-
-            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
-
-            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
-
-        self.ui.exclusion_table.resizeColumnsToContents()
-        self.ui.exclusion_table.resizeRowsToContents()
-
-        area_vheader = self.ui.exclusion_table.verticalHeader()
-        area_vheader.hide()
-        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        area_hheader = self.ui.exclusion_table.horizontalHeader()
-        area_hheader.setMinimumSectionSize(10)
-        area_hheader.setDefaultSectionSize(70)
-
-        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        area_hheader.resizeSection(0, 20)
-        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-
-        # area_hheader.setStretchLastSection(True)
-        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        self.ui.exclusion_table.setColumnWidth(0, 20)
-
-        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
-        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
-
         self.ui_connect()
 
-        # set the text on tool_data_label after loading the object
-        sel_rows = set()
-        sel_items = self.ui.tools_table.selectedItems()
-        for it in sel_items:
-            sel_rows.add(it.row())
-        if len(sel_rows) > 1:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
+    def on_target_changed(self, val):
+        obj_type = 1 if val == 'exc' else 2
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setCurrentIndex(0)
+        self.ui.object_combo.obj_type = {
+            "exc": "Excellon", "geo": "Geometry"
+        }[val]
 
     def on_object_changed(self):
         # load the Excellon object
@@ -634,16 +638,16 @@ class ToolMilling(AppTool, Excellon):
 
         # Get source object.
         try:
-            self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
-        if self.excellon_obj is None:
-            self.ui.exc_param_frame.setDisabled(True)
+        if self.target_obj is None:
+            self.ui.param_frame.setDisabled(True)
         else:
-            self.ui.exc_param_frame.setDisabled(False)
-            self.excellon_tools = self.excellon_obj.tools
+            self.ui.param_frame.setDisabled(False)
+            self.obj_tools = self.target_obj.tools
 
             self.build_ui()
 
@@ -800,7 +804,7 @@ class ToolMilling(AppTool, Excellon):
                 item = self.ui.tools_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = item.text()
-                    self.storage_to_form(self.excellon_tools[str(tooluid)]['data'])
+                    self.storage_to_form(self.obj_tools[str(tooluid)]['data'])
                 else:
                     self.blockSignals(False)
                     return
@@ -854,7 +858,7 @@ class ToolMilling(AppTool, Excellon):
                 row = 0
             tooluid_item = int(self.ui.tools_table.item(row, 3).text())
 
-            for tooluid_key, tooluid_val in self.excellon_tools.items():
+            for tooluid_key, tooluid_val in self.obj_tools.items():
                 if int(tooluid_key) == tooluid_item:
                     new_option_value = self.form_fields[option_changed].get_value()
                     if option_changed in tooluid_val:
@@ -863,35 +867,6 @@ class ToolMilling(AppTool, Excellon):
                         tooluid_val['data'][option_changed] = new_option_value
 
         self.blockSignals(False)
-
-    def on_operation_type(self, val):
-        """
-        Called by a RadioSet activated_custom signal
-
-        :param val:     Parameter passes by the signal that called this method
-        :type val:      str
-        :return:        None
-        :rtype:
-        """
-        if val == 'mill':
-            self.ui.mill_type_label.show()
-            self.ui.milling_type_radio.show()
-            self.ui.mill_dia_label.show()
-            self.ui.mill_dia_entry.show()
-            self.ui.frxylabel.show()
-            self.ui.xyfeedrate_entry.show()
-            self.ui.extracut_cb.show()
-            self.ui.e_cut_entry.show()
-        else:
-            self.ui.mill_type_label.hide()
-            self.ui.milling_type_radio.hide()
-            self.ui.mill_dia_label.hide()
-            self.ui.mill_dia_entry.hide()
-
-            self.ui.frxylabel.hide()
-            self.ui.xyfeedrate_entry.hide()
-            self.ui.extracut_cb.hide()
-            self.ui.e_cut_entry.hide()
 
     def get_selected_tools_list(self):
         """
@@ -1221,7 +1196,7 @@ class ToolMilling(AppTool, Excellon):
         return True, ""
 
     def on_pp_changed(self):
-        current_pp = self.ui.pp_excellon_name_cb.get_value()
+        current_pp = self.ui.pp_geo_name_cb.get_value()
 
         if "toolchange_probe" in current_pp.lower():
             self.ui.pdepth_entry.setVisible(True)
@@ -1317,12 +1292,12 @@ class ToolMilling(AppTool, Excellon):
 
         # Get source object.
         try:
-            self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
 
-        if self.excellon_obj is None:
+        if self.target_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
@@ -1581,7 +1556,7 @@ class ToolMilling(AppTool, Excellon):
 
 class MillingUI:
 
-    toolName = _("Milling Holes Tool")
+    toolName = _("Milling Tool")
 
     def __init__(self, layout, app):
         self.app = app
@@ -1608,7 +1583,7 @@ class MillingUI:
                                 }
                                 """)
         title_label.setToolTip(
-            _("Create CNCJob with toolpaths for drilling or milling holes.")
+            _("Create CNCJob with toolpaths for milling either Geometry or drill holes.")
         )
 
         self.title_box.addWidget(title_label)
@@ -1634,19 +1609,26 @@ class MillingUI:
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
-        self.obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("EXCELLON"))
-        self.obj_combo_label.setToolTip(
-            _("Excellon object for drilling/milling operation.")
+        self.target_label = QtWidgets.QLabel('<b>%s</b>:' % _("Target"))
+        self.target_label.setToolTip(
+            _("Object for milling operation.")
         )
 
-        grid0.addWidget(self.obj_combo_label, 0, 0, 1, 2)
+        self.target_radio = RadioSet(
+            [
+                {'label': _('Geometry'), 'value': 'geo'},
+                {'label': _('Excellon'), 'value': 'exc'}
+            ])
+
+        grid0.addWidget(self.target_label, 0, 0)
+        grid0.addWidget(self.target_radio, 0, 1)
 
         # ################################################
-        # ##### The object to be drilled #################
+        # ##### The object to be milled #################
         # ################################################
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
-        self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
@@ -1717,13 +1699,13 @@ class MillingUI:
         )
         grid0.addWidget(self.tool_data_label, 6, 0, 1, 2)
 
-        self.exc_param_frame = QtWidgets.QFrame()
-        self.exc_param_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.exc_param_frame, 7, 0, 1, 2)
+        self.param_frame = QtWidgets.QFrame()
+        self.param_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.param_frame, 7, 0, 1, 2)
 
         self.exc_tools_box = QtWidgets.QVBoxLayout()
         self.exc_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.exc_param_frame.setLayout(self.exc_tools_box)
+        self.param_frame.setLayout(self.exc_tools_box)
 
         # #################################################################
         # ################# GRID LAYOUT 3   ###############################
@@ -1733,24 +1715,6 @@ class MillingUI:
         self.grid1.setColumnStretch(0, 0)
         self.grid1.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid1)
-
-        # Operation Type
-        self.operation_label = QtWidgets.QLabel('<b>%s:</b>' % _('Operation'))
-        self.operation_label.setToolTip(
-            _("Operation type:\n"
-              "- Drilling -> will drill the drills/slots associated with this tool\n"
-              "- Milling -> will mill the drills/slots")
-        )
-        self.operation_radio = RadioSet(
-            [
-                {'label': _('Drilling'), 'value': 'drill'},
-                {'label': _("Milling"), 'value': 'mill'}
-            ]
-        )
-        self.operation_radio.setObjectName("e_operation")
-
-        self.grid1.addWidget(self.operation_label, 0, 0)
-        self.grid1.addWidget(self.operation_radio, 0, 1)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1771,7 +1735,7 @@ class MillingUI:
                 {'label': _("Both"), 'value': 'both'},
             ]
         )
-        self.milling_type_radio.setObjectName("e_milling_type")
+        self.milling_type_radio.setObjectName("milling_type")
 
         self.grid1.addWidget(self.mill_type_label, 2, 0)
         self.grid1.addWidget(self.milling_type_radio, 2, 1)
@@ -1784,7 +1748,7 @@ class MillingUI:
         self.mill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mill_dia_entry.set_precision(self.decimals)
         self.mill_dia_entry.set_range(0.0000, 10000.0000)
-        self.mill_dia_entry.setObjectName("e_milling_dia")
+        self.mill_dia_entry.setObjectName("milling_dia")
 
         self.grid1.addWidget(self.mill_dia_label, 3, 0)
         self.grid1.addWidget(self.mill_dia_entry, 3, 1)
@@ -1805,7 +1769,7 @@ class MillingUI:
             self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
-        self.cutz_entry.setObjectName("e_cutz")
+        self.cutz_entry.setObjectName("mill_cutz")
 
         self.grid1.addWidget(self.cutzlabel, 4, 0)
         self.grid1.addWidget(self.cutz_entry, 4, 1)
@@ -1820,7 +1784,7 @@ class MillingUI:
                 "reached."
             )
         )
-        self.mpass_cb.setObjectName("e_multidepth")
+        self.mpass_cb.setObjectName("mill_multidepth")
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
@@ -1828,7 +1792,7 @@ class MillingUI:
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
-        self.maxdepth_entry.setObjectName("e_depthperpass")
+        self.maxdepth_entry.setObjectName("mill_depthperpass")
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
@@ -1851,7 +1815,7 @@ class MillingUI:
             self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.setSingleStep(0.1)
-        self.travelz_entry.setObjectName("e_travelz")
+        self.travelz_entry.setObjectName("mill_travelz")
 
         self.grid1.addWidget(self.travelzlabel, 6, 0)
         self.grid1.addWidget(self.travelz_entry, 6, 1)
@@ -1866,7 +1830,7 @@ class MillingUI:
         self.xyfeedrate_entry.set_precision(self.decimals)
         self.xyfeedrate_entry.set_range(0, 10000.0000)
         self.xyfeedrate_entry.setSingleStep(0.1)
-        self.xyfeedrate_entry.setObjectName("e_feedratexy")
+        self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
         self.grid1.addWidget(self.frxylabel, 12, 0)
         self.grid1.addWidget(self.xyfeedrate_entry, 12, 1)
@@ -1883,7 +1847,7 @@ class MillingUI:
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.set_range(0.0, 910000.0000)
         self.feedrate_z_entry.setSingleStep(0.1)
-        self.feedrate_z_entry.setObjectName("e_feedratez")
+        self.feedrate_z_entry.setObjectName("mill_feedratez")
 
         self.grid1.addWidget(self.frzlabel, 14, 0)
         self.grid1.addWidget(self.feedrate_z_entry, 14, 1)
@@ -1901,7 +1865,7 @@ class MillingUI:
         self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.set_range(0.0, 910000.0000)
         self.feedrate_rapid_entry.setSingleStep(0.1)
-        self.feedrate_rapid_entry.setObjectName("e_fr_rapid")
+        self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
         self.grid1.addWidget(self.feedrate_rapid_label, 16, 0)
         self.grid1.addWidget(self.feedrate_rapid_entry, 16, 1)
@@ -1918,7 +1882,7 @@ class MillingUI:
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
-        self.extracut_cb.setObjectName("e_extracut")
+        self.extracut_cb.setObjectName("mill_extracut")
 
         self.e_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.e_cut_entry.set_range(0, 99999)
@@ -1931,7 +1895,7 @@ class MillingUI:
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
-        self.e_cut_entry.setObjectName("e_extracut_length")
+        self.e_cut_entry.setObjectName("mill_extracut_length")
 
         self.ois_recut = OptionalInputSection(self.extracut_cb, [self.e_cut_entry])
 
@@ -1948,7 +1912,7 @@ class MillingUI:
         self.spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.set_step(100)
-        self.spindlespeed_entry.setObjectName("e_spindlespeed")
+        self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
         self.grid1.addWidget(self.spindle_label, 19, 0)
         self.grid1.addWidget(self.spindlespeed_entry, 19, 1)
@@ -1959,7 +1923,7 @@ class MillingUI:
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        self.dwell_cb.setObjectName("e_dwell")
+        self.dwell_cb.setObjectName("mill_dwell")
 
         self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
@@ -1969,7 +1933,7 @@ class MillingUI:
         self.dwelltime_entry.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
-        self.dwelltime_entry.setObjectName("e_dwelltime")
+        self.dwelltime_entry.setObjectName("mill_dwelltime")
 
         self.grid1.addWidget(self.dwell_cb, 20, 0)
         self.grid1.addWidget(self.dwelltime_entry, 20, 1)
@@ -1987,42 +1951,10 @@ class MillingUI:
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-10000.0000, 10000.0000)
-        self.offset_entry.setObjectName("e_offset")
+        self.offset_entry.setObjectName("mill_offset")
 
         self.grid1.addWidget(self.tool_offset_label, 25, 0)
         self.grid1.addWidget(self.offset_entry, 25, 1)
-
-        # #################################################################
-        # ################# GRID LAYOUT 4   ###############################
-        # #################################################################
-
-        # self.grid4 = QtWidgets.QGridLayout()
-        # self.exc_tools_box.addLayout(self.grid4)
-        # self.grid4.setColumnStretch(0, 0)
-        # self.grid4.setColumnStretch(1, 1)
-        #
-        # # choose_tools_label = QtWidgets.QLabel(
-        # #     _("Select from the Tools Table above the hole dias to be\n"
-        # #       "drilled. Use the # column to make the selection.")
-        # # )
-        # # grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
-        #
-        # # ### Choose what to use for Gcode creation: Drills, Slots or Both
-        # gcode_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Gcode'))
-        # gcode_type_label.setToolTip(
-        #     _("Choose what to use for GCode generation:\n"
-        #       "'Drills', 'Slots' or 'Both'.\n"
-        #       "When choosing 'Slots' or 'Both', slots will be\n"
-        #       "converted to a series of drills.")
-        # )
-        # self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
-        #                                            {'label': 'Slots', 'value': 'slots'},
-        #                                            {'label': 'Both', 'value': 'both'}])
-        # self.grid4.addWidget(gcode_type_label, 1, 0)
-        # self.grid4.addWidget(self.excellon_gcode_type_radio, 1, 1)
-        # # temporary action until I finish the feature
-        # self.excellon_gcode_type_radio.setVisible(False)
-        # gcode_type_label.hide()
 
         # #################################################################
         # ################# GRID LAYOUT 5   ###############################
@@ -2083,17 +2015,6 @@ class MillingUI:
         self.grid3.addWidget(self.toolchange_cb, 8, 0)
         self.grid3.addWidget(self.toolchangez_entry, 8, 1)
 
-        # Start move Z:
-        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
-        self.estartz_label.setToolTip(
-            _("Height of the tool just after starting the work.\n"
-              "Delete the value if you don't need this feature.")
-        )
-        self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
-
-        self.grid3.addWidget(self.estartz_label, 9, 0)
-        self.grid3.addWidget(self.estartz_entry, 9, 1)
-
         # End move Z:
         self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
         self.endz_label.setToolTip(
@@ -2136,7 +2057,7 @@ class MillingUI:
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-10000.0000, 10000.0000)
         self.pdepth_entry.setSingleStep(0.1)
-        self.pdepth_entry.setObjectName("e_depth_probe")
+        self.pdepth_entry.setObjectName("mill_depth_probe")
 
         self.grid3.addWidget(self.pdepth_label, 13, 0)
         self.grid3.addWidget(self.pdepth_entry, 13, 1)
@@ -2154,25 +2075,13 @@ class MillingUI:
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0.0, 10000.0000)
         self.feedrate_probe_entry.setSingleStep(0.1)
-        self.feedrate_probe_entry.setObjectName("e_fr_probe")
+        self.feedrate_probe_entry.setObjectName("mill_fr_probe")
 
         self.grid3.addWidget(self.feedrate_probe_label, 14, 0)
         self.grid3.addWidget(self.feedrate_probe_entry, 14, 1)
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
-
-        # Preprocessor Excellon selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
-        pp_excellon_label.setToolTip(
-            _("The preprocessor JSON file that dictates\n"
-              "Gcode output for Excellon Objects.")
-        )
-        self.pp_excellon_name_cb = FCComboBox()
-        self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
-
-        self.grid3.addWidget(pp_excellon_label, 15, 0)
-        self.grid3.addWidget(self.pp_excellon_name_cb, 15, 1)
 
         # Preprocessor Geometry selection
         pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))

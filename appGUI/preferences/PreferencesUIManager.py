@@ -192,9 +192,6 @@ class PreferencesUIManager:
             "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
 
             # Excellon Options
-            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
-            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
-
             "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
 
             "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,

@@ -256,9 +256,6 @@ class FlatCAMDefaults:
         "excellon_plot_line": '#750000BF',
 
         # Excellon Options
-        "excellon_operation": "drill",
-        "excellon_milling_type": "drills",
-
         "excellon_milling_dia": 0.8,
 
         "excellon_tooldia": 0.8,
@@ -349,6 +346,7 @@ class FlatCAMDefaults:
         "geometry_polish_margin": 0.0,
         "geometry_polish_overlap": 5,
         "geometry_polish_method": 0,
+        "tools_mill_milling_type": 'both',
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,

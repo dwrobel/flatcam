@@ -1034,6 +1034,7 @@ class App(QtCore.QObject):
         self.isolation_tool = None
         self.follow_tool = None
         self.drilling_tool = None
+        self.milling_tool = None
 
         self.optimal_tool = None
         self.transform_tool = None
@@ -1882,6 +1883,9 @@ class App(QtCore.QObject):
         self.drilling_tool = ToolDrilling(self)
         self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
                                    pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
+        self.milling_tool = ToolMilling(self)
+        self.milling_tool.install(icon=QtGui.QIcon(self.resource_location + '/milling_tool32.png'),
+                                   pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
@@ -2152,6 +2156,7 @@ class App(QtCore.QObject):
         self.log.debug(" -> Connecting Tools Toolbar Signals")
 
         self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
+        self.ui.mill_btn.triggered.connect(lambda: self.milling_tool.run(toggle=True))
 
         self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
         self.ui.follow_btn.triggered.connect(lambda: self.follow_tool.run(toggle=True))
@@ -2163,6 +2168,7 @@ class App(QtCore.QObject):
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
 
+        self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
@@ -2170,7 +2176,6 @@ class App(QtCore.QObject):
 
         # self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         # self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
-        # self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
         #
         # self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
         # self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))

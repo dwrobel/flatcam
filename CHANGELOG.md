@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - added some not-so-good icons for the Subtract Alt sub-tool in Geometry Editor
 - minimized the number of tools present in the Tools Toolbar to the bare minimum
 - fixed an error in the Follow Tool
+- started to work in Milling Tool - designing the Tool UI
 
 12.11.2020
 

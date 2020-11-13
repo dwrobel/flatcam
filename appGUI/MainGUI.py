@@ -1041,6 +1041,8 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.drill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
+        self.mill_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -1066,6 +1068,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.toolbartools.addSeparator()
 
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
         self.copperfill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
         self.corners_tool_btn = self.toolbartools.addAction(
@@ -1076,7 +1080,6 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators Tool"))
 
         self.toolbartools.addSeparator()
-
 
         # self.solder_btn = self.toolbartools.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
@@ -1092,8 +1095,6 @@ class MainGUI(QtWidgets.QMainWindow):
         #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
         # self.align_btn = self.toolbartools.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
-        # self.extract_btn = self.toolbartools.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
         # self.fiducials_btn = self.toolbartools.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
         # self.cal_btn = self.toolbartools.addAction(
@@ -2223,6 +2224,8 @@ class MainGUI(QtWidgets.QMainWindow):
         # #########################################################################
         self.drill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
+        self.mill_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -2248,6 +2251,8 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.toolbartools.addSeparator()
 
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
         self.copperfill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
         self.corners_tool_btn = self.toolbartools.addAction(
@@ -2273,8 +2278,6 @@ class MainGUI(QtWidgets.QMainWindow):
         #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
         # self.align_btn = self.toolbartools.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
-        # self.extract_btn = self.toolbartools.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
         # self.fiducials_btn = self.toolbartools.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
         # self.cal_btn = self.toolbartools.addAction(
