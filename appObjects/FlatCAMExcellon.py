@@ -181,8 +181,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
-        # FIXME will uncomment when Milling Tool is ready
-        # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
+        self.ui.milling_button.clicked.connect(self.on_milling_button_clicked)
 
         # UTILITIES
         self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
@@ -631,6 +630,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
+
+    def on_milling_button_clicked(self):
+        self.app.milling_tool.run(toggle=False)
+        self.app.milling_tool.ui.target_radio.set_value('exc')
+        current_obj = self.app.collection.get_active()
+        self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])
 
     def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """

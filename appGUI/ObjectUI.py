@@ -755,8 +755,6 @@ class ExcellonObjectUI(ObjectUI):
         #                 }
         #                 """)
         grid2.addWidget(self.milling_button, 6, 0, 1, 2)
-        # TODO until the Milling Tool is finished this stays disabled
-        self.milling_button.setDisabled(True)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1810,8 +1808,6 @@ class GeometryObjectUI(ObjectUI):
                         }
                         """)
         self.grid4.addWidget(self.milling_button, 34, 0, 1, 2)
-        # FIXME: until the Milling Tool is ready, this get disabled
-        self.milling_button.setDisabled(True)
 
         # Paint Button
         self.paint_tool_button = FCButton(_('Paint Tool'))

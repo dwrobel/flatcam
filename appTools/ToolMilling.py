@@ -8,12 +8,13 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, FCComboBox2, \
     FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel
 from appParsers.ParseExcellon import Excellon
 
 from copy import deepcopy
 
+from appObjects.FlatCAMObj import FlatCAMObj
 # import numpy as np
 # import math
 
@@ -129,7 +130,7 @@ class ToolMilling(AppTool, Excellon):
         self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolMilling()")
@@ -174,6 +175,8 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################
 
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
+        self.ui.operation_type_combo.currentIndexChanged.connect(self.on_operation_changed)
+        self.ui.offset_type_combo.currentIndexChanged.connect(self.on_offset_type_changed)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
@@ -373,6 +376,8 @@ class ToolMilling(AppTool, Excellon):
             pass
         self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
 
+        self.ui.offset_type_combo.set_value(0)  # 'Path'
+
     def rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
@@ -394,6 +399,16 @@ class ToolMilling(AppTool, Excellon):
 
     def build_ui(self):
         self.ui_disconnect()
+
+        # load the Milling object
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return
 
         if self.ui.target_radio.get_value() == 'geo':
             self.build_ui_mill()
@@ -465,22 +480,140 @@ class ToolMilling(AppTool, Excellon):
             )
 
     def build_ui_mill(self):
-        pass
+        self.ui_disconnect()
+
+        # Area Exception - exclusion shape added signal
+        # first disconnect it from any other object
+        try:
+            self.app.exc_areas.e_shape_modified.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        # then connect it to the current build_ui() method
+        self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
+
+        self.units = self.app.defaults['units']
+
+        row_idx = 0
+
+        n = len(self.target_obj.tools)
+        self.ui.geo_tools_table.setRowCount(n)
+
+        for tooluid_key, tooluid_value in self.target_obj.tools.items():
+
+            # -------------------- ID ------------------------------------------ #
+            tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
+            tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
+
+            # Make sure that the tool diameter when in MM is with no more than 2 decimals.
+            # There are no tool bits in MM with more than 3 decimals diameter.
+            # For INCH the decimals should be no more than 3. There are no tools under 10mils.
+
+            # -------------------- DIAMETER ------------------------------------- #
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
+            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
+
+            # -------------------- TOOL TYPE ------------------------------------- #
+            tool_type_item = FCComboBox(policy=False)
+            for item in ["C1", "C2", "C3", "C4", "B", "V"]:
+                tool_type_item.addItem(item)
+            idx = tool_type_item.findText(tooluid_value['tool_type'])
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                tool_type_item.setCurrentIndex(0)
+            else:
+                tool_type_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 2, tool_type_item)
+
+            # -------------------- TOOL UID   ------------------------------------- #
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+            self.ui.geo_tools_table.setItem(row_idx, 3, tool_uid_item)  # Tool unique ID
+
+            # -------------------- PLOT       ------------------------------------- #
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 4, empty_plot_item)
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 4, plot_item)
+
+            row_idx += 1
+
+        # make the diameter column editable
+        for row in range(row_idx):
+            self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
+                                                          QtCore.Qt.ItemIsEditable |
+                                                          QtCore.Qt.ItemIsEnabled)
+
+        # sort the tool diameter column
+        # self.ui.geo_tools_table.sortItems(1)
+        # all the tools are selected by default
+        # self.ui.geo_tools_table.selectColumn(0)
+
+        self.ui.geo_tools_table.resizeColumnsToContents()
+        self.ui.geo_tools_table.resizeRowsToContents()
+
+        vertical_header = self.ui.geo_tools_table.verticalHeader()
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        vertical_header.hide()
+        self.ui.geo_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.geo_tools_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(2, 40)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(4, 17)
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.geo_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.geo_tools_table.setColumnWidth(0, 20)
+        self.ui.geo_tools_table.setColumnWidth(2, 40)
+        self.ui.geo_tools_table.setColumnWidth(4, 17)
+
+        # self.ui.geo_tools_table.setSortingEnabled(True)
+
+        self.ui.geo_tools_table.setMinimumHeight(self.ui.geo_tools_table.getHeight())
+        self.ui.geo_tools_table.setMaximumHeight(self.ui.geo_tools_table.getHeight())
+
+        # update UI for all rows - useful after units conversion but only if there is at least one row
+        # row_cnt = self.ui.geo_tools_table.rowCount()
+        # if row_cnt > 0:
+        #     for r in range(row_cnt):
+        #         self.update_ui(r)
+
+        # select only the first tool / row
+        # selected_row = 0
+        # try:
+        #     self.select_tools_table_row(selected_row, clearsel=True)
+        #     # update the Geometry UI
+        #     self.update_ui()
+        # except Exception as e:
+        #     # when the tools table is empty there will be this error but once the table is populated it will go away
+        #     log.debug(str(e))
+
+        # disable the Plot column in Tool Table if the geometry is SingleGeo as it is not needed
+        # and can create some problems
+        if self.target_obj.multigeo is False:
+            self.ui.geo_tools_table.setColumnHidden(4, True)
+        else:
+            self.ui.geo_tools_table.setColumnHidden(4, False)
+
+        self.ui_connect()
 
     def build_ui_exc(self):
         self.ui_disconnect()
 
         # updated units
         self.units = self.app.defaults['units'].upper()
-
-        self.obj_name = self.ui.object_combo.currentText()
-
-        # Get source object.
-        try:
-            self.target_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
 
         if self.target_obj:
             self.ui.param_frame.setDisabled(False)
@@ -632,8 +765,53 @@ class ToolMilling(AppTool, Excellon):
             "exc": "Excellon", "geo": "Geometry"
         }[val]
 
+        if val == 'exc':
+            self.ui.tools_table.show()
+            self.ui.order_label.show()
+            self.ui.order_radio.show()
+
+            self.ui.geo_tools_table.hide()
+
+            self.ui.mill_type_label.show()
+            self.ui.milling_type_radio.show()
+            self.ui.mill_dia_label.show()
+            self.ui.mill_dia_entry.show()
+
+            self.ui.frxylabel.hide()
+            self.ui.xyfeedrate_entry.hide()
+            self.ui.extracut_cb.hide()
+            self.ui.e_cut_entry.hide()
+
+            self.ui.operation_type_lbl.hide()
+            self.ui.operation_type_combo.hide()
+            self.ui.operation_type_combo.set_value(0)  # 'iso' - will hide the Polish UI elements
+
+            self.ui.add_tool_frame.hide()
+        else:
+            self.ui.tools_table.hide()
+            self.ui.order_label.hide()
+            self.ui.order_radio.hide()
+
+            self.ui.geo_tools_table.show()
+
+            self.ui.mill_type_label.hide()
+            self.ui.milling_type_radio.hide()
+            self.ui.mill_dia_label.hide()
+            self.ui.mill_dia_entry.hide()
+
+            self.ui.frxylabel.show()
+            self.ui.xyfeedrate_entry.show()
+            self.ui.extracut_cb.show()
+            self.ui.e_cut_entry.show()
+
+            self.ui.operation_type_lbl.show()
+            self.ui.operation_type_combo.show()
+            # self.ui.operation_type_combo.set_value(self.app.defaults["tools_mill_operation_val"])
+
+            self.ui.add_tool_frame.show()
+
     def on_object_changed(self):
-        # load the Excellon object
+        # load the Milling object
         self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
@@ -650,6 +828,35 @@ class ToolMilling(AppTool, Excellon):
             self.obj_tools = self.target_obj.tools
 
             self.build_ui()
+
+    def on_operation_changed(self, idx):
+        if self.ui.target_radio.get_value() == 'geo':
+            if idx == 3:    # 'Polish'
+                self.ui.polish_margin_lbl.show()
+                self.ui.polish_margin_entry.show()
+                self.ui.polish_over_lbl.show()
+                self.ui.polish_over_entry.show()
+                self.ui.polish_method_lbl.show()
+                self.ui.polish_method_combo.show()
+
+                self.ui.cutzlabel.setText('%s:' % _("Pressure"))
+            else:
+                self.ui.polish_margin_lbl.hide()
+                self.ui.polish_margin_entry.hide()
+                self.ui.polish_over_lbl.hide()
+                self.ui.polish_over_entry.hide()
+                self.ui.polish_method_lbl.hide()
+                self.ui.polish_method_combo.hide()
+
+                self.ui.cutzlabel.setText('%s:' % _('Cut Z'))
+
+    def on_offset_type_changed(self, idx):
+        if idx == 3:    # 'Custom'
+            self.ui.offset_label.show()
+            self.ui.offset_entry.show()
+        else:
+            self.ui.offset_label.hide()
+            self.ui.offset_entry.hide()
 
     def ui_connect(self):
 
@@ -1248,12 +1455,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.dwelltime_entry.hide()
 
             self.ui.spindle_label.setText('%s:' % _("Laser Power"))
-
-            try:
-                self.ui.tool_offset_label.hide()
-                self.ui.offset_entry.hide()
-            except AttributeError:
-                pass
         else:
             self.ui.cutzlabel.show()
             self.ui.cutz_entry.show()
@@ -1280,12 +1481,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.dwelltime_entry.show()
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
-
-            try:
-                # self.ui.tool_offset_lbl.show()
-                self.ui.offset_entry.show()
-            except AttributeError:
-                pass
 
     def on_cnc_button_click(self):
         self.obj_name = self.ui.object_combo.currentText()
@@ -1574,7 +1769,7 @@ class MillingUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -1589,7 +1784,7 @@ class MillingUI:
         self.title_box.addWidget(title_label)
 
         # App Level label
-        self.level = QtWidgets.QLabel("")
+        self.level = FCLabel("")
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -1609,7 +1804,7 @@ class MillingUI:
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
-        self.target_label = QtWidgets.QLabel('<b>%s</b>:' % _("Target"))
+        self.target_label = FCLabel('<b>%s</b>:' % _("Target"))
         self.target_label.setToolTip(
             _("Object for milling operation.")
         )
@@ -1632,18 +1827,31 @@ class MillingUI:
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
-        grid0.addWidget(self.object_combo, 1, 0, 1, 2)
+        grid0.addWidget(self.object_combo, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # grid0.addWidget(separator_line, 4, 0, 1, 2)
+
+        # ### Tools ####
+        self.tools_table_label = FCLabel('<b>%s:</b>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(
+            _("Tools in the object used for milling.")
+        )
+        grid0.addWidget(self.tools_table_label, 6, 0)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox(_('Plot Object'))
+        self.plot_cb.setToolTip(_("Plot (show) this object."))
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        grid0.addWidget(self.plot_cb, 6, 1)
 
         # ################################################
         # ########## Excellon Tool Table #################
         # ################################################
         self.tools_table = FCTable(drag_drop=True)
-        grid0.addWidget(self.tools_table, 3, 0, 1, 2)
+        grid0.addWidget(self.tools_table, 8, 0, 1, 2)
 
         self.tools_table.setColumnCount(5)
         self.tools_table.setColumnHidden(3, True)
@@ -1666,7 +1874,7 @@ class MillingUI:
               "milling them with an endmill bit."))
 
         # Tool order
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -1678,18 +1886,131 @@ class MillingUI:
                                      {'label': _('Forward'), 'value': 'fwd'},
                                      {'label': _('Reverse'), 'value': 'rev'}])
 
-        grid0.addWidget(self.order_label, 4, 0)
-        grid0.addWidget(self.order_radio, 4, 1)
+        grid0.addWidget(self.order_label, 10, 0)
+        grid0.addWidget(self.order_radio, 10, 1)
+
+        # ************************************************************************
+        # ************** Geometry Tool Table *************************************
+        # ************************************************************************
+
+        # Tool Table for Geometry
+        self.geo_tools_table = FCTable(drag_drop=True)
+        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+
+        grid0.addWidget(self.geo_tools_table, 12, 0, 1, 2)
+
+        self.geo_tools_table.setColumnCount(5)
+        self.geo_tools_table.setColumnWidth(0, 20)
+        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('TT'), '', 'P'])
+        self.geo_tools_table.setColumnHidden(3, True)
+
+        self.geo_tools_table.horizontalHeaderItem(0).setToolTip(
+            _(
+                "This is the Tool Number.\n"
+                "When ToolChange is checked, on toolchange event this value\n"
+                "will be showed as a T1, T2 ... Tn")
+        )
+        self.geo_tools_table.horizontalHeaderItem(1).setToolTip(
+            _("Tool Diameter. Its value\n"
+              "is the cut width into the material."))
+        self.geo_tools_table.horizontalHeaderItem(2).setToolTip(
+            _(
+                "The Tool Type (TT) can be:\n"
+                "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the cut width in material\n"
+                "is exactly the tool diameter.\n"
+                "- Ball -> informative only and make reference to the Ball type endmill.\n"
+                "- V-Shape -> it will disable Z-Cut parameter in the UI form and enable two additional UI form\n"
+                "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
+                "as the cut width into material will be equal with the value in the Tool "
+                "Diameter column of this table."
+            ))
+        self.geo_tools_table.horizontalHeaderItem(4).setToolTip(
+            _(
+                "Plot column. It is visible only for MultiGeo geometries, meaning geometries that holds the geometry\n"
+                "data into the tools. For those geometries, deleting the tool will delete the geometry data also,\n"
+                "so be WARNED. From the checkboxes on each row it can be enabled/disabled the plot on canvas\n"
+                "for the corresponding tool."
+            ))
+
+        # Hide the Tools Table on start
+        self.tools_table.hide()
+        self.geo_tools_table.hide()
+        self.order_label.hide()
+        self.order_radio.hide()
+
+        # ADD TOOLS FOR GEOMETRY OBJECT
+        self.add_tool_frame = QtWidgets.QFrame()
+        self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.add_tool_frame, 14, 0, 1, 2)
+        grid_tool = QtWidgets.QGridLayout()
+        grid_tool.setColumnStretch(0, 0)
+        grid_tool.setColumnStretch(1, 1)
+        grid_tool.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(grid_tool)
+
+        self.tool_sel_label = FCLabel('<b>%s</b>' % _("Add from DB"))
+        grid_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
+
+        self.addtool_entry_lbl = FCLabel('%s:' % _('Tool Dia'))
+        self.addtool_entry_lbl.setToolTip(
+            _("Diameter for the new tool")
+        )
+        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.set_range(0.00001, 10000.0000)
+        self.addtool_entry.setSingleStep(0.1)
+
+        grid_tool.addWidget(self.addtool_entry_lbl, 3, 0)
+        grid_tool.addWidget(self.addtool_entry, 3, 1)
+
+        bhlay = QtWidgets.QHBoxLayout()
+
+        self.search_and_add_btn = FCButton(_('Search and Add'))
+        self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.search_and_add_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "with the diameter specified above.")
+        )
+
+        self.addtool_from_db_btn = FCButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tools Database.\n"
+              "Tools database administration in in:\n"
+              "Menu: Options -> Tools Database")
+        )
+
+        bhlay.addWidget(self.search_and_add_btn)
+        bhlay.addWidget(self.addtool_from_db_btn)
+
+        grid_tool.addLayout(bhlay, 5, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
+        grid_tool.addWidget(separator_line, 9, 0, 1, 2)
+
+        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
+        self.deltool_btn.setToolTip(
+            _("Delete a selection of tools in the Tool Table\n"
+              "by first selecting a row in the Tool Table.")
+        )
+
+        grid_tool.addWidget(self.deltool_btn, 12, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 15, 0, 1, 2)
+
+        self.add_tool_frame.hide()
 
         # ###########################################################
         # ############# Create CNC Job ##############################
         # ###########################################################
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -1697,11 +2018,11 @@ class MillingUI:
                 "Each tool store it's own set of such data."
             )
         )
-        grid0.addWidget(self.tool_data_label, 6, 0, 1, 2)
+        grid0.addWidget(self.tool_data_label, 16, 0, 1, 2)
 
         self.param_frame = QtWidgets.QFrame()
         self.param_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.param_frame, 7, 0, 1, 2)
+        grid0.addWidget(self.param_frame, 18, 0, 1, 2)
 
         self.exc_tools_box = QtWidgets.QVBoxLayout()
         self.exc_tools_box.setContentsMargins(0, 0, 0, 0)
@@ -1721,7 +2042,8 @@ class MillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         # self.grid3.addWidget(separator_line, 1, 0, 1, 2)
 
-        self.mill_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        # Milling Type
+        self.mill_type_label = FCLabel('%s:' % _('Milling Type'))
         self.mill_type_label.setToolTip(
             _("Milling type:\n"
               "- Drills -> will mill the drills associated with this tool\n"
@@ -1737,10 +2059,11 @@ class MillingUI:
         )
         self.milling_type_radio.setObjectName("milling_type")
 
-        self.grid1.addWidget(self.mill_type_label, 2, 0)
-        self.grid1.addWidget(self.milling_type_radio, 2, 1)
+        self.grid1.addWidget(self.mill_type_label, 0, 0)
+        self.grid1.addWidget(self.milling_type_radio, 0, 1)
 
-        self.mill_dia_label = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
+        # Milling Diameter
+        self.mill_dia_label = FCLabel('%s:' % _('Milling Diameter'))
         self.mill_dia_label.setToolTip(
             _("The diameter of the tool who will do the milling")
         )
@@ -1750,11 +2073,140 @@ class MillingUI:
         self.mill_dia_entry.set_range(0.0000, 10000.0000)
         self.mill_dia_entry.setObjectName("milling_dia")
 
-        self.grid1.addWidget(self.mill_dia_label, 3, 0)
-        self.grid1.addWidget(self.mill_dia_entry, 3, 1)
+        self.grid1.addWidget(self.mill_dia_label, 2, 0)
+        self.grid1.addWidget(self.mill_dia_entry, 2, 1)
+
+        self.mill_type_label.hide()
+        self.milling_type_radio.hide()
+        self.mill_dia_label.hide()
+        self.mill_dia_entry.hide()
+
+        # Offset Type
+        self.offset_type_lbl = FCLabel('%s:' % _('Offset Type'))
+        self.offset_type_lbl.setToolTip(
+            _(
+                "The value for the Offset can be:\n"
+                "- Path -> There is no offset, the tool cut will be done through the geometry line.\n"
+                "- In(side) -> The tool cut will follow the geometry inside. It will create a 'pocket'.\n"
+                "- Out(side) -> The tool cut will follow the geometry line on the outside.\n"
+                "- Custom -> The tool will cut at an chosen offset."
+            ))
+
+        self.offset_type_combo = FCComboBox2()
+        self.offset_type_combo.addItems(
+            ["Path", "In", "Out", "Custom"]
+        )
+        self.offset_type_combo.setObjectName('mill_offset_type')
+
+        self.grid1.addWidget(self.offset_type_lbl, 4, 0)
+        self.grid1.addWidget(self.offset_type_combo, 4, 1)
+
+        # Tool Offset
+        self.offset_label = FCLabel('%s:' % _('Custom'))
+        self.offset_label.setToolTip(
+            _(
+                "The value to offset the cut when \n"
+                "the Offset type selected is 'Custom'.\n"
+                "The value can be positive for 'outside'\n"
+                "cut and negative for 'inside' cut."
+            )
+        )
+
+        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_entry.set_precision(self.decimals)
+        self.offset_entry.set_range(-10000.0000, 10000.0000)
+        self.offset_entry.setObjectName("mill_offset")
+
+        self.offset_label.hide()
+        self.offset_entry.hide()
+
+        self.grid1.addWidget(self.offset_label, 6, 0)
+        self.grid1.addWidget(self.offset_entry, 6, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(separator_line, 8, 0, 1, 2)
+
+        # Operation Type
+        self.operation_type_lbl = FCLabel('%s:' % _('Operation'))
+        self.operation_type_lbl.setToolTip(
+            _(
+                "- Isolation -> informative - lower Feedrate as it uses a milling bit with a fine tip.\n"
+                "- Roughing  -> informative - lower Feedrate and multiDepth cut.\n"
+                "- Finishing -> infrmative - higher Feedrate, without multiDepth.\n"
+                "- Polish -> adds a painting sequence over the whole area of the object"
+            ))
+
+        self.operation_type_combo = FCComboBox2()
+        self.operation_type_combo.addItems(
+            ['Iso', 'Rough', 'Finish', 'Polish']
+        )
+        self.operation_type_combo.setObjectName('mill_operation_type')
+
+        self.grid1.addWidget(self.operation_type_lbl, 10, 0)
+        self.grid1.addWidget(self.operation_type_combo, 10, 1)
+
+        # Polish Margin
+        self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
+        self.polish_margin_lbl.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.polish_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_margin_entry.set_precision(self.decimals)
+        self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
+        self.polish_margin_entry.setObjectName("mill_polish_margin")
+
+        self.grid1.addWidget(self.polish_margin_lbl, 12, 0)
+        self.grid1.addWidget(self.polish_margin_entry, 12, 1)
+
+        # Polish Overlap
+        self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
+        self.polish_over_lbl.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.")
+        )
+        self.polish_over_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
+        self.polish_over_entry.set_precision(self.decimals)
+        self.polish_over_entry.setWrapping(True)
+        self.polish_over_entry.set_range(0.0000, 99.9999)
+        self.polish_over_entry.setSingleStep(0.1)
+        self.polish_over_entry.setObjectName("mill_polish_overlap")
+
+        self.grid1.addWidget(self.polish_over_lbl, 14, 0)
+        self.grid1.addWidget(self.polish_over_entry, 14, 1)
+
+        # Polish Method
+        self.polish_method_lbl = FCLabel('%s:' % _('Method'))
+        self.polish_method_lbl.setToolTip(
+            _("Algorithm for polishing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
+        )
+
+        self.polish_method_combo = FCComboBox2()
+        self.polish_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
+        self.polish_method_combo.setObjectName('mill_polish_method')
+
+        self.grid1.addWidget(self.polish_method_lbl, 16, 0)
+        self.grid1.addWidget(self.polish_method_combo, 16, 1)
+
+        self.polish_margin_lbl.hide()
+        self.polish_margin_entry.hide()
+        self.polish_over_lbl.hide()
+        self.polish_over_entry.hide()
+        self.polish_method_lbl.hide()
+        self.polish_method_combo.hide()
+
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(separator_line2, 18, 0, 1, 2)
 
         # Cut Z
-        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
@@ -1771,8 +2223,8 @@ class MillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("mill_cutz")
 
-        self.grid1.addWidget(self.cutzlabel, 4, 0)
-        self.grid1.addWidget(self.cutz_entry, 4, 1)
+        self.grid1.addWidget(self.cutzlabel, 20, 0)
+        self.grid1.addWidget(self.cutz_entry, 20, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -1796,11 +2248,11 @@ class MillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        self.grid1.addWidget(self.mpass_cb, 5, 0)
-        self.grid1.addWidget(self.maxdepth_entry, 5, 1)
+        self.grid1.addWidget(self.mpass_cb, 22, 0)
+        self.grid1.addWidget(self.maxdepth_entry, 22, 1)
 
         # Travel Z (z_move)
-        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
         self.travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
@@ -1817,11 +2269,11 @@ class MillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("mill_travelz")
 
-        self.grid1.addWidget(self.travelzlabel, 6, 0)
-        self.grid1.addWidget(self.travelz_entry, 6, 1)
+        self.grid1.addWidget(self.travelzlabel, 24, 0)
+        self.grid1.addWidget(self.travelz_entry, 24, 1)
 
         # Feedrate X-Y
-        self.frxylabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
+        self.frxylabel = FCLabel('%s:' % _('Feedrate X-Y'))
         self.frxylabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
@@ -1832,11 +2284,14 @@ class MillingUI:
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
-        self.grid1.addWidget(self.frxylabel, 12, 0)
-        self.grid1.addWidget(self.xyfeedrate_entry, 12, 1)
+        self.grid1.addWidget(self.frxylabel, 26, 0)
+        self.grid1.addWidget(self.xyfeedrate_entry, 26, 1)
 
-        # Excellon Feedrate Z
-        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frxylabel.hide()
+        self.xyfeedrate_entry.hide()
+
+        # Feedrate Z
+        self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
         self.frzlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -1849,11 +2304,11 @@ class MillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("mill_feedratez")
 
-        self.grid1.addWidget(self.frzlabel, 14, 0)
-        self.grid1.addWidget(self.feedrate_z_entry, 14, 1)
+        self.grid1.addWidget(self.frzlabel, 28, 0)
+        self.grid1.addWidget(self.feedrate_z_entry, 28, 1)
 
-        # Excellon Rapid Feedrate
-        self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        # Rapid Feedrate
+        self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         self.feedrate_rapid_label.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -1867,8 +2322,8 @@ class MillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
-        self.grid1.addWidget(self.feedrate_rapid_label, 16, 0)
-        self.grid1.addWidget(self.feedrate_rapid_entry, 16, 1)
+        self.grid1.addWidget(self.feedrate_rapid_label, 30, 0)
+        self.grid1.addWidget(self.feedrate_rapid_entry, 30, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -1899,11 +2354,14 @@ class MillingUI:
 
         self.ois_recut = OptionalInputSection(self.extracut_cb, [self.e_cut_entry])
 
-        self.grid1.addWidget(self.extracut_cb, 17, 0)
-        self.grid1.addWidget(self.e_cut_entry, 17, 1)
+        self.extracut_cb.hide()
+        self.e_cut_entry.hide()
+
+        self.grid1.addWidget(self.extracut_cb, 32, 0)
+        self.grid1.addWidget(self.e_cut_entry, 32, 1)
 
         # Spindlespeed
-        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
@@ -1914,8 +2372,8 @@ class MillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
-        self.grid1.addWidget(self.spindle_label, 19, 0)
-        self.grid1.addWidget(self.spindlespeed_entry, 19, 1)
+        self.grid1.addWidget(self.spindle_label, 34, 0)
+        self.grid1.addWidget(self.spindlespeed_entry, 34, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -1935,26 +2393,10 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        self.grid1.addWidget(self.dwell_cb, 20, 0)
-        self.grid1.addWidget(self.dwelltime_entry, 20, 1)
+        self.grid1.addWidget(self.dwell_cb, 36, 0)
+        self.grid1.addWidget(self.dwelltime_entry, 36, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
-
-        # Tool Offset
-        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
-        self.tool_offset_label.setToolTip(
-            _("Some drill bits (the larger ones) need to drill deeper\n"
-              "to create the desired exit hole diameter due of the tip shape.\n"
-              "The value here can compensate the Cut Z parameter.")
-        )
-
-        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-10000.0000, 10000.0000)
-        self.offset_entry.setObjectName("mill_offset")
-
-        self.grid1.addWidget(self.tool_offset_label, 25, 0)
-        self.grid1.addWidget(self.offset_entry, 25, 1)
 
         # #################################################################
         # ################# GRID LAYOUT 5   ###############################
@@ -1984,8 +2426,10 @@ class MillingUI:
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line2, 2, 0, 1, 2)
 
-        # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        # #############################################################################################################
+        # #################################### General Parameters #####################################################
+        # #############################################################################################################
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -2016,7 +2460,7 @@ class MillingUI:
         self.grid3.addWidget(self.toolchangez_entry, 8, 1)
 
         # End move Z:
-        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
+        self.endz_label = FCLabel('%s:' % _("End move Z"))
         self.endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
@@ -2035,7 +2479,7 @@ class MillingUI:
         self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # End Move X,Y
-        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
         endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
@@ -2047,7 +2491,7 @@ class MillingUI:
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -2066,7 +2510,7 @@ class MillingUI:
         self.pdepth_entry.setVisible(False)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
@@ -2084,7 +2528,7 @@ class MillingUI:
         self.feedrate_probe_entry.setVisible(False)
 
         # Preprocessor Geometry selection
-        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_geo_label = FCLabel('%s:' % _("Preprocessor"))
         pp_geo_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Geometry (Milling) Objects.")
