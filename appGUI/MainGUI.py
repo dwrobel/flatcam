@@ -665,6 +665,10 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/subtract16.png'),
             '%s\t%s' % (_('Polygon Subtraction'), _('S'))
         )
+        self.geo_subtract_alt_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract16.png'),
+            '%s\t%s' % (_('Alt Subtraction'), _(''))
+        )
         self.geo_editor_menu.addSeparator()
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath16.png'),
@@ -1156,6 +1160,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
+        self.geo_alt_subtract_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _('Alt Subtraction'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
@@ -1631,6 +1637,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _("Intersection"))
         self.draw_substract = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _("Subtraction"))
+        self.draw_substract_alt = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _("Alt Subtraction"))
         self.draw_cut = self.g_editor_cmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _("Cut"))
         self.draw_transform = self.g_editor_cmenu.addAction(
@@ -2327,6 +2335,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
+        self.geo_alt_subtract_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _('Alt Subtraction'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(

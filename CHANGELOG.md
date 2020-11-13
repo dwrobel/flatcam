@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.11.2020
+
+- updated the Geometry Editor such that loading objects into Editor and updating the edited object is done now multithreaded
+- most of the functions in the Geometry Editor are now multithreaded
+- fixed the Subtract sub-tool in the Geometry Editor
+- added an alternative Subtract sub-tool in the Geometry Editor, one that do not delete the subtracting shapes
+- added some not-so-good icons for the Subtract Alt sub-tool in Geometry Editor
+
 12.11.2020
 
 - some fixes in the app_Main class
