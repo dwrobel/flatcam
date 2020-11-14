@@ -49,8 +49,6 @@ class ToolPunchGerber(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         self.ui.punch_object_button.clicked.connect(self.on_generate_object)
 
-        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
-
         self.ui.circular_cb.stateChanged.connect(
             lambda state:
                 self.ui.circular_ring_entry.setDisabled(False) if state else
@@ -84,6 +82,7 @@ class ToolPunchGerber(AppTool):
         self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
         self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
 
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
         self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
 
     def on_object_combo_changed(self):
@@ -516,7 +515,7 @@ class ToolPunchGerber(AppTool):
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
-        # selected codes in thre apertures UI table
+        # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
@@ -1038,6 +1037,9 @@ class PunchUI:
 
         # Select all
         self.select_all_cb = FCCheckBox('%s' % _("All"))
+        self.select_all_cb.setToolTip(
+            _("Process all Pads.")
+        )
         pad_grid.addWidget(self.select_all_cb, 0, 0)
 
         # Circular Aperture Selection

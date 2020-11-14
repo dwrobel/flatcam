@@ -8,10 +8,9 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable
 
 from shapely.geometry import Point, MultiPolygon, Polygon, box
-from shapely.ops import unary_union
 
 from copy import deepcopy
 
@@ -31,7 +30,12 @@ class ToolExtract(AppTool):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
+
+        self.app = app
         self.decimals = self.app.decimals
+
+        # store here the old object name
+        self.old_name = ''
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -68,12 +72,45 @@ class ToolExtract(AppTool):
             self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
         )
 
-        self.ui.all_cb.stateChanged.connect(self.on_select_all)
-
         self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
         self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
         self.ui.e_cut_button.clicked.connect(self.on_extract_cutout_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.ui.circular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.oblong_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.square_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
+
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
+
+    def on_object_combo_changed(self):
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            return
+
+        if self.old_name != '':
+            old_obj = self.app.collection.get_by_name(self.old_name)
+            if old_obj:
+                old_obj.clear_plot_apertures()
+                old_obj.mark_shapes.enabled = False
+
+        # enable mark shapes
+        if grb_obj:
+            grb_obj.mark_shapes.enabled = True
+
+            # create storage for shapes
+            for ap_code in grb_obj.apertures:
+                grb_obj.mark_shapes_storage[ap_code] = []
+
+            self.old_name = grb_obj.options['name']
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
@@ -102,12 +139,15 @@ class ToolExtract(AppTool):
 
         AppTool.run(self)
         self.set_tool_ui()
+        self.build_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Extract Tool"))
 
     def set_tool_ui(self):
         self.reset_fields()
 
+        self.ui_disconnect()
+        self.ui_connect()
         self.ui.hole_size_radio.set_value(self.app.defaults["tools_extract_hole_type"])
 
         self.ui.dia_entry.set_value(float(self.app.defaults["tools_extract_hole_fixed_dia"]))
@@ -133,8 +173,156 @@ class ToolExtract(AppTool):
         self.ui.margin_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_margin"]))
         self.ui.thick_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_thickness"]))
 
-    def on_select_all(self, state):
+    def build_tool_ui(self):
+        self.ui_disconnect()
 
+        # reset table
+        # self.ui.apertures_table.clear()   # this deletes the headers/tooltips too ... not nice!
+        self.ui.apertures_table.setRowCount(0)
+
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+        obj = None
+
+        try:
+            obj = model_index.internalPointer().obj
+            sort = [int(k) for k in obj.apertures.keys()]
+            sorted_apertures = sorted(sort)
+        except Exception:
+            # no object loaded
+            sorted_apertures = []
+
+        # n = len(sorted_apertures)
+        # calculate how many rows to add
+        n = 0
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
+            ap_type = obj.apertures[ap_code]['type']
+
+            if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
+                n += 1
+            if ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    n += 1
+                elif self.ui.rectangular_cb.get_value() is True:
+                    n += 1
+            if ap_type == 'O' and self.ui.oblong_cb.get_value() is True:
+                n += 1
+            if ap_type not in ['C', 'R', 'O'] and self.ui.other_cb.get_value() is True:
+                n += 1
+
+        self.ui.apertures_table.setRowCount(n)
+
+        row = 0
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
+
+            ap_type = obj.apertures[ap_code]['type']
+            if ap_type == 'C':
+                if self.ui.circular_cb.get_value() is False:
+                    continue
+            elif ap_type == 'R':
+                if self.ui.square_cb.get_value() is True:
+                    pass
+                elif self.ui.rectangular_cb.get_value() is True:
+                    pass
+                else:
+                    continue
+            elif ap_type == 'O':
+                if self.ui.oblong_cb.get_value() is False:
+                    continue
+            elif self.ui.other_cb.get_value() is True:
+                pass
+            else:
+                continue
+
+            # Aperture CODE
+            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+            # Aperture TYPE
+            ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
+            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            # Aperture SIZE
+            try:
+                if obj.apertures[ap_code]['size'] is not None:
+                    size_val = self.app.dec_format(float(obj.apertures[ap_code]['size']), self.decimals)
+                    ap_size_item = QtWidgets.QTableWidgetItem(str(size_val))
+                else:
+                    ap_size_item = QtWidgets.QTableWidgetItem('')
+            except KeyError:
+                ap_size_item = QtWidgets.QTableWidgetItem('')
+            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            # Aperture MARK Item
+            mark_item = FCCheckBox()
+            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            # Empty PLOT ITEM
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            self.ui.apertures_table.setItem(row, 0, ap_code_item)  # Aperture Code
+            self.ui.apertures_table.setItem(row, 1, ap_type_item)  # Aperture Type
+            self.ui.apertures_table.setItem(row, 2, ap_size_item)  # Aperture Dimensions
+            self.ui.apertures_table.setItem(row, 3, empty_plot_item)
+            self.ui.apertures_table.setCellWidget(row, 3, mark_item)
+            # increment row
+            row += 1
+
+        self.ui.apertures_table.selectColumn(0)
+        self.ui.apertures_table.resizeColumnsToContents()
+        self.ui.apertures_table.resizeRowsToContents()
+
+        vertical_header = self.ui.apertures_table.verticalHeader()
+        vertical_header.hide()
+        # self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.apertures_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(3, 17)
+        self.ui.apertures_table.setColumnWidth(3, 17)
+
+        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setSortingEnabled(False)
+        # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
+
+        self.ui_connect()
+
+    def ui_connect(self):
+        self.ui.all_cb.stateChanged.connect(self.on_select_all)
+
+        # Mark Checkboxes
+        for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+            except (TypeError, AttributeError):
+                pass
+            self.ui.apertures_table.cellWidget(row, 3).clicked.connect(self.on_mark_cb_click_table)
+
+    def ui_disconnect(self):
+        try:
+            self.ui.all_cb.stateChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        # Mark Checkboxes
+        for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 3).clicked.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+    def on_select_all(self, state):
+        self.ui_disconnect()
         if state:
             self.ui.circular_cb.setChecked(True)
             self.ui.oblong_cb.setChecked(True)
@@ -149,7 +337,6 @@ class ToolExtract(AppTool):
             self.ui.other_cb.setChecked(False)
 
     def on_extract_drills_click(self):
-
         drill_dia = self.ui.dia_entry.get_value()
         circ_r_val = self.ui.circular_ring_entry.get_value()
         oblong_r_val = self.ui.oblong_ring_entry.get_value()
@@ -174,6 +361,11 @@ class ToolExtract(AppTool):
 
         mode = self.ui.hole_size_radio.get_value()
 
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
         if mode == 'fixed':
             tools = {
                 1: {
@@ -182,75 +374,69 @@ class ToolExtract(AppTool):
                     "slots": []
                 }
             }
+
             for apid, apid_value in fcobj.apertures.items():
-                ap_type = apid_value['type']
+                if apid in sel_apid:
+                    ap_type = apid_value['type']
 
-                if ap_type == 'C':
-                    if self.ui.circular_cb.get_value() is False:
+                    if ap_type == 'C' and self.ui.circular_cb.get_value() is False:
                         continue
-                elif ap_type == 'O':
-                    if self.ui.oblong_cb.get_value() is False:
+                    elif ap_type == 'O' and self.ui.oblong_cb.get_value() is False:
                         continue
-                elif ap_type == 'R':
-                    width = float(apid_value['width'])
-                    height = float(apid_value['height'])
+                    elif ap_type == 'R':
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
 
-                    # if the height == width (float numbers so the reason for the following)
-                    if round(width, self.decimals) == round(height, self.decimals):
-                        if self.ui.square_cb.get_value() is False:
+                        # if the height == width (float numbers so the reason for the following)
+                        if round(width, self.decimals) == round(height, self.decimals):
+                            if self.ui.square_cb.get_value() is False:
+                                continue
+                        elif self.ui.rectangular_cb.get_value() is False:
                             continue
-                    else:
-                        if self.ui.rectangular_cb.get_value() is False:
-                            continue
-                else:
-                    if self.ui.other_cb.get_value() is False:
+                    elif ap_type not in ['C', 'R', 'O'] and self.ui.other_cb.get_value() is False:
                         continue
 
-                for geo_el in apid_value['geometry']:
-                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                        tools[1]["drills"].append(geo_el['follow'])
-                        if 'solid_geometry' not in tools[1]:
-                            tools[1]['solid_geometry'] = [geo_el['follow']]
-                        else:
-                            tools[1]['solid_geometry'].append(geo_el['follow'])
-
+                    for geo_el in apid_value['geometry']:
+                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                            tools[1]["drills"].append(geo_el['follow'])
+                            if 'solid_geometry' not in tools[1]:
+                                tools[1]['solid_geometry'] = [geo_el['follow']]
+                            else:
+                                tools[1]['solid_geometry'].append(geo_el['follow'])
             if 'solid_geometry' not in tools[1] or not tools[1]['solid_geometry']:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
                 return
         elif mode == 'ring':
             drills_found = set()
             for apid, apid_value in fcobj.apertures.items():
-                ap_type = apid_value['type']
+                if apid in sel_apid:
+                    ap_type = apid_value['type']
 
-                dia = None
-                if ap_type == 'C':
-                    if self.ui.circular_cb.get_value():
+                    dia = None
+                    if ap_type == 'C' and self.ui.circular_cb.get_value():
                         dia = float(apid_value['size']) - (2 * circ_r_val)
-                elif ap_type == 'O':
-                    width = float(apid_value['width'])
-                    height = float(apid_value['height'])
-                    if self.ui.oblong_cb.get_value():
+                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
                         if width > height:
                             dia = float(apid_value['height']) - (2 * oblong_r_val)
                         else:
                             dia = float(apid_value['width']) - (2 * oblong_r_val)
-                elif ap_type == 'R':
-                    width = float(apid_value['width'])
-                    height = float(apid_value['height'])
+                    elif ap_type == 'R':
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
 
-                    # if the height == width (float numbers so the reason for the following)
-                    if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
-                            (10 ** -self.decimals):
-                        if self.ui.square_cb.get_value():
-                            dia = float(apid_value['height']) - (2 * square_r_val)
-                    else:
-                        if self.ui.rectangular_cb.get_value():
+                        # if the height == width (float numbers so the reason for the following)
+                        if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
+                                (10 ** -self.decimals):
+                            if self.ui.square_cb.get_value():
+                                dia = float(apid_value['height']) - (2 * square_r_val)
+                        elif self.ui.rectangular_cb.get_value():
                             if width > height:
                                 dia = float(apid_value['height']) - (2 * rect_r_val)
                             else:
                                 dia = float(apid_value['width']) - (2 * rect_r_val)
-                else:
-                    if self.ui.other_cb.get_value():
+                    elif self.ui.other_cb.get_value():
                         try:
                             dia = float(apid_value['size']) - (2 * other_r_val)
                         except KeyError:
@@ -264,45 +450,45 @@ class ToolExtract(AppTool):
                                 else:
                                     dia = dy - (2 * other_r_val)
 
-                # if dia is None then none of the above applied so we skip the following
-                if dia is None:
-                    continue
+                    # if dia is None then none of the above applied so we skip the following
+                    if dia is None:
+                        continue
 
-                tool_in_drills = False
-                for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (
-                            self.decimals,
-                            tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
-                        tool_in_drills = tool
+                    tool_in_drills = False
+                    for tool, tool_val in tools.items():
+                        if abs(float('%.*f' % (
+                                self.decimals,
+                                tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
+                            tool_in_drills = tool
 
-                if tool_in_drills is False:
-                    if tools:
-                        new_tool = max([int(t) for t in tools]) + 1
-                        tool_in_drills = new_tool
-                    else:
-                        tool_in_drills = 1
-
-                for geo_el in apid_value['geometry']:
-                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                        if tool_in_drills not in tools:
-                            tools[tool_in_drills] = {
-                                "tooldia": dia,
-                                "drills": [],
-                                "slots": []
-                            }
-
-                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
-
-                        if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                    if tool_in_drills is False:
+                        if tools:
+                            new_tool = max([int(t) for t in tools]) + 1
+                            tool_in_drills = new_tool
                         else:
-                            tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+                            tool_in_drills = 1
 
-                if tool_in_drills in tools:
-                    if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
-                        drills_found.add(False)
-                    else:
-                        drills_found.add(True)
+                    for geo_el in apid_value['geometry']:
+                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                            if tool_in_drills not in tools:
+                                tools[tool_in_drills] = {
+                                    "tooldia": dia,
+                                    "drills": [],
+                                    "slots": []
+                                }
+
+                            tools[tool_in_drills]['drills'].append(geo_el['follow'])
+
+                            if 'solid_geometry' not in tools[tool_in_drills]:
+                                tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                            else:
+                                tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+
+                    if tool_in_drills in tools:
+                        if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
+                            drills_found.add(False)
+                        else:
+                            drills_found.add(True)
 
             if True not in drills_found:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
@@ -310,37 +496,34 @@ class ToolExtract(AppTool):
         else:
             drills_found = set()
             for apid, apid_value in fcobj.apertures.items():
-                ap_type = apid_value['type']
+                if apid in sel_apid:
+                    ap_type = apid_value['type']
 
-                dia = None
-                if ap_type == 'C':
-                    if self.ui.circular_cb.get_value():
+                    dia = None
+                    if ap_type == 'C' and self.ui.circular_cb.get_value():
                         dia = float(apid_value['size']) * prop_factor
-                elif ap_type == 'O':
-                    width = float(apid_value['width'])
-                    height = float(apid_value['height'])
-                    if self.ui.oblong_cb.get_value():
+                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
                         if width > height:
                             dia = float(apid_value['height']) * prop_factor
                         else:
                             dia = float(apid_value['width']) * prop_factor
-                elif ap_type == 'R':
-                    width = float(apid_value['width'])
-                    height = float(apid_value['height'])
+                    elif ap_type == 'R':
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
 
-                    # if the height == width (float numbers so the reason for the following)
-                    if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
-                            (10 ** -self.decimals):
-                        if self.ui.square_cb.get_value():
-                            dia = float(apid_value['height']) * prop_factor
-                    else:
-                        if self.ui.rectangular_cb.get_value():
+                        # if the height == width (float numbers so the reason for the following)
+                        if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
+                                (10 ** -self.decimals):
+                            if self.ui.square_cb.get_value():
+                                dia = float(apid_value['height']) * prop_factor
+                        elif self.ui.rectangular_cb.get_value():
                             if width > height:
                                 dia = float(apid_value['height']) * prop_factor
                             else:
                                 dia = float(apid_value['width']) * prop_factor
-                else:
-                    if self.ui.other_cb.get_value():
+                    elif self.ui.other_cb.get_value():
                         try:
                             dia = float(apid_value['size']) * prop_factor
                         except KeyError:
@@ -354,45 +537,45 @@ class ToolExtract(AppTool):
                                 else:
                                     dia = dy * prop_factor
 
-                # if dia is None then none of the above applied so we skip the following
-                if dia is None:
-                    continue
+                    # if dia is None then none of the above applied so we skip the following
+                    if dia is None:
+                        continue
 
-                tool_in_drills = False
-                for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (
-                            self.decimals,
-                            tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
-                        tool_in_drills = tool
+                    tool_in_drills = False
+                    for tool, tool_val in tools.items():
+                        if abs(float('%.*f' % (
+                                self.decimals,
+                                tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
+                            tool_in_drills = tool
 
-                if tool_in_drills is False:
-                    if tools:
-                        new_tool = max([int(t) for t in tools]) + 1
-                        tool_in_drills = new_tool
-                    else:
-                        tool_in_drills = 1
-
-                for geo_el in apid_value['geometry']:
-                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                        if tool_in_drills not in tools:
-                            tools[tool_in_drills] = {
-                                "tooldia": dia,
-                                "drills": [],
-                                "slots": []
-                            }
-
-                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
-
-                        if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                    if tool_in_drills is False:
+                        if tools:
+                            new_tool = max([int(t) for t in tools]) + 1
+                            tool_in_drills = new_tool
                         else:
-                            tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+                            tool_in_drills = 1
 
-                if tool_in_drills in tools:
-                    if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
-                        drills_found.add(False)
-                    else:
-                        drills_found.add(True)
+                    for geo_el in apid_value['geometry']:
+                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                            if tool_in_drills not in tools:
+                                tools[tool_in_drills] = {
+                                    "tooldia": dia,
+                                    "drills": [],
+                                    "slots": []
+                                }
+
+                            tools[tool_in_drills]['drills'].append(geo_el['follow'])
+
+                            if 'solid_geometry' not in tools[tool_in_drills]:
+                                tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                            else:
+                                tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+
+                    if tool_in_drills in tools:
+                        if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
+                            drills_found.add(False)
+                        else:
+                            drills_found.add(True)
 
             if True not in drills_found:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
@@ -447,42 +630,48 @@ class ToolExtract(AppTool):
         new_solid_geometry = []
         new_follow_geometry = []
 
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
         for apid, apid_value in obj.apertures.items():
-            ap_type = apid_value['type']
+            if apid in sel_apid:
+                ap_type = apid_value['type']
 
-            if ap_type not in allowed_apertures:
-                new_apertures.pop(apid, None)
-                continue
-
-            if ap_type == 'R':
-                width = float(apid_value['width'])
-                height = float(apid_value['height'])
-
-                # if the height == width (float numbers so the reason for the following)
-                if round(width, self.decimals) == round(height, self.decimals):
-                    if square is False:
-                        new_apertures.pop(apid, None)
-                        continue
-                elif rect is False:
+                if ap_type not in allowed_apertures:
                     new_apertures.pop(apid, None)
                     continue
 
-            if 'geometry' in apid_value:
-                new_aper_geo = []
-                for geo_el in apid_value['geometry']:
-                    if 'follow' in geo_el:
-                        if isinstance(geo_el['follow'], Point) and ('clear' not in geo_el or not geo_el['clear']):
-                            new_follow_geometry.append(geo_el['follow'])
-                            if 'solid' in geo_el:
-                                buffered_solid = geo_el['solid'].buffer(clearance)
-                                new_solid_geometry.append(buffered_solid)
+                if ap_type == 'R':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
 
-                                new_geo_el = {
-                                    'solid': buffered_solid,
-                                    'follow': geo_el['follow']
-                                }
-                                new_aper_geo.append(deepcopy(new_geo_el))
-                new_apertures[apid]['geometry'] = deepcopy(new_aper_geo)
+                    # if the height == width (float numbers so the reason for the following)
+                    if round(width, self.decimals) == round(height, self.decimals):
+                        if square is False:
+                            new_apertures.pop(apid, None)
+                            continue
+                    elif rect is False:
+                        new_apertures.pop(apid, None)
+                        continue
+
+                if 'geometry' in apid_value:
+                    new_aper_geo = []
+                    for geo_el in apid_value['geometry']:
+                        if 'follow' in geo_el:
+                            if isinstance(geo_el['follow'], Point) and ('clear' not in geo_el or not geo_el['clear']):
+                                new_follow_geometry.append(geo_el['follow'])
+                                if 'solid' in geo_el:
+                                    buffered_solid = geo_el['solid'].buffer(clearance)
+                                    new_solid_geometry.append(buffered_solid)
+
+                                    new_geo_el = {
+                                        'solid': buffered_solid,
+                                        'follow': geo_el['follow']
+                                    }
+                                    new_aper_geo.append(deepcopy(new_geo_el))
+                    new_apertures[apid]['geometry'] = deepcopy(new_aper_geo)
 
         has_geometry = False
         for apid in list(new_apertures.keys()):
@@ -624,6 +813,42 @@ class ToolExtract(AppTool):
             self.ui.factor_label.setVisible(True)
             self.ui.factor_entry.setVisible(True)
 
+    def on_mark_cb_click_table(self):
+        """
+        Will mark aperture geometries on canvas or delete the markings depending on the checkbox state
+        :return:
+        """
+
+        try:
+            cw = self.sender()
+            cw_index = self.ui.apertures_table.indexAt(cw.pos())
+            cw_row = cw_index.row()
+        except AttributeError:
+            cw_row = 0
+        except TypeError:
+            return
+
+        try:
+            aperture = self.ui.apertures_table.item(cw_row, 0).text()
+        except AttributeError:
+            return
+
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            return
+
+        if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
+            # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
+            grb_obj.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AA',
+                                  marked_aperture=aperture, visible=True, run_thread=True)
+        else:
+            grb_obj.clear_plot_apertures(aperture=aperture)
+
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.gerber_object_combo.setCurrentIndex(0)
@@ -680,50 +905,14 @@ class ExtractUI:
 
         grid_lay.addWidget(self.padt_label, 4, 0, 1, 2)
 
-        # Circular Aperture Selection
-        self.circular_cb = FCCheckBox('%s' % _("Circular"))
-        self.circular_cb.setToolTip(
-            _("Process Circular Pads.")
-        )
+        pad_all_grid = QtWidgets.QGridLayout()
+        pad_all_grid.setColumnStretch(0, 0)
+        pad_all_grid.setColumnStretch(1, 1)
+        grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        grid_lay.addWidget(self.circular_cb, 6, 0, 1, 2)
-
-        # Oblong Aperture Selection
-        self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
-        self.oblong_cb.setToolTip(
-            _("Process Oblong Pads.")
-        )
-
-        grid_lay.addWidget(self.oblong_cb, 8, 0, 1, 2)
-
-        # Square Aperture Selection
-        self.square_cb = FCCheckBox('%s' % _("Square"))
-        self.square_cb.setToolTip(
-            _("Process Square Pads.")
-        )
-
-        grid_lay.addWidget(self.square_cb, 10, 0, 1, 2)
-
-        # Rectangular Aperture Selection
-        self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
-        self.rectangular_cb.setToolTip(
-            _("Process Rectangular Pads.")
-        )
-
-        grid_lay.addWidget(self.rectangular_cb, 12, 0, 1, 2)
-
-        # Others type of Apertures Selection
-        self.other_cb = FCCheckBox('%s' % _("Others"))
-        self.other_cb.setToolTip(
-            _("Process pads not in the categories above.")
-        )
-
-        grid_lay.addWidget(self.other_cb, 14, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line, 16, 0, 1, 2)
+        pad_grid = QtWidgets.QGridLayout()
+        pad_grid.setColumnStretch(0, 0)
+        pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # All Aperture Selection
         self.all_cb = FCCheckBox('%s' % _("All"))
@@ -731,7 +920,71 @@ class ExtractUI:
             _("Process all Pads.")
         )
 
-        grid_lay.addWidget(self.all_cb, 18, 0, 1, 2)
+        pad_grid.addWidget(self.all_cb, 0, 0)
+
+        # Circular Aperture Selection
+        self.circular_cb = FCCheckBox('%s' % _("Circular"))
+        self.circular_cb.setToolTip(
+            _("Process Circular Pads.")
+        )
+
+        pad_grid.addWidget(self.circular_cb, 1, 0)
+
+        # Oblong Aperture Selection
+        self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
+        self.oblong_cb.setToolTip(
+            _("Process Oblong Pads.")
+        )
+
+        pad_grid.addWidget(self.oblong_cb, 2, 0)
+
+        # Square Aperture Selection
+        self.square_cb = FCCheckBox('%s' % _("Square"))
+        self.square_cb.setToolTip(
+            _("Process Square Pads.")
+        )
+
+        pad_grid.addWidget(self.square_cb, 3, 0)
+
+        # Rectangular Aperture Selection
+        self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
+        self.rectangular_cb.setToolTip(
+            _("Process Rectangular Pads.")
+        )
+
+        pad_grid.addWidget(self.rectangular_cb, 4, 0)
+
+        # Others type of Apertures Selection
+        self.other_cb = FCCheckBox('%s' % _("Others"))
+        self.other_cb.setToolTip(
+            _("Process pads not in the categories above.")
+        )
+
+        pad_grid.addWidget(self.other_cb, 5, 0)
+
+        # Aperture Table
+        self.apertures_table = FCTable()
+        pad_all_grid.addWidget(self.apertures_table, 0, 1)
+
+        self.apertures_table.setColumnCount(4)
+        self.apertures_table.setHorizontalHeaderLabels([_('Code'), _('Type'), _('Size'), 'M'])
+        self.apertures_table.setSortingEnabled(False)
+        self.apertures_table.setRowCount(0)
+        self.apertures_table.resizeColumnsToContents()
+        self.apertures_table.resizeRowsToContents()
+
+        self.apertures_table.horizontalHeaderItem(0).setToolTip(
+            _("Aperture Code"))
+        self.apertures_table.horizontalHeaderItem(1).setToolTip(
+            _("Type of aperture: circular, rectangle, macros etc"))
+        self.apertures_table.horizontalHeaderItem(2).setToolTip(
+            _("Aperture Size:"))
+        self.apertures_table.horizontalHeaderItem(3).setToolTip(
+            _("Mark the aperture instances on canvas."))
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.apertures_table.setSizePolicy(sizePolicy)
+        self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
