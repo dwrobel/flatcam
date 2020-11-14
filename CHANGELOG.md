@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 14.11.2020
 
 - upgraded the Extract Tool to allow aperture selection therefore narrowing down what apertures are the source for drills and/or soldermask openings
+- some work in PDF parser to make it work more reliable (not sure if I succeeded)
 
 13.11.2020
 

@@ -286,6 +286,9 @@ class App(QtCore.QObject):
         self.grb_editor = None
         self.geo_editor = None
 
+        # when True, the app has to return from any thread
+        self.abort_flag = False
+
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
@@ -1218,9 +1221,6 @@ class App(QtCore.QObject):
         self.y_pos = None
         self.width = None
         self.height = None
-
-        # when True, the app has to return from any thread
-        self.abort_flag = False
 
         # set the value used in the Windows Title
         self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()

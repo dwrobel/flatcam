@@ -4,7 +4,6 @@
 # Date: 4/23/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-
 from PyQt5 import QtWidgets, QtCore
 
 from appTool import AppTool
@@ -14,6 +13,7 @@ from shapely.geometry import Point, MultiPolygon
 from shapely.ops import unary_union
 
 from copy import deepcopy
+from io import BytesIO
 
 import zlib
 import re
@@ -61,7 +61,9 @@ class ToolPDF(AppTool):
         # when empty we start the layer rendering
         self.parsing_promises = []
 
-        self.parser = PdfParser(app=self.app)
+        self.parser = PdfParser(units=self.app.defaults['units'] ,
+                                resolution=self.app.defaults["gerber_circle_steps"],
+                                abort=self.app.abort_flag)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPDF()")
@@ -103,8 +105,7 @@ class ToolPDF(AppTool):
 
             for filename in filenames:
                 if filename != '':
-                    self.app.worker_task.emit({'fcn': self.open_pdf,
-                                               'params': [filename]})
+                    self.app.worker_task.emit({'fcn': self.open_pdf, 'params': [filename]})
 
     def open_pdf(self, filename):
         if not os.path.exists(filename):
@@ -138,12 +139,62 @@ class ToolPDF(AppTool):
                 stream_nr += 1
                 log.debug("PDF STREAM: %d\n" % stream_nr)
                 s = s.strip(b'\r\n')
+
+                # https://stackoverflow.com/questions/1089662/python-inflate-and-deflate-implementations
+                # def decompress(data):
+                #     decompressed = zlib.decompressobj(
+                #         -zlib.MAX_WBITS  # see above
+                #     )
+                #     inflated = decompressed.decompress(data)
+                #     inflated += decompressed.flush()
+                #     return inflated
+
+                # Convert 2 Bytes If Python 3
+                def C2BIP3(string):
+                    if type(string) == bytes:
+                        return string
+                    else:
+                        return bytes([ord(x) for x in string])
+
+                def inflate(data):
+                    try:
+                        return zlib.decompress(C2BIP3(data))
+                    except Exception:
+                        if len(data) <= 10:
+                            raise
+                        oDecompress = zlib.decompressobj(-zlib.MAX_WBITS)
+                        oStringIO = BytesIO()
+                        count = 0
+                        for byte in C2BIP3(data):
+                            try:
+                                oStringIO.write(oDecompress.decompress(byte))
+                                count += 1
+                            except Exception:
+                                break
+                        if len(data) - count <= 2:
+                            return oStringIO.getvalue()
+                        else:
+                            raise
+
                 try:
-                    self.pdf_decompressed[short_name] += (zlib.decompress(s).decode('UTF-8') + '\r\n')
+                    decomp = inflate(s)
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s\n%s' % (_("Failed to open"), str(filename), str(e)))
-                    log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
-                    return
+                    decomp = None
+                    log.debug("ToolPDF.open_pdf() -> inflate (decompress) -> %s" % str(e))
+
+                try:
+                    self.pdf_decompressed[short_name] += (decomp.decode('UTF-8') + '\r\n')
+                except Exception:
+                    try:
+                        self.pdf_decompressed[short_name] += (decomp.decode('latin1') + '\r\n')
+                    except Exception as e:
+                        log.debug("ToolPDF.open_pdf() -> decoding error -> %s" % str(e))
+
+            if self.pdf_decompressed[short_name] == '':
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open"), str(filename)))
+                log.debug("ToolPDF.open_pdf().obj_init() --> Empty file or error on decompression")
+                self.parsing_promises.remove(short_name)
+                return
 
             self.pdf_parsed[short_name]['pdf'] = self.parser.parse_pdf(pdf_content=self.pdf_decompressed[short_name])
             # we used it, now we delete it
@@ -351,7 +402,7 @@ class ToolPDF(AppTool):
                                 raise grace
 
                             ap_dict = pdf_content[k]
-                            print(k, ap_dict)
+
                             if ap_dict:
                                 layer_nr = k
                                 if k == 0:
