@@ -668,6 +668,18 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui_connect()
 
+        self.ui.geo_tools_table.selectAll()
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = set()
+        sel_items = self.ui.geo_tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.add(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
     def build_ui_exc(self):
         self.ui_disconnect()
 

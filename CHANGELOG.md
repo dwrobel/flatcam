@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - working on adding new feature to Punch Gerber Tool - manual selection of pads to be punched
 - Punch Gerber Tool - added methods to draw the pads selected and some UI buttons to select all and clear all to help in the selection
+- Milling Tool - default state is for all the tools in the Tools Table to be selected
 
 14.11.2020
 
