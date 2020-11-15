@@ -36,12 +36,6 @@ class ToolCalculator(AppTool):
         self.units = ''
 
         # ## Signals
-        self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
-        self.ui.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.ui.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.ui.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.ui.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
-
         self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
         self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
 
@@ -113,6 +107,9 @@ class ToolCalculator(AppTool):
         self.ui.area_sel_radio.set_value('d')
         self.on_area_calculation_radio(val='d')
 
+        self.ui_disconnect()
+        self.ui_connect()
+
     def on_area_calculation_radio(self, val):
         if val == 'a':
             self.ui.pcbwidthlabel.hide()
@@ -140,6 +137,7 @@ class ToolCalculator(AppTool):
             self.ui.area_unit.hide()
 
     def on_calculate_tool_dia(self):
+        self.ui_disconnect()
         # Calculation:
         # Manufacturer gives total angle of the the tip but we need only half of it
         # tangent(half_tip_angle) = opposite side / adjacent = part_of _real_dia / depth_of_cut
@@ -157,6 +155,37 @@ class ToolCalculator(AppTool):
 
         tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))
         self.ui.effectiveToolDia_entry.set_value(self.app.dec_format(tool_diameter, self.decimals))
+        self.app.inform.emit('[success] %s' % _("Cut width (tool diameter) calculated."))
+
+        self.ui_connect()
+
+    def on_calculate_cutz(self):
+        self.ui_disconnect()
+        # Calculation:
+        # Manufacturer gives total angle of the the tip but we need only half of it
+        # tangent(half_tip_angle) = opposite side / adjacent = part_of _real_dia / depth_of_cut
+        # effective_diameter = tip_diameter + part_of_real_dia_left_side + part_of_real_dia_right_side
+        # tool is symmetrical therefore: part_of_real_dia_left_side = part_of_real_dia_right_side
+        # effective_diameter = tip_diameter + (2 * part_of_real_dia_left_side)
+        # effective diameter = tip_diameter + (2 * depth_of_cut * tangent(half_tip_angle))
+
+        tip_diameter = float(self.ui.tipDia_entry.get_value())
+        half_tip_angle = float(self.ui.tipAngle_entry.get_value()) / 2.0
+
+        tooldia = self.ui.effectiveToolDia_entry.get_value()
+
+        if tip_diameter > tooldia:
+            self.ui.cutDepth_entry.set_value(self.app.dec_format(0.0, self.decimals))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Tool diameter (cut width) cannot be smaller than the tip diameter."))
+            self.ui_connect()
+            return
+
+        cut_depth = (tooldia - tip_diameter) / (2 * math.tan(math.radians(half_tip_angle)))
+        self.ui.cutDepth_entry.set_value(self.app.dec_format(cut_depth, self.decimals))
+        self.app.inform.emit('[success] %s' % _("Cut depth (Cut Z) calculated."))
+
+        self.ui_connect()
 
     def on_calculate_inch_units(self):
         mm_val = float(self.ui.mm_entry.get_value())
@@ -183,6 +212,49 @@ class ToolCalculator(AppTool):
 
         self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
         self.ui.time_entry.set_value('%.1f' % calculated_time)
+
+    def ui_connect(self):
+        self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
+        self.ui.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
+
+        self.ui.effectiveToolDia_entry.valueChanged.connect(self.on_calculate_cutz)
+        self.ui.effectiveToolDia_entry.returnPressed.connect(self.on_calculate_cutz)
+
+        self.ui.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.ui.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.ui.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
+
+    def ui_disconnect(self):
+        try:
+            self.ui.cutDepth_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.cutDepth_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        try:
+            self.ui.effectiveToolDia_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.effectiveToolDia_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        try:
+            self.ui.tipDia_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.tipAngle_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.calculate_vshape_button.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
 
 
 class CalcUI:

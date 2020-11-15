@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - brought up-to-date the Romanian translation strings
 - updated the source file when creating Excellon objects in various places in the app
 - working in Milling Tool
+- updated the Calculators Tool such that now the Cut Z parameter for V-tip tool calculator can be calculated from the other parameters too
 
 14.11.2020
 
