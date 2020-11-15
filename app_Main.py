@@ -1885,7 +1885,7 @@ class App(QtCore.QObject):
                                    pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
         self.milling_tool = ToolMilling(self)
         self.milling_tool.install(icon=QtGui.QIcon(self.resource_location + '/milling_tool32.png'),
-                                   pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
+                                  pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
@@ -5349,7 +5349,6 @@ class App(QtCore.QObject):
             if not obj_init.tools:
                 app_obj.debug("on_copy_command() --> no excellon tools")
                 return 'fail'
-
 
         def initialize_script(new_obj, app_obj):
             new_obj.source_file = deepcopy(obj.source_file)
