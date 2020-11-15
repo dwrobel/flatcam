@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - working in Milling Tool
 - updated the Calculators Tool such that now the Cut Z parameter for V-tip tool calculator can be calculated from the other parameters too
 - fixed a small issue in the Calculators Tool Cut Z default value; added a confirmation message for Electroplating calculator
+- fixed bug in opening PDF file from recent files list
 
 14.11.2020
 

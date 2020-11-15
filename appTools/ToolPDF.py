@@ -198,7 +198,8 @@ class ToolPDF(AppTool):
 
             self.pdf_parsed[short_name]['pdf'] = self.parser.parse_pdf(pdf_content=self.pdf_decompressed[short_name])
             # we used it, now we delete it
-            self.pdf_decompressed[short_name] = ''
+            if self.pdf_decompressed[short_name]:
+                self.pdf_decompressed[short_name] = None
 
         # removal from list is done in a multithreaded way therefore not always the removal can be done
         # try to remove until it's done
@@ -276,7 +277,7 @@ class ToolPDF(AppTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Open PDF file failed.'))
                 return
             # Register recent file
-            self.app.file_opened.emit("excellon", filename)
+            self.app.file_opened.emit("pdf", filename)
             # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Rendered"),  outname))
 
@@ -349,7 +350,7 @@ class ToolPDF(AppTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Open PDF file failed.'))
                 return
             # Register recent file
-            self.app.file_opened.emit('gerber', filename)
+            self.app.file_opened.emit('pdf', filename)
             # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Rendered"), outname))
 

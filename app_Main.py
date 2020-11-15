@@ -7415,17 +7415,17 @@ class App(QtCore.QObject):
         :return:
         """
         icons = {
-            "gerber": self.resource_location + "/flatcam_icon16.png",
+            "gerber":   self.resource_location + "/flatcam_icon16.png",
             "excellon": self.resource_location + "/drill16.png",
             'geometry': self.resource_location + "/geometry16.png",
-            "cncjob": self.resource_location + "/cnc16.png",
-            "script": self.resource_location + "/script_new24.png",
+            "cncjob":   self.resource_location + "/cnc16.png",
+            "script":   self.resource_location + "/script_new24.png",
             "document": self.resource_location + "/notes16_1.png",
-            "project": self.resource_location + "/project16.png",
-            "svg": self.resource_location + "/geometry16.png",
-            "dxf": self.resource_location + "/dxf16.png",
-            "pdf": self.resource_location + "/pdf32.png",
-            "image": self.resource_location + "/image16.png"
+            "project":  self.resource_location + "/project16.png",
+            "svg":      self.resource_location + "/geometry16.png",
+            "dxf":      self.resource_location + "/dxf16.png",
+            "pdf":      self.resource_location + "/pdf32.png",
+            "image":    self.resource_location + "/image16.png"
 
         }
 
@@ -7445,7 +7445,7 @@ class App(QtCore.QObject):
             'svg': self.f_handlers.import_svg,
             'dxf': self.f_handlers.import_dxf,
             'image': image_opener,
-            'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
+            'pdf': self.f_handlers.import_pdf
         }
 
         # Open recent file for files
@@ -10209,6 +10209,10 @@ class MenuFileHandlers(QtCore.QObject):
 
             # Register recent file
             self.app.file_opened.emit("dxf", filename)
+
+    def import_pdf(self, filename):
+        self.app.pdf_tool.periodic_check(1000)
+        self.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf, 'params': [filename]})
 
     def open_gerber(self, filename, outname=None, plot=True, from_tcl=False):
         """
