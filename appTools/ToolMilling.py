@@ -331,7 +331,7 @@ class ToolMilling(AppTool, Excellon):
         # init the working variables
         self.default_data.clear()
         self.default_data = {
-            "name":                     outname + '_iso',
+            "name":                     outname + '_mill',
             "plot":                     self.app.defaults["excellon_plot"],
             "solid": False,
             "multicolored": False,
@@ -392,6 +392,7 @@ class ToolMilling(AppTool, Excellon):
         # ########################################
 
         self.ui.target_radio.set_value("geo")
+        self.ui.addtool_entry.set_value(self.app.defaults["geometry_cnctooldia"])
 
         self.on_object_changed()
         if self.target_obj:
@@ -1437,6 +1438,10 @@ class ToolMilling(AppTool, Excellon):
 
     def on_tool_add(self, clicked_state, dia=None, new_geo=None):
         log.debug("GeometryObject.on_add_tool()")
+
+        if self.target_obj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
+            return
 
         self.ui_disconnect()
 

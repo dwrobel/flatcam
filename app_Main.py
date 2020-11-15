@@ -5965,6 +5965,11 @@ class App(QtCore.QObject):
         """
         tool_from_db = deepcopy(tool)
         obj = self.collection.get_active()
+
+        if obj is None:
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
+            return
+
         if obj.kind == 'geometry':
             if tool['data']['tool_target'] not in [0, 1]:    # General, Milling Type
                 # close the tab and delete it
