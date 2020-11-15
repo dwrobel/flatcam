@@ -72,7 +72,9 @@ class ToolPunchGerber(AppTool, Gerber):
         self.ui = PunchUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
 
+        # #############################################################################
         # ## Signals
+        # #############################################################################
         self.ui.method_punch.activated_custom.connect(self.on_method)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         self.ui.punch_object_button.clicked.connect(self.on_punch_object_click)
@@ -112,6 +114,10 @@ class ToolPunchGerber(AppTool, Gerber):
 
         self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
         self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
+
+        self.ui.punch_type_radio.activated_custom.connect(self.on_punch_type)
+        self.ui.sel_all_btn.clicked.connect(self.on_manual_sel_all)
+        self.ui.clear_all_btn.clicked.connect(self.on_manual_clear_all)
 
     def on_object_combo_changed(self):
         # get the Gerber file who is the source of the punched Gerber
@@ -377,6 +383,14 @@ class ToolPunchGerber(AppTool, Gerber):
             self.ui.prop_label.show()
             self.ui.factor_label.show()
             self.ui.factor_entry.show()
+
+    def on_punch_type(self, val):
+        if val == 'm':
+            self.ui.sel_all_btn.show()
+            self.ui.clear_all_btn.show()
+        else:
+            self.ui.sel_all_btn.hide()
+            self.ui.clear_all_btn.hide()
 
     def ui_connect(self):
         self.ui.select_all_cb.stateChanged.connect(self.on_select_all)
@@ -1005,10 +1019,6 @@ class ToolPunchGerber(AppTool, Gerber):
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
 
-        new_options = {}
-        for opt in self.grb_obj.options:
-            new_options[opt] = deepcopy(self.grb_obj.options[opt])
-
         for apid, apid_value in self.grb_obj.apertures.items():
             if apid in sel_apid:
                 for idx, elem in enumerate(apid_value['geometry']):
@@ -1089,12 +1099,10 @@ class ToolPunchGerber(AppTool, Gerber):
                     idx = el['idx']
                     clicked_poly = self.grb_obj.apertures[apid]['geometry'][idx]['solid']
                     if clicked_poly not in self.poly_dict.values():
-                        shape_id = self.app.tool_shapes.add(tolerance=self.grb_obj.drawing_tolerance,
-                                                            layer=0,
-                                                            shape=clicked_poly,
-                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                            face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                            visible=True)
+                        shape_id = self.app.tool_shapes.add(
+                            tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=clicked_poly,
+                            color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                            face_color=self.app.defaults['global_sel_draw_color'] + 'FF', visible=True)
                         self.poly_dict[shape_id] = clicked_poly
                         self.app.inform.emit(
                             '%s: %d. %s' % (_("Added pad"), int(len(self.poly_dict)),
@@ -1271,10 +1279,56 @@ class ToolPunchGerber(AppTool, Gerber):
 
         if self.ui.apertures_table.cellWidget(cw_row, 3).isChecked():
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            grb_obj.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AA',
+            grb_obj.plot_aperture(color='#e32b07' + '60',
                                   marked_aperture=aperture, visible=True, run_thread=True)
         else:
             grb_obj.clear_plot_apertures(aperture=aperture)
+
+    def on_manual_sel_all(self):
+        if self.ui.punch_type_radio.get_value() != 'm':
+            return
+
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.ui.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+
+        try:
+            self.grb_obj = model_index.internalPointer().obj
+        except Exception:
+            return
+
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
+        for apid, apid_value in self.grb_obj.apertures.items():
+            if apid in sel_apid:
+                for idx, elem in enumerate(apid_value['geometry']):
+                    if 'follow' in elem and isinstance(elem['follow'], Point):
+                        if 'solid' in elem:
+                            sol_geo = elem['solid']
+                            if sol_geo not in self.poly_dict.values():
+                                shape_id = self.app.tool_shapes.add(
+                                    tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=sol_geo,
+                                    color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                                    face_color=self.app.defaults['global_sel_draw_color'] + 'FF', visible=True)
+                                self.poly_dict[shape_id] = sol_geo
+        self.app.tool_shapes.redraw()
+        self.app.inform.emit(_("All selectable pads are selected."))
+
+    def on_manual_clear_all(self):
+        if self.ui.punch_type_radio.get_value() != 'm':
+            return
+
+        try:
+            for k in list(self.poly_dict.keys()):
+                self.app.tool_shapes.remove(k)
+            self.poly_dict.clear()
+        except TypeError:
+            return
+        self.app.tool_shapes.redraw()
+        self.app.inform.emit(_("Selection cleared."))
 
     def reset_fields(self):
         self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1601,12 +1655,16 @@ class PunchUI:
         separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line3, 16, 0, 1, 2)
 
+        # Proportional value
+        self.sel_label = FCLabel('<b>%s</b>' % _("Selection"))
+        grid0.addWidget(self.sel_label, 18, 0, 1, 2)
+
         # Type of doing the punch
         self.punch_type_label = FCLabel('%s:' % _("Type"))
         self.punch_type_label.setToolTip(
             _("When the manual type is chosen, the pads to be punched\n"
               "are selected on the canvas but only those that\n"
-              "are in the processed pads.\n")
+              "are in the processed pads.")
         )
 
         self.punch_type_radio = RadioSet([
@@ -1614,13 +1672,26 @@ class PunchUI:
             {"label": _("Manual"), "value": "m"},
         ])
 
-        grid0.addWidget(self.punch_type_label, 18, 0)
-        grid0.addWidget(self.punch_type_radio, 18, 1)
+        grid0.addWidget(self.punch_type_label, 20, 0)
+        grid0.addWidget(self.punch_type_radio, 20, 1)
+
+        sel_hlay = QtWidgets.QHBoxLayout()
+        self.sel_all_btn = FCButton(_("Select All"))
+        self.sel_all_btn.setToolTip(
+            _("Select all the pads available when in manual mode.")
+        )
+        self.clear_all_btn = FCButton(_("Clear All"))
+        self.clear_all_btn.setToolTip(
+            _("Clear the selection of pads available when in manual mode.")
+        )
+        sel_hlay.addWidget(self.sel_all_btn)
+        sel_hlay.addWidget(self.clear_all_btn)
+        grid0.addLayout(sel_hlay, 22, 0, 1, 2)
 
         separator_line3 = QtWidgets.QFrame()
         separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line3, 20, 0, 1, 2)
+        grid0.addWidget(separator_line3, 24, 0, 1, 2)
 
         # Buttons
         self.punch_object_button = FCButton(_("Punch Gerber"))

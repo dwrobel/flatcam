@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 15.11.2020
 
 - working on adding new feature to Punch Gerber Tool - manual selection of pads to be punched
+- Punch Gerber Tool - added methods to draw the pads selected and some UI buttons to select all and clear all to help in the selection
 
 14.11.2020
 
