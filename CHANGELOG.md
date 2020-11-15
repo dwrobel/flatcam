@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - updated the source file when creating Excellon objects in various places in the app
 - working in Milling Tool
 - updated the Calculators Tool such that now the Cut Z parameter for V-tip tool calculator can be calculated from the other parameters too
+- fixed a small issue in the Calculators Tool Cut Z default value; added a confirmation message for Electroplating calculator
 
 14.11.2020
 

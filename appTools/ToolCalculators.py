@@ -102,7 +102,7 @@ class ToolCalculator(AppTool):
         self.ui.tipDia_entry.set_value(tip_dia)
         self.ui.tipAngle_entry.set_value(tip_angle)
         self.ui.cutDepth_entry.set_value(cut_z)
-        self.ui.effectiveToolDia_entry.set_value('0.0000')
+        self.on_calculate_tool_dia()
 
         self.ui.area_sel_radio.set_value('d')
         self.on_area_calculation_radio(val='d')
@@ -181,7 +181,7 @@ class ToolCalculator(AppTool):
             self.ui_connect()
             return
 
-        cut_depth = (tooldia - tip_diameter) / (2 * math.tan(math.radians(half_tip_angle)))
+        cut_depth = (tooldia - tip_diameter) / (2 * math.tan(math.radians(half_tip_angle))) * -1
         self.ui.cutDepth_entry.set_value(self.app.dec_format(cut_depth, self.decimals))
         self.app.inform.emit('[success] %s' % _("Cut depth (Cut Z) calculated."))
 
@@ -212,6 +212,7 @@ class ToolCalculator(AppTool):
 
         self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
         self.ui.time_entry.set_value('%.1f' % calculated_time)
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def ui_connect(self):
         self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)

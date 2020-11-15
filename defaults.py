@@ -561,7 +561,7 @@ class FlatCAMDefaults:
         # Calculators Tool
         "tools_calc_vshape_tip_dia": 0.2,
         "tools_calc_vshape_tip_angle": 30,
-        "tools_calc_vshape_cut_z": 0.05,
+        "tools_calc_vshape_cut_z": -0.05,
         "tools_calc_electro_length": 10.0,
         "tools_calc_electro_width": 10.0,
         "tools_calc_electro_area": 100.0,
