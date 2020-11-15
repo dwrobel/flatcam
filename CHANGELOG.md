@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.11.2020
+
+- modified the behavior of the Tool Tab in the Notebook widget. Now the app start with the Tool Tab off. If an App Tool is launched then the Tool Tab is added and populated. If the same App Tool is launched again and the focus is in its Tool Tab then the Tool Tab is removed but if the focus is elsewhere then the focus is set again on the Tool Tab.
+
 15.11.2020
 
 - working on adding new feature to Punch Gerber Tool - manual selection of pads to be punched

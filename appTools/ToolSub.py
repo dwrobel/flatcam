@@ -101,21 +101,58 @@ class ToolSub(AppTool):
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolSub()")
 
+        # if toggle:
+        #     # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        #     if self.app.ui.splitter.sizes()[0] == 0:
+        #         self.app.ui.splitter.setSizes([1, 1])
+        #     else:
+        #         try:
+        #             if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+        #                 # if tab is populated with the tool but it does not have the focus, focus on it
+        #                 if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+        #                     # focus on Tool Tab
+        #                     self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+        #                 else:
+        #                     self.app.ui.splitter.setSizes([0, 1])
+        #         except AttributeError:
+        #             pass
+        # else:
+        #     if self.app.ui.splitter.sizes()[0] == 0:
+        #         self.app.ui.splitter.setSizes([1, 1])
+
         if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            # if the splitter is hidden, display it
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        # if tab is populated with the tool but it does not have the focus, focus on it
-                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
-                            # focus on Tool Tab
-                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-                        else:
+
+            # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+            found_idx = None
+            for idx in range(self.app.ui.notebook.count()):
+                if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                    found_idx = idx
+                    break
+            # show the Tab
+            if not found_idx:
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                # focus on Tool Tab
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName and found_idx:
+                    # if the Tool Tab is not focused, focus on it
+                    if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                        # focus on Tool Tab
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                    else:
+                        # else remove the Tool Tab
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
+                        self.app.ui.notebook.removeTab(2)
+
+                        # if there are no objects loaded in the app then hide the Notebook widget
+                        if not self.app.collection.get_list():
                             self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
+            except AttributeError:
+                pass
         else:
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])

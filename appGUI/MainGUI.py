@@ -1373,7 +1373,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tool_tab.setObjectName("tool_tab")
         self.tool_tab_layout = QtWidgets.QVBoxLayout(self.tool_tab)
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.notebook.addTab(self.tool_tab, _("Tool"))
+        # self.notebook.addTab(self.tool_tab, _("Tool"))
+
         self.tool_scroll_area = VerticalScrollArea()
         # self.tool_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tool_tab_layout.addWidget(self.tool_scroll_area)
