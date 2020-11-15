@@ -691,7 +691,7 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_("Buffer Tool"), _('B'))
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint16.png'),
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'),
             '%s\t%s' % (_("Paint Tool"), _('I'))
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
@@ -1051,18 +1051,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.follow_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
         self.ncc_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
+            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
 
         self.toolbartools.addSeparator()
 
         self.cutout_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
+            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout Tool"))
         self.panelize_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
+            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film Tool"))
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
 
@@ -2234,18 +2234,18 @@ class MainGUI(QtWidgets.QMainWindow):
         self.follow_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
         self.ncc_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
+            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
 
         self.toolbartools.addSeparator()
 
         self.cutout_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
+            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout Tool"))
         self.panelize_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
+            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film Tool"))
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
 

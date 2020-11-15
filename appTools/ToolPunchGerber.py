@@ -1680,7 +1680,7 @@ class PunchUI:
         self.sel_all_btn.setToolTip(
             _("Select all the pads available when in manual mode.")
         )
-        self.clear_all_btn = FCButton(_("Clear All"))
+        self.clear_all_btn = FCButton(_("Deselect All"))
         self.clear_all_btn.setToolTip(
             _("Clear the selection of pads available when in manual mode.")
         )

@@ -1836,7 +1836,7 @@ class App(QtCore.QObject):
         self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
 
         self.film_tool = Film(self)
-        self.film_tool.install(icon=QtGui.QIcon(self.resource_location + '/film16.png'))
+        self.film_tool.install(icon=QtGui.QIcon(self.resource_location + '/film32.png'))
 
         self.paste_tool = SolderPaste(self)
         self.paste_tool.install(icon=QtGui.QIcon(self.resource_location + '/solderpastebis32.png'))
@@ -1861,15 +1861,15 @@ class App(QtCore.QObject):
                                before=self.ui.menueditorigin, separator=True)
 
         self.cutout_tool = CutOut(self)
-        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut16_bis.png'), pos=self.ui.menutool,
+        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut32.png'), pos=self.ui.menutool,
                                  before=self.sub_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
-        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc16.png'), pos=self.ui.menutool,
+        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc32.png'), pos=self.ui.menutool,
                                   before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
-        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint16.png'), pos=self.ui.menutool,
+        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint20_1.png'), pos=self.ui.menutool,
                                 before=self.sub_tool.menuAction, separator=True)
 
         self.isolation_tool = ToolIsolation(self)
