@@ -2467,12 +2467,12 @@ class GeometryObject(FlatCAMObj, Geometry):
             # To be run in separate thread
             def job_thread(a_obj):
                 if self.multigeo is False:
-                    with self.app.proc_container.new(_("Generating CNC Code")):
+                    with self.app.proc_container.new('%s...' % _("Generating")):
                         ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
                         if ret_val != 'fail':
                             a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
                 else:
-                    with self.app.proc_container.new(_("Generating CNC Code")):
+                    with self.app.proc_container.new('%s...' % _("Generating")):
                         ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
                         if ret_val != 'fail':
                             a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
@@ -2624,7 +2624,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         if use_thread:
             # To be run in separate thread
             def job_thread(app_obj):
-                with self.app.proc_container.new(_("Generating CNC Code")):
+                with self.app.proc_container.new('%s...' % _("Generating")):
                     app_obj.app_obj.new_object("cncjob", outname, job_init, plot=plot)
                     app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
@@ -2638,7 +2638,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     def on_polish(self):
 
         def job_thread(obj):
-            with obj.app.proc_container.new(_("Working ...")):
+            with obj.app.proc_container.new('%s...' % _("Working")):
                 tooldia = obj.ui.polish_dia_entry.get_value()
                 depth = obj.ui.polish_pressure_entry.get_value()
                 travelz = obj.ui.polish_travelz_entry.get_value()

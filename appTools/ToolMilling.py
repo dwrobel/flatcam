@@ -2327,7 +2327,7 @@ class ToolMilling(AppTool, Excellon):
 
         # To be run in separate thread
         def job_thread(a_obj):
-            with self.app.proc_container.new(_("Generating CNC Code")):
+            with self.app.proc_container.new('%s...' % _("Generating")):
                 a_obj.app_obj.new_object("cncjob", job_name, job_init)
 
         # Create promise for the new name.

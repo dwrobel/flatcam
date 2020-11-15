@@ -2,6 +2,14 @@ from tclCommands.TclCommand import TclCommandSignaled
 
 import collections
 
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class TclCommandOpenSVG(TclCommandSignaled):
     """
@@ -74,7 +82,7 @@ class TclCommandOpenSVG(TclCommandSignaled):
 
         units = self.app.defaults['units'].upper()
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
 
             # Object creation
             ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)

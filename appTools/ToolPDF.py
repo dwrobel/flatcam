@@ -61,7 +61,7 @@ class ToolPDF(AppTool):
         # when empty we start the layer rendering
         self.parsing_promises = []
 
-        self.parser = PdfParser(units=self.app.defaults['units'] ,
+        self.parser = PdfParser(units=self.app.defaults['units'],
                                 resolution=self.app.defaults["gerber_circle_steps"],
                                 abort=self.app.abort_flag)
 
@@ -126,7 +126,7 @@ class ToolPDF(AppTool):
             # graceful abort requested by the user
             raise grace
 
-        with self.app.proc_container.new(_("Parsing ...")):
+        with self.app.proc_container.new('%s...' % _("Parsing")):
             with open(filename, "rb") as f:
                 pdf = f.read()
 
@@ -217,8 +217,10 @@ class ToolPDF(AppTool):
         # keys are diameters and values are list of (x,y) coords
         points = {}
 
-        def obj_init(exc_obj, app_obj):
+        def obj_init(new_obj, app_obj):
             clear_geo = [geo_el['clear'] for geo_el in ap_dict['0']['geometry']]
+
+            new_obj.tools = {}
 
             for geo in clear_geo:
                 xmin, ymin, xmax, ymax = geo.bounds
@@ -240,26 +242,29 @@ class ToolPDF(AppTool):
                 name_tool += 1
                 tool = str(name_tool)
 
-                exc_obj.tools[tool] = {
-                    'tooldia': dia,
-                    'drills': [],
-                    'solid_geometry': []
+                new_obj.tools[tool] = {
+                    'tooldia':          dia,
+                    'drills':           [],
+                    'solid_geometry':   []
                 }
 
                 # update the drill list
                 for dia_points in points:
                     if dia == dia_points:
                         for pt in points[dia_points]:
-                            exc_obj.tools[tool]['drills'].append(Point(pt))
+                            new_obj.tools[tool]['drills'].append(Point(pt))
                         break
 
-            ret = exc_obj.create_geometry()
+            ret = new_obj.create_geometry()
             if ret == 'fail':
                 log.debug("Could not create geometry for Excellon object.")
                 return "fail"
 
-            for tool in exc_obj.tools:
-                if exc_obj.tools[tool]['solid_geometry']:
+            new_obj.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=new_obj,
+                                                                     filename=None, use_thread=False)
+
+            for tool in new_obj.tools:
+                if new_obj.tools[tool]['solid_geometry']:
                     return
             app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), outname))
             return "fail"

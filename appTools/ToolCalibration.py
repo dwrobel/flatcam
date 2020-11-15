@@ -45,7 +45,7 @@ class ToolCalibration(AppTool):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = CalibUI(layout=self.layout, app=self.app)
+        self.ui = CalibrationUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
 
         self.mr = None
@@ -601,7 +601,7 @@ class ToolCalibration(AppTool):
         except Exception as e:
             log.debug("ToolCalibration.on_cal_button_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
-            return 'fail'
+            return
 
         obj_name = self.cal_object.options["name"] + "_calibrated"
 
@@ -679,11 +679,6 @@ class ToolCalibration(AppTool):
         def initialize_excellon(obj_init, app_obj):
             obj_init.tools = deepcopy(obj.tools)
 
-            # drills are offset, so they need to be deep copied
-            obj_init.drills = deepcopy(obj.drills)
-            # slots are offset, so they need to be deep copied
-            obj_init.slots = deepcopy(obj.slots)
-
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
 
@@ -730,7 +725,7 @@ class ToolCalibration(AppTool):
         self.ui.adj_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
-class CalibUI:
+class CalibrationUI:
 
     toolName = _("Calibration Tool")
 

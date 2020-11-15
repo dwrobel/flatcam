@@ -1763,9 +1763,8 @@ class AppExcEditor(QtCore.QObject):
 
         self.sorted_diameters = []
 
-        self.new_drills = []
+        # here store the tools dict for the new excellon object
         self.new_tools = {}
-        self.new_slots = []
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -2479,9 +2478,8 @@ class AppExcEditor(QtCore.QObject):
         self.current_storage = []
         self.points_edit = {}
         self.sorted_diameters = []
-        self.new_drills = []
+
         self.new_tools = {}
-        self.new_slots = []
 
         self.olddia_newdia = {}
 
@@ -2663,7 +2661,6 @@ class AppExcEditor(QtCore.QObject):
 
         self.points_edit = {}
         self.new_tools = {}
-        self.new_drills = []
 
         # self.storage_dict = {}
 
@@ -3015,10 +3012,7 @@ class AppExcEditor(QtCore.QObject):
                 self.edited_obj_name += "_edit"
 
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
-                                   'params': [self.edited_obj_name,
-                                              self.new_drills,
-                                              self.new_slots,
-                                              self.new_tools]})
+                                   'params': [self.edited_obj_name, self.new_tools]})
 
         return self.edited_obj_name
 
@@ -3034,7 +3028,7 @@ class AppExcEditor(QtCore.QObject):
             obj.options = {}
             return True
 
-    def new_edited_excellon(self, outname, n_drills, n_slots, n_tools):
+    def new_edited_excellon(self, outname,  n_tools):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.
 
@@ -3042,8 +3036,6 @@ class AppExcEditor(QtCore.QObject):
                             name to be that of the file.
         :type outname:      str
 
-        :param n_drills:    The new Drills storage
-        :param n_slots:     The new Slots storage
         :param n_tools:     The new Tools storage
         :return:            None
         """
@@ -3051,26 +3043,21 @@ class AppExcEditor(QtCore.QObject):
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
                            self.exc_obj.options['name'])
 
-        new_drills = n_drills
-        new_slots = n_slots
         new_tools = n_tools
 
         # How the object should be initialized
-        def obj_init(excellon_obj, app_obj):
+        def obj_init(new_obj, app_obj):
+            new_obj.tools = deepcopy(new_tools)
 
-            excellon_obj.drills = deepcopy(new_drills)
-            excellon_obj.tools = deepcopy(new_tools)
-            excellon_obj.slots = deepcopy(new_slots)
-
-            excellon_obj.options['name'] = outname
+            new_obj.options['name'] = outname
 
             # add a 'data' dict for each tool with the default values
-            for tool in excellon_obj.tools:
-                excellon_obj.tools[tool]['data'] = {}
-                excellon_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
+            for tool in new_obj.tools:
+                new_obj.tools[tool]['data'] = {}
+                new_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
 
             try:
-                excellon_obj.create_geometry()
+                new_obj.create_geometry()
             except KeyError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Tools definitions in the file. Aborting Excellon creation.")
@@ -3082,7 +3069,7 @@ class AppExcEditor(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 return
 
-        with self.app.proc_container.new(_("Creating Excellon.")):
+        with self.app.proc_container.new('%s...' % _("Generating")):
 
             try:
                 edited_obj = self.app.app_obj.new_object("excellon", outname, obj_init)

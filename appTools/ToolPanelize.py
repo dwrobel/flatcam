@@ -611,7 +611,7 @@ class Panelize(AppTool):
                 text='[WARNING] ', col=columns, row=rows))
 
         def job_thread(app_obj):
-            with self.app.proc_container.new(_("Working ...")):
+            with self.app.proc_container.new('%s...' % _("Working")):
                 try:
                     panelize_worker()
                     app_obj.inform.emit('[success] %s' % _("Panel created successfully."))

@@ -389,10 +389,13 @@ class ToolCorners(AppTool):
                 Point((x, y))
             )
 
-        tools = {1: {}}
-        tools[1]["tooldia"] = tooldia
-        tools[1]['drills'] = drill_list
-        tools[1]['solid_geometry'] = []
+        tools = {
+            1: {
+                "tooldia": tooldia,
+                "drills": drill_list,
+                "solid_geometry": []
+            }
+        }
 
         def obj_init(obj_inst, app_inst):
             obj_inst.options.update({

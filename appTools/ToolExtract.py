@@ -582,13 +582,13 @@ class ToolExtract(AppTool):
                 return
 
         def obj_init(obj_inst, app_inst):
-            obj_inst.tools = tools
+            obj_inst.tools = deepcopy(tools)
             obj_inst.create_geometry()
             obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=outname, local_use=obj_inst,
                                                                        filename=None,
                                                                        use_thread=False)
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
             try:
                 self.app.app_obj.new_object("excellon", outname, obj_init)
             except Exception as e:
@@ -699,7 +699,7 @@ class ToolExtract(AppTool):
             except (AttributeError, TypeError):
                 pass
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
@@ -774,7 +774,7 @@ class ToolExtract(AppTool):
             except (AttributeError, TypeError):
                 pass
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:

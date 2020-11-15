@@ -1376,7 +1376,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.ui.shell_dock.show()
 
         def worker_task():
-            with self.app.proc_container.new(_("Sending GCode...")):
+            with self.app.proc_container.new('%s...' % _("Sending")):
                 self.send_grbl_command(command=cmd)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
@@ -1808,7 +1808,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.ui.shell_dock.show()
 
         def worker_task():
-            with self.app.proc_container.new(_("Sending GCode...")):
+            with self.app.proc_container.new('%s...' % _("Sending")):
                 self.grbl_probe_result = ''
                 pr_travelz = str(self.ui.ptravelz_entry.get_value())
                 probe_fr = str(self.ui.feedrate_probe_entry.get_value())

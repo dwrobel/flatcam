@@ -1413,7 +1413,7 @@ class CutOut(AppTool):
                                                                        filename=None,
                                                                        use_thread=False)
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
             try:
                 ret = self.app.app_obj.new_object("excellon", outname, obj_init)
             except Exception as e:

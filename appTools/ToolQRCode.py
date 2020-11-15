@@ -164,7 +164,7 @@ class QRCode(AppTool):
         self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
 
         def job_thread_qr(app_obj):
-            with self.app.proc_container.new('%s' % _("Working ...")) as self.proc:
+            with self.app.proc_container.new('%s...' % _("Working")) as self.proc:
 
                 error_code = {
                     'L': qrcode.constants.ERROR_CORRECT_L,

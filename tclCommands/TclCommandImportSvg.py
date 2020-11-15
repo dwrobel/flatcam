@@ -3,6 +3,14 @@ from tclCommands.TclCommand import TclCommandSignaled
 import collections
 from camlib import Geometry
 
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class TclCommandImportSvg(TclCommandSignaled):
     """
@@ -73,7 +81,7 @@ class TclCommandImportSvg(TclCommandSignaled):
         if obj_type != "geometry" and obj_type != "gerber":
             self.raise_tcl_error("Option type can be 'geometry' or 'gerber' only, got '%s'." % obj_type)
 
-        with self.app.proc_container.new('%s ...' % _("Importing")):
+        with self.app.proc_container.new('%s...' % _("Importing")):
 
             # Object creation
             self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)

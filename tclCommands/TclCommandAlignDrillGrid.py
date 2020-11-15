@@ -2,6 +2,8 @@ import collections
 from tclCommands.TclCommand import TclCommandSignaled
 
 from shapely.geometry import Point
+from copy import deepcopy
+
 
 class TclCommandAlignDrillGrid(TclCommandSignaled):
     """
@@ -109,12 +111,15 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
 
             init_obj.tools = {
                 '1': {
-                    'tooldia': tooldia,
-                    'drills': drills,
-                    'solid_geometry': []
+                    'tooldia':          tooldia,
+                    'drills':           deepcopy(drills),
+                    'solid_geometry':   []
                 }
             }
             init_obj.create_geometry()
+
+            init_obj.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=init_obj,
+                                                                      filename=None, use_thread=False)
 
         # Create the new object
         self.app.app_obj.new_object("excellon", outname, aligndrillgrid_init_me, plot=False)

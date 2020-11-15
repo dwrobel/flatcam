@@ -1273,7 +1273,7 @@ class TransformEditorTool(AppTool):
         :return:
         """
 
-        with self.app.proc_container.new(_("Appying Rotate")):
+        with self.app.proc_container.new('%s...' % _("Rotating")):
             shape_list = self.draw_app.selected
             px, py = point
 
@@ -1306,7 +1306,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
-        with self.app.proc_container.new(_("Applying Flip")):
+        with self.app.proc_container.new('%s...' % _("Flipping")):
             try:
                 px, py = point
 
@@ -1341,7 +1341,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
-        with self.app.proc_container.new(_("Applying Skew")):
+        with self.app.proc_container.new('%s...' % _("Skewing")):
             try:
                 px, py = point
                 for sha in shape_list:
@@ -1376,7 +1376,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
-        with self.app.proc_container.new(_("Applying Scale")):
+        with self.app.proc_container.new('%s...' % _("Scaling")):
             try:
                 px, py = point
 
@@ -1407,7 +1407,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
 
-        with self.app.proc_container.new(_("Applying Offset")):
+        with self.app.proc_container.new('%s...' % _("Offsetting")):
             try:
                 for sha in shape_list:
                     if axis == 'X':
@@ -1432,7 +1432,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Buffer")):
+            with self.app.proc_container.new('%s...' % _("Buffering")):
                 try:
                     for sel_obj in shape_list:
                         sel_obj.buffer(value, join, factor)
@@ -2711,7 +2711,7 @@ class FCMove(FCShapeTool):
 
     def make(self):
         def worker_task():
-            with self.draw_app.app.proc_container.new(_("Moving ...")):
+            with self.draw_app.app.proc_container.new('%s...' % _("Moving")):
                 # Create new geometry
                 dx = self.destination[0] - self.origin[0]
                 dy = self.destination[1] - self.origin[1]

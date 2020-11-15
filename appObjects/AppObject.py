@@ -98,12 +98,12 @@ class AppObject(QtCore.QObject):
 
         # ## Create object
         classdict = {
-            "gerber": GerberObject,
-            "excellon": ExcellonObject,
-            "cncjob": CNCJobObject,
-            "geometry": GeometryObject,
-            "script": ScriptObject,
-            "document": DocumentObject
+            "gerber":       GerberObject,
+            "excellon":     ExcellonObject,
+            "cncjob":       CNCJobObject,
+            "geometry":     GeometryObject,
+            "script":       ScriptObject,
+            "document":     DocumentObject
         }
 
         log.debug("Calling object constructor...")
@@ -226,7 +226,14 @@ class AppObject(QtCore.QObject):
         :return: None
         """
 
-        self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
+        outname = 'new_exc'
+
+        def obj_init(new_obj, app_obj):
+            new_obj.tools = {}
+            new_obj.source_file = ''
+            new_obj.solid_geometry = []
+
+        self.new_object('excellon', outname, obj_init, plot=False)
 
     def new_geometry_object(self):
         """
@@ -236,12 +243,12 @@ class AppObject(QtCore.QObject):
         """
         outname = 'new_geo'
 
-        def initialize(obj, app):
-            obj.multitool = True
-            obj.multigeo = True
+        def initialize(new_obj, app):
+            new_obj.multitool = True
+            new_obj.multigeo = True
+
             # store here the default data for Geometry Data
             default_data = {}
-
             for opt_key, opt_val in app.options.items():
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
@@ -250,19 +257,21 @@ class AppObject(QtCore.QObject):
                     oname = opt_key[len('tools_mill') + 1:]
                     default_data[oname] = self.app.options[opt_key]
 
-            obj.tools = {}
-            obj.tools.update({
+            new_obj.tools = {
                 1: {
-                    'tooldia': float(app.defaults["geometry_cnctooldia"]),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Rough',
-                    'tool_type': 'C1',
-                    'data': deepcopy(default_data),
-                    'solid_geometry': []
+                    'tooldia':          float(app.defaults["geometry_cnctooldia"]),
+                    'offset':           'Path',
+                    'offset_value':     0.0,
+                    'type':             'Rough',
+                    'tool_type':        'C1',
+                    'data':             deepcopy(default_data),
+                    'solid_geometry':   []
                 }
-            })
-            obj.tools[1]['data']['name'] = outname
+            }
+
+            new_obj.tools[1]['data']['name'] = outname
+
+            new_obj.source_file = ''
 
         self.new_object('geometry', outname, initialize, plot=False)
 
@@ -273,19 +282,20 @@ class AppObject(QtCore.QObject):
         :return: None
         """
 
-        def initialize(grb_obj, app):
-            grb_obj.multitool = False
-            grb_obj.source_file = []
-            grb_obj.multigeo = False
-            grb_obj.follow = False
-            grb_obj.apertures = {}
-            grb_obj.solid_geometry = []
+        def initialize(new_obj, app):
+            new_obj.multitool = False
+            new_obj.source_file = ''
+            new_obj.multigeo = False
+            new_obj.follow = False
+            new_obj.apertures = {}
+            new_obj.solid_geometry = []
+            new_obj.follow_geometry = []
 
             try:
-                grb_obj.options['xmin'] = 0
-                grb_obj.options['ymin'] = 0
-                grb_obj.options['xmax'] = 0
-                grb_obj.options['ymax'] = 0
+                new_obj.options['xmin'] = 0
+                new_obj.options['ymin'] = 0
+                new_obj.options['xmax'] = 0
+                new_obj.options['ymax'] = 0
             except KeyError:
                 pass
 
@@ -317,8 +327,8 @@ class AppObject(QtCore.QObject):
         new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
                                           "(displayed in Tcl Shell).")
 
-        def initialize(obj, app):
-            obj.source_file = deepcopy(new_source_file)
+        def initialize(new_obj, app):
+            new_obj.source_file = deepcopy(new_source_file)
 
         outname = 'new_script'
         self.new_object('script', outname, initialize, plot=False)
@@ -330,8 +340,8 @@ class AppObject(QtCore.QObject):
         :return: None
         """
 
-        def initialize(obj, app):
-            obj.source_file = ""
+        def initialize(new_obj, app):
+            new_obj.source_file = ""
 
         self.new_object('document', 'new_document', initialize, plot=False)
 

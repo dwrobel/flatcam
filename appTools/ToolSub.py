@@ -194,7 +194,7 @@ class ToolSub(AppTool):
                     self.new_apertures[apid][key] = self.target_grb_obj.apertures[apid][key]
 
         def worker_job(app_obj):
-            with app_obj.app.proc_container.new('%s' % _("Working ...")):
+            with app_obj.app.proc_container.new('%s...' % _("Working")):
                 # SUBTRACTOR geometry (always the same)
                 sub_geometry = {'solid': [], 'clear': []}
                 # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
@@ -350,7 +350,7 @@ class ToolSub(AppTool):
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
                                                                    local_use=grb_obj, use_thread=False)
 
-        with self.app.proc_container.new(_("New object ...")):
+        with self.app.proc_container.new('%s...' % _("Generating")):
             ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
@@ -544,7 +544,7 @@ class ToolSub(AppTool):
                     app_obj.log.debug("ToolSub.new_geo_object() --> %s" % str(e))
                 geo_obj.multigeo = False
 
-        with self.app.proc_container.new(_("New object ...")):
+        with self.app.proc_container.new('%s...' % _("Generating")):
             ret = self.app.app_obj.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))

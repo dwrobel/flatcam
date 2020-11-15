@@ -5344,15 +5344,12 @@ class App(QtCore.QObject):
 
             obj_init.tools = deepcopy(obj.tools)
 
-            # drills are offset, so they need to be deep copied
-            obj_init.drills = deepcopy(obj.drills)
-            # slots are offset, so they need to be deep copied
-            obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
             if not obj_init.tools:
                 app_obj.debug("on_copy_command() --> no excellon tools")
                 return 'fail'
+
 
         def initialize_script(new_obj, app_obj):
             new_obj.source_file = deepcopy(obj.source_file)
@@ -5405,26 +5402,26 @@ class App(QtCore.QObject):
                 app_obj.debug("on_copy_object2() --> no gerber apertures")
                 return 'fail'
 
-        def initialize_excellon(obj_init, app_obj):
-            obj_init.tools = deepcopy(obj.tools)
-            # drills are offset, so they need to be deep copied
-            obj_init.drills = deepcopy(obj.drills)
-            # slots are offset, so they need to be deep copied
-            obj_init.slots = deepcopy(obj.slots)
-            obj_init.create_geometry()
-            if not obj_init.tools:
+        def initialize_excellon(new_obj, app_obj):
+            new_obj.tools = deepcopy(obj.tools)
+            new_obj.create_geometry()
+            if not new_obj.tools:
                 app_obj.debug("on_copy_object2() --> no excellon tools")
                 return 'fail'
+            new_obj.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=new_obj,
+                                                                     filename=None, use_thread=False)
 
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
+            outname = str(obj_name) + custom_name
+
             try:
                 if isinstance(obj, ExcellonObject):
-                    self.app_obj.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
+                    self.app_obj.new_object("excellon", outname, initialize_excellon)
                 elif isinstance(obj, GerberObject):
-                    self.app_obj.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
+                    self.app_obj.new_object("gerber", outname, initialize_gerber)
                 elif isinstance(obj, GeometryObject):
-                    self.app_obj.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
+                    self.app_obj.new_object("geometry", outname, initialize_geometry)
             except Exception as er:
                 return "Operation failed: %s" % str(er)
 
@@ -5589,7 +5586,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        def initialize_geometry(obj_init, app_obj):
+        def initialize_from_geometry(obj_init, app_obj):
             tools = {}
             tooluid = 1
 
@@ -5636,7 +5633,7 @@ class App(QtCore.QObject):
             if not obj_init.solid_geometry:
                 return 'fail'
 
-        def initialize_gerber(obj_init, app_obj):
+        def initialize_from_gerber(obj_init, app_obj):
             tools = {}
             tooluid = 1
             digits = app_obj.decimals
@@ -5731,6 +5728,8 @@ class App(QtCore.QObject):
 
             if not obj_init.solid_geometry:
                 return 'fail'
+            obj_init.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=obj_init,
+                                                                      filename=None, use_thread=False)
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2excellon--> No object selected")
@@ -5740,12 +5739,12 @@ class App(QtCore.QObject):
         for obj in self.collection.get_selected():
 
             obj_name = obj.options["name"]
-
+            outname = "%s_conv" % str(obj_name)
             try:
                 if obj.kind == 'gerber':
-                    self.app_obj.new_object("excellon", str(obj_name) + "_conv", initialize_gerber)
+                    self.app_obj.new_object("excellon", outname, initialize_from_gerber)
                 elif obj.kind == 'geometry':
-                    self.app_obj.new_object("excellon", str(obj_name) + "_conv", initialize_geometry)
+                    self.app_obj.new_object("excellon", outname, initialize_from_geometry)
                 else:
                     log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
 
@@ -7886,7 +7885,7 @@ class App(QtCore.QObject):
         :return:
         """
         self.log.debug("Enabling plots ...")
-        # self.inform.emit(_("Working ..."))
+        # self.inform.emit('%s...' % _("Working"))
 
         for obj in objects:
             if obj.options['plot'] is False:
@@ -7929,7 +7928,7 @@ class App(QtCore.QObject):
         """
 
         self.log.debug("Disabling plots ...")
-        # self.inform.emit(_("Working ..."))
+        # self.inform.emit('%s...' % _("Working"))
 
         for obj in objects:
             if obj.options['plot'] is True:
@@ -7980,7 +7979,7 @@ class App(QtCore.QObject):
             return
 
         self.log.debug("Toggling plots ...")
-        self.inform.emit(_("Working ..."))
+        self.inform.emit('%s...' % _("Working"))
         for obj in objects:
             if obj.options['plot'] is False:
                 obj.options['plot'] = True
@@ -10253,7 +10252,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
 
-        with self.app.proc_container.new(_("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
@@ -10293,6 +10292,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
+            # populate excellon_obj.tools dict
             try:
                 ret = excellon_obj.parse_file(filename=filename)
                 if ret == "fail":
@@ -10309,6 +10309,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 return "fail"
 
+            # populate excellon_obj.solid_geometry list
             ret = excellon_obj.create_geometry()
             if ret == 'fail':
                 app_obj.log.debug("Could not create geometry for Excellon object.")
@@ -10320,7 +10321,7 @@ class MenuFileHandlers(QtCore.QObject):
             app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), filename))
             return "fail"
 
-        with self.app.proc_container.new(_("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
             ret_val = self.app.app_obj.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
@@ -10383,7 +10384,7 @@ class MenuFileHandlers(QtCore.QObject):
 
             job_obj.create_geometry()
 
-        with self.app.proc_container.new(_("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -10457,7 +10458,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.app.log.debug("open_hpgl2()")
 
-        with self.app.proc_container.new(_("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
@@ -10513,7 +10514,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
 
-        with self.app.proc_container.new(_("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
 
             # Object name
             script_name = outname or filename.split('/')[-1].split('\\')[-1]

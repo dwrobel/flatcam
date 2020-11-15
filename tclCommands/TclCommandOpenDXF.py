@@ -2,6 +2,14 @@ from tclCommands.TclCommand import TclCommandSignaled
 
 import collections
 
+import gettext
+import appTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class TclCommandOpenDXF(TclCommandSignaled):
     """
@@ -78,7 +86,7 @@ class TclCommandOpenDXF(TclCommandSignaled):
 
         units = self.app.defaults['units'].upper()
 
-        with self.app.proc_container.new('%s' % _("Opening ...")):
+        with self.app.proc_container.new('%s...' % _("Opening")):
 
             # Object creation
             ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)

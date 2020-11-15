@@ -66,6 +66,7 @@ class TclCommandNewGerber(TclCommandSignaled):
             grb_obj.follow = False
             grb_obj.apertures = {}
             grb_obj.solid_geometry = []
+            grb_obj.follow_geometry = []
 
             try:
                 grb_obj.options['xmin'] = 0

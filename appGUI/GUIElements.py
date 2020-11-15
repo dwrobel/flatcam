@@ -4510,7 +4510,10 @@ class FlatCAMActivityView(QtWidgets.QWidget):
             icon = self.app.resource_location + '/active_static.png'
             movie = self.app.resource_location + "/active.gif"
 
-        self.setMinimumWidth(200)
+        # ###############################################################3
+        # self.setMinimumWidth(200)
+        # ###############################################################3
+
         self.movie_path = movie
         self.icon_path = icon
 

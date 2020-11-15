@@ -303,6 +303,7 @@ class PcbWizard(AppTool):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
+            # populate excellon_obj.tools dict
             try:
                 ret = excellon_obj.parse_file(file_obj=excellon_fileobj)
                 if ret == "fail":
@@ -320,6 +321,7 @@ class PcbWizard(AppTool):
                 app_obj.inform.emit(msg)
                 return "fail"
 
+            # populate excellon_obj.solid_geometry list
             ret = excellon_obj.create_geometry()
             if ret == 'fail':
                 app_obj.log.debug("Could not create geometry for Excellon object.")

@@ -3,6 +3,7 @@ from tclCommands.TclCommand import TclCommandSignaled
 
 from shapely.geometry import Point
 import shapely.affinity as affinity
+from copy import deepcopy
 
 
 class TclCommandAlignDrill(TclCommandSignaled):
@@ -172,15 +173,20 @@ class TclCommandAlignDrill(TclCommandSignaled):
                     drills.append(point)
                     drills.append(point_mirror)
 
+            # populate init_obj.solid_geometry
+            init_obj.create_geometry()
+
+            # populate init_obj.tools dict
             init_obj.tools = {
                 '1': {
-                    'tooldia': tooldia,
-                    'drills': drills,
-                    'solid_geometry': []
+                    'tooldia':          tooldia,
+                    'drills':           deepcopy(drills),
+                    'solid_geometry':   init_obj.solid_geometry
                 }
             }
 
-            init_obj.create_geometry()
+            init_obj.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=init_obj,
+                                                                      filename=None, use_thread=False)
 
         # Box
         if 'box' in args:

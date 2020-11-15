@@ -192,7 +192,7 @@ class Properties(AppTool):
         self.treeWidget.addChild(obj_name, [obj.options['name']])
 
         def job_thread(obj_prop):
-            self.app.proc_container.new(_("Working ..."))
+            self.app.proc_container.new('%s...' % _("Working"))
 
             length = 0.0
             width = 0.0

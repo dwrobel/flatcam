@@ -2630,7 +2630,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
     def selection_worker(self, point):
         def job_thread(editor_obj):
             self.results = []
-            with editor_obj.app.proc_container.new('%s' % _("Working ...")):
+            with editor_obj.app.proc_container.new('%s...' % _("Working")):
 
                 def divide_chunks(lst, n):
                     # looping till length of lst
@@ -4216,7 +4216,7 @@ class AppGerberEditor(QtCore.QObject):
             grb_obj.source_file = self.app.f_handlers.export_gerber(obj_name=out_name, filename=None,
                                                                     local_use=grb_obj, use_thread=False)
 
-        with self.app.proc_container.new(_("Working ...")):
+        with self.app.proc_container.new('%s...' % _("Working")):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:

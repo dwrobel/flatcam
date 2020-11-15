@@ -293,7 +293,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Appying Rotate")):
+            with self.app.proc_container.new('%s...' % _("Rotating")):
                 try:
                     px, py = point
                     for sel_obj in obj_list:
@@ -318,7 +318,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Flip")):
+            with self.app.proc_container.new('%s...' % _("Flipping")):
                 try:
                     px, py = point
 
@@ -363,7 +363,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Skew")):
+            with self.app.proc_container.new('%s...' % _("Skewing")):
                 try:
                     px, py = point
 
@@ -389,7 +389,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Scale")):
+            with self.app.proc_container.new('%s...' % _("Scaling")):
                 try:
                     px, py = point
 
@@ -416,7 +416,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Offset")):
+            with self.app.proc_container.new('%s...' % _("Offsetting")):
                 try:
                     for sel_obj in obj_list:
                         if sel_obj.kind == 'cncjob':
@@ -445,7 +445,7 @@ class ToolTransform(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
         else:
-            with self.app.proc_container.new(_("Applying Buffer")):
+            with self.app.proc_container.new('%s...' % _("Buffering")):
                 try:
                     for sel_obj in obj_list:
                         if sel_obj.kind == 'cncjob':

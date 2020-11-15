@@ -5,6 +5,7 @@ from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel
 
 from numpy import Inf
+from copy import deepcopy
 
 from shapely.geometry import Point
 from shapely import affinity
@@ -202,7 +203,7 @@ class DblSidedTool(AppTool):
             tools[1]['solid_geometry'] += [point, point_mirror]
 
         def obj_init(obj_inst, app_inst):
-            obj_inst.tools = tools
+            obj_inst.tools = deepcopy(tools)
             obj_inst.create_geometry()
             obj_inst.source_file = app_inst.f_handlers.export_excellon(obj_name=obj_inst.options['name'],
                                                                        local_use=obj_inst,
