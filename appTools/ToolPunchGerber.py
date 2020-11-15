@@ -8,12 +8,17 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable, FCButton, FCLabel
 
 from copy import deepcopy
 import logging
 from shapely.geometry import MultiPolygon, Point
 from shapely.ops import unary_union
+
+from appParsers.ParseGerber import Gerber
+from camlib import Geometry, FlatCAMRTreeStorage, grace
+
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import gettext
 import appTranslation as fcTranslate
@@ -26,10 +31,11 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolPunchGerber(AppTool):
+class ToolPunchGerber(AppTool, Gerber):
 
     def __init__(self, app):
         AppTool.__init__(self, app)
+        Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
 
         self.app = app
         self.decimals = self.app.decimals
@@ -37,6 +43,28 @@ class ToolPunchGerber(AppTool):
 
         # store here the old object name
         self.old_name = ''
+
+        # Target Gerber object
+        self.grb_obj = None
+
+        self.mm = None
+        self.mp = None
+        self.mr = None
+        self.kp = None
+        
+        # store here if the grid snapping is active
+        self.grid_status_memory = False
+
+        self.poly_sel_disconnect_flag = False
+
+        # dict to store the pads selected for displaying; key is the shape added to be plotted and value is the poly
+        self.poly_dict = {}
+
+        # list of dicts to store the selection result in the manual selection
+        self.manual_pads = []
+
+        # remember to restore this if we want the selection shape to work
+        self.old_selection_status = None
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -47,7 +75,7 @@ class ToolPunchGerber(AppTool):
         # ## Signals
         self.ui.method_punch.activated_custom.connect(self.on_method)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
-        self.ui.punch_object_button.clicked.connect(self.on_generate_object)
+        self.ui.punch_object_button.clicked.connect(self.on_punch_object_click)
 
         self.ui.circular_cb.stateChanged.connect(
             lambda state:
@@ -166,6 +194,12 @@ class ToolPunchGerber(AppTool):
         self.ui.other_cb.set_value(self.app.defaults["tools_punch_others"])
 
         self.ui.factor_entry.set_value(float(self.app.defaults["tools_punch_hole_prop_factor"]))
+
+        self.ui.punch_type_radio.set_value("a")
+        self.old_selection_status = None
+
+        # list of dicts to store the selection result in the manual selection
+        self.manual_pads = []
 
     def build_tool_ui(self):
         self.ui_disconnect()
@@ -368,30 +402,64 @@ class ToolPunchGerber(AppTool):
             except (TypeError, AttributeError):
                 pass
 
-    def on_generate_object(self):
+    def on_punch_object_click(self):
+        punch_type = self.ui.punch_type_radio.get_value()
+        punch_method = self.ui.method_punch.get_value()
 
         # get the Gerber file who is the source of the punched Gerber
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
 
         try:
-            grb_obj = model_index.internalPointer().obj
+            self.grb_obj = model_index.internalPointer().obj
         except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        name = grb_obj.options['name'].rpartition('.')[0]
+        if self.grb_obj is None:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return
+
+        name = self.grb_obj.options['name'].rpartition('.')[0]
+        if name == '':
+            name = self.grb_obj.options['name']
         outname = name + "_punched"
 
-        punch_method = self.ui.method_punch.get_value()
-        if punch_method == 'exc':
-            self.on_excellon_method(grb_obj, outname)
-        elif punch_method == 'fixed':
-            self.on_fixed_method(grb_obj, outname)
-        elif punch_method == 'ring':
-            self.on_ring_method(grb_obj, outname)
-        elif punch_method == 'prop':
-            self.on_proportional_method(grb_obj, outname)
+        if punch_type == 'a':
+            if punch_method == 'exc':
+                self.on_excellon_method(self.grb_obj, outname)
+            elif punch_method == 'fixed':
+                self.on_fixed_method(self.grb_obj, outname)
+            elif punch_method == 'ring':
+                self.on_ring_method(self.grb_obj, outname)
+            elif punch_method == 'prop':
+                self.on_proportional_method(self.grb_obj, outname)
+        else:
+            # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
+            if self.app.ui.grid_snap_btn.isChecked():
+                self.grid_status_memory = True
+                self.app.ui.grid_snap_btn.trigger()
+            else:
+                self.grid_status_memory = False
+
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a pad to select it."))
+
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_single_poly_mouse_release)
+            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+
+            # disconnect flags
+            self.poly_sel_disconnect_flag = True
+
+            # disable the canvas mouse dragging seelction shape
+            self.old_selection_status = deepcopy(self.app.defaults['global_selection_shape'])
+            self.app.defaults['global_selection_shape'] = False
 
     def on_excellon_method(self, grb_obj, outname):
         # get the Excellon file whose geometry will create the punch holes
@@ -408,7 +476,7 @@ class ToolPunchGerber(AppTool):
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
-        # selected codes in thre apertures UI table
+        # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
@@ -928,6 +996,250 @@ class ToolPunchGerber(AppTool):
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
+    def find_pad(self, point):
+        pt = Point(point) if type(point) is tuple else point
+        results = []
+
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
+        new_options = {}
+        for opt in self.grb_obj.options:
+            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+
+        for apid, apid_value in self.grb_obj.apertures.items():
+            if apid in sel_apid:
+                for idx, elem in enumerate(apid_value['geometry']):
+                    if 'follow' in elem and isinstance(elem['follow'], Point):
+                        try:
+                            pad = elem['solid']
+                        except KeyError:
+                            continue
+                        if pt.within(pad):
+                            new_elem = {
+                                'apid': apid,
+                                'idx': idx
+                            }
+                            results.append(deepcopy(new_elem))
+        return results
+
+    def manual_punch(self):
+        """
+
+        :return:
+        """
+
+        punch_method = self.ui.method_punch.get_value()
+
+        '''
+        self.manual_pads it's a list of dicts taht store the result of manual pad selection
+        Each dictionary is in the format:
+        {
+            'apid': aperture in the target Gerber object apertures dict,
+            'idx': index of the selected geo dict in the self.grb_obj.apertures[apid]['geometry] list of geo_dicts
+        }
+        Each geo_dict in the list above has possible keys:
+        {
+            'solid': Shapely Polygon,
+            'follow': Shapely Point or LineString,
+            'clear': Shapely Polygon
+        }
+        '''
+        if punch_method == 'exc':
+            # get the Excellon file whose geometry will create the punch holes
+            selection_index = self.ui.exc_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.ui.exc_combo.rootModelIndex())
+
+        elif punch_method == 'fixed':
+            pass
+        elif punch_method == 'ring':
+            pass
+        elif punch_method == 'prop':
+            pass
+
+    # To be called after clicking on the plot.
+    def on_single_poly_mouse_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+            event_is_dragging = self.app.event_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            event_is_dragging = self.app.ui.popMenu.mouse_is_panning
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        event_pos = (x, y)
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+
+        # do paint single only for left mouse clicks
+        if event.button == 1:
+            self.manual_pads = self.find_pad(point=(curr_pos[0], curr_pos[1]))
+
+            if self.manual_pads:
+                for el in self.manual_pads:
+                    apid = el['apid']
+                    idx = el['idx']
+                    clicked_poly = self.grb_obj.apertures[apid]['geometry'][idx]['solid']
+                    if clicked_poly not in self.poly_dict.values():
+                        shape_id = self.app.tool_shapes.add(tolerance=self.grb_obj.drawing_tolerance,
+                                                            layer=0,
+                                                            shape=clicked_poly,
+                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            visible=True)
+                        self.poly_dict[shape_id] = clicked_poly
+                        self.app.inform.emit(
+                            '%s: %d. %s' % (_("Added pad"), int(len(self.poly_dict)),
+                                            _("Click to add next pad or right click to start."))
+                        )
+                    else:
+                        try:
+                            for k, v in list(self.poly_dict.items()):
+                                if v == clicked_poly:
+                                    self.app.tool_shapes.remove(k)
+                                    self.poly_dict.pop(k)
+                                    break
+                        except TypeError:
+                            return
+                        self.app.inform.emit(
+                            '%s. %s' % (_("Removed pad"),
+                                        _("Click to add/remove next pad or right click to start."))
+                        )
+
+                    self.app.tool_shapes.redraw()
+            else:
+                self.app.inform.emit(_("No pad detected under click position."))
+
+        elif event.button == right_button and event_is_dragging is False:
+            # restore the Grid snapping if it was active before
+            if self.grid_status_memory is True:
+                self.app.ui.grid_snap_btn.trigger()
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            # disconnect flags
+            self.poly_sel_disconnect_flag = False
+
+            # restore the selection shape
+            self.app.defaults['global_selection_shape'] = self.old_selection_status
+
+            self.app.tool_shapes.clear(update=True)
+
+            self.manual_punch()
+
+            self.manual_pads = []
+            if self.poly_dict:
+                self.poly_dict.clear()
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
+
+    def on_key_press(self, event):
+        # modifiers = QtWidgets.QApplication.keyboardModifiers()
+        # matplotlib_key_flag = False
+
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        elif type(event) == QtGui.QKeyEvent:
+            key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            # matplotlib_key_flag = True
+
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    # modifiers = QtCore.Qt.ControlModifier
+                    pass
+                elif mod.lower() == 'alt':
+                    # modifiers = QtCore.Qt.AltModifier
+                    pass
+                elif mod.lower() == 'shift':
+                    # modifiers = QtCore.Qt.ShiftModifier
+                    pass
+                else:
+                    # modifiers = QtCore.Qt.NoModifier
+                    pass
+                key = QtGui.QKeySequence(key_text)
+
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
+
+        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+            if self.area_sel_disconnect_flag is True:
+                try:
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.mm)
+                        self.app.plotcanvas.graph_event_disconnect(self.kp)
+                except Exception as e:
+                    log.debug("ToolPaint.on_key_press() _1 --> %s" % str(e))
+
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
+                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                      self.app.on_mouse_move_over_plot)
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+
+            if self.poly_sel_disconnect_flag is False:
+                try:
+                    # restore the Grid snapping if it was active before
+                    if self.grid_status_memory is True:
+                        self.app.ui.grid_snap_btn.trigger()
+
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                    self.app.tool_shapes.clear(update=True)
+                except Exception as e:
+                    log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
+                # restore the selection shape
+                if self.old_selection_status is not None:
+                    self.app.defaults['global_selection_shape'] = self.old_selection_status
+
+            self.poly_dict.clear()
+
+            self.delete_moving_selection_shape()
+            self.delete_tool_selection_shape()
+
     def on_mark_cb_click_table(self):
         """
         Will mark aperture geometries on canvas or delete the markings depending on the checkbox state
@@ -980,7 +1292,7 @@ class PunchUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -991,7 +1303,7 @@ class PunchUI:
         self.layout.addWidget(title_label)
 
         # Punch Drill holes
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -1006,7 +1318,7 @@ class PunchUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grb_label = FCLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
 
         grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
@@ -1017,7 +1329,7 @@ class PunchUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
-        self.padt_label = QtWidgets.QLabel("<b>%s</b>" % _("Processed Pads Type"))
+        self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -1117,7 +1429,7 @@ class PunchUI:
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        self.method_label = QtWidgets.QLabel('<b>%s:</b>' % _("Method"))
+        self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
         self.method_label.setToolTip(
             _("The punch hole source can be:\n"
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
@@ -1142,7 +1454,7 @@ class PunchUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
-        self.exc_label = QtWidgets.QLabel('<b>%s</b>' % _("Excellon"))
+        self.exc_label = FCLabel('<b>%s</b>' % _("Excellon"))
         self.exc_label.setToolTip(
             _("Remove the geometry of Excellon from the Gerber to create the holes in pads.")
         )
@@ -1157,7 +1469,7 @@ class PunchUI:
         grid0.addWidget(self.exc_combo, 4, 0, 1, 2)
 
         # Fixed Dia
-        self.fixed_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Diameter"))
+        self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
         grid0.addWidget(self.fixed_label, 6, 0, 1, 2)
 
         # Diameter value
@@ -1165,7 +1477,7 @@ class PunchUI:
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.set_range(0.0000, 10000.0000)
 
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.dia_label = FCLabel('%s:' % _("Value"))
         self.dia_label.setToolTip(
             _("Fixed hole diameter.")
         )
@@ -1185,7 +1497,7 @@ class PunchUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # Annular Ring value
-        self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
+        self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the hole exterior\n"
@@ -1200,7 +1512,7 @@ class PunchUI:
         self.ring_box.addLayout(self.grid1)
 
         # Circular Annular Ring Value
-        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
+        self.circular_ring_label = FCLabel('%s:' % _("Circular"))
         self.circular_ring_label.setToolTip(
             _("The size of annular ring for circular pads.")
         )
@@ -1213,7 +1525,7 @@ class PunchUI:
         self.grid1.addWidget(self.circular_ring_entry, 3, 1)
 
         # Oblong Annular Ring Value
-        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label = FCLabel('%s:' % _("Oblong"))
         self.oblong_ring_label.setToolTip(
             _("The size of annular ring for oblong pads.")
         )
@@ -1226,7 +1538,7 @@ class PunchUI:
         self.grid1.addWidget(self.oblong_ring_entry, 4, 1)
 
         # Square Annular Ring Value
-        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
+        self.square_ring_label = FCLabel('%s:' % _("Square"))
         self.square_ring_label.setToolTip(
             _("The size of annular ring for square pads.")
         )
@@ -1239,7 +1551,7 @@ class PunchUI:
         self.grid1.addWidget(self.square_ring_entry, 5, 1)
 
         # Rectangular Annular Ring Value
-        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
+        self.rectangular_ring_label = FCLabel('%s:' % _("Rectangular"))
         self.rectangular_ring_label.setToolTip(
             _("The size of annular ring for rectangular pads.")
         )
@@ -1252,7 +1564,7 @@ class PunchUI:
         self.grid1.addWidget(self.rectangular_ring_entry, 6, 1)
 
         # Others Annular Ring Value
-        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
+        self.other_ring_label = FCLabel('%s:' % _("Others"))
         self.other_ring_label.setToolTip(
             _("The size of annular ring for other pads.")
         )
@@ -1266,7 +1578,7 @@ class PunchUI:
         # #############################################################################################################
 
         # Proportional value
-        self.prop_label = QtWidgets.QLabel('<b>%s</b>' % _("Proportional Diameter"))
+        self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
         grid0.addWidget(self.prop_label, 12, 0, 1, 2)
 
         # Diameter value
@@ -1275,22 +1587,43 @@ class PunchUI:
         self.factor_entry.set_range(0.0000, 100.0000)
         self.factor_entry.setSingleStep(0.1)
 
-        self.factor_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.factor_label = FCLabel('%s:' % _("Value"))
         self.factor_label.setToolTip(
             _("Proportional Diameter.\n"
               "The hole diameter will be a fraction of the pad size.")
         )
 
-        grid0.addWidget(self.factor_label, 13, 0)
-        grid0.addWidget(self.factor_entry, 13, 1)
+        grid0.addWidget(self.factor_label, 14, 0)
+        grid0.addWidget(self.factor_entry, 14, 1)
 
         separator_line3 = QtWidgets.QFrame()
         separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line3, 14, 0, 1, 2)
+        grid0.addWidget(separator_line3, 16, 0, 1, 2)
+
+        # Type of doing the punch
+        self.punch_type_label = FCLabel('%s:' % _("Type"))
+        self.punch_type_label.setToolTip(
+            _("When the manual type is chosen, the pads to be punched\n"
+              "are selected on the canvas but only those that\n"
+              "are in the processed pads.\n")
+        )
+
+        self.punch_type_radio = RadioSet([
+            {"label": _("Automatic"), "value": "a"},
+            {"label": _("Manual"), "value": "m"},
+        ])
+
+        grid0.addWidget(self.punch_type_label, 18, 0)
+        grid0.addWidget(self.punch_type_radio, 18, 1)
+
+        separator_line3 = QtWidgets.QFrame()
+        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line3, 20, 0, 1, 2)
 
         # Buttons
-        self.punch_object_button = QtWidgets.QPushButton(_("Punch Gerber"))
+        self.punch_object_button = FCButton(_("Punch Gerber"))
         self.punch_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/punch32.png'))
         self.punch_object_button.setToolTip(
             _("Create a Gerber object from the selected object, within\n"
@@ -1307,7 +1640,7 @@ class PunchUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")

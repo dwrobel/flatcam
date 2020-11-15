@@ -686,6 +686,7 @@ class Gerber(Geometry):
                                     poly_buffer.append(flash.simplify(s_tol))
                                 else:
                                     poly_buffer.append(flash)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = flash
                                 else:
@@ -1215,6 +1216,7 @@ class Gerber(Geometry):
                             self.apertures[current_aperture],
                             self.steps_per_circle
                         )
+
                         if not flash.is_empty:
                             if self.app.defaults['gerber_simplification']:
                                 poly_buffer.append(flash.simplify(s_tol))

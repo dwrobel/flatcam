@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.11.2020
+
+- working on adding new feature to Punch Gerber Tool - manual selection of pads to be punched
+
 14.11.2020
 
 - upgraded the Extract Tool to allow aperture selection therefore narrowing down what apertures are the source for drills and/or soldermask openings
