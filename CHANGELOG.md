@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - fixed the menu entries for the Properties Tool, Transform Tool
 - fixed the Tools menu actions
 - added new feature in the Calculator Tool: the Electroplating sub-tool is now able to do reverse calculations when time is adjusted; fixes issue #14 (on the work repo)
+- Turkish language strings updated (by Mehmet Kaya)
 
 15.11.2020
 
