@@ -892,8 +892,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.setCentralWidget(self.splitter)
 
         # self.notebook = QtWidgets.QTabWidget()
-        self.notebook = FCDetachableTab(protect=True, parent=self)
-        self.notebook.setTabsClosable(False)
+        self.notebook = FCDetachableTab(protect=True, protect_by_name=[_("Project"), _("Properties")], parent=self)
+        # self.notebook.setTabsClosable(False)
         self.notebook.useOldIndex(True)
 
         self.splitter.addWidget(self.notebook)
@@ -1350,6 +1350,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_frame)
         self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.project_tab, _("Project"))
+        self.notebook.protectTab(0)
         self.project_frame.setDisabled(False)
 
         # ########################################################################
@@ -1365,6 +1366,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # self.properties_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.properties_tab_layout.addWidget(self.properties_scroll_area)
         self.notebook.addTab(self.properties_tab, _("Properties"))
+        self.notebook.protectTab(1)
 
         # ########################################################################
         # ########################## TOOL Tab # ##################################
