@@ -198,7 +198,7 @@ class FlatCAMObj(QtCore.QObject):
             pass
 
         try:
-            self.ui.transformations_button.clicked.connect(self.app.transform_tool.run)
+            self.ui.transformations_button.clicked.connect(lambda: self.app.transform_tool.run(toggle=True))
         except (TypeError, AttributeError):
             pass
 

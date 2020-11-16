@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - fixed the App Tools buttons in the Tools section of the Properties Tab for Excellon, Gerber and Geometry objects
 - made the Tool Tab closable
 - fixed a small typo in the Gerber Properties Tab that made the icon for the Cutout Tool not to show up
+- fixed the menu entries for the Properties Tool, Transform Tool
+- fixed the Tools menu actions
 
 15.11.2020
 

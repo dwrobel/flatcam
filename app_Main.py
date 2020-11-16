@@ -7121,7 +7121,7 @@ class App(QtCore.QObject):
         """
 
         self.defaults.report_usage("obj_properties()")
-        self.properties_tool.run(toggle=False)
+        self.properties_tool.run(toggle=True)
 
     def on_project_context_save(self):
         """

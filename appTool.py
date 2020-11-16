@@ -81,7 +81,7 @@ class AppTool(QtWidgets.QWidget):
         if separator is True:
             pos.addSeparator()
 
-        self.menuAction.triggered.connect(self.run)
+        self.menuAction.triggered.connect(lambda: self.run(toggle=True))
 
     def run(self):
 
