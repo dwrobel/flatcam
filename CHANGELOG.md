@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed a small typo in the Gerber Properties Tab that made the icon for the Cutout Tool not to show up
 - fixed the menu entries for the Properties Tool, Transform Tool
 - fixed the Tools menu actions
+- added new feature in the Calculator Tool: the Electroplating sub-tool is now able to do reverse calculations when time is adjusted; fixes issue #14 (on the work repo)
 
 15.11.2020
 

@@ -39,7 +39,6 @@ class ToolCalculator(AppTool):
         self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
         self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
 
-        self.ui.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
@@ -124,6 +123,8 @@ class ToolCalculator(AppTool):
 
         self.ui.area_sel_radio.set_value('d')
         self.on_area_calculation_radio(val='d')
+
+        self.on_calculate_eplate()
 
         self.ui_disconnect()
         self.ui_connect()
@@ -214,6 +215,30 @@ class ToolCalculator(AppTool):
         self.ui.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
 
     def on_calculate_eplate(self):
+        """
+
+        :return:
+        """
+
+        '''
+        Example: If you are plating a 12" by 9", double-sided board, with a current density of 20 ASF, you will need:
+        [(12" x 9" x 2 sides)/144] x 20 = 30 Amps = C
+        In Metric, for a 10cm by 10cm, double sided board, with a current density of 20 ASF, you will need:
+        [(10cm x 10cm x 2 sides]/929.0304359661127] x 20 =~ 4.3 Amps = C
+        or written differently:
+        [(10cm x 10cm x 2 sides] * 0.001076391] x 20 =~ 4.3 Amps = C
+        or:
+        (10cm x 10cm) * 0.0021527820833419] x 20 =~ 4.3 Amps = C
+        
+        Calculated time for a copper growth of 10 microns is:
+        [10um / (28um/hr)] x 60 min/hr = 21.42 minutes = TC (at 20ASF)
+        or:
+        10 um * 2.142857142857143 min/um = 21.42 minutes = TC (at 20ASF)
+        or:
+        10 * 2.142857142857143 min * (20/new_density) = 21.42 minutes = TC 
+        (with new_density = 20ASF amd copper groth of 10 um)
+        '''
+        self.ui_disconnect()
         area_calc_sel = self.ui.area_sel_radio.get_value()
         length = self.ui.pcblength_entry.get_value()
         width = self.ui.pcbwidth_entry.get_value()
@@ -231,8 +256,22 @@ class ToolCalculator(AppTool):
         self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
         self.ui.time_entry.set_value('%.1f' % calculated_time)
         self.app.inform.emit('[success] %s' % _("Done."))
+        self.ui_connect()
+
+    def on_calculate_growth(self):
+        self.ui_disconnect()
+        density = self.ui.cdensity_entry.get_value()
+        time = self.ui.time_entry.get_value()
+
+        growth = time / (2.142857142857143 * float(20 / density))
+
+        self.ui.growth_entry.set_value(self.app.dec_format(growth, self.decimals))
+        self.app.inform.emit('[success] %s' % _("Done."))
+
+        self.ui_connect()
 
     def ui_connect(self):
+        # V-Shape Calculator
         self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
         self.ui.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
 
@@ -241,9 +280,26 @@ class ToolCalculator(AppTool):
 
         self.ui.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
         self.ui.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
+
         self.ui.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
 
+        # Electroplating Calculator
+        self.ui.cdensity_entry.valueChanged.connect(self.on_calculate_eplate)
+        self.ui.cdensity_entry.returnPressed.connect(self.on_calculate_eplate)
+
+        self.ui.growth_entry.valueChanged.connect(self.on_calculate_eplate)
+        self.ui.growth_entry.returnPressed.connect(self.on_calculate_eplate)
+
+        self.ui.cdensity_entry.valueChanged.connect(self.on_calculate_growth)
+        self.ui.cdensity_entry.returnPressed.connect(self.on_calculate_growth)
+
+        self.ui.time_entry.valueChanged.connect(self.on_calculate_growth)
+        self.ui.time_entry.returnPressed.connect(self.on_calculate_growth)
+
+        self.ui.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
+
     def ui_disconnect(self):
+        # V-Shape Calculator
         try:
             self.ui.cutDepth_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
@@ -272,6 +328,44 @@ class ToolCalculator(AppTool):
             pass
         try:
             self.ui.calculate_vshape_button.clicked.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        # Electroplating Calculator
+        try:
+            self.ui.cdensity_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.cdensity_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.growth_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.growth_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.cdensity_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.cdensity_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.time_entry.valueChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.time_entry.returnPressed.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        try:
+            self.ui.calculate_plate_button.clicked.disconnect()
         except (AttributeError, TypeError):
             pass
 
@@ -568,7 +662,7 @@ class CalcUI:
 
         time_unit = FCLabel('%s' % "min")
         time_unit.setMinimumWidth(25)
-        self.time_entry.setReadOnly(True)
+        # self.time_entry.setReadOnly(True)
 
         t_hlay = QtWidgets.QHBoxLayout()
         t_hlay.addWidget(self.time_entry)
