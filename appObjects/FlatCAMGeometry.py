@@ -655,8 +655,8 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # Buttons Signals
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
-        self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
-        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
+        self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=True))
+        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=True))
         self.ui.milling_button.clicked.connect(self.on_milling_button_clicked)
 
         # Postprocessor change
@@ -700,7 +700,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.treeWidget.resize_sig.emit()
 
     def on_milling_button_clicked(self):
-        self.app.milling_tool.run(toggle=False)
+        self.app.milling_tool.run(toggle=True)
         self.app.milling_tool.ui.target_radio.set_value('geo')
         current_obj = self.app.collection.get_active()
         self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])

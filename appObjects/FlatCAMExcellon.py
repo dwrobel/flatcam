@@ -632,7 +632,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.treeWidget.resize_sig.emit()
 
     def on_milling_button_clicked(self):
-        self.app.milling_tool.run(toggle=False)
+        self.app.milling_tool.run(toggle=True)
         self.app.milling_tool.ui.target_radio.set_value('exc')
         current_obj = self.app.collection.get_active()
         self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])
