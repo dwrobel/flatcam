@@ -83,6 +83,7 @@ if __name__ == '__main__':
         QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
     app = QtWidgets.QApplication(sys.argv)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # apply style
     settings = QSettings("Open Source", "FlatCAM")
