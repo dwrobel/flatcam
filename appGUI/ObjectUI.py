@@ -385,7 +385,7 @@ class GerberObjectUI(ObjectUI):
 
         # ## Board cutout
         self.generate_cutout_button = FCButton(_('Cutout Tool'))
-        self.generate_cutout_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cut32_bis.png'))
+        self.generate_cutout_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cut32.png'))
         self.generate_cutout_button.setToolTip(
             _("Generate the geometry for\n"
               "the board cutout.")
