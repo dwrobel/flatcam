@@ -13,14 +13,16 @@ from shapely.geometry import Point, MultiPolygon
 from shapely.ops import unary_union
 
 from copy import deepcopy
-from io import BytesIO
-
-import zlib
+# from io import BytesIO
+#
+# import zlib
 import re
 import time
 import logging
 import traceback
 import os
+
+from pikepdf import Pdf, parse_content_stream
 
 import gettext
 import appTranslation as fcTranslate
@@ -128,67 +130,83 @@ class ToolPDF(AppTool):
 
         with self.app.proc_container.new('%s...' % _("Parsing")):
             with open(filename, "rb") as f:
-                pdf = f.read()
+                # pdf = f.read()
+                pdf = Pdf.open(f)
 
-            stream_nr = 0
-            for s in re.findall(self.stream_re, pdf):
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise grace
+                page = pdf.pages[0]
+                decomp_file = ''
+                for operands, command in parse_content_stream(page):
+                    line = ''
+                    for op in operands:
+                        try:
+                            line += str(op) + ' '
+                        except Exception as e:
+                            # print(str(e), operands, command)
+                            pass
+                    line += str(command)
+                    decomp_file += line + '\n'
+            self.pdf_decompressed[short_name] = decomp_file
 
-                stream_nr += 1
-                log.debug("PDF STREAM: %d\n" % stream_nr)
-                s = s.strip(b'\r\n')
-
-                # https://stackoverflow.com/questions/1089662/python-inflate-and-deflate-implementations
-                # def decompress(data):
-                #     decompressed = zlib.decompressobj(
-                #         -zlib.MAX_WBITS  # see above
-                #     )
-                #     inflated = decompressed.decompress(data)
-                #     inflated += decompressed.flush()
-                #     return inflated
-
-                # Convert 2 Bytes If Python 3
-                def C2BIP3(string):
-                    if type(string) == bytes:
-                        return string
-                    else:
-                        return bytes([ord(x) for x in string])
-
-                def inflate(data):
-                    try:
-                        return zlib.decompress(C2BIP3(data))
-                    except Exception:
-                        if len(data) <= 10:
-                            raise
-                        oDecompress = zlib.decompressobj(-zlib.MAX_WBITS)
-                        oStringIO = BytesIO()
-                        count = 0
-                        for byte in C2BIP3(data):
-                            try:
-                                oStringIO.write(oDecompress.decompress(byte))
-                                count += 1
-                            except Exception:
-                                break
-                        if len(data) - count <= 2:
-                            return oStringIO.getvalue()
-                        else:
-                            raise
-
-                try:
-                    decomp = inflate(s)
-                except Exception as e:
-                    decomp = None
-                    log.debug("ToolPDF.open_pdf() -> inflate (decompress) -> %s" % str(e))
-
-                try:
-                    self.pdf_decompressed[short_name] += (decomp.decode('UTF-8') + '\r\n')
-                except Exception:
-                    try:
-                        self.pdf_decompressed[short_name] += (decomp.decode('latin1') + '\r\n')
-                    except Exception as e:
-                        log.debug("ToolPDF.open_pdf() -> decoding error -> %s" % str(e))
+            # stream_nr = 0
+            # for s in re.findall(self.stream_re, pdf):
+            #     if self.app.abort_flag:
+            #         # graceful abort requested by the user
+            #         raise grace
+            #
+            #     stream_nr += 1
+            #     log.debug("PDF STREAM: %d\n" % stream_nr)
+            #     s = s.strip(b'\r\n')
+            #
+            #     # https://stackoverflow.com/questions/1089662/python-inflate-and-deflate-implementations
+            #     # def decompress(data):
+            #     #     decompressed = zlib.decompressobj(
+            #     #         -zlib.MAX_WBITS  # see above
+            #     #     )
+            #     #     inflated = decompressed.decompress(data)
+            #     #     inflated += decompressed.flush()
+            #     #     return inflated
+            #
+            #     Convert 2 Bytes If Python 3
+            #     def C2BIP3(string):
+            #         if type(string) == bytes:
+            #             return string
+            #         else:
+            #             return bytes([ord(x) for x in string])
+            #
+            #     def inflate(data):
+            #         try:
+            #             return zlib.decompress(C2BIP3(data))
+            #         except Exception:
+            #             if len(data) <= 10:
+            #                 raise
+            #             oDecompress = zlib.decompressobj(-zlib.MAX_WBITS)
+            #             oStringIO = BytesIO()
+            #             count = 0
+            #             for byte in C2BIP3(data):
+            #                 try:
+            #                     oStringIO.write(oDecompress.decompress(byte))
+            #                     count += 1
+            #                 except Exception:
+            #                     break
+            #             if len(data) - count <= 2:
+            #                 return oStringIO.getvalue()
+            #             else:
+            #                 raise
+            #
+            #     try:
+            #         decomp = inflate(s)
+            #     except Exception as e:
+            #         decomp = None
+            #         log.debug("ToolPDF.open_pdf() -> inflate (decompress) -> %s" % str(e))
+            #
+            #     try:
+            #         self.pdf_decompressed[short_name] += (decomp.decode('UTF-8') + '\r\n')
+            #     except Exception:
+            #         try:
+            #             self.pdf_decompressed[short_name] += (decomp.decode('latin1') + '\r\n')
+            #         except Exception as e:
+            #             log.debug("ToolPDF.open_pdf() -> decoding error -> %s" % str(e))
+            #     self.pdf_decompressed[short_name] = decomp_file
 
             if self.pdf_decompressed[short_name] == '':
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open"), str(filename)))

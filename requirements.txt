@@ -29,3 +29,4 @@ reportlab>=3.5
 svglib
 gdal
 pyserial>=3.4
+pikepdf>=2.0

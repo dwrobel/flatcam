@@ -532,7 +532,8 @@ class PdfParser:
                         else:
                             ap_list = [int(k) for k in apertures_dict.keys()]
                             # perhaps it's the only aperture? and in that case we need to start from 10
-                            ap_list.remove(0)
+                            if 0 in ap_list and len(ap_list) == 1:
+                                ap_list.remove(0)
                             if not ap_list:
                                 aperture = 10
                             else:
@@ -874,7 +875,8 @@ class PdfParser:
                     else:
                         ap_list = [int(k) for k in apertures_dict.keys()]
                         # perhaps it's the only aperture? and in that case we need to start from 10
-                        ap_list.remove(0)
+                        if 0 in ap_list and len(ap_list) == 1:
+                            ap_list.remove(0)
                         if not ap_list:
                             aperture = 10
                         else:

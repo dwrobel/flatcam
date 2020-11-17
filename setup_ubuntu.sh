@@ -45,6 +45,7 @@ sudo -H python3 -m pip install --upgrade \
 	pyqt5 \
 	reportlab \
 	svglib \
-	pyserial
+	pyserial \
+	pikepdf
 
 sudo -H easy_install -U distribute

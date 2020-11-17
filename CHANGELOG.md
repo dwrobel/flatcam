@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - the Follow Geometry outputted by the Follow Tools is now of type multigeo which means that it can be fused with other multigeo object without much pain 
 - Punch Gerber Tool - working on the new manual pads add feature
+- fixed PDF Tool such that now it can import more types of files including PDF files made with FlatCAM
 
 16.11.2020
 
