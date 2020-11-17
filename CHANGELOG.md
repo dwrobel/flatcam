@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.11.2020
+
+- the Follow Geometry outputted by the Follow Tools is now of type multigeo which means that it can be fused with other multigeo object without much pain 
+
 16.11.2020
 
 - modified the behavior of the Tool Tab in the Notebook widget. Now the app start with the Tool Tab off. If an App Tool is launched then the Tool Tab is added and populated. If the same App Tool is launched again and the focus is in its Tool Tab then the Tool Tab is removed but if the focus is elsewhere then the focus is set again on the Tool Tab.

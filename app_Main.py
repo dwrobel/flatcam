@@ -2586,7 +2586,7 @@ class App(QtCore.QObject):
                             edited_obj.options['ymin'] = ymin
                             edited_obj.options['xmax'] = xmax
                             edited_obj.options['ymax'] = ymax
-                        except AttributeError as e:
+                        except (AttributeError, ValueError) as e:
                             self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
                             self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 

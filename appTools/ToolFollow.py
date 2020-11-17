@@ -271,6 +271,8 @@ class ToolFollow(AppTool, Gerber):
         """
 
         def follow_init(new_obj, app_obj):
+            new_obj.multigeo = True
+            
             if type(app_obj.defaults["geometry_cnctooldia"]) == float:
                 tools_list = [app_obj.defaults["geometry_cnctooldia"]]
             else:

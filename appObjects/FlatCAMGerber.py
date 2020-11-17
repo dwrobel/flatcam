@@ -773,10 +773,49 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             follow_name = outname
 
-        def follow_init(follow_obj, app_obj):
+        def follow_init(new_obj, app_obj):
+            if type(app_obj.defaults["geometry_cnctooldia"]) == float:
+                tools_list = [app_obj.defaults["geometry_cnctooldia"]]
+            else:
+                try:
+                    temp_tools = app_obj.defaults["geometry_cnctooldia"].split(",")
+                    tools_list = [
+                        float(eval(dia)) for dia in temp_tools if dia != ''
+                    ]
+                except Exception as e:
+                    log.error("GerberObject.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
+                    return 'fail'
+
             # Propagate options
-            follow_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
-            follow_obj.solid_geometry = self.follow_geometry
+            new_obj.multigeo = True
+            # new_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
+            new_obj.solid_geometry = deepcopy(self.follow_geometry)
+
+            new_obj.options["cnctooldia"] = app_obj.defaults["geometry_cnctooldia"]
+
+            # store here the default data for Geometry Data
+            default_data = {}
+            for opt_key, opt_val in app_obj.options.items():
+                if opt_key.find('geometry' + "_") == 0:
+                    oname = opt_key[len('geometry') + 1:]
+                    default_data[oname] = self.app.options[opt_key]
+                if opt_key.find('tools_mill' + "_") == 0:
+                    oname = opt_key[len('tools_mill') + 1:]
+                    default_data[oname] = self.app.options[opt_key]
+
+            new_obj.tools = {
+                1: {
+                    'tooldia':  app_obj.dec_format(float(tools_list[0]), self.decimals),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': 'Rough',
+                    'tool_type': 'C1',
+                    'data': deepcopy(default_data),
+                    'solid_geometry': new_obj.solid_geometry
+                }
+            }
+
+            new_obj.tools[1]['data']['name'] = follow_name
 
         try:
             self.app.app_obj.new_object("geometry", follow_name, follow_init)
