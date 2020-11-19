@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - cleaned up the Geometry Properties UI
 - in Geometry Properties UI restored the plot functionality
+- in Tool Cutout fixed issues when using a negative value for the Margin parameter when the cutout object is a Gerber object
 
 17.11.2020
 

@@ -798,15 +798,21 @@ class CutOut(AppTool):
                             object_geo = box(x0, y0, x1, y1)
                         if margin >= 0:
                             geo_buf = object_geo.buffer(margin + abs(dia / 2))
+                            geo = geo_buf.exterior
                         else:
-                            geo_buf = object_geo.buffer(margin - abs(dia / 2))
-                        geo = geo_buf.exterior
+                            geo_buf = object_geo.buffer(- margin + abs(dia / 2))
+                            geo = unary_union(geo_buf.interiors)
                     else:
                         if isinstance(object_geo, MultiPolygon):
                             x0, y0, x1, y1 = object_geo.bounds
                             object_geo = box(x0, y0, x1, y1)
                         geo_buf = object_geo.buffer(0)
                         geo = geo_buf.exterior
+
+                    print(geo)
+                    if geo.is_empty:
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return 'fail'
 
                     solid_geo, rest_geo = cutout_handler(geom=geo, gapsize=gapsize)
                     if gap_type == 'bt' and thin_entry != 0:
