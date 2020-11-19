@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 19.11.2020
 
 - cleaned up the Geometry Properties UI
+- in Geometry Properties UI restored the plot functionality
 
 17.11.2020
 
