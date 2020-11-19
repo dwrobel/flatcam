@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.11.2020
+
+- cleaned up the Geometry Properties UI
+
 17.11.2020
 
 - the Follow Geometry outputted by the Follow Tools is now of type multigeo which means that it can be fused with other multigeo object without much pain 

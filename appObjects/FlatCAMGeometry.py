@@ -254,18 +254,18 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
 
             # set an initial value for the OFFSET ENTRY
-            try:
-                self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
-            except Exception as e:
-                log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
+            # try:
+            #     self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
+            # except Exception as e:
+            #     log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
 
             row_idx += 1
 
         # make the diameter column editable
-        for row in range(row_idx):
-            self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
-                                                          QtCore.Qt.ItemIsEditable |
-                                                          QtCore.Qt.ItemIsEnabled)
+        # for row in range(row_idx):
+        #     self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
+        #                                                   QtCore.Qt.ItemIsEditable |
+        #                                                   QtCore.Qt.ItemIsEnabled)
 
         # sort the tool diameter column
         # self.ui.geo_tools_table.sortItems(1)
@@ -306,17 +306,17 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.geo_tools_table.setMaximumHeight(self.ui.geo_tools_table.getHeight())
 
         # update UI for all rows - useful after units conversion but only if there is at least one row
-        row_cnt = self.ui.geo_tools_table.rowCount()
-        if row_cnt > 0:
-            for r in range(row_cnt):
-                self.update_ui(r)
+        # row_cnt = self.ui.geo_tools_table.rowCount()
+        # if row_cnt > 0:
+        #     for r in range(row_cnt):
+        #         self.update_ui(r)
 
         # select only the first tool / row
         selected_row = 0
         try:
             self.select_tools_table_row(selected_row, clearsel=True)
             # update the Geometry UI
-            self.update_ui()
+            # self.update_ui()
         except Exception as e:
             # when the tools table is empty there will be this error but once the table is populated it will go away
             log.debug(str(e))
@@ -328,94 +328,94 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.geo_tools_table.setColumnHidden(6, False)
 
-        self.set_tool_offset_visibility(selected_row)
+        # self.set_tool_offset_visibility(selected_row)
 
         # #############################################################################################################
         # ################################### Build Exclusion Areas section ###########################################
         # #############################################################################################################
-        self.ui_disconnect()
-
-        e_len = len(self.app.exc_areas.exclusion_areas_storage)
-        self.ui.exclusion_table.setRowCount(e_len)
-
-        for area in range(e_len):
-            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
-
-            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_dict["idx"]))
-            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
-
-            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
-
-            # strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            # strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            strategy_item = FCComboBox2(policy=False)
-            strategy_item.addItems([_("Around"), _("Over")])
-            idx = 0 if area_dict["strategy"] == 'around' else 1
-            # protection against having this translated or loading a project with translated values
-            if idx == -1:
-                strategy_item.setCurrentIndex(0)
-            else:
-                strategy_item.setCurrentIndex(idx)
-            self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
-
-            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
-
-        # make the Overz column editable
-        for row in range(e_len):
-            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
-                                                          QtCore.Qt.ItemIsEditable |
-                                                          QtCore.Qt.ItemIsEnabled)
-
-        self.ui.exclusion_table.resizeColumnsToContents()
-        self.ui.exclusion_table.resizeRowsToContents()
-
-        area_vheader = self.ui.exclusion_table.verticalHeader()
-        area_vheader.hide()
-        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        area_hheader = self.ui.exclusion_table.horizontalHeader()
-        area_hheader.setMinimumSectionSize(10)
-        area_hheader.setDefaultSectionSize(70)
-
-        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        area_hheader.resizeSection(0, 20)
-        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-
-        # area_hheader.setStretchLastSection(True)
-        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        self.ui.exclusion_table.setColumnWidth(0, 20)
-
-        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
-        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
-
-        # End Build Exclusion Areas
-        # -----------------------------
-
-        # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
-        # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
-        self.ui.name_entry.set_value(self.options['name'])
-        self.ui_connect()
-
-        self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
-            self.ui.e_cut_entry.setDisabled(True)
-
-        # set the text on tool_data_label after loading the object
-        sel_rows = set()
-        for it in self.ui.geo_tools_table.selectedItems():
-            sel_rows.add(it.row())
-
-        if len(sel_rows) > 1:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
+        # self.ui_disconnect()
+        #
+        # e_len = len(self.app.exc_areas.exclusion_areas_storage)
+        # self.ui.exclusion_table.setRowCount(e_len)
+        #
+        # for area in range(e_len):
+        #     area_dict = self.app.exc_areas.exclusion_areas_storage[area]
+        #
+        #     area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_dict["idx"]))
+        #     area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
+        #
+        #     object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
+        #     object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
+        #
+        #     # strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
+        #     # strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     strategy_item = FCComboBox2(policy=False)
+        #     strategy_item.addItems([_("Around"), _("Over")])
+        #     idx = 0 if area_dict["strategy"] == 'around' else 1
+        #     # protection against having this translated or loading a project with translated values
+        #     if idx == -1:
+        #         strategy_item.setCurrentIndex(0)
+        #     else:
+        #         strategy_item.setCurrentIndex(idx)
+        #     self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
+        #
+        #     overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
+        #     overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+        #
+        # # make the Overz column editable
+        # for row in range(e_len):
+        #     self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
+        #                                                   QtCore.Qt.ItemIsEditable |
+        #                                                   QtCore.Qt.ItemIsEnabled)
+        #
+        # self.ui.exclusion_table.resizeColumnsToContents()
+        # self.ui.exclusion_table.resizeRowsToContents()
+        #
+        # area_vheader = self.ui.exclusion_table.verticalHeader()
+        # area_vheader.hide()
+        # self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        #
+        # area_hheader = self.ui.exclusion_table.horizontalHeader()
+        # area_hheader.setMinimumSectionSize(10)
+        # area_hheader.setDefaultSectionSize(70)
+        #
+        # area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        # area_hheader.resizeSection(0, 20)
+        # area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        # area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        # area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        #
+        # # area_hheader.setStretchLastSection(True)
+        # self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        #
+        # self.ui.exclusion_table.setColumnWidth(0, 20)
+        #
+        # self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
+        # self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
+        #
+        # # End Build Exclusion Areas
+        # # -----------------------------
+        #
+        # # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
+        # # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
+        # self.ui.name_entry.set_value(self.options['name'])
+        # self.ui_connect()
+        #
+        # self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
+        #     self.ui.e_cut_entry.setDisabled(True)
+        #
+        # # set the text on tool_data_label after loading the object
+        # sel_rows = set()
+        # for it in self.ui.geo_tools_table.selectedItems():
+        #     sel_rows.add(it.row())
+        #
+        # if len(sel_rows) > 1:
+        #     self.ui.tool_data_label.setText(
+        #         "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+        #     )
 
     def set_ui(self, ui):
         # this one adds the 'name' key and the self.ui.name_entry widget in the self.form_fields dict
@@ -429,91 +429,91 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
-        # make sure the preprocessor combobox is clear
-        self.ui.pp_geometry_name_cb.clear()
-        # populate preprocessor names in the combobox
-        pp_list = []
-        for name in list(self.app.preprocessors.keys()):
-            pp_list.append(name)
-        pp_list.sort()
-        if 'default' in pp_list:
-            pp_list.remove('default')
-            pp_list.insert(0, 'default')
-        self.ui.pp_geometry_name_cb.addItems(pp_list)
-        # add tooltips
-        for it in range(self.ui.pp_geometry_name_cb.count()):
-            self.ui.pp_geometry_name_cb.setItemData(
-                it, self.ui.pp_geometry_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+        # # make sure the preprocessor combobox is clear
+        # self.ui.pp_geometry_name_cb.clear()
+        # # populate preprocessor names in the combobox
+        # pp_list = []
+        # for name in list(self.app.preprocessors.keys()):
+        #     pp_list.append(name)
+        # pp_list.sort()
+        # if 'default' in pp_list:
+        #     pp_list.remove('default')
+        #     pp_list.insert(0, 'default')
+        # self.ui.pp_geometry_name_cb.addItems(pp_list)
+        # # add tooltips
+        # for it in range(self.ui.pp_geometry_name_cb.count()):
+        #     self.ui.pp_geometry_name_cb.setItemData(
+        #         it, self.ui.pp_geometry_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "multicolored": self.ui.multicolored_cb,
-            "cutz": self.ui.cutz_entry,
-            "vtipdia": self.ui.tipdia_entry,
-            "vtipangle": self.ui.tipangle_entry,
-            "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.cncfeedrate_entry,
-            "feedrate_z": self.ui.feedrate_z_entry,
-            "feedrate_rapid": self.ui.feedrate_rapid_entry,
-            "spindlespeed": self.ui.cncspindlespeed_entry,
-            "dwell": self.ui.dwell_cb,
-            "dwelltime": self.ui.dwelltime_entry,
-            "multidepth": self.ui.mpass_cb,
-            "ppname_g": self.ui.pp_geometry_name_cb,
-            "z_pdepth": self.ui.pdepth_entry,
-            "feedrate_probe": self.ui.feedrate_probe_entry,
-            "depthperpass": self.ui.maxdepth_entry,
-            "extracut": self.ui.extracut_cb,
-            "extracut_length": self.ui.e_cut_entry,
-            "toolchange": self.ui.toolchangeg_cb,
-            "toolchangez": self.ui.toolchangez_entry,
-            "endz": self.ui.endz_entry,
-            "endxy": self.ui.endxy_entry,
-            "cnctooldia": self.ui.addtool_entry,
-            "area_exclusion": self.ui.exclusion_cb,
-            "area_shape": self.ui.area_shape_radio,
-            "area_strategy": self.ui.strategy_radio,
-            "area_overz": self.ui.over_z_entry,
-            "polish": self.ui.polish_cb,
-            "polish_dia": self.ui.polish_dia_entry,
-            "polish_pressure": self.ui.polish_pressure_entry,
-            "polish_travelz": self.ui.polish_travelz_entry,
-            "polish_margin": self.ui.polish_margin_entry,
-            "polish_overlap": self.ui.polish_over_entry,
-            "polish_method": self.ui.polish_method_combo,
+            # "cutz": self.ui.cutz_entry,
+            # "vtipdia": self.ui.tipdia_entry,
+            # "vtipangle": self.ui.tipangle_entry,
+            # "travelz": self.ui.travelz_entry,
+            # "feedrate": self.ui.cncfeedrate_entry,
+            # "feedrate_z": self.ui.feedrate_z_entry,
+            # "feedrate_rapid": self.ui.feedrate_rapid_entry,
+            # "spindlespeed": self.ui.cncspindlespeed_entry,
+            # "dwell": self.ui.dwell_cb,
+            # "dwelltime": self.ui.dwelltime_entry,
+            # "multidepth": self.ui.mpass_cb,
+            # "ppname_g": self.ui.pp_geometry_name_cb,
+            # "z_pdepth": self.ui.pdepth_entry,
+            # "feedrate_probe": self.ui.feedrate_probe_entry,
+            # "depthperpass": self.ui.maxdepth_entry,
+            # "extracut": self.ui.extracut_cb,
+            # "extracut_length": self.ui.e_cut_entry,
+            # "toolchange": self.ui.toolchangeg_cb,
+            # "toolchangez": self.ui.toolchangez_entry,
+            # "endz": self.ui.endz_entry,
+            # "endxy": self.ui.endxy_entry,
+            # "cnctooldia": self.ui.addtool_entry,
+            # "area_exclusion": self.ui.exclusion_cb,
+            # "area_shape": self.ui.area_shape_radio,
+            # "area_strategy": self.ui.strategy_radio,
+            # "area_overz": self.ui.over_z_entry,
+            # "polish": self.ui.polish_cb,
+            # "polish_dia": self.ui.polish_dia_entry,
+            # "polish_pressure": self.ui.polish_pressure_entry,
+            # "polish_travelz": self.ui.polish_travelz_entry,
+            # "polish_margin": self.ui.polish_margin_entry,
+            # "polish_overlap": self.ui.polish_over_entry,
+            # "polish_method": self.ui.polish_method_combo,
         })
 
-        self.param_fields.update({
-            "vtipdia": self.ui.tipdia_entry,
-            "vtipangle": self.ui.tipangle_entry,
-            "cutz": self.ui.cutz_entry,
-            "depthperpass": self.ui.maxdepth_entry,
-            "multidepth": self.ui.mpass_cb,
-            "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.cncfeedrate_entry,
-            "feedrate_z": self.ui.feedrate_z_entry,
-            "feedrate_rapid": self.ui.feedrate_rapid_entry,
-            "extracut": self.ui.extracut_cb,
-            "extracut_length": self.ui.e_cut_entry,
-            "spindlespeed": self.ui.cncspindlespeed_entry,
-            "dwelltime": self.ui.dwelltime_entry,
-            "dwell": self.ui.dwell_cb,
-            "pdepth": self.ui.pdepth_entry,
-            "pfeedrate": self.ui.feedrate_probe_entry,
-        })
+        # self.param_fields.update({
+        #     "vtipdia": self.ui.tipdia_entry,
+        #     "vtipangle": self.ui.tipangle_entry,
+        #     "cutz": self.ui.cutz_entry,
+        #     "depthperpass": self.ui.maxdepth_entry,
+        #     "multidepth": self.ui.mpass_cb,
+        #     "travelz": self.ui.travelz_entry,
+        #     "feedrate": self.ui.cncfeedrate_entry,
+        #     "feedrate_z": self.ui.feedrate_z_entry,
+        #     "feedrate_rapid": self.ui.feedrate_rapid_entry,
+        #     "extracut": self.ui.extracut_cb,
+        #     "extracut_length": self.ui.e_cut_entry,
+        #     "spindlespeed": self.ui.cncspindlespeed_entry,
+        #     "dwelltime": self.ui.dwelltime_entry,
+        #     "dwell": self.ui.dwell_cb,
+        #     "pdepth": self.ui.pdepth_entry,
+        #     "pfeedrate": self.ui.feedrate_probe_entry,
+        # })
         # Fill form fields only on object create
         self.to_form()
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_geometry_name_cb combobox
-        self.on_pp_changed()
+        # self.on_pp_changed()
 
-        self.ui.tipdialabel.hide()
-        self.ui.tipdia_entry.hide()
-        self.ui.tipanglelabel.hide()
-        self.ui.tipangle_entry.hide()
-        self.ui.cutz_entry.setDisabled(False)
+        # self.ui.tipdialabel.hide()
+        # self.ui.tipdia_entry.hide()
+        # self.ui.tipanglelabel.hide()
+        # self.ui.tipangle_entry.hide()
+        # self.ui.cutz_entry.setDisabled(False)
 
         # store here the default data for Geometry Data
         self.default_data = {}
@@ -531,53 +531,53 @@ class GeometryObject(FlatCAMObj, Geometry):
         #         if def_key == opt_key:
         #             self.default_data[def_key] = deepcopy(opt_val)
 
-        if type(self.options["cnctooldia"]) == float:
-            tools_list = [self.options["cnctooldia"]]
-        else:
-            try:
-                temp_tools = self.options["cnctooldia"].split(",")
-                tools_list = [
-                    float(eval(dia)) for dia in temp_tools if dia != ''
-                ]
-            except Exception as e:
-                log.error("GeometryObject.set_ui() -> At least one tool diameter needed. "
-                          "Verify in Edit -> Preferences -> Geometry General -> Tool dia. %s" % str(e))
-                return
+        # if type(self.options["cnctooldia"]) == float:
+        #     tools_list = [self.options["cnctooldia"]]
+        # else:
+        #     try:
+        #         temp_tools = self.options["cnctooldia"].split(",")
+        #         tools_list = [
+        #             float(eval(dia)) for dia in temp_tools if dia != ''
+        #         ]
+        #     except Exception as e:
+        #         log.error("GeometryObject.set_ui() -> At least one tool diameter needed. "
+        #                   "Verify in Edit -> Preferences -> Geometry General -> Tool dia. %s" % str(e))
+        #         return
 
-        self.tooluid += 1
-
-        if not self.tools:
-            for toold in tools_list:
-                new_data = deepcopy(self.default_data)
-                self.tools.update({
-                    self.tooluid: {
-                        'tooldia': self.app.dec_format(float(toold), self.decimals),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': 'Rough',
-                        'tool_type': self.tool_type,
-                        'data': new_data,
-                        'solid_geometry': self.solid_geometry
-                    }
-                })
-                self.tooluid += 1
-        else:
-            # if self.tools is not empty then it can safely be assumed that it comes from an opened project.
-            # Because of the serialization the self.tools list on project save, the dict keys (members of self.tools
-            # are each a dict) are turned into strings so we rebuild the self.tools elements so the keys are
-            # again float type; dict's don't like having keys changed when iterated through therefore the need for the
-            # following convoluted way of changing the keys from string to float type
-            temp_tools = {}
-            for tooluid_key in self.tools:
-                val = deepcopy(self.tools[tooluid_key])
-                new_key = deepcopy(int(tooluid_key))
-                temp_tools[new_key] = val
-
-            self.tools.clear()
-            self.tools = deepcopy(temp_tools)
-
-        self.ui.tool_offset_entry.hide()
-        self.ui.tool_offset_lbl.hide()
+        # self.tooluid += 1
+        #
+        # if not self.tools:
+        #     for toold in tools_list:
+        #         new_data = deepcopy(self.default_data)
+        #         self.tools.update({
+        #             self.tooluid: {
+        #                 'tooldia': self.app.dec_format(float(toold), self.decimals),
+        #                 'offset': 'Path',
+        #                 'offset_value': 0.0,
+        #                 'type': 'Rough',
+        #                 'tool_type': self.tool_type,
+        #                 'data': new_data,
+        #                 'solid_geometry': self.solid_geometry
+        #             }
+        #         })
+        #         self.tooluid += 1
+        # else:
+        #     # if self.tools is not empty then it can safely be assumed that it comes from an opened project.
+        #     # Because of the serialization the self.tools list on project save, the dict keys (members of self.tools
+        #     # are each a dict) are turned into strings so we rebuild the self.tools elements so the keys are
+        #     # again float type; dict's don't like having keys changed when iterated through therefore the need for the
+        #     # following convoluted way of changing the keys from string to float type
+        #     temp_tools = {}
+        #     for tooluid_key in self.tools:
+        #         val = deepcopy(self.tools[tooluid_key])
+        #         new_key = deepcopy(int(tooluid_key))
+        #         temp_tools[new_key] = val
+        #
+        #     self.tools.clear()
+        #     self.tools = deepcopy(temp_tools)
+        #
+        # self.ui.tool_offset_entry.hide()
+        # self.ui.tool_offset_lbl.hide()
 
         # used to store the state of the mpass_cb if the selected preprocessor for geometry is hpgl
         self.old_pp_state = self.default_data['multidepth']
@@ -590,58 +590,61 @@ class GeometryObject(FlatCAMObj, Geometry):
         # #############################################################################################################
         # ############################### TOOLS TABLE context menu ####################################################
         # #############################################################################################################
-        self.ui.geo_tools_table.setupContextMenu()
-        self.ui.geo_tools_table.addContextMenu(
-            _("Pick from DB"), self.on_tool_add_from_db_clicked,
-            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Copy"), self.on_tool_copy,
-            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
+        # self.ui.geo_tools_table.setupContextMenu()
+        # self.ui.geo_tools_table.addContextMenu(
+        #     _("Pick from DB"), self.on_tool_add_from_db_clicked,
+        #     icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        # self.ui.geo_tools_table.addContextMenu(
+        #     _("Copy"), self.on_tool_copy,
+        #     icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
+        # self.ui.geo_tools_table.addContextMenu(
+        #     _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+        #     icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
         # #############################################################################################################
         # ############################## EXCLUSION TABLE context menu #################################################
         # #############################################################################################################
-        self.ui.exclusion_table.setupContextMenu()
-        self.ui.exclusion_table.addContextMenu(
-            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
-        )
+        # self.ui.exclusion_table.setupContextMenu()
+        # self.ui.exclusion_table.addContextMenu(
+        #     _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        # )
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+        # if self.app.defaults["global_app_level"] == 'b':
+        #     self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+        #
+        #     self.ui.geo_tools_table.setColumnHidden(2, True)
+        #     self.ui.geo_tools_table.setColumnHidden(3, True)
+        #     # self.ui.geo_tools_table.setColumnHidden(4, True)
+        #     self.ui.addtool_entry_lbl.hide()
+        #     self.ui.addtool_entry.hide()
+        #     self.ui.search_and_add_btn.hide()
+        #     self.ui.deltool_btn.hide()
+        #     # self.ui.endz_label.hide()
+        #     # self.ui.endz_entry.hide()
+        #     self.ui.fr_rapidlabel.hide()
+        #     self.ui.feedrate_rapid_entry.hide()
+        #     self.ui.extracut_cb.hide()
+        #     self.ui.e_cut_entry.hide()
+        #     self.ui.pdepth_label.hide()
+        #     self.ui.pdepth_entry.hide()
+        #     self.ui.feedrate_probe_label.hide()
+        #     self.ui.feedrate_probe_entry.hide()
+        # else:
+        #     self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
-            self.ui.geo_tools_table.setColumnHidden(2, True)
-            self.ui.geo_tools_table.setColumnHidden(3, True)
-            # self.ui.geo_tools_table.setColumnHidden(4, True)
-            self.ui.addtool_entry_lbl.hide()
-            self.ui.addtool_entry.hide()
-            self.ui.search_and_add_btn.hide()
-            self.ui.deltool_btn.hide()
-            # self.ui.endz_label.hide()
-            # self.ui.endz_entry.hide()
-            self.ui.fr_rapidlabel.hide()
-            self.ui.feedrate_rapid_entry.hide()
-            self.ui.extracut_cb.hide()
-            self.ui.e_cut_entry.hide()
-            self.ui.pdepth_label.hide()
-            self.ui.pdepth_entry.hide()
-            self.ui.feedrate_probe_label.hide()
-            self.ui.feedrate_probe_entry.hide()
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+        self.ui.geo_tools_table.setColumnHidden(2, True)
+        self.ui.geo_tools_table.setColumnHidden(3, True)
 
         # #############################################################################################################
         # ################################ Signals Connection #########################################################
         # #############################################################################################################
-        self.builduiSig.connect(self.build_ui)
-
-        self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
-            self.ui.e_cut_entry.setDisabled(True)
-        self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
-
+        # self.builduiSig.connect(self.build_ui)
+        #
+        # self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
+        #     self.ui.e_cut_entry.setDisabled(True)
+        # self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
+        #
         # Plot state signals
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
@@ -653,37 +656,37 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
 
-        # Buttons Signals
-        self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
+        # # Buttons Signals
+        # self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=True))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=True))
         self.ui.milling_button.clicked.connect(self.on_milling_button_clicked)
 
-        # Postprocessor change
-        self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
-
-        # V tool shape params changed
-        self.ui.tipdia_entry.valueChanged.connect(self.on_update_cutz)
-        self.ui.tipangle_entry.valueChanged.connect(self.on_update_cutz)
-
-        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
-        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-        self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
-
-        # Exclusion areas signals
-        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.on_exclusion_table_toggle_all)
-        self.ui.exclusion_table.lost_focus.connect(self.on_clear_selection)
-        self.ui.exclusion_table.itemClicked.connect(self.on_draw_sel_shape)
-        self.ui.add_area_button.clicked.connect(self.on_add_area_click)
-        self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
-        self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
-        self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
-
-        # Tools Table signals
-        self.ui.geo_tools_table.drag_drop_sig.connect(self.on_rebuild_ui)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
-
-        self.launch_job.connect(self.mtool_gen_cncjob)
+        # # Postprocessor change
+        # self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
+        #
+        # # V tool shape params changed
+        # self.ui.tipdia_entry.valueChanged.connect(self.on_update_cutz)
+        # self.ui.tipangle_entry.valueChanged.connect(self.on_update_cutz)
+        #
+        # self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
+        # self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        # self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
+        #
+        # # Exclusion areas signals
+        # self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.on_exclusion_table_toggle_all)
+        # self.ui.exclusion_table.lost_focus.connect(self.on_clear_selection)
+        # self.ui.exclusion_table.itemClicked.connect(self.on_draw_sel_shape)
+        # self.ui.add_area_button.clicked.connect(self.on_add_area_click)
+        # self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
+        # self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
+        # self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
+        #
+        # # Tools Table signals
+        # self.ui.geo_tools_table.drag_drop_sig.connect(self.on_rebuild_ui)
+        # self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        #
+        # self.launch_job.connect(self.mtool_gen_cncjob)
 
     def on_properties(self, state):
         if state:
@@ -776,33 +779,33 @@ class GeometryObject(FlatCAMObj, Geometry):
     def ui_connect(self):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for i in self.param_fields:
-            current_widget = self.param_fields[i]
-
-            if isinstance(current_widget, FCCheckBox):
-                current_widget.stateChanged.connect(self.gui_form_to_storage)
-            elif isinstance(current_widget, FCComboBox):
-                current_widget.currentIndexChanged.connect(self.gui_form_to_storage)
-            elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry) or \
-                    isinstance(current_widget, NumericalEvalTupleEntry):
-                current_widget.editingFinished.connect(self.gui_form_to_storage)
-            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
-                current_widget.returnPressed.connect(self.gui_form_to_storage)
-
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            for col in [2, 3, 4]:
-                self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.connect(
-                    self.on_tooltable_cellwidget_change)
-
-        self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
-        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        # for i in self.param_fields:
+        #     current_widget = self.param_fields[i]
+        #
+        #     if isinstance(current_widget, FCCheckBox):
+        #         current_widget.stateChanged.connect(self.gui_form_to_storage)
+        #     elif isinstance(current_widget, FCComboBox):
+        #         current_widget.currentIndexChanged.connect(self.gui_form_to_storage)
+        #     elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
+        #             isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry) or \
+        #             isinstance(current_widget, NumericalEvalTupleEntry):
+        #         current_widget.editingFinished.connect(self.gui_form_to_storage)
+        #     elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+        #         current_widget.returnPressed.connect(self.gui_form_to_storage)
+        #
+        # for row in range(self.ui.geo_tools_table.rowCount()):
+        #     for col in [2, 3, 4]:
+        #         self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.connect(
+        #             self.on_tooltable_cellwidget_change)
+        #
+        # self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
+        # self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
         # Tools Table
-        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
-
-        self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
+        # self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
+        # self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
+        #
+        # self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
@@ -810,82 +813,82 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
         # Exclusion Table widgets connect
-        for row in range(self.ui.exclusion_table.rowCount()):
-            self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_exclusion_table_strategy)
-
-        self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
+        # for row in range(self.ui.exclusion_table.rowCount()):
+        #     self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_exclusion_table_strategy)
+        #
+        # self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
 
         # common parameters update
-        self.ui.toolchangeg_cb.stateChanged.connect(self.update_common_param_in_storage)
-        self.ui.toolchangez_entry.editingFinished.connect(self.update_common_param_in_storage)
-        self.ui.endz_entry.editingFinished.connect(self.update_common_param_in_storage)
-        self.ui.endxy_entry.editingFinished.connect(self.update_common_param_in_storage)
-        self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
-        self.ui.exclusion_cb.stateChanged.connect(self.update_common_param_in_storage)
-        self.ui.polish_cb.stateChanged.connect(self.update_common_param_in_storage)
+        # self.ui.toolchangeg_cb.stateChanged.connect(self.update_common_param_in_storage)
+        # self.ui.toolchangez_entry.editingFinished.connect(self.update_common_param_in_storage)
+        # self.ui.endz_entry.editingFinished.connect(self.update_common_param_in_storage)
+        # self.ui.endxy_entry.editingFinished.connect(self.update_common_param_in_storage)
+        # self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
+        # self.ui.exclusion_cb.stateChanged.connect(self.update_common_param_in_storage)
+        # self.ui.polish_cb.stateChanged.connect(self.update_common_param_in_storage)
 
     def ui_disconnect(self):
 
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for i in self.param_fields:
-            # current_widget = self.ui.grid3.itemAt(i).widget()
-            current_widget = self.param_fields[i]
-            if isinstance(current_widget, FCCheckBox):
-                try:
-                    current_widget.stateChanged.disconnect(self.gui_form_to_storage)
-                except (TypeError, AttributeError):
-                    pass
-            elif isinstance(current_widget, FCComboBox):
-                try:
-                    current_widget.currentIndexChanged.disconnect(self.gui_form_to_storage)
-                except (TypeError, AttributeError):
-                    pass
-            elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry) or \
-                    isinstance(current_widget, NumericalEvalTupleEntry):
-                try:
-                    current_widget.editingFinished.disconnect(self.gui_form_to_storage)
-                except (TypeError, AttributeError):
-                    pass
-            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
-                try:
-                    current_widget.returnPressed.disconnect(self.gui_form_to_storage)
-                except TypeError:
-                    pass
+        # for i in self.param_fields:
+        #     # current_widget = self.ui.grid3.itemAt(i).widget()
+        #     current_widget = self.param_fields[i]
+        #     if isinstance(current_widget, FCCheckBox):
+        #         try:
+        #             current_widget.stateChanged.disconnect(self.gui_form_to_storage)
+        #         except (TypeError, AttributeError):
+        #             pass
+        #     elif isinstance(current_widget, FCComboBox):
+        #         try:
+        #             current_widget.currentIndexChanged.disconnect(self.gui_form_to_storage)
+        #         except (TypeError, AttributeError):
+        #             pass
+        #     elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
+        #             isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry) or \
+        #             isinstance(current_widget, NumericalEvalTupleEntry):
+        #         try:
+        #             current_widget.editingFinished.disconnect(self.gui_form_to_storage)
+        #         except (TypeError, AttributeError):
+        #             pass
+        #     elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+        #         try:
+        #             current_widget.returnPressed.disconnect(self.gui_form_to_storage)
+        #         except TypeError:
+        #             pass
 
         # disconnect FCCombobox widgets in the Tool Table
-        for row in range(self.ui.geo_tools_table.rowCount()):
-            for col in [2, 3, 4]:
-                try:
-                    self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
-                except (TypeError, AttributeError):
-                    pass
+        # for row in range(self.ui.geo_tools_table.rowCount()):
+        #     for col in [2, 3, 4]:
+        #         try:
+        #             self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
+        #         except (TypeError, AttributeError):
+        #             pass
 
-        try:
-            self.ui.search_and_add_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        # try:
+        #     self.ui.search_and_add_btn.clicked.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # try:
+        #     self.ui.deltool_btn.clicked.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
 
-        try:
-            self.ui.deltool_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.geo_tools_table.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.geo_tools_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.tool_offset_entry.returnPressed.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        # try:
+        #     self.ui.geo_tools_table.clicked.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # try:
+        #     self.ui.geo_tools_table.itemChanged.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # try:
+        #     self.ui.tool_offset_entry.returnPressed.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             try:
@@ -899,48 +902,48 @@ class GeometryObject(FlatCAMObj, Geometry):
             pass
 
         # common parameters update
-        try:
-            self.ui.toolchangeg_cb.stateChanged.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.toolchangez_entry.editingFinished.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.endz_entry.editingFinished.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.endxy_entry.editingFinished.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.pp_geometry_name_cb.currentIndexChanged.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.exclusion_cb.stateChanged.disconnect(self.update_common_param_in_storage)
-        except (TypeError, AttributeError):
-            pass
-
-        # Exclusion Table widgets disconnect
-        for row in range(self.ui.exclusion_table.rowCount()):
-            try:
-                self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-        try:
-            self.ui.exclusion_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        # try:
+        #     self.ui.toolchangeg_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        # try:
+        #     self.ui.toolchangez_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        # try:
+        #     self.ui.endz_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        # try:
+        #     self.ui.endxy_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        # try:
+        #     self.ui.pp_geometry_name_cb.currentIndexChanged.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # try:
+        #     self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # try:
+        #     self.ui.exclusion_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        # except (TypeError, AttributeError):
+        #     pass
+        #
+        # # Exclusion Table widgets disconnect
+        # for row in range(self.ui.exclusion_table.rowCount()):
+        #     try:
+        #         self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+        #     except (TypeError, AttributeError):
+        #         pass
+        #
+        # try:
+        #     self.ui.exclusion_table.itemChanged.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
 
     def on_toggle_all_rows(self):
         """
