@@ -49,8 +49,8 @@ class TclCommandGeoUnion(TclCommand):
         obj_name = args['name']
 
         try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except:
+            obj = self.app.collection.get_by_name(str(obj_name))
+        except Exception:
             return "Could not retrieve object: %s" % obj_name
         if obj is None:
             return "Object not found: %s" % obj_name

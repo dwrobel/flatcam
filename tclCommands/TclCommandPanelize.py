@@ -1,4 +1,4 @@
-from copy import copy,deepcopy
+from copy import copy, deepcopy
 from tclCommands.TclCommand import *
 
 
@@ -60,7 +60,7 @@ class TclCommandPanelize(TclCommand):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -70,7 +70,7 @@ class TclCommandPanelize(TclCommand):
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
-            except:
+            except Exception:
                 return "Could not retrieve object: %s" % name
         else:
             box = obj

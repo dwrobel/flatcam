@@ -67,7 +67,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             self.raise_tcl_error("Could not retrieve object: %s" % name)
 
         # Get min and max data for each object as we just cut rectangles across X or Y

@@ -80,7 +80,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % obj_name
 
         try:

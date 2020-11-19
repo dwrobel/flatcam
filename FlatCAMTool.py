@@ -1,15 +1,15 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 
-class FlatCAMTool(QtGui.QWidget):
+class FlatCAMTool(QtWidgets.QWidget):
 
     toolName = "FlatCAM Generic Tool"
 
@@ -21,11 +21,11 @@ class FlatCAMTool(QtGui.QWidget):
         :param parent: Qt Parent
         :return: FlatCAMTool
         """
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
-        # self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
         self.app = app
@@ -49,7 +49,7 @@ class FlatCAMTool(QtGui.QWidget):
             before = (kwargs['before'])
 
         # create the new Action
-        self.menuAction = QtGui.QAction(self)
+        self.menuAction = QtWidgets.QAction(self)
         # if provided, add an icon to this Action
         if icon is not None:
             self.menuAction.setIcon(icon)

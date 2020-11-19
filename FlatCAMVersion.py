@@ -1,14 +1,14 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
-#################################################
+# ################################################
 #  FlatCAM - Version settings                   #
-#################################################
+# ################################################
 
 import logging
 
@@ -28,7 +28,7 @@ def setup(app):
     else:
         app.log.setLevel(logging.DEBUG)
 
-    if version["name"] is None and version["release"] == False:
+    if version["name"] is None and version["release"] is False:
         app.version_name = "Development Version"
     else:
         app.version_name = version["name"]

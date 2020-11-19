@@ -57,5 +57,3 @@ class TclCommandFollow(TclCommandSignaled):
 
         del args['name']
         obj.follow(**args)
-
-

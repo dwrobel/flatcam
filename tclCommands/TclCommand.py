@@ -3,13 +3,12 @@ import re
 import FlatCAMApp
 import abc
 import collections
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 from contextlib import contextmanager
 from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry, FlatCAMCNCjob, FlatCAMObj
 
 
 class TclCommand(object):
-
     # FlatCAMApp
     app = None
 
@@ -52,10 +51,10 @@ class TclCommand(object):
         self.app = app
 
         if self.app is None:
-            raise TypeError('Expected app to be FlatCAMApp instance.')
+            return
 
         if not isinstance(self.app, FlatCAMApp.App):
-            raise TypeError('Expected FlatCAMApp, got %s.' % type(app))
+            return
 
         self.log = self.app.log
 
@@ -116,7 +115,7 @@ class TclCommand(object):
             if help_key in self.arg_names:
                 arg_type = self.arg_names[help_key]
                 type_name = str(arg_type.__name__)
-                #in_command_name = help_key + "<" + type_name + ">"
+                # in_command_name = help_key + "<" + type_name + ">"
                 in_command_name = help_key
 
             elif help_key in self.option_types:
@@ -162,7 +161,7 @@ class TclCommand(object):
 
     @staticmethod
     def parse_arguments(args):
-            """
+        """
             Pre-processes arguments to detect '-keyword value' pairs into dictionary
             and standalone parameters into list.
 
@@ -173,24 +172,24 @@ class TclCommand(object):
             :return: arguments, options
             """
 
-            options = {}
-            arguments = []
-            n = len(args)
-            name = None
-            for i in range(n):
-                match = re.search(r'^-([a-zA-Z].*)', args[i])
-                if match:
-                    assert name is None
-                    name = match.group(1)
-                    continue
+        options = {}
+        arguments = []
+        n = len(args)
+        name = None
+        for i in range(n):
+            match = re.search(r'^-([a-zA-Z].*)', args[i])
+            if match:
+                assert name is None
+                name = match.group(1)
+                continue
 
-                if name is None:
-                    arguments.append(args[i])
-                else:
-                    options[name] = args[i]
-                    name = None
+            if name is None:
+                arguments.append(args[i])
+            else:
+                options[name] = args[i]
+                name = None
 
-            return arguments, options
+        return arguments, options
 
     def check_args(self, args):
         """
@@ -249,7 +248,7 @@ class TclCommand(object):
         :return:
         """
 
-        raise unknown_exception
+        return unknown_exception
 
     def execute_wrapper(self, *args):
         """
@@ -261,7 +260,7 @@ class TclCommand(object):
         :return: None, output text or exception
         """
 
-        #self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
+        # self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
 
         try:
             self.log.debug("TCL command '%s' executed." % str(self.__class__))
@@ -286,7 +285,7 @@ class TclCommand(object):
         :return: None, output text or exception
         """
 
-        raise NotImplementedError("Please Implement this method")
+        return "Please Implement this method"
 
 
 class TclCommandSignaled(TclCommand):
@@ -306,7 +305,7 @@ class TclCommandSignaled(TclCommand):
 
     @abc.abstractmethod
     def execute(self, args, unnamed_args):
-        raise NotImplementedError("Please Implement this method")
+        return ("Please Implement this method")
 
     output = None
 
@@ -359,6 +358,7 @@ class TclCommandSignaled(TclCommand):
             def except_hook(type_, value, traceback_):
                 ex.append(value)
                 oeh(type_, value, traceback_)
+
             sys.excepthook = except_hook
 
             # Terminate on timeout
@@ -371,7 +371,7 @@ class TclCommandSignaled(TclCommand):
             # Restore exception management
             sys.excepthook = oeh
             if ex:
-                raise ex[0]
+                return 'fail'
 
             if status['timed_out']:
                 self.app.raise_tcl_unknown_error("Operation timed outed! Consider increasing option "

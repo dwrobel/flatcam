@@ -65,7 +65,7 @@ class TclCommandMillHoles(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             self.raise_tcl_error("Could not retrieve object: %s" % name)
 
         if not isinstance(obj, FlatCAMExcellon):

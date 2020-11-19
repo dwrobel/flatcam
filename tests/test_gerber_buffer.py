@@ -21,7 +21,7 @@ class GerberBuffer(unittest.TestCase):
             for geo in geometry:
                 area += geo.area
 
-        ## Not iterable, do the actual indexing and add.
+        # # Not iterable, do the actual indexing and add.
         except TypeError:
             area = geometry.area
         return area

@@ -1,10 +1,11 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
+
 
 class LoudDict(dict):
     """
@@ -29,7 +30,7 @@ class LoudDict(dict):
 
     def update(self, *args, **kwargs):
         if len(args) > 1:
-            raise TypeError("update expected at most 1 arguments, got %d" % len(args))
+            return ("update expected at most 1 arguments, got %d" % len(args))
         other = dict(*args, **kwargs)
         for key in other:
             self[key] = other[key]
@@ -45,4 +46,3 @@ class LoudDict(dict):
         """
 
         self.callback = callback
-

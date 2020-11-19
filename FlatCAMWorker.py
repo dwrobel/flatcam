@@ -1,12 +1,12 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 
 class Worker(QtCore.QObject):
@@ -35,7 +35,7 @@ class Worker(QtCore.QObject):
                 import pydevd
                 pydevd.settrace(suspend=False, trace_only_current_thread=True)
             except ImportError:
-                self.pydevd_failed=True
+                self.pydevd_failed = True
 
     def run(self):
 
@@ -53,13 +53,13 @@ class Worker(QtCore.QObject):
         self.allow_debug()
 
         if ('worker_name' in task and task['worker_name'] == self.name) or \
-            ('worker_name' not in task and self.name is None):
+                ('worker_name' not in task and self.name is None):
 
             try:
                 task['fcn'](*task['params'])
             except Exception as e:
                 self.app.thread_exception.emit(e)
-                raise e
+                return e
 
             return
 

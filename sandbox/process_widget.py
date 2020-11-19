@@ -1,5 +1,5 @@
 import sys
-from PyQt4.QtGui import *
+from PyQt4.QtWidgets import *
 
 app = QApplication(sys.argv)
 

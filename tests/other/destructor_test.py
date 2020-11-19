@@ -1,5 +1,5 @@
 import sys
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
 class MyObj():
@@ -16,12 +16,12 @@ def parse():
     raise Exception("Intentional Exception")
 
 
-class Example(QtGui.QWidget):
+class Example(QtWidgets.QWidget):
 
     def __init__(self):
         super(Example, self).__init__()
 
-        qbtn = QtGui.QPushButton('Raise', self)
+        qbtn = QtWidgets.QPushButton('Raise', self)
         qbtn.clicked.connect(parse)
 
         self.setWindowTitle('Quit button')
@@ -29,6 +29,6 @@ class Example(QtGui.QWidget):
 
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())

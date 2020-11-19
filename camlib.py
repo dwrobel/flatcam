@@ -1,17 +1,16 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
-#from __future__ import division
-#from scipy import optimize
-#import traceback
+# ###########################################################
+# from __future__ import division
+# from scipy import optimize
+# import traceback
 
 from io import StringIO
-from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, dot, float32, \
-    transpose
+from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, dot, float32, transpose
 from numpy.linalg import solve, norm
 from matplotlib.figure import Figure
 import re
@@ -22,8 +21,8 @@ from decimal import Decimal
 import collections
 import numpy as np
 import matplotlib
-#import matplotlib.pyplot as plt
-#from scipy.spatial import Delaunay, KDTree
+# import matplotlib.pyplot as plt
+# from scipy.spatial import Delaunay, KDTree
 
 from rtree import index as rtindex
 
@@ -31,7 +30,7 @@ from rtree import index as rtindex
 from shapely.geometry import Polygon, LineString, Point, LinearRing
 from shapely.geometry import MultiPoint, MultiPolygon
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import unary_union
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -42,15 +41,11 @@ from descartes.patch import PolygonPatch
 
 import simplejson as json
 # TODO: Commented for FlatCAM packaging with cx_freeze
-#from matplotlib.pyplot import plot, subplot
+# from matplotlib.pyplot import plot, subplot
 
 import xml.etree.ElementTree as ET
 from svg.path import Path, Line, Arc, CubicBezier, QuadraticBezier, parse_path
 import itertools
-
-import xml.etree.ElementTree as ET
-from svg.path import Path, Line, Arc, CubicBezier, QuadraticBezier, parse_path
-
 
 from svgparse import *
 
@@ -82,7 +77,7 @@ class Geometry(object):
     def __init__(self):
         # Units (in or mm)
         self.units = Geometry.defaults["init_units"]
-        
+
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 
@@ -121,10 +116,10 @@ class Geometry(object):
 
         try:
             self.solid_geometry = self.solid_geometry.union(Point(origin).buffer(radius))
-        except:
-            #print "Failed to run union on polygons."
+        except Exception:
+            # print "Failed to run union on polygons."
             log.error("Failed to run union on polygons.")
-            raise
+            return
 
     def add_polygon(self, points):
         """
@@ -142,10 +137,10 @@ class Geometry(object):
 
         try:
             self.solid_geometry = self.solid_geometry.union(Polygon(points))
-        except:
-            #print "Failed to run union on polygons."
+        except Exception:
+            # print "Failed to run union on polygons."
             log.error("Failed to run union on polygons.")
-            raise
+            return
 
     def add_polyline(self, points):
         """
@@ -163,10 +158,10 @@ class Geometry(object):
 
         try:
             self.solid_geometry = self.solid_geometry.union(LineString(points))
-        except:
-            #print "Failed to run union on polygons."
+        except Exception:
+            # print "Failed to run union on polygons."
             log.error("Failed to run union on polylines.")
-            raise
+            return
 
     def is_empty(self):
 
@@ -176,7 +171,7 @@ class Geometry(object):
         if isinstance(self.solid_geometry, list):
             return len(self.solid_geometry) == 0
 
-        raise Exception("self.solid_geometry is neither BaseGeometry or list.")
+        return ("self.solid_geometry is neither BaseGeometry or list.")
 
     def subtract_polygon(self, points):
         """
@@ -188,18 +183,18 @@ class Geometry(object):
         if self.solid_geometry is None:
             self.solid_geometry = []
 
-        #pathonly should be allways True, otherwise polygons are not subtracted
+        # pathonly should be allways True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
-        polygon=Polygon(points)
-        toolgeo=cascaded_union(polygon)
-        diffs=[]
+        polygon = Polygon(points)
+        toolgeo = unary_union(polygon)
+        diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
                 diffs.append(target.difference(toolgeo))
             else:
                 log.warning("Not implemented.")
-        self.solid_geometry=cascaded_union(diffs)
+        self.solid_geometry = unary_union(diffs)
 
     def bounds(self):
         """
@@ -216,7 +211,7 @@ class Geometry(object):
             if len(self.solid_geometry) == 0:
                 log.debug('solid_geometry is empty []')
                 return 0, 0, 0, 0
-            return cascaded_union(self.solid_geometry).bounds
+            return unary_union(self.solid_geometry).bounds
         else:
             return self.solid_geometry.bounds
 
@@ -263,12 +258,12 @@ class Geometry(object):
         if geometry is None:
             geometry = self.solid_geometry
 
-        ## If iterable, expand recursively.
+        # # If iterable, expand recursively.
         try:
             for geo in geometry:
                 interiors.extend(self.get_interiors(geometry=geo))
 
-        ## Not iterable, get the exterior if polygon.
+        # # Not iterable, get the exterior if polygon.
         except TypeError:
             if type(geometry) == Polygon:
                 interiors.extend(geometry.interiors)
@@ -290,12 +285,12 @@ class Geometry(object):
         if geometry is None:
             geometry = self.solid_geometry
 
-        ## If iterable, expand recursively.
+        # # If iterable, expand recursively.
         try:
             for geo in geometry:
                 exteriors.extend(self.get_exteriors(geometry=geo))
 
-        ## Not iterable, get the exterior if polygon.
+        # # Not iterable, get the exterior if polygon.
         except TypeError:
             if type(geometry) == Polygon:
                 exteriors.append(geometry.exterior)
@@ -320,14 +315,14 @@ class Geometry(object):
         if reset:
             self.flat_geometry = []
 
-        ## If iterable, expand recursively.
+        # # If iterable, expand recursively.
         try:
             for geo in geometry:
                 self.flatten(geometry=geo,
                              reset=False,
                              pathonly=pathonly)
 
-        ## Not iterable, do the actual indexing and add.
+        # # Not iterable, do the actual indexing and add.
         except TypeError:
             if pathonly and type(geometry) == Polygon:
                 self.flat_geometry.append(geometry.exterior)
@@ -376,18 +371,18 @@ class Geometry(object):
     #     if reset:
     #         self.flat_geometry = []
     #
-    #     ## If iterable, expand recursively.
+    #     # # If iterable, expand recursively.
     #     try:
     #         for geo in geometry:
     #             self.flatten_to_paths(geometry=geo, reset=False)
     #
-    #     ## Not iterable, do the actual indexing and add.
+    #     # # Not iterable, do the actual indexing and add.
     #     except TypeError:
     #         if type(geometry) == Polygon:
     #             g = geometry.exterior
     #             self.flat_geometry.append(g)
     #
-    #             ## Add first and last points of the path to the index.
+    #             # # Add first and last points of the path to the index.
     #             self.flat_geometry_rtree.insert(len(self.flat_geometry) - 1, g.coords[0])
     #             self.flat_geometry_rtree.insert(len(self.flat_geometry) - 1, g.coords[-1])
     #
@@ -443,14 +438,14 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
+            # self.solid_geometry.append(unary_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
                 self.solid_geometry.append(geos)
         else:  # It's shapely geometry
-            # self.solid_geometry = cascaded_union([self.solid_geometry,
-            #                                       cascaded_union(geos)])
+            # self.solid_geometry = unary_union([self.solid_geometry,
+            #                                       unary_union(geos)])
             self.solid_geometry = [self.solid_geometry, geos]
 
     def size(self):
@@ -463,7 +458,7 @@ class Geometry(object):
             return 0
         bounds = self.bounds()
         return bounds[2] - bounds[0], bounds[3] - bounds[1]
-        
+
     def get_empty_area(self, boundary=None):
         """
         Returns the complement of self.solid_geometry within
@@ -473,7 +468,7 @@ class Geometry(object):
         if boundary is None:
             boundary = self.solid_geometry.envelope
         return boundary.difference(self.solid_geometry)
-        
+
     @staticmethod
     def clear_polygon(polygon, tooldia, overlap=0.15, connect=True,
                       contour=True):
@@ -498,10 +493,11 @@ class Geometry(object):
         assert type(polygon) == Polygon or type(polygon) == MultiPolygon, \
             "Expected a Polygon or MultiPolygon, got %s" % type(polygon)
 
-        ## The toolpaths
+        # # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
+
         geoms = FlatCAMRTreeStorage()
         geoms.get_points = get_pts
 
@@ -581,10 +577,11 @@ class Geometry(object):
         # Current buffer radius
         radius = tooldia / 2 * (1 - overlap)
 
-        ## The toolpaths
+        # # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
+
         geoms = FlatCAMRTreeStorage()
         geoms.get_points = get_pts
 
@@ -605,8 +602,8 @@ class Geometry(object):
             if path.is_empty:
                 break
             else:
-                #geoms.append(path)
-                #geoms.insert(path)
+                # geoms.append(path)
+                # geoms.insert(path)
                 # path can be a collection of paths.
                 try:
                     for p in path:
@@ -623,7 +620,7 @@ class Geometry(object):
             for x in autolist(polygon.buffer(-tooldia / 2)):  # Over resulting polygons
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
-            #geoms += outer_edges + inner_edges
+            # geoms += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
                 geoms.insert(g)
 
@@ -658,7 +655,7 @@ class Geometry(object):
 
         log.debug("camlib.clear_polygon3()")
 
-        ## The toolpaths
+        # # The toolpaths
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
@@ -752,7 +749,7 @@ class Geometry(object):
 
         # Assuming geolist is a flat list of flat elements
 
-        ## Index first and last points in paths
+        # # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
@@ -766,8 +763,8 @@ class Geometry(object):
         #         storage.insert(LineString(shape))
         #         #storage.insert(shape)
 
-        ## Iterate over geometry paths getting the nearest each time.
-        #optimized_paths = []
+        # # Iterate over geometry paths getting the nearest each time.
+        # optimized_paths = []
         optimized_paths = FlatCAMRTreeStorage()
         optimized_paths.get_points = get_pts
         path_count = 0
@@ -779,7 +776,7 @@ class Geometry(object):
         try:
             while True:
                 path_count += 1
-                #log.debug("Path %d" % path_count)
+                # log.debug("Path %d" % path_count)
 
                 pt, candidate = storage.nearest(current_pt)
                 storage.remove(candidate)
@@ -797,7 +794,7 @@ class Geometry(object):
                 walk_cut = walk_path.buffer(tooldia / 2)
 
                 if walk_cut.within(boundary) and walk_path.length < max_walk:
-                    #log.debug("Walk to path #%d is inside. Joining." % path_count)
+                    # log.debug("Walk to path #%d is inside. Joining." % path_count)
 
                     # Completely inside. Append...
                     geo.coords = list(geo.coords) + list(candidate.coords)
@@ -810,18 +807,18 @@ class Geometry(object):
                 else:
 
                     # Have to lift tool. End path.
-                    #log.debug("Path #%d not within boundary. Next." % path_count)
-                    #optimized_paths.append(geo)
+                    # log.debug("Path #%d not within boundary. Next." % path_count)
+                    # optimized_paths.append(geo)
                     optimized_paths.insert(geo)
                     geo = candidate
 
                 current_pt = geo.coords[-1]
 
                 # Next
-                #pt, geo = storage.nearest(current_pt)
+                # pt, geo = storage.nearest(current_pt)
 
         except StopIteration:  # Nothing left in storage.
-            #pass
+            # pass
             optimized_paths.insert(geo)
 
         return optimized_paths
@@ -832,6 +829,8 @@ class Geometry(object):
         Simplifies paths in the FlatCAMRTreeStorage storage by
         connecting paths that touch on their enpoints.
 
+        :param origin:
+        :type origin:
         :param storage: Storage containing the initial paths.
         :rtype storage: FlatCAMRTreeStorage
         :return: Simplified storage.
@@ -840,9 +839,10 @@ class Geometry(object):
 
         log.debug("path_connect()")
 
-        ## Index first and last points in paths
+        # # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
+
         #
         # storage = FlatCAMRTreeStorage()
         # storage.get_points = get_pts
@@ -854,18 +854,18 @@ class Geometry(object):
         path_count = 0
         pt, geo = storage.nearest(origin)
         storage.remove(geo)
-        #optimized_geometry = [geo]
+        # optimized_geometry = [geo]
         optimized_geometry = FlatCAMRTreeStorage()
         optimized_geometry.get_points = get_pts
-        #optimized_geometry.insert(geo)
+        # optimized_geometry.insert(geo)
         try:
             while True:
                 path_count += 1
 
-                #print "geo is", geo
+                # print "geo is", geo
 
                 _, left = storage.nearest(geo.coords[0])
-                #print "left is", left
+                # print "left is", left
 
                 # If left touches geo, remove left from original
                 # storage and append to geo.
@@ -891,7 +891,7 @@ class Geometry(object):
                         continue
 
                 _, right = storage.nearest(geo.coords[-1])
-                #print "right is", right
+                # print "right is", right
 
                 # If right touches geo, remove left from original
                 # storage and append to geo.
@@ -933,7 +933,7 @@ class Geometry(object):
         except StopIteration:  # Nothing found in storage.
             optimized_geometry.insert(geo)
 
-        #print path_count
+        # print path_count
         log.debug("path_count = %d" % path_count)
 
         return optimized_geometry
@@ -1002,7 +1002,7 @@ class Geometry(object):
 
         :return: None
         """
-        self.solid_geometry = [cascaded_union(self.solid_geometry)]
+        self.solid_geometry = [unary_union(self.solid_geometry)]
 
     def export_svg(self, scale_factor=0.00):
         """
@@ -1011,7 +1011,7 @@ class Geometry(object):
         :return: SVG Element
         """
         # Make sure we see a Shapely Geometry class and not a list
-        geom = cascaded_union(self.flatten())
+        geom = unary_union(self.flatten())
 
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
 
@@ -1039,6 +1039,7 @@ class Geometry(object):
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
+
         def mirror_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -1046,7 +1047,7 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px,py))
+                return affinity.scale(obj, xscale, yscale, origin=(px, py))
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
 
@@ -1056,13 +1057,18 @@ class Geometry(object):
 
         Parameters
         ----------
-        xs, ys : float, float
+        angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
+        :param angle_y:
+        :type angle_y:
+        :param angle_x:
+        :type angle_x:
+        :param point:
+        :type point:
         """
 
         if angle_x is None:
@@ -1070,7 +1076,7 @@ class Geometry(object):
         if angle_y is None:
             angle_y = 0
         if point is None:
-            point = (0,0)
+            point = (0, 0)
         else:
             px, py = point
 
@@ -1082,7 +1088,7 @@ class Geometry(object):
                 return new_obj
             else:
                 return affinity.skew(obj, angle_x, angle_y,
-                              origin=(px, py))
+                                     origin=(px, py))
 
         self.solid_geometry = skew_geom(self.solid_geometry)
         return
@@ -1100,13 +1106,12 @@ class Geometry(object):
         center (default), 'centroid' for the geometry's centroid, a Point object
         or a coordinate tuple (x0, y0).
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         if point is not None:
             px, py = point
         else:
-            px, py = (0,0)
+            px, py = (0, 0)
 
         def rotate_geom(obj):
             if type(obj) is list:
@@ -1120,6 +1125,7 @@ class Geometry(object):
         self.solid_geometry = rotate_geom(self.solid_geometry)
         return
 
+
 class ApertureMacro:
     """
     Syntax of aperture macros.
@@ -1132,7 +1138,7 @@ class ApertureMacro:
     <Comment>:              0 <Text>
     """
 
-    ## Regular expressions
+    # # Regular expressions
     am1_re = re.compile(r'^%AM([^\*]+)\*(.+)?(%)?$')
     am2_re = re.compile(r'(.*)%$')
     amcomm_re = re.compile(r'^0(.*)')
@@ -1143,8 +1149,8 @@ class ApertureMacro:
         self.name = name
         self.raw = ""
 
-        ## These below are recomputed for every aperture
-        ## definition, in other words, are temporary variables.
+        # # These below are recomputed for every aperture
+        # # definition, in other words, are temporary variables.
         self.primitives = []
         self.locvars = {}
         self.geometry = None
@@ -1190,14 +1196,14 @@ class ApertureMacro:
         # Separate parts
         parts = self.raw.split('*')
 
-        #### Every part in the macro ####
+        # ### Every part in the macro ####
         for part in parts:
-            ### Comments. Ignored.
+            # ## Comments. Ignored.
             match = ApertureMacro.amcomm_re.search(part)
             if match:
                 continue
 
-            ### Variables
+            # ## Variables
             # These are variables defined locally inside the macro. They can be
             # numerical constant or defind in terms of previously define
             # variables, which can be defined locally or in an aperture
@@ -1209,7 +1215,7 @@ class ApertureMacro:
 
                 # Replace variables in value
                 for v in self.locvars:
-                    val = re.sub(r'\$'+str(v)+r'(?![0-9a-zA-Z])', str(self.locvars[v]), val)
+                    val = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), val)
 
                 # Make all others 0
                 val = re.sub(r'\$[0-9a-zA-Z](?![0-9a-zA-Z])', "0", val)
@@ -1221,14 +1227,14 @@ class ApertureMacro:
                 self.locvars[var] = eval(val)
                 continue
 
-            ### Primitives
+            # ## Primitives
             # Each is an array. The first identifies the primitive, while the
             # rest depend on the primitive. All are strings representing a
             # number and may contain variable definition. The values of these
             # variables are defined in an aperture definition.
             match = ApertureMacro.amprim_re.search(part)
             if match:
-                ## Replace all variables
+                # # Replace all variables
                 for v in self.locvars:
                     part = re.sub(r'\$' + str(v) + r'(?![0-9a-zA-Z])', str(self.locvars[v]), part)
 
@@ -1238,7 +1244,7 @@ class ApertureMacro:
                 # Change x with *
                 part = re.sub(r'[xX]', "*", part)
 
-                ## Store
+                # # Store
                 elements = part.split(",")
                 self.primitives.append([eval(x) for x in elements])
                 continue
@@ -1283,7 +1289,7 @@ class ApertureMacro:
 
         pol, dia, x, y = ApertureMacro.default2zero(4, mods)
 
-        return {"pol": int(pol), "geometry": Point(x, y).buffer(dia/2)}
+        return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
     def make_vectorline(mods):
@@ -1296,7 +1302,7 @@ class ApertureMacro:
         pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
 
         line = LineString([(xs, ys), (xe, ye)])
-        box = line.buffer(width/2, cap_style=2)
+        box = line.buffer(width / 2, cap_style=2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -1312,7 +1318,7 @@ class ApertureMacro:
 
         pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
 
-        box = shply_box(x-width/2, y-height/2, x+width/2, y+height/2)
+        box = shply_box(x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -1328,7 +1334,7 @@ class ApertureMacro:
 
         pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
 
-        box = shply_box(x, y, x+width, y+height)
+        box = shply_box(x, y, x + width, y + height)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -1343,12 +1349,12 @@ class ApertureMacro:
 
         pol = mods[0]
         n = mods[1]
-        points = [(0, 0)]*(n+1)
+        points = [(0, 0)] * (n + 1)
 
-        for i in range(n+1):
-            points[i] = mods[2*i + 2:2*i + 4]
+        for i in range(n + 1):
+            points[i] = mods[2 * i + 2:2 * i + 4]
 
-        angle = mods[2*n + 4]
+        angle = mods[2 * n + 4]
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -1367,11 +1373,11 @@ class ApertureMacro:
         """
 
         pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
-        points = [(0, 0)]*nverts
+        points = [(0, 0)] * nverts
 
         for i in range(nverts):
-            points[i] = (x + 0.5 * dia * cos(2*pi * i/nverts),
-                         y + 0.5 * dia * sin(2*pi * i/nverts))
+            points[i] = (x + 0.5 * dia * cos(2 * pi * i / nverts),
+                         y + 0.5 * dia * sin(2 * pi * i / nverts))
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -1392,26 +1398,26 @@ class ApertureMacro:
 
         x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
 
-        r = dia/2 - thickness/2
-        result = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)
-        ring = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)  # Need a copy!
+        r = dia / 2 - thickness / 2
+        result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
+        ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)  # Need a copy!
 
         i = 1  # Number of rings created so far
 
-        ## If the ring does not have an interior it means that it is
-        ## a disk. Then stop.
+        # # If the ring does not have an interior it means that it is
+        # # a disk. Then stop.
         while len(ring.interiors) > 0 and i < nrings:
             r -= thickness + gap
             if r <= 0:
                 break
-            ring = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)
-            result = cascaded_union([result, ring])
+            ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
+            result = unary_union([result, ring])
             i += 1
 
-        ## Crosshair
-        hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th/2.0, cap_style=2)
-        ver = LineString([(x, y-cross_len), (x, y + cross_len)]).buffer(cross_th/2.0, cap_style=2)
-        result = cascaded_union([result, hor, ver])
+        # # Crosshair
+        hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th / 2.0, cap_style=2)
+        ver = LineString([(x, y - cross_len), (x, y + cross_len)]).buffer(cross_th / 2.0, cap_style=2)
+        result = unary_union([result, hor, ver])
 
         return {"pol": 1, "geometry": result}
 
@@ -1428,9 +1434,9 @@ class ApertureMacro:
 
         x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
 
-        ring = Point((x, y)).buffer(dout/2.0).difference(Point((x, y)).buffer(din/2.0))
-        hline = LineString([(x - dout/2.0, y), (x + dout/2.0, y)]).buffer(t/2.0, cap_style=3)
-        vline = LineString([(x, y - dout/2.0), (x, y + dout/2.0)]).buffer(t/2.0, cap_style=3)
+        ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
+        hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)
+        vline = LineString([(x, y - dout / 2.0), (x, y + dout / 2.0)]).buffer(t / 2.0, cap_style=3)
         thermal = ring.difference(hline.union(vline))
 
         return {"pol": 1, "geometry": thermal}
@@ -1446,7 +1452,7 @@ class ApertureMacro:
         :rtype: shapely.geometry.polygon
         """
 
-        ## Primitive makers
+        # # Primitive makers
         makers = {
             "1": ApertureMacro.make_circle,
             "2": ApertureMacro.make_vectorline,
@@ -1459,19 +1465,19 @@ class ApertureMacro:
             "7": ApertureMacro.make_thermal
         }
 
-        ## Store modifiers as local variables
+        # # Store modifiers as local variables
         modifiers = modifiers or []
         modifiers = [float(m) for m in modifiers]
         self.locvars = {}
         for i in range(0, len(modifiers)):
             self.locvars[str(i + 1)] = modifiers[i]
 
-        ## Parse
+        # # Parse
         self.primitives = []  # Cleanup
         self.geometry = Polygon()
         self.parse_content()
 
-        ## Make the geometry
+        # # Make the geometry
         for primitive in self.primitives:
             # Make the primitive
             prim_geo = makers[str(int(primitive[0]))](primitive[1:])
@@ -1490,7 +1496,7 @@ class ApertureMacro:
         return self.geometry
 
 
-class Gerber (Geometry):
+class Gerber(Geometry):
     """
     **ATTRIBUTES**
 
@@ -1552,8 +1558,8 @@ class Gerber (Geometry):
 
         self.frac_digits = 4
         """Number of fraction digits in Gerber numbers. Used during parsing."""
-        
-        ## Gerber elements ##
+
+        # # Gerber elements ##
         # Apertures {'id':{'type':chr, 
         #             ['size':float], ['width':float],
         #             ['height':float]}, ...}
@@ -1568,7 +1574,7 @@ class Gerber (Geometry):
         self.ser_attrs += ['int_digits', 'frac_digits', 'apertures',
                            'aperture_macros', 'solid_geometry']
 
-        #### Parser patterns ####
+        # ### Parser patterns ####
         # FS - Format Specification
         # The format of X and Y must be the same!
         # L-omit leading zeros, T-omit trailing zeros
@@ -1588,7 +1594,7 @@ class Gerber (Geometry):
 
         # AM - Aperture Macro
         # Beginning of macro (Ends with *%):
-        #self.am_re = re.compile(r'^%AM([a-zA-Z0-9]*)\*')
+        # self.am_re = re.compile(r'^%AM([a-zA-Z0-9]*)\*')
 
         # Tool change
         # May begin with G54 but that is deprecated
@@ -1671,7 +1677,7 @@ class Gerber (Geometry):
         :rtype : None
         """
 
-        ## solid_geometry ???
+        # # solid_geometry ???
         #  It's a cascaded union of objects.
         self.solid_geometry = affinity.scale(self.solid_geometry, factor,
                                              factor, origin=(0, 0))
@@ -1701,7 +1707,7 @@ class Gerber (Geometry):
 
         dx, dy = vect
 
-        ## Solid geometry
+        # # Solid geometry
         self.solid_geometry = affinity.translate(self.solid_geometry, xoff=dx, yoff=dy)
 
     # def mirror(self, axis, point):
@@ -1729,7 +1735,7 @@ class Gerber (Geometry):
     #     px, py = point
     #     xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
     #
-    #     ## solid_geometry ???
+    #     # # solid_geometry ???
     #     #  It's a cascaded union of objects.
     #     self.solid_geometry = affinity.scale(self.solid_geometry,
     #                                          xscale, yscale, origin=(px, py))
@@ -1761,28 +1767,28 @@ class Gerber (Geometry):
 
         try:  # Could be empty for aperture macros
             paramList = apParameters.split('X')
-        except:
+        except Exception:
             paramList = None
 
         if apertureType == "C":  # Circle, example: %ADD11C,0.1*%
             self.apertures[apid] = {"type": "C",
                                     "size": float(paramList[0])}
             return apid
-        
+
         if apertureType == "R":  # Rectangle, example: %ADD15R,0.05X0.12*%
             self.apertures[apid] = {"type": "R",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0])**2 + float(paramList[1])**2)}  # Hack
+                                    "size": sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
 
         if apertureType == "O":  # Obround
             self.apertures[apid] = {"type": "O",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0])**2 + float(paramList[1])**2)}  # Hack
+                                    "size": sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
-        
+
         if apertureType == "P":  # Polygon (regular)
             self.apertures[apid] = {"type": "P",
                                     "diam": float(paramList[0]),
@@ -1800,7 +1806,7 @@ class Gerber (Geometry):
 
         log.warning("Aperture not implemented: %s" % str(apertureType))
         return None
-        
+
     def parse_file(self, filename, follow=False):
         """
         Calls Gerber.parse_lines() with generator of lines
@@ -1848,7 +1854,7 @@ class Gerber (Geometry):
 
             self.parse_lines(line_generator(), follow=follow)
 
-    #@profile
+    # @profile
     def parse_lines(self, glines, follow=False):
         """
         Main Gerber parser. Reads Gerber and populates ``self.paths``, ``self.apertures``,
@@ -1868,7 +1874,7 @@ class Gerber (Geometry):
         path = []
 
         # Polygons are stored here until there is a change in polarity.
-        # Only then they are combined via cascaded_union and added or
+        # Only then they are combined via unary_union and added or
         # subtracted from solid_geometry. This is ~100 times faster than
         # applyng a union for every new polygon.
         poly_buffer = []
@@ -1904,19 +1910,19 @@ class Gerber (Geometry):
         # If a region is being defined
         making_region = False
 
-        #### Parsing starts here ####
+        # ### Parsing starts here ####
         line_num = 0
         gline = ""
         try:
             for gline in glines:
                 line_num += 1
 
-                ### Cleanup
+                # ## Cleanup
                 gline = gline.strip(' \r\n')
 
-                #log.debug("%3s %s" % (line_num, gline))
+                # log.debug("%3s %s" % (line_num, gline))
 
-                ### Aperture Macros
+                # ## Aperture Macros
                 # Having this at the beginning will slow things down
                 # but macros can have complicated statements than could
                 # be caught by other patterns.
@@ -1930,7 +1936,7 @@ class Gerber (Geometry):
                         if match.group(2):  # Append
                             self.aperture_macros[current_macro].append(match.group(2))
                         if match.group(3):  # Finish macro
-                            #self.aperture_macros[current_macro].parse_content()
+                            # self.aperture_macros[current_macro].parse_content()
                             current_macro = None
                             log.debug("Macro complete in 1 line.")
                         continue
@@ -1940,13 +1946,13 @@ class Gerber (Geometry):
                     if match:  # Finish macro
                         log.debug("End of macro. Line %d." % line_num)
                         self.aperture_macros[current_macro].append(match.group(1))
-                        #self.aperture_macros[current_macro].parse_content()
+                        # self.aperture_macros[current_macro].parse_content()
                         current_macro = None
                     else:  # Append
                         self.aperture_macros[current_macro].append(gline)
                     continue
 
-                ### G01 - Linear interpolation plus flashes
+                # ## G01 - Linear interpolation plus flashes
                 # Operation code (D0x) missing is deprecated... oh well I will support it.
                 # REGEX: r'^(?:G0?(1))?(?:X(-?\d+))?(?:Y(-?\d+))?(?:D0([123]))?\*$'
                 match = self.lin_re.search(gline)
@@ -1955,7 +1961,7 @@ class Gerber (Geometry):
                     # if match.group(1) is None and match.group(2) is None and match.group(3) is None:
                     #     try:
                     #         current_operation_code = int(match.group(4))
-                    #     except:
+                    #     except Exception:
                     #         pass  # A line with just * will match too.
                     #     continue
                     # NOTE: Letting it continue allows it to react to the
@@ -1979,7 +1985,7 @@ class Gerber (Geometry):
                     elif current_operation_code == 2:
                         if len(path) > 1:
 
-                            ## --- BUFFERED ---
+                            # # --- BUFFERED ---
                             if making_region:
                                 if follow:
                                     geo = Polygon()
@@ -1989,7 +1995,8 @@ class Gerber (Geometry):
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
-                                #log.debug("Line %d: Setting aperture to %s before buffering." % (line_num, last_path_aperture))
+                                # log.debug("Line %d: Setting aperture to %s before buffering." %
+                                #           (line_num, last_path_aperture))
                                 if follow:
                                     geo = LineString(path)
                                 else:
@@ -2031,7 +2038,7 @@ class Gerber (Geometry):
 
                     continue
 
-                ### G02/3 - Circular interpolation
+                # ## G02/3 - Circular interpolation
                 # 2-clockwise, 3-counterclockwise
                 match = self.circ_re.search(gline)
                 if match:
@@ -2040,19 +2047,19 @@ class Gerber (Geometry):
                     mode, x, y, i, j, d = match.groups()
                     try:
                         x = parse_gerber_number(x, self.frac_digits)
-                    except:
+                    except Exception:
                         x = current_x
                     try:
                         y = parse_gerber_number(y, self.frac_digits)
-                    except:
+                    except Exception:
                         y = current_y
                     try:
                         i = parse_gerber_number(i, self.frac_digits)
-                    except:
+                    except Exception:
                         i = 0
                     try:
                         j = parse_gerber_number(j, self.frac_digits)
-                    except:
+                    except Exception:
                         j = 0
 
                     if quadrant_mode is None:
@@ -2186,7 +2193,7 @@ class Gerber (Geometry):
                         else:
                             log.warning("Invalid arc in line %d." % line_num)
 
-                ### Operation code alone
+                # ## Operation code alone
                 # Operation code alone, usually just D03 (Flash)
                 # self.opcode_re = re.compile(r'^D0?([123])\*$')
                 match = self.opcode_re.search(gline)
@@ -2194,7 +2201,7 @@ class Gerber (Geometry):
                     current_operation_code = int(match.group(1))
                     if current_operation_code == 3:
 
-                        ## --- Buffered ---
+                        # # --- Buffered ---
                         try:
                             log.debug("Bare op-code %d." % current_operation_code)
                             # flash = Gerber.create_flash_geometry(Point(path[-1]),
@@ -2210,7 +2217,7 @@ class Gerber (Geometry):
 
                     continue
 
-                ### G74/75* - Single or multiple quadrant arcs
+                # ## G74/75* - Single or multiple quadrant arcs
                 match = self.quad_re.search(gline)
                 if match:
                     if match.group(1) == '4':
@@ -2219,18 +2226,18 @@ class Gerber (Geometry):
                         quadrant_mode = 'MULTI'
                     continue
 
-                ### G36* - Begin region
+                # ## G36* - Begin region
                 if self.regionon_re.search(gline):
                     if len(path) > 1:
                         # Take care of what is left in the path
 
-                        ## --- Buffered ---
+                        # # --- Buffered ---
                         width = self.apertures[last_path_aperture]["size"]
 
                         if follow:
                             geo = LineString(path)
                         else:
-                            geo = LineString(path).buffer(width/2)
+                            geo = LineString(path).buffer(width / 2)
                         if not geo.is_empty:
                             poly_buffer.append(geo)
 
@@ -2239,7 +2246,7 @@ class Gerber (Geometry):
                     making_region = True
                     continue
 
-                ### G37* - End region
+                # ## G37* - End region
                 if self.regionoff_re.search(gline):
                     making_region = False
 
@@ -2251,7 +2258,7 @@ class Gerber (Geometry):
                         # print path
                         # print "Line (%d): " % line_num, gline
                         # path = []
-                        #path = [[current_x, current_y]]
+                        # path = [[current_x, current_y]]
                         continue
 
                     # For regions we may ignore an aperture that is None
@@ -2272,14 +2279,14 @@ class Gerber (Geometry):
                     path = [[current_x, current_y]]  # Start new path
                     continue
 
-                ### Aperture definitions %ADD...
+                # ## Aperture definitions %ADD...
                 match = self.ad_re.search(gline)
                 if match:
                     log.info("Found aperture definition. Line %d: %s" % (line_num, gline))
                     self.aperture_parse(match.group(1), match.group(2), match.group(3))
                     continue
 
-                ### G01/2/3* - Interpolation mode change
+                # ## G01/2/3* - Interpolation mode change
                 # Can occur along with coordinates and operation code but
                 # sometimes by itself (handled here).
                 # Example: G01*
@@ -2288,7 +2295,7 @@ class Gerber (Geometry):
                     current_interpolation_mode = int(match.group(1))
                     continue
 
-                ### Tool/aperture change
+                # ## Tool/aperture change
                 # Example: D12*
                 match = self.tool_re.search(gline)
                 if match:
@@ -2300,7 +2307,7 @@ class Gerber (Geometry):
                     # so it can be processed by FlatCAM.
                     # But first test to see if the aperture type is "aperture macro". In that case
                     # we should not test for "size" key as it does not exist in this case.
-                    if self.apertures[current_aperture]["type"] is not "AM":
+                    if self.apertures[current_aperture]["type"] != "AM":
                         if self.apertures[current_aperture]["size"] == 0:
                             self.apertures[current_aperture]["size"] = 0.0000001
                     log.debug(self.apertures[current_aperture])
@@ -2321,7 +2328,7 @@ class Gerber (Geometry):
 
                     continue
 
-                ### Polarity change
+                # ## Polarity change
                 # Example: %LPD*% or %LPC*%
                 # If polarity changes, creates geometry from current
                 # buffer, then adds or subtracts accordingly.
@@ -2346,15 +2353,15 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.union(unary_union(poly_buffer))
                         else:
-                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.difference(unary_union(poly_buffer))
                         poly_buffer = []
 
                     current_polarity = match.group(1)
                     continue
 
-                ### Number format
+                # ## Number format
                 # Example: %FSLAX24Y24*%
                 # TODO: This is ignoring most of the format. Implement the rest.
                 match = self.fmt_re.search(gline)
@@ -2364,49 +2371,49 @@ class Gerber (Geometry):
                     self.frac_digits = int(match.group(4))
                     continue
 
-                ### Mode (IN/MM)
+                # ## Mode (IN/MM)
                 # Example: %MOIN*%
                 match = self.mode_re.search(gline)
                 if match:
-                    #self.units = match.group(1)
+                    # self.units = match.group(1)
 
                     # Changed for issue #80
                     self.convert_units(match.group(1))
                     continue
 
-                ### Units (G70/1) OBSOLETE
+                # ## Units (G70/1) OBSOLETE
                 match = self.units_re.search(gline)
                 if match:
-                    #self.units = {'0': 'IN', '1': 'MM'}[match.group(1)]
+                    # self.units = {'0': 'IN', '1': 'MM'}[match.group(1)]
 
                     # Changed for issue #80
                     self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])
                     continue
 
-                ### Absolute/relative coordinates G90/1 OBSOLETE
+                # ## Absolute/relative coordinates G90/1 OBSOLETE
                 match = self.absrel_re.search(gline)
                 if match:
                     absolute = {'0': True, '1': False}[match.group(1)]
                     continue
 
-                #### Ignored lines
-                ## Comments
+                # ### Ignored lines
+                # # Comments
                 match = self.comm_re.search(gline)
                 if match:
                     continue
 
-                ## EOF
+                # # EOF
                 match = self.eof_re.search(gline)
                 if match:
                     continue
 
-                ### Line did not match any pattern. Warn user.
+                # ## Line did not match any pattern. warning user.
                 log.warning("Line ignored (%d): %s" % (line_num, gline))
 
             if len(path) > 1:
                 # EOF, create shapely LineString if something still in path
 
-                ## --- Buffered ---
+                # # --- Buffered ---
                 width = self.apertures[last_path_aperture]["size"]
                 if follow:
                     geo = LineString(path)
@@ -2420,18 +2427,18 @@ class Gerber (Geometry):
                 self.solid_geometry = poly_buffer
                 return
 
-            log.warn("Joining %d polygons." % len(poly_buffer))
+            log.warning("Joining %d polygons." % len(poly_buffer))
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
                 new_poly = MultiPolygon(poly_buffer)
                 new_poly = new_poly.buffer(0.00000001)
                 new_poly = new_poly.buffer(-0.00000001)
-                log.warn("Union(buffer) done.")
+                log.warning("Union(buffer) done.")
             else:
                 log.debug("Union by union()...")
-                new_poly = cascaded_union(poly_buffer)
+                new_poly = unary_union(poly_buffer)
                 new_poly = new_poly.buffer(0)
-                log.warn("Union done.")
+                log.warning("Union done.")
             if current_polarity == 'D':
                 self.solid_geometry = self.solid_geometry.union(new_poly)
             else:
@@ -2440,10 +2447,10 @@ class Gerber (Geometry):
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
-            #print traceback.format_exc()
+            # print traceback.format_exc()
 
             log.error("PARSING FAILED. Line %d: %s" % (line_num, gline))
-            raise ParseError("Line %d: %s" % (line_num, gline), repr(err))
+            return ("Line %d: %s" % (line_num, gline), repr(err))
 
     @staticmethod
     def create_flash_geometry(location, aperture):
@@ -2480,7 +2487,7 @@ class Gerber (Geometry):
                 p2 = Point(loc[0], loc[1] - 0.5 * (height - width))
                 c1 = p1.buffer(width * 0.5)
                 c2 = p2.buffer(width * 0.5)
-            return cascaded_union([c1, c2]).convex_hull
+            return unary_union([c1, c2]).convex_hull
 
         if aperture['type'] == 'P':  # Regular polygon
             loc = location.coords[0]
@@ -2505,7 +2512,7 @@ class Gerber (Geometry):
 
         log.warning("Unknown aperture type: %s" % aperture['type'])
         return None
-    
+
     def create_geometry(self):
         """
         Geometry from a Gerber file is made up entirely of polygons.
@@ -2523,7 +2530,7 @@ class Gerber (Geometry):
         #
         # self.do_flashes()
         #
-        # self.solid_geometry = cascaded_union(self.buffered_paths +
+        # self.solid_geometry = unary_union(self.buffered_paths +
         #                                      [poly['polygon'] for poly in self.regions] +
         #                                      self.flash_geometry)
 
@@ -2590,11 +2597,11 @@ class Excellon(Geometry):
         self.tools = {}
         self.drills = []
 
-        ## IN|MM -> Units are inherited from Geometry
-        #self.units = units
+        # # IN|MM -> Units are inherited from Geometry
+        # self.units = units
 
         # Trailing "T" or leading "L" (default)
-        #self.zeros = "T"
+        # self.zeros = "T"
         self.zeros = zeros or self.defaults["zeros"]
 
         # Attributes to be included in serialization
@@ -2602,7 +2609,7 @@ class Excellon(Geometry):
         # from Geometry.
         self.ser_attrs += ['tools', 'drills', 'zeros']
 
-        #### Patterns ####
+        # ### Patterns ####
         # Regex basics:
         # ^ - beginning
         # $ - end
@@ -2617,7 +2624,7 @@ class Excellon(Geometry):
 
         # FMAT Excellon format
         # Ignored in the parser
-        #self.fmat_re = re.compile(r'^FMAT,([12])$')
+        # self.fmat_re = re.compile(r'^FMAT,([12])$')
 
         # Number format and units
         # INCH uses 6 digits
@@ -2657,8 +2664,8 @@ class Excellon(Geometry):
         self.meas_re = re.compile(r'^M7([12])$')
 
         # Coordinates
-        #self.xcoord_re = re.compile(r'^X(\d*\.?\d*)(?:Y\d*\.?\d*)?$')
-        #self.ycoord_re = re.compile(r'^(?:X\d*\.?\d*)?Y(\d*\.?\d*)$')
+        # self.xcoord_re = re.compile(r'^X(\d*\.?\d*)(?:Y\d*\.?\d*)?$')
+        # self.ycoord_re = re.compile(r'^(?:X\d*\.?\d*)?Y(\d*\.?\d*)$')
         self.coordsperiod_re = re.compile(r'(?=.*X([-\+]?\d*\.\d*))?(?=.*Y([-\+]?\d*\.\d*))?[XY]')
         self.coordsnoperiod_re = re.compile(r'(?!.*\.)(?=.*X([-\+]?\d*))?(?=.*Y([-\+]?\d*))?[XY]')
 
@@ -2670,7 +2677,7 @@ class Excellon(Geometry):
 
         # Parse coordinates
         self.leadingzeros_re = re.compile(r'^[-\+]?(0*)(\d*)')
-        
+
     def parse_file(self, filename):
         """
         Reads the specified file as array of lines as
@@ -2700,63 +2707,63 @@ class Excellon(Geometry):
         current_x = None
         current_y = None
 
-        #### Parsing starts here ####
+        # ### Parsing starts here ####
         line_num = 0  # Line number
         eline = ""
         try:
             for eline in elines:
                 line_num += 1
-                #log.debug("%3d %s" % (line_num, str(eline)))
+                # log.debug("%3d %s" % (line_num, str(eline)))
 
-                ### Cleanup lines
+                # ## Cleanup lines
                 eline = eline.strip(' \r\n')
 
-                ## Header Begin (M48) ##
+                # # Header Begin (M48) ##
                 if self.hbegin_re.search(eline):
                     in_header = True
                     continue
 
-                ## Header End ##
+                # # Header End ##
                 if self.hend_re.search(eline):
                     in_header = False
                     continue
 
-                ## Alternative units format M71/M72
+                # # Alternative units format M71/M72
                 # Supposed to be just in the body (yes, the body)
                 # but some put it in the header (PADS for example).
                 # Will detect anywhere. Occurrence will change the
                 # object's units.
                 match = self.meas_re.match(eline)
                 if match:
-                    #self.units = {"1": "MM", "2": "IN"}[match.group(1)]
+                    # self.units = {"1": "MM", "2": "IN"}[match.group(1)]
 
                     # Modified for issue #80
                     self.convert_units({"1": "MM", "2": "IN"}[match.group(1)])
                     log.debug("  Units: %s" % self.units)
                     continue
 
-                #### Body ####
+                # ### Body ####
                 if not in_header:
 
-                    ## Tool change ##
+                    # # Tool change ##
                     match = self.toolsel_re.search(eline)
                     if match:
                         current_tool = str(int(match.group(1)))
                         log.debug("Tool change: %s" % current_tool)
                         continue
 
-                    ## Coordinates without period ##
+                    # # Coordinates without period ##
                     match = self.coordsnoperiod_re.search(eline)
                     if match:
                         try:
-                            #x = float(match.group(1))/10000
+                            # x = float(match.group(1))/10000
                             x = self.parse_number(match.group(1))
                             current_x = x
                         except TypeError:
                             x = current_x
 
                         try:
-                            #y = float(match.group(2))/10000
+                            # y = float(match.group(2))/10000
                             y = self.parse_number(match.group(2))
                             current_y = y
                         except TypeError:
@@ -2770,7 +2777,7 @@ class Excellon(Geometry):
                         log.debug("{:15} {:8} {:8}".format(eline, x, y))
                         continue
 
-                    ## Coordinates with period: Use literally. ##
+                    # # Coordinates with period: Use literally. ##
                     match = self.coordsperiod_re.search(eline)
                     if match:
                         try:
@@ -2793,13 +2800,12 @@ class Excellon(Geometry):
                         log.debug("{:15} {:8} {:8}".format(eline, x, y))
                         continue
 
-                #### Header ####
+                # ### Header ####
                 if in_header:
 
-                    ## Tool definitions ##
+                    # # Tool definitions ##
                     match = self.toolset_re.search(eline)
                     if match:
-
                         name = str(int(match.group(1)))
                         spec = {
                             "C": float(match.group(2)),
@@ -2813,12 +2819,12 @@ class Excellon(Geometry):
                         log.debug("  Tool definition: %s %s" % (name, spec))
                         continue
 
-                    ## Units and number format ##
+                    # # Units and number format ##
                     match = self.units_re.match(eline)
                     if match:
                         self.zeros = match.group(2) or self.zeros  # "T" or "L". Might be empty
 
-                        #self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
+                        # self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
 
                         # Modified for issue #80
                         self.convert_units({"INCH": "IN", "METRIC": "MM"}[match.group(1)])
@@ -2831,8 +2837,8 @@ class Excellon(Geometry):
 
         except Exception as e:
             log.error("PARSING FAILED. Line %d: %s" % (line_num, eline))
-            raise
-        
+            return
+
     def parse_number(self, number_str):
         """
         Parses coordinate numbers without period.
@@ -2853,10 +2859,10 @@ class Excellon(Geometry):
             match = self.leadingzeros_re.search(number_str)
             if self.units.lower() == "in":
                 return float(number_str) / \
-                    (10 ** (len(match.group(1)) + len(match.group(2)) - 2))
+                       (10 ** (len(match.group(1)) + len(match.group(2)) - 2))
             else:
                 return float(number_str) / \
-                    (10 ** (len(match.group(1)) + len(match.group(2)) - 3))
+                       (10 ** (len(match.group(1)) + len(match.group(2)) - 3))
 
         else:  # Trailing
             # You must show all zeros to the right of the number and can omit
@@ -2950,8 +2956,7 @@ class Excellon(Geometry):
             use_radians=True.
         point: point of origin for skew, tuple of coordinates
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
 
         if angle_y is None:
@@ -3044,7 +3049,7 @@ class CNCjob(Geometry):
         self.tooldia = tooldia
         self.unitcode = {"IN": "G20", "MM": "G21"}
         # TODO: G04 Does not exist. It's G4 and now we are handling in postprocessing.
-        #self.pausecode = "G04 P1"
+        # self.pausecode = "G04 P1"
         self.feedminutecode = "G94"
         self.absolutecode = "G90"
         self.gcode = ""
@@ -3102,14 +3107,14 @@ class CNCjob(Geometry):
         # Tools
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        #sorted_tools = sorted(list(exobj.tools.items()), key=lambda tl: tl[1])
+        # sorted_tools = sorted(list(exobj.tools.items()), key=lambda tl: tl[1])
         sort = []
         for k, v in exobj.tools.items():
             sort.append((k, v.get('C')))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
-            tools = [i[0] for i in sorted_tools]   # List if ordered tool names.
+            tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
         else:
             selected_tools = [x.strip() for x in tools.split(",")]
@@ -3209,12 +3214,12 @@ class CNCjob(Geometry):
 
         log.debug("generate_from_geometry_2()")
 
-        ## Flatten the geometry
+        # # Flatten the geometry
         # Only linear elements (no polygons) remain.
         flat_geometry = geometry.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        ## Index first and last points in paths
+        # # Index first and last points in paths
         # What points to index.
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
@@ -3247,9 +3252,9 @@ class CNCjob(Geometry):
             self.gcode += "M03 S%d\n" % int(self.spindlespeed)  # Spindle start with configured speed
         else:
             self.gcode += "M03\n"  # Spindle start
-        #self.gcode += self.pausecode + "\n"
+        # self.gcode += self.pausecode + "\n"
 
-        ## Iterate over geometry paths getting the nearest each time.
+        # # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
         current_pt = (0, 0)
@@ -3257,7 +3262,7 @@ class CNCjob(Geometry):
         try:
             while True:
                 path_count += 1
-                #print "Current: ", "(%.3f, %.3f)" % current_pt
+                # print "Current: ", "(%.3f, %.3f)" % current_pt
 
                 # Remove before modifying, otherwise
                 # deletion will fail.
@@ -3269,7 +3274,7 @@ class CNCjob(Geometry):
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
                     geo.coords = list(geo.coords)[::-1]
 
-                #---------- Single depth/pass --------
+                # ---------- Single depth/pass --------
                 if not multidepth:
                     # G-code
                     # Note: self.linear2gcode() and self.point2gcode() will
@@ -3281,7 +3286,7 @@ class CNCjob(Geometry):
                     else:
                         log.warning("G-code generation not implemented for %s" % (str(type(geo))))
 
-                #--------- Multi-pass ---------
+                # --------- Multi-pass ---------
                 else:
                     if isinstance(self.z_cut, Decimal):
                         z_cut = self.z_cut
@@ -3337,8 +3342,8 @@ class CNCjob(Geometry):
 
                 # Did deletion at the beginning.
                 # Delete from index, update current location and continue.
-                #rti.delete(hits[0], geo.coords[0])
-                #rti.delete(hits[0], geo.coords[-1])
+                # rti.delete(hits[0], geo.coords[0])
+                # rti.delete(hits[0], geo.coords[-1])
 
                 current_pt = geo.coords[-1]
 
@@ -3385,7 +3390,7 @@ class CNCjob(Geometry):
         kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
 
         # Results go here
-        geometry = []        
+        geometry = []
 
         # Last known instruction
         current = {'X': 0.0, 'Y': 0.0, 'Z': 0.0, 'G': 0}
@@ -3399,12 +3404,12 @@ class CNCjob(Geometry):
 
             gobj = self.codes_split(line)
 
-            ## Units
+            # # Units
             if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
                 self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]
                 continue
 
-            ## Changing height
+            # # Changing height
             if 'Z' in gobj:
                 if ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
                     log.warning("Non-orthogonal motion: From %s" % str(current))
@@ -3418,14 +3423,14 @@ class CNCjob(Geometry):
 
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])
-                
+
             if 'X' in gobj or 'Y' in gobj:
-                
+
                 if 'X' in gobj:
                     x = gobj['X']
                 else:
                     x = current['X']
-                
+
                 if 'Y' in gobj:
                     y = gobj['Y']
                 else:
@@ -3437,14 +3442,14 @@ class CNCjob(Geometry):
                     kind[0] = 'T'
                 if current['G'] > 0:
                     kind[1] = 'S'
-                   
+
                 arcdir = [None, None, "cw", "ccw"]
                 if current['G'] in [0, 1]:  # line
                     path.append((x, y))
 
                 if current['G'] in [2, 3]:  # arc
                     center = [gobj['I'] + current['X'], gobj['J'] + current['Y']]
-                    radius = sqrt(gobj['I']**2 + gobj['J']**2)
+                    radius = sqrt(gobj['I'] ** 2 + gobj['J'] ** 2)
                     start = arctan2(-gobj['J'], -gobj['I'])
                     stop = arctan2(-center[1] + y, -center[0] + x)
                     path += arc(center, radius, start, stop,
@@ -3499,7 +3504,7 @@ class CNCjob(Geometry):
     #             ax.add_patch(patch)
     #
     #     return fig
-        
+
     def plot2(self, axes, tooldia=None, dpi=75, margin=0.1,
               color={"T": ["#F0E24D", "#B5AB3A"], "C": ["#5E6CFF", "#4650BD"]},
               alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005):
@@ -3519,7 +3524,7 @@ class CNCjob(Geometry):
 
         if tooldia is None:
             tooldia = self.tooldia
-        
+
         if tooldia == 0:
             for geo in self.gcode_parsed:
                 linespec = '--'
@@ -3539,10 +3544,10 @@ class CNCjob(Geometry):
                                      edgecolor=color[geo['kind'][0]][1],
                                      alpha=alpha[geo['kind'][0]], zorder=2)
                 axes.add_patch(patch)
-        
+
     def create_geometry(self):
         # TODO: This takes forever. Too much data?
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
     def linear2gcode(self, linear, tolerance=0, down=True, up=True,
                      zcut=None, ztravel=None, downrate=None,
@@ -3550,6 +3555,20 @@ class CNCjob(Geometry):
         """
         Generates G-code to cut along the linear feature.
 
+        :param up:
+        :type up:
+        :param down:
+        :type down:
+        :param cont:
+        :type cont:
+        :param feedrate:
+        :type feedrate:
+        :param zcut:
+        :type zcut:
+        :param ztravel:
+        :type ztravel:
+        :param downrate:
+        :type downrate:
         :param linear: The path to cut along.
         :type: Shapely.LinearRing or Shapely.Linear String
         :param tolerance: All points in the simplified object will be within the
@@ -3592,14 +3611,14 @@ class CNCjob(Geometry):
             # Different feedrate for vertical cut?
             if self.zdownrate is not None:
                 gcode += "F%.2f\n" % downrate
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
-                gcode += "F%.2f\n" % feedrate       # Restore feedrate
+                gcode += "G01 Z%.4f\n" % zcut  # Start cutting
+                gcode += "F%.2f\n" % feedrate  # Restore feedrate
             else:
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
+                gcode += "G01 Z%.4f\n" % zcut  # Start cutting
 
         # Cutting...
         for pt in path[1:]:
-            gcode += t % (1, pt[0], pt[1])    # Linear motion to point
+            gcode += t % (1, pt[0], pt[1])  # Linear motion to point
 
         # Up to travelling height.
         if up:
@@ -3609,19 +3628,19 @@ class CNCjob(Geometry):
 
     def point2gcode(self, point):
         gcode = ""
-        #t = "G0%d X%.4fY%.4f\n"
+        # t = "G0%d X%.4fY%.4f\n"
         t = "G0%d " + CNCjob.defaults["coordinate_format"] + "\n"
         path = list(point.coords)
         gcode += t % (0, path[0][0], path[0][1])  # Move to first point
 
         if self.zdownrate is not None:
             gcode += "F%.2f\n" % self.zdownrate
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
+            gcode += "G01 Z%.4f\n" % self.z_cut  # Start cutting
             gcode += "F%.2f\n" % self.feedrate
         else:
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
+            gcode += "G01 Z%.4f\n" % self.z_cut  # Start cutting
 
-        gcode += "G00 Z%.4f\n" % self.z_move      # Stop cutting
+        gcode += "G00 Z%.4f\n" % self.z_move  # Stop cutting
         return gcode
 
     def scale(self, factor):
@@ -3669,22 +3688,19 @@ class CNCjob(Geometry):
             use_radians=True.
         point: tupple of coordinates . Origin for skew.
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
 
         if angle_y is None:
             angle_y = 0.0
         if angle_x is None:
             angle_x = 0.0
-        if point == None:
+        if point is None:
             for g in self.gcode_parsed:
-                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
-                                          origin=(0, 0))
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=(0, 0))
         else:
             for g in self.gcode_parsed:
-                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
-                                          origin=point)
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=point)
 
         self.create_geometry()
 
@@ -3751,17 +3767,19 @@ class CNCjob(Geometry):
         cuts = []
         travels = []
         for g in self.gcode_parsed:
-            if g['kind'][0] == 'C': cuts.append(g)
-            if g['kind'][0] == 'T': travels.append(g)
+            if g['kind'][0] == 'C':
+                cuts.append(g)
+            if g['kind'][0] == 'T':
+                travels.append(g)
 
         # Used to determine the overall board size
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # Convert the cuts and travels into single geometry objects we can render as svg xml
         if travels:
-            travelsgeom = cascaded_union([geo['geom'] for geo in travels])
+            travelsgeom = unary_union([geo['geom'] for geo in travels])
         if cuts:
-            cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
+            cutsgeom = unary_union([geo['geom'] for geo in cuts])
 
         # Render the SVG Xml
         # The scale factor affects the size of the lines, and the stroke color adds different formatting for each set
@@ -3773,6 +3791,7 @@ class CNCjob(Geometry):
             svg_elem += cutsgeom.svg(scale_factor=scale_factor, stroke_color="#5E6CFF")
 
         return svg_elem
+
 
 # def get_bounds(geometry_set):
 #     xmin = Inf
@@ -3788,7 +3807,7 @@ class CNCjob(Geometry):
 #             ymin = min([ymin, gymin])
 #             xmax = max([xmax, gxmax])
 #             ymax = max([ymax, gymax])
-#         except:
+#         except Exception:
 #             print "DEV WARNING: Tried to get bounds of empty geometry."
 #
 #     return [xmin, ymin, xmax, ymax]
@@ -3799,7 +3818,7 @@ def get_bounds(geometry_list):
     xmax = -Inf
     ymax = -Inf
 
-    #print "Getting bounds of:", str(geometry_set)
+    # print "Getting bounds of:", str(geometry_set)
     for gs in geometry_list:
         try:
             gxmin, gymin, gxmax, gymax = gs.bounds()
@@ -3807,7 +3826,7 @@ def get_bounds(geometry_list):
             ymin = min([ymin, gymin])
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
-        except:
+        except Exception:
             log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
 
     return [xmin, ymin, xmax, ymax]
@@ -3841,10 +3860,10 @@ def arc(center, radius, start, stop, direction, steps_per_circ):
         stop += 2 * pi
     if direction == "cw" and stop >= start:
         stop -= 2 * pi
-    
+
     angle = abs(stop - start)
-        
-    #angle = stop-start
+
+    # angle = stop-start
     steps = max([int(ceil(angle / (2 * pi) * steps_per_circ)), 2])
     delta_angle = da_sign[direction] * angle * 1.0 / steps
     for i in range(steps + 1):
@@ -3943,46 +3962,46 @@ def dict2obj(d):
         return d
 
 
-def plotg(geo, solid_poly=False, color="black"):
-    try:
-        _ = iter(geo)
-    except:
-        geo = [geo]
-
-    for g in geo:
-        if type(g) == Polygon:
-            if solid_poly:
-                patch = PolygonPatch(g,
-                                     facecolor="#BBF268",
-                                     edgecolor="#006E20",
-                                     alpha=0.75,
-                                     zorder=2)
-                ax = subplot(111)
-                ax.add_patch(patch)
-            else:
-                x, y = g.exterior.coords.xy
-                plot(x, y, color=color)
-                for ints in g.interiors:
-                    x, y = ints.coords.xy
-                    plot(x, y, color=color)
-                continue
-
-        if type(g) == LineString or type(g) == LinearRing:
-            x, y = g.coords.xy
-            plot(x, y, color=color)
-            continue
-
-        if type(g) == Point:
-            x, y = g.coords.xy
-            plot(x, y, 'o')
-            continue
-
-        try:
-            _ = iter(g)
-            plotg(g, color=color)
-        except:
-            log.error("Cannot plot: " + str(type(g)))
-            continue
+# def plotg(geo, solid_poly=False, color="black"):
+#     try:
+#         _ = iter(geo)
+#     except Exception:
+#         geo = [geo]
+#
+#     for g in geo:
+#         if type(g) == Polygon:
+#             if solid_poly:
+#                 patch = PolygonPatch(g,
+#                                      facecolor="#BBF268",
+#                                      edgecolor="#006E20",
+#                                      alpha=0.75,
+#                                      zorder=2)
+#                 ax = subplot(111)
+#                 ax.add_patch(patch)
+#             else:
+#                 x, y = g.exterior.coords.xy
+#                 plot(x, y, color=color)
+#                 for ints in g.interiors:
+#                     x, y = ints.coords.xy
+#                     plot(x, y, color=color)
+#                 continue
+#
+#         if type(g) == LineString or type(g) == LinearRing:
+#             x, y = g.coords.xy
+#             plot(x, y, color=color)
+#             continue
+#
+#         if type(g) == Point:
+#             x, y = g.coords.xy
+#             plot(x, y, 'o')
+#             continue
+#
+#         try:
+#             _ = iter(g)
+#             plotg(g, color=color)
+#         except Exception:
+#             log.error("Cannot plot: " + str(type(g)))
+#             continue
 
 
 def parse_gerber_number(strnumber, frac_digits):
@@ -4091,7 +4110,9 @@ def parse_gerber_number(strnumber, frac_digits):
 #     for pIdx, lineIndices_ in cells.items():
 #         dangling_lines = []
 #         for i1, i2 in lineIndices_:
-#             connections = filter(lambda (i1_, i2_): (i1, i2) != (i1_, i2_) and (i1 == i1_ or i1 == i2_ or i2 == i1_ or i2 == i2_), lineIndices_)
+#             connections = filter(
+#                 lambda (i1_, i2_): (i1, i2) != (i1_, i2_) and (i1 == i1_ or i1 == i2_ or i2 == i1_ or i2 == i2_),
+#                 lineIndices)
 #             assert 1 <= len(connections) <= 2
 #             if len(connections) == 1:
 #                 dangling_lines.append((i1, i2))
@@ -4257,7 +4278,7 @@ class FlatCAMRTree(object):
         # Python RTree Index
         self.rti = rtindex.Index()
 
-        ## Track object-point relationship
+        # # Track object-point relationship
         # Each is list of points in object.
         self.obj2points = []
 
@@ -4337,7 +4358,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
 
         super(FlatCAMRTreeStorage, self).insert(idx, obj)
 
-    #@profile
+    # @profile
     def remove(self, obj):
         # See note about self.indexes in insert().
         # objidx = self.indexes[obj]
@@ -4364,7 +4385,6 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         """
         tidx = super(FlatCAMRTreeStorage, self).nearest(pt)
         return (tidx.bbox[0], tidx.bbox[1]), self.objects[tidx.object]
-
 
 # class myO:
 #     def __init__(self, coords):

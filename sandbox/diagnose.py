@@ -18,7 +18,7 @@ print(("shapely", shapely.__version__))
 print(("GEOS library", shapely.geos.geos_version))
 
 
-from PyQt4 import Qt
+from PyQt5 import Qt
 
 print(("Qt", Qt.qVersion()))
 

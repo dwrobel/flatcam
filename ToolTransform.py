@@ -1,5 +1,5 @@
-from PyQt4 import QtGui, QtCore
-from PyQt4 import Qt
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import Qt
 from GUIElements import FCEntry, FCButton
 from FlatCAMTool import FlatCAMTool
 from camlib import *
@@ -15,32 +15,32 @@ class ToolTransform(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        self.transform_lay = QtGui.QVBoxLayout()
+        self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
-        ## Title
-        title_label = QtGui.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
+        # # Title
+        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
         self.transform_lay.addWidget(title_label)
 
-        self.empty_label = QtGui.QLabel("")
+        self.empty_label = QtWidgets.QLabel("")
         self.empty_label.setFixedWidth(80)
-        self.empty_label1 = QtGui.QLabel("")
+        self.empty_label1 = QtWidgets.QLabel("")
         self.empty_label1.setFixedWidth(80)
-        self.empty_label2 = QtGui.QLabel("")
+        self.empty_label2 = QtWidgets.QLabel("")
         self.empty_label2.setFixedWidth(80)
         self.transform_lay.addWidget(self.empty_label)
 
-        ## Rotate Title
-        rotate_title_label = QtGui.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
+        # # Rotate Title
+        rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
         self.transform_lay.addWidget(rotate_title_label)
 
-        ## Form Layout
-        form_layout = QtGui.QFormLayout()
+        # # Form Layout
+        form_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form_layout)
 
         self.rotate_entry = FCEntry()
         self.rotate_entry.setFixedWidth(70)
         self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.rotate_label = QtGui.QLabel("Angle Rotation:")
+        self.rotate_label = QtWidgets.QLabel("Angle Rotation:")
         self.rotate_label.setToolTip(
             "Angle for Rotation action, in degrees.\n"
             "Float number between -360 and 359.\n"
@@ -63,18 +63,18 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label1)
 
-        ## Skew Title
-        skew_title_label = QtGui.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
+        # # Skew Title
+        skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
         self.transform_lay.addWidget(skew_title_label)
 
-        ## Form Layout
-        form1_layout = QtGui.QFormLayout()
+        # # Form Layout
+        form1_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form1_layout)
 
         self.skewx_entry = FCEntry()
         self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewx_entry.setFixedWidth(70)
-        self.skewx_label = QtGui.QLabel("Angle SkewX:")
+        self.skewx_label = QtWidgets.QLabel("Angle SkewX:")
         self.skewx_label.setToolTip(
             "Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359."
@@ -92,7 +92,7 @@ class ToolTransform(FlatCAMTool):
         self.skewy_entry = FCEntry()
         self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewy_entry.setFixedWidth(70)
-        self.skewy_label = QtGui.QLabel("Angle SkewY:")
+        self.skewy_label = QtWidgets.QLabel("Angle SkewY:")
         self.skewy_label.setToolTip(
             "Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359."
@@ -114,12 +114,12 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label2)
 
-        ## Flip Title
-        flip_title_label = QtGui.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
+        # # Flip Title
+        flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
         self.transform_lay.addWidget(flip_title_label)
 
-        ## Form Layout
-        form2_layout = QtGui.QFormLayout()
+        # # Form Layout
+        form2_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form2_layout)
 
         self.flipx_button = FCButton()
@@ -143,7 +143,7 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
-        ## Signals
+        # # Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
         self.skewy_button.clicked.connect(self.on_skewy)
@@ -154,7 +154,7 @@ class ToolTransform(FlatCAMTool):
         self.skewx_entry.returnPressed.connect(self.on_skewx)
         self.skewy_entry.returnPressed.connect(self.on_skewy)
 
-        ## Initialize form
+        # # Initialize form
         self.rotate_entry.set_value('0')
         self.skewx_entry.set_value('0')
         self.skewy_entry.set_value('0')
@@ -192,12 +192,12 @@ class ToolTransform(FlatCAMTool):
         if not obj_list:
             self.app.inform.emit("WARNING: No object selected.")
             msg = "Please Select an object to rotate!"
-            warningbox = QtGui.QMessageBox()
+            warningbox = QtWidgets.QMessageBox()
             warningbox.setText(msg)
             warningbox.setWindowTitle("Warning ...")
             warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
+            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
             warningbox.exec_()
         else:
             try:
@@ -224,7 +224,7 @@ class ToolTransform(FlatCAMTool):
                 self.app.inform.emit('Object was rotated ...')
             except Exception as e:
                 self.app.inform.emit("[ERROR] Due of %s, rotation movement was not executed." % str(e))
-                raise
+                return
 
     def on_flip(self, axis):
         obj_list = self.app.collection.get_selected()
@@ -236,12 +236,12 @@ class ToolTransform(FlatCAMTool):
         if not obj_list:
             self.app.inform.emit("WARNING: No object selected.")
             msg = "Please Select an object to flip!"
-            warningbox = QtGui.QMessageBox()
+            warningbox = QtWidgets.QMessageBox()
             warningbox.setText(msg)
             warningbox.setWindowTitle("Warning ...")
             warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
+            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
             warningbox.exec_()
             return
         else:
@@ -265,18 +265,18 @@ class ToolTransform(FlatCAMTool):
 
                 # execute mirroring
                 for obj in obj_list:
-                    if axis is 'X':
+                    if axis == 'X':
                         obj.mirror('X', [px, py])
                         obj.plot()
                         self.app.inform.emit('Flipped on the Y axis ...')
-                    elif axis is 'Y':
+                    elif axis == 'Y':
                         obj.mirror('Y', [px, py])
                         obj.plot()
                         self.app.inform.emit('Flipped on the X axis ...')
 
-            except Exception as e:
+            except Exception:
                 self.app.inform.emit("[ERROR] Due of %s, Flip action was not executed.")
-                raise
+                return
 
     def on_skew(self, axis, num):
         obj_list = self.app.collection.get_selected()
@@ -286,12 +286,12 @@ class ToolTransform(FlatCAMTool):
         if not obj_list:
             self.app.inform.emit("WARNING: No object selected.")
             msg = "Please Select an object to skew/shear!"
-            warningbox = QtGui.QMessageBox()
+            warningbox = QtWidgets.QMessageBox()
             warningbox.setText(msg)
             warningbox.setWindowTitle("Warning ...")
             warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
+            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
             warningbox.exec_()
         else:
             try:
@@ -306,14 +306,14 @@ class ToolTransform(FlatCAMTool):
                 yminimal = min(yminlist)
 
                 for obj in obj_list:
-                    if axis is 'X':
+                    if axis == 'X':
                         obj.skew(num, 0, point=(xminimal, yminimal))
-                    elif axis is 'Y':
+                    elif axis == 'Y':
                         obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
                 self.app.inform.emit('Object was skewed on %s axis ...' % str(axis))
             except Exception as e:
                 self.app.inform.emit("[ERROR] Due of %s, Skew action was not executed." % str(e))
-                raise
+                return
 
 # end of file

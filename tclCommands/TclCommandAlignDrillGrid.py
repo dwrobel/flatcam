@@ -1,4 +1,5 @@
 from tclCommands.TclCommand import *
+from shapely.geometry import Point
 
 
 class TclCommandAlignDrillGrid(TclCommandSignaled):
@@ -101,4 +102,4 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             init_obj.create_geometry()
 
         # Create the new object
-        self.new_object("excellon", args['outname'], aligndrillgrid_init_me)
+        self.app.new_object("excellon", args['outname'], aligndrillgrid_init_me)

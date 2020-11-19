@@ -1,4 +1,5 @@
 from tclCommands.TclCommand import *
+from camlib import CNCjob
 
 
 class TclCommandExportGcode(TclCommandSignaled):

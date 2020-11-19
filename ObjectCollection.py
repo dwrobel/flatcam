@@ -1,20 +1,20 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
 from FlatCAMObj import *
 import inspect  # TODO: Remove
 import FlatCAMApp
-from PyQt4 import Qt, QtGui, QtCore
+from PyQt5 import Qt, QtWidgets, QtCore, QtGui
 
 
-class KeySensitiveListView(QtGui.QListView):
+class KeySensitiveListView(QtWidgets.QListView):
     """
-    QtGui.QListView extended to emit a signal on key press.
+    QtWidgets.QListView extended to emit a signal on key press.
     """
 
     keyPressed = QtCore.pyqtSignal(int)
@@ -24,8 +24,8 @@ class KeySensitiveListView(QtGui.QListView):
         self.keyPressed.emit(event.key())
 
 
-#class ObjectCollection(QtCore.QAbstractListModel):
-class ObjectCollection():
+# class ObjectCollection(QtCore.QAbstractListModel):
+class ObjectCollection:
     """
     Object storage and management.
     """
@@ -45,14 +45,14 @@ class ObjectCollection():
     }
 
     def __init__(self, parent=None):
-        #QtCore.QAbstractListModel.__init__(self, parent=parent)
+        # QtCore.QAbstractListModel.__init__(self, parent=parent)
 
-        ### Icons for the list view
+        # ## Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
             self.icons[kind] = QtGui.QPixmap(ObjectCollection.icon_files[kind])
 
-        ### Data ###
+        # ## Data ###
         self.object_list = []
         self.checked_indexes = []
 
@@ -63,8 +63,8 @@ class ObjectCollection():
         # tasks know that they have to wait until available.
         self.promises = set()
 
-        ### View
-        #self.view = QtGui.QListView()
+        # ## View
+        # self.view = QtWidgets.QListView()
         self.view = KeySensitiveListView()
         self.view.setSelectionMode(Qt.QAbstractItemView.ExtendedSelection)
         self.model = QtGui.QStandardItemModel(self.view)
@@ -73,7 +73,7 @@ class ObjectCollection():
 
         self.click_modifier = None
 
-        ## GUI Events
+        # # GUI Events
         self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
         self.view.activated.connect(self.on_item_activated)
         self.view.keyPressed.connect(self.on_key)
@@ -105,7 +105,7 @@ class ObjectCollection():
 
     def on_mouse_down(self, event):
         FlatCAMApp.App.log.debug("Mouse button pressed on list")
-        #self.print_list()
+        # self.print_list()
 
     def rowCount(self, parent=QtCore.QModelIndex(), *args, **kwargs):
         return len(self.object_list)
@@ -140,7 +140,7 @@ class ObjectCollection():
 
         # Prevent same name
         while name in self.get_names():
-            ## Create a new name
+            # # Create a new name
             # Ends with number?
             FlatCAMApp.App.log.debug("new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
@@ -155,13 +155,13 @@ class ObjectCollection():
         obj.set_ui(obj.ui_type())
 
         # Required before appending (Qt MVC)
-        #self.beginInsertRows(QtCore.QModelIndex(), len(self.object_list), len(self.object_list))
+        # self.beginInsertRows(QtCore.QModelIndex(), len(self.object_list), len(self.object_list))
 
         # Simply append to the python list
         self.object_list.append(obj)
 
         # Create the model item to insert into the QListView
-        icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
+        icon = QtGui.QIcon(self.icons[obj.kind])  # self.icons["gerber"])
         item = QtGui.QStandardItem(icon, str(name))
         # Item is not editable, so that double click
         # does not allow cell value modification.
@@ -169,27 +169,27 @@ class ObjectCollection():
         # The item is checkable, to add the checkbox.
         item.setCheckable(True)
         if obj.options["plot"] is True:
-            item.setCheckState(2)   #Qt.Checked)
+            item.setCheckState(2)  # Qt.Checked)
         else:
-            item.setCheckState(0)   #Qt.Unchecked)
+            item.setCheckState(0)  # Qt.Unchecked)
 
         self.model.appendRow(item)
 
         obj.option_changed.connect(self.on_object_option_changed)
 
         # Required after appending (Qt MVC)
-        #self.endInsertRows()
+        # self.endInsertRows()
 
     def on_object_option_changed(self, obj, key):
         if key == "plot":
             self.model.blockSignals(True)
             name = obj.options["name"]
-            state = 0 #Qt.Unchecked
+            state = 0  # Qt.Unchecked
             for index in range(self.model.rowCount()):
                 item = self.model.item(index)
                 if self.object_list[item.row()].options["name"] == name:
-                    if obj.options["plot"] == True:
-                        state = 2 #Qt.Checked
+                    if obj.options["plot"] is True:
+                        state = 2  # Qt.Checked
 
                     item.setCheckState(state)
                     obj.ui.plot_cb.set_value(state)
@@ -230,7 +230,7 @@ class ObjectCollection():
                 ymin = min([ymin, gymin])
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
-            except:
+            except Exception:
                 FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry.")
 
         return [xmin, ymin, xmax, ymax]
@@ -257,12 +257,12 @@ class ObjectCollection():
             return
         row = selections[0].row()
 
-        #self.beginRemoveRows(QtCore.QModelIndex(), row, row)
+        # self.beginRemoveRows(QtCore.QModelIndex(), row, row)
 
         self.object_list.pop(row)
         self.model.removeRow(row)
 
-        #self.endRemoveRows()
+        # self.endRemoveRows()
 
     def get_active(self):
         """
@@ -293,7 +293,7 @@ class ObjectCollection():
         :return: None
         """
         iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
-        self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Select)
+        self.view.selectionModel().select(iobj, QtCore.QItemSelectionModel.Select)
 
     def set_inactive(self, name):
         """
@@ -304,7 +304,7 @@ class ObjectCollection():
         :return: None
         """
         iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
-        self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Deselect)
+        self.view.selectionModel().select(iobj, QtCore.QItemSelectionModel.Deselect)
 
     def set_all_inactive(self):
         """
@@ -328,11 +328,12 @@ class ObjectCollection():
         self.object_list[selection_index].build_ui()
 
     def on_item_changed(self, item):
-        FlatCAMApp.App.log.debug("on_item_changed(): " + str(item.row()) + " " + self.object_list[item.row()].options["name"])
+        FlatCAMApp.App.log.debug(
+            "on_item_changed(): " + str(item.row()) + " " + self.object_list[item.row()].options["name"])
         if item.checkState() == QtCore.Qt.Checked:
-           self.object_list[item.row()].options["plot"] = True #(item.checkState() == QtCore.Qt.Checked)
+            self.object_list[item.row()].options["plot"] = True  # (item.checkState() == QtCore.Qt.Checked)
         else:
-           self.object_list[item.row()].options["plot"] = False #(item.checkState() == QtCore.Qt.Checked)
+            self.object_list[item.row()].options["plot"] = False  # (item.checkState() == QtCore.Qt.Checked)
 
         self.object_list[item.row()].plot()
         return
@@ -349,14 +350,13 @@ class ObjectCollection():
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
-#        self.beginResetModel()
+        #        self.beginResetModel()
 
         self.model.removeRows(0, self.model.rowCount())
         self.object_list = []
         self.checked_indexes = []
 
-#        self.endResetModel()
+    #        self.endResetModel()
 
     def get_list(self):
         return self.object_list
-

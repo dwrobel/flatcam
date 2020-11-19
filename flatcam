@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
 import sys
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+from PyQt5 import QtWidgets
+from PyQt5 import QtCore
 from FlatCAMApp import App
 
 
@@ -18,10 +18,11 @@ def debug_trace():
     Set a tracepoint in the Python debugger that works with Qt
     :return: None
     """
-    from PyQt4.QtCore import pyqtRemoveInputHook
-    #from pdb import set_trace
+    from PyQt5.QtCore import pyqtRemoveInputHook
+    # from pdb import set_trace
     pyqtRemoveInputHook()
-    #set_trace()
+    # set_trace()
+
 
 debug_trace()
 
@@ -29,7 +30,7 @@ debug_trace()
 # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 # NOTE: Never talk to the GUI from threads! This is why I commented the above.
 
-app = QtGui.QApplication(sys.argv)
-QtCore.QDir.setSearchPaths("share", str(("share", "share/flatcam", "/usr/share/flatcam")));
+app = QtWidgets.QApplication(sys.argv)
+QtCore.QDir.setSearchPaths("share", ["share", "share/flatcam", "/usr/share/flatcam"])
 fc = App()
 sys.exit(app.exec_())

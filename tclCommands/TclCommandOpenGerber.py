@@ -1,3 +1,4 @@
+from camlib import ParseError
 from tclCommands.TclCommand import *
 
 
@@ -64,7 +65,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
                 app_obj.inform.emit("[error] Failed to parse file: %s, %s " % (filename, str(e)))
                 app_obj.progress.emit(0)
                 self.log.error(str(e))
-                raise
+                return
 
             # Further parsing
             app_obj.progress.emit(70)
