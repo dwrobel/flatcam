@@ -718,7 +718,7 @@ class Gerber(Geometry):
                     # we should not test for "size" key as it does not exist in this case.
                     if self.apertures[current_aperture]["type"] != "AM":
                         if self.apertures[current_aperture]["size"] == 0:
-                            self.apertures[current_aperture]["size"] = 1e-12
+                            self.apertures[current_aperture]["size"] = 10 ** -self.decimals
                     # log.debug(self.apertures[current_aperture])
 
                     # Take care of the current path with the previous tool
