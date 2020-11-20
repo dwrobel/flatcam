@@ -6123,6 +6123,20 @@ class TransformEditorTool(AppTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.callback_on_close = self.on_tab_close
+
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
@@ -6179,6 +6193,10 @@ class TransformEditorTool(AppTool):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
         self.app.ui.splitter.setSizes([0, 1])
+
+    def on_tab_close(self):
+        self.draw_app.select_tool("select")
+        self.app.ui.notebook.callback_on_close = lambda: None
 
     def on_reference_changed(self, index):
         if index == 0 or index == 1:  # "Origin" or "Selection" reference

@@ -7,13 +7,17 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.11.2020
+
+- fixed the Distance adn Minimal Distance Tools not showing
+- in Geometry Editor and in the Gerber Editor made sure that for the sub-tools that open in the Tool Tab, if the tab is closed then the Select Tool is automatically selected. And also trying to open that sub-tool again will open a new tab.
+
 19.11.2020
 
 - cleaned up the Geometry Properties UI
 - in Geometry Properties UI restored the plot functionality
 - in Tool Cutout fixed issues when using a negative value for the Margin parameter when the cutout object is a Gerber object
 - fixed the Gerber parser such that when it encounter an aperture with size 0.0 it will replace it with the smallest number that is still displayed which is (10 ** -self.decimals); previously it replaced with a too small number (1e-12)
-- fixed the Distance adn Minimal Distance Tools not showing
 
 17.11.2020
 

@@ -132,7 +132,25 @@ class BufferSelectionTool(AppTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.callback_on_close = self.on_tab_close
+
         self.app.ui.notebook.setTabText(2, _("Buffer Tool"))
+
+    def on_tab_close(self):
+        self.draw_app.select_tool("select")
+        self.app.ui.notebook.callback_on_close = lambda: None
 
     def on_buffer(self):
         try:
@@ -197,10 +215,11 @@ class TextInputTool(AppTool):
 
     toolName = _("Text Input Tool")
 
-    def __init__(self, app):
+    def __init__(self, app, draw_app):
         AppTool.__init__(self, app)
 
         self.app = app
+        self.draw_app = draw_app
         self.text_path = []
         self.decimals = self.app.decimals
 
@@ -350,7 +369,25 @@ class TextInputTool(AppTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.callback_on_close = self.on_tab_close
+
         self.app.ui.notebook.setTabText(2, _("Text Tool"))
+
+    def on_tab_close(self):
+        self.draw_app.select_tool("select")
+        self.app.ui.notebook.callback_on_close = lambda: None
 
     def on_apply_button(self):
         font_to_geo_type = ""
@@ -548,7 +585,25 @@ class PaintOptionsTool(AppTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.callback_on_close = self.on_tab_close
+
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
+
+    def on_tab_close(self):
+        self.fcdraw.select_tool("select")
+        self.app.ui.notebook.callback_on_close = lambda: None
 
     def set_tool_ui(self):
         # Init appGUI
@@ -1025,6 +1080,20 @@ class TransformEditorTool(AppTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.callback_on_close = self.on_tab_close
+
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
@@ -1038,6 +1107,10 @@ class TransformEditorTool(AppTool):
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
+
+    def on_tab_close(self):
+        self.draw_app.select_tool("select")
+        self.app.ui.notebook.callback_on_close = lambda: None
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
@@ -2890,7 +2963,7 @@ class FCText(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st point ..."))
         self.origin = (0, 0)
 
-        self.text_gui = TextInputTool(app=self.app)
+        self.text_gui = TextInputTool(app=self.app, draw_app=self.draw_app)
         self.text_gui.run()
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 

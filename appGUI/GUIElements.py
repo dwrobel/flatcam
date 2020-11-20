@@ -2624,6 +2624,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.setTabsClosable(True)
         self.tabCloseRequested.connect(self.closeTab)
 
+        # called when one of the tabs is closed
+        self.callback_on_close = lambda: None
+
     def set_rmb_callback(self, callback):
         """
 
@@ -2685,7 +2688,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         :param currentIndex:
         :return:
         """
-
+        self.callback_on_close()
         self.removeTab(currentIndex)
 
     def on_closetab_middle_button(self, current_index):
@@ -2697,6 +2700,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         # if tab is protected don't delete it
         if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.RightSide) is not None:
+            self.callback_on_close()
             self.removeTab(current_index)
 
     def protectTab(self, currentIndex):
