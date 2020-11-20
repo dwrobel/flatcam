@@ -1778,14 +1778,11 @@ class App(QtCore.QObject):
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_excellon,
-                                   'params': [filename]})
+            self.worker_task.emit({'fcn': self.open_excellon, 'params': [filename]})
 
     def on_fileopengcode(self):
         """
@@ -2148,15 +2145,15 @@ class App(QtCore.QObject):
 
             try:
                 excellon_obj.parse_file(filename)
-
             except IOError:
                 app_obj.inform.emit("[error] Cannot open file: " + filename)
                 self.progress.emit(0)  # TODO: self and app_bjj mixed
-                return ("Cannot open file: " + filename)
+                return "Cannot open file: " + filename
 
             except Exception:
                 msg = "[error] An internal error has ocurred. See shell.\n"
                 msg += traceback.format_exc()
+                log.debug(msg)
                 app_obj.inform.emit(msg)
                 return
 

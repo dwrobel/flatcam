@@ -2687,9 +2687,9 @@ class Excellon(Geometry):
         :type filename: str
         :return: None
         """
-        efile = open(filename, 'r')
-        estr = efile.readlines()
-        efile.close()
+        with open(filename, 'r') as efile:
+            estr = efile.readlines()
+
         self.parse_lines(estr)
 
     def parse_lines(self, elines):
