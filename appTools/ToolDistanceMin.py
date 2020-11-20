@@ -53,8 +53,6 @@ class DistanceMin(AppTool):
         if self.app.tool_tab_locked is True:
             return
 
-        self.app.ui.notebook.setTabText(2, _("Minimum Distance Tool"))
-
         # if the splitter is hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
@@ -70,6 +68,20 @@ class DistanceMin(AppTool):
         AppTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
 
     def set_tool_ui(self):
+        # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
+        found_idx = None
+        for idx in range(self.app.ui.notebook.count()):
+            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                found_idx = idx
+                break
+        # show the Tab
+        if not found_idx:
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            # focus on Tool Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        self.app.ui.notebook.setTabText(2, _("Minimum Distance Tool"))
+
         # Remove anything else in the appGUI
         self.app.ui.tool_scroll_area.takeWidget()
 

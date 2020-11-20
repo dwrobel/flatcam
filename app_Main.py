@@ -1019,7 +1019,7 @@ class App(QtCore.QObject):
         # ########################################## Tools and Plugins ##############################################
         # ###########################################################################################################
 
-        self.shell = None
+        self.shell = FCShell(app=self, version=self.version)
         self.dblsidedtool = None
         self.distance_tool = None
         self.distance_min_tool = None
@@ -1804,7 +1804,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        # shell tool has t obe initialized always first because other tools print messages in the Shell Dock
+        # shell tool has to be initialized always first because other tools print messages in the Shell Dock
         self.shell = FCShell(app=self, version=self.version)
 
         self.distance_tool = Distance(self)

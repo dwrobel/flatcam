@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Properties UI restored the plot functionality
 - in Tool Cutout fixed issues when using a negative value for the Margin parameter when the cutout object is a Gerber object
 - fixed the Gerber parser such that when it encounter an aperture with size 0.0 it will replace it with the smallest number that is still displayed which is (10 ** -self.decimals); previously it replaced with a too small number (1e-12)
+- fixed the Distance adn Minimal Distance Tools not showing
 
 17.11.2020
 
