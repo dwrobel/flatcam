@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - Tool Copper Thieving - changed the units for plated area from mm2 in cm2 when the app units are Metric
 - Calculator Tool - Electroplating Calculator - changing the area will update the current value
 - GUI Elements FCDoubleSpinner and FCSpinner: modified the context menu to not allow cut/paste/delete/step_up/step_down when the GUI element is set as Read Only
+- GUI Element FCLineEdit (and the inheritors) has now disabled cut/paste/delete context menu entries too
 
 20.11.2020
 

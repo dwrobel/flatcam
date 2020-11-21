@@ -286,6 +286,11 @@ class FCLineEdit(QtWidgets.QLineEdit):
     def contextMenuEvent(self, event):
         self.menu = QtWidgets.QMenu()
 
+        if self.isReadOnly():
+            undo_action = QAction('%s' % _("Read Only"), self)
+            self.menu.addAction(undo_action)
+            self.menu.addSeparator()
+
         # UNDO
         undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
         self.menu.addAction(undo_action)
@@ -306,7 +311,7 @@ class FCLineEdit(QtWidgets.QLineEdit):
         cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
         self.menu.addAction(cut_action)
         cut_action.triggered.connect(self.cut_text)
-        if not self.hasSelectedText():
+        if not self.hasSelectedText() or self.isReadOnly():
             cut_action.setDisabled(True)
 
         # COPY
@@ -320,11 +325,15 @@ class FCLineEdit(QtWidgets.QLineEdit):
         paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
         self.menu.addAction(paste_action)
         paste_action.triggered.connect(self.paste_text)
+        if self.isReadOnly():
+            paste_action.setDisabled(True)
 
         # DELETE
         delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
         self.menu.addAction(delete_action)
         delete_action.triggered.connect(self.del_)
+        if self.isReadOnly():
+            delete_action.setDisabled(True)
 
         self.menu.addSeparator()
 
