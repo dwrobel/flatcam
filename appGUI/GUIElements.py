@@ -974,6 +974,11 @@ class FCSpinner(QtWidgets.QSpinBox):
         self.menu = QtWidgets.QMenu()
         line_edit = self.lineEdit()
 
+        if line_edit.isReadOnly():
+            undo_action = QAction('%s' % _("Read Only"), self)
+            self.menu.addAction(undo_action)
+            self.menu.addSeparator()
+
         # UNDO
         undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
         self.menu.addAction(undo_action)
@@ -994,7 +999,7 @@ class FCSpinner(QtWidgets.QSpinBox):
         cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
         self.menu.addAction(cut_action)
         cut_action.triggered.connect(self.cut_text)
-        if not line_edit.hasSelectedText():
+        if not line_edit.hasSelectedText() or line_edit.isReadOnly():
             cut_action.setDisabled(True)
 
         # COPY
@@ -1008,11 +1013,15 @@ class FCSpinner(QtWidgets.QSpinBox):
         paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
         self.menu.addAction(paste_action)
         paste_action.triggered.connect(self.paste_text)
+        if line_edit.isReadOnly():
+            paste_action.setDisabled(True)
 
         # DELETE
         delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
         self.menu.addAction(delete_action)
         delete_action.triggered.connect(line_edit.del_)
+        if line_edit.isReadOnly():
+            delete_action.setDisabled(True)
 
         self.menu.addSeparator()
 
@@ -1027,11 +1036,15 @@ class FCSpinner(QtWidgets.QSpinBox):
         step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
         self.menu.addAction(step_up_action)
         step_up_action.triggered.connect(self.stepUp)
+        if line_edit.isReadOnly():
+            step_up_action.setDisabled(True)
 
         # STEP DOWN
         step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
         self.menu.addAction(step_down_action)
         step_down_action.triggered.connect(self.stepDown)
+        if line_edit.isReadOnly():
+            step_down_action.setDisabled(True)
 
         self.menu.exec_(event.globalPos())
 
@@ -1360,6 +1373,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.menu = QtWidgets.QMenu()
         line_edit = self.lineEdit()
 
+        if line_edit.isReadOnly():
+            undo_action = QAction('%s' % _("Read Only"), self)
+            self.menu.addAction(undo_action)
+            self.menu.addSeparator()
+
         # UNDO
         undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
         self.menu.addAction(undo_action)
@@ -1380,7 +1398,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
         self.menu.addAction(cut_action)
         cut_action.triggered.connect(self.cut_text)
-        if not line_edit.hasSelectedText():
+        if not line_edit.hasSelectedText() or line_edit.isReadOnly():
             cut_action.setDisabled(True)
 
         # COPY
@@ -1394,11 +1412,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         paste_action = QAction('%s\t%s' % (_("Paste"), _('Ctrl+V')), self)
         self.menu.addAction(paste_action)
         paste_action.triggered.connect(self.paste_text)
+        if line_edit.isReadOnly():
+            paste_action.setDisabled(True)
 
         # DELETE
         delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
         self.menu.addAction(delete_action)
         delete_action.triggered.connect(line_edit.del_)
+        if line_edit.isReadOnly():
+            delete_action.setDisabled(True)
 
         self.menu.addSeparator()
 
@@ -1413,11 +1435,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         step_up_action = QAction('%s\t%s' % (_("Step Up"), ''), self)
         self.menu.addAction(step_up_action)
         step_up_action.triggered.connect(self.stepUp)
+        if line_edit.isReadOnly():
+            step_up_action.setDisabled(True)
 
         # STEP DOWN
         step_down_action = QAction('%s\t%s' % (_("Step Down"), ''), self)
         self.menu.addAction(step_down_action)
         step_down_action.triggered.connect(self.stepDown)
+        if line_edit.isReadOnly():
+            step_down_action.setDisabled(True)
 
         self.menu.exec_(event.globalPos())
 

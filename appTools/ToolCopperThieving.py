@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from camlib import grace
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox
 
 import shapely.geometry.base as base
 from shapely.ops import unary_union
@@ -166,6 +166,7 @@ class ToolCopperThieving(AppTool):
 
         self.ui.rb_margin_entry.set_value(self.app.defaults["tools_copper_thieving_rb_margin"])
         self.ui.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
+        self.ui.only_pads_cb.set_value(self.app.defaults["tools_copper_thieving_only_apds"])
         self.ui.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
         self.ui.ppm_choice_radio.set_value(self.app.defaults["tools_copper_thieving_geo_choice"])
 
@@ -951,7 +952,8 @@ class ToolCopperThieving(AppTool):
     def on_new_pattern_plating_object(self):
         ppm_clearance = self.ui.clearance_ppm_entry.get_value()
         geo_choice = self.ui.ppm_choice_radio.get_value()
-        rb_thickness = self.rb_thickness
+        rb_thickness = self.ui.rb_thickness_entry.get_value()
+        only_pads = self.ui.only_pads_cb.get_value()
 
         # get the Gerber object on which the Copper thieving will be inserted
         selection_index = self.ui.sm_object_combo.currentIndex()
@@ -965,15 +967,26 @@ class ToolCopperThieving(AppTool):
             return
 
         self.app.proc_container.update_view_text(' %s' % _("Append PP-M geometry"))
-        geo_list = deepcopy(self.sm_object.solid_geometry)
-        if isinstance(geo_list, MultiPolygon):
-            geo_list = list(geo_list.geoms)
+
+        geo_list = []
+        if only_pads is False:
+            geo_list = deepcopy(self.sm_object.solid_geometry)
+            if isinstance(geo_list, MultiPolygon):
+                geo_list = list(geo_list.geoms)
+        else:
+            for apid in self.sm_object.apertures:
+                for k in self.sm_object.apertures[apid]:
+                    if k == 'geometry':
+                        for elem in self.sm_object.apertures[apid]['geometry']:
+                            if 'follow' in elem and isinstance(elem['follow'], Point):
+                                if 'solid' in elem:
+                                    geo_list.append(elem['solid'])
 
         # create a copy of the source apertures so we can manipulate them without altering the source object
         new_apertures = deepcopy(self.sm_object.apertures)
 
-        # if the clearance is negative apply it to the original soldermask geometry too
-        if ppm_clearance < 0:
+        # if the clearance is not zero apply it to the original soldermask geometry too
+        if ppm_clearance != 0:
             temp_geo_list = []
             for geo in geo_list:
                 temp_geo_list.append(geo.buffer(ppm_clearance))
@@ -1088,6 +1101,10 @@ class ToolCopperThieving(AppTool):
             geo_list.append(robber_solid_geo.buffer(ppm_clearance))
 
         # and then set the total plated area value to the GUI element
+        # the area is in mm2 when using Metric units, make it in cm2 for Metric units
+        print(plated_area)
+        if self.units.lower() == 'mm':
+            plated_area /= 100
         self.ui.plated_area_entry.set_value(plated_area)
 
         new_solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
@@ -1644,6 +1661,13 @@ class ThievingUI:
         grid_lay_1.addWidget(self.sm_obj_label, 14, 0, 1, 3)
         grid_lay_1.addWidget(self.sm_object_combo, 16, 0, 1, 3)
 
+        # Only Pads
+        self.only_pads_cb = FCCheckBox(_("Only Pads"))
+        self.only_pads_cb.setToolTip(
+            _("Select only pads in case the selected object is a copper Gerber.")
+        )
+        grid_lay_1.addWidget(self.only_pads_cb, 17, 0, 1, 3)
+
         # Openings CLEARANCE #
         self.clearance_ppm_label = FCLabel('%s:' % _("Clearance"))
         self.clearance_ppm_label.setToolTip(
@@ -1669,10 +1693,10 @@ class ThievingUI:
               "calculated from the soldermask openings.")
         )
         self.plated_area_entry = FCEntry()
-        self.plated_area_entry.setDisabled(True)
+        self.plated_area_entry.setReadOnly(True)
 
         if self.units.upper() == 'MM':
-            self.units_area_label = FCLabel('%s<sup>2</sup>' % _("mm"))
+            self.units_area_label = FCLabel('%s<sup>2</sup>' % _("cm"))
         else:
             self.units_area_label = FCLabel('%s<sup>2</sup>' % _("in"))
 

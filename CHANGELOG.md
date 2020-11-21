@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.11.2020
+
+- Tool Copper Thieving - made sure that the clearance for pattern plating mask is applied also for positive values
+- Tool Copper Thieving - when creating pattern plating masks now the user can select to use only the pads and that's useful when the soldermsk Gerber is actually a copper Gerber
+- Tool Copper Thieving - changed the units for plated area from mm2 in cm2 when the app units are Metric
+- Calculator Tool - Electroplating Calculator - changing the area will update the current value
+- GUI Elements FCDoubleSpinner and FCSpinner: modified the context menu to not allow cut/paste/delete/step_up/step_down when the GUI element is set as Read Only
+
 20.11.2020
 
 - fixed the Distance adn Minimal Distance Tools not showing

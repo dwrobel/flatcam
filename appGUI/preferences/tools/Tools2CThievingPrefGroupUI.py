@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -264,11 +264,19 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.rb_thickness_label, 40, 0)
         grid_lay.addWidget(self.rb_thickness_entry, 40, 1)
 
+        # Pattern Plating Mask Title
         self.patern_mask_label = FCLabel('<b>%s</b>' % _('Pattern Plating Mask'))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
         grid_lay.addWidget(self.patern_mask_label, 42, 0, 1, 2)
+
+        # Use Only Pads
+        self.only_pads_cb = FCCheckBox(_("Only Pads"))
+        self.only_pads_cb.setToolTip(
+            _("Select only pads in case the selected object is a copper Gerber.")
+        )
+        grid_lay.addWidget(self.only_pads_cb, 43, 0, 1, 2)
 
         # Openings CLEARANCE #
         self.clearance_ppm_label = FCLabel('%s:' % _("Clearance"))

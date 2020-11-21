@@ -678,6 +678,7 @@ class FlatCAMDefaults:
         "tools_copper_thieving_lines_spacing": 2.0,
         "tools_copper_thieving_rb_margin": 1.0,
         "tools_copper_thieving_rb_thickness": 1.0,
+        "tools_copper_thieving_only_apds": True,
         "tools_copper_thieving_mask_clearance": 0.0,
         "tools_copper_thieving_geo_choice": 'b',
 

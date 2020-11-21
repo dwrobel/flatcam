@@ -214,7 +214,7 @@ class ToolCalculator(AppTool):
         inch_val = float(self.ui.inch_entry.get_value())
         self.ui.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
 
-    def on_calculate_eplate(self):
+    def on_calculate_current(self):
         """
 
         :return:
@@ -229,7 +229,30 @@ class ToolCalculator(AppTool):
         [(10cm x 10cm x 2 sides] * 0.001076391] x 20 =~ 4.3 Amps = C
         or:
         (10cm x 10cm) * 0.0021527820833419] x 20 =~ 4.3 Amps = C
-        
+        '''
+        self.ui_disconnect()
+        area_calc_sel = self.ui.area_sel_radio.get_value()
+        length = self.ui.pcblength_entry.get_value()
+        width = self.ui.pcbwidth_entry.get_value()
+        area = self.ui.area_entry.get_value()
+
+        density = self.ui.cdensity_entry.get_value()
+
+        if area_calc_sel == 'd':
+            calculated_current = (length * width * density) * 0.0021527820833419
+        else:
+            calculated_current = (area * density) * 0.0021527820833419
+
+        self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
+        self.ui_connect()
+
+    def on_calculate_time(self):
+        """
+
+        :return:
+        """
+
+        '''
         Calculated time for a copper growth of 10 microns is:
         [10um / (28um/hr)] x 60 min/hr = 21.42 minutes = TC (at 20ASF)
         or:
@@ -239,24 +262,19 @@ class ToolCalculator(AppTool):
         (with new_density = 20ASF amd copper groth of 10 um)
         '''
         self.ui_disconnect()
-        area_calc_sel = self.ui.area_sel_radio.get_value()
-        length = self.ui.pcblength_entry.get_value()
-        width = self.ui.pcbwidth_entry.get_value()
-        area = self.ui.area_entry.get_value()
 
         density = self.ui.cdensity_entry.get_value()
-        copper = self.ui.growth_entry.get_value()
+        growth = self.ui.growth_entry.get_value()
 
-        if area_calc_sel == 'd':
-            calculated_current = (length * width * density) * 0.0021527820833419
-        else:
-            calculated_current = (area * density) * 0.0021527820833419
-        calculated_time = copper * 2.142857142857143 * float(20 / density)
+        calculated_time = growth * 2.142857142857143 * float(20 / density)
 
-        self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
         self.ui.time_entry.set_value('%.1f' % calculated_time)
-        self.app.inform.emit('[success] %s' % _("Done."))
         self.ui_connect()
+
+    def on_calculate_eplate(self):
+        self.on_calculate_time()
+        self.on_calculate_current()
+        self.app.inform.emit('[success] %s' % _("Done."))
 
     def on_calculate_growth(self):
         self.ui_disconnect()
@@ -287,11 +305,11 @@ class ToolCalculator(AppTool):
         self.ui.cdensity_entry.valueChanged.connect(self.on_calculate_eplate)
         self.ui.cdensity_entry.returnPressed.connect(self.on_calculate_eplate)
 
-        self.ui.growth_entry.valueChanged.connect(self.on_calculate_eplate)
-        self.ui.growth_entry.returnPressed.connect(self.on_calculate_eplate)
+        self.ui.growth_entry.valueChanged.connect(self.on_calculate_time)
+        self.ui.growth_entry.returnPressed.connect(self.on_calculate_time)
 
-        self.ui.cdensity_entry.valueChanged.connect(self.on_calculate_growth)
-        self.ui.cdensity_entry.returnPressed.connect(self.on_calculate_growth)
+        self.ui.area_entry.valueChanged.connect(self.on_calculate_current)
+        self.ui.area_entry.returnPressed.connect(self.on_calculate_current)
 
         self.ui.time_entry.valueChanged.connect(self.on_calculate_growth)
         self.ui.time_entry.returnPressed.connect(self.on_calculate_growth)
@@ -308,7 +326,7 @@ class ToolCalculator(AppTool):
             self.ui.cutDepth_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
-
+        # ##
         try:
             self.ui.effectiveToolDia_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
@@ -317,6 +335,7 @@ class ToolCalculator(AppTool):
             self.ui.effectiveToolDia_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
+        # ###
 
         try:
             self.ui.tipDia_entry.returnPressed.disconnect()
@@ -332,6 +351,7 @@ class ToolCalculator(AppTool):
             pass
 
         # Electroplating Calculator
+        # Density
         try:
             self.ui.cdensity_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
@@ -340,6 +360,7 @@ class ToolCalculator(AppTool):
             self.ui.cdensity_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
+        # Growth
         try:
             self.ui.growth_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
@@ -348,14 +369,16 @@ class ToolCalculator(AppTool):
             self.ui.growth_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
+        # Area
         try:
-            self.ui.cdensity_entry.valueChanged.disconnect()
+            self.ui.area_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
             pass
         try:
-            self.ui.cdensity_entry.returnPressed.disconnect()
+            self.ui.area_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
+        # Time
         try:
             self.ui.time_entry.valueChanged.disconnect()
         except (AttributeError, TypeError):
@@ -364,6 +387,7 @@ class ToolCalculator(AppTool):
             self.ui.time_entry.returnPressed.disconnect()
         except (AttributeError, TypeError):
             pass
+        # Calculate
         try:
             self.ui.calculate_plate_button.clicked.disconnect()
         except (AttributeError, TypeError):

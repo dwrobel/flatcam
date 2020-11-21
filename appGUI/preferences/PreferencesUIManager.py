@@ -611,6 +611,7 @@ class PreferencesUIManager:
             "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
             "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
             "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
+            "tools_copper_thieving_only_apds": self.ui.tools2_defaults_form.tools2_cfill_group.only_pads_cb,
             "tools_copper_thieving_mask_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_ppm_entry,
             "tools_copper_thieving_geo_choice": self.ui.tools2_defaults_form.tools2_cfill_group.ppm_choice_radio,
 
