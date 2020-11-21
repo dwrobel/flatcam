@@ -53,8 +53,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "multicolored": False,
             "merge_fuse_tools": True,
 
-            "tooldia": 0.1,
-            "milling_dia": 0.04,
+            "drill_tooldia": 0.1,
             "slot_tooldia": 0.1,
 
             "format_upper_in": 2,
@@ -140,7 +139,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "multicolored":     self.ui.multicolored_cb,
 
             "autoload_db":      self.ui.autoload_db_cb,
-            "tooldia":          self.ui.tooldia_entry,
+            "drill_tooldia":          self.ui.tooldia_entry,
             "slot_tooldia":     self.ui.slot_tooldia_entry,
         })
 

@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - Calculator Tool - Electroplating Calculator - changing the area will update the current value
 - GUI Elements FCDoubleSpinner and FCSpinner: modified the context menu to not allow cut/paste/delete/step_up/step_down when the GUI element is set as Read Only
 - GUI Element FCLineEdit (and the inheritors) has now disabled cut/paste/delete context menu entries too
+- Cleaned the GUI in Excellon Preferences of parameters no longer used (transferred to Drilling Tool)
+- Removed warning message boxes from export DXF/SVG handlers of the menu entries in the File menu and upgraded the status bar message to error
 
 20.11.2020
 

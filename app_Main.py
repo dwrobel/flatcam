@@ -4411,7 +4411,7 @@ class App(QtCore.QObject):
             "gerber_editor_newdim", "gerber_editor_ma_low", "gerber_editor_ma_high",
 
             # Excellon Object
-            "excellon_milling_dia", 'excellon_tooldia', 'excellon_slot_tooldia',
+            'excellon_drill_tooldia', 'excellon_slot_tooldia',
 
             # Excellon Editor
             "excellon_editor_newdia", "excellon_editor_lin_pitch", "excellon_editor_slot_lin_pitch",
@@ -8573,15 +8573,8 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
-            msg = _("Please Select a Geometry object to export")
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
-
-            msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-            msgbox.setDefaultButton(bt_ok)
-            msgbox.exec_()
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
+            msg = _("No object is selected")
             return
 
         # Check for more compatible types and add as required
@@ -8675,7 +8668,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8717,7 +8710,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8759,7 +8752,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8801,7 +8794,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8842,7 +8835,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8887,7 +8880,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required
@@ -8932,15 +8925,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         obj = self.app.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
-            msg = _("Please Select a Geometry object to export")
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
-
-            msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-            msgbox.setDefaultButton(bt_ok)
-            msgbox.exec_()
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
         # Check for more compatible types and add as required

@@ -256,9 +256,7 @@ class FlatCAMDefaults:
         "excellon_plot_line": '#750000BF',
 
         # Excellon Options
-        "excellon_milling_dia": 0.8,
-
-        "excellon_tooldia": 0.8,
+        "excellon_drill_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
 
         # Excellon Advanced options
