@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - GUI Element FCLineEdit (and the inheritors) has now disabled cut/paste/delete context menu entries too
 - Cleaned the GUI in Excellon Preferences of parameters no longer used (transferred to Drilling Tool)
 - Removed warning message boxes from export DXF/SVG handlers of the menu entries in the File menu and upgraded the status bar message to error
+- reactivated the close_app Qt signal mechanism
 
 20.11.2020
 

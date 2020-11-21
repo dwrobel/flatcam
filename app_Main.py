@@ -3699,14 +3699,16 @@ class App(QtCore.QObject):
         try:
             # self.new_launch.thread_exit = True
             # self.new_launch.listener.close()
-            self.new_launch.stop.emit()
+            if sys.platform == 'win32' or sys.platform == 'linux':
+                self.new_launch.stop.emit()
         except Exception as err:
             self.log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
             # del self.new_launch
-            self.listen_th.quit()
+            if sys.platform == 'win32' or sys.platform == 'linux':
+                self.listen_th.quit()
         except Exception as e:
             self.log.debug("App.quit_application() --> %s" % str(e))
 
@@ -3715,9 +3717,9 @@ class App(QtCore.QObject):
         self.clear_pool()
 
         # quit app by signalling for self.kill_app() method
-        # self.close_app_signal.emit()
-        QtWidgets.qApp.quit()
-        sys.exit(0)
+        self.close_app_signal.emit()
+        # QtWidgets.qApp.quit()
+        # sys.exit(0)
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
