@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Cleaned the GUI in Excellon Preferences of parameters no longer used (transferred to Drilling Tool)
 - Removed warning message boxes from export DXF/SVG handlers of the menu entries in the File menu and upgraded the status bar message to error
 - reactivated the close_app Qt signal mechanism
+- updated the Readme file - MacOS installation instructions to ensure that the gdal package is installed correctly
 
 20.11.2020
 

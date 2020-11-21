@@ -289,6 +289,20 @@ class App(QtCore.QObject):
         # when True, the app has to return from any thread
         self.abort_flag = False
 
+        # ###########################################################################################################
+        # ############################################ Data #########################################################
+        # ###########################################################################################################
+
+        self.recent = []
+        self.recent_projects = []
+
+        self.clipboard = QtWidgets.QApplication.clipboard()
+
+        self.project_filename = None
+        self.toggle_units_ignore = False
+
+        self.main_thread = QtWidgets.QApplication.instance().thread()
+
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
@@ -614,20 +628,6 @@ class App(QtCore.QObject):
 
         # When the self.defaults dictionary changes will update the Preferences GUI forms
         self.defaults.set_change_callback(self.on_defaults_dict_change)
-
-        # ###########################################################################################################
-        # ############################################ Data #########################################################
-        # ###########################################################################################################
-
-        self.recent = []
-        self.recent_projects = []
-
-        self.clipboard = QtWidgets.QApplication.clipboard()
-
-        self.project_filename = None
-        self.toggle_units_ignore = False
-
-        self.main_thread = QtWidgets.QApplication.instance().thread()
 
         # ###########################################################################################################
         # ########################################## LOAD LANGUAGES  ################################################
@@ -3646,7 +3646,6 @@ class App(QtCore.QObject):
             self.plotcanvas.graph_event_disconnect(self.mr)
             self.plotcanvas.graph_event_disconnect(self.mdc)
             self.plotcanvas.graph_event_disconnect(self.kp)
-
         else:
             self.mm = self.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move_over_plot)
             self.mp = self.plotcanvas.graph_event_disconnect('mouse_press', self.on_mouse_click_over_plot)
@@ -3718,24 +3717,14 @@ class App(QtCore.QObject):
 
         # quit app by signalling for self.kill_app() method
         self.close_app_signal.emit()
-        # QtWidgets.qApp.quit()
-        # sys.exit(0)
-
-        # When the main event loop is not started yet in which case the qApp.quit() will do nothing
-        # we use the following command
-        # minor_v = sys.version_info.minor
-        # if minor_v < 8:
-        #     # make sure that the app closes
-        #     sys.exit(0)
-        # else:
-        #     os._exit(0)  # fix to work with Python 3.8
 
     @staticmethod
     def kill_app():
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        sys.exit(0)
+        # sys.exit(0)
+        raise SystemExit
 
     def on_portable_checked(self, state):
         """

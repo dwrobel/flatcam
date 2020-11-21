@@ -62,6 +62,15 @@ cd D:\FlatCAM_beta
 python FlatCAM.py
 
 2.Linux
+- create a folder to hold the sources somewhere on your HDD:
+mkdir FlatCAM-beta
+
+- unzip in this folder the sources downloaded from https://bitbucket.org/jpcgt/flatcam/downloads/
+Using commands (e.g using the sources for FlatCAM beta 8.995):
+cd ~/FlatCAM-beta
+wget https://bitbucket.org/jpcgt/flatcam/downloads/FlatCAM_beta_8.995_sources.zip
+unzip FlatCAM_beta_8.995_sources.zip
+cd FlatCAM_beta_8.995_sources
 
 - make sure that Python 3.8 is installed on your OS and that the command: python3 -V confirm it
 - verify that the pip package is installed for your Python installation (e.g 3.8) by running the command:
@@ -101,14 +110,14 @@ sudo make install
 Instructions from here: https://gist.github.com/natevw/3e6fc929aff358b38c0a#gistcomment-3111878
 
 - create a folder to hold the sources somewhere on your HDD:
-mkdir FlatCAM
+mkdir FlatCAM-beta
 
 - unzip in this folder the sources downloaded from https://bitbucket.org/jpcgt/flatcam/downloads/
-Using commands (e.g using the sources for FlatCAM beta 8.991):
-cd ~/FlatCAM
-wget https://bitbucket.org/jpcgt/flatcam/downloads/FlatCAM_beta_8.991_sources.zip
-unzip FlatCAM_beta_8.991_sources.zip
-cd FlatCAM_beta_8.991_sources
+Using commands (e.g using the sources for FlatCAM beta 8.995):
+cd ~/FlatCAM-beta
+wget https://bitbucket.org/jpcgt/flatcam/downloads/FlatCAM_beta_8.995_sources.zip
+unzip FlatCAM_beta_8.995_sources.zip
+cd FlatCAM_beta_8.995_sources
 
 - check if Homebrew is installed:
 xcode-select --install
@@ -116,6 +125,7 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 
 - install dependencies:
 brew install pyqt
+brew install gdal
 python3 -m ensurepip
 python3 -m pip install -r requirements.txt
 
