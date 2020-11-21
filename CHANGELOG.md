@@ -19,6 +19,8 @@ CHANGELOG for FlatCAM beta
 - Removed warning message boxes from export DXF/SVG handlers of the menu entries in the File menu and upgraded the status bar message to error
 - reactivated the close_app Qt signal mechanism
 - updated the Readme file - MacOS installation instructions to ensure that the gdal package is installed correctly
+- Punch Gerber Tool - made sure that Select All/Deselect All in Manual mode is actually selecting pads not only visually
+- Punch Gerber Tool - finished manual mode for "Excellon" method
 
 20.11.2020
 

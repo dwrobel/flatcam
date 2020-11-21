@@ -467,6 +467,17 @@ class ToolPunchGerber(AppTool, Gerber):
             elif punch_method == 'prop':
                 self.on_proportional_method(self.grb_obj, outname)
         else:
+            if punch_method == 'exc':
+                # get the Excellon file whose geometry will create the punch holes
+                selection_index = self.ui.exc_combo.currentIndex()
+                model_index = self.app.collection.index(selection_index, 0, self.ui.exc_combo.rootModelIndex())
+
+                try:
+                    model_index.internalPointer().obj
+                except Exception:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("There is no Excellon object loaded ..."))
+                    return
+
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
@@ -517,10 +528,6 @@ class ToolPunchGerber(AppTool, Gerber):
         exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
 
         # this is the target geometry
-        # if isinstance(grb_obj.solid_geometry, list):
-        #     grb_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
-        # else:
-        #     grb_solid_geometry = grb_obj.solid_geometry
         grb_solid_geometry = []
         target_geometry = []
         for apid in grb_obj.apertures:
@@ -617,8 +624,22 @@ class ToolPunchGerber(AppTool, Gerber):
         for opt in self.grb_obj.options:
             new_options[opt] = deepcopy(self.grb_obj.options[opt])
 
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
         # this is the punching geometry
         exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
+        fin_exc_geo = []
+        for sel_geo in self.manual_pads:
+            apid = sel_geo['apid']
+            idx = sel_geo['idx']
+            for exc_geo in exc_solid_geometry.geoms:
+                if exc_geo.within(self.grb_obj.apertures[apid]['geometry'][idx]['solid']) and \
+                        isinstance(self.grb_obj.apertures[apid]['geometry'][idx]['follow'], Point):
+                    fin_exc_geo.append(exc_geo)
+        exc_solid_geometry = MultiPolygon(fin_exc_geo)
 
         # this is the target geometry
         grb_solid_geometry = []
@@ -626,14 +647,11 @@ class ToolPunchGerber(AppTool, Gerber):
         for apid in self.grb_obj.apertures:
             if 'geometry' in self.grb_obj.apertures[apid]:
                 for el_geo in self.grb_obj.apertures[apid]['geometry']:
-                    geo_el_index = self.grb_obj.apertures[apid]['geometry'].index(el_geo)
-                    found = False
-                    for sel_geo in self.manual_pads:
-                        if sel_geo['apid'] == apid and sel_geo['idx'] == geo_el_index:
-                            found = True
+                    if 'solid' in el_geo:
+                        if apid in sel_apid:
                             target_geometry.append(el_geo['solid'])
-                    if found is False:
-                        grb_solid_geometry.append(el_geo['solid'])
+                        else:
+                            grb_solid_geometry.append(el_geo['solid'])
 
         target_geometry = MultiPolygon(target_geometry).buffer(0)
 
@@ -658,36 +676,39 @@ class ToolPunchGerber(AppTool, Gerber):
         # find maximum aperture id
         new_apid = max([int(x) for x, __ in new_apertures_items])
 
+        sel_pad_geo_list = []
+        for pad_elem in self.manual_pads:
+            apid = pad_elem['apid']
+            idx = pad_elem['idx']
+            sel_geo = self.grb_obj.apertures[apid]['geometry'][idx]['solid']
+            sel_pad_geo_list.append(sel_geo)
+
         # store here the clear geometry, the key is the drill size
         holes_apertures = {}
 
         for apid, val in new_apertures_items:
-            for sel_el in self.manual_pads:
-                if sel_el['apid'] == apid:
-                    sel_idx = sel_el['idx']
-                    for elem in val['geometry']:
-                        geo_idx = val['geometry'].index(elem)
-                        if sel_idx == geo_idx:
-                            # make it work only for Gerber Flashes who are Points in 'follow'
-                            if 'solid' in elem and isinstance(elem['follow'], Point):
-                                for tool in exc_obj.tools:
-                                    clear_apid_size = exc_obj.tools[tool]['tooldia']
+            for elem in val['geometry']:
+                # make it work only for Gerber Flashes who are Points in 'follow'
+                if 'solid' in elem and isinstance(elem['follow'], Point):
+                    for tool in exc_obj.tools:
+                        clear_apid_size = exc_obj.tools[tool]['tooldia']
 
-                                    if 'drills' in exc_obj.tools[tool]:
-                                        for drill_pt in exc_obj.tools[tool]['drills']:
-                                            # since there may be drills that do not drill into a pad we test only for
-                                            # drills in a pad
-                                            if drill_pt.within(elem['solid']):
-                                                geo_elem = {'clear': drill_pt}
+                        if 'drills' in exc_obj.tools[tool]:
+                            for drill_pt in exc_obj.tools[tool]['drills']:
+                                # since there may be drills that do not drill into a pad we test only for
+                                # drills in a pad
+                                for sel_pad_geo in sel_pad_geo_list:
+                                    if drill_pt.within(elem['solid']) and drill_pt.within(sel_pad_geo):
+                                        geo_elem = {'clear': drill_pt}
 
-                                                if clear_apid_size not in holes_apertures:
-                                                    holes_apertures[clear_apid_size] = {
-                                                        'type': 'C',
-                                                        'size': clear_apid_size,
-                                                        'geometry': []
-                                                    }
+                                        if clear_apid_size not in holes_apertures:
+                                            holes_apertures[clear_apid_size] = {
+                                                'type': 'C',
+                                                'size': clear_apid_size,
+                                                'geometry': []
+                                            }
 
-                                                holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+                                        holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
         # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
         # size and add there the clear geometry
@@ -1221,7 +1242,22 @@ class ToolPunchGerber(AppTool, Gerber):
         # do paint single only for left mouse clicks
         if event.button == 1:
             pads = self.find_pad(point=(curr_pos[0], curr_pos[1]))
-            self.manual_pads += pads
+
+            def test_pad(a, b):
+                return True if a['apid'] == b['apid'] and a['idx'] == b['idx'] else False
+
+            if self.manual_pads:
+                tmp_lst = deepcopy(self.manual_pads)
+                tmp_pads = deepcopy(pads)
+                for old_pad in self.manual_pads:
+                    for pad in pads:
+                        if test_pad(old_pad, pad):
+                            tmp_lst.remove(old_pad)
+                            tmp_pads.remove(pad)
+
+                self.manual_pads = [x for x in tmp_lst if x is not None] + tmp_pads
+            else:
+                self.manual_pads += pads
 
             if self.manual_pads:
                 for el in pads:
@@ -1433,6 +1469,7 @@ class ToolPunchGerber(AppTool, Gerber):
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
 
+        self.manual_pads = []
         for apid, apid_value in self.grb_obj.apertures.items():
             if apid in sel_apid:
                 for idx, elem in enumerate(apid_value['geometry']):
@@ -1440,6 +1477,12 @@ class ToolPunchGerber(AppTool, Gerber):
                         if 'solid' in elem:
                             sol_geo = elem['solid']
                             if sol_geo not in self.poly_dict.values():
+                                new_elem = {
+                                    'apid': apid,
+                                    'idx': idx
+                                }
+                                self.manual_pads.append(deepcopy(new_elem))
+
                                 shape_id = self.app.tool_shapes.add(
                                     tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=sol_geo,
                                     color=self.app.defaults['global_sel_draw_color'] + 'FF',
@@ -1458,6 +1501,10 @@ class ToolPunchGerber(AppTool, Gerber):
             self.poly_dict.clear()
         except TypeError:
             return
+
+        self.manual_pads = []
+        self.poly_dict.clear()
+
         self.app.tool_shapes.redraw()
         self.app.inform.emit(_("Selection cleared."))
 
