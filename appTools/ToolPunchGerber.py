@@ -863,6 +863,101 @@ class ToolPunchGerber(AppTool, Gerber):
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
+    def on_fixed_manual_method(self, outname):
+        punch_size = float(self.ui.dia_entry.get_value())
+        if punch_size == 0.0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("The value of the fixed diameter is 0.0. Aborting."))
+            return 'fail'
+
+        fail_msg = _("Failed. Punch hole size is bigger than"
+                     " some of the apertures in the Gerber object.")
+
+        new_options = {}
+        for opt in self.grb_obj.options:
+            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
+        # this is the punching geometry
+        punching_geo = []
+        for apid in self.grb_obj.apertures:
+            for pad_elem in self.manual_pads:
+                pad_apid = pad_elem['apid']
+                pad_idx = pad_elem['idx']
+                if pad_apid == apid:
+                    if 'size' in self.grb_obj.apertures[apid]:
+                        if punch_size >= float(self.grb_obj.apertures[apid]['size']):
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                            return 'fail'
+                    pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                    punching_geo.append(pad_point.buffer(punch_size / 2))
+
+        punching_geo = MultiPolygon(punching_geo)
+        if isinstance(self.grb_obj.solid_geometry, list):
+            temp_solid_geometry = MultiPolygon(self.grb_obj.solid_geometry)
+        else:
+            temp_solid_geometry = self.grb_obj.solid_geometry
+        punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
+
+        if punched_solid_geometry == temp_solid_geometry:
+            msg = '[WARNING_NOTCL] %s' % \
+                  _("Failed. The new object geometry is the same as the one in the source object geometry...")
+            self.app.inform.emit(msg)
+            return 'fail'
+
+        # update the gerber apertures to include the clear geometry so it can be exported successfully
+        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures_items = new_apertures.items()
+
+        # find maximum aperture id
+        new_apid = max([int(x) for x, __ in new_apertures_items])
+
+        # store here the clear geometry, the key is the drill size
+        holes_apertures = {}
+
+        for apid, val in new_apertures_items:
+            for elem in val['geometry']:
+                # make it work only for Gerber Flashes who are Points in 'follow'
+                if 'solid' in elem and isinstance(elem['follow'], Point):
+                    for geo in punching_geo:
+                        clear_apid_size = punch_size
+
+                        # since there may be drills that do not drill into a pad we test only for drills in a pad
+                        if geo.within(elem['solid']):
+                            geo_elem = {'clear': geo.centroid}
+
+                            if clear_apid_size not in holes_apertures:
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
+
+                            holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+
+        # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
+        # size and add there the clear geometry
+        for hole_size, ap_val in holes_apertures.items():
+            new_apid += 1
+            new_apertures[str(new_apid)] = deepcopy(ap_val)
+
+        def init_func(new_obj, app_obj):
+            new_obj.options.update(new_options)
+            new_obj.options['name'] = outname
+            new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
+            new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
+
+            new_obj.apertures = deepcopy(new_apertures)
+
+            new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
+
+        self.app.app_obj.new_object('gerber', outname, init_func)
+
     def on_ring_method(self, grb_obj, outname):
         circ_r_val = self.ui.circular_ring_entry.get_value()
         oblong_r_val = self.ui.oblong_ring_entry.get_value()
@@ -1003,6 +1098,146 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
+
+            new_obj.apertures = deepcopy(new_apertures)
+
+            new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
+
+        self.app.app_obj.new_object('gerber', outname, init_func)
+
+    def on_ring_manual_method(self, outname):
+        circ_r_val = self.ui.circular_ring_entry.get_value()
+        oblong_r_val = self.ui.oblong_ring_entry.get_value()
+        square_r_val = self.ui.square_ring_entry.get_value()
+        rect_r_val = self.ui.rectangular_ring_entry.get_value()
+        other_r_val = self.ui.other_ring_entry.get_value()
+        dia = None
+
+        new_options = {}
+        for opt in self.grb_obj.options:
+            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+
+        if isinstance(self.grb_obj.solid_geometry, list):
+            temp_solid_geometry = MultiPolygon(self.grb_obj.solid_geometry)
+        else:
+            temp_solid_geometry = self.grb_obj.solid_geometry
+
+        punched_solid_geometry = temp_solid_geometry
+
+        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures_items = new_apertures.items()
+
+        # find maximum aperture id
+        new_apid = max([int(x) for x, __ in new_apertures_items])
+
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
+        # store here the clear geometry, the key is the new aperture size
+        holes_apertures = {}
+
+        for apid, apid_value in self.grb_obj.apertures.items():
+            ap_type = apid_value['type']
+            punching_geo = []
+
+            for pad_elem in self.manual_pads:
+                pad_apid = pad_elem['apid']
+                pad_idx = pad_elem['idx']
+
+                if pad_apid == apid:
+                    if ap_type == 'C':
+                        dia = float(apid_value['size']) - (2 * circ_r_val)
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
+
+                        if width > height:
+                            dia = float(apid_value['height']) - (2 * oblong_r_val)
+                        else:
+                            dia = float(apid_value['width']) - (2 * oblong_r_val)
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+                    elif ap_type == 'R':
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
+
+                        # if the height == width (float numbers so the reason for the following)
+                        if round(width, self.decimals) == round(height, self.decimals):
+                            if self.ui.square_cb.get_value():
+                                dia = float(apid_value['height']) - (2 * square_r_val)
+                                pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                                punching_geo.append(pad_point.buffer(dia / 2))
+                        elif self.ui.rectangular_cb.get_value():
+                            if width > height:
+                                dia = float(apid_value['height']) - (2 * rect_r_val)
+                            else:
+                                dia = float(apid_value['width']) - (2 * rect_r_val)
+                            pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                            punching_geo.append(pad_point.buffer(dia / 2))
+                    elif self.ui.other_cb.get_value():
+                        try:
+                            dia = float(apid_value['size']) - (2 * other_r_val)
+                        except KeyError:
+                            if ap_type == 'AM':
+                                pol = apid_value['geometry'][0]['solid']
+                                x0, y0, x1, y1 = pol.bounds
+                                dx = x1 - x0
+                                dy = y1 - y0
+                                if dx <= dy:
+                                    dia = dx - (2 * other_r_val)
+                                else:
+                                    dia = dy - (2 * other_r_val)
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+
+            # if dia is None then none of the above applied so we skip the following
+            if dia is None:
+                continue
+
+            punching_geo = MultiPolygon(punching_geo)
+
+            if punching_geo is None or punching_geo.is_empty:
+                continue
+
+            punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
+
+            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            for elem in apid_value['geometry']:
+                # make it work only for Gerber Flashes who are Points in 'follow'
+                if 'solid' in elem and isinstance(elem['follow'], Point):
+                    clear_apid_size = dia
+                    for geo in punching_geo:
+
+                        # since there may be drills that do not drill into a pad we test only for geos in a pad
+                        if geo.within(elem['solid']):
+                            geo_elem = {'clear': geo.centroid}
+
+                            if clear_apid_size not in holes_apertures:
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
+
+                            holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+
+        # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
+        # size and add there the clear geometry
+        for hole_size, ap_val in holes_apertures.items():
+            new_apid += 1
+            new_apertures[str(new_apid)] = deepcopy(ap_val)
+
+        def init_func(new_obj, app_obj):
+            new_obj.options.update(new_options)
+            new_obj.options['name'] = outname
+            new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
+            new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
             new_obj.apertures = deepcopy(new_apertures)
 
@@ -1156,6 +1391,142 @@ class ToolPunchGerber(AppTool, Gerber):
 
         self.app.app_obj.new_object('gerber', outname, init_func)
 
+    def on_proportional_manual_method(self, outname):
+        prop_factor = self.ui.factor_entry.get_value() / 100.0
+        dia = None
+        new_options = {}
+        for opt in self.grb_obj.options:
+            new_options[opt] = deepcopy(self.grb_obj.options[opt])
+
+        if isinstance(self.grb_obj.solid_geometry, list):
+            temp_solid_geometry = MultiPolygon(self.grb_obj.solid_geometry)
+        else:
+            temp_solid_geometry = self.grb_obj.solid_geometry
+
+        punched_solid_geometry = temp_solid_geometry
+
+        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures_items = new_apertures.items()
+
+        # find maximum aperture id
+        new_apid = max([int(x) for x, __ in new_apertures_items])
+
+        # selected codes in the apertures UI table
+        sel_apid = []
+        for it in self.ui.apertures_table.selectedItems():
+            sel_apid.append(it.text())
+
+        # store here the clear geometry, the key is the new aperture size
+        holes_apertures = {}
+
+        for apid, apid_value in self.grb_obj.apertures.items():
+            ap_type = apid_value['type']
+            punching_geo = []
+
+            for pad_elem in self.manual_pads:
+                pad_apid = pad_elem['apid']
+                pad_idx = pad_elem['idx']
+
+                if pad_apid == apid:
+
+                    if ap_type == 'C' and self.ui.circular_cb.get_value():
+                        dia = float(apid_value['size']) * prop_factor
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
+
+                        if width > height:
+                            dia = float(apid_value['height']) * prop_factor
+                        else:
+                            dia = float(apid_value['width']) * prop_factor
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+                    elif ap_type == 'R':
+                        width = float(apid_value['width'])
+                        height = float(apid_value['height'])
+
+                        # if the height == width (float numbers so the reason for the following)
+                        if round(width, self.decimals) == round(height, self.decimals):
+                            if self.ui.square_cb.get_value():
+                                dia = float(apid_value['height']) * prop_factor
+                                pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                                punching_geo.append(pad_point.buffer(dia / 2))
+                        elif self.ui.rectangular_cb.get_value():
+                            if width > height:
+                                dia = float(apid_value['height']) * prop_factor
+                            else:
+                                dia = float(apid_value['width']) * prop_factor
+                            pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                            punching_geo.append(pad_point.buffer(dia / 2))
+                    elif self.ui.other_cb.get_value():
+                        try:
+                            dia = float(apid_value['size']) * prop_factor
+                        except KeyError:
+                            if ap_type == 'AM':
+                                pol = apid_value['geometry'][0]['solid']
+                                x0, y0, x1, y1 = pol.bounds
+                                dx = x1 - x0
+                                dy = y1 - y0
+                                if dx <= dy:
+                                    dia = dx * prop_factor
+                                else:
+                                    dia = dy * prop_factor
+                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        punching_geo.append(pad_point.buffer(dia / 2))
+
+            # if dia is None then none of the above applied so we skip the following
+            if dia is None:
+                continue
+
+            punching_geo = MultiPolygon(punching_geo)
+
+            if punching_geo is None or punching_geo.is_empty:
+                continue
+
+            punched_solid_geometry = punched_solid_geometry.difference(punching_geo)
+
+            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            for elem in apid_value['geometry']:
+                # make it work only for Gerber Flashes who are Points in 'follow'
+                if 'solid' in elem and isinstance(elem['follow'], Point):
+                    clear_apid_size = dia
+                    for geo in punching_geo:
+
+                        # since there may be drills that do not drill into a pad we test only for geos in a pad
+                        if geo.within(elem['solid']):
+                            geo_elem = {'clear': geo.centroid}
+
+                            if clear_apid_size not in holes_apertures:
+                                holes_apertures[clear_apid_size] = {
+                                    'type': 'C',
+                                    'size': clear_apid_size,
+                                    'geometry': []
+                                }
+
+                            holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+
+        # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
+        # size and add there the clear geometry
+        for hole_size, ap_val in holes_apertures.items():
+            new_apid += 1
+            new_apertures[str(new_apid)] = deepcopy(ap_val)
+
+        def init_func(new_obj, app_obj):
+            new_obj.options.update(new_options)
+            new_obj.options['name'] = outname
+            new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
+            new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
+
+            new_obj.apertures = deepcopy(new_apertures)
+
+            new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+            new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                   local_use=new_obj, use_thread=False)
+
+        self.app.app_obj.new_object('gerber', outname, init_func)
+
     def find_pad(self, point):
         pt = Point(point) if type(point) is tuple else point
         results = []
@@ -1213,11 +1584,11 @@ class ToolPunchGerber(AppTool, Gerber):
         if punch_method == 'exc':
             self.on_excellon_manual_method(outname)
         elif punch_method == 'fixed':
-            pass
+            self.on_fixed_manual_method(outname)
         elif punch_method == 'ring':
-            pass
+            self.on_ring_manual_method(outname)
         elif punch_method == 'prop':
-            pass
+            self.on_proportional_manual_method(outname)
 
     # To be called after clicking on the plot.
     def on_single_poly_mouse_release(self, event):

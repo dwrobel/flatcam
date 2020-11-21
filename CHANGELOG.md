@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - updated the Readme file - MacOS installation instructions to ensure that the gdal package is installed correctly
 - Punch Gerber Tool - made sure that Select All/Deselect All in Manual mode is actually selecting pads not only visually
 - Punch Gerber Tool - finished manual mode for "Excellon" method
+- Punch Gerber Tool - finished manual mode for all methods
 
 20.11.2020
 
