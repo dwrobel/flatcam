@@ -840,7 +840,11 @@ class CutOut(AppTool):
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return "fail"
 
-                solid_geo = linemerge(solid_geo)
+                try:
+                    solid_geo = linemerge(solid_geo)
+                except Exception:
+                    # there ar enot lines but polygons
+                    pass
 
                 if has_mouse_bites is True:
                     gapsize -= dia / 2
@@ -1190,7 +1194,11 @@ class CutOut(AppTool):
                     app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return "fail"
 
-                solid_geo = linemerge(solid_geo)
+                try:
+                    solid_geo = linemerge(solid_geo)
+                except Exception:
+                    # there are not lines but polygon
+                    pass
 
                 if has_mouse_bites is True:
                     gapsize -= dia / 2

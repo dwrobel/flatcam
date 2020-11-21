@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - Punch Gerber Tool - made sure that Select All/Deselect All in Manual mode is actually selecting pads not only visually
 - Punch Gerber Tool - finished manual mode for "Excellon" method
 - Punch Gerber Tool - finished manual mode for all methods
+- Cutout Tool - fixed generation of rectangular geometry if the selected gaps is "None"
 
 20.11.2020
 
