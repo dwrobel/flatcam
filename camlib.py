@@ -1261,8 +1261,12 @@ class Geometry(object):
 
         merged_lines = linemerge(geos_lines)
         geos = geos_polys
-        for ml in merged_lines:
-            geos.append(ml)
+
+        try:
+            for ml in merged_lines:
+                geos.append(ml)
+        except TypeError:
+            geos.append(merged_lines)
 
         # Add to object
         if self.solid_geometry is None:

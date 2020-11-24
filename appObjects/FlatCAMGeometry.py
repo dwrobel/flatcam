@@ -524,9 +524,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             if opt_key.find('geometry' + "_") == 0:
                 oname = opt_key[len('geometry') + 1:]
                 self.default_data[oname] = self.app.options[opt_key]
-            if opt_key.find('tools_mill' + "_") == 0:
-                oname = opt_key[len('tools_mill') + 1:]
-                self.default_data[oname] = self.app.options[opt_key]
+            elif opt_key.find('tools_') == 0:
+                self.default_data[opt_key] = self.app.options[opt_key]
+
         # fill in self.default_data values from self.options
         for def_key in self.default_data:
             for opt_key, opt_val in self.options.items():

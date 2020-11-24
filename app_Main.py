@@ -5441,51 +5441,98 @@ class App(QtCore.QObject):
         """
         self.defaults.report_usage("convert_any2geo()")
 
-        def initialize(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+        # store here the default data for Geometry Data
+        default_data = {}
+
+        for opt_key, opt_val in self.options.items():
+            if opt_key.find('geometry' + "_") == 0:
+                oname = opt_key[len('geometry') + 1:]
+                default_data[oname] = self.options[opt_key]
+            if opt_key.find('tools_mill' + "_") == 0:
+                oname = opt_key[len('tools_mill') + 1:]
+                default_data[oname] = self.options[opt_key]
+            if opt_key.find('tools_ncc' + "_") == 0:
+                oname = opt_key[len('tools_ncc') + 1:]
+                default_data[oname] = self.options[opt_key]
+            if opt_key.find('tools_paint' + "_") == 0:
+                oname = opt_key[len('tools_paint') + 1:]
+                default_data[oname] = self.options[opt_key]
+            if opt_key.find('tools_cutout' + "_") == 0:
+                oname = opt_key[len('tools_cutout') + 1:]
+                default_data[oname] = self.options[opt_key]
+
+        if type(self.defaults["geometry_cnctooldia"]) == float:
+            tools_diameters = [self.defaults["geometry_cnctooldia"]]
+        else:
             try:
-                obj_init.follow_geometry = obj.follow_geometry
-            except AttributeError:
-                pass
+                dias = str(self.defaults["geometry_cnctooldia"]).strip('[').strip(']')
+                tools_string = dias.split(",")
+                tools_diameters = [eval(a) for a in tools_string if a != '']
+            except Exception as e:
+                log.debug("App.convert_any2geo() --> %s" % str(e))
+                return 'fail'
+
+        tools = {}
+        t_id = 0
+        for tooldia in tools_diameters:
+            t_id += 1
+            new_tool = {
+                'tooldia': tooldia,
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': 'Rough',
+                'tool_type': 'C1',
+                'data': deepcopy(default_data),
+                'solid_geometry': []
+            }
+            tools[t_id] = deepcopy(new_tool)
+
+        def initialize_from_gerber(new_obj, app):
+            new_obj.solid_geometry = deepcopy(obj.solid_geometry)
             try:
-                obj_init.apertures = obj.apertures
+                new_obj.follow_geometry = obj.follow_geometry
             except AttributeError:
                 pass
 
-            try:
-                if obj.tools:
-                    obj_init.tools = obj.tools
-            except AttributeError:
-                pass
+            new_obj.options.update(deepcopy(default_data))
+            new_obj.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.tools = deepcopy(tools)
+            for k in new_obj.tools:
+                new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
 
-        def initialize_excellon(obj_init, app_obj):
-            # objs = self.collection.get_selected()
-            # GeometryObject.merge(objs, obj)
+        def initialize_from_excellon(new_obj, app_obj):
             solid_geo = []
             for tool in obj.tools:
                 for geo in obj.tools[tool]['solid_geometry']:
                     solid_geo.append(geo)
-            obj_init.solid_geometry = deepcopy(solid_geo)
-            if not obj_init.solid_geometry:
+            new_obj.solid_geometry = deepcopy(solid_geo)
+            if not new_obj.solid_geometry:
                 app_obj.log("convert_any2geo() failed")
                 return 'fail'
 
+            new_obj.options.update(deepcopy(default_data))
+            new_obj.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.tools = deepcopy(tools)
+            for k in new_obj.tools:
+                new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
+
         if not self.collection.get_selected():
             log.warning("App.convert_any2geo --> No object selected")
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object is selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         for obj in self.collection.get_selected():
-            obj_name = obj.options["name"]
+            outname = '%s_conv' % obj.options["name"]
 
             try:
                 if obj.kind == 'excellon':
-                    self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
-                else:
-                    self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize)
+                    self.app_obj.new_object("geometry", outname, initialize_from_excellon)
+
+                if obj.kind == 'gerber':
+                    self.app_obj.new_object("geometry", outname, initialize_from_gerber)
+
             except Exception as e:
-                return "Operation failed: %s" % str(e)
+                log.debug("Convert any 2 geo operation failed: %s" % str(e))
 
     def convert_any2gerber(self):
         """
@@ -5494,21 +5541,22 @@ class App(QtCore.QObject):
         :return:
         """
 
-        def initialize_geometry(obj_init, app_obj):
-            apertures = {}
-            apid = 0
+        def initialize_from_geometry(obj_init, app_obj):
+            apertures = {
+                '0': {
+                    'size': 0.0,
+                    'type': 'REG',
+                    'geometry': []
+                }
+            }
 
-            apertures[str(apid)] = {}
-            apertures[str(apid)]['geometry'] = []
             for obj_orig in obj.solid_geometry:
                 new_elem = {'solid': obj_orig}
                 try:
                     new_elem['follow'] = obj_orig.exterior
                 except AttributeError:
                     pass
-                apertures[str(apid)]['geometry'].append(deepcopy(new_elem))
-            apertures[str(apid)]['size'] = 0.0
-            apertures[str(apid)]['type'] = 'C'
+                apertures['0']['geometry'].append(deepcopy(new_elem))
 
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.apertures = deepcopy(apertures)
@@ -5517,19 +5565,24 @@ class App(QtCore.QObject):
                 app_obj.log("convert_any2gerber() failed")
                 return 'fail'
 
-        def initialize_excellon(obj_init, app_obj):
+        def initialize_from_excellon(obj_init, app_obj):
             apertures = {}
 
             apid = 10
             for tool in obj.tools:
-                apertures[str(apid)] = {}
-                apertures[str(apid)]['geometry'] = []
+                apertures[str(apid)] = {
+                    'size': float(obj.tools[tool]['tooldia']),
+                    'type': 'C',
+                    'geometry': []
+                }
+
                 for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = {'solid': geo, 'follow': geo.exterior}
+                    new_el = {
+                        'solid': geo,
+                        'follow': geo.exterior
+                    }
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
-                apertures[str(apid)]['size'] = float(obj.tools[tool]['tooldia'])
-                apertures[str(apid)]['type'] = 'C'
                 apid += 1
 
             # create solid_geometry
@@ -5550,19 +5603,18 @@ class App(QtCore.QObject):
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2gerber --> No object selected")
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object is selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
         for obj in self.collection.get_selected():
 
-            obj_name = obj.options["name"]
+            outname = '%s_conv' % obj.options["name"]
 
             try:
                 if obj.kind == 'excellon':
-                    self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                    self.app_obj.new_object("gerber", outname, initialize_from_excellon)
                 elif obj.kind == 'geometry':
-                    self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
+                    self.app_obj.new_object("gerber", outname, initialize_from_geometry)
                 else:
                     log.warning("App.convert_any2gerber --> This is no valid object for conversion.")
 

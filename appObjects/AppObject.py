@@ -142,12 +142,13 @@ class AppObject(QtCore.QObject):
                     obj.options[option] = self.app.options[option]
         if kind == 'gerber':
             for option in self.app.options:
-                if option.find('tools_iso_') == 0:
+                if option.find('tools_iso_') == 0 or option.find('tools_mill_') == 0:
                     obj.options[option] = self.app.options[option]
         if kind == 'geometry':
             for option in self.app.options:
                 if option.find('tools_mill_') == 0:
                     obj.options[option] = self.app.options[option]
+
         # ############################################################################################################
         # ############################################################################################################
 

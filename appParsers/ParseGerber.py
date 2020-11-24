@@ -1878,7 +1878,7 @@ class Gerber(Geometry):
 
     def import_dxf_as_gerber(self, filename, units='MM'):
         """
-        Imports shapes from an DXF file into the Gerberobject geometry.
+        Imports shapes from an DXF file into the Gerber object geometry.
 
         :param filename:    Path to the DXF file.
         :type filename:     str

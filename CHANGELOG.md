@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.11.2020
+
+- fixed an issue for importing DXF as Geometry when the DXF geometry is a single line
+- updated the convert_any2geo() method such that resulting geometry objects have the tools attribute required in the newer versions of the app
+
 21.11.2020
 
 - Tool Copper Thieving - made sure that the clearance for pattern plating mask is applied also for positive values
