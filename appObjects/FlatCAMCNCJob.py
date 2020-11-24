@@ -2230,9 +2230,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # if this dict is not empty then the object is an Excellon object
         if self.exc_cnc_tools:
             first_key = next(iter(self.exc_cnc_tools))
-            include_header = self.app.preprocessors[
-                self.exc_cnc_tools[first_key]['data']['tools_drill_ppname_e']
-            ].include_header
+            try:
+                include_header = self.app.preprocessors[
+                    self.exc_cnc_tools[first_key]['data']['tools_drill_ppname_e']
+                ].include_header
+            except KeyError:
+                # for older loaded projects
+                include_header = self.app.preprocessors[
+                    self.exc_cnc_tools[first_key]['data']['ppname_e']
+                ].include_header
 
         gcode = ''
         if include_header is False:

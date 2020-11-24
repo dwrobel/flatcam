@@ -138,13 +138,15 @@ class AppObject(QtCore.QObject):
         # add some of the FlatCAM Tools related properties
         if kind == 'excellon':
             for option in self.app.options:
-                if option.find('tools_drill_') == 0 or option.find('tools_mill_') == 0:
+                if option.find('tools_drill_') == 0:
                     obj.options[option] = self.app.options[option]
         if kind == 'gerber':
             for option in self.app.options:
-                if option.find('tools_iso_') == 0 or option.find('tools_mill_') == 0:
+                if option.find('tools_iso_') == 0:
                     obj.options[option] = self.app.options[option]
-        if kind == 'geometry':
+
+        # the milling options should be inherited by all manufacturing objects
+        if kind in ['excellon', 'gerber', 'geometry']:
             for option in self.app.options:
                 if option.find('tools_mill_') == 0:
                     obj.options[option] = self.app.options[option]

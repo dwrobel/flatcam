@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed an issue for importing DXF as Geometry when the DXF geometry is a single line
 - updated the convert_any2geo() method such that resulting geometry objects have the tools attribute required in the newer versions of the app
+- added a way to keep compatibility with old projects
 
 21.11.2020
 
