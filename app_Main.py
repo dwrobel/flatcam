@@ -2566,9 +2566,14 @@ class App(QtCore.QObject):
                         tools_tb.show()
 
                     # clean the Tools Tab
-                    self.ui.tool_scroll_area.takeWidget()
-                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
-                    self.ui.notebook.setTabText(2, _("Tool"))
+                    found_idx = None
+                    for idx in range(self.ui.notebook.count()):
+                        if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                            found_idx = idx
+                            break
+                    if found_idx:
+                        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+                        self.ui.notebook.removeTab(2)
 
                     if edited_obj.kind == 'geometry':
                         obj_type = "Geometry"
@@ -2672,9 +2677,14 @@ class App(QtCore.QObject):
                         tools_tb.show()
 
                     # clean the Tools Tab
-                    self.ui.tool_scroll_area.takeWidget()
-                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
-                    self.ui.notebook.setTabText(2, _("Tool"))
+                    found_idx = None
+                    for idx in range(self.ui.notebook.count()):
+                        if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                            found_idx = idx
+                            break
+                    if found_idx:
+                        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+                        self.ui.notebook.removeTab(2)
 
                     self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
@@ -2716,15 +2726,17 @@ class App(QtCore.QObject):
                 if self.old_state_of_tools_toolbar is True:
                     tools_tb.show()
 
-                if isinstance(edited_obj, GeometryObject):
+                if edited_obj.kind == 'geometry':
                     self.geo_editor.deactivate()
-                elif isinstance(edited_obj, GerberObject):
+                elif edited_obj.kind == 'gerber':
                     self.grb_editor.deactivate_grb_editor()
-                elif isinstance(edited_obj, ExcellonObject):
+                elif edited_obj.kind == 'excellon':
                     self.exc_editor.deactivate()
+                elif edited_obj.kind == 'cncjob':
+                    self.gcode_editor.deactivate()
                 else:
                     self.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Select a Gerber, Geometry or Excellon Object to update."))
+                                     _("Select a Gerber, Geometry, Excellon or CNCJob object to update."))
                     return
 
             # if notebook is hidden we show it

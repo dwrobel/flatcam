@@ -652,10 +652,10 @@ class PaintOptionsTool(AppTool):
 
         self.fcdraw.paint(tooldia, overlap, margin, connect=connect, contour=contour, method=method)
         self.fcdraw.select_tool("select")
-        self.app.ui.notebook.setTabText(2, _("Tools"))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-
-        self.app.ui.splitter.setSizes([0, 1])
+        # self.app.ui.notebook.setTabText(2, _("Tools"))
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        #
+        # self.app.ui.splitter.setSizes([0, 1])
 
 
 class TransformEditorTool(AppTool):
@@ -2987,7 +2987,7 @@ class FCText(FCShapeTool):
                                               (_("Font not supported. Only Regular, Bold, Italic and BoldItalic are "
                                                  "supported. Error"), str(e)))
                 self.text_gui.text_path = []
-                self.text_gui.hide_tool()
+                # self.text_gui.hide_tool()
                 self.draw_app.select_tool('select')
                 self.draw_app.app.jump_signal.disconnect()
                 return
@@ -3068,8 +3068,6 @@ class FCBuffer(FCShapeTool):
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer(buffer_distance, join_style)
-        self.app.ui.notebook.setTabText(2, _("Tools"))
-        self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
         if ret_val == 'fail':
@@ -3096,8 +3094,6 @@ class FCBuffer(FCShapeTool):
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
-        self.app.ui.notebook.setTabText(2, _("Tools"))
-        self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
         if ret_val == 'fail':
@@ -3124,8 +3120,8 @@ class FCBuffer(FCShapeTool):
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
-        self.app.ui.notebook.setTabText(2, _("Tools"))
-        self.draw_app.app.ui.splitter.setSizes([0, 1])
+        # self.app.ui.notebook.setTabText(2, _("Tools"))
+        # self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
         if ret_val == 'fail':
@@ -3151,7 +3147,7 @@ class FCBuffer(FCShapeTool):
         self.buff_tool.buffer_ext_button.clicked.connect(self.buff_tool.on_buffer_ext)
         self.complete = True
         self.draw_app.select_tool("select")
-        self.buff_tool.hide_tool()
+        # self.buff_tool.hide_tool()
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
