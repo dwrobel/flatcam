@@ -1052,6 +1052,7 @@ class PreferencesUIManager:
         """
         log.debug("on_restore_defaults_preferences()")
         self.defaults.reset_to_factory_defaults()
+        self.defaults_write_form()
         self.on_preferences_edited()
         self.inform.emit('[success] %s' % _("Preferences default values are restored."))
 

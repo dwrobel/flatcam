@@ -2176,6 +2176,9 @@ class App(QtCore.QObject):
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
 
+        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        # self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+
         self.ui.extract_btn.triggered.connect(lambda: self.extract_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
@@ -2183,10 +2186,8 @@ class App(QtCore.QObject):
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
 
         # self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
-        # self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
         #
         # self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        # self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
         # self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
         # self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
         #

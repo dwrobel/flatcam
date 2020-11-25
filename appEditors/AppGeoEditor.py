@@ -4872,11 +4872,14 @@ class AppGeoEditor(QtCore.QObject):
                         new_geo = linemerge(new_geo)
                     fcgeometry.solid_geometry.append(new_geo)
 
-                bounds = fcgeometry.bounds()
-                fcgeometry.options['xmin'] = bounds[0]
-                fcgeometry.options['ymin'] = bounds[1]
-                fcgeometry.options['xmax'] = bounds[2]
-                fcgeometry.options['ymax'] = bounds[3]
+                try:
+                    bounds = fcgeometry.bounds()
+                    fcgeometry.options['xmin'] = bounds[0]
+                    fcgeometry.options['ymin'] = bounds[1]
+                    fcgeometry.options['xmax'] = bounds[2]
+                    fcgeometry.options['ymax'] = bounds[3]
+                except Exception:
+                    pass
 
                 self.deactivate()
 

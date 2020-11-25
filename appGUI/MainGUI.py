@@ -1080,6 +1080,13 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.toolbartools.addSeparator()
 
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        # self.sub_btn = self.toolbartools.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+
+        self.toolbartools.addSeparator()
+
         self.extract_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
         self.copperfill_btn = self.toolbartools.addAction(
@@ -2274,6 +2281,13 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film Tool"))
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
+
+        self.toolbartools.addSeparator()
+
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        # self.sub_btn = self.toolbartools.addAction(
+        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
 
         self.toolbartools.addSeparator()
 

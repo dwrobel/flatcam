@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - had a first shot in creating a way to show the log messages in the Tcl Shell if a setting in Preferences is set
 - fixed Isolation Tool tool table context menu pointing at the same method for the menu entries: Add Tool and Pick from DB
 - made sure that the GUI element FCInputDialogSpinnerButton has the spinner element auto-selected on launch
+- fixed an error in Geo Editor when trying to save an empty Geometry
+- in Preferences made sure that clicking the Restore Defaults will update the values in the Preferences Tab
+- some changes in the Tools visibility in the Tools ToolBar
 
 24.11.2020
 
