@@ -17,6 +17,8 @@ CHANGELOG for FlatCAM beta
 - some changes in the Tools visibility in the Tools ToolBar
 - added confirmation status messages for clearing the recent files/projects lists
 - moved around portions of code in the App.__init__ for optimization; added a control in Preferences for usage of Log in Tcl Shell
+- added a text placeholder in the Tcl Shell
+- added Find function in Tcl Shell (will search for either the selected text in the command line or for the one stored on the clipboard)
 
 24.11.2020
 

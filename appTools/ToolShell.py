@@ -7,7 +7,7 @@
 # ##########################################################
 
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QTextCursor, QPixmap
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
@@ -48,6 +48,7 @@ class TermWidget(QWidget):
             "span {white-space:pre;}")
 
         self._edit = _ExpandableTextEdit(self, self)
+        self._edit.setPlaceholderText(_("Type a command to be executed ..."))
         self._edit.historyNext.connect(self._on_history_next)
         self._edit.historyPrev.connect(self._on_history_prev)
         self._edit.setFocus()
@@ -319,6 +320,20 @@ class FCShell(TermWidget):
         # signal for displaying messages in the shell
         self.app.inform_shell[str].connect(self.app.info_shell)
         self.app.inform_shell[str, bool].connect(self.app.info_shell)
+
+        self._browser.find_text = self.find_text
+
+    def find_text(self):
+        edit_cursor = self._edit.textCursor()
+        txt = edit_cursor.selectedText()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        searched_txt = txt if txt != '' else clipboard.text()
+
+        r = self._browser.find(str(searched_txt))
+        if r is False:
+            self._browser.moveCursor(QtGui.QTextCursor.Start)
+            self._browser.find(str(searched_txt))
 
     def init_tcl(self):
         if hasattr(self, 'tcl') and self.tcl is not None:

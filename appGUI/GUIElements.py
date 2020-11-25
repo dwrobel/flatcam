@@ -3865,6 +3865,7 @@ class _BrowserTextEdit(QTextEdit):
         self.menu = None
         self.version = version
         self.app = app
+        self.find_text = lambda: None
 
     def contextMenuEvent(self, event):
         # self.menu = self.createStandardContextMenu(event.pos())
@@ -3883,6 +3884,12 @@ class _BrowserTextEdit(QTextEdit):
         sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
         self.menu.addAction(sel_all_action)
         sel_all_action.triggered.connect(self.selectAll)
+
+        find_action = QAction('%s\t%s' % (_("Find"), _('Ctrl+F')), self)
+        self.menu.addAction(find_action)
+        find_action.triggered.connect(self.find_text)
+
+        self.menu.addSeparator()
 
         if self.app:
             save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
@@ -3913,6 +3920,9 @@ class _BrowserTextEdit(QTextEdit):
             # Copy Text
             elif key == QtCore.Qt.Key_C:
                 self.copy_text()
+            # Copy Text
+            elif key == QtCore.Qt.Key_F:
+                self.find_text()
             # Save Log
             elif key == QtCore.Qt.Key_S:
                 if self.app:
