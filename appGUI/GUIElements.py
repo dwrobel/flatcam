@@ -2487,6 +2487,7 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
 
         self.wdg = FCButtonWithDoubleSpinner(min=self.min, max=self.max, step=self.step, decimals=decimals,
                                              button_text=button_text, button_icon=button_icon, callback=callback)
+        self.wdg.spinner.selectAll()
         self.wdg.set_value(self.init_value)
 
         QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
