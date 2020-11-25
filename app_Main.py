@@ -6095,15 +6095,15 @@ class App(QtCore.QObject):
         """
 
         if tab_obj_name == "preferences_tab":
-            self.preferencesUiManager.on_close_preferences_tab()
+            self.preferencesUiManager.on_close_preferences_tab(parent=self.ui)
         elif tab_obj_name == "database_tab":
             # disconnect the signals from the table widget in tab
             self.tools_db_tab.ui_disconnect()
 
             if self.tools_db_changed_flag is True:
-                msgbox = QtWidgets.QMessageBox()
+                msgbox = QtWidgets.QMessageBox(parent=self.ui)
                 msgbox.setText(_("One or more Tools are edited.\n"
-                                 "Do you want to update the Tools Database?"))
+                                 "Do you want to save?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
                 msgbox.setIcon(QtWidgets.QMessageBox.Question)

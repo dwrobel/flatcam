@@ -1153,7 +1153,7 @@ class PreferencesUIManager:
 
             self.preferences_changed_flag = True
 
-    def on_close_preferences_tab(self):
+    def on_close_preferences_tab(self, parent):
         if self.ignore_tab_close_event:
             return
 
@@ -1190,9 +1190,9 @@ class PreferencesUIManager:
 
         # Prompt user to save
         if self.preferences_changed_flag is True:
-            msgbox = QtWidgets.QMessageBox()
+            msgbox = QtWidgets.QMessageBox(parent=parent)
             msgbox.setText(_("One or more values are changed.\n"
-                             "Do you want to save the Preferences?"))
+                             "Do you want to save?"))
             msgbox.setWindowTitle(_("Save Preferences"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
             msgbox.setIcon(QtWidgets.QMessageBox.Question)

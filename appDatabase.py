@@ -40,8 +40,8 @@ class ToolsDB2UI:
         tree_layout = QtWidgets.QVBoxLayout()
         self.g_lay.addLayout(tree_layout, 0, 0)
 
-        self.tree_widget = FCTree(columns=2, header_hidden=False, protected_column=[0])
-        self.tree_widget.setHeaderLabels([_("ID"), _("Tool Name")])
+        self.tree_widget = FCTree(columns=3, header_hidden=False, protected_column=[0, 2])
+        self.tree_widget.setHeaderLabels([_("ID"), _("Tool Name"), _("Target")])
         self.tree_widget.setIndentation(0)
         self.tree_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -1388,7 +1388,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.on_tool_request = callback_on_tool_request
 
-        self.tools_db_changed_flag = False
+        self.app.tools_db_changed_flag = False
 
         '''
         dict to hold all the tools in the Tools DB
@@ -1624,6 +1624,16 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_menu_request(self, pos):
 
         menu = QtWidgets.QMenu()
+
+        # sort_by_id = menu.addAction(QtGui.QIcon(self.app.resource_location + '/plus16.png'), _("Sort by Operation"))
+        # sort_by_id.triggered.connect(self.on_sort_operation)
+
+        sort_by_dia = menu.addAction(QtGui.QIcon
+                                     (self.app.resource_location + '/desc_sort32.png'), _("Sort by Diameter"))
+        sort_by_dia.triggered.connect(self.on_sort_dia)
+
+        menu.addSeparator()
+
         add_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/plus16.png'), _("Add to DB"))
         add_tool.triggered.connect(self.on_tool_add)
 
@@ -1633,7 +1643,7 @@ class ToolsDB2(QtWidgets.QWidget):
         delete_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete from DB"))
         delete_tool.triggered.connect(self.on_tool_delete)
 
-        # sep = menu.addSeparator()
+        menu.addSeparator()
 
         save_changes = menu.addAction(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save changes"))
         save_changes.triggered.connect(self.on_save_changes)
@@ -1662,8 +1672,37 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_list_item_edited(self, item, column):
         if column == 0:
             return
+        elif column == 1:
+            self.ui.name_entry.set_value(item.text(1))
 
-        self.ui.name_entry.set_value(item.text(1))
+    def on_sort_operation(self):
+        for tool in self.db_tool_dict.values():
+            dia = tool['tooldia']
+            target = tool['data']['tool_target']
+
+        ordered_by_target = sorted(self.db_tool_dict.items(), key=lambda x: x[1]['data']['tool_target'])
+        for td, k in ordered_by_target:
+            print(td,k)
+
+        self.build_db_ui()
+        self.on_tools_db_edited()
+
+    def on_sort_dia(self):
+        dias = [tool['tooldia'] for tool in self.db_tool_dict.values()]
+        if dias:
+            dias.sort()
+
+        new_dict = {}
+        t_id = 0
+        for dia in dias:
+            for tool in self.db_tool_dict.values():
+                if tool['tooldia'] == dia:
+                    t_id += 1
+                    new_dict[str(t_id)] = tool
+
+        self.db_tool_dict = deepcopy(new_dict)
+        self.build_db_ui()
+        self.on_tools_db_edited()
 
     def storage_to_form(self, dict_storage):
         self.ui_disconnect()
@@ -1744,11 +1783,21 @@ class ToolsDB2(QtWidgets.QWidget):
             nr_crt += 1
 
             t_name = dict_val['name']
+            op_name = {
+                0: _("General"),
+                1: _("Milling"),
+                2: _("Drilling"),
+                3: _('Isolation'),
+                4: _('Paint'),
+                5: _('NCC'),
+                6: _('Cutout')
+            }[dict_val['data']['tool_target']]
             try:
                 # self.add_tool_table_line(row, name=t_name, tooldict=dict_val)
                 self.ui.tree_widget.blockSignals(True)
                 try:
-                    self.ui.tree_widget.addParentEditable(parent=parent, title=[str(row+1), t_name], editable=True)
+                    self.ui.tree_widget.addParentEditable(
+                        parent=parent, title=[str(row+1), t_name, op_name], editable=True)
                 except Exception as e:
                     print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
                 self.ui.tree_widget.blockSignals(False)
@@ -2584,7 +2633,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui.save_db_btn.setStyleSheet("QPushButton {color: red;}")
 
-        self.tools_db_changed_flag = True
+        self.app.tools_db_changed_flag = True
         if silent is None:
             msg = '[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved.")
             self.app.inform[str, bool].emit(msg, False)
