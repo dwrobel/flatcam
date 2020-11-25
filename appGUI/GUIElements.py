@@ -3986,6 +3986,8 @@ class _ExpandableTextEdit(FCTextEdit):
         self.completer.insertText.connect(self.insertCompletion)
         self.completer.popup().clicked.connect(self.insert_completion_click)
 
+        self.on_escape_key = lambda: None
+
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
 
@@ -4054,6 +4056,8 @@ class _ExpandableTextEdit(FCTextEdit):
                 return
         elif event.matches(QKeySequence.MoveToNextPage) or event.matches(QKeySequence.MoveToPreviousPage):
             return self._termWidget.browser().keyPressEvent(event)
+        elif event.key() == QtCore.Qt.Key_Escape:
+            self.on_escape_key()
 
         tc = self.textCursor()
 

@@ -3540,7 +3540,7 @@ class AppGeoEditor(QtCore.QObject):
         self.mm = None
         self.mr = None
 
-        log.debug("Initialization of the Geometry Editor is finished ...")
+        self.app.log.debug("Initialization of the Geometry Editor is finished ...")
 
     def make_callback(self, thetool):
         def f():
@@ -3592,7 +3592,7 @@ class AppGeoEditor(QtCore.QObject):
             self.options[opt] = float(text_value)
         except Exception as e:
             entry.set_value(self.app.defaults[opt])
-            log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
+            self.app.log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
             return
 
     def grid_changed(self, goption, gentry):
@@ -3754,7 +3754,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.geo_frame.show()
 
-        log.debug("Finished activating the Geometry Editor...")
+        self.app.log.debug("Finished activating the Geometry Editor...")
 
     def deactivate(self):
         try:
@@ -3820,7 +3820,7 @@ class AppGeoEditor(QtCore.QObject):
         #     for w in sel_tab_widget_list:
         #         w.setEnabled(True)
         # except Exception as e:
-        #     log.debug("AppGeoEditor.deactivate() --> %s" % str(e))
+        #     self.app.log.debug("AppGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:
@@ -3833,7 +3833,7 @@ class AppGeoEditor(QtCore.QObject):
         # hide the UI
         self.geo_frame.hide()
 
-        log.debug("Finished deactivating the Geometry Editor...")
+        self.app.log.debug("Finished deactivating the Geometry Editor...")
 
     def connect_canvas_event_handlers(self):
         # Canvas events
@@ -4363,7 +4363,7 @@ class AppGeoEditor(QtCore.QObject):
                                 self.app.inform.emit('[success] %s' % _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
-            log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
+            self.app.log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
             return
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -4638,10 +4638,10 @@ class AppGeoEditor(QtCore.QObject):
                 elif isinstance(geom, LineString) and geom is not None:
                     geom = LineString(geom.coords[::-1])
                 else:
-                    log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
+                    self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
                               type(geom))
             except Exception as e:
-                log.debug("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
+                self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
         shape_list = []
@@ -4932,7 +4932,7 @@ class AppGeoEditor(QtCore.QObject):
                 try:
                     results = geo_shapes[0].geo
                 except Exception as e:
-                    log.debug("AppGeoEditor.intersection() --> %s" % str(e))
+                    self.app.log.debug("AppGeoEditor.intersection() --> %s" % str(e))
                     self.app.inform.emit('[WARNING_NOTCL] %s' %
                                          _("A selection of minimum two items is required to do Intersection."))
                     self.select_tool('select')
@@ -4971,7 +4971,7 @@ class AppGeoEditor(QtCore.QObject):
                 try:
                     intersector = geo_shapes[0].geo
                 except Exception as e:
-                    log.debug("AppGeoEditor.intersection() --> %s" % str(e))
+                    self.app.log.debug("AppGeoEditor.intersection() --> %s" % str(e))
                     self.app.inform.emit('[WARNING_NOTCL] %s' %
                                          _("A selection of minimum two items is required to do Intersection."))
                     self.select_tool('select')
@@ -5016,7 +5016,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     self.replot()
                 except Exception as e:
-                    log.debug(str(e))
+                    self.app.log.debug(str(e))
 
         self.app.worker_task.emit({'fcn': work_task, 'params': []})
 
@@ -5035,7 +5035,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     self.replot()
                 except Exception as e:
-                    log.debug(str(e))
+                    self.app.log.debug(str(e))
 
         self.app.worker_task.emit({'fcn': work_task, 'params': []})
 
@@ -5307,7 +5307,7 @@ class AppGeoEditor(QtCore.QObject):
                             if cp is not None:
                                 local_results += list(cp.get_objects())
                         except Exception as e:
-                            log.debug("Could not Paint the polygons. %s" % str(e))
+                            self.app.log.debug("Could not Paint the polygons. %s" % str(e))
                             self.app.inform.emit(
                                 '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                       "Or a different method of Paint"), str(e))

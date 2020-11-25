@@ -322,6 +322,10 @@ class FCShell(TermWidget):
         self.app.inform_shell[str, bool].connect(self.app.info_shell)
 
         self._browser.find_text = self.find_text
+        self._edit.on_escape_key = self.on_escape_key
+
+    def on_escape_key(self):
+        self.app.plotcanvas.native.setFocus()
 
     def find_text(self):
         edit_cursor = self._edit.textCursor()

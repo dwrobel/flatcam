@@ -51,7 +51,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.update_gcode_sec_button.clicked.connect(self.insert_code_snippet_2)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
-        log.debug("Initialization of the GCode Editor is finished ...")
+        self.app.log.debug("Initialization of the GCode Editor is finished ...")
 
     def set_ui(self):
         """

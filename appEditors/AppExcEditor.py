@@ -1900,7 +1900,7 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
-        log.debug("Initialization of the Excellon Editor is finished ...")
+        self.app.log.debug("Initialization of the Excellon Editor is finished ...")
 
     def make_callback(self, thetool):
         def f():
@@ -2058,7 +2058,7 @@ class AppExcEditor(QtCore.QObject):
             #
             #     self.tot_slot_cnt += slot_cnt
             # except AttributeError:
-            #     # log.debug("No slots in the Excellon file")
+            #     # self.app.log.debug("No slots in the Excellon file")
             #     # Find no of slots for the current tool
             #     for tool_dia in self.slot_points_edit:
             #         if float(tool_dia) == tool_no:
@@ -2259,7 +2259,7 @@ class AppExcEditor(QtCore.QObject):
         try:
             self.ui.tools_table_exc.selectRow(row_to_be_selected)
         except TypeError as e:
-            log.debug("AppExcEditor.on_tool_add() --> %s" % str(e))
+            self.app.log.debug("AppExcEditor.on_tool_add() --> %s" % str(e))
 
     def on_tool_delete(self, dia=None):
         self.is_modified = True
@@ -2335,7 +2335,7 @@ class AppExcEditor(QtCore.QObject):
         try:
             new_dia = float(self.ui.tools_table_exc.currentItem().text())
         except ValueError as e:
-            log.debug("AppExcEditor.on_tool_edit() --> %s" % str(e))
+            self.app.log.debug("AppExcEditor.on_tool_edit() --> %s" % str(e))
             return
 
         row_of_item_changed = self.ui.tools_table_exc.currentRow()
@@ -3081,7 +3081,7 @@ class AppExcEditor(QtCore.QObject):
                                                                              use_thread=False)
             except Exception as e:
                 self.deactivate()
-                log.error("Error on Edited object creation: %s" % str(e))
+                self.app.log.error("Error on Edited object creation: %s" % str(e))
                 return
 
             self.deactivate()
@@ -3266,7 +3266,7 @@ class AppExcEditor(QtCore.QObject):
                         self.app.ui.popMenu.popup(self.app.cursor.pos())
 
         except Exception as e:
-            log.warning("AppExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
+            self.app.log.warning("AppExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -3284,7 +3284,7 @@ class AppExcEditor(QtCore.QObject):
                     if self.selected:
                         self.replot()
         except Exception as e:
-            log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
+            self.app.log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def on_canvas_move(self, event):

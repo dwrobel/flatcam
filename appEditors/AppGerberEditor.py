@@ -2948,7 +2948,7 @@ class AppGerberEditor(QtCore.QObject):
         self.complete = True
 
         self.set_ui()
-        log.debug("Initialization of the Gerber Editor is finished ...")
+        self.app.log.debug("Initialization of the Gerber Editor is finished ...")
 
     def make_callback(self, the_tool):
         def f():
@@ -3239,7 +3239,7 @@ class AppGerberEditor(QtCore.QObject):
                         self.ui.apsize_entry.set_value(size_val)
 
                     except Exception as e:
-                        log.error("AppGerberEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
+                        self.app.log.error("AppGerberEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
                                   "tuple format (x,y)\nError: %s" % str(e))
                         self.app.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Aperture dimensions value is missing or wrong format. "
@@ -3369,7 +3369,7 @@ class AppGerberEditor(QtCore.QObject):
             try:
                 val_edited = int(self.ui.apertures_table.currentItem().text())
             except ValueError as e:
-                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.ui.apertures_table.setCurrentItem(None)
                 # we reactivate the signals after the after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3379,7 +3379,7 @@ class AppGerberEditor(QtCore.QObject):
             try:
                 val_edited = float(self.ui.apertures_table.currentItem().text())
             except ValueError as e:
-                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.ui.apertures_table.setCurrentItem(None)
                 # we reactivate the signals after the after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3391,7 +3391,7 @@ class AppGerberEditor(QtCore.QObject):
                     float(x.strip()) for x in self.ui.apertures_table.currentItem().text().split(",") if x != ''
                 ]
             except ValueError as e:
-                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # we reactivate the signals after the after the tool editing
                 self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
@@ -3595,7 +3595,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.deactivate_grb_editor() --> %s" % str(e))
+            self.app.log.debug("AppGerberEditor.deactivate_grb_editor() --> %s" % str(e))
 
         self.clear()
 
@@ -3847,7 +3847,7 @@ class AppGerberEditor(QtCore.QObject):
             # we activate this after the initial build as we don't need to see the tool been populated
             self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         except Exception as e:
-            log.debug("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
+            self.app.log.debug("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
 
         # apply the conversion factor on the obj.apertures
         conv_apertures = deepcopy(self.gerber_obj.apertures)
@@ -3887,7 +3887,7 @@ class AppGerberEditor(QtCore.QObject):
         #                 else:
         #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
         #             except Exception as e:
-        #                 log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+        #                 self.app.log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
         #
         #         # Check promises and clear if exists
         #         while True:
@@ -3945,7 +3945,7 @@ class AppGerberEditor(QtCore.QObject):
                             for elem in app_obj.gerber_obj.apertures[aper_id]['geometry']:
                                 if 'clear' in elem:
                                     global_clear_geo.append(elem['clear'])
-                    log.warning("Found %d clear polygons." % len(global_clear_geo))
+                    self.app.log.warning("Found %d clear polygons." % len(global_clear_geo))
 
                     if global_clear_geo:
                         global_clear_geo = unary_union(global_clear_geo)
@@ -4008,7 +4008,8 @@ class AppGerberEditor(QtCore.QObject):
 
                             app_obj.gerber_obj.apertures[ap_code]['geometry'] = deepcopy(temp_solid_geometry)
 
-                    log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
+                    self.app.log.warning(
+                        "Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
                     try:
                         # Loading the Geometry into Editor Storage
@@ -4017,7 +4018,7 @@ class AppGerberEditor(QtCore.QObject):
                                 app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_code, ap_dict))
                             )
                     except Exception as ee:
-                        log.debug(
+                        self.app.log.debug(
                             "AppGerberEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
                         traceback.print_exc()
 
@@ -4056,7 +4057,7 @@ class AppGerberEditor(QtCore.QObject):
                 else:
                     storage_dict[k] = aperture_dict[k]
             except Exception as e:
-                log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
 
         return [aperture_id, storage_dict]
 
@@ -4085,7 +4086,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.plot_thread.stop()
         except Exception as e:
-            log.debug("AppGerberEditor.update_fcgerber() --> %s" % str(e))
+            self.app.log.debug("AppGerberEditor.update_fcgerber() --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -4222,7 +4223,7 @@ class AppGerberEditor(QtCore.QObject):
             try:
                 self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
-                log.error("Error on Edited object creation: %s" % str(e))
+                self.app.log.error("Error on Edited object creation: %s" % str(e))
                 # make sure to clean the previous results
                 self.results = []
                 return
@@ -4464,14 +4465,13 @@ class AppGerberEditor(QtCore.QObject):
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
                         except Exception as e:
-                            log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
+                            self.app.log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, SelectEditorGrb):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit('[success] %s' %
-                                                 _("Done."))
+                            self.app.inform.emit('[success] %s' % _("Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
@@ -4507,7 +4507,7 @@ class AppGerberEditor(QtCore.QObject):
                                     else:
                                         self.select_tool("select")
         except Exception as e:
-            log.warning("AppGerberEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
+            self.app.log.warning("AppGerberEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -4525,7 +4525,7 @@ class AppGerberEditor(QtCore.QObject):
                     # if self.selected:
                     #     self.plot_all()
         except Exception as e:
-            log.warning("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
+            self.app.log.warning("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -4561,7 +4561,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.ui.apertures_table.cellPressed.disconnect()
         except Exception as e:
-            log.debug("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
+            self.app.log.debug("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
         # select the aperture code of the selected geometry, in the tool table
         self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
@@ -4775,7 +4775,7 @@ class AppGerberEditor(QtCore.QObject):
     #
     #     # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
     #     # self.plot_thread.start()
-    #     log.debug("AppGerberEditor --> Delayed Plot started.")
+    #     self.app.log.debug("AppGerberEditor --> Delayed Plot started.")
     #     self.plot_thread = QtCore.QTimer()
     #     self.plot_thread.setInterval(check_period)
     #     self.plot_finished.connect(self.setup_ui_after_delayed_plot)
@@ -4793,7 +4793,7 @@ class AppGerberEditor(QtCore.QObject):
     #         if not self.grb_plot_promises:
     #             self.plot_thread.stop()
     #             self.plot_finished.emit()
-    #             log.debug("AppGerberEditor --> delayed_plot finished")
+    #             self.app.log.debug("AppGerberEditor --> delayed_plot finished")
     #     except Exception as e:
     #         traceback.print_exc()
     #
@@ -4815,7 +4815,7 @@ class AppGerberEditor(QtCore.QObject):
 
         :return:        None
         """
-        log.debug("AppGerberEditor.on_zoom_fit()")
+        self.app.log.debug("AppGerberEditor.on_zoom_fit()")
 
         # calculate all the geometry in the edited Gerber object
         edit_geo = []
@@ -4991,7 +4991,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def on_buffer(self):
         buff_value = 0.01
-        log.debug("AppGerberEditor.on_buffer()")
+        self.app.log.debug("AppGerberEditor.on_buffer()")
 
         try:
             buff_value = float(self.ui.buffer_distance_entry.get_value())
@@ -5042,7 +5042,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = []
                 self.storage_dict[apcode]['geometry'] = temp_storage
             except Exception as e:
-                log.debug("AppGerberEditor.buffer() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.buffer() --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
                 return
 
@@ -5051,7 +5051,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def on_scale(self):
         scale_factor = 1.0
-        log.debug("AppGerberEditor.on_scale()")
+        self.app.log.debug("AppGerberEditor.on_scale()")
 
         try:
             scale_factor = float(self.ui.scale_factor_entry.get_value())
@@ -5106,7 +5106,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = temp_storage
 
             except Exception as e:
-                log.debug("AppGerberEditor.on_scale() --> %s" % str(e))
+                self.app.log.debug("AppGerberEditor.on_scale() --> %s" % str(e))
 
         self.plot_all()
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -5181,7 +5181,7 @@ class AppGerberEditor(QtCore.QObject):
             if tool_name == 'markarea' or tool_name == 'all':
                 self.ui.ma_tool_frame.hide()
         except Exception as e:
-            log.debug("AppGerberEditor.hide_tool() --> %s" % str(e))
+            self.app.log.debug("AppGerberEditor.hide_tool() --> %s" % str(e))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
 
