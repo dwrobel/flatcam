@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed an error in Geo Editor when trying to save an empty Geometry
 - in Preferences made sure that clicking the Restore Defaults will update the values in the Preferences Tab
 - some changes in the Tools visibility in the Tools ToolBar
+- added confirmation status messages for clearing the recent files/projects lists
 
 24.11.2020
 

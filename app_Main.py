@@ -7568,6 +7568,7 @@ class App(QtCore.QObject):
                 return
 
             json.dump(self.recent, ff)
+            self.inform.emit('%s' % _("Recent files list was reset."))
 
         def reset_recent_projects():
             # Reset menu
@@ -7581,6 +7582,7 @@ class App(QtCore.QObject):
                 return
 
             json.dump(self.recent, frp)
+            self.inform.emit('%s' % _("Recent projects list was reset."))
 
         # Reset menu
         self.ui.recent.clear()
