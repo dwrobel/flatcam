@@ -57,8 +57,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.precision_metric_entry.set_range(2, 16)
         self.precision_metric_entry.setWrapping(True)
 
-        grid0.addWidget(self.precision_metric_label, 1, 0)
-        grid0.addWidget(self.precision_metric_entry, 1, 1)
+        grid0.addWidget(self.precision_metric_label, 2, 0)
+        grid0.addWidget(self.precision_metric_entry, 2, 1)
 
         # Precision Inch
         self.precision_inch_label = FCLabel('%s:' % _('Precision Inch'))
@@ -71,8 +71,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.precision_inch_entry.set_range(2, 16)
         self.precision_inch_entry.setWrapping(True)
 
-        grid0.addWidget(self.precision_inch_label, 2, 0)
-        grid0.addWidget(self.precision_inch_entry, 2, 1)
+        grid0.addWidget(self.precision_inch_label, 4, 0)
+        grid0.addWidget(self.precision_inch_entry, 4, 1)
 
         # Graphic Engine for FlatCAM
         self.ge_label = FCLabel('<b>%s:</b>' % _('Graphic Engine'))
@@ -86,13 +86,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                   {'label': _('OpenGL(3D)'), 'value': '3D'}],
                                  orientation='vertical')
 
-        grid0.addWidget(self.ge_label, 3, 0)
-        grid0.addWidget(self.ge_radio, 3, 1)
+        grid0.addWidget(self.ge_label, 6, 0)
+        grid0.addWidget(self.ge_radio, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Application Level for FlatCAM
         self.app_level_label = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('APPLICATION LEVEL'))
@@ -101,51 +101,58 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                           "ADVANCED level -> full functionality.\n\n"
                                           "The choice here will influence the parameters in\n"
                                           "the Selected Tab for all kinds of FlatCAM objects."))
+        grid0.addWidget(self.app_level_label, 10, 0, 1, 2)
+
         self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
+        grid0.addWidget(self.app_level_radio, 12, 0, 1, 2)
 
-        grid0.addWidget(self.app_level_label, 5, 0, 1, 2)
-        grid0.addWidget(self.app_level_radio, 6, 0, 1, 2)
-
-        # Portability for FlatCAM
+        # Portability
         self.portability_cb = FCCheckBox('%s' % _('Portable app'))
         self.portability_cb.setToolTip(_("Choose if the application should run as portable.\n\n"
                                          "If Checked the application will run portable,\n"
                                          "which means that the preferences files will be saved\n"
                                          "in the application folder, in the lib\\config subfolder."))
 
-        grid0.addWidget(self.portability_cb, 7, 0, 1, 2)
+        grid0.addWidget(self.portability_cb, 14, 0, 1, 2)
+
+        # Verbose Log
+        self.verbose_cb = FCCheckBox('%s' % _('Verbose log'))
+        self.verbose_cb.setToolTip(_("Enable log messages in the Tcl Shell.\n"
+                                     "Require restart."))
+
+        grid0.addWidget(self.verbose_cb, 16, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 2)
+        grid0.addWidget(separator_line, 18, 0, 1, 2)
 
         # Languages for FlatCAM
         self.languagelabel = FCLabel('<b>%s</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
-        self.language_cb = FCComboBox()
+        grid0.addWidget(self.languagelabel, 20, 0, 1, 2)
 
-        grid0.addWidget(self.languagelabel, 9, 0, 1, 2)
-        grid0.addWidget(self.language_cb, 10, 0, 1, 2)
+        self.language_cb = FCComboBox()
+        grid0.addWidget(self.language_cb, 22, 0, 1, 2)
 
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
                                              "The app will restart after click."))
 
-        grid0.addWidget(self.language_apply_btn, 15, 0, 1, 2)
+        grid0.addWidget(self.language_apply_btn, 24, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        grid0.addWidget(separator_line, 26, 0, 1, 2)
 
         # -----------------------------------------------------------
         # ----------- APPLICATION STARTUP SETTINGS ------------------
         # -----------------------------------------------------------
 
         self.startup_label = FCLabel('<b>%s</b>' % _('Startup Settings'))
-        grid0.addWidget(self.startup_label, 17, 0, 1, 2)
+        grid0.addWidget(self.startup_label, 28, 0, 1, 2)
 
         # Splash Screen
         self.splash_cb = FCCheckBox('%s' % _('Splash Screen'))
@@ -159,14 +166,14 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         else:
             self.splash_cb.set_value(False)
 
-        grid0.addWidget(self.splash_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.splash_cb, 30, 0, 1, 2)
 
         # Sys Tray Icon
         self.systray_cb = FCCheckBox('%s' % _('Sys Tray Icon'))
         self.systray_cb.setToolTip(
             _("Enable display of FlatCAM icon in Sys Tray.")
         )
-        grid0.addWidget(self.systray_cb, 19, 0, 1, 2)
+        grid0.addWidget(self.systray_cb, 32, 0, 1, 2)
 
         # Shell StartUp CB
         self.shell_startup_cb = FCCheckBox(label='%s' % _('Show Shell'))
@@ -175,7 +182,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "start automatically at startup.")
         )
 
-        grid0.addWidget(self.shell_startup_cb, 20, 0, 1, 2)
+        grid0.addWidget(self.shell_startup_cb, 34, 0, 1, 2)
 
         # Project at StartUp CB
         self.project_startup_cb = FCCheckBox(label='%s' % _('Show Project'))
@@ -183,7 +190,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Check this box if you want the project/selected/tool tab area to\n"
               "to be shown automatically at startup.")
         )
-        grid0.addWidget(self.project_startup_cb, 21, 0, 1, 2)
+        grid0.addWidget(self.project_startup_cb, 36, 0, 1, 2)
 
         # Version Check CB
         self.version_check_cb = FCCheckBox(label='%s' % _('Version Check'))
@@ -192,7 +199,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "for a new version automatically at startup.")
         )
 
-        grid0.addWidget(self.version_check_cb, 22, 0, 1, 2)
+        grid0.addWidget(self.version_check_cb, 38, 0, 1, 2)
 
         # Send Stats CB
         self.send_stats_cb = FCCheckBox(label='%s' % _('Send Statistics'))
@@ -201,14 +208,14 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "stats automatically at startup, to help improve FlatCAM.")
         )
 
-        grid0.addWidget(self.send_stats_cb, 23, 0, 1, 2)
+        grid0.addWidget(self.send_stats_cb, 40, 0, 1, 2)
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 24, 0, 1, 2)
+        grid0.addWidget(separator_line, 42, 0, 1, 2)
 
         # Worker Numbers
         self.worker_number_label = FCLabel('%s:' % _('Workers number'))
@@ -223,8 +230,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.worker_number_sb = FCSpinner()
         self.worker_number_sb.set_range(2, 16)
 
-        grid0.addWidget(self.worker_number_label, 25, 0)
-        grid0.addWidget(self.worker_number_sb, 25, 1)
+        grid0.addWidget(self.worker_number_label, 44, 0)
+        grid0.addWidget(self.worker_number_sb, 44, 1)
 
         # Geometric tolerance
         tol_label = FCLabel('%s:' % _("Geo Tolerance"))
@@ -240,17 +247,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid0.addWidget(tol_label, 26, 0)
-        grid0.addWidget(self.tol_entry, 26, 1)
+        grid0.addWidget(tol_label, 46, 0)
+        grid0.addWidget(self.tol_entry, 46, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 27, 0, 1, 2)
+        grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # Save Settings
         self.save_label = FCLabel('<b>%s</b>' % _("Save Settings"))
-        grid0.addWidget(self.save_label, 28, 0, 1, 2)
+        grid0.addWidget(self.save_label, 50, 0, 1, 2)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -259,7 +266,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "When checked it will save a compressed FlatCAM project.")
         )
 
-        grid0.addWidget(self.save_type_cb, 29, 0, 1, 2)
+        grid0.addWidget(self.save_type_cb, 52, 0, 1, 2)
 
         # Project LZMA Comppression Level
         self.compress_spinner = FCSpinner()
@@ -271,8 +278,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but require more RAM usage and more processing time.")
         )
 
-        grid0.addWidget(self.compress_label, 30, 0)
-        grid0.addWidget(self.compress_spinner, 30, 1)
+        grid0.addWidget(self.compress_label, 54, 0)
+        grid0.addWidget(self.compress_spinner, 54, 1)
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
@@ -284,7 +291,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "at the set interval.")
         )
 
-        grid0.addWidget(self.autosave_cb, 31, 0, 1, 2)
+        grid0.addWidget(self.autosave_cb, 56, 0, 1, 2)
 
         # Auto Save Timeout Interval
         self.autosave_entry = FCSpinner()
@@ -297,21 +304,21 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "While active, some operations may block this feature.")
         )
 
-        grid0.addWidget(self.autosave_label, 32, 0)
-        grid0.addWidget(self.autosave_entry, 32, 1)
+        grid0.addWidget(self.autosave_label, 58, 0)
+        grid0.addWidget(self.autosave_entry, 58, 1)
 
         # self.as_ois = OptionalInputSection(self.autosave_cb, [self.autosave_label, self.autosave_entry], True)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 33, 0, 1, 2)
+        grid0.addWidget(separator_line, 60, 0, 1, 2)
 
         self.pdf_param_label = FCLabel('<B>%s:</b>' % _("Text to PDF parameters"))
         self.pdf_param_label.setToolTip(
             _("Used when saving text in Code Editor or in FlatCAM Document objects.")
         )
-        grid0.addWidget(self.pdf_param_label, 34, 0, 1, 2)
+        grid0.addWidget(self.pdf_param_label, 62, 0, 1, 2)
 
         # Top Margin value
         self.tmargin_entry = FCDoubleSpinner()
@@ -323,8 +330,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the top of the PDF file.")
         )
 
-        grid0.addWidget(self.tmargin_label, 35, 0)
-        grid0.addWidget(self.tmargin_entry, 35, 1)
+        grid0.addWidget(self.tmargin_label, 64, 0)
+        grid0.addWidget(self.tmargin_entry, 64, 1)
 
         # Bottom Margin value
         self.bmargin_entry = FCDoubleSpinner()
@@ -336,8 +343,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the bottom of the PDF file.")
         )
 
-        grid0.addWidget(self.bmargin_label, 36, 0)
-        grid0.addWidget(self.bmargin_entry, 36, 1)
+        grid0.addWidget(self.bmargin_label, 66, 0)
+        grid0.addWidget(self.bmargin_entry, 66, 1)
 
         # Left Margin value
         self.lmargin_entry = FCDoubleSpinner()
@@ -349,8 +356,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the left of the PDF file.")
         )
 
-        grid0.addWidget(self.lmargin_label, 37, 0)
-        grid0.addWidget(self.lmargin_entry, 37, 1)
+        grid0.addWidget(self.lmargin_label, 68, 0)
+        grid0.addWidget(self.lmargin_entry, 68, 1)
 
         # Right Margin value
         self.rmargin_entry = FCDoubleSpinner()
@@ -362,8 +369,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the right of the PDF file.")
         )
 
-        grid0.addWidget(self.rmargin_label, 38, 0)
-        grid0.addWidget(self.rmargin_entry, 38, 1)
+        grid0.addWidget(self.rmargin_label, 70, 0)
+        grid0.addWidget(self.rmargin_entry, 70, 1)
 
         self.layout.addStretch()
 

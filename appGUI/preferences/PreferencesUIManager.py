@@ -53,7 +53,9 @@ class PreferencesUIManager:
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_log_verbose": self.ui.general_defaults_form.general_app_group.verbose_cb,
             "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
+
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
             "global_systray_icon": self.ui.general_defaults_form.general_app_group.systray_cb,

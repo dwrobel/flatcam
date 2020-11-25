@@ -267,9 +267,9 @@ class App(QtCore.QObject):
 
         super().__init__()
 
-        # ###############################################################################################################
-        # ######################################### LOGGING #############################################################
-        # ###############################################################################################################
+        # #############################################################################################################
+        # ######################################### LOGGING ###########################################################
+        # #############################################################################################################
         self.log = logging.getLogger('base')
         self.log.setLevel(logging.DEBUG)
         # log.setLevel(logging.WARNING)
@@ -303,6 +303,134 @@ class App(QtCore.QObject):
         self.toggle_units_ignore = False
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
+
+        # ###########################################################################################################
+        # ###########################################################################################################
+        # ######################################## Variables for global usage #######################################
+        # ###########################################################################################################
+        # ###########################################################################################################
+
+        # hold the App units
+        self.units = 'MM'
+
+        # coordinates for relative position display
+        self.rel_point1 = (0, 0)
+        self.rel_point2 = (0, 0)
+
+        # variable to store coordinates
+        self.pos = (0, 0)
+        self.pos_canvas = (0, 0)
+        self.pos_jump = (0, 0)
+
+        # variable to store mouse coordinates
+        self.mouse = [0, 0]
+
+        # variable to store the delta positions on cavnas
+        self.dx = 0
+        self.dy = 0
+
+        # decide if we have a double click or single click
+        self.doubleclick = False
+
+        # store here the is_dragging value
+        self.event_is_dragging = False
+
+        # variable to store if a command is active (then the var is not None) and which one it is
+        self.command_active = None
+        # variable to store the status of moving selection action
+        # None value means that it's not an selection action
+        # True value = a selection from left to right
+        # False value = a selection from right to left
+        self.selection_type = None
+
+        # List to store the objects that are currently loaded in FlatCAM
+        # This list is updated on each object creation or object delete
+        self.all_objects_list = []
+
+        self.objects_under_the_click_list = []
+
+        # List to store the objects that are selected
+        self.sel_objects_list = []
+
+        # holds the key modifier if pressed (CTRL, SHIFT or ALT)
+        self.key_modifiers = None
+
+        # Variable to store the status of the code editor
+        self.toggle_codeeditor = False
+
+        # Variable to be used for situations when we don't want the LMB click on canvas to auto open the Project Tab
+        self.click_noproject = False
+
+        self.cursor = None
+
+        # Variable to store the GCODE that was edited
+        self.gcode_edited = ""
+
+        # Variable to store old state of the Tools Toolbar; used in the Editor2Object and in Object2Editor methods
+        self.old_state_of_tools_toolbar = False
+
+        self.text_editor_tab = None
+
+        # here store the color of a Tab text before it is changed so it can be restored in the future
+        self.old_tab_text_color = None
+
+        # reference for the self.ui.code_editor
+        self.reference_code_editor = None
+        self.script_code = ''
+
+        # if Tools DB are changed/edited in the Edit -> Tools Database tab the value will be set to True
+        self.tools_db_changed_flag = False
+
+        self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
+                         'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
+                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'outline',
+                         'pho', 'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top',
+                         'tsm']
+
+        self.exc_list = ['drd', 'drl', 'drill', 'exc', 'ncd', 'tap', 'txt', 'xln']
+
+        self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
+                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'ply', 'rol',
+                           'sbp', 'tap', 'xpi']
+        self.svg_list = ['svg']
+        self.dxf_list = ['dxf']
+        self.pdf_list = ['pdf']
+        self.prj_list = ['flatprj']
+        self.conf_list = ['flatconfig']
+
+        # last used filters
+        self.last_op_gerber_filter = None
+        self.last_op_excellon_filter = None
+        self.last_op_gcode_filter = None
+
+        # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
+        # flag for polygons not cleared
+        self.poly_not_cleared = False
+
+        # VisPy visuals
+        self.isHovering = False
+        self.notHovering = True
+
+        # Window geometry
+        self.x_pos = None
+        self.y_pos = None
+        self.width = None
+        self.height = None
+
+        # this holds a widget that is installed in the Plot Area when View Source option is used
+        self.source_editor_tab = None
+
+        self.pagesize = {}
+
+        # used in the delayed shutdown self.start_delayed_quit() method
+        self.save_timer = None
+
+        # to use for tools like Distance tool who depends on the event sources who are changed inside the appEditors
+        # depending on from where those tools are called different actions can be done
+        self.call_source = 'app'
+
+        # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
+        self.tool_tab_locked = False
 
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
@@ -469,329 +597,9 @@ class App(QtCore.QObject):
 
         self.current_units = self.defaults['units']
 
-        # ############################################################################################################
-        # ################################### Set LOG verbosity ######################################################
-        # ############################################################################################################
-        if self.defaults["global_log_verbose"] is True:
-            self.log.handlers.pop()
-            self.log = AppLogging(app=self)
-
-        # ###########################################################################################################
-        # #################################### SETUP OBJECT CLASSES #################################################
-        # ###########################################################################################################
-        self.setup_obj_classes()
-
-        # ###########################################################################################################
-        # ###################################### CREATE MULTIPROCESSING POOL #######################################
-        # ###########################################################################################################
-        self.pool = Pool()
-
-        # ###########################################################################################################
-        # ###################################### Clear GUI Settings - once at first start ###########################
-        # ###########################################################################################################
-        if self.defaults["first_run"] is True:
-            # on first run clear the previous QSettings, therefore clearing the GUI settings
-            qsettings = QSettings("Open Source", "FlatCAM")
-            for key in qsettings.allKeys():
-                qsettings.remove(key)
-            # This will write the setting to the platform specific storage.
-            del qsettings
-
-        # ###########################################################################################################
-        # ###################################### Setting the Splash Screen ##########################################
-        # ###########################################################################################################
-        splash_settings = QSettings("Open Source", "FlatCAM")
-        if splash_settings.contains("splash_screen"):
-            show_splash = splash_settings.value("splash_screen")
-        else:
-            splash_settings.setValue('splash_screen', 1)
-
-            # This will write the setting to the platform specific storage.
-            del splash_settings
-            show_splash = 1
-
-        if show_splash and self.cmd_line_headless != 1:
-            splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
-            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-            # self.splash.setMask(splash_pix.mask())
-
-            # move splashscreen to the current monitor
-            desktop = QtWidgets.QApplication.desktop()
-            screen = desktop.screenNumber(QtGui.QCursor.pos())
-            current_screen_center = desktop.availableGeometry(screen).center()
-            self.splash.move(current_screen_center - self.splash.rect().center())
-
-            self.splash.show()
-            self.splash.showMessage(_("The application is initializing ..."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                    color=QtGui.QColor("gray"))
-        else:
-            self.splash = None
-            show_splash = 0
-
-        # ###########################################################################################################
-        # ######################################### Initialize GUI ##################################################
-        # ###########################################################################################################
-
-        # FlatCAM colors used in plotting
-        self.FC_light_green = '#BBF268BF'
-        self.FC_dark_green = '#006E20BF'
-        self.FC_light_blue = '#a5a5ffbf'
-        self.FC_dark_blue = '#0000ffbf'
-
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
-        else:
-            theme = 'white'
-
-        if self.defaults["global_cursor_color_enabled"]:
-            self.cursor_color_3D = self.defaults["global_cursor_color"]
-        else:
-            if theme == 'white':
-                self.cursor_color_3D = 'black'
-            else:
-                self.cursor_color_3D = 'gray'
-
-        # update the defaults dict with the setting in QSetting
-        self.defaults['global_theme'] = theme
-
-        self.ui = MainGUI(self)
-
-        # set FlatCAM units in the Status bar
-        self.set_screen_units(self.defaults['units'])
-
-        # ###########################################################################################################
-        # ########################################### AUTOSAVE SETUP ################################################
-        # ###########################################################################################################
-
-        self.block_autosave = False
-        self.autosave_timer = QtCore.QTimer(self)
-        self.save_project_auto_update()
-        self.autosave_timer.timeout.connect(self.save_project_auto)
-
-        # ###########################################################################################################
-        # #################################### LOAD PREPROCESSORS ###################################################
-        # ###########################################################################################################
-
-        # ----------------------------------------- WARNING --------------------------------------------------------
-        # Preprocessors need to be loaded before the Preferences Manager builds the Preferences
-        # That's because the number of preprocessors can vary and here the combobox is populated
-        # -----------------------------------------------------------------------------------------------------------
-
-        # a dictionary that have as keys the name of the preprocessor files and the value is the class from
-        # the preprocessor file
-        self.preprocessors = load_preprocessors(self)
-
-        # make sure that always the 'default' preprocessor is the first item in the dictionary
-        if 'default' in self.preprocessors.keys():
-            # add the 'default' name first in the dict after removing from the preprocessor's dictionary
-            default_pp = self.preprocessors.pop('default')
-            new_ppp_dict = {
-                'default': default_pp
-            }
-
-            # then add the rest of the keys
-            for name, val_class in self.preprocessors.items():
-                new_ppp_dict[name] = val_class
-
-            # and now put back the ordered dict with 'default' key first
-            self.preprocessors = deepcopy(new_ppp_dict)
-
-        # populate the Preprocessor ComboBoxes in the PREFERENCES
-        for name in list(self.preprocessors.keys()):
-            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
-            if name.partition('_')[0] == 'Paste':
-                self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
-                continue
-
-            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
-            # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
-            if name == 'hpgl':
-                continue
-
-            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
-
-        # add ToolTips for the Preprocessor ComboBoxes in Preferences
-        for it in range(self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.count()):
-            self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
-        for it in range(self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.count()):
-            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.setItemData(
-                it, self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
-        for it in range(self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.count()):
-            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.setItemData(
-                it, self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
-
-        # ###########################################################################################################
-        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
-        # ###########################################################################################################
-
-        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
-                                                         inform=self.inform)
-
-        self.preferencesUiManager.defaults_write_form()
-
-        # When the self.defaults dictionary changes will update the Preferences GUI forms
-        self.defaults.set_change_callback(self.on_defaults_dict_change)
-
-        # ###########################################################################################################
-        # ########################################## LOAD LANGUAGES  ################################################
-        # ###########################################################################################################
-
-        self.languages = fcTranslate.load_languages()
-        for name in sorted(self.languages.values()):
-            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
-
-        # ###########################################################################################################
-        # ####################################### APPLY APP LANGUAGE ################################################
-        # ###########################################################################################################
-
-        ret_val = fcTranslate.apply_language('strings')
-
-        if ret_val == "no language":
-            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
-            self.log.debug("Could not find the Language files. The App strings are missing.")
-        else:
-            # make the current language the current selection on the language combobox
-            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
-            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
-
-        # ###########################################################################################################
-        # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
-        # ###########################################################################################################
-
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-        if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
-            self.defaults['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
-            self.preferencesUiManager.save_defaults(silent=True, first_time=True)
-
-        self.defaults.propagate_defaults()
-
-        # ###########################################################################################################
-        # ######################################## UPDATE THE OPTIONS ###############################################
-        # ###########################################################################################################
-
-        self.options = LoudDict()
-        # -----------------------------------------------------------------------------------------------------------
-        #   Update the self.options from the self.defaults
-        #   The self.defaults holds the application defaults while the self.options holds the object defaults
-        # -----------------------------------------------------------------------------------------------------------
-        # Copy app defaults to project options
-        for def_key, def_val in self.defaults.items():
-            self.options[def_key] = deepcopy(def_val)
-
-        self.preferencesUiManager.show_preferences_gui()
-
-        # ### End of Data ####
-
-        # ###########################################################################################################
-        # #################################### SETUP OBJECT COLLECTION ##############################################
-        # ###########################################################################################################
-
-        self.collection = ObjectCollection(app=self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
-
-        self.app_obj = AppObject(app=self)
-
-        # ### Adjust tabs width ## ##
-        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
-        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
-        self.collection.view.setMinimumWidth(290)
-        self.log.debug("Finished creating Object Collection.")
-
-        # ###########################################################################################################
-        # ######################################## SETUP Plot Area ##################################################
-        # ###########################################################################################################
-
-        # determine if the Legacy Graphic Engine is to be used or the OpenGL one
-        if self.defaults["global_graphic_engine"] == '3D':
-            self.is_legacy = False
-        else:
-            self.is_legacy = True
-
-        # Event signals disconnect id holders
-        self.mp = None
-        self.mm = None
-        self.mr = None
-        self.mdc = None
-        self.mp_zc = None
-        self.kp = None
-
-        # Matplotlib axis
-        self.axes = None
-
-        if show_splash:
-            self.splash.showMessage(_("The application is initializing ...\n"
-                                      "Canvas initialization started."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                    color=QtGui.QColor("gray"))
-        start_plot_time = time.time()  # debug
-
-        self.app_cursor = None
-        self.hover_shapes = None
-
-        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
-
-        # setup the PlotCanvas
-        self.plotcanvas = self.on_plotcanvas_setup()
-        if self.plotcanvas == 'fail':
-            return
-
-        end_plot_time = time.time()
-        self.used_time = end_plot_time - start_plot_time
-        self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
-
-        if show_splash:
-            self.splash.showMessage('%s: %ssec' % (_("The application is initializing ...\n"
-                                                     "Canvas initialization started.\n"
-                                                     "Canvas initialization finished in"), '%.2f' % self.used_time),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                    color=QtGui.QColor("gray"))
-        self.ui.splitter.setStretchFactor(1, 2)
-
-        # ###########################################################################################################
-        # ############################################### Worker SETUP ##############################################
-        # ###########################################################################################################
-        if self.defaults["global_worker_number"]:
-            self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
-        else:
-            self.workers = WorkerStack(workers_number=2)
-
-        self.worker_task.connect(self.workers.add_task)
-        self.log.debug("Finished creating Workers crew.")
-
-        # ###########################################################################################################
-        # ############################################# Activity Monitor ############################################
-        # ###########################################################################################################
-        # self.activity_view = FlatCAMActivityView(app=self)
-        # self.ui.infobar.addWidget(self.activity_view)
-        self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
-
-        # ###########################################################################################################
-        # ########################################## Other setups ###################################################
-        # ###########################################################################################################
-
-        # to use for tools like Distance tool who depends on the event sources who are changed inside the appEditors
-        # depending on from where those tools are called different actions can be done
-        self.call_source = 'app'
-
-        # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
-        self.tool_tab_locked = False
-
-        # decide if to show or hide the Notebook side of the screen at startup
-        if self.defaults["global_project_at_startup"] is True:
-            self.ui.splitter.setSizes([1, 1])
-        else:
-            self.ui.splitter.setSizes([0, 1])
-
-        # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
-        self.setup_default_properties_tab()
-
         # ###########################################################################################################
         # ####################################### Auto-complete KEYWORDS ############################################
+        # ######################## Setup after the Defaults class was instantiated ##################################
         # ###########################################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'aligndrillgrid', 'bbox', 'clear', 'cncjob', 'cutout',
@@ -1023,11 +831,344 @@ class App(QtCore.QObject):
         self.autocomplete_kw_list = self.defaults['util_autocomplete_keywords'].replace(' ', '').split(',')
         self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
 
+        # ############################################################################################################
+        # ################################### Set LOG verbosity ######################################################
+        # ############################################################################################################
+        if self.defaults["global_log_verbose"] is True:
+            self.log.handlers.pop()
+            self.log = AppLogging(app=self)
+
+        # ###########################################################################################################
+        # #################################### SETUP OBJECT CLASSES #################################################
+        # ###########################################################################################################
+        self.setup_obj_classes()
+
+        # ###########################################################################################################
+        # ###################################### CREATE MULTIPROCESSING POOL #######################################
+        # ###########################################################################################################
+        self.pool = Pool()
+
+        # ###########################################################################################################
+        # ###################################### Clear GUI Settings - once at first start ###########################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # on first run clear the previous QSettings, therefore clearing the GUI settings
+            qsettings = QSettings("Open Source", "FlatCAM")
+            for key in qsettings.allKeys():
+                qsettings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del qsettings
+
+        # ###########################################################################################################
+        # ###################################### Setting the Splash Screen ##########################################
+        # ###########################################################################################################
+        splash_settings = QSettings("Open Source", "FlatCAM")
+        if splash_settings.contains("splash_screen"):
+            show_splash = splash_settings.value("splash_screen")
+        else:
+            splash_settings.setValue('splash_screen', 1)
+
+            # This will write the setting to the platform specific storage.
+            del splash_settings
+            show_splash = 1
+
+        if show_splash and self.cmd_line_headless != 1:
+            splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
+            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            # self.splash.setMask(splash_pix.mask())
+
+            # move splashscreen to the current monitor
+            desktop = QtWidgets.QApplication.desktop()
+            screen = desktop.screenNumber(QtGui.QCursor.pos())
+            current_screen_center = desktop.availableGeometry(screen).center()
+            self.splash.move(current_screen_center - self.splash.rect().center())
+
+            self.splash.show()
+            self.splash.showMessage(_("The application is initializing ..."),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
+        else:
+            self.splash = None
+            show_splash = 0
+
+        # ###########################################################################################################
+        # ######################################### Initialize GUI ##################################################
+        # ###########################################################################################################
+
+        # FlatCAM colors used in plotting
+        self.FC_light_green = '#BBF268BF'
+        self.FC_dark_green = '#006E20BF'
+        self.FC_light_blue = '#a5a5ffbf'
+        self.FC_dark_blue = '#0000ffbf'
+
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if self.defaults["global_cursor_color_enabled"]:
+            self.cursor_color_3D = self.defaults["global_cursor_color"]
+        else:
+            if theme == 'white':
+                self.cursor_color_3D = 'black'
+            else:
+                self.cursor_color_3D = 'gray'
+
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
+
+        self.ui = MainGUI(self)
+
+        # set FlatCAM units in the Status bar
+        self.set_screen_units(self.defaults['units'])
+
+        # decide if to show or hide the Notebook side of the screen at startup
+        if self.defaults["global_project_at_startup"] is True:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
+        # ###########################################################################################################
+        # ########################################### Initialize Tcl Shell ##########################################
+        # ###########################    always initialize it after the UI is initialized   #########################
+        # ###########################################################################################################
+        self.shell = FCShell(app=self, version=self.version)
+        self.log.debug("Stardate: %s" % self.date)
+        self.log.debug("TCL Shell has been initialized.")
+
+        # ###########################################################################################################
+        # ########################################### AUTOSAVE SETUP ################################################
+        # ###########################################################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
+
+        # ###########################################################################################################
+        # #################################### LOAD PREPROCESSORS ###################################################
+        # ###########################################################################################################
+
+        # ----------------------------------------- WARNING --------------------------------------------------------
+        # Preprocessors need to be loaded before the Preferences Manager builds the Preferences
+        # That's because the number of preprocessors can vary and here the combobox is populated
+        # -----------------------------------------------------------------------------------------------------------
+
+        # a dictionary that have as keys the name of the preprocessor files and the value is the class from
+        # the preprocessor file
+        self.preprocessors = load_preprocessors(self)
+
+        # make sure that always the 'default' preprocessor is the first item in the dictionary
+        if 'default' in self.preprocessors.keys():
+            # add the 'default' name first in the dict after removing from the preprocessor's dictionary
+            default_pp = self.preprocessors.pop('default')
+            new_ppp_dict = {
+                'default': default_pp
+            }
+
+            # then add the rest of the keys
+            for name, val_class in self.preprocessors.items():
+                new_ppp_dict[name] = val_class
+
+            # and now put back the ordered dict with 'default' key first
+            self.preprocessors = deepcopy(new_ppp_dict)
+
+        # populate the Preprocessor ComboBoxes in the PREFERENCES
+        for name in list(self.preprocessors.keys()):
+            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
+            if name.partition('_')[0] == 'Paste':
+                self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
+                continue
+
+            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
+            # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
+            if name == 'hpgl':
+                continue
+
+            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
+
+        # add ToolTips for the Preprocessor ComboBoxes in Preferences
+        for it in range(self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.count()):
+            self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.setItemData(
+                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+        for it in range(self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.count()):
+            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.setItemData(
+                it, self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.itemText(it),
+                QtCore.Qt.ToolTipRole)
+        for it in range(self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.count()):
+            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.setItemData(
+                it, self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
+                QtCore.Qt.ToolTipRole)
+
+        # ###########################################################################################################
+        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
+        # ###########################################################################################################
+
+        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
+                                                         inform=self.inform)
+
+        self.preferencesUiManager.defaults_write_form()
+
+        # When the self.defaults dictionary changes will update the Preferences GUI forms
+        self.defaults.set_change_callback(self.on_defaults_dict_change)
+
+        # set the value used in the Windows Title
+        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+
+        # ###########################################################################################################
+        # ########################################## LOAD LANGUAGES  ################################################
+        # ###########################################################################################################
+
+        self.languages = fcTranslate.load_languages()
+        for name in sorted(self.languages.values()):
+            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
+
+        # ###########################################################################################################
+        # ####################################### APPLY APP LANGUAGE ################################################
+        # ###########################################################################################################
+
+        ret_val = fcTranslate.apply_language('strings')
+
+        if ret_val == "no language":
+            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
+            self.log.debug("Could not find the Language files. The App strings are missing.")
+        else:
+            # make the current language the current selection on the language combobox
+            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
+            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
+
+        # ###########################################################################################################
+        # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
+        # ###########################################################################################################
+
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+        if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
+            self.defaults['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
+            self.preferencesUiManager.save_defaults(silent=True, first_time=True)
+
+        self.defaults.propagate_defaults()
+
+        # ###########################################################################################################
+        # ######################################## UPDATE THE OPTIONS ###############################################
+        # ###########################################################################################################
+
+        self.options = LoudDict()
+        # -----------------------------------------------------------------------------------------------------------
+        #   Update the self.options from the self.defaults
+        #   The self.defaults holds the application defaults while the self.options holds the object defaults
+        # -----------------------------------------------------------------------------------------------------------
+        # Copy app defaults to project options
+        for def_key, def_val in self.defaults.items():
+            self.options[def_key] = deepcopy(def_val)
+
+        self.preferencesUiManager.show_preferences_gui()
+
+        # ###########################################################################################################
+        # #################################### SETUP OBJECT COLLECTION ##############################################
+        # ###########################################################################################################
+
+        self.collection = ObjectCollection(app=self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        self.app_obj = AppObject(app=self)
+
+        # ### Adjust tabs width ## ##
+        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
+        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
+        self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
+
+        # ###########################################################################################################
+        # ######################################## SETUP Plot Area ##################################################
+        # ###########################################################################################################
+
+        # determine if the Legacy Graphic Engine is to be used or the OpenGL one
+        if self.defaults["global_graphic_engine"] == '3D':
+            self.is_legacy = False
+        else:
+            self.is_legacy = True
+
+        # PlotCanvas Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+        self.mdc = None
+        self.mp_zc = None
+        self.kp = None
+
+        # Matplotlib axis
+        self.axes = None
+
+        self.app_cursor = None
+        self.hover_shapes = None
+
+        if show_splash:
+            self.splash.showMessage(_("The application is initializing ...\n"
+                                      "Canvas initialization started."),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
+        start_plot_time = time.time()  # debug
+
+        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
+
+        # setup the PlotCanvas
+        self.plotcanvas = self.on_plotcanvas_setup()
+        if self.plotcanvas == 'fail':
+            return
+
+        end_plot_time = time.time()
+        self.used_time = end_plot_time - start_plot_time
+        self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
+
+        if show_splash:
+            self.splash.showMessage('%s: %ssec' % (_("The application is initializing ...\n"
+                                                     "Canvas initialization started.\n"
+                                                     "Canvas initialization finished in"), '%.2f' % self.used_time),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
+        self.ui.splitter.setStretchFactor(1, 2)
+
+        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
+        # VisPy visuals
+        if self.is_legacy is False:
+            try:
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.tool_shapes = None
+        else:
+            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
+
+        # ###########################################################################################################
+        # ############################################### Worker SETUP ##############################################
+        # ###########################################################################################################
+        if self.defaults["global_worker_number"]:
+            self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
+        else:
+            self.workers = WorkerStack(workers_number=2)
+
+        self.worker_task.connect(self.workers.add_task)
+        self.log.debug("Finished creating Workers crew.")
+
+        # ###########################################################################################################
+        # ############################################# Activity Monitor ############################################
+        # ###########################################################################################################
+        # self.activity_view = FlatCAMActivityView(app=self)
+        # self.ui.infobar.addWidget(self.activity_view)
+        self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
+
+        # ###########################################################################################################
+        # ########################################## Other setups ###################################################
+        # ###########################################################################################################
+
+        # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
+        self.setup_default_properties_tab()
+
         # ###########################################################################################################
         # ########################################## Tools and Plugins ##############################################
         # ###########################################################################################################
 
-        self.shell = FCShell(app=self, version=self.version)
         self.dblsidedtool = None
         self.distance_tool = None
         self.distance_min_tool = None
@@ -1108,8 +1249,7 @@ class App(QtCore.QObject):
             self.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
-            self.worker_task.emit({'fcn': self.version_check,
-                                   'params': []})
+            self.worker_task.emit({'fcn': self.version_check, 'params': []})
             # self.thr2.start(QtCore.QThread.LowPriority)
 
         # ###########################################################################################################
@@ -1118,139 +1258,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         if sys.platform == 'win32' and self.defaults["first_run"] is True:
             self.on_register_files()
-
-        # ###########################################################################################################
-        # ######################################## Variables for global usage #######################################
-        # ###########################################################################################################
-
-        # hold the App units
-        self.units = 'MM'
-
-        # coordinates for relative position display
-        self.rel_point1 = (0, 0)
-        self.rel_point2 = (0, 0)
-
-        # variable to store coordinates
-        self.pos = (0, 0)
-        self.pos_canvas = (0, 0)
-        self.pos_jump = (0, 0)
-
-        # variable to store mouse coordinates
-        self.mouse = [0, 0]
-
-        # variable to store the delta positions on cavnas
-        self.dx = 0
-        self.dy = 0
-
-        # decide if we have a double click or single click
-        self.doubleclick = False
-
-        # store here the is_dragging value
-        self.event_is_dragging = False
-
-        # variable to store if a command is active (then the var is not None) and which one it is
-        self.command_active = None
-        # variable to store the status of moving selection action
-        # None value means that it's not an selection action
-        # True value = a selection from left to right
-        # False value = a selection from right to left
-        self.selection_type = None
-
-        # List to store the objects that are currently loaded in FlatCAM
-        # This list is updated on each object creation or object delete
-        self.all_objects_list = []
-
-        self.objects_under_the_click_list = []
-
-        # List to store the objects that are selected
-        self.sel_objects_list = []
-
-        # holds the key modifier if pressed (CTRL, SHIFT or ALT)
-        self.key_modifiers = None
-
-        # Variable to store the status of the code editor
-        self.toggle_codeeditor = False
-
-        # Variable to be used for situations when we don't want the LMB click on canvas to auto open the Project Tab
-        self.click_noproject = False
-
-        self.cursor = None
-
-        # Variable to store the GCODE that was edited
-        self.gcode_edited = ""
-
-        # Variable to store old state of the Tools Toolbar; used in the Editor2Object and in Object2Editor methods
-        self.old_state_of_tools_toolbar = False
-
-        self.text_editor_tab = None
-
-        # here store the color of a Tab text before it is changed so it can be restored in the future
-        self.old_tab_text_color = None
-
-        # reference for the self.ui.code_editor
-        self.reference_code_editor = None
-        self.script_code = ''
-
-        # if Tools DB are changed/edited in the Edit -> Tools Database tab the value will be set to True
-        self.tools_db_changed_flag = False
-
-        self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
-                         'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
-                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'outline',
-                         'pho', 'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top',
-                         'tsm']
-
-        self.exc_list = ['drd', 'drl', 'drill', 'exc', 'ncd', 'tap', 'txt', 'xln']
-
-        self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
-                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'ply', 'rol',
-                           'sbp', 'tap', 'xpi']
-        self.svg_list = ['svg']
-        self.dxf_list = ['dxf']
-        self.pdf_list = ['pdf']
-        self.prj_list = ['flatprj']
-        self.conf_list = ['flatconfig']
-
-        # last used filters
-        self.last_op_gerber_filter = None
-        self.last_op_excellon_filter = None
-        self.last_op_gcode_filter = None
-
-        # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
-        # flag for polygons not cleared
-        self.poly_not_cleared = False
-
-        # VisPy visuals
-        self.isHovering = False
-        self.notHovering = True
-
-        # Window geometry
-        self.x_pos = None
-        self.y_pos = None
-        self.width = None
-        self.height = None
-
-        # set the value used in the Windows Title
-        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
-
-        # this holds a widget that is installed in the Plot Area when View Source option is used
-        self.source_editor_tab = None
-
-        self.pagesize = {}
-
-        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
-        # VisPy visuals
-        if self.is_legacy is False:
-            try:
-                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
-            except AttributeError:
-                self.tool_shapes = None
-        else:
-            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
-
-        # used in the delayed shutdown self.start_delayed_quit() method
-        self.save_timer = None
 
         # ###########################################################################################################
         # ################################## ADDING FlatCAM EDITORS section #########################################
@@ -1364,9 +1371,7 @@ class App(QtCore.QObject):
         self.inform[str].connect(self.info)
         self.inform[str, bool].connect(self.info)
 
-        # signal for displaying messages in the shell
-        self.inform_shell[str].connect(self.info_shell)
-        self.inform_shell[str, bool].connect(self.info_shell)
+        # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
@@ -1398,7 +1403,7 @@ class App(QtCore.QObject):
 
         # Tool Signals
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
-        # the rest are autoinserted
+        # the rest are auto-inserted
 
         # Help Signals
         self.connect_menuhelp_signals()
@@ -1528,6 +1533,7 @@ class App(QtCore.QObject):
         # ##################################### Finished the CONSTRUCTOR ############################################
         # ###########################################################################################################
         self.log.debug("END of constructor. Releasing control.")
+        self.log.debug("... Resistance is futile. You will be assimilated ...\n")
 
         # ###########################################################################################################
         # ########################################## SHOW GUI #######################################################
@@ -1803,7 +1809,7 @@ class App(QtCore.QObject):
 
         gc.collect()
 
-    def install_tools(self):
+    def install_tools(self, init_tcl=False):
         """
         This installs the FlatCAM tools (plugin-like) which reside in their own classes.
         Instantiation of the Tools classes.
@@ -1812,8 +1818,9 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        # shell tool has to be initialized always first because other tools print messages in the Shell Dock
-        self.shell = FCShell(app=self, version=self.version)
+        if init_tcl:
+            # shell tool has to be initialized always first because other tools print messages in the Shell Dock
+            self.shell = FCShell(app=self, version=self.version)
 
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
@@ -1988,7 +1995,7 @@ class App(QtCore.QObject):
 
         # third install all of them
         try:
-            self.install_tools()
+            self.install_tools(init_tcl=True)
         except AttributeError:
             pass
 
@@ -2853,17 +2860,19 @@ class App(QtCore.QObject):
         self.defaults.report_usage("save_to_file")
         self.log.debug("save_to_file()")
 
-        self.date = str(datetime.today()).rpartition('.')[0]
-        self.date = ''.join(c for c in self.date if c not in ':-')
-        self.date = self.date.replace(' ', '_')
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
 
         filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
         path_to_save = self.defaults["global_last_save_folder"] if \
             self.defaults["global_last_save_folder"] is not None else self.data_path
+        final_path = os.path.join(path_to_save, 'file_%s' % str(date))
+
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save to file"),
-                directory=path_to_save + '/file_' + self.date,
+                directory=final_path,
                 ext_filter=filter__
             )
         except TypeError:

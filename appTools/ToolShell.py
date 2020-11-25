@@ -7,7 +7,7 @@
 # ##########################################################
 
 
-from PyQt5.QtCore import Qt
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QTextCursor, QPixmap
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
@@ -88,8 +88,8 @@ class TermWidget(QWidget):
         :return: None
         """
 
-        self._edit.setTextColor(Qt.white)
-        self._edit.setTextBackgroundColor(Qt.darkGreen)
+        self._edit.setTextColor(QtCore.Qt.white)
+        self._edit.setTextBackgroundColor(QtCore.Qt.darkGreen)
         if detail is None:
             self._edit.setPlainText(_("...processing..."))
         else:
@@ -104,8 +104,8 @@ class TermWidget(QWidget):
         :return:
         """
 
-        self._edit.setTextColor(Qt.black)
-        self._edit.setTextBackgroundColor(Qt.white)
+        self._edit.setTextColor(QtCore.Qt.black)
+        self._edit.setTextBackgroundColor(QtCore.Qt.white)
         self._edit.setPlainText('')
         self._edit.setDisabled(False)
         self._edit.setFocus()
@@ -292,14 +292,33 @@ class FCShell(TermWidget):
         self.init_tcl()
 
         self._edit.set_model_data(self.app.myKeywords)
-        self.setWindowIcon(self.app.ui.app_icon)
+
+        app_icon = QtGui.QIcon()
+        app_icon.addFile(self.app.resource_location + '/flatcam_icon16.png', QtCore.QSize(16, 16))
+        app_icon.addFile(self.app.resource_location + '/flatcam_icon24.png', QtCore.QSize(24, 24))
+        app_icon.addFile(self.app.resource_location + '/flatcam_icon32.png', QtCore.QSize(32, 32))
+
+        self.setWindowIcon(app_icon)
         self.setWindowTitle(_("FlatCAM Shell"))
         self.resize(*self.app.defaults["global_shell_shape"])
         self._append_to_browser('in', "FlatCAM %s - " % version)
         self.append_output('%s\n\n' % _("Type >help< to get started"))
 
         self.app.ui.shell_dock.setWidget(self)
-        self.app.log.debug("TCL Shell has been initialized.")
+
+        # first try to disconnect the signals since within the app the Tcl Tool can be reinitialized
+        try:
+            self.app.inform_shell[str].disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.inform_shell[str, bool].disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # signal for displaying messages in the shell
+        self.app.inform_shell[str].connect(self.app.info_shell)
+        self.app.inform_shell[str, bool].connect(self.app.info_shell)
 
     def init_tcl(self):
         if hasattr(self, 'tcl') and self.tcl is not None:

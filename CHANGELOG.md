@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - in Preferences made sure that clicking the Restore Defaults will update the values in the Preferences Tab
 - some changes in the Tools visibility in the Tools ToolBar
 - added confirmation status messages for clearing the recent files/projects lists
+- moved around portions of code in the App.__init__ for optimization; added a control in Preferences for usage of Log in Tcl Shell
 
 24.11.2020
 
