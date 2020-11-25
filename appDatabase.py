@@ -40,8 +40,8 @@ class ToolsDB2UI:
         tree_layout = QtWidgets.QVBoxLayout()
         self.g_lay.addLayout(tree_layout, 0, 0)
 
-        self.tree_widget = FCTree(columns=3, header_hidden=False, protected_column=[0, 2])
-        self.tree_widget.setHeaderLabels([_("ID"), _("Tool Name"), _("Target")])
+        self.tree_widget = FCTree(columns=3, header_hidden=False, protected_column=[0, 2, 3])
+        self.tree_widget.setHeaderLabels([_("ID"), _("Name"), _("Target"), _("Diameter")])
         self.tree_widget.setIndentation(0)
         self.tree_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -1792,12 +1792,15 @@ class ToolsDB2(QtWidgets.QWidget):
                 5: _('NCC'),
                 6: _('Cutout')
             }[dict_val['data']['tool_target']]
+
+            dia = dict_val['tooldia']
+
             try:
                 # self.add_tool_table_line(row, name=t_name, tooldict=dict_val)
                 self.ui.tree_widget.blockSignals(True)
                 try:
                     self.ui.tree_widget.addParentEditable(
-                        parent=parent, title=[str(row+1), t_name, op_name], editable=True)
+                        parent=parent, title=[str(row+1), t_name, op_name, str(dia)], editable=True)
                 except Exception as e:
                     print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
                 self.ui.tree_widget.blockSignals(False)

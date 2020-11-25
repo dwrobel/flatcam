@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - using 'Escape' key shortcut while the focus is in the Tcl Shell command line will set focus on the main canvas
 - in Tools Database added a new column showing the intended target and also added in the context menu an entry that will sort the tools by tool diameter
 - fixed in Tools Database the message pop-up that tools are modified but not saved on Toos Database tab closing
+- in Tools Database added a 3rd column showing the Tool Diameter
 
 24.11.2020
 
