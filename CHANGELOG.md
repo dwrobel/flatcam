@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - added a way to keep compatibility with old projects
 - some small fixes in the Geo Editor such that the Tool Tab is no longer shown on Editor Exit if it was used by an Editor sub-tool
 - removed the Notebook hide action when using the Esc key in the Geometry Editor
+- changed how the Editor toolbar button works; added a background for the 'Exit Editor' toolbar button when in Editor
 
 21.11.2020
 

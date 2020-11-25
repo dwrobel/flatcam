@@ -2225,8 +2225,8 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        self.ui.editgeo_btn.triggered.connect(self.object2editor)
-        self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
+        self.ui.editor_start_btn.triggered.connect(self.object2editor)
+        self.ui.editor_exit_btn.clicked.connect(lambda: self.editor2object())
         self.ui.copy_btn.triggered.connect(self.on_copy_command)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
@@ -2411,15 +2411,14 @@ class App(QtCore.QObject):
 
         edited_object = self.collection.get_active()
 
-        if isinstance(edited_object, GerberObject) or isinstance(edited_object, GeometryObject) or \
-                isinstance(edited_object, ExcellonObject) or isinstance(edited_object, CNCJobObject):
+        if edited_object and edited_object.kind in ['cncjob', 'excellon', 'geometry', 'gerber']:
             pass
         else:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber, Excellon or CNCJob Object to edit."))
             self.ui.menuobjects.setDisabled(False)
             return
 
-        if isinstance(edited_object, GeometryObject):
+        if edited_object.kind == 'geometry':
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
@@ -2462,7 +2461,7 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
-        elif isinstance(edited_object, ExcellonObject):
+        elif edited_object.kind == 'excellon':
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
 
@@ -2473,7 +2472,7 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
-        elif isinstance(edited_object, GerberObject):
+        elif edited_object.kind == 'gerber':
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
 
@@ -2487,7 +2486,7 @@ class App(QtCore.QObject):
 
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
-        elif isinstance(edited_object, CNCJobObject):
+        elif edited_object.kind == 'cncjob':
 
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])

@@ -2493,7 +2493,8 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.exc_editor_menu.setDisabled(False)
         self.app.ui.exc_editor_menu.menuAction().setVisible(True)
 
-        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.editor_exit_btn_ret_action.setVisible(True)
+        self.app.ui.editor_start_btn.setVisible(False)
         self.app.ui.e_editor_cmenu.setEnabled(True)
 
         self.app.ui.exc_edit_toolbar.setDisabled(False)
@@ -2546,7 +2547,8 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.exc_editor_menu.setDisabled(True)
         self.app.ui.exc_editor_menu.menuAction().setVisible(False)
 
-        self.app.ui.update_obj_btn.setEnabled(False)
+        self.app.ui.editor_exit_btn_ret_action.setVisible(False)
+        self.app.ui.editor_start_btn.setVisible(True)
 
         self.app.ui.popmenu_disable.setVisible(True)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(True)

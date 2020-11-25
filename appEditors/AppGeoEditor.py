@@ -3726,7 +3726,8 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.geo_editor_menu.setDisabled(False)
         self.app.ui.geo_editor_menu.menuAction().setVisible(True)
 
-        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.editor_exit_btn_ret_action.setVisible(True)
+        self.app.ui.editor_start_btn.setVisible(False)
         self.app.ui.g_editor_cmenu.setEnabled(True)
 
         self.app.ui.geo_edit_toolbar.setDisabled(False)
@@ -3787,7 +3788,8 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.geo_editor_menu.setDisabled(True)
         self.app.ui.geo_editor_menu.menuAction().setVisible(False)
 
-        self.app.ui.update_obj_btn.setEnabled(False)
+        self.app.ui.editor_exit_btn_ret_action.setVisible(False)
+        self.app.ui.editor_start_btn.setVisible(True)
 
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)

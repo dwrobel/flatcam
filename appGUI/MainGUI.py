@@ -49,6 +49,7 @@ class MainGUI(QtWidgets.QMainWindow):
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
 
+    # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
         super(MainGUI, self).__init__()
 
@@ -982,11 +983,22 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
         # ########################################################################
-        self.editgeo_btn = self.toolbaredit.addAction(
+        self.editor_start_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit_file32.png'), _("Editor"))
-        self.update_obj_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'), _("Save Object and close the Editor")
-        )
+        self.editor_exit_btn = QtWidgets.QToolButton()
+
+        # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
+        self.editor_exit_btn.setStyleSheet("""
+                                          QToolButton
+                                          {
+                                              color: black;
+                                              background-color: tomato;
+                                          }
+                                          """)
+        self.editor_exit_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.editor_exit_btn.setToolTip(_("Exit from Editor."))
+        # in order to hide it we hide the returned action
+        self.editor_exit_btn_ret_action = self.toolbaredit.addWidget(self.editor_exit_btn)
 
         self.toolbaredit.addSeparator()
         self.copy_btn = self.toolbaredit.addAction(
@@ -1787,7 +1799,8 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.grid_snap_btn.setCheckable(True)
         self.corner_snap_btn.setCheckable(True)
-        self.update_obj_btn.setEnabled(False)
+        self.editor_exit_btn_ret_action.setVisible(False)
+
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
@@ -2170,12 +2183,22 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################### Edit Toolbar #################################
         # ########################################################################
-        self.editgeo_btn = self.toolbaredit.addAction(
+        self.editor_start_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Editor"))
-        self.update_obj_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'),
-            _("Save Object and close the Editor")
-        )
+        self.editor_exit_btn = QtWidgets.QToolButton()
+
+        # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
+        self.editor_exit_btn.setStyleSheet("""
+                                          QToolButton
+                                          {
+                                              color: black;
+                                              background-color: tomato;
+                                          }
+                                          """)
+        self.editor_exit_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.editor_exit_btn.setToolTip(_("Exit from Editor."))
+        # in order to hide it we hide the returned action
+        self.editor_exit_btn_ret_action = self.toolbaredit.addWidget(self.editor_exit_btn)
 
         self.toolbaredit.addSeparator()
         self.copy_btn = self.toolbaredit.addAction(
