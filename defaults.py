@@ -46,6 +46,8 @@ class FlatCAMDefaults:
         # 1 = show trace(show trace always),
         # 2 = (For the future).
 
+        "global_log_verbose": False,
+
         "global_grid_context_menu": {
             'in': [0.01, 0.02, 0.025, 0.05, 0.1],
             'mm': [0.1, 0.2, 0.5, 1, 2.54]

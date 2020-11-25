@@ -25,6 +25,8 @@ import numpy as np
 # from voronoi import Voronoi
 # from voronoi import Polygon as voronoi_polygon
 
+import logging
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -896,6 +898,35 @@ class ExclusionAreas(QtCore.QObject):
 
         ret_list.append([None, end_point])
         return ret_list
+
+
+class AppLogging:
+    def __init__(self, app):
+        self.app = app
+
+        self._log = logging.getLogger('base')
+        self._log.setLevel(logging.DEBUG)
+        # log.setLevel(logging.WARNING)
+        formatter = logging.Formatter('[%(levelname)s][%(threadName)s] %(message)s')
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
+        self._log.addHandler(handler)
+
+    def info(self, msg):
+        self._log.info(msg=msg)
+        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+
+    def debug(self, msg):
+        self._log.debug(msg=msg)
+        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+
+    def warning(self, msg):
+        self._log.warning(msg=msg)
+        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+
+    def error(self, msg):
+        self._log.error(msg=msg)
+        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
 
 
 def farthest_point(origin, points_list):

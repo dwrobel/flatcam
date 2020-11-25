@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.11.2020
+
+- had a first shot in creating a way to show the log messages in the Tcl Shell if a setting in Preferences is set
+- fixed Isolation Tool tool table context menu pointing at the same method for the menu entries: Add Tool and Pick from DB
+
 24.11.2020
 
 - fixed an issue for importing DXF as Geometry when the DXF geometry is a single line

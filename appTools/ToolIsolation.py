@@ -64,7 +64,7 @@ class ToolIsolation(AppTool, Gerber):
         )
         self.ui.tools_table.addContextMenu(
             _("Pick from DB"),
-            self.on_add_tool_by_key,
+            self.on_tool_add_from_db_clicked,
             icon=QtGui.QIcon(self.app.resource_location + "/search_db32.png")
         )
         self.ui.tools_table.addContextMenu(

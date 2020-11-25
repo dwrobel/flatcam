@@ -47,6 +47,7 @@ import socket
 from appCommon.Common import LoudDict
 from appCommon.Common import color_variant
 from appCommon.Common import ExclusionAreas
+from appCommon.Common import AppLogging
 
 from Bookmark import BookmarkManager
 from appDatabase import ToolsDB2
@@ -115,17 +116,6 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # ########################################## App ################################################################
     # ###############################################################################################################
-
-    # ###############################################################################################################
-    # ######################################### LOGGING #############################################################
-    # ###############################################################################################################
-    log = logging.getLogger('base')
-    log.setLevel(logging.DEBUG)
-    # log.setLevel(logging.WARNING)
-    formatter = logging.Formatter('[%(levelname)s][%(threadName)s] %(message)s')
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
 
     # ###############################################################################################################
     # #################################### Get Cmd Line Options #####################################################
@@ -277,7 +267,18 @@ class App(QtCore.QObject):
 
         super().__init__()
 
-        log.info("FlatCAM Starting...")
+        # ###############################################################################################################
+        # ######################################### LOGGING #############################################################
+        # ###############################################################################################################
+        self.log = logging.getLogger('base')
+        self.log.setLevel(logging.DEBUG)
+        # log.setLevel(logging.WARNING)
+        formatter = logging.Formatter('[%(levelname)s][%(threadName)s] %(message)s')
+        handler = logging.StreamHandler()
+        handler.setFormatter(formatter)
+        self.log.addHandler(handler)
+
+        self.log.info("FlatCAM Starting...")
 
         self.qapp = qapp
 
@@ -467,6 +468,13 @@ class App(QtCore.QObject):
             self.resource_location = 'assets/resources/dark_resources'
 
         self.current_units = self.defaults['units']
+
+        # ############################################################################################################
+        # ################################### Set LOG verbosity ######################################################
+        # ############################################################################################################
+        if self.defaults["global_log_verbose"] is True:
+            self.log.handlers.pop()
+            self.log = AppLogging(app=self)
 
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################
@@ -1097,7 +1105,7 @@ class App(QtCore.QObject):
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
                 self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
-            App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
+            self.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
@@ -1544,7 +1552,7 @@ class App(QtCore.QObject):
             if self.defaults["global_systray_icon"]:
                 self.trayIcon.show()
         else:
-            log.warning("*******************  RUNNING HEADLESS  *******************")
+            self.log.warning("*******************  RUNNING HEADLESS  *******************")
 
         # ###########################################################################################################
         # ######################################## START-UP ARGUMENTS ###############################################
@@ -2882,8 +2890,8 @@ class App(QtCore.QObject):
                 f.close()
             except Exception:
                 e = sys.exc_info()[0]
-                App.log.error("Could not load the file.")
-                App.log.error(str(e))
+                self.log.error("Could not load the file.")
+                self.log.error(str(e))
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
                 return
 
@@ -2935,7 +2943,7 @@ class App(QtCore.QObject):
         try:
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
-            App.log.error("Failed to open recent items file for writing.")
+            self.log.error("Failed to open recent items file for writing.")
             self.inform.emit('[ERROR_NOTCL] %s' %
                              _('Failed to open recent files file for writing.'))
             return
@@ -2946,7 +2954,7 @@ class App(QtCore.QObject):
         try:
             fp = open(self.data_path + '/recent_projects.json', 'w')
         except IOError:
-            App.log.error("Failed to open recent items file for writing.")
+            self.log.error("Failed to open recent items file for writing.")
             self.inform.emit('[ERROR_NOTCL] %s' %
                              _('Failed to open recent projects file for writing.'))
             return
@@ -5443,7 +5451,8 @@ class App(QtCore.QObject):
                 try:
                     obj.options['name'] = text
                 except Exception as e:
-                    log.warning("App.on_rename_object() --> Could not rename the object in the list. --> %s" % str(e))
+                    self.log.warning(
+                        "App.on_rename_object() --> Could not rename the object in the list. --> %s" % str(e))
 
     def convert_any2geo(self):
         """
@@ -5480,7 +5489,7 @@ class App(QtCore.QObject):
                 tools_string = dias.split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
             except Exception as e:
-                log.debug("App.convert_any2geo() --> %s" % str(e))
+                self.log.debug("App.convert_any2geo() --> %s" % str(e))
                 return 'fail'
 
         tools = {}
@@ -5528,7 +5537,7 @@ class App(QtCore.QObject):
                 new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
 
         if not self.collection.get_selected():
-            log.warning("App.convert_any2geo --> No object selected")
+            self.log.warning("App.convert_any2geo --> No object selected")
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
@@ -5543,7 +5552,7 @@ class App(QtCore.QObject):
                     self.app_obj.new_object("geometry", outname, initialize_from_gerber)
 
             except Exception as e:
-                log.debug("Convert any 2 geo operation failed: %s" % str(e))
+                self.log.debug("Convert any 2 geo operation failed: %s" % str(e))
 
     def convert_any2gerber(self):
         """
@@ -5613,7 +5622,7 @@ class App(QtCore.QObject):
                 return 'fail'
 
         if not self.collection.get_selected():
-            log.warning("App.convert_any2gerber --> No object selected")
+            self.log.warning("App.convert_any2gerber --> No object selected")
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
@@ -5627,7 +5636,7 @@ class App(QtCore.QObject):
                 elif obj.kind == 'geometry':
                     self.app_obj.new_object("gerber", outname, initialize_from_geometry)
                 else:
-                    log.warning("App.convert_any2gerber --> This is no valid object for conversion.")
+                    self.log.warning("App.convert_any2gerber --> This is no valid object for conversion.")
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5785,7 +5794,7 @@ class App(QtCore.QObject):
                                                                       filename=None, use_thread=False)
 
         if not self.collection.get_selected():
-            log.warning("App.convert_any2excellon--> No object selected")
+            self.log.warning("App.convert_any2excellon--> No object selected")
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
@@ -5799,7 +5808,7 @@ class App(QtCore.QObject):
                 elif obj.kind == 'geometry':
                     self.app_obj.new_object("excellon", outname, initialize_from_geometry)
                 else:
-                    log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
+                    self.log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5945,10 +5954,11 @@ class App(QtCore.QObject):
                 __ = f.read()
         except Exception as eros:
             self.log.debug("The tools DB file is not loaded: %s" % str(eros))
-            log.error("Could not access tools DB file. The file may be locked,\n"
-                      "not existing or doesn't have the read permissions.\n"
-                      "Check to see if exists, it should be here: %s\n"
-                      "It may help to reboot the app, it will try to recreate it if it's missing." % self.data_path)
+            self.log.error("Could not access tools DB file. The file may be locked,\n"
+                           "not existing or doesn't have the read permissions.\n"
+                           "Check to see if exists, it should be here: %s\n"
+                           "It may help to reboot the app, it will try to recreate it if it's missing." % 
+                           self.data_path)
             self.inform.emit('[ERROR] %s' % _("Could not load the file."))
             return 'fail'
 
@@ -6763,7 +6773,8 @@ class App(QtCore.QObject):
                         self.delete_selection_shape()
                         self.delete_hover_shape()
                     except Exception as e:
-                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
+                        self.log.warning(
+                            "FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
                         return
             else:
                 # WORKAROUND for LEGACY MODE
@@ -6777,7 +6788,8 @@ class App(QtCore.QObject):
                         self.selection_area_handler(self.pos, pos, self.selection_type)
                         self.selection_type = None
                     except Exception as e:
-                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
+                        self.log.warning(
+                            "FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
                         return
                 else:
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -6803,7 +6815,8 @@ class App(QtCore.QObject):
 
                             self.delete_hover_shape()
                     except Exception as e:
-                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
+                        self.log.warning(
+                            "FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
                         return
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -6985,7 +6998,7 @@ class App(QtCore.QObject):
                 else:
                     self.call_source = 'app'
         except Exception as e:
-            log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
+            self.log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
 
     def selected_message(self, curr_sel_obj):
         if curr_sel_obj:
@@ -7505,14 +7518,14 @@ class App(QtCore.QObject):
         try:
             f = open(self.data_path + '/recent.json')
         except IOError:
-            App.log.error("Failed to load recent item list.")
+            self.log.error("Failed to load recent item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent item list."))
             return
 
         try:
             self.recent = json.load(f)
         except json.errors.JSONDecodeError:
-            App.log.error("Failed to parse recent item list.")
+            self.log.error("Failed to parse recent item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse recent item list."))
             f.close()
             return
@@ -7522,14 +7535,14 @@ class App(QtCore.QObject):
         try:
             fp = open(self.data_path + '/recent_projects.json')
         except IOError:
-            App.log.error("Failed to load recent project item list.")
+            self.log.error("Failed to load recent project item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent projects item list."))
             return
 
         try:
             self.recent_projects = json.load(fp)
         except json.errors.JSONDecodeError:
-            App.log.error("Failed to parse recent project item list.")
+            self.log.error("Failed to parse recent project item list.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse recent project item list."))
             fp.close()
             return
@@ -7550,7 +7563,7 @@ class App(QtCore.QObject):
             try:
                 ff = open(self.data_path + '/recent.json', 'w')
             except IOError:
-                App.log.error("Failed to open recent items file for writing.")
+                self.log.error("Failed to open recent items file for writing.")
                 return
 
             json.dump(self.recent, ff)
@@ -7563,7 +7576,7 @@ class App(QtCore.QObject):
             try:
                 frp = open(self.data_path + '/recent_projects.json', 'w')
             except IOError:
-                App.log.error("Failed to open recent projects items file for writing.")
+                self.log.error("Failed to open recent projects items file for writing.")
                 return
 
             json.dump(self.recent, frp)
@@ -7587,7 +7600,7 @@ class App(QtCore.QObject):
                     self.ui.recent_projects.addAction(action)
 
                 except KeyError:
-                    App.log.error("Unsupported file type: %s" % recent["kind"])
+                    self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action_proj = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
@@ -7611,7 +7624,7 @@ class App(QtCore.QObject):
                     self.ui.recent.addAction(action)
 
                 except KeyError:
-                    App.log.error("Unsupported file type: %s" % recent["kind"])
+                    self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
@@ -7764,7 +7777,7 @@ class App(QtCore.QObject):
         try:
             f = urllib.request.urlopen(full_url)
         except Exception:
-            # App.log.warning("Failed checking for latest version. Could not connect.")
+            # self.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
             self.inform.emit('[WARNING_NOTCL] %s' % _("Failed checking for latest version. Could not connect."))
             return
@@ -7772,7 +7785,7 @@ class App(QtCore.QObject):
         try:
             data = json.load(f)
         except Exception as e:
-            App.log.error("Could not parse information about latest version.")
+            self.log.error("Could not parse information about latest version.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Could not parse information about latest version."))
             self.log.debug("json.load(): %s" % str(e))
             f.close()
@@ -8388,6 +8401,7 @@ class MenuFileHandlers(QtCore.QObject):
         super().__init__()
 
         self.app = app
+        self.log = self.app.log
         self.inform = self.app.inform
         self.splash = self.app.splash
         self.worker_task = self.app.worker_task
@@ -8404,7 +8418,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("on_fileopengerber()")
+        self.log.debug("on_fileopengerber()")
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 " \
                    "*.gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb " \
@@ -8454,7 +8468,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("on_fileopenexcellon()")
+        self.log.debug("on_fileopenexcellon()")
 
         _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
                    "All Files (*.*)"
@@ -8494,7 +8508,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
 
-        self.app.log.debug("on_fileopengcode()")
+        self.log.debug("on_fileopengcode()")
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
         _filter_ = "G-Code Files (*.txt *.nc *.ncc *.tap *.gcode *.cnc *.ecs *.fnc *.dnc *.ncg *.gc *.fan *.fgc" \
@@ -8536,7 +8550,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("on_file_openproject()")
+        self.log.debug("on_file_openproject()")
 
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
@@ -8564,7 +8578,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param name:
         :return:        None
         """
-        self.app.log.debug("on_fileopenhpgl2()")
+        self.log.debug("on_fileopenhpgl2()")
 
         _filter_ = "HPGL2 Files (*.plt);;" \
                    "All Files (*.*)"
@@ -8602,7 +8616,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:        None
         """
 
-        self.app.log.debug("on_file_openconfig()")
+        self.log.debug("on_file_openconfig()")
 
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
@@ -8623,7 +8637,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_exportsvg()")
+        self.log.debug("on_file_exportsvg()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8672,7 +8686,7 @@ class MenuFileHandlers(QtCore.QObject):
 
     def on_file_exportpng(self):
 
-        self.app.log.debug("on_file_exportpng()")
+        self.log.debug("on_file_exportpng()")
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
@@ -8718,7 +8732,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_savegerber()")
+        self.log.debug("on_file_savegerber()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8760,7 +8774,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_savescript()")
+        self.log.debug("on_file_savescript()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8802,7 +8816,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_savedocument()")
+        self.log.debug("on_file_savedocument()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8844,7 +8858,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_saveexcellon()")
+        self.log.debug("on_file_saveexcellon()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8885,7 +8899,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_file_exportexcellon()")
+        self.log.debug("on_file_exportexcellon()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8930,7 +8944,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        App.log.debug("on_file_exportgerber()")
+        self.log.debug("on_file_exportgerber()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -8975,7 +8989,7 @@ class MenuFileHandlers(QtCore.QObject):
 
                 :return: None
                 """
-        App.log.debug("on_file_exportdxf()")
+        self.log.debug("on_file_exportdxf()")
 
         obj = self.app.collection.get_active()
         if obj is None:
@@ -9026,7 +9040,7 @@ class MenuFileHandlers(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.app.log.debug("on_file_importsvg()")
+        self.log.debug("on_file_importsvg()")
 
         _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
         try:
@@ -9056,7 +9070,7 @@ class MenuFileHandlers(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.app.log.debug("on_file_importdxf()")
+        self.log.debug("on_file_importdxf()")
 
         _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
@@ -9126,7 +9140,7 @@ class MenuFileHandlers(QtCore.QObject):
         self.defaults.report_usage("on_file_new")
 
         # Remove everything from memory
-        self.app.log.debug("on_file_new()")
+        self.log.debug("on_file_new()")
 
         # close any editor that might be open
         if self.app.call_source != 'app':
@@ -9196,7 +9210,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     self.app.ui.plot_tab_area.closeTab(index)
                 except Exception as e:
-                    log.debug("App.on_file_new() --> %s" % str(e))
+                    self.log.debug("App.on_file_new() --> %s" % str(e))
 
             # # And then add again the Plot Area
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
@@ -9232,7 +9246,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:        None
         """
 
-        self.app.log.debug("on_fileopenscript()")
+        self.log.debug("on_fileopenscript()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                    "All Files (*.*)"
@@ -9263,7 +9277,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:
         """
 
-        self.app.log.debug("on_fileopenscript_example()")
+        self.log.debug("on_fileopenscript_example()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                    "All Files (*.*)"
@@ -9300,7 +9314,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("on_file_runscript()")
+        self.log.debug("on_file_runscript()")
 
         if name:
             filename = name
@@ -9433,7 +9447,7 @@ class MenuFileHandlers(QtCore.QObject):
             else:
                 obj_name = _("FlatCAM objects print")
         except AttributeError as err:
-            self.app.log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
+            self.log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
             return
 
@@ -9568,7 +9582,7 @@ class MenuFileHandlers(QtCore.QObject):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                self.app.log.warning(
+                self.log.warning(
                     "DEV WARNING: Tried to get bounds of empty geometry in App.save_pdf(). %s" % str(e))
 
         # Determine bounding area for svg export
@@ -9634,7 +9648,7 @@ class MenuFileHandlers(QtCore.QObject):
                 renderPDF.draw(drawing, my_canvas, 0, 0)
                 my_canvas.save()
         except Exception as e:
-            self.app.log.debug("MenuFileHandlers.save_pdf() --> PDF output --> %s" % str(e))
+            self.log.debug("MenuFileHandlers.save_pdf() --> PDF output --> %s" % str(e))
             return 'fail'
 
         self.inform.emit('[success] %s: %s' % (_("PDF file saved to"), file_name))
@@ -9652,7 +9666,7 @@ class MenuFileHandlers(QtCore.QObject):
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
                                                                    is not None else self.defaults["global_last_folder"]
 
-        self.app.log.debug("export_svg()")
+        self.log.debug("export_svg()")
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
@@ -9712,7 +9726,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("App.on_import_preferences()")
+        self.log.debug("App.on_import_preferences()")
 
         # Show file chooser
         filter_ = "Config File (*.FlatConfig);;All Files (*.*)"
@@ -9740,7 +9754,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         :return: None
         """
-        self.app.log.debug("on_export_preferences()")
+        self.log.debug("on_export_preferences()")
 
         # defaults_file_content = None
 
@@ -9796,7 +9810,7 @@ class MenuFileHandlers(QtCore.QObject):
             else:
                 filename = self.defaults["global_last_folder"] + '/' + 'exported_excellon'
 
-        self.app.log.debug("export_excellon()")
+        self.log.debug("export_excellon()")
 
         format_exc = ';FILE_FORMAT=%d:%d\n' % (self.defaults["excellon_exp_integer"],
                                                self.defaults["excellon_exp_decimals"]
@@ -9914,7 +9928,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return exported_excellon
             except Exception as e:
-                self.app.log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
+                self.log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -9952,7 +9966,7 @@ class MenuFileHandlers(QtCore.QObject):
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
                                                                    is not None else self.defaults["global_last_folder"]
 
-        self.app.log.debug("export_gerber()")
+        self.log.debug("export_gerber()")
 
         if local_use is None:
             try:
@@ -10049,7 +10063,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return exported_gerber
             except Exception as e:
-                log.debug("App.export_gerber.make_gerber() --> %s" % str(e))
+                self.debug("App.export_gerber.make_gerber() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10086,7 +10100,7 @@ class MenuFileHandlers(QtCore.QObject):
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
                                                                    is not None else self.defaults["global_last_folder"]
 
-        self.app.log.debug("export_dxf()")
+        self.log.debug("export_dxf()")
 
         if local_use is None:
             try:
@@ -10115,7 +10129,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return dxf_code
             except Exception as e:
-                log.debug("App.export_dxf.make_dxf() --> %s" % str(e))
+                self.log.debug("App.export_dxf.make_dxf() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10148,7 +10162,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param outname:     The name given to the resulting FlatCAM object
         :return:
         """
-        self.app.log.debug("App.import_svg()")
+        self.log.debug("App.import_svg()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10201,7 +10215,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param plot:        If True then the resulting object will be plotted on canvas
         :return:
         """
-        self.app.log.debug(" ********* Importing DXF as: %s ********* " % geo_type.capitalize())
+        self.log.debug(" ********* Importing DXF as: %s ********* " % geo_type.capitalize())
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10283,7 +10297,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.log.error(str(err))
                 return "fail"
             except Exception as e:
-                log.debug("App.open_gerber() --> %s" % str(e))
+                app_obj.log.debug("App.open_gerber() --> %s" % str(e))
                 msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -10294,7 +10308,7 @@ class MenuFileHandlers(QtCore.QObject):
                                     _("Object is not Gerber file or empty. Aborting object creation."))
                 return "fail"
 
-        self.app.log.debug("open_gerber()")
+        self.log.debug("open_gerber()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10332,7 +10346,7 @@ class MenuFileHandlers(QtCore.QObject):
         :return:            None
         """
 
-        self.app.log.debug("open_excellon()")
+        self.log.debug("open_excellon()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10399,7 +10413,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param from_tcl:        True if run from Tcl Shell
         :return:                None
         """
-        self.app.log.debug("open_gcode()")
+        self.log.debug("open_gcode()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10503,7 +10517,7 @@ class MenuFileHandlers(QtCore.QObject):
                                     _("Object is not HPGL2 file or empty. Aborting object creation."))
                 return "fail"
 
-        self.app.log.debug("open_hpgl2()")
+        self.log.debug("open_hpgl2()")
 
         with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name
@@ -10556,7 +10570,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 return "fail"
 
-        self.app.log.debug("open_script()")
+        self.log.debug("open_script()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10589,7 +10603,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param run_from_arg:    if True the FlatConfig file will be open as an command line argument
         :return:                None
         """
-        self.app.log.debug("Opening config file: " + filename)
+        self.log.debug("Opening config file: " + filename)
 
         if run_from_arg:
             self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
@@ -10621,7 +10635,7 @@ class MenuFileHandlers(QtCore.QObject):
                     self.app.text_editor_tab.load_text(code_edited, clear_text=True, move_to_start=True)
                     f.close()
         except IOError:
-            self.app.log.error("Failed to open config file: %s" % filename)
+            self.log.error("Failed to open config file: %s" % filename)
             self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open config file"), filename))
             return
 
@@ -10643,7 +10657,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param from_tcl:        True if run from Tcl Sehll
         :return:                None
         """
-        self.app.log.debug("Opening project: " + filename)
+        self.log.debug("Opening project: " + filename)
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
@@ -10674,18 +10688,18 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     f = open(filename, 'r')
                 except IOError:
-                    self.app.log.error("Failed to open project file: %s" % filename)
+                    self.log.error("Failed to open project file: %s" % filename)
                     self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
                     return
             else:
-                self.app.log.error("Failed to open project file: %s" % filename)
+                self.log.error("Failed to open project file: %s" % filename)
                 self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
                 return
 
         try:
             d = json.load(f, object_hook=dict2obj)
         except Exception as e:
-            self.app.log.error(
+            self.log.error(
                 "Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
                 (filename, str(e)))
             f.close()
@@ -10696,7 +10710,7 @@ class MenuFileHandlers(QtCore.QObject):
                     file_content = f.read().decode('utf-8')
                     d = json.loads(file_content, object_hook=dict2obj)
             except Exception as e:
-                self.app.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
+                self.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
                 self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
                 return
 
@@ -10720,7 +10734,7 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.set_screen_units(self.app.options["units"])
 
         # Re create objects
-        self.app.log.debug(" **************** Started PROEJCT loading... **************** ")
+        self.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
@@ -10730,7 +10744,7 @@ class MenuFileHandlers(QtCore.QObject):
                     app_inst.log('MenuFileHandlers.open_project() --> ' + str(erro))
                     return 'fail'
 
-            self.app.log.debug(
+            self.log.debug(
                 "Recreating from opened project an %s object: %s" % (obj['kind'].capitalize(), obj['options']['name']))
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
@@ -10754,7 +10768,7 @@ class MenuFileHandlers(QtCore.QObject):
         if cli is None:
             self.app.ui.set_ui_title(name=self.app.project_filename)
 
-        self.app.log.debug(" **************** Finished PROJECT loading... **************** ")
+        self.log.debug(" **************** Finished PROJECT loading... **************** ")
 
     def save_project(self, filename, quit_action=False, silent=False, from_tcl=False):
         """
@@ -10767,11 +10781,11 @@ class MenuFileHandlers(QtCore.QObject):
         :param from_tcl         True is run from Tcl Shell
         :return:                None
         """
-        self.app.log.debug("save_project()")
+        self.log.debug("save_project()")
         self.app.save_in_progress = True
 
         if from_tcl:
-            log.debug("MenuFileHandlers.save_project() -> Project saved from TCL command.")
+            self.log.debug("MenuFileHandlers.save_project() -> Project saved from TCL command.")
 
         with self.app.proc_container.new(_("Saving Project ...")):
             # Capture the latest changes
@@ -10781,7 +10795,7 @@ class MenuFileHandlers(QtCore.QObject):
                 if current_object:
                     current_object.read_form()
             except Exception as e:
-                self.app.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
+                self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
 
             # Serialize the whole project
             d = {
@@ -10801,7 +10815,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     f = open(filename, 'w')
                 except IOError:
-                    self.app.log.error("Failed to open file for saving: %s", filename)
+                    self.log.error("Failed to open file for saving: %s", filename)
                     self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
                     return
 
@@ -10861,7 +10875,7 @@ class MenuFileHandlers(QtCore.QObject):
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
                                                                    is not None else self.defaults["global_last_folder"]
 
-        self.app.log.debug("save source file()")
+        self.log.debug("save source file()")
 
         obj = self.app.collection.get_by_name(obj_name)
 
