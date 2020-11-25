@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - updated the convert_any2geo() method such that resulting geometry objects have the tools attribute required in the newer versions of the app
 - added a way to keep compatibility with old projects
 - some small fixes in the Geo Editor such that the Tool Tab is no longer shown on Editor Exit if it was used by an Editor sub-tool
+- removed the Notebook hide action when using the Esc key in the Geometry Editor
 
 21.11.2020
 

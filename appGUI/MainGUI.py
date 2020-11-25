@@ -3052,13 +3052,9 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.geo_editor.delete_utility_geometry()
-
                     self.app.geo_editor.active_tool.clean_up()
-
                     self.app.geo_editor.select_tool('select')
 
-                    # hide the notebook
-                    self.app.ui.splitter.setSizes([0, 1])
                     return
 
                 # Delete selected object
@@ -3483,7 +3479,6 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit(response)
                 else:
                     pass
-
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
@@ -3500,9 +3495,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.exc_editor.delete_utility_geometry()
-
                     self.app.exc_editor.active_tool.clean_up()
-
                     self.app.exc_editor.select_tool('drill_select')
                     return
 
