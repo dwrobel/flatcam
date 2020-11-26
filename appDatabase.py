@@ -1809,6 +1809,11 @@ class ToolsDB2(QtWidgets.QWidget):
             except Exception as e:
                 self.app.log.debug("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
 
+        header = self.ui.tree_widget.header()
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+
         if self.current_toolid is None or self.current_toolid < 1:
             if self.db_tool_dict:
                 self.storage_to_form(self.db_tool_dict['1'])
@@ -2440,6 +2445,11 @@ class ToolsDB2(QtWidgets.QWidget):
             return
         # I'm setting the value for the third column (designated by 2) because first column holds the ID
         item.setData(2, QtCore.Qt.DisplayRole, op_name)
+
+        header = self.ui.tree_widget.header()
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
 
     def update_tree_tooldia(self):
         val = self.ui.dia_entry.get_value()
