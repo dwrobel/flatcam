@@ -1613,8 +1613,10 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui.tree_widget.currentItemChanged.connect(self.on_list_selection_change)
         self.ui.tree_widget.itemChanged.connect(self.on_list_item_edited)
         self.ui.tree_widget.customContextMenuRequested.connect(self.on_menu_request)
-
         self.ui.tree_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
+
+        self.ui.tree_widget.tree_header.setSectionsClickable(True)
+        self.ui.tree_widget.tree_header.sectionPressed.connect(self.on_header_clicked)
 
         self.ui.tool_op_combo.currentIndexChanged.connect(self.on_tool_target_changed)
 
@@ -1701,6 +1703,13 @@ class ToolsDB2(QtWidgets.QWidget):
         self.db_tool_dict = deepcopy(new_dict)
         self.build_db_ui()
         self.on_tools_db_edited()
+
+    def on_header_clicked(self, column):
+
+        if column == 2:
+            self.on_sort_target()
+        if column == 3:
+            self.on_sort_dia()
 
     def storage_to_form(self, dict_storage):
         self.ui_disconnect()

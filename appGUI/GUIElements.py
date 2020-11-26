@@ -164,9 +164,11 @@ class FCTree(QtWidgets.QTreeWidget):
     def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False, protected_column=None):
         super(FCTree, self).__init__(parent)
 
+        self.tree_header = self.header()
+
         self.setColumnCount(columns)
         self.setHeaderHidden(header_hidden)
-        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tree_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
 
         palette = QtGui.QPalette()
@@ -185,7 +187,8 @@ class FCTree(QtWidgets.QTreeWidget):
 
         self.protected_column = protected_column
         self.itemDoubleClicked.connect(self.on_double_click)
-        self.header().sectionDoubleClicked.connect(self.on_header_double_click)
+
+        self.tree_header.sectionDoubleClicked.connect(self.on_header_double_click)
         self.resize_sig.connect(self.on_resize)
 
     def on_double_click(self, item, column):
@@ -197,11 +200,10 @@ class FCTree(QtWidgets.QTreeWidget):
             item.setFlags(tmp_flags ^ QtCore.Qt.ItemIsEditable)
 
     def on_header_double_click(self, column):
-        header = self.header()
-        header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
-        width = header.sectionSize(column)
-        header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
-        header.resizeSection(column, width)
+        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+        width = self.tree_header.sectionSize(column)
+        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+        self.tree_header.resizeSection(column, width)
 
     def is_editable(self, tested_col):
         try:
