@@ -1533,7 +1533,8 @@ class App(QtCore.QObject):
         # ##################################### Finished the CONSTRUCTOR ############################################
         # ###########################################################################################################
         self.log.debug("END of constructor. Releasing control.")
-        self.log.debug("... Resistance is futile. You will be assimilated ...\n")
+        self.log.debug("... Resistance is futile. You will be assimilated ...")
+        self.log.debug("... I disagree. We will not be vaccinated ... We are free!\n")
 
         # ###########################################################################################################
         # ########################################## SHOW GUI #######################################################

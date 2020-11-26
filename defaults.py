@@ -84,7 +84,7 @@ class FlatCAMDefaults:
         "global_graphic_engine": '3D',
         "global_app_level": 'b',
 
-        "global_log_verbose": False,
+        "global_log_verbose": True,
         "global_portable": False,
         "global_language": 'English',
 

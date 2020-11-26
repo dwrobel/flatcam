@@ -81,6 +81,7 @@ class ToolsDB2UI:
         self.description_vlay = QtWidgets.QVBoxLayout()
         self.tool_description_box.setTitle(_("Tool Description"))
         self.tool_description_box.setMinimumWidth(250)
+        self.tool_description_box.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
 
         # Milling box
         self.milling_box = QtWidgets.QGroupBox()
@@ -169,29 +170,26 @@ class ToolsDB2UI:
         self.drill_box.setLayout(self.drill_vlay)
         self.cutout_box.setLayout(self.cutout_vlay)
 
+        descript_vlay = QtWidgets.QVBoxLayout()
+        descript_vlay.addWidget(self.tool_description_box)
+
         tools_vlay = QtWidgets.QVBoxLayout()
         tools_vlay.addWidget(self.iso_box)
         tools_vlay.addWidget(self.paint_box)
         tools_vlay.addWidget(self.ncc_box)
         tools_vlay.addWidget(self.cutout_box)
         tools_vlay.addStretch()
-
-        descript_vlay = QtWidgets.QVBoxLayout()
-        descript_vlay.addWidget(self.tool_description_box)
         descript_vlay.addLayout(tools_vlay)
+        param_hlay.addLayout(descript_vlay)
         descript_vlay.addStretch()
+
+        drilling_vlay = QtWidgets.QVBoxLayout()
+        drilling_vlay.addWidget(self.drill_box)
+        param_hlay.addLayout(drilling_vlay)
 
         mill_vlay = QtWidgets.QVBoxLayout()
         mill_vlay.addWidget(self.milling_box)
         mill_vlay.addStretch()
-
-        drilling_vlay = QtWidgets.QVBoxLayout()
-        drilling_vlay.addWidget(self.drill_box)
-
-        param_hlay.addLayout(descript_vlay)
-        param_hlay.addLayout(drilling_vlay)
-        param_hlay.addLayout(tools_vlay)
-
         # always visible, always to be included last
         param_hlay.addLayout(mill_vlay)
 
@@ -269,7 +267,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tol_max_entry, 6, 1)
 
         # Tool Object Type
-        self.tool_op_label = FCLabel('<b>%s:</b>' % _('Operation'))
+        self.tool_op_label = FCLabel('<b>%s:</b>' % _('Target'))
         self.tool_op_label.setToolTip(
             _("The kind of Application Tool where this tool is to be used."))
 
@@ -2105,7 +2103,14 @@ class ToolsDB2(QtWidgets.QWidget):
                     # remove from the storage
                     self.db_tool_dict.pop(toolid, None)
 
-        self.current_toolid -= 1
+        self.current_toolid = 0
+        new_tool_dict = {}
+
+        for dict_val in self.db_tool_dict.values():
+            self.current_toolid += 1
+            new_tool_dict[str(self.current_toolid)] = dict_val
+
+        self.db_tool_dict = deepcopy(new_tool_dict)
 
         self.update_storage()
         self.build_db_ui()

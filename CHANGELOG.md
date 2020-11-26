@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.11.2020
+
+- fixed error in Tools Database when deleting first tool; remade the tool deletion method
+
 25.11.2020
 
 - had a first shot in creating a way to show the log messages in the Tcl Shell if a setting in Preferences is set
