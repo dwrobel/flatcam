@@ -3392,24 +3392,66 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_font.setBold(True)
         self.geo_parent = self.tw.invisibleRootItem()
 
+        # Parameters Title
+        param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
+        param_title.setToolTip(
+            _("Geometry parameters.")
+        )
+        grid0.addWidget(param_title, 4, 0)
+
+        # Is Valid
+        is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
+        self.is_valid_entry = FCLabel('None')
+
+        grid0.addWidget(is_valid_lbl, 6, 0)
+        grid0.addWidget(self.is_valid_entry, 6, 1)
+
+        # Is Empty
+        is_empty_lbl = FCLabel('<b>%s</b>:' % _("Is Empty"))
+        self.is_empty_entry = FCLabel('None')
+
+        grid0.addWidget(is_empty_lbl, 8, 0)
+        grid0.addWidget(self.is_empty_entry, 8, 1)
+
+        # Is Ring
+        is_ring_lbl = FCLabel('<b>%s</b>:' % _("Is Ring"))
+        self.is_ring_entry = FCLabel('None')
+
+        grid0.addWidget(is_ring_lbl, 10, 0)
+        grid0.addWidget(self.is_ring_entry, 10, 1)
+
+        # Is CCW
+        is_ccw_lbl = FCLabel('<b>%s</b>:' % _("Is CCW"))
+        self.is_ccw_entry = FCLabel('None')
+
+        grid0.addWidget(is_ccw_lbl, 12, 0)
+        grid0.addWidget(self.is_ccw_entry, 12, 1)
+
+        # Is Simple
+        is_simple_lbl = FCLabel('<b>%s</b>:' % _("Is Simple"))
+        self.is_simple_entry = FCLabel('None')
+
+        grid0.addWidget(is_simple_lbl, 14, 0)
+        grid0.addWidget(self.is_simple_entry, 14, 1)
+
         # Length
         len_lbl = FCLabel('<b>%s</b>:' % _("Length"))
         len_lbl.setToolTip(
             _("The length of the geometry element.")
         )
         self.geo_len_entry = FCEntry(decimals=self.decimals)
-        grid0.addWidget(len_lbl, 4, 0)
-        grid0.addWidget(self.geo_len_entry, 4, 1)
+        grid0.addWidget(len_lbl, 16, 0)
+        grid0.addWidget(self.geo_len_entry, 16, 1)
 
         # Coordinates
         coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
-        grid0.addWidget(coords_lbl, 6, 0, 1, 2)
+        grid0.addWidget(coords_lbl, 18, 0, 1, 2)
 
         self.geo_coords_entry = FCTextEdit()
-        grid0.addWidget(self.geo_coords_entry, 8, 0, 1, 2)
+        grid0.addWidget(self.geo_coords_entry, 20, 0, 1, 2)
 
         # Vertex Points Number
         vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
@@ -3418,8 +3460,8 @@ class AppGeoEditor(QtCore.QObject):
         )
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
 
-        grid0.addWidget(vertex_lbl, 10, 0)
-        grid0.addWidget(self.geo_vertex_entry, 10, 1)
+        grid0.addWidget(vertex_lbl, 22, 0)
+        grid0.addWidget(self.geo_vertex_entry, 22, 1)
 
         layout.addStretch()
 
@@ -3745,14 +3787,25 @@ class AppGeoEditor(QtCore.QObject):
 
         if last_obj_shape:
             last_sel_geo = last_obj_shape.geo
+
+            self.is_valid_entry.set_value(last_sel_geo.is_valid)
+            self.is_empty_entry.set_value(last_sel_geo.is_empty)
+
+            if last_sel_geo.geom_type == 'LinearRing':
+                self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
+
             if last_sel_geo.geom_type in ['LinearRing', 'LineString', 'MultiLineString']:
                 length = last_sel_geo.length
                 coords = list(last_sel_geo.coords)
                 vertex_nr = len(coords)
+                self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.is_ring_entry.set_value(last_sel_geo.is_ring)
             elif last_sel_geo.geom_type == 'Polygon':
                 length = last_sel_geo.exterior.length
                 coords = list(last_sel_geo.exterior.coords)
                 vertex_nr = len(coords)
+                self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.is_ring_entry.set_value(last_sel_geo.is_ring)
             else:
                 length = 0.0
                 coords = 'None'

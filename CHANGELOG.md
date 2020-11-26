@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor fixed the selection on the Geometry Table
 - in Geometry Editor - made sure that the edited Geometry do not contain Shapely Points and that when adding shapes, that the geometry of that shapes is valid and non empty and it is not a Shapely Point
 - in Geometry Editor - added new information's (length, coordinates and vertex points number) for the geometric element selected in the Geometry Table
+- in Geometry Editor - added more parameters displayed for the geometric elements selected in the Geometry Table: is_valid, is_empty, is_ccw, is_simple, is_ring
 
 26.11.2020
 
