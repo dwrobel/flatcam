@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed error in Tools Database when deleting first tool; remade the tool deletion method
 - in Tools Database added tooltips for each column item in the left TreeWidget
 - in Tools Database made sure that editing the Target and Tool diameter in the right side section will update the values in the left TreeWidget
+- in Tools Database added a Sort by Target context menu entry and functionality; fixed the Sort by Dia functionality
 
 25.11.2020
 

@@ -1624,8 +1624,8 @@ class ToolsDB2(QtWidgets.QWidget):
 
         menu = QtWidgets.QMenu()
 
-        # sort_by_id = menu.addAction(QtGui.QIcon(self.app.resource_location + '/plus16.png'), _("Sort by Operation"))
-        # sort_by_id.triggered.connect(self.on_sort_operation)
+        sort_by_id = menu.addAction(QtGui.QIcon(self.app.resource_location + '/desc_sort32.png'), _("Sort by Target"))
+        sort_by_id.triggered.connect(self.on_sort_target)
 
         sort_by_dia = menu.addAction(QtGui.QIcon
                                      (self.app.resource_location + '/desc_sort32.png'), _("Sort by Diameter"))
@@ -1674,15 +1674,15 @@ class ToolsDB2(QtWidgets.QWidget):
         elif column == 1:
             self.ui.name_entry.set_value(item.text(1))
 
-    def on_sort_operation(self):
-        for tool in self.db_tool_dict.values():
-            dia = tool['tooldia']
-            target = tool['data']['tool_target']
-
+    def on_sort_target(self):
         ordered_by_target = sorted(self.db_tool_dict.items(), key=lambda x: x[1]['data']['tool_target'])
-        for td, k in ordered_by_target:
-            print(td,k)
+        new_dict = {}
+        t_id = 0
+        for __, old_dict in ordered_by_target:
+            t_id += 1
+            new_dict[str(t_id)] = old_dict
 
+        self.db_tool_dict = deepcopy(new_dict)
         self.build_db_ui()
         self.on_tools_db_edited()
 
@@ -1691,13 +1691,12 @@ class ToolsDB2(QtWidgets.QWidget):
         if dias:
             dias.sort()
 
+        ordered_by_dia = sorted(self.db_tool_dict.items(), key=lambda x: x[1]['tooldia'])
         new_dict = {}
         t_id = 0
-        for dia in dias:
-            for tool in self.db_tool_dict.values():
-                if tool['tooldia'] == dia:
-                    t_id += 1
-                    new_dict[str(t_id)] = tool
+        for __, old_dict in ordered_by_dia:
+            t_id += 1
+            new_dict[str(t_id)] = old_dict
 
         self.db_tool_dict = deepcopy(new_dict)
         self.build_db_ui()
