@@ -178,13 +178,14 @@ class ToolsDB2UI:
         tools_vlay.addWidget(self.paint_box)
         tools_vlay.addWidget(self.ncc_box)
         tools_vlay.addWidget(self.cutout_box)
-        tools_vlay.addStretch()
+        tools_vlay.addStretch(2)
         descript_vlay.addLayout(tools_vlay)
         param_hlay.addLayout(descript_vlay)
         descript_vlay.addStretch()
 
         drilling_vlay = QtWidgets.QVBoxLayout()
         drilling_vlay.addWidget(self.drill_box)
+        drilling_vlay.addStretch()
         param_hlay.addLayout(drilling_vlay)
 
         mill_vlay = QtWidgets.QVBoxLayout()
@@ -193,7 +194,7 @@ class ToolsDB2UI:
         # always visible, always to be included last
         param_hlay.addLayout(mill_vlay)
 
-        param_hlay.addStretch()
+        param_hlay.addStretch(stretch=2)
 
         # ###########################################################################
         # ################ Tool UI form #############################################
@@ -1797,8 +1798,11 @@ class ToolsDB2(QtWidgets.QWidget):
                 # self.add_tool_table_line(row, name=t_name, tooldict=dict_val)
                 self.ui.tree_widget.blockSignals(True)
                 try:
-                    self.ui.tree_widget.addParentEditable(
+                    item = self.ui.tree_widget.addParentEditable(
                         parent=parent, title=[str(row+1), t_name, op_name, str(dia)], editable=True)
+                    item.setData(1, QtCore.Qt.ToolTipRole, t_name)
+                    item.setData(2, QtCore.Qt.ToolTipRole, op_name)
+                    item.setData(3, QtCore.Qt.ToolTipRole, str(dia))
                 except Exception as e:
                     print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
                 self.ui.tree_widget.blockSignals(False)
@@ -1841,6 +1845,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_connect()
 
     def on_tool_target_changed(self, index=None, val=None):
+        self.update_tree_target()
 
         if val is None:
             tool_target = self.ui.tool_op_combo.get_value()
@@ -2307,6 +2312,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_disconnect()
 
         self.ui.name_entry.editingFinished.connect(self.update_tree_name)
+        self.ui.dia_entry.editingFinished.connect(self.update_tree_tooldia)
 
         for key in self.form_fields:
             wdg = self.form_fields[key]
@@ -2341,6 +2347,10 @@ class ToolsDB2(QtWidgets.QWidget):
     def ui_disconnect(self):
         try:
             self.ui.name_entry.editingFinished.disconnect(self.update_tree_name)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.dia_entry.editingFinished.disconnect(self.update_tree_tooldia)
         except (TypeError, AttributeError):
             pass
 
@@ -2411,6 +2421,34 @@ class ToolsDB2(QtWidgets.QWidget):
         # I'm setting the value for the second column (designated by 1) because first column holds the ID
         # and second column holds the Name (this behavior is set in the build_ui method)
         item.setData(1, QtCore.Qt.DisplayRole, val)
+
+    def update_tree_target(self):
+        val = self.ui.tool_op_combo.get_value()
+
+        op_name = {
+            0: _("General"),
+            1: _("Milling"),
+            2: _("Drilling"),
+            3: _('Isolation'),
+            4: _('Paint'),
+            5: _('NCC'),
+            6: _('Cutout')
+        }[val]
+
+        item = self.ui.tree_widget.currentItem()
+        if item is None:
+            return
+        # I'm setting the value for the third column (designated by 2) because first column holds the ID
+        item.setData(2, QtCore.Qt.DisplayRole, op_name)
+
+    def update_tree_tooldia(self):
+        val = self.ui.dia_entry.get_value()
+
+        item = self.ui.tree_widget.currentItem()
+        if item is None:
+            return
+        # I'm setting the value for the forth column (designated by 3) because first column holds the ID
+        item.setData(3, QtCore.Qt.DisplayRole, val)
 
     def update_storage(self):
         """
