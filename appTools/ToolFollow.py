@@ -238,9 +238,19 @@ class ToolFollow(AppTool, Gerber):
                     oname = opt_key[len('tools_mill') + 1:]
                     new_data[oname] = app_obj.options[opt_key]
 
+            try:
+                __ = iter(followed_obj.follow_geometry)
+            except TypeError:
+                followed_obj.follow_geometry = [followed_obj.follow_geometry]
+
+            follow_geo = [
+                g for g in followed_obj.follow_geometry if g and not g.is_empty and g.is_valid and
+                                                           g.geom_type != 'Point'
+            ]
+
             # Propagate options
             new_obj.options["cnctooldia"] = app_obj.defaults["geometry_cnctooldia"]
-            new_obj.solid_geometry = deepcopy(followed_obj.follow_geometry)
+            new_obj.solid_geometry = follow_geo
             new_obj.tools = {
                 1: {
                     'tooldia': app_obj.dec_format(float(tools_list[0]), self.decimals),
@@ -304,7 +314,14 @@ class ToolFollow(AppTool, Gerber):
             self.sel_rect[:] = []
             self.points = []
 
-            new_obj.solid_geometry = deepcopy(area_follow)
+            try:
+                __ = iter(area_follow)
+            except TypeError:
+                area_follow = [area_follow]
+
+            cleaned_area_follow = [g for g in area_follow if not g.is_empty and g.is_valid and g.geom_type != 'Point']
+
+            new_obj.solid_geometry = deepcopy(cleaned_area_follow)
             new_obj.tools = {
                 1: {
                     'tooldia': app_obj.dec_format(float(tools_list[0]), self.decimals),

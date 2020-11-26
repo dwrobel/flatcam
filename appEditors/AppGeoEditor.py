@@ -17,7 +17,7 @@ from PyQt5.QtCore import Qt
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
-    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry
+    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit
 from appParsers.ParseFont import *
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -2637,7 +2637,7 @@ class FCSelect(DrawTool):
         except Exception as e:
             log.error("[ERROR] AppGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
 
-        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        # if selection is done on canvas update the Tree in Properties Tab with the selection
         try:
             self.draw_app.tw.itemSelectionChanged.disconnect(self.draw_app.on_tree_selection_change)
         except (AttributeError, TypeError):
@@ -2649,7 +2649,7 @@ class FCSelect(DrawTool):
             while iterator.value():
                 item = iterator.value()
                 try:
-                    if int(item.text(1)) == id(sel_shape):
+                    if int(item.text(0)) == id(sel_shape):
                         item.setSelected(True)
                 except ValueError:
                     pass
@@ -3368,17 +3368,58 @@ class AppGeoEditor(QtCore.QObject):
         self.title_box.addWidget(self.title_label, stretch=1)
         self.title_box.addWidget(FCLabel(''))
 
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid0)
+
+        # Tree Widget Title
+        tw_label = FCLabel('<b>%s</b>:' % _("Geometry Table"))
+        tw_label.setToolTip(
+            _("The list of geometry elements inside the edited object.")
+        )
+        grid0.addWidget(tw_label, 0, 0, 1, 2)
+
+        # Tree Widget
         self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
         self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
         self.tw.setIndentation(0)
         self.tw.header().setStretchLastSection(True)
         self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.tools_box.addWidget(self.tw)
+        grid0.addWidget(self.tw, 2, 0, 1, 2)
 
         self.geo_font = QtGui.QFont()
         self.geo_font.setBold(True)
-
         self.geo_parent = self.tw.invisibleRootItem()
+
+        # Length
+        len_lbl = FCLabel('<b>%s</b>:' % _("Length"))
+        len_lbl.setToolTip(
+            _("The length of the geometry element.")
+        )
+        self.geo_len_entry = FCEntry(decimals=self.decimals)
+        grid0.addWidget(len_lbl, 4, 0)
+        grid0.addWidget(self.geo_len_entry, 4, 1)
+
+        # Coordinates
+        coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
+        coords_lbl.setToolTip(
+            _("The coordinates of the selected geometry element.")
+        )
+        grid0.addWidget(coords_lbl, 6, 0, 1, 2)
+
+        self.geo_coords_entry = FCTextEdit()
+        grid0.addWidget(self.geo_coords_entry, 8, 0, 1, 2)
+
+        # Vertex Points Number
+        vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
+        vertex_lbl.setToolTip(
+            _("The number of vertex points in the selected geometry element.")
+        )
+        self.geo_vertex_entry = FCEntry(decimals=self.decimals)
+
+        grid0.addWidget(vertex_lbl, 10, 0)
+        grid0.addWidget(self.geo_vertex_entry, 10, 1)
 
         layout.addStretch()
 
@@ -3690,14 +3731,37 @@ class AppGeoEditor(QtCore.QObject):
 
     def on_tree_selection_change(self):
         self.selected = []
+        last_obj_shape = None
+
         selected_tree_items = self.tw.selectedItems()
         for sel in selected_tree_items:
             for obj_shape in self.storage.get_objects():
                 try:
                     if id(obj_shape) == int(sel.text(0)):
                         self.selected.append(obj_shape)
+                        last_obj_shape = obj_shape
                 except ValueError:
                     pass
+
+        if last_obj_shape:
+            last_sel_geo = last_obj_shape.geo
+            if last_sel_geo.geom_type in ['LinearRing', 'LineString', 'MultiLineString']:
+                length = last_sel_geo.length
+                coords = list(last_sel_geo.coords)
+                vertex_nr = len(coords)
+            elif last_sel_geo.geom_type == 'Polygon':
+                length = last_sel_geo.exterior.length
+                coords = list(last_sel_geo.exterior.coords)
+                vertex_nr = len(coords)
+            else:
+                length = 0.0
+                coords = 'None'
+                vertex_nr = 0
+
+            self.geo_len_entry.set_value(length, decimals=self.decimals)
+            self.geo_coords_entry.setText(str(coords))
+            self.geo_vertex_entry.set_value(vertex_nr)
+
         self.replot()
 
     def activate(self):
@@ -4029,10 +4093,17 @@ class AppGeoEditor(QtCore.QObject):
             return
 
         # List of DrawToolShape?
-        if isinstance(shape, list):
+        # if isinstance(shape, list):
+        #     for subshape in shape:
+        #         self.add_shape(subshape)
+        #     return
+
+        try:
             for subshape in shape:
                 self.add_shape(subshape)
             return
+        except TypeError:
+            pass
 
         assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
         assert shape.geo is not None, "Shape object has empty geometry (None)"
@@ -4042,12 +4113,14 @@ class AppGeoEditor(QtCore.QObject):
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
         else:
-            try:
-                self.storage.insert(shape)
-            except Exception as err:
-                self.app.inform_shell.emit('%s\n%s' % ( _("Error on inserting shapes into storage."), str(err)))
-            if build_ui is True:
-                self.build_ui_sig.emit()    # Build UI
+            geometry = shape.geo
+            if geometry and geometry.is_valid and not geometry.is_empty and geometry.geom_type != 'Point':
+                try:
+                    self.storage.insert(shape)
+                except Exception as err:
+                    self.app.inform_shell.emit('%s\n%s' % ( _("Error on inserting shapes into storage."), str(err)))
+                if build_ui is True:
+                    self.build_ui_sig.emit()    # Build UI
 
     def delete_utility_geometry(self):
         """
@@ -4416,7 +4489,7 @@ class AppGeoEditor(QtCore.QObject):
             while iterator.value():
                 item = iterator.value()
                 try:
-                    if int(item.text(1)) == id(sel_shape):
+                    if int(item.text(0)) == id(sel_shape):
                         item.setSelected(True)
                 except ValueError:
                     pass
@@ -4801,14 +4874,22 @@ class AppGeoEditor(QtCore.QObject):
                 else:
                     geo_to_edit = editor_obj.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
 
-                for shape in geo_to_edit:
-                    if shape is not None:
-                        if type(shape) == Polygon:
-                            editor_obj.add_shape(DrawToolShape(shape.exterior), build_ui=False)
-                            for inter in shape.interiors:
-                                editor_obj.add_shape(DrawToolShape(inter), build_ui=False)
-                        else:
-                            editor_obj.add_shape(DrawToolShape(shape), build_ui=False)
+                # ####################################################################################################
+                # remove the invalid geometry and also the Points as those are not relevant for the Editor
+                # ####################################################################################################
+                try:
+                    __ = iter(geo_to_edit)
+                except TypeError:
+                    geo_to_edit = [geo_to_edit]
+                cleaned_geo = [g for g in geo_to_edit if g and not g.is_empty and g.is_valid and g.geom_type != 'Point']
+
+                for shape in cleaned_geo:
+                    if shape.geom_type == 'Polygon':
+                        editor_obj.add_shape(DrawToolShape(shape.exterior), build_ui=False)
+                        for inter in shape.interiors:
+                            editor_obj.add_shape(DrawToolShape(inter), build_ui=False)
+                    else:
+                        editor_obj.add_shape(DrawToolShape(shape), build_ui=False)
 
                 editor_obj.replot()
 
@@ -5007,8 +5088,9 @@ class AppGeoEditor(QtCore.QObject):
                     tools = selected[1:]
                     toolgeo = unary_union([deepcopy(shp.geo) for shp in tools]).buffer(0.0000001)
                     target = deepcopy(selected[0].geo)
-                    result = DrawToolShape(target.difference(toolgeo))
-                    self.add_shape(result)
+
+                    result = target.difference(toolgeo)
+                    self.add_shape(DrawToolShape(result))
 
                     for_deletion = [s for s in self.get_selected()]
                     for shape in for_deletion:

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.11.2020
+
+- in Geometry Editor fixed the selection on the Geometry Table
+- in Geometry Editor - made sure that the edited Geometry do not contain Shapely Points and that when adding shapes, that the geometry of that shapes is valid and non empty and it is not a Shapely Point
+- in Geometry Editor - added new information's (length, coordinates and vertex points number) for the geometric element selected in the Geometry Table
+
 26.11.2020
 
 - fixed error in Tools Database when deleting first tool; remade the tool deletion method
@@ -14,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - in Tools Database made sure that editing the Target and Tool diameter in the right side section will update the values in the left TreeWidget
 - in Tools Database added a Sort by Target context menu entry and functionality; fixed the Sort by Dia functionality
 - in Tools Database - clicking the header sections of the TreeWidget for columns Target and Diameter will sort the tools by that criteria
+- in Tool Follow made sure that the resulting geometry elements are all valid and not empty and also do not contain Points as those are irrelevant in the Follow Tool
 
 25.11.2020
 
