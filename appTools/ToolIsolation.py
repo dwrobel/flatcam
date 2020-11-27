@@ -230,6 +230,10 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
+        # Select All/None when in Polygon Selection mode
+        self.ui.sel_all_btn.clicked.connect(self.on_select_all_polygons)
+        self.ui.clear_all_btn.clicked.connect(self.on_deselect_all_polygons)
+
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
@@ -832,7 +836,10 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.hide()
             self.ui.area_shape_radio.hide()
+
             self.ui.poly_int_cb.hide()
+            self.ui.sel_all_btn.hide()
+            self.ui.clear_all_btn.hide()
 
             # disable rest-machining for area painting
             self.ui.rest_cb.setDisabled(False)
@@ -842,7 +849,10 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.show()
             self.ui.area_shape_radio.show()
+
             self.ui.poly_int_cb.hide()
+            self.ui.sel_all_btn.hide()
+            self.ui.clear_all_btn.hide()
 
             # disable rest-machining for area isolation
             self.ui.rest_cb.set_value(False)
@@ -853,14 +863,21 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.reference_combo_type_label.hide()
             self.ui.area_shape_label.hide()
             self.ui.area_shape_radio.hide()
+
             self.ui.poly_int_cb.show()
+            self.ui.sel_all_btn.show()
+            self.ui.clear_all_btn.show()
+
         else:   # Reference Object
             self.ui.reference_combo.show()
             self.ui.reference_combo_type.show()
             self.ui.reference_combo_type_label.show()
             self.ui.area_shape_label.hide()
             self.ui.area_shape_radio.hide()
+
             self.ui.poly_int_cb.hide()
+            self.ui.sel_all_btn.hide()
+            self.ui.clear_all_btn.hide()
 
             # disable rest-machining for area painting
             self.ui.rest_cb.setDisabled(False)
@@ -2302,6 +2319,45 @@ class ToolIsolation(AppTool, Gerber):
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
 
+    def on_select_all_polygons(self):
+        self.app.log.debug("ToolIsolation.on_select_all_polygons()")
+
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.grb_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return
+
+        if self.grb_obj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
+            return
+
+        try:
+            for poly in self.grb_obj.solid_geometry:
+                shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=poly,
+                                                    color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                    face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                    visible=True)
+                self.poly_dict[shape_id] = poly
+        except TypeError:
+            poly = self.grb_obj.solid_geometry
+            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=poly,
+                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                visible=True)
+            self.poly_dict[shape_id] = poly
+
+        self.app.tool_shapes.redraw()
+
+    def on_deselect_all_polygons(self):
+        self.app.log.debug("ToolIsolation.on_deselect_all_polygons()")
+
+        self.poly_dict.clear()
+        self.app.tool_shapes.clear(update=True)
+
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
         :param start_pos: mouse position when the selection LMB click was done
@@ -3454,6 +3510,28 @@ class IsoUI:
         self.grid3.addWidget(self.poly_int_cb, 40, 0)
 
         self.poly_int_cb.hide()
+
+        # Select All/None
+        sel_hlay = QtWidgets.QHBoxLayout()
+        self.sel_all_btn = FCButton(_("Select All"))
+        self.sel_all_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/select_all.png'))
+
+        self.sel_all_btn.setToolTip(
+            _("Select all available.")
+        )
+        self.clear_all_btn = FCButton(_("Deselect All"))
+        self.clear_all_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/deselect_all32.png'))
+
+        self.clear_all_btn.setToolTip(
+            _("Clear the selection.")
+        )
+
+        self.sel_all_btn.hide()
+        self.clear_all_btn.hide()
+
+        sel_hlay.addWidget(self.sel_all_btn)
+        sel_hlay.addWidget(self.clear_all_btn)
+        self.grid3.addLayout(sel_hlay, 41, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))

@@ -2229,13 +2229,13 @@ class PunchUI:
         self.sel_all_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/select_all.png'))
 
         self.sel_all_btn.setToolTip(
-            _("Select all the pads available when in manual mode.")
+            _("Select all available.")
         )
         self.clear_all_btn = FCButton(_("Deselect All"))
         self.clear_all_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/deselect_all32.png'))
 
         self.clear_all_btn.setToolTip(
-            _("Clear the selection of pads available when in manual mode.")
+            _("Clear the selection.")
         )
         sel_hlay.addWidget(self.sel_all_btn)
         sel_hlay.addWidget(self.clear_all_btn)
