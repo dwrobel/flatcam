@@ -3385,6 +3385,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
         self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
         self.tw.setIndentation(0)
+        self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tw.header().setStretchLastSection(True)
         self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         grid0.addWidget(self.tw, 2, 0, 1, 3)
@@ -3430,6 +3431,7 @@ class AppGeoEditor(QtCore.QObject):
         is_ccw_lbl = FCLabel('<b>%s</b>:' % _("Is CCW"))
         self.is_ccw_entry = FCLabel('None')
         self.change_orientation_btn = FCButton(_("Change"))
+        self.change_orientation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/orientation32.png'))
         self.change_orientation_btn.setToolTip(
             _("Change the orientation of the geometric element.\n"
               "Works for LinearRing and Polygons.")
@@ -3672,6 +3674,8 @@ class AppGeoEditor(QtCore.QObject):
 
         self.simplification_btn.clicked.connect(self.on_simplification_click)
         self.change_orientation_btn.clicked.connect(self.on_change_orientation)
+
+        self.tw.customContextMenuRequested.connect(self.on_menu_request)
 
         self.clear_tree_sig.connect(self.on_clear_tree)
 
@@ -3946,6 +3950,24 @@ class AppGeoEditor(QtCore.QObject):
                 self.build_ui_sig.emit()
 
         self.app.worker_task.emit({'fcn': task_job, 'params': []})
+
+    def on_menu_request(self, pos):
+        menu = QtWidgets.QMenu()
+
+        delete_action = menu.addAction(QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete"))
+        delete_action.triggered.connect(self.delete_selected)
+
+        menu.addSeparator()
+
+        orientation_change = menu.addAction(QtGui.QIcon(self.app.resource_location + '/orientation32.png'),
+                                            _("Change"))
+        orientation_change.triggered.connect(self.on_change_orientation)
+
+        if not self.tw.selectedItems():
+            delete_action.setDisabled(True)
+            orientation_change.setDisabled(True)
+
+        menu.exec(self.tw.viewport().mapToGlobal(pos))
 
     def activate(self):
         # adjust the status of the menu entries related to the editor
