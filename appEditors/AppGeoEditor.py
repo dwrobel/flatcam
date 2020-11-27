@@ -3871,22 +3871,29 @@ class AppGeoEditor(QtCore.QObject):
         tol = self.geo_tol_entry.get_value()
 
         selected_tree_items = self.tw.selectedItems()
-        for sel in selected_tree_items:
-            for obj_shape in self.storage.get_objects():
-                try:
-                    if id(obj_shape) == int(sel.text(0)):
-                        selected_shapes.append(obj_shape)
-                        selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
-                except ValueError:
-                    pass
 
-        for shape in selected_shapes:
-            self.delete_shape(shape=shape)
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Working")):
+                for sel in selected_tree_items:
+                    for obj_shape in self.storage.get_objects():
+                        try:
+                            if id(obj_shape) == int(sel.text(0)):
+                                selected_shapes.append(obj_shape)
+                                selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
+                        except ValueError:
+                            pass
 
-        for geo in selected_shapes_geos:
-            self.add_shape(DrawToolShape(geo))
+                for shape in selected_shapes:
+                    self.delete_shape(shape=shape)
 
-        self.build_ui_sig.emit()
+                for geo in selected_shapes_geos:
+                    self.add_shape(DrawToolShape(geo), build_ui=False)
+
+                self.plot_all()
+
+                self.build_ui_sig.emit()
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def activate(self):
         # adjust the status of the menu entries related to the editor
