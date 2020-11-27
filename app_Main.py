@@ -1426,6 +1426,8 @@ class App(QtCore.QObject):
         # Notebook tab clicking
         self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
 
+        self.ui.notebook.callback_on_close = self.on_close_notebook_tab
+
         # ###########################################################################################################
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
@@ -2134,7 +2136,7 @@ class App(QtCore.QObject):
         self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
         self.ui.menuhelp_gerber_spec.triggered.connect(lambda: webbrowser.open(self.gerber_spec_url))
         self.ui.menuhelp_videohelp.triggered.connect(lambda: webbrowser.open(self.video_url))
-        self.ui.menuhelp_shortcut_list.triggered.connect(self.on_shortcut_list)
+        self.ui.menuhelp_shortcut_list.triggered.connect(self.ui.on_shortcut_list)
 
     def connect_project_context_signals(self):
         self.ui.menuprojectenable.triggered.connect(self.on_enable_sel_plots)
@@ -2782,6 +2784,9 @@ class App(QtCore.QObject):
             # edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
             self.ui.plot_tab_area.protectTab(0)
+
+            # restore the notebook tab close method to the app
+            self.ui.notebook.callback_on_close = self.on_close_notebook_tab
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
             self.ui.project_frame.setDisabled(False)
@@ -4820,6 +4825,8 @@ class App(QtCore.QObject):
                             obj_active.mark_shapes_storage.clear()
                             obj_active.mark_shapes.clear(update=True)
                             obj_active.mark_shapes.enabled = False
+                            self.tool_shapes.clear(update=True)
+
                         elif obj_active.kind == 'cncjob':
                             try:
                                 obj_active.text_col.enabled = False
@@ -4841,7 +4848,6 @@ class App(QtCore.QObject):
                     # if there are no longer objects delete also the exclusion areas shapes
                     if not self.collection.get_list():
                         self.exc_areas.clear_shapes()
-                    self.inform.emit('%s...' % _("Object(s) deleted"))
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No object is selected.")))
         else:
@@ -6498,37 +6504,8 @@ class App(QtCore.QObject):
         else:
             self.inform.emit('[WARNING_NOTCL] %s...' % _("Delete Grid value cancelled"))
 
-    def on_shortcut_list(self):
-        self.defaults.report_usage("on_shortcut_list()")
-
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, _("Key Shortcut List"))
-
-        # delete the absolute and relative position and messages in the infobar
-        # self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
-        # hide coordinates toolbars in the infobar while in DB
-        self.ui.coords_toolbar.hide()
-        self.ui.delta_coords_toolbar.hide()
-
-        # Switch plot_area to preferences page
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
-        # self.ui.show()
-
-    def on_select_tab(self, name):
-        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-        if self.ui.splitter.sizes()[0] == 0:
-            self.ui.splitter.setSizes([1, 1])
-        else:
-            if self.ui.notebook.currentWidget().objectName() == name + '_tab':
-                self.ui.splitter.setSizes([0, 1])
-
-        if name == 'project':
-            self.ui.notebook.setCurrentWidget(self.ui.project_tab)
-        elif name == 'properties':
-            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-        elif name == 'tool':
-            self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
+    def on_close_notebook_tab(self):
+        self.tool_shapes.clear(update=True)
 
     def on_copy_name(self):
         self.defaults.report_usage("on_copy_name()")

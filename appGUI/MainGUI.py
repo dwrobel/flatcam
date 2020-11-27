@@ -2796,7 +2796,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Show shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
-                    self.app.on_shortcut_list()
+                    self.on_shortcut_list()
 
                 # Open Video Help
                 if key == QtCore.Qt.Key_F4 or key == 'F4':
@@ -2808,15 +2808,15 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1:
-                    self.app.on_select_tab('project')
+                    self.on_select_tab('project')
 
                 # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2:
-                    self.app.on_select_tab('properties')
+                    self.on_select_tab('properties')
 
                 # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3:
-                    self.app.on_select_tab('tool')
+                    self.on_select_tab('tool')
 
                 # Delete from PyQt
                 # It's meant to make a difference between delete objects and delete tools in
@@ -3115,15 +3115,15 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
-                    self.app.on_select_tab('project')
+                    self.on_select_tab('project')
 
                 # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2 or key == '2':
-                    self.app.on_select_tab('selected')
+                    self.on_select_tab('selected')
 
                 # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3 or key == '3':
-                    self.app.on_select_tab('tool')
+                    self.on_select_tab('tool')
 
                 # Grid Snap
                 if key == QtCore.Qt.Key_G or key == 'G':
@@ -3260,7 +3260,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Show Shortcut list
                 if key == 'F3':
-                    self.app.on_shortcut_list()
+                    self.on_shortcut_list()
         elif self.app.call_source == 'grb_editor':
             # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
@@ -3350,19 +3350,19 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('project')
+                    self.on_select_tab('project')
                     return
 
                 # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2 or key == '2':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('selected')
+                    self.on_select_tab('selected')
                     return
 
                 # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('tool')
+                    self.on_select_tab('tool')
                     return
 
                 # we do this so we can reuse the following keys while inside a Tool
@@ -3493,7 +3493,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
-                    self.app.on_shortcut_list()
+                    self.on_shortcut_list()
                     return
         elif self.app.call_source == 'exc_editor':
             # CTRL
@@ -3573,19 +3573,19 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('project')
+                    self.on_select_tab('project')
                     return
 
                 # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2 or key == '2':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('selected')
+                    self.on_select_tab('selected')
                     return
 
                 # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.on_select_tab('tool')
+                    self.on_select_tab('tool')
                     return
 
                 # Grid Snap
@@ -3625,7 +3625,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
-                    self.app.on_shortcut_list()
+                    self.on_shortcut_list()
                     return
 
                 # Propagate to tool
@@ -3841,6 +3841,36 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key_J or key == 'J':
                     self.app.on_jump_to()
+
+    def on_shortcut_list(self):
+        # add the tab if it was closed
+        self.plot_tab_area.addTab(self.shortcuts_tab, _("Key Shortcut List"))
+
+        # delete the absolute and relative position and messages in the infobar
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.coords_toolbar.hide()
+        self.delta_coords_toolbar.hide()
+
+        # Switch plot_area to preferences page
+        self.plot_tab_area.setCurrentWidget(self.shortcuts_tab)
+        # self.show()
+
+    def on_select_tab(self, name):
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.splitter.sizes()[0] == 0:
+            self.splitter.setSizes([1, 1])
+        else:
+            if self.notebook.currentWidget().objectName() == name + '_tab':
+                self.splitter.setSizes([0, 1])
+
+        if name == 'project':
+            self.notebook.setCurrentWidget(self.project_tab)
+        elif name == 'properties':
+            self.notebook.setCurrentWidget(self.properties_tab)
+        elif name == 'tool':
+            self.notebook.setCurrentWidget(self.tool_tab)
 
     def createPopupMenu(self):
         menu = super().createPopupMenu()

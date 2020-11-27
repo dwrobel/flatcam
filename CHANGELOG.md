@@ -23,6 +23,8 @@ CHANGELOG for FlatCAM beta
 - in Geometry Object Properties UI - added the UI for Utilities and within Utilities added the Simplification UI
 - in Geometry Object Properties UI - finished the new feature Simplification and Vertex Points calculation which should greatly reduce the resulting GCode size
 - in Tool Isolation, for Polygon Selection method, added ability to select all/clear all polygons allowing thus negative selection (select all followed by deselection of the polygons you don't want isolated, e.g a ground plane)
+- some refactoring between app_Main class and MainGUI class
+- on tab close in Notebook the tool_shapes are deleted (shape markings used by some of the App Tools) therefore part fo the clean-up
 
 26.11.2020
 
