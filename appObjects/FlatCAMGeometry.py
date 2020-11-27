@@ -639,6 +639,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.geo_tools_table.setColumnHidden(3, True)
 
         # #############################################################################################################
+        # ##################################### Setting Values#########################################################
+        # #############################################################################################################
+        self.ui.vertex_points_entry.set_value(0)
+        self.ui.geo_tol_entry.set_value(10 ** -self.decimals)
+
+        # #############################################################################################################
         # ################################ Signals Connection #########################################################
         # #############################################################################################################
         # self.builduiSig.connect(self.build_ui)
@@ -665,9 +671,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.milling_button.clicked.connect(self.on_milling_button_clicked)
 
         self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
-
-        self.ui.vertex_points_entry.set_value(0)
-        self.ui.geo_tol_entry.set_value(10 ** -self.decimals)
+        self.ui.vertex_points_btn.clicked.connect(self.on_calculate_vertex_points)
+        self.ui.simplification_btn.clicked.connect(self.on_simplify_geometry)
 
         # # Postprocessor change
         # self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
@@ -714,6 +719,57 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.app.milling_tool.ui.target_radio.set_value('geo')
         current_obj = self.app.collection.get_active()
         self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])
+
+    def on_calculate_vertex_points(self):
+        self.app.log.debug("GeometryObject.on_calculate_vertex_points()")
+
+        vertex_points = 0
+
+        for tool in self.tools:
+            geometry = self.tools[tool]['solid_geometry']
+            flattened_geo = self.flatten_list(obj_list=geometry)
+            for geo in flattened_geo:
+                if geo.geom_type == 'Polygon':
+                    vertex_points += len(list(geo.exterior.coords))
+                    for int in geo.interiors:
+                        vertex_points += len(list(int.coords))
+                if geo.geom_type in ['LineString', 'LinearRing']:
+                    vertex_points += len(list(geo.coords))
+
+        self.ui.vertex_points_entry.set_value(vertex_points)
+        self.app.inform.emit('[success] %s' % _("Vertex points calculated."))
+
+    def on_simplify_geometry(self):
+        self.app.log.debug("GeometryObject.on_simplify_geometry()")
+
+        tol = self.ui.geo_tol_entry.get_value()
+
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Simplify")):
+                for tool in self.tools:
+                    new_tool_geo = []
+                    geometry = self.tools[tool]['solid_geometry']
+                    flattened_geo = self.flatten_list(obj_list=geometry)
+                    for geo in flattened_geo:
+                        new_tool_geo.append(geo.simplify(tolerance=tol))
+                    self.tools[tool]['solid_geometry'] = deepcopy(new_tool_geo)
+
+                # update the solid_geometry
+                total_geo = []
+                for tool in self.tools:
+                    total_geo += self.tools[tool]['solid_geometry']
+
+                self.solid_geometry = unary_union(total_geo)
+
+                # plot the new geometry
+                self.app.plot_all()
+
+                # update the vertex points number
+                self.on_calculate_vertex_points()
+
+                self.app.inform.emit('[success] %s' % _("Done."))
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
 
     def on_rebuild_ui(self):
         # read the table tools uid

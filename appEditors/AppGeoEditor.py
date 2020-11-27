@@ -3951,7 +3951,7 @@ class AppGeoEditor(QtCore.QObject):
         selected_tree_items = self.tw.selectedItems()
 
         def task_job():
-            with self.app.proc_container.new('%s...' % _("Working")):
+            with self.app.proc_container.new('%s...' % _("Simplify")):
                 for sel in selected_tree_items:
                     for obj_shape in self.storage.get_objects():
                         try:

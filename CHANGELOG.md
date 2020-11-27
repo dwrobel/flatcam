@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - fixed crash when launching with 2D Graphic Engine (due of recent changes)
 - in Geometry Editor - added new feature: Zoom on selected (by selecting a geometry element in the Geometry Table)
 - in Geometry Object Properties UI - added the UI for Utilities and within Utilities added the Simplification UI
+- in Geometry Object Properties UI - finished the new feature Simplification and Vertex Points calculation which should greatly reduce the resulting GCode size
 
 26.11.2020
 
