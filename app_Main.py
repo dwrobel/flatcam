@@ -8651,7 +8651,6 @@ class MenuFileHandlers(QtCore.QObject):
         obj = self.app.collection.get_active()
         if obj is None:
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
-            msg = _("No object is selected")
             return
 
         # Check for more compatible types and add as required

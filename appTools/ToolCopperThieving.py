@@ -1379,7 +1379,7 @@ class ThievingUI:
 
         self.ref_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.ref_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
+            _("The Application object to be used as non copper clearing reference.")
         )
         self.ref_combo = FCComboBox()
         self.ref_combo.setModel(self.app.collection)

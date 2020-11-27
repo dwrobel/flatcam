@@ -29,6 +29,9 @@ CHANGELOG for FlatCAM beta
 - fixed wrong display of editor actions in the Editor toolbar at the first start of the app
 - fixed missing import in the preprocessors
 - deleted the Toolchange_custom preprocessor because it is no longer used
+- updated Language strings
+- translated the strings to Romanian language
+- Google-translated the strings to German language
 
 26.11.2020
 

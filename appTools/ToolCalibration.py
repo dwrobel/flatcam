@@ -1343,7 +1343,7 @@ class CalibrationUI:
         self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
-        self.adj_object_type_label.setToolTip(_("Type of the FlatCAM Object to be adjusted."))
+        self.adj_object_type_label.setToolTip(_("Type of the Application Object to be adjusted."))
 
         grid_lay.addWidget(self.adj_object_type_label, 46, 0, 1, 3)
         grid_lay.addWidget(self.adj_object_type_combo, 47, 0, 1, 3)
@@ -1358,7 +1358,7 @@ class CalibrationUI:
 
         self.adj_object_label = QtWidgets.QLabel("%s:" % _("Adjusted object selection"))
         self.adj_object_label.setToolTip(
-            _("The FlatCAM Object to be adjusted.")
+            _("The Application Object to be adjusted.")
         )
 
         grid_lay.addWidget(self.adj_object_label, 48, 0, 1, 3)

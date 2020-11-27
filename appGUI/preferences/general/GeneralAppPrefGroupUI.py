@@ -37,7 +37,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Units for FlatCAM
         self.unitslabel = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
-        self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
+        self.unitslabel.setToolTip(_("The default value for the application units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "FlatCAM is started."))
         self.units_radio = RadioSet([{'label': _('MM'), 'value': 'MM'},
