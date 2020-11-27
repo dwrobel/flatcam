@@ -3392,12 +3392,17 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_font.setBold(True)
         self.geo_parent = self.tw.invisibleRootItem()
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 3, 0, 1, 2)
+
         # Parameters Title
         param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
         param_title.setToolTip(
             _("Geometry parameters.")
         )
-        grid0.addWidget(param_title, 4, 0)
+        grid0.addWidget(param_title, 4, 0, 1, 2)
 
         # Is Valid
         is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
@@ -3462,6 +3467,47 @@ class AppGeoEditor(QtCore.QObject):
 
         grid0.addWidget(vertex_lbl, 22, 0)
         grid0.addWidget(self.geo_vertex_entry, 22, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 23, 0, 1, 2)
+
+        # Simplification
+        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl.setToolTip(
+            _("Simplify a geometry element by reducing its vertex points number.")
+        )
+        grid0.addWidget(simplif_lbl, 24, 0, 1, 2)
+
+        simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
+        simplification_tol_lbl.setToolTip(
+            _("All points in the simplified object will be\n"
+              "within the tolerance distance of the original geometry.")
+        )
+        self.geo_tol_entry = FCDoubleSpinner()
+        self.geo_tol_entry.set_precision(self.decimals)
+        self.geo_tol_entry.setSingleStep(0.001)
+        self.geo_tol_entry.setWrapping(True)
+        self.geo_tol_entry.set_range(-10000.0000, 10000.0000)
+        self.geo_tol_entry.set_value(10 ** -self.decimals)
+
+        grid0.addWidget(simplification_tol_lbl, 26, 0)
+        grid0.addWidget(self.geo_tol_entry, 26, 1)
+
+        self.simplification_btn = FCButton(_("Simplify"))
+        self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
+        self.simplification_btn.setToolTip(
+            _("Simplify a geometry element by reducing its vertex points number.")
+        )
+        self.simplification_btn.setStyleSheet("""
+                                              QPushButton
+                                              {
+                                                  font-weight: bold;
+                                              }
+                                              """)
+
+        grid0.addWidget(self.simplification_btn, 27, 0, 1, 2)
 
         layout.addStretch()
 
@@ -3617,6 +3663,8 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
 
         self.transform_complete.connect(self.on_transform_complete)
+
+        self.simplification_btn.clicked.connect(self.on_simplification_click)
 
         # Event signals disconnect id holders
         self.mp = None
@@ -3816,6 +3864,29 @@ class AppGeoEditor(QtCore.QObject):
             self.geo_vertex_entry.set_value(vertex_nr)
 
         self.replot()
+
+    def on_simplification_click(self):
+        selected_shapes = []
+        selected_shapes_geos = []
+        tol = self.geo_tol_entry.get_value()
+
+        selected_tree_items = self.tw.selectedItems()
+        for sel in selected_tree_items:
+            for obj_shape in self.storage.get_objects():
+                try:
+                    if id(obj_shape) == int(sel.text(0)):
+                        selected_shapes.append(obj_shape)
+                        selected_shapes_geos.append(obj_shape.geo.simplify(tolerance=tol))
+                except ValueError:
+                    pass
+
+        for shape in selected_shapes:
+            self.delete_shape(shape=shape)
+
+        for geo in selected_shapes_geos:
+            self.add_shape(DrawToolShape(geo))
+
+        self.build_ui_sig.emit()
 
     def activate(self):
         # adjust the status of the menu entries related to the editor

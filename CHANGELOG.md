@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - made sure that the edited Geometry do not contain Shapely Points and that when adding shapes, that the geometry of that shapes is valid and non empty and it is not a Shapely Point
 - in Geometry Editor - added new information's (length, coordinates and vertex points number) for the geometric element selected in the Geometry Table
 - in Geometry Editor - added more parameters displayed for the geometric elements selected in the Geometry Table: is_valid, is_empty, is_ccw, is_simple, is_ring
+- in Geometry Editor - added a new feature: Simplification. It will greatly reduce the number of vertex points in a geometry element selected in the Geometry Table thus potentially greatly reducing the resulting GCode number of lines
 
 26.11.2020
 
