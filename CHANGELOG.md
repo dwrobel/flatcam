@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - added a new feature: Simplification. It will greatly reduce the number of vertex points in a geometry element selected in the Geometry Table thus potentially greatly reducing the resulting GCode number of lines
 - in Geometry Editor - simplification method is now threaded and optimized
 - in Geometry Editor - fixed a crash on Geometry Editor exit
+- in Geometry Editor - added a new feature: ability to change the orientation (from CW to CCW and the revers) for Polygon and LinearRing geometry elements.
 
 26.11.2020
 

@@ -3379,7 +3379,7 @@ class AppGeoEditor(QtCore.QObject):
         tw_label.setToolTip(
             _("The list of geometry elements inside the edited object.")
         )
-        grid0.addWidget(tw_label, 0, 0, 1, 2)
+        grid0.addWidget(tw_label, 0, 0, 1, 3)
 
         # Tree Widget
         self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
@@ -3387,7 +3387,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tw.setIndentation(0)
         self.tw.header().setStretchLastSection(True)
         self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        grid0.addWidget(self.tw, 2, 0, 1, 2)
+        grid0.addWidget(self.tw, 2, 0, 1, 3)
 
         self.geo_font = QtGui.QFont()
         self.geo_font.setBold(True)
@@ -3396,49 +3396,54 @@ class AppGeoEditor(QtCore.QObject):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 3, 0, 1, 2)
+        grid0.addWidget(separator_line, 3, 0, 1, 3)
 
         # Parameters Title
         param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
         param_title.setToolTip(
             _("Geometry parameters.")
         )
-        grid0.addWidget(param_title, 4, 0, 1, 2)
+        grid0.addWidget(param_title, 4, 0, 1, 3)
 
         # Is Valid
         is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
         self.is_valid_entry = FCLabel('None')
 
         grid0.addWidget(is_valid_lbl, 6, 0)
-        grid0.addWidget(self.is_valid_entry, 6, 1)
+        grid0.addWidget(self.is_valid_entry, 6, 1, 1, 2)
 
         # Is Empty
         is_empty_lbl = FCLabel('<b>%s</b>:' % _("Is Empty"))
         self.is_empty_entry = FCLabel('None')
 
         grid0.addWidget(is_empty_lbl, 8, 0)
-        grid0.addWidget(self.is_empty_entry, 8, 1)
+        grid0.addWidget(self.is_empty_entry, 8, 1, 1, 2)
 
         # Is Ring
         is_ring_lbl = FCLabel('<b>%s</b>:' % _("Is Ring"))
         self.is_ring_entry = FCLabel('None')
 
         grid0.addWidget(is_ring_lbl, 10, 0)
-        grid0.addWidget(self.is_ring_entry, 10, 1)
+        grid0.addWidget(self.is_ring_entry, 10, 1, 1, 2)
 
         # Is CCW
         is_ccw_lbl = FCLabel('<b>%s</b>:' % _("Is CCW"))
         self.is_ccw_entry = FCLabel('None')
-
+        self.change_orientation_btn = FCButton(_("Change"))
+        self.change_orientation_btn.setToolTip(
+            _("Change the orientation of the geometric element.\n"
+              "Works for LinearRing and Polygons.")
+        )
         grid0.addWidget(is_ccw_lbl, 12, 0)
         grid0.addWidget(self.is_ccw_entry, 12, 1)
+        grid0.addWidget(self.change_orientation_btn, 12, 2)
 
         # Is Simple
         is_simple_lbl = FCLabel('<b>%s</b>:' % _("Is Simple"))
         self.is_simple_entry = FCLabel('None')
 
         grid0.addWidget(is_simple_lbl, 14, 0)
-        grid0.addWidget(self.is_simple_entry, 14, 1)
+        grid0.addWidget(self.is_simple_entry, 14, 1, 1, 2)
 
         # Length
         len_lbl = FCLabel('<b>%s</b>:' % _("Length"))
@@ -3447,17 +3452,17 @@ class AppGeoEditor(QtCore.QObject):
         )
         self.geo_len_entry = FCEntry(decimals=self.decimals)
         grid0.addWidget(len_lbl, 16, 0)
-        grid0.addWidget(self.geo_len_entry, 16, 1)
+        grid0.addWidget(self.geo_len_entry, 16, 1, 1, 2)
 
         # Coordinates
         coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
-        grid0.addWidget(coords_lbl, 18, 0, 1, 2)
+        grid0.addWidget(coords_lbl, 18, 0, 1, 3)
 
         self.geo_coords_entry = FCTextEdit()
-        grid0.addWidget(self.geo_coords_entry, 20, 0, 1, 2)
+        grid0.addWidget(self.geo_coords_entry, 20, 0, 1, 3)
 
         # Vertex Points Number
         vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
@@ -3467,19 +3472,19 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
 
         grid0.addWidget(vertex_lbl, 22, 0)
-        grid0.addWidget(self.geo_vertex_entry, 22, 1)
+        grid0.addWidget(self.geo_vertex_entry, 22, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 23, 0, 1, 2)
+        grid0.addWidget(separator_line, 23, 0, 1, 3)
 
         # Simplification
         simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
         simplif_lbl.setToolTip(
             _("Simplify a geometry element by reducing its vertex points number.")
         )
-        grid0.addWidget(simplif_lbl, 24, 0, 1, 2)
+        grid0.addWidget(simplif_lbl, 24, 0, 1, 3)
 
         simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
         simplification_tol_lbl.setToolTip(
@@ -3494,7 +3499,7 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_tol_entry.set_value(10 ** -self.decimals)
 
         grid0.addWidget(simplification_tol_lbl, 26, 0)
-        grid0.addWidget(self.geo_tol_entry, 26, 1)
+        grid0.addWidget(self.geo_tol_entry, 26, 1, 1, 2)
 
         self.simplification_btn = FCButton(_("Simplify"))
         self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
@@ -3508,7 +3513,7 @@ class AppGeoEditor(QtCore.QObject):
                                               }
                                               """)
 
-        grid0.addWidget(self.simplification_btn, 27, 0, 1, 2)
+        grid0.addWidget(self.simplification_btn, 27, 0, 1, 3)
 
         layout.addStretch()
 
@@ -3666,6 +3671,7 @@ class AppGeoEditor(QtCore.QObject):
         self.transform_complete.connect(self.on_transform_complete)
 
         self.simplification_btn.clicked.connect(self.on_simplification_click)
+        self.change_orientation_btn.clicked.connect(self.on_change_orientation)
 
         self.clear_tree_sig.connect(self.on_clear_tree)
 
@@ -3873,6 +3879,8 @@ class AppGeoEditor(QtCore.QObject):
         self.replot()
 
     def on_simplification_click(self):
+        self.app.log.debug("AppGeoEditor.on_simplification_click()")
+
         selected_shapes = []
         selected_shapes_geos = []
         tol = self.geo_tol_entry.get_value()
@@ -3897,6 +3905,43 @@ class AppGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(geo), build_ui=False)
 
                 self.replot()
+
+                self.build_ui_sig.emit()
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
+
+    def on_change_orientation(self):
+        self.app.log.debug("AppGeoEditor.on_change_orientation()")
+
+        selected_tree_items = self.tw.selectedItems()
+        processed_shapes = []
+        new_shapes = []
+
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Working")):
+                for sel in selected_tree_items:
+                    for obj_shape in self.storage.get_objects():
+                        try:
+                            if id(obj_shape) == int(sel.text(0)):
+                                old_geo = obj_shape.geo
+                                if old_geo.geom_type == 'LineaRing':
+                                    processed_shapes.append(obj_shape)
+                                    new_shapes.append(LinearRing(list(old_geo.coords)[::-1]))
+                                elif old_geo.geom_type == 'Polygon':
+                                    processed_shapes.append(obj_shape)
+                                    if old_geo.exterior.is_ccw is True:
+                                        new_shapes.append(deepcopy(orient(old_geo, -1)))
+                                    else:
+                                        new_shapes.append(deepcopy(orient(old_geo, 1)))
+
+                        except ValueError:
+                            pass
+
+                for shape in processed_shapes:
+                    self.delete_shape(shape=shape)
+
+                for geo in new_shapes:
+                    self.add_shape(DrawToolShape(geo), build_ui=False)
 
                 self.build_ui_sig.emit()
 
