@@ -734,7 +734,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         """
         self.clear()
 
-    def adjust_axes(self, xmin, ymin, xmax, ymax):
+    def adjust_axes(self, xmin=None, ymin=None, xmax=None, ymax=None):
         """
         Adjusts all axes while maintaining the use of the whole canvas
         and an aspect ratio to 1:1 between x and y axes. The parameters are an original
@@ -753,7 +753,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # FlatCAMApp.App.log.debug("PC.adjust_axes()")
 
-        if not self.app.collection.get_list():
+        if not self.app.collection.get_list() and not xmin and not ymin and not xmax and not ymax:
             xmin = -10
             ymin = -10
             xmax = 100

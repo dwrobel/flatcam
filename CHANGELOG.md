@@ -18,6 +18,9 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - fixed a crash on Geometry Editor exit
 - in Geometry Editor - added a new feature: ability to change the orientation (from CW to CCW and the revers) for Polygon and LinearRing geometry elements.
 - in Geometry Editor - added a context menu in the Geometry Table
+- fixed crash when launching with 2D Graphic Engine (due of recent changes)
+- in Geometry Editor - added new feature: Zoom on selected (by selecting a geometry element in the Geometry Table)
+
 
 26.11.2020
 

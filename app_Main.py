@@ -1084,10 +1084,9 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         # determine if the Legacy Graphic Engine is to be used or the OpenGL one
+        self.is_legacy = True
         if self.defaults["global_graphic_engine"] == '3D':
             self.is_legacy = False
-        else:
-            self.is_legacy = True
 
         # PlotCanvas Event signals disconnect id holders
         self.mp = None
@@ -1139,6 +1138,13 @@ class App(QtCore.QObject):
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
+
+        # Storage for Hover Shapes
+        if self.is_legacy is False:
+            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+        else:
+            # will use the default Matplotlib axes
+            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
         # ###########################################################################################################
         # ############################################### Worker SETUP ##############################################
@@ -7879,12 +7885,6 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = True
         else:
             self.app_cursor.enabled = False
-
-        if self.is_legacy is False:
-            self.hover_shapes = ShapeCollection(parent=plotcanvas.view.scene, layers=1)
-        else:
-            # will use the default Matplotlib axes
-            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
         return plotcanvas
 

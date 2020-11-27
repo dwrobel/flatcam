@@ -20,6 +20,8 @@ from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComb
     FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit
 from appParsers.ParseFont import *
 
+from vispy.geometry import Rect
+
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
@@ -3394,38 +3396,42 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_font.setBold(True)
         self.geo_parent = self.tw.invisibleRootItem()
 
+        # Zoom Selection
+        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
+        grid0.addWidget(self.geo_zoom, 4, 0, 1, 3)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 3, 0, 1, 3)
+        grid0.addWidget(separator_line, 6, 0, 1, 3)
 
         # Parameters Title
         param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
         param_title.setToolTip(
             _("Geometry parameters.")
         )
-        grid0.addWidget(param_title, 4, 0, 1, 3)
+        grid0.addWidget(param_title, 8, 0, 1, 3)
 
         # Is Valid
         is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
         self.is_valid_entry = FCLabel('None')
 
-        grid0.addWidget(is_valid_lbl, 6, 0)
-        grid0.addWidget(self.is_valid_entry, 6, 1, 1, 2)
+        grid0.addWidget(is_valid_lbl, 10, 0)
+        grid0.addWidget(self.is_valid_entry, 10, 1, 1, 2)
 
         # Is Empty
         is_empty_lbl = FCLabel('<b>%s</b>:' % _("Is Empty"))
         self.is_empty_entry = FCLabel('None')
 
-        grid0.addWidget(is_empty_lbl, 8, 0)
-        grid0.addWidget(self.is_empty_entry, 8, 1, 1, 2)
+        grid0.addWidget(is_empty_lbl, 12, 0)
+        grid0.addWidget(self.is_empty_entry, 12, 1, 1, 2)
 
         # Is Ring
         is_ring_lbl = FCLabel('<b>%s</b>:' % _("Is Ring"))
         self.is_ring_entry = FCLabel('None')
 
-        grid0.addWidget(is_ring_lbl, 10, 0)
-        grid0.addWidget(self.is_ring_entry, 10, 1, 1, 2)
+        grid0.addWidget(is_ring_lbl, 14, 0)
+        grid0.addWidget(self.is_ring_entry, 14, 1, 1, 2)
 
         # Is CCW
         is_ccw_lbl = FCLabel('<b>%s</b>:' % _("Is CCW"))
@@ -3436,16 +3442,16 @@ class AppGeoEditor(QtCore.QObject):
             _("Change the orientation of the geometric element.\n"
               "Works for LinearRing and Polygons.")
         )
-        grid0.addWidget(is_ccw_lbl, 12, 0)
-        grid0.addWidget(self.is_ccw_entry, 12, 1)
-        grid0.addWidget(self.change_orientation_btn, 12, 2)
+        grid0.addWidget(is_ccw_lbl, 16, 0)
+        grid0.addWidget(self.is_ccw_entry, 16, 1)
+        grid0.addWidget(self.change_orientation_btn, 16, 2)
 
         # Is Simple
         is_simple_lbl = FCLabel('<b>%s</b>:' % _("Is Simple"))
         self.is_simple_entry = FCLabel('None')
 
-        grid0.addWidget(is_simple_lbl, 14, 0)
-        grid0.addWidget(self.is_simple_entry, 14, 1, 1, 2)
+        grid0.addWidget(is_simple_lbl, 18, 0)
+        grid0.addWidget(self.is_simple_entry, 18, 1, 1, 2)
 
         # Length
         len_lbl = FCLabel('<b>%s</b>:' % _("Length"))
@@ -3453,18 +3459,21 @@ class AppGeoEditor(QtCore.QObject):
             _("The length of the geometry element.")
         )
         self.geo_len_entry = FCEntry(decimals=self.decimals)
-        grid0.addWidget(len_lbl, 16, 0)
-        grid0.addWidget(self.geo_len_entry, 16, 1, 1, 2)
+        grid0.addWidget(len_lbl, 20, 0)
+        grid0.addWidget(self.geo_len_entry, 20, 1, 1, 2)
 
         # Coordinates
         coords_lbl = FCLabel('<b>%s</b>:' % _("Coordinates"))
         coords_lbl.setToolTip(
             _("The coordinates of the selected geometry element.")
         )
-        grid0.addWidget(coords_lbl, 18, 0, 1, 3)
+        grid0.addWidget(coords_lbl, 22, 0, 1, 3)
 
         self.geo_coords_entry = FCTextEdit()
-        grid0.addWidget(self.geo_coords_entry, 20, 0, 1, 3)
+        self.geo_coords_entry.setPlaceholderText(
+            _("The coordinates of the selected geometry element.")
+        )
+        grid0.addWidget(self.geo_coords_entry, 24, 0, 1, 3)
 
         # Vertex Points Number
         vertex_lbl = FCLabel('<b>%s</b>:' % _("Vertex Points"))
@@ -3473,20 +3482,20 @@ class AppGeoEditor(QtCore.QObject):
         )
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
 
-        grid0.addWidget(vertex_lbl, 22, 0)
-        grid0.addWidget(self.geo_vertex_entry, 22, 1, 1, 2)
+        grid0.addWidget(vertex_lbl, 26, 0)
+        grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 23, 0, 1, 3)
+        grid0.addWidget(separator_line, 28, 0, 1, 3)
 
         # Simplification
         simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
         simplif_lbl.setToolTip(
             _("Simplify a geometry element by reducing its vertex points number.")
         )
-        grid0.addWidget(simplif_lbl, 24, 0, 1, 3)
+        grid0.addWidget(simplif_lbl, 30, 0, 1, 3)
 
         simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
         simplification_tol_lbl.setToolTip(
@@ -3499,8 +3508,8 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_tol_entry.set_range(0.0000, 10000.0000)
         self.geo_tol_entry.set_value(10 ** -self.decimals)
 
-        grid0.addWidget(simplification_tol_lbl, 26, 0)
-        grid0.addWidget(self.geo_tol_entry, 26, 1, 1, 2)
+        grid0.addWidget(simplification_tol_lbl, 32, 0)
+        grid0.addWidget(self.geo_tol_entry, 32, 1, 1, 2)
 
         self.simplification_btn = FCButton(_("Simplify"))
         self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
@@ -3514,7 +3523,7 @@ class AppGeoEditor(QtCore.QObject):
                                               }
                                               """)
 
-        grid0.addWidget(self.simplification_btn, 27, 0, 1, 3)
+        grid0.addWidget(self.simplification_btn, 34, 0, 1, 3)
 
         layout.addStretch()
 
@@ -3783,6 +3792,16 @@ class AppGeoEditor(QtCore.QObject):
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
+        self.geo_coords_entry.setText('')
+        self.is_ccw_entry.set_value('None')
+        self.is_ring_entry.set_value('None')
+        self.is_simple_entry.set_value('None')
+        self.is_empty_entry.set_value('None')
+        self.is_valid_entry.set_value('None')
+        self.geo_vertex_entry.set_value(0.0)
+        self.geo_tol_entry.set_value(10 ** -self.decimals)
+        self.geo_zoom.set_value(False)
+
     def build_ui(self):
         """
         Build the appGUI in the Properties Tab for this editor
@@ -3872,6 +3891,45 @@ class AppGeoEditor(QtCore.QObject):
                     length = 0.0
                     coords = 'None'
                     vertex_nr = 0
+
+                if self.geo_zoom.get_value():
+                    xmin, ymin, xmax, ymax = last_sel_geo.bounds
+                    if xmin == xmax and ymin != ymax:
+                        xmin = ymin
+                        xmax = ymax
+                    elif xmin != xmax and ymin == ymax:
+                        ymin = xmin
+                        ymax = xmax
+
+                    if self.app.is_legacy is False:
+                        rect = Rect(xmin, ymin, xmax, ymax)
+                        rect.left, rect.right = xmin, xmax
+                        rect.bottom, rect.top = ymin, ymax
+                        # Lock updates in other threads
+                        self.shapes.lock_updates()
+
+                        # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
+                        # seen clearly otherwise the shape collection boundary will have no border
+                        dx = rect.right - rect.left
+                        dy = rect.top - rect.bottom
+                        x_factor = dx * 0.02
+                        y_factor = dy * 0.02
+
+                        rect.left -= x_factor
+                        rect.bottom -= y_factor
+                        rect.right += x_factor
+                        rect.top += y_factor
+
+                        self.app.plotcanvas.view.camera.rect = rect
+                        self.shapes.unlock_updates()
+                    else:
+                        width = xmax - xmin
+                        height = ymax - ymin
+                        xmin -= 0.05 * width
+                        xmax += 0.05 * width
+                        ymin -= 0.05 * height
+                        ymax += 0.05 * height
+                        self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
                 self.geo_len_entry.set_value(length, decimals=self.decimals)
                 self.geo_coords_entry.setText(str(coords))
