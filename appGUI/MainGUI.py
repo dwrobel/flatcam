@@ -2191,7 +2191,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ######################### Edit Toolbar #################################
         # ########################################################################
         self.editor_start_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Editor"))
+            QtGui.QIcon(self.app.resource_location + '/edit_file32.png'), _("Editor"))
         self.editor_exit_btn = QtWidgets.QToolButton()
 
         # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
@@ -2452,6 +2452,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.corner_snap_btn.setVisible(False)
         self.snap_magnet.setVisible(False)
+        self.editor_exit_btn_ret_action.setVisible(False)
 
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("layout"):

@@ -26,6 +26,7 @@ CHANGELOG for FlatCAM beta
 - some refactoring between app_Main class and MainGUI class
 - on tab close in Notebook the tool_shapes are deleted (shape markings used by some of the App Tools) therefore part fo the clean-up
 - added some protections in case the Editors could not start such that the app is not crashed
+- fixed wrong display of editor actions in the Editor toolbar at the first start of the app
 
 26.11.2020
 
