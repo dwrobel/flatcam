@@ -25,6 +25,7 @@ CHANGELOG for FlatCAM beta
 - in Tool Isolation, for Polygon Selection method, added ability to select all/clear all polygons allowing thus negative selection (select all followed by deselection of the polygons you don't want isolated, e.g a ground plane)
 - some refactoring between app_Main class and MainGUI class
 - on tab close in Notebook the tool_shapes are deleted (shape markings used by some of the App Tools) therefore part fo the clean-up
+- added some protections in case the Editors could not start such that the app is not crashed
 
 26.11.2020
 

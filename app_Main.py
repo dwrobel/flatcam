@@ -2444,6 +2444,11 @@ class App(QtCore.QObject):
             return
 
         if edited_object.kind == 'geometry':
+            if self.geo_editor is None:
+                self.ui.menuobjects.setDisabled(False)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
+                return
+
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
@@ -2487,6 +2492,11 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
         elif edited_object.kind == 'excellon':
+            if self.exc_editor is None:
+                self.ui.menuobjects.setDisabled(False)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
+                return
+
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
 
@@ -2498,6 +2508,11 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
         elif edited_object.kind == 'gerber':
+            if self.grb_editor is None:
+                self.ui.menuobjects.setDisabled(False)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
+                return
+
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
 
@@ -2512,6 +2527,10 @@ class App(QtCore.QObject):
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
         elif edited_object.kind == 'cncjob':
+            if self.gcode_editor is None:
+                self.ui.menuobjects.setDisabled(False)
+                self.inform.emit('[ERROR_NOTCL] %s' % _("The Editor could not start."))
+                return
 
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
