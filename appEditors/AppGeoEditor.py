@@ -3490,13 +3490,14 @@ class AppGeoEditor(QtCore.QObject):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 28, 0, 1, 3)
 
-        # Simplification
+        # Simplification Title
         simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
         simplif_lbl.setToolTip(
-            _("Simplify a geometry element by reducing its vertex points number.")
+            _("Simplify a geometry by reducing its vertex points number.")
         )
         grid0.addWidget(simplif_lbl, 30, 0, 1, 3)
 
+        # Simplification Tolerance
         simplification_tol_lbl = FCLabel('<b>%s</b>:' % _("Tolerance"))
         simplification_tol_lbl.setToolTip(
             _("All points in the simplified object will be\n"
@@ -3511,6 +3512,7 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(simplification_tol_lbl, 32, 0)
         grid0.addWidget(self.geo_tol_entry, 32, 1, 1, 2)
 
+        # Simplification button
         self.simplification_btn = FCButton(_("Simplify"))
         self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
         self.simplification_btn.setToolTip(

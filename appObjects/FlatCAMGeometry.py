@@ -664,6 +664,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=True))
         self.ui.milling_button.clicked.connect(self.on_milling_button_clicked)
 
+        self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
+
+        self.ui.vertex_points_entry.set_value(0)
+        self.ui.geo_tol_entry.set_value(10 ** -self.decimals)
+
         # # Postprocessor change
         # self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
         #

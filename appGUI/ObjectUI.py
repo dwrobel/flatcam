@@ -1791,9 +1791,9 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.setColumnStretch(1, 1)
         self.geo_tools_box.addLayout(self.grid4)
 
-        # ##############
-        # Paint area ##
-        # ##############
+        # #############################################################################################################
+        # ############################################ Tools ##########################################################
+        # #############################################################################################################
         self.tools_label = FCLabel('<b>%s</b>' % _('TOOLS'))
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
@@ -1822,12 +1822,6 @@ class GeometryObjectUI(ObjectUI):
               "whole area of a polygon.")
         )
 
-        # self.paint_tool_button.setStyleSheet("""
-        #                 QPushButton
-        #                 {
-        #                     font-weight: bold;
-        #                 }
-        #                 """)
         self.grid4.addWidget(self.paint_tool_button, 36, 0, 1, 2)
 
         # NCC Tool
@@ -1844,6 +1838,99 @@ class GeometryObjectUI(ObjectUI):
         #                 }
         #                 """)
         self.grid4.addWidget(self.generate_ncc_button, 38, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid4.addWidget(separator_line, 40, 0, 1, 2)
+
+        # UTILITIES BUTTON
+        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
+        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        self.grid4.addWidget(self.util_button, 42, 0, 1, 2)
+
+        # UTILITIES Frame
+        self.util_frame = QtWidgets.QFrame()
+        self.util_frame.setContentsMargins(0, 0, 0, 0)
+        self.grid4.addWidget(self.util_frame, 44, 0, 1, 2)
+
+        self.util_box = QtWidgets.QVBoxLayout()
+        self.util_box.setContentsMargins(0, 0, 0, 0)
+        self.util_frame.setLayout(self.util_box)
+        self.util_frame.hide()
+
+        util_grid = QtWidgets.QGridLayout()
+        util_grid.setColumnStretch(0, 0)
+        util_grid.setColumnStretch(1, 1)
+        self.util_box.addLayout(util_grid)
+
+        # Simplification Title
+        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl.setToolTip(
+            _("Simplify a geometry by reducing its vertex points number.")
+        )
+        util_grid.addWidget(simplif_lbl, 0, 0, 1, 3)
+
+        # Vertex Points
+        vertexes_lbl = FCLabel('%s:' % _("Points"))
+        vertexes_lbl.setToolTip(
+            _("Total of vertex points in the geometry.")
+        )
+        self.vertex_points_entry = FCEntry()
+
+        util_grid.addWidget(vertexes_lbl, 2, 0)
+        util_grid.addWidget(self.vertex_points_entry, 2, 1)
+
+        # Calculate vertexes button
+        self.vertex_points_btn = FCButton(_("Calculate"))
+        # self.vertex_points_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
+        self.vertex_points_btn.setToolTip(
+            _("Calculate the number of vertex points in the geometry.")
+        )
+        # self.vertex_points_btn.setStyleSheet("""
+        #                                       QPushButton
+        #                                       {
+        #                                           font-weight: bold;
+        #                                       }
+        #                                       """)
+
+        util_grid.addWidget(self.vertex_points_btn, 2, 2)
+
+        # Simplification Tolerance
+        simplification_tol_lbl = FCLabel('%s:' % _("Tolerance"))
+        simplification_tol_lbl.setToolTip(
+            _("All points in the simplified object will be\n"
+              "within the tolerance distance of the original geometry.")
+        )
+        self.geo_tol_entry = FCDoubleSpinner()
+        self.geo_tol_entry.set_precision(self.decimals)
+        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
+        self.geo_tol_entry.set_range(0.0000, 10000.0000)
+
+        util_grid.addWidget(simplification_tol_lbl, 4, 0)
+        util_grid.addWidget(self.geo_tol_entry, 4, 1)
+
+        # Simplification button
+        self.simplification_btn = FCButton(_("Simplify"))
+        # self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
+        self.simplification_btn.setToolTip(
+            _("Simplify a geometry element by reducing its vertex points number.")
+        )
+        # self.simplification_btn.setStyleSheet("""
+        #                                       QPushButton
+        #                                       {
+        #                                           font-weight: bold;
+        #                                       }
+        #                                       """)
+
+        util_grid.addWidget(self.simplification_btn, 4, 2)
 
 
 class CNCObjectUI(ObjectUI):

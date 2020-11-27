@@ -20,7 +20,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - added a context menu in the Geometry Table
 - fixed crash when launching with 2D Graphic Engine (due of recent changes)
 - in Geometry Editor - added new feature: Zoom on selected (by selecting a geometry element in the Geometry Table)
-
+- in Geometry Object Properties UI - added the UI for Utilities and within Utilities added the Simplification UI
 
 26.11.2020
 
