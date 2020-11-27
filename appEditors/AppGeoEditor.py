@@ -3495,9 +3495,8 @@ class AppGeoEditor(QtCore.QObject):
         )
         self.geo_tol_entry = FCDoubleSpinner()
         self.geo_tol_entry.set_precision(self.decimals)
-        self.geo_tol_entry.setSingleStep(0.001)
-        self.geo_tol_entry.setWrapping(True)
-        self.geo_tol_entry.set_range(-10000.0000, 10000.0000)
+        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
+        self.geo_tol_entry.set_range(0.0000, 10000.0000)
         self.geo_tol_entry.set_value(10 ** -self.decimals)
 
         grid0.addWidget(simplification_tol_lbl, 26, 0)
