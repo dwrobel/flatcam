@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - added more parameters displayed for the geometric elements selected in the Geometry Table: is_valid, is_empty, is_ccw, is_simple, is_ring
 - in Geometry Editor - added a new feature: Simplification. It will greatly reduce the number of vertex points in a geometry element selected in the Geometry Table thus potentially greatly reducing the resulting GCode number of lines
 - in Geometry Editor - simplification method is now threaded and optimized
+- in Geometry Editor - fixed a crash on Geometry Editor exit
 
 26.11.2020
 

@@ -3321,6 +3321,7 @@ class AppGeoEditor(QtCore.QObject):
     transform_complete = QtCore.pyqtSignal()
 
     build_ui_sig = QtCore.pyqtSignal()
+    clear_tree_sig = QtCore.pyqtSignal()
 
     draw_shape_idx = -1
 
@@ -3666,6 +3667,8 @@ class AppGeoEditor(QtCore.QObject):
 
         self.simplification_btn.clicked.connect(self.on_simplification_click)
 
+        self.clear_tree_sig.connect(self.on_clear_tree)
+
         # Event signals disconnect id holders
         self.mp = None
         self.mm = None
@@ -3823,45 +3826,49 @@ class AppGeoEditor(QtCore.QObject):
         self.selected = []
         last_obj_shape = None
 
-        selected_tree_items = self.tw.selectedItems()
-        for sel in selected_tree_items:
-            for obj_shape in self.storage.get_objects():
-                try:
-                    if id(obj_shape) == int(sel.text(0)):
-                        self.selected.append(obj_shape)
-                        last_obj_shape = obj_shape
-                except ValueError:
-                    pass
+        try:
+            selected_tree_items = self.tw.selectedItems()
+            for sel in selected_tree_items:
+                for obj_shape in self.storage.get_objects():
+                    try:
+                        if id(obj_shape) == int(sel.text(0)):
+                            self.selected.append(obj_shape)
+                            last_obj_shape = obj_shape
+                    except ValueError:
+                        pass
 
-        if last_obj_shape:
-            last_sel_geo = last_obj_shape.geo
+            if last_obj_shape:
+                last_sel_geo = last_obj_shape.geo
 
-            self.is_valid_entry.set_value(last_sel_geo.is_valid)
-            self.is_empty_entry.set_value(last_sel_geo.is_empty)
+                self.is_valid_entry.set_value(last_sel_geo.is_valid)
+                self.is_empty_entry.set_value(last_sel_geo.is_empty)
 
-            if last_sel_geo.geom_type == 'LinearRing':
-                self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
+                if last_sel_geo.geom_type in ['LinearRing', 'LineString', 'MultiLineString']:
+                    length = last_sel_geo.length
+                    coords = list(last_sel_geo.coords)
+                    vertex_nr = len(coords)
+                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                    if last_sel_geo.geom_type == 'LinearRing':
+                        self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
+                elif last_sel_geo.geom_type == 'Polygon':
+                    length = last_sel_geo.exterior.length
+                    coords = list(last_sel_geo.exterior.coords)
+                    vertex_nr = len(coords)
+                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                    if last_sel_geo.exterior.geom_type == 'LinearRing':
+                        self.is_ccw_entry.set_value(last_sel_geo.exterior.is_ccw)
+                else:
+                    length = 0.0
+                    coords = 'None'
+                    vertex_nr = 0
 
-            if last_sel_geo.geom_type in ['LinearRing', 'LineString', 'MultiLineString']:
-                length = last_sel_geo.length
-                coords = list(last_sel_geo.coords)
-                vertex_nr = len(coords)
-                self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                self.is_ring_entry.set_value(last_sel_geo.is_ring)
-            elif last_sel_geo.geom_type == 'Polygon':
-                length = last_sel_geo.exterior.length
-                coords = list(last_sel_geo.exterior.coords)
-                vertex_nr = len(coords)
-                self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                self.is_ring_entry.set_value(last_sel_geo.is_ring)
-            else:
-                length = 0.0
-                coords = 'None'
-                vertex_nr = 0
-
-            self.geo_len_entry.set_value(length, decimals=self.decimals)
-            self.geo_coords_entry.setText(str(coords))
-            self.geo_vertex_entry.set_value(vertex_nr)
+                self.geo_len_entry.set_value(length, decimals=self.decimals)
+                self.geo_coords_entry.setText(str(coords))
+                self.geo_vertex_entry.set_value(vertex_nr)
+        except Exception as e:
+            self.app.log.debug("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
 
         self.replot()
 
@@ -3889,7 +3896,7 @@ class AppGeoEditor(QtCore.QObject):
                 for geo in selected_shapes_geos:
                     self.add_shape(DrawToolShape(geo), build_ui=False)
 
-                self.plot_all()
+                self.replot()
 
                 self.build_ui_sig.emit()
 
@@ -4018,12 +4025,14 @@ class AppGeoEditor(QtCore.QObject):
         #     self.app.log.debug("AppGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
-        if self.fcgeometry:
-            self.fcgeometry.visible = True
+        try:
+            if self.fcgeometry:
+                self.fcgeometry.visible = True
 
-        # clear the Tree
-        self.tw.clear()
-        self.geo_parent = self.tw.invisibleRootItem()
+            # clear the Tree
+            self.clear_tree_sig.emit()
+        except Exception as err:
+            self.app.log.debug("AppGeoEditor.deactivate() --> %s" % str(err))
 
         # hide the UI
         self.geo_frame.hide()
@@ -4208,6 +4217,11 @@ class AppGeoEditor(QtCore.QObject):
             self.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
+
+    def on_clear_tree(self):
+        self.tw.clearSelection()
+        self.tw.clear()
+        self.geo_parent = self.tw.invisibleRootItem()
 
     def add_shape(self, shape, build_ui=True):
         """
