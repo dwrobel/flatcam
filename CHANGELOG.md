@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated the Italian translation (by Massimiliano Golfetto)
 - added the mechanism to create an error log in the data path where to write debug data for the crashes of FlatCAM
+- Turkish language strings updated (by Mehmet Kaya)
 
 27.11.2020
 
