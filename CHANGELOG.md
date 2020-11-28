@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.11.2020
+
+- updated the Italian translation (by Massimiliano Golfetto)
+
 27.11.2020
 
 - in Geometry Editor fixed the selection on the Geometry Table
