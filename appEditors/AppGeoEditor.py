@@ -2388,7 +2388,9 @@ class FCRectangle(FCShapeTool):
         p1 = self.points[0]
         p2 = self.points[1]
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
-        self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+        geo = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
+
+        self.geometry = DrawToolShape(geo)
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
@@ -2433,7 +2435,8 @@ class FCPolygon(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.in_action = True
-        self.points.append(point)
+        if point != self.points[-1:]:
+            self.points.append(point)
 
         if len(self.points) > 0:
             self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
@@ -2460,8 +2463,11 @@ class FCPolygon(FCShapeTool):
         except Exception:
             pass
 
+        if self.points[-1] == self.points[-2]:
+            self.points.pop(-1)
+
         # self.geometry = LinearRing(self.points)
-        self.geometry = DrawToolShape(Polygon(self.points))
+        self.geometry = DrawToolShape(LinearRing(self.points))
         self.draw_app.in_action = False
         self.complete = True
 
@@ -2694,17 +2700,23 @@ class FCExplode(FCShapeTool):
         for shape in self.draw_app.get_selected():
             to_be_deleted_list.append(shape)
             geo = shape.geo
-            ext_coords = list(geo.exterior.coords)
 
-            for c in range(len(ext_coords)):
-                if c < len(ext_coords) - 1:
-                    lines.append(LineString([ext_coords[c], ext_coords[c + 1]]))
+            if geo.geom_type == 'MultiLineString':
+                lines = [line for line in geo]
 
-            for int_geo in geo.interiors:
-                int_coords = list(int_geo.coords)
-                for c in range(len(int_coords)):
-                    if c < len(int_coords):
-                        lines.append(LineString([int_coords[c], int_coords[c + 1]]))
+            elif geo.is_ring:
+                geo = Polygon(geo)
+                ext_coords = list(geo.exterior.coords)
+
+                for c in range(len(ext_coords)):
+                    if c < len(ext_coords) - 1:
+                        lines.append(LineString([ext_coords[c], ext_coords[c + 1]]))
+
+                for int_geo in geo.interiors:
+                    int_coords = list(int_geo.coords)
+                    for c in range(len(int_coords)):
+                        if c < len(int_coords):
+                            lines.append(LineString([int_coords[c], int_coords[c + 1]]))
 
         for shape in to_be_deleted_list:
             self.draw_app.storage.remove(shape)
@@ -2714,6 +2726,7 @@ class FCExplode(FCShapeTool):
         geo_list = []
         for line in lines:
             geo_list.append(DrawToolShape(line))
+
         self.geometry = geo_list
         self.draw_app.on_shape_complete()
         self.draw_app.app.inform.emit('[success] %s...' % _("Done."))
@@ -2785,24 +2798,21 @@ class FCMove(FCShapeTool):
             return "Done."
 
     def make(self):
-        def worker_task():
-            with self.draw_app.app.proc_container.new('%s...' % _("Moving")):
-                # Create new geometry
-                dx = self.destination[0] - self.origin[0]
-                dy = self.destination[1] - self.origin[1]
-                self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-                                 for geom in self.draw_app.get_selected()]
+        with self.draw_app.app.proc_container.new('%s...' % _("Moving")):
+            # Create new geometry
+            dx = self.destination[0] - self.origin[0]
+            dy = self.destination[1] - self.origin[1]
+            self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+                             for geom in self.draw_app.get_selected()]
 
-                # Delete old
-                self.draw_app.delete_selected()
-                self.complete = True
-                self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-                try:
-                    self.draw_app.app.jump_signal.disconnect()
-                except TypeError:
-                    pass
-
-        self.draw_app.app.worker_task.emit({'fcn': worker_task, 'params': []})
+            # Delete old
+            self.draw_app.delete_selected()
+            self.complete = True
+            self.draw_app.app.inform.emit('[success] %s' % _("Done."))
+            try:
+                self.draw_app.app.jump_signal.disconnect()
+            except TypeError:
+                pass
 
     def selection_bbox(self):
         geo_list = []
@@ -3873,7 +3883,21 @@ class AppGeoEditor(QtCore.QObject):
                 self.is_valid_entry.set_value(last_sel_geo.is_valid)
                 self.is_empty_entry.set_value(last_sel_geo.is_empty)
 
-                if last_sel_geo.geom_type in ['LinearRing', 'LineString', 'MultiLineString']:
+                if last_sel_geo.geom_type == 'MultiLineString':
+                    length = last_sel_geo.length
+                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                    self.is_ccw_entry.set_value('None')
+
+                    coords = ''
+                    vertex_nr = 0
+                    for idx, line in enumerate(last_sel_geo):
+                        line_coords = list(line.coords)
+                        vertex_nr += len(line_coords)
+                        coords += 'Line %s\n' % str(idx)
+                        coords += str(line_coords) + '\n'
+
+                elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
                     length = last_sel_geo.length
                     coords = list(last_sel_geo.coords)
                     vertex_nr = len(coords)
@@ -4879,7 +4903,6 @@ class AppGeoEditor(QtCore.QObject):
         :return: List of plotted elements.
         """
         plot_elements = []
-
         if geometry is None:
             geometry = self.active_tool.geometry
 
@@ -4894,10 +4917,14 @@ class AppGeoEditor(QtCore.QObject):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
             # Polygon: Descend into exterior and each interior.
-            if isinstance(geometry, Polygon):
-                plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
-                plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
+            # if isinstance(geometry, Polygon):
+            #     plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
+            #     plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
 
+            if isinstance(geometry, Polygon):
+                plot_elements.append(self.shapes.add(shape=geometry, color=color, face_color=color[:-2]+'50', layer=0,
+                                                     tolerance=self.fcgeometry.drawing_tolerance,
+                                                     linewidth=linewidth))
             if isinstance(geometry, (LineString, LinearRing)):
                 plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0,
                                                      tolerance=self.fcgeometry.drawing_tolerance,
@@ -4961,7 +4988,7 @@ class AppGeoEditor(QtCore.QObject):
                         if isinstance(p, Polygon):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
                         elif isinstance(p, LinearRing):
-                            pl.append(Polygon(p.coords[::-1]))
+                            pl.append(LinearRing(p.coords[::-1]))
                         elif isinstance(p, LineString):
                             pl.append(LineString(p.coords[::-1]))
                         elif isinstance(p, MultiPolygon):
@@ -4978,7 +5005,7 @@ class AppGeoEditor(QtCore.QObject):
                 if isinstance(geom, Polygon) and geom is not None:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
                 elif isinstance(geom, LinearRing) and geom is not None:
-                    geom = Polygon(geom.coords[::-1])
+                    geom = LinearRing(geom.coords[::-1])
                 elif isinstance(geom, LineString) and geom is not None:
                     geom = LineString(geom.coords[::-1])
                 else:
@@ -5253,9 +5280,11 @@ class AppGeoEditor(QtCore.QObject):
         :return: None.
         """
 
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 results = unary_union([t.geo for t in self.get_selected()])
+                if results.geom_type == 'MultiLineString':
+                    results = linemerge(results)
 
                 # Delete originals.
                 for_deletion = [s for s in self.get_selected()]
@@ -5266,10 +5295,11 @@ class AppGeoEditor(QtCore.QObject):
                 self.selected = []
 
                 self.add_shape(DrawToolShape(results))
-
                 self.replot()
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def intersection_2(self):
         """
@@ -5277,21 +5307,37 @@ class AppGeoEditor(QtCore.QObject):
 
         :return: None
         """
-        def work_task():
-            with self.app.proc_container.new(_("Working...")):
-                geo_shapes = self.get_selected()
+        def work_task(self):
+            self.app.log.debug("AppGeoEditor.intersection_2()")
 
-                try:
-                    results = geo_shapes[0].geo
-                except Exception as e:
-                    self.app.log.debug("AppGeoEditor.intersection() --> %s" % str(e))
+            with self.app.proc_container.new(_("Working...")):
+                selected = self.get_selected()
+
+                if len(selected) < 2:
                     self.app.inform.emit('[WARNING_NOTCL] %s' %
                                          _("A selection of minimum two items is required to do Intersection."))
                     self.select_tool('select')
                     return
 
-                for shape_el in geo_shapes[1:]:
-                    results = results.intersection(shape_el.geo)
+                target = deepcopy(selected[0].geo)
+                if target.is_ring:
+                    target = Polygon(target)
+                tools = selected[1:]
+                # toolgeo = unary_union([deepcopy(shp.geo) for shp in tools]).buffer(0.0000001)
+                # result = DrawToolShape(target.difference(toolgeo))
+                for tool in tools:
+                    if tool.geo.is_ring:
+                        intersector_geo = Polygon(tool.geo)
+                    target = target.difference(intersector_geo)
+
+                if target.geom_type in ['LineString', 'MultiLineString']:
+                    target = linemerge(target)
+
+                if target.geom_type == 'Polygon':
+                    target = target.exterior
+
+                result = DrawToolShape(target)
+                self.add_shape(deepcopy(result))
 
                 # Delete originals.
                 for_deletion = [s for s in self.get_selected()]
@@ -5301,11 +5347,11 @@ class AppGeoEditor(QtCore.QObject):
                 # Selected geometry is now gone!
                 self.selected = []
 
-                self.add_shape(DrawToolShape(results))
-
                 self.replot()
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def intersection(self):
         """
@@ -5314,28 +5360,35 @@ class AppGeoEditor(QtCore.QObject):
         :return: None
         """
 
-        def work_task():
+        def work_task(self):
+            self.app.log.debug("AppGeoEditor.intersection()")
+
             with self.app.proc_container.new(_("Working...")):
-                geo_shapes = self.get_selected()
+                selected = self.get_selected()
                 results = []
                 intact = []
 
-                try:
-                    intersector = geo_shapes[0].geo
-                except Exception as e:
-                    self.app.log.debug("AppGeoEditor.intersection() --> %s" % str(e))
+                if len(selected) < 2:
                     self.app.inform.emit('[WARNING_NOTCL] %s' %
                                          _("A selection of minimum two items is required to do Intersection."))
                     self.select_tool('select')
                     return
 
-                for shape_el in geo_shapes[1:]:
-                    if intersector.intersects(shape_el.geo):
-                        results.append(intersector.intersection(shape_el.geo))
+                intersector = selected[0].geo
+                if intersector.is_ring:
+                    intersector = Polygon(intersector)
+                tools = selected[1:]
+                for tool in tools:
+                    if tool.geo.is_ring:
+                        intersected = Polygon(tool.geo)
                     else:
-                        intact.append(shape_el)
+                        intersected = tool.geo
+                    if intersector.intersects(intersected):
+                        results.append(intersector.intersection(intersected))
+                    else:
+                        intact.append(tool)
 
-                if len(results) != 0:
+                if results:
                     # Delete originals.
                     for_deletion = [s for s in self.get_selected()]
                     for shape_el in for_deletion:
@@ -5343,57 +5396,81 @@ class AppGeoEditor(QtCore.QObject):
                             self.delete_shape(shape_el)
 
                     for geo in results:
-                        self.add_shape(DrawToolShape(geo))
+                        if geo.geom_type == 'MultiPolygon':
+                            for poly in geo.geoms:
+                                p_geo = [poly.exterior] + [ints for ints in poly.interiors]
+                                for g in p_geo:
+                                    self.add_shape(DrawToolShape(g))
+                        elif geo.geom_type == 'Polygon':
+                            p_geo = [geo.exterior] + [ints for ints in geo.interiors]
+                            for g in p_geo:
+                                self.add_shape(DrawToolShape(g))
+                        else:
+                            self.add_shape(DrawToolShape(geo))
 
                 # Selected geometry is now gone!
                 self.selected = []
                 self.replot()
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def subtract(self):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
                 try:
-                    tools = selected[1:]
-                    toolgeo = unary_union([deepcopy(shp.geo) for shp in tools]).buffer(0.0000001)
                     target = deepcopy(selected[0].geo)
-
-                    result = target.difference(toolgeo)
-                    self.add_shape(DrawToolShape(result))
+                    tools = selected[1:]
+                    # toolgeo = unary_union([deepcopy(shp.geo) for shp in tools]).buffer(0.0000001)
+                    # result = DrawToolShape(target.difference(toolgeo))
+                    for tool in tools:
+                        if tool.geo.is_ring:
+                            sub_geo = Polygon(tool.geo)
+                        target = target.difference(sub_geo)
+                    result = DrawToolShape(target)
+                    self.add_shape(deepcopy(result))
 
                     for_deletion = [s for s in self.get_selected()]
                     for shape in for_deletion:
                         self.delete_shape(shape)
 
                     self.replot()
+                    self.build_ui_sig.emit()
+                    self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
                     self.app.log.debug(str(e))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def subtract_2(self):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
                 try:
-                    tools = selected[1:]
-                    toolgeo = unary_union([shp.geo for shp in tools]).buffer(0.0000001)
                     target = deepcopy(selected[0].geo)
-                    result = DrawToolShape(target.difference(toolgeo))
-                    self.add_shape(result)
+                    tools = selected[1:]
+                    # toolgeo = unary_union([shp.geo for shp in tools]).buffer(0.0000001)
+                    for tool in tools:
+                        if tool.geo.is_ring:
+                            sub_geo = Polygon(tool.geo)
+                        target = target.difference(sub_geo)
+                    result = DrawToolShape(target)
+                    self.add_shape(deepcopy(result))
 
                     self.delete_shape(selected[0])
 
                     self.replot()
+                    self.build_ui_sig.emit()
+                    self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
                     self.app.log.debug(str(e))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def cutpath(self):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
                 tools = selected[1:]
@@ -5417,11 +5494,13 @@ class AppGeoEditor(QtCore.QObject):
 
                 self.delete_shape(target)
                 self.replot()
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def buffer(self, buf_distance, join_style):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
 
@@ -5449,22 +5528,43 @@ class AppGeoEditor(QtCore.QObject):
 
                 results = []
                 for t in selected:
-                    if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                        results.append(t.geo.exterior.buffer(
-                            buf_distance - 1e-10,
-                            resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
-                            join_style=join_style)
-                        )
-                    else:
-                        results.append(t.geo.buffer(
-                            buf_distance - 1e-10,
-                            resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
-                            join_style=join_style)
-                        )
+                    if not t.geo.is_empty and t.geo.is_valid:
+                        if t.geo.geom_type == 'Polygon':
+                            results.append(t.geo.exterior.buffer(
+                                buf_distance - 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style)
+                            )
+                        elif t.geo.geom_type == 'MultiLineString':
+                            for line in t.geo:
+                                if line.is_ring:
+                                    b_geo = Polygon(line)
+                                results.append(b_geo.buffer(
+                                    buf_distance - 1e-10,
+                                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                    join_style=join_style).exterior
+                                )
+                                results.append(b_geo.buffer(
+                                    -buf_distance + 1e-10,
+                                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                    join_style=join_style).exterior
+                                )
+                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
+                            if t.geo.is_ring:
+                                b_geo = Polygon(t.geo)
+                            results.append(b_geo.buffer(
+                                buf_distance - 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                            )
+                            results.append(b_geo.buffer(
+                                -buf_distance + 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                           )
 
                 if not results:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Failed, the result is empty. Choose a different buffer value."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     self.selected = []
                     self.replot()
@@ -5474,12 +5574,13 @@ class AppGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(sha))
 
                 self.replot()
-                self.app.inform.emit('[success] %s' % _("Full buffer geometry created."))
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def buffer_int(self, buf_distance, join_style):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
 
@@ -5503,19 +5604,33 @@ class AppGeoEditor(QtCore.QObject):
 
                 results = []
                 for t in selected:
-                    if isinstance(t.geo, LinearRing):
-                        t.geo = Polygon(t.geo)
-
-                    if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                        results.append(t.geo.buffer(
-                            -buf_distance + 1e-10,
-                            resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
-                            join_style=join_style)
-                        )
+                    if not t.geo.is_empty and t.geo.is_valid:
+                        if t.geo.geom_type == 'Polygon':
+                            results.append(t.geo.exterior.buffer(
+                                -buf_distance + 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                            )
+                        elif t.geo.geom_type == 'MultiLineString':
+                            for line in t.geo:
+                                if line.is_ring:
+                                    b_geo = Polygon(line)
+                                results.append(b_geo.buffer(
+                                    -buf_distance + 1e-10,
+                                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                    join_style=join_style).exterior
+                                )
+                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
+                            if t.geo.is_ring:
+                                b_geo = Polygon(t.geo)
+                            results.append(b_geo.buffer(
+                                -buf_distance + 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                            )
 
                 if not results:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Failed, the result is empty. Choose a different buffer value."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     self.selected = []
                     self.replot()
@@ -5525,12 +5640,13 @@ class AppGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(sha))
 
                 self.replot()
-                self.app.inform.emit('[success] %s' % _("Interior buffer geometry created."))
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def buffer_ext(self, buf_distance, join_style):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 selected = self.get_selected()
 
@@ -5556,34 +5672,49 @@ class AppGeoEditor(QtCore.QObject):
 
                 results = []
                 for t in selected:
-                    if isinstance(t.geo, LinearRing):
-                        t.geo = Polygon(t.geo)
-
-                    if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                        results.append(t.geo.buffer(
-                            buf_distance,
-                            resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
-                            join_style=join_style)
-                        )
+                    if not t.geo.is_empty and t.geo.is_valid:
+                        if t.geo.geom_type == 'Polygon':
+                            results.append(t.geo.exterior.buffer(
+                                buf_distance - 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                            )
+                        elif t.geo.geom_type == 'MultiLineString':
+                            for line in t.geo:
+                                if line.is_ring:
+                                    b_geo = Polygon(line)
+                                results.append(b_geo.buffer(
+                                    buf_distance - 1e-10,
+                                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                    join_style=join_style).exterior
+                                )
+                        elif t.geo.geom_type in ['LineString', 'LinearRing']:
+                            if t.geo.is_ring:
+                                b_geo = Polygon(t.geo)
+                            results.append(b_geo.buffer(
+                                buf_distance - 1e-10,
+                                resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                                join_style=join_style).exterior
+                            )
 
                 if not results:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Failed, the result is empty. Choose a different buffer value."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     self.selected = []
                     self.replot()
-                    return
+                    return 'fail'
 
                 for sha in results:
                     self.add_shape(DrawToolShape(sha))
 
                 self.replot()
-                self.app.inform.emit('[success] %s' % _("Exterior buffer geometry created."))
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def paint(self, tooldia, overlap, margin, connect, contour, method):
-        def work_task():
+        def work_task(self):
             with self.app.proc_container.new(_("Working...")):
                 if overlap >= 100:
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
@@ -5673,10 +5804,11 @@ class AppGeoEditor(QtCore.QObject):
                 # This is a dirty patch:
                 for r in results:
                     self.add_shape(DrawToolShape(r))
-                self.app.inform.emit('[success] %s' % _("Done."))
                 self.replot()
+                self.build_ui_sig.emit()
+                self.app.inform.emit('[success] %s' % _("Done."))
 
-        self.app.worker_task.emit({'fcn': work_task, 'params': []})
+        self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
     def flatten(self, geometry, orient_val=1, reset=True, pathonly=False):
         """

@@ -1186,9 +1186,15 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'),
+            _('Polygon Subtraction. First selected is the target.\n'
+              'The rest of the selected is subtracted from the first.\n'
+              'First selected is replaced by the result.'))
         self.geo_alt_subtract_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'), _('Alt Subtraction'))
+            QtGui.QIcon(self.app.resource_location + '/subtract_alt32.png'),
+            _('Alt Subtraction. First selected is the target.\n'
+              'The rest of the selected is subtracted from the first.\n'
+              'First selected is kept besides the result.'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(

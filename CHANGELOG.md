@@ -12,6 +12,14 @@ CHANGELOG for FlatCAM beta
 - updated the Italian translation (by Massimiliano Golfetto)
 - added the mechanism to create an error log in the data path where to write debug data for the crashes of FlatCAM
 - Turkish language strings updated (by Mehmet Kaya)
+- in Geometry Editor - reverted to using non-threaded move
+- in Geometry Editor - made sure that polygons are displayed as such in order to not create confusion (the plotted shapes now have 'content')
+- in Geometry Editor - in Polygon tool solved issues with adding a double point at the last position
+- in Geometry Editor - the Rectangle and Polygon tools are now the result stored as LinearRing instead of Polygon
+- in Geometry Editor - upgraded the Intersection and Subtraction tools to work correctly using as inputs LinearRing's
+- in Geometry Editor - fixed the display of coordinates for MultiLineString's
+- in Geometry Editor - fixed the Explode tool to work in the new conditions
+- in Geometry Editor - fixed the Buffer tool to work in the new conditions
 
 27.11.2020
 
