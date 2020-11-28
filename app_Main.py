@@ -508,9 +508,6 @@ class App(QtCore.QObject):
             os.makedirs(self.data_path)
             self.log.debug('Created data folder: ' + self.data_path)
 
-            os.makedirs(os.path.join(self.data_path, 'preprocessors'))
-            self.log.debug('Created data preprocessors folder: ' + os.path.join(self.data_path, 'preprocessors'))
-
         self.preprocessorpaths = self.preprocessors_path()
         if not os.path.exists(self.preprocessorpaths):
             os.makedirs(self.preprocessorpaths)

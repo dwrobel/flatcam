@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 28.11.2020
 
 - updated the Italian translation (by Massimiliano Golfetto)
+- added the mechanism to create an error log in the data path where to write debug data for the crashes of FlatCAM
 
 27.11.2020
 
