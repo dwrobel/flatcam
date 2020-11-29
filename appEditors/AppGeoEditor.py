@@ -2669,6 +2669,8 @@ class FCSelect(DrawTool):
         self.draw_app.tw.itemClicked.connect(self.draw_app.on_tree_geo_click)
 
         # self.draw_app.tw.itemClicked.emit(self.draw_app.tw.currentItem(), 0)
+        self.draw_app.update_ui()
+
         return ""
 
     def clean_up(self):
@@ -3865,105 +3867,108 @@ class AppGeoEditor(QtCore.QObject):
     def on_geo_elem_selected(self):
         pass
 
-    def on_tree_geo_click(self):
+    def update_ui(self):
         self.selected = []
         last_obj_shape = None
 
-        try:
-            selected_tree_items = self.tw.selectedItems()
-            for sel in selected_tree_items:
-                for obj_shape in self.storage.get_objects():
-                    try:
-                        if id(obj_shape) == int(sel.text(0)):
-                            self.selected.append(obj_shape)
-                            last_obj_shape = obj_shape
-                    except ValueError:
-                        pass
+        selected_tree_items = self.tw.selectedItems()
+        for sel in selected_tree_items:
+            for obj_shape in self.storage.get_objects():
+                try:
+                    if id(obj_shape) == int(sel.text(0)):
+                        self.selected.append(obj_shape)
+                        last_obj_shape = obj_shape
+                except ValueError:
+                    pass
 
-            if last_obj_shape:
-                last_sel_geo = last_obj_shape.geo
+        if last_obj_shape:
+            last_sel_geo = last_obj_shape.geo
 
-                self.is_valid_entry.set_value(last_sel_geo.is_valid)
-                self.is_empty_entry.set_value(last_sel_geo.is_empty)
+            self.is_valid_entry.set_value(last_sel_geo.is_valid)
+            self.is_empty_entry.set_value(last_sel_geo.is_empty)
 
-                if last_sel_geo.geom_type == 'MultiLineString':
-                    length = last_sel_geo.length
-                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
-                    self.is_ccw_entry.set_value('None')
+            if last_sel_geo.geom_type == 'MultiLineString':
+                length = last_sel_geo.length
+                self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                self.is_ccw_entry.set_value('None')
 
-                    coords = ''
-                    vertex_nr = 0
-                    for idx, line in enumerate(last_sel_geo):
-                        line_coords = list(line.coords)
-                        vertex_nr += len(line_coords)
-                        coords += 'Line %s\n' % str(idx)
-                        coords += str(line_coords) + '\n'
+                coords = ''
+                vertex_nr = 0
+                for idx, line in enumerate(last_sel_geo):
+                    line_coords = list(line.coords)
+                    vertex_nr += len(line_coords)
+                    coords += 'Line %s\n' % str(idx)
+                    coords += str(line_coords) + '\n'
 
-                elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
-                    length = last_sel_geo.length
-                    coords = list(last_sel_geo.coords)
-                    vertex_nr = len(coords)
-                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
-                    if last_sel_geo.geom_type == 'LinearRing':
-                        self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
-                elif last_sel_geo.geom_type == 'Polygon':
-                    length = last_sel_geo.exterior.length
-                    coords = list(last_sel_geo.exterior.coords)
-                    vertex_nr = len(coords)
-                    self.is_simple_entry.set_value(last_sel_geo.is_simple)
-                    self.is_ring_entry.set_value(last_sel_geo.is_ring)
-                    if last_sel_geo.exterior.geom_type == 'LinearRing':
-                        self.is_ccw_entry.set_value(last_sel_geo.exterior.is_ccw)
+            elif last_sel_geo.geom_type in ['LinearRing', 'LineString']:
+                length = last_sel_geo.length
+                coords = list(last_sel_geo.coords)
+                vertex_nr = len(coords)
+                self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                if last_sel_geo.geom_type == 'LinearRing':
+                    self.is_ccw_entry.set_value(last_sel_geo.is_ccw)
+            elif last_sel_geo.geom_type == 'Polygon':
+                length = last_sel_geo.exterior.length
+                coords = list(last_sel_geo.exterior.coords)
+                vertex_nr = len(coords)
+                self.is_simple_entry.set_value(last_sel_geo.is_simple)
+                self.is_ring_entry.set_value(last_sel_geo.is_ring)
+                if last_sel_geo.exterior.geom_type == 'LinearRing':
+                    self.is_ccw_entry.set_value(last_sel_geo.exterior.is_ccw)
+            else:
+                length = 0.0
+                coords = 'None'
+                vertex_nr = 0
+
+            if self.geo_zoom.get_value():
+                xmin, ymin, xmax, ymax = last_sel_geo.bounds
+                if xmin == xmax and ymin != ymax:
+                    xmin = ymin
+                    xmax = ymax
+                elif xmin != xmax and ymin == ymax:
+                    ymin = xmin
+                    ymax = xmax
+
+                if self.app.is_legacy is False:
+                    rect = Rect(xmin, ymin, xmax, ymax)
+                    rect.left, rect.right = xmin, xmax
+                    rect.bottom, rect.top = ymin, ymax
+                    # Lock updates in other threads
+                    self.shapes.lock_updates()
+
+                    # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
+                    # seen clearly otherwise the shape collection boundary will have no border
+                    dx = rect.right - rect.left
+                    dy = rect.top - rect.bottom
+                    x_factor = dx * 0.02
+                    y_factor = dy * 0.02
+
+                    rect.left -= x_factor
+                    rect.bottom -= y_factor
+                    rect.right += x_factor
+                    rect.top += y_factor
+
+                    self.app.plotcanvas.view.camera.rect = rect
+                    self.shapes.unlock_updates()
                 else:
-                    length = 0.0
-                    coords = 'None'
-                    vertex_nr = 0
+                    width = xmax - xmin
+                    height = ymax - ymin
+                    xmin -= 0.05 * width
+                    xmax += 0.05 * width
+                    ymin -= 0.05 * height
+                    ymax += 0.05 * height
+                    self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
-                if self.geo_zoom.get_value():
-                    xmin, ymin, xmax, ymax = last_sel_geo.bounds
-                    if xmin == xmax and ymin != ymax:
-                        xmin = ymin
-                        xmax = ymax
-                    elif xmin != xmax and ymin == ymax:
-                        ymin = xmin
-                        ymax = xmax
+            self.geo_len_entry.set_value(length, decimals=self.decimals)
+            self.geo_coords_entry.setText(str(coords))
+            self.geo_vertex_entry.set_value(vertex_nr)
 
-                    if self.app.is_legacy is False:
-                        rect = Rect(xmin, ymin, xmax, ymax)
-                        rect.left, rect.right = xmin, xmax
-                        rect.bottom, rect.top = ymin, ymax
-                        # Lock updates in other threads
-                        self.shapes.lock_updates()
+    def on_tree_geo_click(self):
 
-                        # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
-                        # seen clearly otherwise the shape collection boundary will have no border
-                        dx = rect.right - rect.left
-                        dy = rect.top - rect.bottom
-                        x_factor = dx * 0.02
-                        y_factor = dy * 0.02
-
-                        rect.left -= x_factor
-                        rect.bottom -= y_factor
-                        rect.right += x_factor
-                        rect.top += y_factor
-
-                        self.app.plotcanvas.view.camera.rect = rect
-                        self.shapes.unlock_updates()
-                    else:
-                        width = xmax - xmin
-                        height = ymax - ymin
-                        xmin -= 0.05 * width
-                        xmax += 0.05 * width
-                        ymin -= 0.05 * height
-                        ymax += 0.05 * height
-                        self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
-
-                self.geo_len_entry.set_value(length, decimals=self.decimals)
-                self.geo_coords_entry.setText(str(coords))
-                self.geo_vertex_entry.set_value(vertex_nr)
-
+        try:
+            self.update_ui()
             self.plot_all()
         except Exception as e:
             self.app.log.debug("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))

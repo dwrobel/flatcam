@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - improvements and some issues are solved
 - in Geometry Editor - improvement in update of the whole Geometry Editor UI on shape selection on canvas
 - in Geometry Editor - fixed multiple plotting for the same selection
+- in Geometry Editor - made sure that selecting shapes on canvas will update the UI - final fix
 
 28.11.2020
 
