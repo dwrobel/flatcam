@@ -156,7 +156,7 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.common_grid.addWidget(self.transformations_button, 5, 0, 1, 2)
 
-        layout.addStretch()
+        layout.addStretch(1)
     
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
@@ -663,7 +663,8 @@ class ExcellonObjectUI(ObjectUI):
 
         self.drills_frame = QtWidgets.QFrame()
         self.drills_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.drills_frame)
+        grid0.addWidget(self.drills_frame, 10, 0, 1, 3)
+
         self.tools_box = QtWidgets.QVBoxLayout()
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
@@ -716,9 +717,9 @@ class ExcellonObjectUI(ObjectUI):
         # #################################################################
 
         grid2 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid2)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
+        grid0.addLayout(grid2, 12, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

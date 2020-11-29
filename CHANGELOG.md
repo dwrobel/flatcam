@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - fixed multiple plotting for the same selection
 - in Geometry Editor - made sure that selecting shapes on canvas will update the UI - final fix
 - in Geometry Editor - the Length and Vertex Points GUI elements are now read only since it does not make sense to edit them
+- in Properties Tab UI (Object UI) made sure that the UI stays compact even on large screens
 
 28.11.2020
 
