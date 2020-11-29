@@ -214,7 +214,7 @@ class Distance(AppTool):
             if self.app.is_legacy is False:
                 self.canvas.graph_event_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
                 self.canvas.graph_event_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
-                self.canvas.graph_event_disconnect('mouse_release', self.app.geo_editor.on_geo_click_release)
+                self.canvas.graph_event_disconnect('mouse_release', self.app.geo_editor.on_canvas_click_release)
             else:
                 self.canvas.graph_event_disconnect(self.app.geo_editor.mm)
                 self.canvas.graph_event_disconnect(self.app.geo_editor.mp)
@@ -263,7 +263,7 @@ class Distance(AppTool):
             self.app.geo_editor.mm = self.canvas.graph_event_connect('mouse_move', self.app.geo_editor.on_canvas_move)
             self.app.geo_editor.mp = self.canvas.graph_event_connect('mouse_press', self.app.geo_editor.on_canvas_click)
             self.app.geo_editor.mr = self.canvas.graph_event_connect('mouse_release',
-                                                                     self.app.geo_editor.on_geo_click_release)
+                                                                     self.app.geo_editor.on_canvas_click_release)
 
         elif self.original_call_source == 'exc_editor':
             self.app.exc_editor.mm = self.canvas.graph_event_connect('mouse_move', self.app.exc_editor.on_canvas_move)

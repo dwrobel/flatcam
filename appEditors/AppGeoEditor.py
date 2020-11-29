@@ -14,6 +14,8 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 
+# import inspect
+
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
@@ -1359,7 +1361,7 @@ class TransformEditorTool(AppTool):
             try:
                 for sel_sha in shape_list:
                     sel_sha.rotate(-val, point=(px, py))
-                    self.draw_app.replot()
+                    self.draw_app.plot_all()
 
                 self.app.inform.emit('[success] %s' % _("Done."))
             except Exception as e:
@@ -1393,7 +1395,7 @@ class TransformEditorTool(AppTool):
                     elif axis == 'Y':
                         sha.mirror('Y', (px, py))
                         self.app.inform.emit('[success] %s' % _('Flip on X axis done'))
-                    self.draw_app.replot()
+                    self.draw_app.plot_all()
 
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
@@ -1422,7 +1424,7 @@ class TransformEditorTool(AppTool):
                 for sha in shape_list:
                     sha.skew(xval, yval, point=(px, py))
 
-                    self.draw_app.replot()
+                    self.draw_app.plot_all()
 
                 if axis == 'X':
                     self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
@@ -1457,7 +1459,7 @@ class TransformEditorTool(AppTool):
 
                 for sha in shape_list:
                     sha.scale(xfactor, yfactor, point=(px, py))
-                    self.draw_app.replot()
+                    self.draw_app.plot_all()
 
                 if str(axis) == 'X':
                     self.app.inform.emit('[success] %s...' % _('Scale on the X axis done'))
@@ -1489,7 +1491,7 @@ class TransformEditorTool(AppTool):
                         sha.offset((num, 0))
                     elif axis == 'Y':
                         sha.offset((0, num))
-                    self.draw_app.replot()
+                    self.draw_app.plot_all()
 
                 if axis == 'X':
                     self.app.inform.emit('[success] %s...' % _('Offset on the X axis done'))
@@ -1512,7 +1514,7 @@ class TransformEditorTool(AppTool):
                     for sel_obj in shape_list:
                         sel_obj.buffer(value, join, factor)
 
-                        self.draw_app.replot()
+                        self.draw_app.plot_all()
 
                     self.app.inform.emit('[success] %s...' % _('Buffer done'))
 
@@ -2641,14 +2643,13 @@ class FCSelect(DrawTool):
                     else:
                         self.draw_app.selected.append(obj_to_add)
                 else:
-                    self.draw_app.selected = []
-                    self.draw_app.selected.append(obj_to_add)
+                    self.draw_app.selected = [obj_to_add]
         except Exception as e:
             log.error("[ERROR] AppGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
 
         # if selection is done on canvas update the Tree in Properties Tab with the selection
         try:
-            self.draw_app.tw.itemSelectionChanged.disconnect(self.draw_app.on_tree_selection_change)
+            self.draw_app.tw.itemClicked.disconnect(self.draw_app.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
@@ -2665,8 +2666,9 @@ class FCSelect(DrawTool):
 
                 iterator += 1
 
-        self.draw_app.tw.itemSelectionChanged.connect(self.draw_app.on_tree_selection_change)
-        self.draw_app.tw.itemSelectionChanged.emit()
+        self.draw_app.tw.itemClicked.connect(self.draw_app.on_tree_geo_click)
+
+        # self.draw_app.tw.itemClicked.emit(self.draw_app.tw.currentItem(), 0)
         return ""
 
     def clean_up(self):
@@ -2783,7 +2785,7 @@ class FCMove(FCShapeTool):
             # self.complete = True
             # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
             self.select_shapes(point)
-            self.draw_app.replot()
+            self.draw_app.plot_all()
             self.draw_app.app.inform.emit(_("Click on reference location ..."))
             return
 
@@ -3741,7 +3743,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def on_transform_complete(self):
         self.delete_selected()
-        self.replot()
+        self.plot_all()
 
     def entry2option(self, opt, entry):
         """
@@ -3863,7 +3865,7 @@ class AppGeoEditor(QtCore.QObject):
     def on_geo_elem_selected(self):
         pass
 
-    def on_tree_selection_change(self):
+    def on_tree_geo_click(self):
         self.selected = []
         last_obj_shape = None
 
@@ -3961,10 +3963,10 @@ class AppGeoEditor(QtCore.QObject):
                 self.geo_len_entry.set_value(length, decimals=self.decimals)
                 self.geo_coords_entry.setText(str(coords))
                 self.geo_vertex_entry.set_value(vertex_nr)
+
+            self.plot_all()
         except Exception as e:
             self.app.log.debug("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
-
-        self.replot()
 
     def on_simplification_click(self):
         self.app.log.debug("AppGeoEditor.on_simplification_click()")
@@ -3992,7 +3994,7 @@ class AppGeoEditor(QtCore.QObject):
                 for geo in selected_shapes_geos:
                     self.add_shape(DrawToolShape(geo), build_ui=False)
 
-                self.replot()
+                self.plot_all()
 
                 self.build_ui_sig.emit()
 
@@ -4101,7 +4103,7 @@ class AppGeoEditor(QtCore.QObject):
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
-        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
+        self.tw.itemClicked.connect(self.on_tree_geo_click)
         # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
         # self.tw.customContextMenuRequested.connect(self.on_menu_request)
 
@@ -4161,7 +4163,7 @@ class AppGeoEditor(QtCore.QObject):
 
         try:
             # ## appGUI Events
-            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+            self.tw.itemClicked.disconnect(self.on_tree_geo_click)
             # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
             # self.tw.customContextMenuRequested.connect(self.on_menu_request)
         except (AttributeError, TypeError):
@@ -4197,7 +4199,7 @@ class AppGeoEditor(QtCore.QObject):
         # don't ask why but if there is nothing connected I've seen issues
         self.mp = self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
         self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
-        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_geo_click_release)
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_canvas_click_release)
 
         if self.app.is_legacy is False:
             # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
@@ -4260,7 +4262,7 @@ class AppGeoEditor(QtCore.QObject):
         if self.app.is_legacy is False:
             self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
-            self.canvas.graph_event_disconnect('mouse_release', self.on_geo_click_release)
+            self.canvas.graph_event_disconnect('mouse_release', self.on_canvas_click_release)
         else:
             self.canvas.graph_event_disconnect(self.mp)
             self.canvas.graph_event_disconnect(self.mm)
@@ -4449,7 +4451,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def clear(self):
         """
-        Will clear the storage for the Editor shapes, the selected shapes storage and replot. Clean up method.
+        Will clear the storage for the Editor shapes, the selected shapes storage and plot_all. Clean up method.
 
         :return:    None
         """
@@ -4460,7 +4462,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
 
         # self.storage = AppGeoEditor.make_storage()
-        self.replot()
+        self.plot_all()
 
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)
@@ -4564,9 +4566,9 @@ class AppGeoEditor(QtCore.QObject):
                     else:
                         self.select_tool(self.active_tool.name)
 
-                if isinstance(self.active_tool, FCSelect):
-                    # self.app.log.debug("Replotting after click.")
-                    self.replot()
+                # if isinstance(self.active_tool, FCSelect):
+                #     # self.app.log.debug("plot_allting after click.")
+                #     self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
@@ -4671,7 +4673,7 @@ class AppGeoEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-    def on_geo_click_release(self, event):
+    def on_canvas_click_release(self, event):
         if self.app.is_legacy is False:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
@@ -4702,7 +4704,7 @@ class AppGeoEditor(QtCore.QObject):
                     # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
-                    self.replot()
+                    self.plot_all()
             elif event.button == right_button:  # right click
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
@@ -4732,7 +4734,7 @@ class AppGeoEditor(QtCore.QObject):
                                 self.app.inform.emit('[success] %s' % _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
-            self.app.log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
+            self.app.log.warning("FLatCAMGeoEditor.on_canvas_click_release() --> Error: %s" % str(e))
             return
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -4775,7 +4777,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # if selection is done on canvas update the Tree in Selected Tab with the selection
         try:
-            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+            self.tw.itemClicked.disconnect(self.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
@@ -4792,9 +4794,9 @@ class AppGeoEditor(QtCore.QObject):
 
                 iterator += 1
 
-        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
+        self.tw.itemClicked.connect(self.on_tree_geo_click)
 
-        self.replot()
+        self.plot_all()
 
     def draw_utility_geometry(self, geo):
         # Add the new utility shape
@@ -4836,7 +4838,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def on_delete_btn(self):
         self.delete_selected()
-        self.replot()
+        self.plot_all()
 
     def delete_selected(self):
         tempref = [s for s in self.selected]
@@ -4943,31 +4945,24 @@ class AppGeoEditor(QtCore.QObject):
         :return: None
         :rtype: None
         """
-        # self.app.log.debug("plot_all()")
+        # self.app.log.debug(str(inspect.stack()[1][3]) + " --> AppGeoEditor.plot_all()")
+
         self.shapes.clear(update=True)
 
+        draw_color = self.app.defaults['global_draw_color'] + "FF"
+        sel_color = self.app.defaults['global_sel_draw_color'] + 'FF'
+
         for shape in self.storage.get_objects():
-            if shape.geo is None or shape.geo.is_empty or not shape.geo.is_valid:
-                continue
-
-            if shape in self.selected:
-                self.plot_shape(geometry=shape.geo,
-                                color=self.app.defaults['global_sel_draw_color'] + 'FF',
-                                linewidth=2)
-                continue
-
-            self.plot_shape(geometry=shape.geo,
-                            color=self.app.defaults['global_draw_color'] + "FF")
+            if shape.geo and not shape.geo.is_empty and shape.geo.is_valid:
+                if shape in self.selected:
+                    self.plot_shape(geometry=shape.geo, color=sel_color)
+                else:
+                    self.plot_shape(geometry=shape.geo, color=draw_color)
 
         for shape in self.utility:
-            self.plot_shape(geometry=shape.geo,
-                            linewidth=1)
-            continue
+            self.plot_shape(geometry=shape.geo, linewidth=1)
 
         self.shapes.redraw()
-
-    def replot(self):
-        self.plot_all()
 
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
@@ -5040,7 +5035,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
 
         # Re-plot and reset tool.
-        self.replot()
+        self.plot_all()
         # self.active_tool = type(self.active_tool)(self)
 
     @staticmethod
@@ -5199,7 +5194,7 @@ class AppGeoEditor(QtCore.QObject):
                     else:
                         editor_obj.add_shape(DrawToolShape(shape), build_ui=False)
 
-                editor_obj.replot()
+                editor_obj.plot_all()
 
                 # updated units
                 editor_obj.units = self.app.defaults['units'].upper()
@@ -5305,7 +5300,7 @@ class AppGeoEditor(QtCore.QObject):
                 editor_self.selected = []
 
                 editor_self.add_shape(DrawToolShape(results))
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5358,7 +5353,7 @@ class AppGeoEditor(QtCore.QObject):
                 # Selected geometry is now gone!
                 editor_self.selected = []
 
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5421,7 +5416,7 @@ class AppGeoEditor(QtCore.QObject):
 
                 # Selected geometry is now gone!
                 editor_self.selected = []
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5447,7 +5442,7 @@ class AppGeoEditor(QtCore.QObject):
                     for shape in for_deletion:
                         self.delete_shape(shape)
 
-                    editor_self.replot()
+                    editor_self.plot_all()
                     editor_self.build_ui_sig.emit()
                     editor_self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
@@ -5472,7 +5467,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     editor_self.delete_shape(selected[0])
 
-                    editor_self.replot()
+                    editor_self.plot_all()
                     editor_self.build_ui_sig.emit()
                     editor_self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
@@ -5504,7 +5499,7 @@ class AppGeoEditor(QtCore.QObject):
                     return
 
                 editor_self.delete_shape(target)
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5522,7 +5517,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 if len(selected) == 0:
@@ -5534,7 +5529,7 @@ class AppGeoEditor(QtCore.QObject):
 
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 results = []
@@ -5578,13 +5573,13 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 for sha in results:
                     editor_self.add_shape(DrawToolShape(sha))
 
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5599,7 +5594,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 if len(selected) == 0:
@@ -5610,7 +5605,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 results = []
@@ -5644,13 +5639,13 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 for sha in results:
                     editor_self.add_shape(DrawToolShape(sha))
 
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5667,7 +5662,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit(msg)
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return
 
                 if len(selected) == 0:
@@ -5678,7 +5673,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return
 
                 results = []
@@ -5712,13 +5707,13 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed, the result is empty."))
                     # deselect everything
                     editor_self.selected = []
-                    editor_self.replot()
+                    editor_self.plot_all()
                     return 'fail'
 
                 for sha in results:
                     editor_self.add_shape(DrawToolShape(sha))
 
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -5815,7 +5810,7 @@ class AppGeoEditor(QtCore.QObject):
                 # This is a dirty patch:
                 for r in results:
                     editor_self.add_shape(DrawToolShape(r))
-                editor_self.replot()
+                editor_self.plot_all()
                 editor_self.build_ui_sig.emit()
                 editor_self.app.inform.emit('[success] %s' % _("Done."))
 
