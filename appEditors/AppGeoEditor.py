@@ -3474,6 +3474,8 @@ class AppGeoEditor(QtCore.QObject):
             _("The length of the geometry element.")
         )
         self.geo_len_entry = FCEntry(decimals=self.decimals)
+        self.geo_len_entry.setReadOnly(True)
+
         grid0.addWidget(len_lbl, 20, 0)
         grid0.addWidget(self.geo_len_entry, 20, 1, 1, 2)
 
@@ -3496,6 +3498,7 @@ class AppGeoEditor(QtCore.QObject):
             _("The number of vertex points in the selected geometry element.")
         )
         self.geo_vertex_entry = FCEntry(decimals=self.decimals)
+        self.geo_vertex_entry.setReadOnly(True)
 
         grid0.addWidget(vertex_lbl, 26, 0)
         grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)

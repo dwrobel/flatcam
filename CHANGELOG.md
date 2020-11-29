@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Geometry Editor - improvement in update of the whole Geometry Editor UI on shape selection on canvas
 - in Geometry Editor - fixed multiple plotting for the same selection
 - in Geometry Editor - made sure that selecting shapes on canvas will update the UI - final fix
+- in Geometry Editor - the Length and Vertex Points GUI elements are now read only since it does not make sense to edit them
 
 28.11.2020
 
