@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.11.2020
+
+- in Geometry Editor - improvements and some issues are solved
+
 28.11.2020
 
 - updated the Italian translation (by Massimiliano Golfetto)
