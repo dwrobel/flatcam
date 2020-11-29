@@ -2666,7 +2666,7 @@ class FCSelect(DrawTool):
                 iterator += 1
 
         self.draw_app.tw.itemSelectionChanged.connect(self.draw_app.on_tree_selection_change)
-
+        self.draw_app.tw.itemSelectionChanged.emit()
         return ""
 
     def clean_up(self):

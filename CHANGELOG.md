@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 29.11.2020
 
 - in Geometry Editor - improvements and some issues are solved
+- in Geometry Editor - improvement in update of the whole Geometry Editor UI on shape selection on canvas
 
 28.11.2020
 
