@@ -249,10 +249,14 @@ class ToolMilling(AppTool, Excellon):
         self.ui.geo_tools_table.drag_drop_sig.connect(self.on_geo_rebuild_ui)
         self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
+        # Generate CNCJob
         self.launch_job.connect(self.mtool_gen_cncjob)
-
         self.ui.generate_cnc_button.clicked.connect(self.on_generate_cncjob_click)
 
+        # When object selection on canvas change
+        self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+
+        # Reset Tool
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
@@ -1028,6 +1032,13 @@ class ToolMilling(AppTool, Excellon):
                 self.app.collection.set_all_inactive()
                 self.app.collection.set_active(self.obj_name)
             self.build_ui()
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            self.ui.object_combo.set_value(name)
+        except IndexError:
+            pass
 
     def on_job_changed(self, idx):
         if self.ui.target_radio.get_value() == 'geo':
@@ -2362,6 +2373,8 @@ class ToolMilling(AppTool, Excellon):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
 
     def on_generate_cncjob_click(self):
+        self.app.delete_selection_shape()
+
         if self.target_obj.kind == 'geometry':
             self.on_generatecnc_from_geo()
 
@@ -2764,24 +2777,29 @@ class ToolMilling(AppTool, Excellon):
             def job_thread(a_obj):
                 if self.target_obj.multigeo is False:
                     with self.app.proc_container.new('%s...' % _("Generating")):
-                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
-                        if ret_val != 'fail':
-                            a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
+                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
+                                                           autoselected=True)
                 else:
                     with self.app.proc_container.new('%s...' % _("Generating")):
-                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
-                        if ret_val != 'fail':
-                            a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
+                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot,
+                                                           autoselected=True)
+
+                if ret_val != 'fail':
+                    a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
             # Create a promise with the name
             self.app.collection.promise(outname)
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            if self.solid_geometry:
-                self.app.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
+            if self.target_obj.multigeo is False:
+                ret_val = self.app.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
+                                                      autoselected=True)
             else:
-                self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
+                ret_val = self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot,
+                                                      autoselected=True)
+            if ret_val != 'fail':
+                self.app.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
     def on_pp_changed(self):
         current_pp = self.ui.pp_geo_name_cb.get_value()

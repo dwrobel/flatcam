@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - working in tool data structures
 - Milling Tool - more or less made the CNCJob generation for multigeo Geometries to work; still the parameters may not be used
 - removed the Generate CNCJob context menu action in the Project Menu as this will not work anymore
+- Milling Tool - selecting an object on canvas will update the selection of the object combobox, if the selected object type is the same sa the one selected in the Target radio
 
 29.11.2020
 
