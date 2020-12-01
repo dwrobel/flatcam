@@ -103,7 +103,7 @@ class ToolMilling(AppTool, Excellon):
         self.grid_status_memory = self.app.ui.grid_snap_btn.isChecked()
 
         # store here the state of the exclusion checkbox state to be restored after building the UI
-        # TODO add this in the sel.app.defaults dict and in Preferences
+        # TODO add this in the self.app.defaults dict and in Preferences
         self.exclusion_area_cb_is_checked = False
 
         # store here solid_geometry when there are tool with isolation job
@@ -211,6 +211,7 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################
         self.builduiSig.connect(self.build_ui)
 
+        # add Tool
         self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
@@ -218,6 +219,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
         self.ui.operation_type_combo.currentIndexChanged.connect(self.on_operation_changed)
         self.ui.offset_type_combo.currentIndexChanged.connect(self.on_offset_type_changed)
+        self.ui.pp_geo_name_cb.activated.connect(self.on_pp_changed)
 
         # V tool shape params changed
         self.ui.tipdia_entry.valueChanged.connect(self.on_update_cutz)
@@ -2194,22 +2196,18 @@ class ToolMilling(AppTool, Excellon):
         if 'laser' in current_pp.lower():
             self.ui.cutzlabel.hide()
             self.ui.cutz_entry.hide()
+
+            self.ui.endz_label.hide()
+            self.ui.endz_entry.hide()
+
+            self.ui.travelzlabel.hide()
+            self.ui.travelz_entry.hide()
+
             try:
                 self.ui.mpass_cb.hide()
                 self.ui.maxdepth_entry.hide()
             except AttributeError:
                 pass
-
-            if 'marlin' in current_pp.lower():
-                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
-                self.ui.endz_label.show()
-                self.ui.endz_entry.show()
-            else:
-                self.ui.travelzlabel.hide()
-                self.ui.travelz_entry.hide()
-
-                self.ui.endz_label.hide()
-                self.ui.endz_entry.hide()
 
             try:
                 self.ui.frzlabel.hide()
@@ -2231,7 +2229,6 @@ class ToolMilling(AppTool, Excellon):
                 pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
-
             self.ui.travelzlabel.show()
             self.ui.travelz_entry.show()
 
@@ -2247,6 +2244,14 @@ class ToolMilling(AppTool, Excellon):
             self.ui.dwelltime_entry.show()
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+
+        if ('marlin' in current_pp.lower() and 'laser' in current_pp.lower()) or 'z_laser' in current_pp.lower():
+            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
+
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
 
     def on_cnc_button_click(self):
         self.obj_name = self.ui.object_combo.currentText()

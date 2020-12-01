@@ -456,52 +456,41 @@ class ToolIsolation(AppTool, Gerber):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        units = self.app.defaults['units'].upper()
+        self.units = units
 
-        sorted_tools = []
-        for k, v in self.iso_tools.items():
-            sorted_tools.append(self.app.dec_format(float(v['tooldia']), self.decimals))
+        self.sort_iso_tools()
 
-        order = self.ui.order_radio.get_value()
-        if order == 'fwd':
-            sorted_tools.sort(reverse=False)
-        elif order == 'rev':
-            sorted_tools.sort(reverse=True)
-        else:
-            pass
-
-        n = len(sorted_tools)
+        n = len(self.iso_tools)
         self.ui.tools_table.setRowCount(n)
         tool_id = 0
 
-        for tool_sorted in sorted_tools:
-            for tooluid_key, tooluid_value in self.iso_tools.items():
-                truncated_dia = self.app.dec_format(tooluid_value['tooldia'], self.decimals)
-                if truncated_dia == tool_sorted:
-                    tool_id += 1
+        for tooluid_key, tooluid_value in self.iso_tools.items():
+            tool_id += 1
 
-                    # Tool name/id
-                    id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-                    row_no = tool_id - 1
-                    self.ui.tools_table.setItem(row_no, 0, id_)
+            # Tool name/id
+            id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
+            id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            row_no = tool_id - 1
+            self.ui.tools_table.setItem(row_no, 0, id_)
 
-                    # Diameter
-                    dia = QtWidgets.QTableWidgetItem(str(truncated_dia))
-                    dia.setFlags(QtCore.Qt.ItemIsEnabled)
-                    self.ui.tools_table.setItem(row_no, 1, dia)
+            # Diameter
+            truncated_dia = self.app.dec_format(tooluid_value['tooldia'], self.decimals)
+            dia = QtWidgets.QTableWidgetItem(str(truncated_dia))
+            dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(row_no, 1, dia)
 
-                    # Tool Type
-                    tool_type_item = FCComboBox()
-                    tool_type_item.addItems(self.tool_type_item_options)
-                    idx = tool_type_item.findText(tooluid_value['tool_type'])
-                    tool_type_item.setCurrentIndex(idx)
-                    self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
+            # Tool Type
+            tool_type_item = FCComboBox()
+            tool_type_item.addItems(self.tool_type_item_options)
+            idx = tool_type_item.findText(tooluid_value['tool_type'])
+            tool_type_item.setCurrentIndex(idx)
+            self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
-                    # Tool unique ID
-                    # REMEMBER: THIS COLUMN IS HIDDEN
-                    tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
-                    self.ui.tools_table.setItem(row_no, 3, tool_uid_item)
+            # Tool unique ID
+            # REMEMBER: THIS COLUMN IS HIDDEN
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
+            self.ui.tools_table.setItem(row_no, 3, tool_uid_item)
 
         # make the diameter column editable
         for row in range(tool_id):
@@ -630,6 +619,27 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
             pass
+
+    def sort_iso_tools(self):
+        order = self.ui.order_radio.get_value()
+        if order == 'no':
+            return
+
+        # sort the tools dictionary having the 'tooldia' as sorting key
+        new_tools_list = []
+        if order == 'fwd':
+            new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=False))
+        elif order == 'rev':
+            new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=True))
+
+        # clear the tools dictionary
+        self.iso_tools.clear()
+
+        # recreate the tools dictionary in a ordered fashion
+        new_toolid = 0
+        for tool in new_tools_list:
+            new_toolid += 1
+            self.iso_tools[new_toolid] = tool[1]
 
     def on_toggle_all_rows(self):
         """
@@ -883,8 +893,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.rest_cb.setDisabled(False)
 
     def on_order_changed(self, order):
-        if order != 'no':
-            self.build_ui()
+        self.build_ui()
 
     def on_rest_machining_check(self, state):
         if state:
@@ -1173,10 +1182,10 @@ class ToolIsolation(AppTool, Gerber):
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
 
         # if new tool diameter already in the Tool List then abort
-        if truncated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-            self.blockSignals(False)
-            return
+        # if truncated_tooldia in tool_dias:
+        #     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+        #     self.blockSignals(False)
+        #     return
 
         # load the database tools from the file
         try:
@@ -1260,10 +1269,10 @@ class ToolIsolation(AppTool, Gerber):
             return
 
         # if new tool diameter found in Tools Database already in the Tool List then abort
-        if updated_tooldia is not None and updated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-            self.blockSignals(False)
-            return
+        # if updated_tooldia is not None and updated_tooldia in tool_dias:
+        #     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+        #     self.blockSignals(False)
+        #     return
 
         new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
         self.iso_tools.update({
@@ -1317,13 +1326,14 @@ class ToolIsolation(AppTool, Gerber):
                     tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
-        if truncated_tooldia in tool_dias:
-            if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-            # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
-            self.blockSignals(False)
-            return
+        # if truncated_tooldia in tool_dias:
+        #     if muted is None:
+        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+        #     # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
+        #     self.blockSignals(False)
+        #     return
 
+        # print("before", self.iso_tools)
         self.iso_tools.update({
             int(self.tooluid): {
                 'tooldia':          truncated_tooldia,
@@ -1335,6 +1345,7 @@ class ToolIsolation(AppTool, Gerber):
                 'solid_geometry':   []
             }
         })
+        # print("after", self.iso_tools)
 
         self.blockSignals(False)
         self.build_ui()
@@ -2741,10 +2752,10 @@ class ToolIsolation(AppTool, Gerber):
                     tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
         truncated_tooldia = self.app.dec_format(tooldia, self.decimals)
-        if truncated_tooldia in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-            self.ui_connect()
-            return 'fail'
+        # if truncated_tooldia in tool_dias:
+        #     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+        #     self.ui_connect()
+        #     return 'fail'
 
         self.iso_tools.update({
             tooluid: {

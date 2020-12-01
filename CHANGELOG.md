@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.12.2020
+
+- in Milling Tool fixed the UI change as a result of preprocessor change
+- in Isolation Tool added possibility to have tools with the same diameter; remade the sorting of the tools storage
+
 29.11.2020
 
 - in Geometry Editor - improvements and some issues are solved
