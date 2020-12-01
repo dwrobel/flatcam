@@ -13,9 +13,11 @@ CHANGELOG for FlatCAM beta
 - in Isolation Tool added possibility to have tools with the same diameter; remade the sorting of the tools storage
 - some work in Milling Tool
 - Milling Tool - working in tool data structures
-- Milling Tool - more or less made the CNCJob generation for multigeo Geometries to work; still the parameters may not be used
+- Milling Tool - more or less made the CNCJob generation for multi-geo Geometries to work; still the parameters may not be used
 - removed the Generate CNCJob context menu action in the Project Menu as this will not work anymore
 - Milling Tool - selecting an object on canvas will update the selection of the object combobox, if the selected object type is the same sa the one selected in the Target radio
+- Milling Tool - changing parameters for the Geo Tool table now updates correctly the storage and are used in the CNCJob object that is created
+- Milling Tool - after creating and CNCJob object, it is now auto-selected and the Property tab is automatically switched to
 
 29.11.2020
 

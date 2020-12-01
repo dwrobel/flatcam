@@ -1275,7 +1275,7 @@ class ToolMilling(AppTool, Excellon):
             #     sel_model.select(index, mode)
 
     def update_ui(self):
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         sel_rows = set()
         if self.ui.target_radio.get_value() == 'exc':
@@ -1295,7 +1295,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
-            self.blockSignals(False)
+            self.ui_connect()
             return
         else:
             self.ui.generate_cnc_button.setDisabled(False)
@@ -1334,11 +1334,11 @@ class ToolMilling(AppTool, Excellon):
                     tool_type_txt = item.currentText()
                     self.ui_update_v_shape(tool_type_txt=tool_type_txt)
                 else:
-                    self.blockSignals(False)
+                    self.ui_connect()
                     return
             except Exception as e:
                 log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
-                self.blockSignals(False)
+                self.ui_connect()
                 return
 
         for c_row in sel_rows:
@@ -1351,13 +1351,13 @@ class ToolMilling(AppTool, Excellon):
                         tooluid = int(tooluid)
                     self.storage_to_form(self.obj_tools[tooluid]['data'])
                 else:
-                    self.blockSignals(False)
+                    self.ui_connect()
                     return
             except Exception as e:
                 log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-                self.blockSignals(False)
+                self.ui_connect()
                 return
-        self.blockSignals(False)
+        self.ui_connect()
 
     def storage_to_form(self, dict_storage):
         """
@@ -1385,15 +1385,26 @@ class ToolMilling(AppTool, Excellon):
         :return:    None
         :rtype:
         """
-        if self.ui.tools_table.rowCount() == 2:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            # Excellon Tool Table has 2 rows by default
-            return
-
-        self.blockSignals(True)
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
+
+        # the Target Object is Excellon
+        if self.ui.target_radio.get_value() == 'exc':
+            used_tools_table = self.ui.tools_table
+            if used_tools_table.rowCount() == 2:
+                # there is no tool in tool table so we can't save the GUI elements values to storage
+                # Excellon Tool Table has 2 rows by default
+                return
+
+        # the Target Object is Geometry
+        else:
+            used_tools_table = self.ui.geo_tools_table
+            if used_tools_table.rowCount() == 0:
+                # there is no tool in tool table so we can't save the GUI elements values to storage
+                return
+
+        self.ui_disconnect()
 
         try:
             option_changed = self.name2option[wdg_objname]
@@ -1402,21 +1413,21 @@ class ToolMilling(AppTool, Excellon):
             return
 
         # row = self.ui.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        rows = sorted(set(index.row() for index in used_tools_table.selectedIndexes()))
         for row in rows:
             if row < 0:
                 row = 0
-            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+            tooluid_item = int(used_tools_table.item(row, 3).text())
 
-            for tooluid_key, tooluid_val in self.obj_tools.items():
+            for tooluid_key, tooluid_val in self.target_obj.tools.items():
                 if int(tooluid_key) == tooluid_item:
                     new_option_value = self.form_fields[option_changed].get_value()
                     if option_changed in tooluid_val:
-                        tooluid_val[option_changed] = new_option_value
+                        self.target_obj.tools[tooluid_key][option_changed] = new_option_value
                     if option_changed in tooluid_val['data']:
-                        tooluid_val['data'][option_changed] = new_option_value
+                        self.target_obj.tools[tooluid_key]['data'][option_changed] = new_option_value
 
-        self.blockSignals(False)
+        self.ui_connect()
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
@@ -1534,7 +1545,7 @@ class ToolMilling(AppTool, Excellon):
             log.debug("ToolDrilling.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         row = self.ui.tools_table.currentRow()
         if row < 0:
@@ -1554,7 +1565,7 @@ class ToolMilling(AppTool, Excellon):
             tooluid_val['data'] = deepcopy(temp_tool_data)
 
         self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
-        self.blockSignals(False)
+        self.ui_connect()
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -2777,14 +2788,15 @@ class ToolMilling(AppTool, Excellon):
             def job_thread(a_obj):
                 if self.target_obj.multigeo is False:
                     with self.app.proc_container.new('%s...' % _("Generating")):
-                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
-                                                           autoselected=True)
+                        ret_value = a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot,
+                                                             autoselected=True)
                 else:
                     with self.app.proc_container.new('%s...' % _("Generating")):
-                        ret_val = a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot,
-                                                           autoselected=True)
+                        ret_value = a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot,
+                                                             autoselected=True)
 
-                if ret_val != 'fail':
+                if ret_value != 'fail':
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                     a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
             # Create a promise with the name
@@ -2799,6 +2811,7 @@ class ToolMilling(AppTool, Excellon):
                 ret_val = self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot,
                                                       autoselected=True)
             if ret_val != 'fail':
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 self.app.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
     def on_pp_changed(self):
