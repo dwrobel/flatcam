@@ -310,6 +310,7 @@ class FlatCAMDefaults:
         "geometry_multidepth": False,
         "geometry_depthperpass": 0.8,
         "geometry_travelz": 2,
+
         "geometry_toolchange": False,
         "geometry_toolchangez": 15.0,
         "geometry_endz": 15.0,

@@ -125,10 +125,11 @@ class ToolMilling(AppTool, Excellon):
         self.area_sel_disconnect_flag = False
         self.poly_sel_disconnect_flag = False
 
+        # updated in the self.set_tool_ui()
         self.form_fields = {
             "tools_mill_milling_type":   self.ui.milling_type_radio,
         }
-
+        # updated in the self.set_tool_ui()
         self.name2option = {
             "milling_type":   "tools_mill_milling_type",
         }
@@ -221,7 +222,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.target_radio.activated_custom.connect(self.on_target_changed)
-        self.ui.operation_type_combo.currentIndexChanged.connect(self.on_operation_changed)
+        self.ui.job_type_combo.currentIndexChanged.connect(self.on_job_changed)
         self.ui.offset_type_combo.currentIndexChanged.connect(self.on_offset_type_changed)
         self.ui.pp_geo_name_cb.activated.connect(self.on_pp_changed)
 
@@ -266,20 +267,33 @@ class ToolMilling(AppTool, Excellon):
             pass
 
         self.form_fields.update({
-
+            # Excellon properties
             "milling_type": self.ui.milling_type_radio,
-
             "milling_dia": self.ui.mill_dia_entry,
+
+            # Geometry properties
+            "cnctooldia": self.ui.addtool_entry,
+
+            "offset_type": self.ui.offset_type_combo,
+            "offset": self.ui.offset_entry,
+
+            "job_type": self.ui.job_type_combo,
+            "polish_margin": self.ui.polish_margin_entry,
+            "polish_overlap": self.ui.polish_over_entry,
+            "polish_method": self.ui.polish_method_combo,
+
+            "vtipdia": self.ui.tipdia_entry,
+            "vtipangle": self.ui.tipangle_entry,
+
             "cutz": self.ui.cutz_entry,
             "multidepth": self.ui.mpass_cb,
             "depthperpass": self.ui.maxdepth_entry,
+
             "travelz": self.ui.travelz_entry,
-            "feedrate_z": self.ui.feedrate_z_entry,
             "feedrate": self.ui.xyfeedrate_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
 
-            "toolchange": self.ui.toolchange_cb,
-            "toolchangez": self.ui.toolchangez_entry,
             "extracut": self.ui.extracut_cb,
             "extracut_length": self.ui.e_cut_entry,
 
@@ -287,14 +301,16 @@ class ToolMilling(AppTool, Excellon):
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
 
+            "toolchange": self.ui.toolchange_cb,
+            "toolchangez": self.ui.toolchangez_entry,
+
             "endz": self.ui.endz_entry,
             "endxy": self.ui.endxy_entry,
 
-            "offset": self.ui.offset_entry,
-
-            "ppname_g": self.ui.pp_geo_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
+            "ppname_g": self.ui.pp_geo_name_cb,
+
             # "gcode_type": self.ui.excellon_gcode_type_radio,
             "area_exclusion": self.ui.exclusion_cb,
             "area_shape": self.ui.area_shape_radio,
@@ -305,6 +321,20 @@ class ToolMilling(AppTool, Excellon):
         self.name2option = {
             "milling_type": "milling_type",
             "milling_dia": "milling_dia",
+
+            "mill_cnctooldia": "cnctooldia",
+
+            "mill_offset_type": "offset_type",
+            "mill_offset":  "offset",
+
+            "mill_job_type": "job_type",
+            "mill_polish_margin": "polish_margin",
+            "mill_polish_overlap": "polish_overlap",
+            "mill_polish_method": "polish_method",
+
+            "mill_tipdia": "vtipdia",
+            "mill_tipangle": "vtipangle",
+
             "mill_cutz": "cutz",
             "mill_multidepth": "multidepth",
             "mill_depthperpass": "depthperpass",
@@ -313,12 +343,13 @@ class ToolMilling(AppTool, Excellon):
             "mill_feedratexy": "feedrate",
             "mill_feedratez": "feedrate_z",
             "mill_fr_rapid": "feedrate_rapid",
+
             "mill_extracut": "extracut",
             "mill_extracut_length": "extracut_length",
+
             "mill_spindlespeed": "spindlespeed",
             "mill_dwell": "dwell",
             "mill_dwelltime": "dwelltime",
-            "mill_offset": "offset",
         }
 
         # populate Geometry (milling) preprocessor combobox list
@@ -326,7 +357,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.pp_geo_name_cb.addItem(name)
 
         # Fill form fields
-        # self.to_form()
+        self.to_form()
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
@@ -366,47 +397,61 @@ class ToolMilling(AppTool, Excellon):
             "solid": False,
             "multicolored": False,
 
-            "operation": "drill",
-            "milling_type": "drills",
+            "tooldia": 0.1,
 
+            "offset_type": "Path",
+            "offset": 0.0,
+
+            "milling_type": "drills",
             "milling_dia": 0.04,
+
+            "job_type": 'Rough',
+            "polish_margin": 0.0,
+            "polish_overlap": 10,
+            "polish_method": _("Standard"),
+
+            "vtipdia": 0.1,
+            "vtipangle": 30,
 
             "cutz": -0.1,
             "multidepth": False,
             "depthperpass": 0.7,
+
             "travelz": 0.1,
             "feedrate": self.app.defaults["geometry_feedrate"],
             "feedrate_z": 5.0,
             "feedrate_rapid": 5.0,
-            "tooldia": 0.1,
-            "slot_tooldia": 0.1,
+
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
+
+            "spindlespeed": 0,
+            "dwell": True,
+            "dwelltime": 1000,
+
             "toolchange": False,
             "toolchangez": 1.0,
             "toolchangexy": "0.0, 0.0",
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
+
             "endz": 2.0,
             "endxy": '',
 
             "startz": None,
-            "offset": 0.0,
-            "spindlespeed": 0,
-            "dwell": True,
-            "dwelltime": 1000,
-            "ppname_e": 'default',
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
+
             "z_pdepth": -0.02,
             "feedrate_probe": 3.0,
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
             "optimization_type": "B",
         }
 
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0:
+            if opt_key.find('tools_mill_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
         for opt_key, opt_val in self.app.options.items():
             if opt_key.find('geometry_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
+                oname = opt_key[len('geometry_'):]
+                self.default_data[oname] = deepcopy(opt_val)
 
         self.obj_name = ""
         self.target_obj = None
@@ -438,6 +483,19 @@ class ToolMilling(AppTool, Excellon):
 
         # handle the Plot checkbox
         self.plot_cb_handler()
+
+    def to_form(self, storage=None):
+        if storage is None:
+            storage = self.app.options
+
+        for k in self.form_fields:
+            for option in storage:
+                if option.startswith('tools_mill_'):
+                    if k == option.replace('tools_mill_', ''):
+                        self.form_fields[k].set_value(storage[option])
+                elif option.startswith('geometry_'):
+                    if k == option.replace('geometry_', ''):
+                        self.form_fields[k].set_value(storage[option])
 
     def plot_cb_handler(self):
         # load the Milling object
@@ -907,9 +965,9 @@ class ToolMilling(AppTool, Excellon):
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
 
-            self.ui.operation_type_lbl.hide()
-            self.ui.operation_type_combo.hide()
-            self.ui.operation_type_combo.set_value(0)  # 'iso' - will hide the Polish UI elements
+            self.ui.job_type_lbl.hide()
+            self.ui.job_type_combo.hide()
+            self.ui.job_type_combo.set_value(0)  # 'iso' - will hide the Polish UI elements
 
             self.ui.add_tool_frame.hide()
         else:
@@ -929,9 +987,9 @@ class ToolMilling(AppTool, Excellon):
             self.ui.extracut_cb.show()
             self.ui.e_cut_entry.show()
 
-            self.ui.operation_type_lbl.show()
-            self.ui.operation_type_combo.show()
-            # self.ui.operation_type_combo.set_value(self.app.defaults["tools_mill_operation_val"])
+            self.ui.job_type_lbl.show()
+            self.ui.job_type_combo.show()
+            # self.ui.job_type_combo.set_value(self.app.defaults["tools_mill_job_val"])
 
             self.ui.add_tool_frame.show()
 
@@ -967,7 +1025,7 @@ class ToolMilling(AppTool, Excellon):
                 self.app.collection.set_active(self.obj_name)
             self.build_ui()
 
-    def on_operation_changed(self, idx):
+    def on_job_changed(self, idx):
         if self.ui.target_radio.get_value() == 'geo':
             if idx == 3:    # 'Polish'
                 self.ui.polish_margin_lbl.show()
@@ -1321,6 +1379,7 @@ class ToolMilling(AppTool, Excellon):
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
+
         try:
             option_changed = self.name2option[wdg_objname]
         except KeyError:
@@ -1592,6 +1651,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui_connect()
             return
 
+        # if we found more than one tool then message "warning" and return
         if tool_found > 1:
             self.app.inform.emit(
                 '[WARNING_NOTCL] %s' % _("Cancelled.\n"
@@ -1599,6 +1659,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui_connect()
             return
 
+        # i we found only one tool then go forward and add it
         new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
         self.target_obj.tools.update({
             tooluid: {
@@ -1700,6 +1761,7 @@ class ToolMilling(AppTool, Excellon):
 
         if muted is None:
             self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
+
         self.ui_connect()
         self.build_ui()
         self.target_obj.build_ui()
@@ -3335,6 +3397,7 @@ class MillingUI:
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.set_range(0.00001, 10000.0000)
         self.addtool_entry.setSingleStep(0.1)
+        self.addtool_entry.setObjectName("mill_cnctooldia")
 
         grid_tool.addWidget(self.addtool_entry_lbl, 3, 0)
         grid_tool.addWidget(self.addtool_entry, 3, 1)
@@ -3504,9 +3567,9 @@ class MillingUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid1.addWidget(separator_line, 8, 0, 1, 2)
 
-        # Operation Type
-        self.operation_type_lbl = FCLabel('%s:' % _('Operation'))
-        self.operation_type_lbl.setToolTip(
+        # Job Type
+        self.job_type_lbl = FCLabel('%s:' % _('Job'))
+        self.job_type_lbl.setToolTip(
             _(
                 "- Isolation -> informative - lower Feedrate as it uses a milling bit with a fine tip.\n"
                 "- Roughing  -> informative - lower Feedrate and multiDepth cut.\n"
@@ -3514,14 +3577,14 @@ class MillingUI:
                 "- Polish -> adds a painting sequence over the whole area of the object"
             ))
 
-        self.operation_type_combo = FCComboBox2()
-        self.operation_type_combo.addItems(
+        self.job_type_combo = FCComboBox2()
+        self.job_type_combo.addItems(
             ['Iso', 'Rough', 'Finish', 'Polish']
         )
-        self.operation_type_combo.setObjectName('mill_operation_type')
+        self.job_type_combo.setObjectName('mill_job_type')
 
-        self.grid1.addWidget(self.operation_type_lbl, 10, 0)
-        self.grid1.addWidget(self.operation_type_combo, 10, 1)
+        self.grid1.addWidget(self.job_type_lbl, 10, 0)
+        self.grid1.addWidget(self.job_type_combo, 10, 1)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
