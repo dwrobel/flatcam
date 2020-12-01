@@ -864,8 +864,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.menuproject.addSeparator()
 
-        self.menuprojectgeneratecnc = self.menuproject.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cnc32.png'), _('Create CNCJob'))
         self.menuprojectviewsource = self.menuproject.addAction(
             QtGui.QIcon(self.app.resource_location + '/source32.png'), _('View Source'))
 

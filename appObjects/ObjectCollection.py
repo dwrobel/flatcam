@@ -384,7 +384,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.ui.menuprojectproperties.setEnabled(sel)
 
         if sel:
-            self.app.ui.menuprojectgeneratecnc.setVisible(True)
             self.app.ui.menuprojectedit.setVisible(True)
             self.app.ui.menuprojectsave.setVisible(True)
             self.app.ui.menuprojectviewsource.setVisible(True)
@@ -396,8 +395,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 if obj.kind == 'gerber' or obj.kind == 'excellon':
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
-                if obj.kind == 'geometry':
-                    self.app.ui.menuprojectgeneratecnc.setVisible(False)
                 if obj.kind != 'gerber' and obj.kind != 'excellon' and obj.kind != 'cncjob':
                     self.app.ui.menuprojectviewsource.setVisible(False)
                 if obj.kind != 'gerber' and obj.kind != 'geometry' and obj.kind != 'excellon' and obj.kind != 'cncjob':
@@ -406,7 +403,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.app.ui.menuprojectdisable.setVisible(False)
                     self.app.ui.menuprojectedit.setVisible(False)
                     self.app.ui.menuprojectproperties.setVisible(False)
-                    self.app.ui.menuprojectgeneratecnc.setVisible(False)
 
             len_objects = len(obj_selection)
             cnt = 0
@@ -417,8 +413,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
                 if len_objects == cnt:
                     self.app.ui.menuprojectsave.setText(_('Batch Save'))
-        else:
-            self.app.ui.menuprojectgeneratecnc.setVisible(False)
 
         self.app.ui.menuproject.popup(self.view.mapToGlobal(pos))
 

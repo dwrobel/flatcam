@@ -2138,7 +2138,6 @@ class App(QtCore.QObject):
     def connect_project_context_signals(self):
         self.ui.menuprojectenable.triggered.connect(self.on_enable_sel_plots)
         self.ui.menuprojectdisable.triggered.connect(self.on_disable_sel_plots)
-        self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
         self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
 
         self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
@@ -8206,20 +8205,6 @@ class App(QtCore.QObject):
                 item_index = self.collection.index(item.row(), 0, group_index)
                 idx = item_index.row()
                 self.defaults["gerber_color_list"][idx] = new_c
-
-    def generate_cnc_job(self, objects):
-        """
-        Slot that will be called by clicking an entry in the contextual menu generated in the Project Tab tree
-
-        :param objects:     Selected objects in the Project Tab
-        :return:
-        """
-        self.defaults.report_usage("generate_cnc_job()")
-
-        # for obj in objects:
-        #     obj.generatecncjob()
-        for obj in objects:
-            obj.on_generatecnc_button_click()
 
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """

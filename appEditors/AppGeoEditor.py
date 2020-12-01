@@ -5239,8 +5239,6 @@ class AppGeoEditor(QtCore.QObject):
         def task_job(editor_obj):
             # Link shapes into editor.
             with editor_obj.app.proc_container.new(_("Working...")):
-                editor_obj.app.inform.emit(_("Updating the Geometry object..."))
-
                 if editor_obj.multigeo_tool:
                     fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
                     # for shape in self.shape_buffer:
@@ -5274,6 +5272,7 @@ class AppGeoEditor(QtCore.QObject):
                     pass
 
                 self.deactivate()
+                editor_obj.app.inform.emit(_("Editor Exit. Geometry object was updated ..."))
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
 

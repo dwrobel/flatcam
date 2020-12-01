@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - in Isolation Tool added possibility to have tools with the same diameter; remade the sorting of the tools storage
 - some work in Milling Tool
 - Milling Tool - working in tool data structures
+- Milling Tool - more or less made the CNCJob generation for multigeo Geometries to work; still the parameters may not be used
+- removed the Generate CNCJob context menu action in the Project Menu as this will not work anymore
 
 29.11.2020
 
