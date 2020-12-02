@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - Subtraction Tool - minor changes
 - in Gerber Editor - added some parameters to the UI: selected polygon coordinates and vertexes number and also added polygon simplification
 - in Gerber Editor - fixed update of Aperture Table rows selection on multiple shapes selection
+- in Geometry Editor - modified the FCCircle class to work as is the rest of the Geometry Editor add shapes classes
 
 1.12.2020
 
@@ -20,18 +21,18 @@ CHANGELOG for FlatCAM beta
 - some work in Milling Tool
 - Milling Tool - working in tool data structures
 - Milling Tool - more or less made the CNCJob generation for multi-geo Geometries to work; still the parameters may not be used
-- removed the Generate CNCJob context menu action in the Project Menu as this will not work anymore
+- removed Generate CNCJob context menu action in the Project Menu as this will not work anymore
 - Milling Tool - selecting an object on canvas will update the selection of the object combobox, if the selected object type is the same sa the one selected in the Target radio
 - Milling Tool - changing parameters for the Geo Tool table now updates correctly the storage and are used in the CNCJob object that is created
-- Milling Tool - after creating and CNCJob object, it is now auto-selected and the Property tab is automatically switched to
+- Milling Tool - after creating and CNCJob object it is now auto-selected and the Property tab is automatically switched to
 - Milling Tool - various fixes
-- Line_xyx preprocessor - fixed when using multidepth cut to use the right depth
+- Line_xyx preprocessor - fixed when using multi-depth cut to use the right depth
 - Milling Tool - trying to fix an error on dragging and dropping tools in the Geo Tools Table
 
 29.11.2020
 
 - in Geometry Editor - improvements and some issues are solved
-- in Geometry Editor - improvement in update of the whole Geometry Editor UI on shape selection on canvas
+- in Geometry Editor - improvement in the update method of the whole Geometry Editor UI on shape selection on canvas
 - in Geometry Editor - fixed multiple plotting for the same selection
 - in Geometry Editor - made sure that selecting shapes on canvas will update the UI - final fix
 - in Geometry Editor - the Length and Vertex Points GUI elements are now read only since it does not make sense to edit them

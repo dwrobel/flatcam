@@ -3102,7 +3102,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Delete selected object
                 if key == QtCore.Qt.Key_Delete or key == 'Delete':
                     self.app.geo_editor.delete_selected()
-                    self.app.geo_editor.replot()
+                    self.app.geo_editor.plot_all()
 
                 # Rotate
                 if key == QtCore.Qt.Key_Space or key == 'Space':

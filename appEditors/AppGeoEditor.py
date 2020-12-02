@@ -2076,7 +2076,8 @@ class FCCircle(FCShapeTool):
         p1 = self.points[0]
         p2 = self.points[1]
         radius = distance(p1, p2)
-        self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+        circle_shape = Point(p1).buffer(radius, int(self.steps_per_circ / 4)).exterior
+        self.geometry = DrawToolShape(circle_shape)
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
