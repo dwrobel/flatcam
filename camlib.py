@@ -3615,14 +3615,14 @@ class CNCjob(Geometry):
                 self.xy_end = None
             else:
                 # either originally it was a string or not, xy_end will be made string
-                self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+                self.xy_end = re.sub('[\(\)\[\]]', '', str(self.xy_end)) if self.xy_end else None
 
                 # and now, xy_end is made into a list of floats in format [x, y]
                 if self.xy_end:
                     self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
 
                 if self.xy_end and len(self.xy_end) != 2:
-                    self.app.inform.emit('[ERROR]%s' % _("The End X,Y format has to be (x, y)."))
+                    self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
@@ -7097,7 +7097,7 @@ class CNCjob(Geometry):
                 next_x = pt[0]
                 next_y = pt[1]
 
-            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
+            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z_cut=z_cut)  # Linear motion to point
             prev_x = pt[0]
             prev_y = pt[1]
 
@@ -7245,7 +7245,7 @@ class CNCjob(Geometry):
                 next_x = pt[0]
                 next_y = pt[1]
 
-            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
+            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z_cut=z_cut)  # Linear motion to point
             prev_x = next_x
             prev_y = next_y
 

@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, FCComboBox2, \
-    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel
+    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalTupleEntry, OptionalHideInputSection, FCLabel
 from appParsers.ParseExcellon import Excellon
 
 from camlib import Geometry, grace
@@ -1894,8 +1894,9 @@ class ToolMilling(AppTool, Excellon):
         # update Tool dia
         self.target_obj.tools[tooluid]['tooldia'] = tool_dia
 
-        # update Cut Z if V shape tool
-        self.on_update_cutz()
+        # update Cut Z if the tool has a V shape tool
+        if self.ui.geo_tools_table.cellWidget(current_row, 2).get_value() == 'V':
+            self.on_update_cutz()
 
         try:
             self.target_obj.ser_attrs.remove('tools')
@@ -2450,7 +2451,7 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, toolchange=None,
                          plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
@@ -2493,6 +2494,8 @@ class ToolMilling(AppTool, Excellon):
 
         # force everything as MULTI-GEO
         # self.multigeo = True
+
+        is_toolchange = toolchange if toolchange is not None else self.ui.toolchange_cb.get_value()
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -2695,8 +2698,35 @@ class ToolMilling(AppTool, Excellon):
                 })
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    tools_dict[tooluid_key]['data']["optimization_type"] = \
-                        self.app.defaults["geometry_optimization_type"]
+                    def_optimization_type = self.app.defaults["geometry_optimization_type"]
+                    tools_dict[tooluid_key]['data']["optimization_type"] = def_optimization_type
+
+                # #####################################################################################################
+                # ############################ COMMON Parameters ######################################################
+                # #####################################################################################################
+
+                # Toolchange Z
+                tools_dict[tooluid_key]['data']['toolchangez'] = self.ui.toolchangez_entry.get_value()
+                # End Move Z
+                tools_dict[tooluid_key]['data']['endz'] = self.ui.endz_entry.get_value()
+                # End Move XY
+                tools_dict[tooluid_key]['data']['endxy'] = self.ui.endxy_entry.get_value()
+                # Probe Z
+                tools_dict[tooluid_key]['data']['z_pdepth'] = self.ui.pdepth_entry.get_value()
+                # Probe FR
+                tools_dict[tooluid_key]['data']['feedrate_probe'] = self.ui.feedrate_probe_entry.get_value()
+
+                # Exclusion Areas Enable
+                tools_dict[tooluid_key]['data']['area_exclusion'] = self.ui.exclusion_cb.get_value()
+                # Exclusion Areas Shape
+                tools_dict[tooluid_key]['data']['area_shape'] = self.ui.area_shape_radio.get_value()
+                # Exclusion Areas Strategy
+                tools_dict[tooluid_key]['data']['area_strategy'] = self.ui.strategy_radio.get_value()
+                # Exclusion Areas Overz
+                tools_dict[tooluid_key]['data']['area_overz'] = self.ui.over_z_entry.get_value()
+
+                # Preprocessor
+                tools_dict[tooluid_key]['data']['ppname_g'] = self.ui.pp_geo_name_cb.get_value()
 
                 # Offset calculation
                 offset_type = dia_cnc_dict['offset'].lower()
@@ -2744,7 +2774,7 @@ class ToolMilling(AppTool, Excellon):
                 res, start_gcode = new_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
                                                                    tolerance=tol,
                                                                    is_first=is_first, is_last=is_last,
-                                                                   toolchange=True)
+                                                                   toolchange=is_toolchange)
                 if res == 'fail':
                     log.debug("ToolMilling.mtool_gen_cncjob() --> geometry_tool_gcode_gen() failed")
                     return 'fail'
@@ -3995,7 +4025,7 @@ class MillingUI:
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
-        self.endxy_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.grid3.addWidget(endmove_xy_label, 12, 0)
         self.grid3.addWidget(self.endxy_entry, 12, 1)

@@ -18,6 +18,8 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - selecting an object on canvas will update the selection of the object combobox, if the selected object type is the same sa the one selected in the Target radio
 - Milling Tool - changing parameters for the Geo Tool table now updates correctly the storage and are used in the CNCJob object that is created
 - Milling Tool - after creating and CNCJob object, it is now auto-selected and the Property tab is automatically switched to
+- Milling Tool - various fixes
+- Line_xyx preprocessor - fixed when using multidepth cut to use the right depth
 
 29.11.2020
 
