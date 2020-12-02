@@ -13,6 +13,10 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor - added some parameters to the UI: selected polygon coordinates and vertexes number and also added polygon simplification
 - in Gerber Editor - fixed update of Aperture Table rows selection on multiple shapes selection
 - in Geometry Editor - modified the FCCircle class to work as is the rest of the Geometry Editor add shapes classes
+- fixed the display of status bar messages when they contain brackets
+- in Panelize Tool - fixed the export when panelizing Excllon objects
+- in Panelize Tool - remade the methods such that panelizing a Gerber object as Geometry panel will now hold all the Gerber apertures as Geometry tools and added a supplementary tool that holds the solid_geometry. 
+- in Panelize Tool - remade the methods such that panelizing a Geometry object as a Gerber panel will attempt to create polygons from Geometry
 
 1.12.2020
 

@@ -2840,7 +2840,7 @@ class App(QtCore.QObject):
         """
 
         # Type of message in brackets at the beginning of the message.
-        match = re.search(r"\[(.*)\](.*)", msg)
+        match = re.search(r"^\[(.*?)\](.*)", msg)
         if match:
             level = match.group(1)
             msg_ = match.group(2)
