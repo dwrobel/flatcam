@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - after creating and CNCJob object, it is now auto-selected and the Property tab is automatically switched to
 - Milling Tool - various fixes
 - Line_xyx preprocessor - fixed when using multidepth cut to use the right depth
+- Milling Tool - trying to fix an error on dragging and dropping tools in the Geo Tools Table
 
 29.11.2020
 

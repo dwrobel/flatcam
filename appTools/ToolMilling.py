@@ -555,9 +555,13 @@ class ToolMilling(AppTool, Excellon):
         new_tools = {}
         new_uid = 1
 
-        for current_uid in current_uid_list:
-            new_tools[new_uid] = deepcopy(self.tools[current_uid])
-            new_uid += 1
+        try:
+            for current_uid in current_uid_list:
+                new_tools[new_uid] = deepcopy(self.tools[current_uid])
+                new_uid += 1
+        except Exception as err:
+            self.app.log.debug("ToolMilling.on_geo_rebuild_ui() -> %s" % str(err))
+            return
 
         self.tools = new_tools
 
