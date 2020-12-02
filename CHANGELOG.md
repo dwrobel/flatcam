@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.12.2020
+
+- Subtraction Tool - minor changes
+- in Gerber Editor - added some parameters to the UI: selected polygon coordinates and vertexes number and also added polygon simplification
+- in Gerber Editor - fixed update of Aperture Table rows selection on multiple shapes selection
+
 1.12.2020
 
 - in Milling Tool fixed the UI change as a result of preprocessor change

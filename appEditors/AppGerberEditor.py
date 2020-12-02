@@ -19,7 +19,7 @@ import logging
 
 from camlib import distance, arc, three_point_circle
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
-    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel
+    FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCTextEdit
 from appTool import AppTool
 
 import numpy as np
@@ -2561,7 +2561,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app.bend_mode = 1
 
         # here store the selected apertures
-        self.sel_aperture = []
+        self.sel_aperture = set()
 
         # multiprocessing results
         self.results = []
@@ -2666,6 +2666,8 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                             # add the object to the selected shapes
                             editor_obj.selected.append(shape_stored)
 
+                self.draw_app.update_ui_sig.emit()
+
                 editor_obj.plot_object.emit(None)
 
         self.draw_app.app.worker_task.emit({'fcn': job_thread, 'params': [self.draw_app]})
@@ -2691,23 +2693,20 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         except Exception as e:
             log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
 
-        brake_flag = False
         for shape_s in self.draw_app.selected:
             for storage in self.draw_app.storage_dict:
                 if shape_s in self.draw_app.storage_dict[storage]['geometry']:
-                    self.sel_aperture.append(storage)
-                    brake_flag = True
-                    break
-            if brake_flag is True:
-                break
+                    self.sel_aperture.add(storage)
 
         # actual row selection is done here
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in self.sel_aperture:
             for row in range(self.draw_app.ui.apertures_table.rowCount()):
                 if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
-                    if not self.draw_app.ui.apertures_table.item(row, 0).isSelected():
+                    if row not in set(idx.row() for idx in self.draw_app.ui.apertures_table.selectedIndexes()):
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
         # reconnect signal when clicking in the table
         self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
@@ -2742,7 +2741,8 @@ class AppGerberEditor(QtCore.QObject):
     draw_shape_idx = -1
     # plot_finished = QtCore.pyqtSignal()
     mp_finished = QtCore.pyqtSignal(list)
-
+    build_ui_sig = QtCore.pyqtSignal()
+    update_ui_sig = QtCore.pyqtSignal()
     plot_object = QtCore.pyqtSignal(object)
 
     def __init__(self, app):
@@ -2896,6 +2896,8 @@ class AppGerberEditor(QtCore.QObject):
         # #############################################################################################################
         self.app.pool_recreated.connect(self.pool_recreated)
         self.mp_finished.connect(self.on_multiprocessing_finished)
+        self.build_ui_sig.connect(self.build_ui)
+        self.update_ui_sig.connect(self.update_ui)
 
         # connect the toolbar signals
         self.connect_grb_toolbar_signals()
@@ -2938,6 +2940,8 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+
+        self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
 
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
@@ -3034,6 +3038,11 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.pad_direction_radio.set_value('CW')
         self.ui.pad_direction_radio.set_value(self.app.defaults["gerber_editor_circ_dir"])
         self.ui.pad_angle_entry.set_value(float(self.app.defaults["gerber_editor_circ_angle"]))
+
+        self.ui.geo_coords_entry.setText('')
+        self.ui.geo_vertex_entry.set_value(0.0)
+        self.ui.geo_tol_entry.set_value(0.01)
+        self.ui.geo_zoom.set_value(False)
 
     def build_ui(self, first_run=None):
 
@@ -3527,6 +3536,120 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         # self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
 
+    def on_simplification_click(self):
+        self.app.log.debug("AppGrbEditor.on_simplification_click()")
+
+        selected_shapes = []
+        selected_shapes_geos = []
+        tol = self.ui.geo_tol_entry.get_value()
+
+        def task_job():
+            with self.app.proc_container.new('%s...' % _("Simplify")):
+                for obj_shape in self.selected:
+                    try:
+                        selected_shapes.append(obj_shape)
+
+                        new_geo = {
+                            'apid': '',
+                            'geo': {}
+                        }
+
+                        # find the aperture where the shape is stored
+                        current_apid = None
+                        for apid in self.storage_dict:
+                            if obj_shape in self.storage_dict[apid]['geometry']:
+                                current_apid = apid
+                                break
+
+                        if current_apid is None:
+                            current_apid = self.last_aperture_selected
+
+                        new_geo['apid'] = deepcopy(current_apid)
+                        print(current_apid)
+
+                        if 'solid' in obj_shape.geo:
+                            new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
+                        if 'follow' in obj_shape.geo:
+                            new_geo['geo']['follow'] = obj_shape.geo['follow'].simplify(tolerance=tol)
+                        if 'clear' in obj_shape.geo:
+                            new_geo['geo']['clear'] = obj_shape.geo['clear'].simplify(tolerance=tol)
+
+                        selected_shapes_geos.append(deepcopy(new_geo))
+                    except ValueError:
+                        pass
+
+                for shape in selected_shapes:
+                    self.delete_shape(geo_el=shape)
+
+                for geo in selected_shapes_geos:
+                    stora = self.storage_dict[geo['apid']]['geometry']
+                    geo_el = geo['geo']
+                    self.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
+
+                self.plot_all()
+
+        self.app.worker_task.emit({'fcn': task_job, 'params': []})
+
+    def update_ui(self):
+        if not self.selected:
+            self.ui.geo_coords_entry.setText('')
+            self.ui.geo_vertex_entry.set_value(0)
+            return
+
+        last_sel_geo = self.selected[-1].geo
+        last_sel_geo_solid = last_sel_geo['solid']
+
+        if self.ui.geo_zoom.get_value():
+            xmin, ymin, xmax, ymax = last_sel_geo_solid.bounds
+            if xmin == xmax and ymin != ymax:
+                xmin = ymin
+                xmax = ymax
+            elif xmin != xmax and ymin == ymax:
+                ymin = xmin
+                ymax = xmax
+
+            if self.app.is_legacy is False:
+                rect = Rect(xmin, ymin, xmax, ymax)
+                rect.left, rect.right = xmin, xmax
+                rect.bottom, rect.top = ymin, ymax
+                # Lock updates in other threads
+                self.shapes.lock_updates()
+
+                # adjust the view camera to be slightly bigger than the bounds so the shape collection can be
+                # seen clearly otherwise the shape collection boundary will have no border
+                dx = rect.right - rect.left
+                dy = rect.top - rect.bottom
+                x_factor = dx * 0.02
+                y_factor = dy * 0.02
+
+                rect.left -= x_factor
+                rect.bottom -= y_factor
+                rect.right += x_factor
+                rect.top += y_factor
+
+                self.app.plotcanvas.view.camera.rect = rect
+                self.shapes.unlock_updates()
+            else:
+                width = xmax - xmin
+                height = ymax - ymin
+                xmin -= 0.05 * width
+                xmax += 0.05 * width
+                ymin -= 0.05 * height
+                ymax += 0.05 * height
+                self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
+
+        if last_sel_geo_solid.geom_type == 'Polygon':
+            coords = list(last_sel_geo_solid.exterior.coords)
+            vertex_nr = len(coords)
+        elif last_sel_geo_solid.geom_type in ['LinearRing', 'LineString']:
+            coords = list(last_sel_geo_solid.coords)
+            vertex_nr = len(coords)
+        else:
+            return
+
+        self.ui.geo_coords_entry.setText(str(coords))
+        self.ui.geo_vertex_entry.set_value(vertex_nr)
+
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
 
@@ -3652,7 +3775,7 @@ class AppGerberEditor(QtCore.QObject):
         # don't ask why but if there is nothing connected I've seen issues
         self.mp = self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
         self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
-        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_grb_click_release)
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_canvas_click_release)
 
         if self.app.is_legacy is False:
             self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -3704,7 +3827,7 @@ class AppGerberEditor(QtCore.QObject):
         if self.app.is_legacy is False:
             self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
             self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
-            self.canvas.graph_event_disconnect('mouse_release', self.on_grb_click_release)
+            self.canvas.graph_event_disconnect('mouse_release', self.on_canvas_click_release)
         else:
             self.canvas.graph_event_disconnect(self.mp)
             self.canvas.graph_event_disconnect(self.mm)
@@ -4057,7 +4180,7 @@ class AppGerberEditor(QtCore.QObject):
                 else:
                     storage_dict[k] = aperture_dict[k]
             except Exception as e:
-                self.app.log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
 
         return [aperture_id, storage_dict]
 
@@ -4439,7 +4562,7 @@ class AppGerberEditor(QtCore.QObject):
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
-    def on_grb_click_release(self, event):
+    def on_canvas_click_release(self, event):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.app.is_legacy is False:
             event_pos = event.pos
@@ -4558,11 +4681,14 @@ class AppGerberEditor(QtCore.QObject):
                             self.selected.append(obj)
                             sel_aperture.add(storage)
 
+        # #############################################################################################################
+        # ##########  select the aperture code of the selected geometry, in the tool table  ###########################
+        # #############################################################################################################
         try:
             self.ui.apertures_table.cellPressed.disconnect()
         except Exception as e:
             self.app.log.debug("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
-        # select the aperture code of the selected geometry, in the tool table
+
         self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
             for row_to_sel in range(self.ui.apertures_table.rowCount()):
@@ -5368,6 +5494,101 @@ class AppGerberEditorUI:
         )
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
+
+        # #############################################################################################################
+        # ############################################ Shape Properties ###############################################
+        # #############################################################################################################
+        self.shape_frame = QtWidgets.QFrame()
+        self.shape_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.shape_frame)
+
+        self.shape_grid = QtWidgets.QGridLayout()
+        self.shape_grid.setColumnStretch(0, 0)
+        self.shape_grid.setColumnStretch(1, 1)
+        self.shape_grid.setContentsMargins(0, 0, 0, 0)
+        self.shape_frame.setLayout(self.shape_grid)
+
+        # Zoom Selection
+        self.geo_zoom = FCCheckBox(_("Zoom on selection"))
+        self.shape_grid.addWidget(self.geo_zoom, 0, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.shape_grid.addWidget(separator_line, 2, 0, 1, 3)
+
+        # Parameters Title
+        param_title = FCLabel('<b>%s</b>' % _("Parameters"))
+        param_title.setToolTip(
+            _("Geometry parameters.")
+        )
+        self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
+
+        # Coordinates
+        coords_lbl = FCLabel('%s:' % _("Coordinates"))
+        coords_lbl.setToolTip(
+            _("The coordinates of the selected geometry element.")
+        )
+        self.shape_grid.addWidget(coords_lbl, 6, 0, 1, 3)
+
+        self.geo_coords_entry = FCTextEdit()
+        self.geo_coords_entry.setPlaceholderText(
+            _("The coordinates of the selected geometry element.")
+        )
+        self.shape_grid.addWidget(self.geo_coords_entry, 8, 0, 1, 3)
+
+        # Vertex Points Number
+        vertex_lbl = FCLabel('%s:' % _("Vertex Points"))
+        vertex_lbl.setToolTip(
+            _("The number of vertex points in the selected geometry element.")
+        )
+        self.geo_vertex_entry = FCEntry(decimals=self.decimals)
+        self.geo_vertex_entry.setReadOnly(True)
+
+        self.shape_grid.addWidget(vertex_lbl, 10, 0)
+        self.shape_grid.addWidget(self.geo_vertex_entry, 10, 1, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.shape_grid.addWidget(separator_line, 12, 0, 1, 3)
+
+        # Simplification Title
+        simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
+        simplif_lbl.setToolTip(
+            _("Simplify a geometry by reducing its vertex points number.")
+        )
+        self.shape_grid.addWidget(simplif_lbl, 14, 0, 1, 3)
+
+        # Simplification Tolerance
+        simplification_tol_lbl = FCLabel('%s:' % _("Tolerance"))
+        simplification_tol_lbl.setToolTip(
+            _("All points in the simplified object will be\n"
+              "within the tolerance distance of the original geometry.")
+        )
+        self.geo_tol_entry = FCDoubleSpinner()
+        self.geo_tol_entry.set_precision(self.decimals)
+        self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
+        self.geo_tol_entry.set_range(0.0000, 10000.0000)
+        self.geo_tol_entry.set_value(10 ** -self.decimals)
+
+        self.shape_grid.addWidget(simplification_tol_lbl, 16, 0)
+        self.shape_grid.addWidget(self.geo_tol_entry, 16, 1, 1, 2)
+
+        # Simplification button
+        self.simplification_btn = FCButton(_("Simplify"))
+        self.simplification_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/simplify32.png'))
+        self.simplification_btn.setToolTip(
+            _("Simplify a geometry element by reducing its vertex points number.")
+        )
+        self.simplification_btn.setStyleSheet("""
+                                                      QPushButton
+                                                      {
+                                                          font-weight: bold;
+                                                      }
+                                                      """)
+
+        self.shape_grid.addWidget(self.simplification_btn, 18, 0, 1, 3)
 
         # #############################################################################################################
         # ############################################ BUFFER TOOL ####################################################

@@ -274,7 +274,7 @@ class ToolSub(AppTool):
         :type target_geo:       list
         :param sub_geometry:    the apertures dict that holds all the geometry that is subtracted
         :type sub_geometry:     dict
-        :return:                (apid, unaffected_geometry lsit, affected_geometry list)
+        :return:                (apid, unaffected_geometry list, affected_geometry list)
         :rtype:                 tuple
         """
 
@@ -286,28 +286,30 @@ class ToolSub(AppTool):
             destination_geo_obj = {}
             if "solid" in target_geo_obj:
                 diff = []
+                target_solid = target_geo_obj["solid"]
                 for sub_solid_geo in sub_geometry["solid"]:
-                    if target_geo_obj["solid"].intersects(sub_solid_geo):
-                        new_geo = target_geo_obj["solid"].difference(sub_solid_geo)
+                    if target_solid.intersects(sub_solid_geo) or target_solid.contains(sub_solid_geo):
+                        new_geo = target_solid.difference(sub_solid_geo)
                         if not new_geo.is_empty:
                             diff.append(new_geo)
                             solid_is_modified = True
                 if solid_is_modified:
-                    target_geo_obj["solid"] = unary_union(diff)
-                destination_geo_obj["solid"] = deepcopy(target_geo_obj["solid"])
+                    target_solid = unary_union(diff)
+                destination_geo_obj["solid"] = deepcopy(target_solid)
 
             clear_is_modified = False
             if "clear" in target_geo_obj:
                 clear_diff = []
+                target_clear = target_geo_obj["clear"]
                 for sub_clear_geo in sub_geometry["clear"]:
-                    if target_geo_obj["clear"].intersects(sub_clear_geo):
-                        new_geo = target_geo_obj["clear"].difference(sub_clear_geo)
+                    if target_clear.intersects(sub_clear_geo) or target_clear.contains(sub_clear_geo):
+                        new_geo = target_clear.difference(sub_clear_geo)
                         if not new_geo.is_empty:
                             clear_diff.append(new_geo)
                             clear_is_modified = True
                 if clear_is_modified:
-                    target_geo_obj["clear"] = unary_union(clear_diff)
-                destination_geo_obj["clear"] = deepcopy(target_geo_obj["clear"])
+                    target_clear = unary_union(clear_diff)
+                destination_geo_obj["clear"] = deepcopy(target_clear)
 
             if solid_is_modified or clear_is_modified:
                 affected_geo.append(deepcopy(destination_geo_obj))
