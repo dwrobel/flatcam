@@ -289,11 +289,10 @@ class ToolSub(AppTool):
                 target_solid = target_geo_obj["solid"]
                 for sub_solid_geo in sub_geometry["solid"]:
                     if target_solid.intersects(sub_solid_geo) or target_solid.contains(sub_solid_geo):
-                        new_geo = target_solid.difference(sub_solid_geo)
-                        if not new_geo.is_empty:
-                            diff.append(new_geo)
-                            solid_is_modified = True
-                if solid_is_modified:
+                        target_solid = target_solid.difference(sub_solid_geo)
+                if not target_solid.is_empty:
+                    diff.append(target_solid)
+                    solid_is_modified = True
                     target_solid = unary_union(diff)
                 destination_geo_obj["solid"] = deepcopy(target_solid)
 
@@ -303,11 +302,10 @@ class ToolSub(AppTool):
                 target_clear = target_geo_obj["clear"]
                 for sub_clear_geo in sub_geometry["clear"]:
                     if target_clear.intersects(sub_clear_geo) or target_clear.contains(sub_clear_geo):
-                        new_geo = target_clear.difference(sub_clear_geo)
-                        if not new_geo.is_empty:
-                            clear_diff.append(new_geo)
-                            clear_is_modified = True
-                if clear_is_modified:
+                        target_clear = target_clear.difference(sub_clear_geo)
+                if not target_clear.is_empty:
+                    clear_diff.append(target_clear)
+                    clear_is_modified = True
                     target_clear = unary_union(clear_diff)
                 destination_geo_obj["clear"] = deepcopy(target_clear)
 
