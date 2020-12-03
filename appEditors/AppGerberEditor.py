@@ -5558,7 +5558,7 @@ class AppGerberEditorUI:
         )
         self.area_entry = FCEntry(decimals=self.decimals)
         self.area_entry.set_value(0.0)
-        a_units = _("cm") if self.units == 'MM' else _("in")
+        a_units = _("mm") if self.units == 'MM' else _("in")
         area_units_lbl = FCLabel('%s<sup>2</sup>' % a_units)
 
         p_grid.addWidget(area_lbl, 0, 2)
