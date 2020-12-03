@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in Gerber Editor - modified the UI
 - in Gerber Editor - added new parameters for selected polygons: is_valid and area
+- in Gerber Editor - for Disc and SemiDisc tools now it is allowed to start without a defined aperture; it will be assumed that we work with an aperture with size zero
 
 2.12.2020
 

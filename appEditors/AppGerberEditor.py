@@ -1638,17 +1638,18 @@ class DiscEditorGrb(ShapeToolEditorGrb):
         try:
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
-            try:
-                QtGui.QGuiApplication.restoreOverrideCursor()
-            except Exception:
-                pass
-            self.dont_execute = True
-            self.draw_app.in_action = False
-            self.complete = True
-            self.draw_app.select_tool('select')
-            return
+            size_ap = 0.0
+            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # try:
+            #     QtGui.QGuiApplication.restoreOverrideCursor()
+            # except Exception:
+            #     pass
+            # self.dont_execute = True
+            # self.draw_app.in_action = False
+            # self.complete = True
+            # self.draw_app.select_tool('select')
+            # return
 
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
@@ -1761,17 +1762,18 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
         try:
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
-            try:
-                QtGui.QGuiApplication.restoreOverrideCursor()
-            except Exception:
-                pass
-            self.dont_execute = True
-            self.draw_app.in_action = False
-            self.complete = True
-            self.draw_app.select_tool('select')
-            return
+            size_ap = 0.0
+            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # try:
+            #     QtGui.QGuiApplication.restoreOverrideCursor()
+            # except Exception:
+            #     pass
+            # self.dont_execute = True
+            # self.draw_app.in_action = False
+            # self.complete = True
+            # self.draw_app.select_tool('select')
+            # return
 
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
@@ -4373,7 +4375,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_aperture_selected is None and current_tool != 'select':
+        if self.last_aperture_selected is None and current_tool not in ['select', 'disc', 'semidisc']:
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
