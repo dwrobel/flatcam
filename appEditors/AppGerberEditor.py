@@ -2800,8 +2800,8 @@ class AppGerberEditor(QtCore.QObject):
         # #############################################################################################################
         # ######################### Init appGUI #######################################################################
         # #############################################################################################################
-        self.ui.apdim_lbl.hide()
-        self.ui.apdim_entry.hide()
+        self.ui.apdim_lbl.setDisabled(True)
+        self.ui.apdim_entry.setDisabled(True)
 
         self.gerber_obj = None
         self.gerber_obj_options = {}
@@ -3594,6 +3594,8 @@ class AppGerberEditor(QtCore.QObject):
         if not self.selected:
             self.ui.geo_coords_entry.setText('')
             self.ui.geo_vertex_entry.set_value(0)
+            self.ui.area_entry.set_value(0)
+            self.ui.is_valid_entry.setText('None')
             return
 
         last_sel_geo = self.selected[-1].geo
@@ -3641,12 +3643,17 @@ class AppGerberEditor(QtCore.QObject):
         if last_sel_geo_solid.geom_type == 'Polygon':
             coords = list(last_sel_geo_solid.exterior.coords)
             vertex_nr = len(coords)
+            area_val = last_sel_geo_solid.area
+            self.ui.area_entry.set_value(area_val)
         elif last_sel_geo_solid.geom_type in ['LinearRing', 'LineString']:
             coords = list(last_sel_geo_solid.coords)
             vertex_nr = len(coords)
         else:
             return
 
+        validity = last_sel_geo_solid.is_valid
+
+        self.ui.is_valid_entry.setText(str(validity))
         self.ui.geo_coords_entry.setText(str(coords))
         self.ui.geo_vertex_entry.set_value(vertex_nr)
 
@@ -3656,12 +3663,12 @@ class AppGerberEditor(QtCore.QObject):
     def on_aptype_changed(self, current_text):
         # 'O' is letter O not zero.
         if current_text == 'R' or current_text == 'O':
-            self.ui.apdim_lbl.show()
-            self.ui.apdim_entry.show()
+            self.ui.apdim_lbl.setDisabled(False)
+            self.ui.apdim_entry.setDisabled(False)
             self.ui.apsize_entry.setDisabled(True)
         else:
-            self.ui.apdim_lbl.hide()
-            self.ui.apdim_entry.hide()
+            self.ui.apdim_lbl.setDisabled(True)
+            self.ui.apdim_entry.setDisabled(True)
             self.ui.apsize_entry.setDisabled(False)
 
     def activate_grb_editor(self):
@@ -5417,7 +5424,7 @@ class AppGerberEditorUI:
         grid1.addWidget(apadd_del_lbl, 0, 0, 1, 2)
 
         # Aperture Code
-        apcode_lbl = FCLabel('%s:' % _('Aperture Code'))
+        apcode_lbl = FCLabel('%s:' % _('Code'))
         apcode_lbl.setToolTip(_("Code for the new aperture"))
 
         self.apcode_entry = FCSpinner()
@@ -5428,7 +5435,7 @@ class AppGerberEditorUI:
         grid1.addWidget(self.apcode_entry, 1, 1)
 
         # Aperture Size
-        apsize_lbl = FCLabel('%s' % _('Aperture Size:'))
+        apsize_lbl = FCLabel('%s' % _('Size:'))
         apsize_lbl.setToolTip(
             _("Size for the new aperture.\n"
               "If aperture type is 'R' or 'O' then\n"
@@ -5445,7 +5452,7 @@ class AppGerberEditorUI:
         grid1.addWidget(self.apsize_entry, 2, 1)
 
         # Aperture Type
-        aptype_lbl = FCLabel('%s:' % _('Aperture Type'))
+        aptype_lbl = FCLabel('%s:' % _('Type'))
         aptype_lbl.setToolTip(
             _("Select the type of new aperture. Can be:\n"
               "C = circular\n"
@@ -5460,10 +5467,9 @@ class AppGerberEditorUI:
         grid1.addWidget(self.aptype_cb, 3, 1)
 
         # Aperture Dimensions
-        self.apdim_lbl = FCLabel('%s:' % _('Aperture Dim'))
+        self.apdim_lbl = FCLabel('%s:' % _('Dims'))
         self.apdim_lbl.setToolTip(
             _("Dimensions for the new aperture.\n"
-              "Active only for rectangular apertures (type R).\n"
               "The format is (width, height)")
         )
 
@@ -5475,25 +5481,28 @@ class AppGerberEditorUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid1.addWidget(separator_line, 6, 0, 1, 2)
+        grid1.addWidget(separator_line, 5, 0, 1, 3)
 
         # Aperture Buttons
-        hlay_ad = QtWidgets.QHBoxLayout()
-        grid1.addLayout(hlay_ad, 8, 0, 1, 2)
+        vlay_buttons = QtWidgets.QVBoxLayout()
+        grid1.addLayout(vlay_buttons, 1, 2, 4, 1)
 
         self.addaperture_btn = FCButton(_('Add'))
+        self.addaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.addaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addaperture_btn.setToolTip(
             _("Add a new aperture to the aperture list.")
         )
 
         self.delaperture_btn = FCButton(_('Delete'))
+        # self.delaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
         self.delaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delaperture_btn.setToolTip(
             _("Delete a aperture in the aperture list")
         )
-        hlay_ad.addWidget(self.addaperture_btn)
-        hlay_ad.addWidget(self.delaperture_btn)
+        vlay_buttons.addWidget(self.addaperture_btn)
+        vlay_buttons.addWidget(self.delaperture_btn)
 
         # #############################################################################################################
         # ############################################ Shape Properties ###############################################
@@ -5523,6 +5532,38 @@ class AppGerberEditorUI:
             _("Geometry parameters.")
         )
         self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
+
+        p_grid = QtWidgets.QGridLayout()
+        p_grid.setColumnStretch(0, 0)
+        p_grid.setColumnStretch(1, 0)
+        p_grid.setColumnStretch(2, 0)
+        p_grid.setColumnStretch(3, 1)
+        p_grid.setColumnStretch(4, 0)
+
+        # Is Valid
+        valid_lbl = FCLabel('<b>%s</b>:' % _("Valid"))
+        valid_lbl.setToolTip(
+            _("Show if the selected polygon is valid.")
+        )
+        self.is_valid_entry = FCLabel("False")
+        p_grid.addWidget(valid_lbl, 0, 0)
+        p_grid.addWidget(self.is_valid_entry, 0, 1)
+
+        # Area
+        area_lbl = FCLabel('<b>%s</b>:' % _("Area"))
+        area_lbl.setToolTip(
+            _("Show the area of the selected polygon.")
+        )
+        self.area_entry = FCEntry(decimals=self.decimals)
+        self.area_entry.set_value(0.0)
+        a_units = _("cm") if self.units == 'MM' else _("in")
+        area_units_lbl = FCLabel('%s<sup>2</sup>' % a_units)
+
+        p_grid.addWidget(area_lbl, 0, 2)
+        p_grid.addWidget(self.area_entry, 0, 3)
+        p_grid.addWidget(area_units_lbl, 0, 4)
+
+        self.shape_grid.addLayout(p_grid, 5, 0, 1, 3)
 
         # Coordinates
         coords_lbl = FCLabel('%s:' % _("Coordinates"))

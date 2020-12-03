@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.12.2020
+
+- in Gerber Editor - modified the UI
+- in Gerber Editor - added new parameters for selected polygons: is_valid and area
+
 2.12.2020
 
 - Subtraction Tool - minor changes
