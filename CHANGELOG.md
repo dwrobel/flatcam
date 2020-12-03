@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - in Panelize Tool - fixed the export when panelizing Excllon objects
 - in Panelize Tool - remade the methods such that panelizing a Gerber object as Geometry panel will now hold all the Gerber apertures as Geometry tools and added a supplementary tool that holds the solid_geometry. 
 - in Panelize Tool - remade the methods such that panelizing a Geometry object as a Gerber panel will attempt to create polygons from Geometry
+- in Panelize Tool - made sure that when the path optimization will yield an empty geometry it will not be added to the panel geometry
 
 1.12.2020
 

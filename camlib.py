@@ -7583,8 +7583,10 @@ class CNCjob(Geometry):
                     maxx = -np.Inf
                     maxy = -np.Inf
                     try:
-                        for k in v['solid_geometry']:
-                            minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        for geo in v['solid_geometry']:
+                            if geo.is_empty:
+                                continue
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(geo)
                             minx = min(minx, minx_)
                             miny = min(miny, miny_)
                             maxx = max(maxx, maxx_)
@@ -7603,8 +7605,8 @@ class CNCjob(Geometry):
                     maxx = -np.Inf
                     maxy = -np.Inf
                     try:
-                        for k in v['solid_geometry']:
-                            minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        for geo in v['solid_geometry']:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(geo)
                             minx = min(minx, minx_)
                             miny = min(miny, miny_)
                             maxx = max(maxx, maxx_)

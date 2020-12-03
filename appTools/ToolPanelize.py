@@ -470,7 +470,8 @@ class Panelize(AppTool):
                                         pol_nr = 0
                                         for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
                                             trans_geo = translate_recursion(geo_el)
-                                            new_obj.tools[tool]['solid_geometry'].append(trans_geo)
+                                            if not trans_geo.is_empty:
+                                                new_obj.tools[tool]['solid_geometry'].append(trans_geo)
 
                                             # update progress
                                             pol_nr += 1
@@ -615,7 +616,7 @@ class Panelize(AppTool):
                                             lines[idx_s] = res
 
                             fused_lines = linemerge(lines)
-                            fused_lines = [unary_union(fused_lines)]
+                            fused_lines = [unary_union(fused_lines)] if not fused_lines.is_empty else []
 
                             new_obj.tools[tool]['solid_geometry'] = fused_lines + other_geo
 
@@ -749,7 +750,8 @@ class Panelize(AppTool):
                                         pol_nr = 0
                                         for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
                                             trans_geo = translate_recursion(geo_el)
-                                            new_obj.tools[tool]['solid_geometry'].append(trans_geo)
+                                            if not trans_geo.is_empty:
+                                                new_obj.tools[tool]['solid_geometry'].append(trans_geo)
 
                                             # update progress
                                             pol_nr += 1
