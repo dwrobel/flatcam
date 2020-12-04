@@ -3243,7 +3243,13 @@ class IsoUI:
 
         self.grid3.addLayout(new_tool_lay, 2, 1)
 
-        bhlay = QtWidgets.QHBoxLayout()
+        # #############################################################################################################
+        # ################################    Button Grid   ###########################################################
+        # #############################################################################################################
+        button_grid = QtWidgets.QGridLayout()
+        button_grid.setColumnStretch(0, 1)
+        button_grid.setColumnStretch(1, 0)
+        self.grid3.addLayout(button_grid, 7, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -3254,7 +3260,8 @@ class IsoUI:
               "in the Tools Database. If nothing is found\n"
               "in the Tools DB then a default tool is added.")
         )
-        bhlay.addWidget(self.search_and_add_btn)
+
+        button_grid.addWidget(self.search_and_add_btn, 0, 0)
 
         self.addtool_from_db_btn = FCButton(_('Pick from DB'))
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
@@ -3264,24 +3271,19 @@ class IsoUI:
               "Tools database administration in in:\n"
               "Menu: Options -> Tools Database")
         )
-        bhlay.addWidget(self.addtool_from_db_btn)
 
-        self.grid3.addLayout(bhlay, 7, 0, 1, 2)
+        button_grid.addWidget(self.addtool_from_db_btn, 1, 0)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 8, 0, 1, 2)
-
-        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn = FCButton()
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 
-        # self.grid3.addWidget(FCLabel(''), 10, 0, 1, 2)
+        button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
+        # #############################################################################################################
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

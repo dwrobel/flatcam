@@ -180,7 +180,7 @@ class ToolPaint(AppTool, Gerber):
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
 
         # adding tools
-        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
+        self.ui.search_and_add_btn.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
 
         self.app.proj_selection_changed.connect(self.on_object_selection_changed)
@@ -2798,6 +2798,7 @@ class PaintUI:
         self.tools_frame = QtWidgets.QFrame()
         self.tools_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.tools_frame)
+
         self.tools_box = QtWidgets.QVBoxLayout()
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.tools_frame.setLayout(self.tools_box)
@@ -2943,18 +2944,25 @@ class PaintUI:
         self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
         self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
 
-        hlay = QtWidgets.QHBoxLayout()
+        # #############################################################################################################
+        # ################################    Button Grid   ###########################################################
+        # #############################################################################################################
+        button_grid = QtWidgets.QGridLayout()
+        button_grid.setColumnStretch(0, 1)
+        button_grid.setColumnStretch(1, 0)
+        self.grid3.addLayout(button_grid, 7, 0, 1, 2)
 
-        self.add_newtool_button = FCButton(_('Search and Add'))
-        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
-        self.add_newtool_button.setToolTip(
+        self.search_and_add_btn = FCButton(_('Search and Add'))
+        self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.search_and_add_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "with the diameter specified above.\n"
               "This is done by a background search\n"
               "in the Tools Database. If nothing is found\n"
               "in the Tools DB then a default tool is added.")
         )
-        hlay.addWidget(self.add_newtool_button)
+
+        button_grid.addWidget(self.search_and_add_btn, 0, 0)
 
         self.addtool_from_db_btn = FCButton(_('Pick from DB'))
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
@@ -2964,22 +2972,19 @@ class PaintUI:
               "Tools database administration in in:\n"
               "Menu: Options -> Tools Database")
         )
-        hlay.addWidget(self.addtool_from_db_btn)
 
-        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+        button_grid.addWidget(self.addtool_from_db_btn, 1, 0)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 8, 0, 1, 2)
-
-        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn = FCButton()
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
+        button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
+        # #############################################################################################################
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -3205,7 +3210,7 @@ class PaintUI:
                                                  """)
         self.tools_box.addWidget(self.generate_paint_button)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
@@ -3270,7 +3275,7 @@ class PaintUI:
             self.area_shape_radio.show()
         else:   # All = index 0 in combobox
             self.new_tooldia_entry.setDisabled(False)
-            self.add_newtool_button.setDisabled(False)
+            self.search_and_add_btn.setDisabled(False)
             self.deltool_btn.setDisabled(False)
             self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 

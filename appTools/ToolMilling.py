@@ -2398,10 +2398,22 @@ class ToolMilling(AppTool, Excellon):
     def on_generate_cncjob_click(self):
         self.app.delete_selection_shape()
 
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.target_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception as e:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+
+        if self.target_obj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s.' % _("Object not found"))
+            return
+
         if self.target_obj.kind == 'geometry':
             self.on_generatecnc_from_geo()
-
-        if self.target_obj.kind == 'excellon':
+        elif self.target_obj.kind == 'excellon':
             pass
 
     def on_generatecnc_from_geo(self):
@@ -3519,14 +3531,25 @@ class MillingUI:
         grid_tool.addWidget(self.addtool_entry_lbl, 3, 0)
         grid_tool.addWidget(self.addtool_entry, 3, 1)
 
-        bhlay = QtWidgets.QHBoxLayout()
+        # #############################################################################################################
+        # ################################    Button Grid   ###########################################################
+        # #############################################################################################################
+        button_grid = QtWidgets.QGridLayout()
+        button_grid.setColumnStretch(0, 1)
+        button_grid.setColumnStretch(1, 0)
+        grid_tool.addLayout(button_grid, 5, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.search_and_add_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "with the diameter specified above.")
+              "with the diameter specified above.\n"
+              "This is done by a background search\n"
+              "in the Tools Database. If nothing is found\n"
+              "in the Tools DB then a default tool is added.")
         )
+
+        button_grid.addWidget(self.search_and_add_btn, 0, 0)
 
         self.addtool_from_db_btn = FCButton(_('Pick from DB'))
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
@@ -3537,24 +3560,18 @@ class MillingUI:
               "Menu: Options -> Tools Database")
         )
 
-        bhlay.addWidget(self.search_and_add_btn)
-        bhlay.addWidget(self.addtool_from_db_btn)
+        button_grid.addWidget(self.addtool_from_db_btn, 1, 0)
 
-        grid_tool.addLayout(bhlay, 5, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_tool.addWidget(separator_line, 9, 0, 1, 2)
-
-        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn = FCButton()
         self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 
-        grid_tool.addWidget(self.deltool_btn, 12, 0, 1, 2)
+        button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
+        # #############################################################################################################
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

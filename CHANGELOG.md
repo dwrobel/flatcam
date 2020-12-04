@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - set the shortcut key for Milling Tool to ALt+M and for Corner Markers Tool to Alt+B
 - fixed a bug introduced by first mod today, when the selected object is of 'cncjob' kind.
 - Milling Tool - working in making the exclusion areas work in this Tool; added the Exclusion Table editing ability
+- Milling Tool - fixed a crash when clicking the Generate CNCJob object button with no object selected
+- Milling, Isolation, NCC, Paint Tools UI update
 
 3.12.2020
 
