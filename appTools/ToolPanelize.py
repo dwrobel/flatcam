@@ -204,9 +204,10 @@ class Panelize(AppTool):
             name = current.indexes()[0].internalPointer().obj.options['name']
             kind = current.indexes()[0].internalPointer().obj.kind
 
-            obj_type = {
-                "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
-            }[kind]
+            if kind in ['gerber', 'excellon', 'geometry']:
+                obj_type = {
+                    "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
+                }[kind]
 
             self.ui.type_obj_combo.set_value(obj_type)
             self.ui.type_box_combo.set_value(obj_type)
@@ -216,7 +217,7 @@ class Panelize(AppTool):
 
             self.ui.object_combo.set_value(name)
             self.ui.box_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def on_panelize(self):

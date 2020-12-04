@@ -177,12 +177,13 @@ class DblSidedTool(AppTool):
             name = current.indexes()[0].internalPointer().obj.options['name']
             kind = current.indexes()[0].internalPointer().obj.kind
 
-            obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
-            self.ui.object_type_radio.set_value(obj_type)
-            self.ui.box_type_radio.set_value(obj_type)
+            if kind in ['gerber', 'excellon', 'geometry']:
+                obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
+                self.ui.object_type_radio.set_value(obj_type)
+                self.ui.box_type_radio.set_value(obj_type)
 
-            self.ui.object_combo.set_value(name)
-        except IndexError:
+                self.ui.object_combo.set_value(name)
+        except Exception:
             pass
 
     def on_create_alignment_holes(self):

@@ -100,7 +100,7 @@ class Film(AppTool):
 
                 self.ui.tf_object_combo.set_value(name)
                 self.ui.tf_box_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def run(self, toggle=True):

@@ -280,7 +280,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.ui.type_obj_radio.set_value(kind)
 
             self.ui.object_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def on_toggle_all_rows(self):

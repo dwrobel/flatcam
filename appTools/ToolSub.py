@@ -173,7 +173,7 @@ class ToolSub(AppTool):
                 self.ui.target_gerber_combo.set_value(name)
             if kind == 'geometry':
                 self.ui.target_geo_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def set_tool_ui(self):

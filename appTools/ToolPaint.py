@@ -292,7 +292,7 @@ class ToolPaint(AppTool, Gerber):
                 self.ui.type_obj_radio.set_value(kind)
 
             self.ui.obj_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def update_ui(self):
