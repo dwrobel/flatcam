@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Cutout, 2Sided, Film, NCC, Paint, Panelize and Subtract Tool made sure that the object selection in Project Tab reflects in the selected object in the Tools
 - set the shortcut key for Milling Tool to ALt+M and for Corner Markers Tool to Alt+B
 - fixed a bug introduced by first mod today, when the selected object is of 'cncjob' kind.
+- Milling Tool - working in making the exclusion areas work in this Tool; added the Exclusion Table editing ability
 
 3.12.2020
 

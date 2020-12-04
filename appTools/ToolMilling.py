@@ -155,6 +155,14 @@ class ToolMilling(AppTool, Excellon):
             _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
+        # #############################################################################################################
+        # ############################## EXCLUSION TABLE context menu #################################################
+        # #############################################################################################################
+        self.ui.exclusion_table.setupContextMenu()
+        self.ui.exclusion_table.addContextMenu(
+            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        )
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
 
@@ -588,6 +596,7 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.build_ui_exc()
 
+        self.ui_disconnect()
         # Build Exclusion Areas section
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
         self.ui.exclusion_table.setRowCount(e_len)
@@ -599,21 +608,37 @@ class ToolMilling(AppTool, Excellon):
 
             area_dict = self.app.exc_areas.exclusion_areas_storage[area]
 
+            # --------------------  ID  -------------------------------
             area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
             area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
 
+            # --------------------  Object Type  ----------------------
             object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
             object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
 
-            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+            # --------------------  Strategy  -------------------------
+            strategy_item = FCComboBox2(policy=False)
+            strategy_item.addItems([_("Around"), _("Over")])
+            idx = 0 if area_dict["strategy"] == 'around' else 1
+            # protection against having this translated or loading a project with translated values
+            if idx == -1:
+                strategy_item.setCurrentIndex(0)
+            else:
+                strategy_item.setCurrentIndex(idx)
+            self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
 
+            # --------------------  Over Z  ---------------------------
             overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
             overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+
+        # make the Overz column editable
+        for row in range(e_len):
+            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
+                                                          QtCore.Qt.ItemIsEditable |
+                                                          QtCore.Qt.ItemIsEnabled)
 
         self.ui.exclusion_table.resizeColumnsToContents()
         self.ui.exclusion_table.resizeRowsToContents()
@@ -653,17 +678,6 @@ class ToolMilling(AppTool, Excellon):
             )
 
     def build_ui_mill(self):
-        self.ui_disconnect()
-
-        # Area Exception - exclusion shape added signal
-        # first disconnect it from any other object
-        try:
-            self.app.exc_areas.e_shape_modified.disconnect()
-        except (TypeError, AttributeError):
-            pass
-        # then connect it to the current build_ui() method
-        self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
-
         self.units = self.app.defaults['units']
 
         if self.target_obj:
@@ -685,10 +699,6 @@ class ToolMilling(AppTool, Excellon):
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
             tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
-
-            # Make sure that the tool diameter when in MM is with no more than 2 decimals.
-            # There are no tool bits in MM with more than 3 decimals diameter.
-            # For INCH the decimals should be no more than 3. There are no tools under 10mils.
 
             # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
@@ -765,30 +775,12 @@ class ToolMilling(AppTool, Excellon):
         self.ui.geo_tools_table.setMinimumHeight(self.ui.geo_tools_table.getHeight())
         self.ui.geo_tools_table.setMaximumHeight(self.ui.geo_tools_table.getHeight())
 
-        # update UI for all rows - useful after units conversion but only if there is at least one row
-        # row_cnt = self.ui.geo_tools_table.rowCount()
-        # if row_cnt > 0:
-        #     for r in range(row_cnt):
-        #         self.update_ui(r)
-
-        # select only the first tool / row
-        # selected_row = 0
-        # try:
-        #     self.select_tools_table_row(selected_row, clearsel=True)
-        #     # update the Geometry UI
-        #     self.update_ui()
-        # except Exception as e:
-        #     # when the tools table is empty there will be this error but once the table is populated it will go away
-        #     log.debug(str(e))
-
         # disable the Plot column in Tool Table if the geometry is SingleGeo as it is not needed
         # and can create some problems
         if self.target_obj and self.target_obj.multigeo is True:
             self.ui.geo_tools_table.setColumnHidden(4, False)
         else:
             self.ui.geo_tools_table.setColumnHidden(4, True)
-
-        self.ui_connect()
 
         self.ui.geo_tools_table.selectAll()
 
@@ -803,8 +795,6 @@ class ToolMilling(AppTool, Excellon):
             )
 
     def build_ui_exc(self):
-        self.ui_disconnect()
-
         # updated units
         self.units = self.app.defaults['units'].upper()
 
@@ -947,8 +937,6 @@ class ToolMilling(AppTool, Excellon):
 
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
-
-        self.ui_connect()
 
     def on_target_changed(self, val):
         # handle the Plot checkbox
@@ -1114,6 +1102,12 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
+        # Exclusion Table widgets connect
+        for row in range(self.ui.exclusion_table.rowCount()):
+            self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_exclusion_table_strategy)
+
+        self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
+
     def ui_disconnect(self):
         # Excellon Tool Table - rows selected
         try:
@@ -1178,6 +1172,18 @@ class ToolMilling(AppTool, Excellon):
         try:
             self.ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
+            pass
+
+        # Exclusion Table widgets disconnect
+        for row in range(self.ui.exclusion_table.rowCount()):
+            try:
+                self.ui.exclusion_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+        try:
+            self.ui.exclusion_table.itemChanged.disconnect()
+        except (TypeError, AttributeError):
             pass
 
     def on_toggle_all_rows(self):
@@ -3152,8 +3158,8 @@ class ToolMilling(AppTool, Excellon):
         overz_button = self.ui.over_z_entry
         strategy_radio = self.ui.strategy_radio
         cnc_button = self.ui.generate_cnc_button
-        solid_geo = self.solid_geometry
-        obj_type = self.kind
+        solid_geo = self.target_obj.solid_geometry
+        obj_type = self.target_obj.kind
 
         self.app.exc_areas.on_add_area_click(
             shape_button=shape_button, overz_button=overz_button, cnc_button=cnc_button, strategy_radio=strategy_radio,
@@ -3250,6 +3256,49 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.ui.exclusion_table.selectAll()
             self.draw_sel_shape()
+
+    def on_exclusion_table_overz(self, current_item):
+        self.ui_disconnect()
+
+        current_row = current_item.row()
+        try:
+            d = float(self.ui.exclusion_table.item(current_row, 3).text())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                d = float(self.ui.exclusion_table.item(current_row, 3).text().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
+                return
+        except AttributeError:
+            self.ui_connect()
+            return
+
+        overz = self.app.dec_format(d, self.decimals)
+        idx = int(self.ui.exclusion_table.item(current_row, 0).text())
+
+        for area_dict in self.app.exc_areas.exclusion_areas_storage:
+            if area_dict['idx'] == idx:
+                area_dict['overz'] = overz
+
+        self.app.inform.emit('[success] %s' % _("Value edited in Exclusion Table."))
+        self.ui_connect()
+        self.builduiSig.emit()
+
+    def on_exclusion_table_strategy(self):
+        cw = self.sender()
+        cw_index = self.ui.exclusion_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        idx = int(self.ui.exclusion_table.item(cw_row, 0).text())
+
+        for area_dict in self.app.exc_areas.exclusion_areas_storage:
+            if area_dict['idx'] == idx:
+                strategy = self.ui.exclusion_table.cellWidget(cw_row, 2).currentIndex()
+                area_dict['strategy'] = "around" if strategy == 0 else 'overz'
+
+        self.app.inform.emit('[success] %s' % _("Value edited in Exclusion Table."))
+        self.ui_connect()
+        self.builduiSig.emit()
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
