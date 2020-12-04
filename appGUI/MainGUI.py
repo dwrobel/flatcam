@@ -2683,6 +2683,11 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_A:
                     self.app.align_objects_tool.run(toggle=True)
 
+                # Corner Markers Tool
+                if key == QtCore.Qt.Key_B:
+                    self.app.corners_tool.run(toggle=True)
+                    return
+
                 # Calculator Tool
                 if key == QtCore.Qt.Key_C:
                     self.app.calculator_tool.run(toggle=True)
@@ -2730,9 +2735,9 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.film_tool.run(toggle=True)
                     return
 
-                # Corner Markers Tool
+                # Milling Tool
                 if key == QtCore.Qt.Key_M:
-                    self.app.corners_tool.run(toggle=True)
+                    self.app.milling_tool.run(toggle=True)
                     return
 
                 # Non-Copper Clear Tool
@@ -4462,6 +4467,10 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>%s</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
@@ -4581,6 +4590,7 @@ class ShortcutsTab(QtWidgets.QWidget):
 
                     # ALT section
                     _('Alt+A'), _("Align Objects Tool"),
+                    _('Alt+B'), _("Corner Markers Tool"),
                     _('Alt+C'), _("Calculators Tool"),
                     _('Alt+D'), _("2-Sided PCB Tool"),
                     _('Alt+E'), _("Extract Tool"),
@@ -4591,7 +4601,7 @@ class ShortcutsTab(QtWidgets.QWidget):
                     _('Alt+J'), _("Copper Thieving Tool"),
                     _('Alt+K'), _("Solder Paste Dispensing Tool"),
                     _('Alt+L'), _("Film PCB Tool"),
-                    _('Alt+M'), _("Corner Markers Tool"),
+                    _('Alt+M'), _("Milling Tool"),
                     _('Alt+N'), _("Non-Copper Clearing Tool"),
                     _('Alt+O'), _("Optimal Tool"),
                     _('Alt+P'), _("Paint Area Tool"),

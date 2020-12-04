@@ -116,6 +116,9 @@ class CutOut(AppTool):
         self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
         self.ui.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
         self.ui.drillcut_btn.clicked.connect(self.on_drill_cut_click)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_changed(self, val):
@@ -130,6 +133,19 @@ class CutOut(AppTool):
         else:
             self.ui.convex_box_label.setDisabled(True)
             self.ui.convex_box_cb.setDisabled(True)
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
+                self.ui.type_obj_radio.set_value(obj_type)
+
+            self.ui.obj_combo.set_value(name)
+        except IndexError:
+            pass
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCutOut()")
@@ -809,7 +825,6 @@ class CutOut(AppTool):
                         geo_buf = object_geo.buffer(0)
                         geo = geo_buf.exterior
 
-                    print(geo)
                     if geo.is_empty:
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return 'fail'

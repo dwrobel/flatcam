@@ -985,6 +985,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if obj:
             obj.build_ui()
 
+        self.app.proj_selection_changed.emit(current, previous)
+
     def on_item_activated(self, index):
         """
         Double-click or Enter on item.

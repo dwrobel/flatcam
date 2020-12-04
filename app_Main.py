@@ -257,6 +257,8 @@ class App(QtCore.QObject):
     # graphic residues behind
     cleanup = pyqtSignal()
 
+    proj_selection_changed = pyqtSignal(object, object)
+
     def __init__(self, qapp, user_defaults=True):
         """
         Starts the application.

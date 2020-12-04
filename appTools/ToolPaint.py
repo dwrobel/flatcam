@@ -183,6 +183,8 @@ class ToolPaint(AppTool, Gerber):
         self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
 
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
@@ -280,6 +282,18 @@ class ToolPaint(AppTool, Gerber):
         # for the rows other that the current one (first selected)
         if len(sel_rows) == 1:
             self.update_ui()
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                self.ui.type_obj_radio.set_value(kind)
+
+            self.ui.obj_combo.set_value(name)
+        except IndexError:
+            pass
 
     def update_ui(self):
         self.blockSignals(True)

@@ -245,6 +245,8 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_ncc_tool_add_from_db_clicked)
 
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
@@ -268,6 +270,18 @@ class NonCopperClear(AppTool, Gerber):
             # TODO got a crash here, a KeyError exception; need to see it again and find out the why
         except AttributeError:
             return
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                self.ui.type_obj_radio.set_value(kind)
+
+            self.ui.object_combo.set_value(name)
+        except IndexError:
+            pass
 
     def on_toggle_all_rows(self):
         """

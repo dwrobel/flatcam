@@ -91,6 +91,8 @@ class ToolSub(AppTool):
         self.ui.intersect_geo_btn.clicked.connect(self.on_subtract_geo_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         # Custom Signals
         self.job_finished.connect(self.on_job_finished)
         self.aperture_processing_finished.connect(self.new_gerber_object)
@@ -161,6 +163,18 @@ class ToolSub(AppTool):
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Sub Tool"))
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind == 'gerber':
+                self.ui.target_gerber_combo.set_value(name)
+            if kind == 'geometry':
+                self.ui.target_geo_combo.set_value(name)
+        except IndexError:
+            pass
 
     def set_tool_ui(self):
         self.new_apertures.clear()

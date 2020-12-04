@@ -51,6 +51,9 @@ class Panelize(AppTool):
         self.ui.panelize_object_button.clicked.connect(self.on_panelize)
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.ui.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # list to hold the temporary objects
@@ -167,7 +170,7 @@ class Panelize(AppTool):
         }[self.ui.type_obj_combo.get_value()]
 
         # hide the panel type for Excellons, the panel can be only of type Geometry
-        if self.ui.type_obj_combo.currentText() != 'Excellon':
+        if self.ui.type_obj_combo.currentText() != _('Excellon'):
             self.ui.panel_type_label.setDisabled(False)
             self.ui.panel_type_radio.setDisabled(False)
             self.ui.on_panel_type(val=self.ui.panel_type_radio.get_value())
@@ -195,6 +198,26 @@ class Panelize(AppTool):
             self.ui.type_box_combo.setDisabled(True)
             self.ui.type_box_combo_label.setDisabled(True)
             self.ui.box_combo.setDisabled(True)
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            obj_type = {
+                "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
+            }[kind]
+
+            self.ui.type_obj_combo.set_value(obj_type)
+            self.ui.type_box_combo.set_value(obj_type)
+
+            if kind in ['gerber', 'geometry']:
+                self.ui.panel_type_radio.set_value(kind)
+
+            self.ui.object_combo.set_value(name)
+            self.ui.box_combo.set_value(name)
+        except IndexError:
+            pass
 
     def on_panelize(self):
         name = self.ui.object_combo.currentText()
@@ -993,9 +1016,7 @@ class PanelizeUI:
 
         # Type of object to be panelized
         self.type_obj_combo = FCComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
+        self.type_obj_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
         self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))

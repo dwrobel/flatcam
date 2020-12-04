@@ -110,7 +110,7 @@ class ToolCorners(AppTool):
         self.app.ui.notebook.setTabText(2, _("Corners Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

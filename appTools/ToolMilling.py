@@ -156,7 +156,7 @@ class ToolMilling(AppTool, Excellon):
             icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolMilling()")
@@ -254,7 +254,8 @@ class ToolMilling(AppTool, Excellon):
         self.ui.generate_cnc_button.clicked.connect(self.on_generate_cncjob_click)
 
         # When object selection on canvas change
-        self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
         # Reset Tool
         self.ui.reset_button.clicked.connect(self.set_tool_ui)

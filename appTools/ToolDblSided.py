@@ -38,7 +38,9 @@ class DblSidedTool(AppTool):
 
         self.mr = None
 
-        # ## Signals
+        # ############################################################################################################
+        # ######################################### Signals ##########################################################
+        # ############################################################################################################
         self.ui.object_type_radio.activated_custom.connect(self.on_object_type)
 
         self.ui.add_point_button.clicked.connect(self.on_point_add)
@@ -64,7 +66,10 @@ class DblSidedTool(AppTool):
         self.ui.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
         self.ui.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)
 
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        # ############################################################################################################
 
         self.drill_values = ""
 
@@ -166,6 +171,19 @@ class DblSidedTool(AppTool):
         self.ui.box_combo.setCurrentIndex(0)
         self.ui.box_combo.obj_type = {
             "grb": "Gerber", "exc": "Excellon", "geo": "Geometry"}[val]
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
+            self.ui.object_type_radio.set_value(obj_type)
+            self.ui.box_type_radio.set_value(obj_type)
+
+            self.ui.object_combo.set_value(name)
+        except IndexError:
+            pass
 
     def on_create_alignment_holes(self):
         axis = self.ui.align_axis_radio.get_value()
@@ -545,8 +563,8 @@ class DsidedUI:
 
         self.object_type_radio = RadioSet([
             {"label": _("Gerber"), "value": "grb"},
-            {"label": _("Geometry"), "value": "geo"},
-            {"label": _("Excellon"), "value": "exc"}
+            {"label": _("Excellon"), "value": "exc"},
+            {"label": _("Geometry"), "value": "geo"}
         ])
 
         grid_lay.addWidget(self.type_obj_combo_label, 2, 0)

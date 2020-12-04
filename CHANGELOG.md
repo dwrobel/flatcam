@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.12.2020
+
+- in Cutout, 2Sided, Film, NCC, Paint, Panelize and Subtract Tool made sure that the object selection in Project Tab reflects in the selected object in the Tools
+- set the shortcut key for Milling Tool to ALt+M and for Corner Markers Tool to Alt+B
+
 3.12.2020
 
 - in Gerber Editor - modified the UI

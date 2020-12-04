@@ -48,13 +48,15 @@ class Film(AppTool):
         self.decimals = self.app.decimals
         self.units = self.app.defaults['units']
 
-        # #############################################################################
-        # ######################### Tool GUI ##########################################
-        # #############################################################################
+        # #############################################################################################################
+        # ######################################## Tool GUI ###########################################################
+        # #############################################################################################################
         self.ui = FilmUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
 
-        # ## Signals
+        # #############################################################################################################
+        # #####################################    Signals     ########################################################
+        # #############################################################################################################
         self.ui.film_object_button.clicked.connect(self.on_film_creation)
         self.ui.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
         self.ui.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
@@ -62,7 +64,11 @@ class Film(AppTool):
         self.ui.film_type.activated_custom.connect(self.ui.on_film_type)
         self.ui.source_punch.activated_custom.connect(self.ui.on_punch_source)
         self.ui.file_type_radio.activated_custom.connect(self.ui.on_file_type)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        # #############################################################################################################
 
         self.screen_dpi = 96
 
@@ -81,6 +87,21 @@ class Film(AppTool):
         self.ui.tf_box_combo.obj_type = {
             "grb": "gerber", "geo": "geometry"
         }[self.ui.tf_type_obj_combo.get_value()]
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                obj_type = {'gerber': 'grb', 'geometry': 'geo'}[kind]
+                self.ui.tf_type_obj_combo.set_value(obj_type)
+                self.ui.tf_type_box_combo.set_value(obj_type)
+
+                self.ui.tf_object_combo.set_value(name)
+                self.ui.tf_box_combo.set_value(name)
+        except IndexError:
+            pass
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFilm()")
