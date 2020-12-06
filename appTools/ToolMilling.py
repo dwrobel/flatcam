@@ -1355,7 +1355,7 @@ class ToolMilling(AppTool, Excellon):
         """
         Will update the GUI with data from the "storage" in this case the dict self.tools
 
-        :param dict_storage:    A dictionary holding the data relevant for gnerating Gcode from Excellon
+        :param dict_storage:    A dictionary holding the data relevant for generating Gcode
         :type dict_storage:     dict
         :return:                None
         :rtype:
@@ -1415,6 +1415,10 @@ class ToolMilling(AppTool, Excellon):
             t_table = self.ui.tools_table
         self.current_row = t_table.currentRow()
 
+        # those are the general parameters that are common to all tools
+        general_parameters = ["toolchange", "toolchangez", "endxy", "endz", "ppname_g", "area_exclusion",
+                              "area_shape", "area_strategy", "area_overz"]
+
         # update the tool specific parameters
         rows = sorted(set(index.row() for index in used_tools_table.selectedIndexes()))
         for row in rows:
@@ -1425,18 +1429,21 @@ class ToolMilling(AppTool, Excellon):
             for tooluid_key, tooluid_val in self.target_obj.tools.items():
                 if int(tooluid_key) == tooluid_item:
                     for form_key, form_val in self.form_fields.items():
+                        if form_key in general_parameters:
+                            continue
+
                         try:
                             # widgets in the tools table
                             if form_key == 'tool_type':
-                                form_val = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
-
-                            self.target_obj.tools[tooluid_key]['data'][form_key] = form_val.get_value()
+                                tt_wdg = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
+                                self.target_obj.tools[tooluid_key]['data'][form_key] = tt_wdg.get_value()
+                            else:
+                                self.target_obj.tools[tooluid_key]['data'][form_key] = form_val.get_value()
                         except Exception as e:
                             self.app.log.debug("ToolMilling.form_to_storage() --> %s" % str(e))
 
         # update the general parameters in all tools
-        for general_option in ["toolchange", "toolchangez", "endxy", "endz", "ppname_g", "area_exclusion",
-                               "area_shape", "area_strategy", "area_overz"]:
+        for general_option in general_parameters:
             new_opt_val = self.form_fields[general_option].get_value()
             for tool in self.target_obj.tools:
                 try:
