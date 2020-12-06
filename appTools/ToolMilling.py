@@ -289,7 +289,7 @@ class ToolMilling(AppTool, Excellon):
 
             # Geometry properties
             "cnctooldia": self.ui.addtool_entry,
-            "tool_type": self.ui.geo_tools_table.cellWidget(self.current_row, 2),
+            "tools_mill_tool_type": self.ui.geo_tools_table.cellWidget(self.current_row, 2),
             "offset_type": self.ui.offset_type_combo,
             "offset": self.ui.offset_entry,
 
@@ -392,7 +392,7 @@ class ToolMilling(AppTool, Excellon):
             "polish_overlap": 10,
             "polish_method": _("Standard"),
 
-            "tool_type": 'C1',
+            "tools_mill_tool_type": 'C1',
             "vtipdia": 0.1,
             "vtipangle": 30,
 
@@ -662,7 +662,7 @@ class ToolMilling(AppTool, Excellon):
             tool_type_item = FCComboBox(policy=False)
             for item in ["C1", "C2", "C3", "C4", "B", "V"]:
                 tool_type_item.addItem(item)
-            idx = tool_type_item.findText(tooluid_value['tool_type'])
+            idx = tool_type_item.findText(tooluid_value['data']['tools_mill_tool_type'])
             # protection against having this translated or loading a project with translated values
             if idx == -1:
                 tool_type_item.setCurrentIndex(0)
@@ -1374,9 +1374,10 @@ class ToolMilling(AppTool, Excellon):
                      "area_shape", "area_strategy", "area_overz"]:
                 try:
                     # widgets in the tools table
-                    if storage_key == 'tool_type':
+                    if storage_key == 'tools_mill_tool_type':
+                        print(dict_storage['tools_mill_tool_type'])
                         form_val = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
-                        form_val.set_value(dict_storage[storage_key])
+                        form_val.set_value(dict_storage['tools_mill_tool_type'])
                     else:
                         self.form_fields[storage_key].set_value(dict_storage[storage_key])
                 except Exception as e:
@@ -1434,7 +1435,7 @@ class ToolMilling(AppTool, Excellon):
 
                         try:
                             # widgets in the tools table
-                            if form_key == 'tool_type':
+                            if form_key == 'tools_mill_tool_type':
                                 tt_wdg = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
                                 self.target_obj.tools[tooluid_key]['data'][form_key] = tt_wdg.get_value()
                             else:
@@ -1462,6 +1463,8 @@ class ToolMilling(AppTool, Excellon):
         if cw_col == 2:
             tool_type = self.ui.geo_tools_table.cellWidget(cw_row, 2).currentText()
             self.ui_update_v_shape(tool_type)
+
+            self.form_to_storage()
 
     def ui_update_v_shape(self, tool_type_txt):
         if tool_type_txt == 'V':
@@ -2048,6 +2051,7 @@ class ToolMilling(AppTool, Excellon):
         self.target_obj.ser_attrs.append('tools')
 
         self.ui_connect()
+
         self.build_ui()
         self.target_obj.build_ui()
         self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))

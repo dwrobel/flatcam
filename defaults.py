@@ -462,6 +462,9 @@ class FlatCAMDefaults:
         "tools_drill_area_strategy": "over",
         "tools_drill_area_overz": 1.0,
 
+        # Milling Tool
+        "tools_mill_tool_type": 'C1',
+
         # NCC Tool
         "tools_ncc_tools": "1.0, 0.5",
         "tools_ncc_order": 'rev',
