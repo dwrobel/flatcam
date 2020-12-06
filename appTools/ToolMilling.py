@@ -1248,7 +1248,6 @@ class ToolMilling(AppTool, Excellon):
             tool_table = self.ui.geo_tools_table
 
         table_items = tool_table.selectedItems()
-
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
@@ -1276,16 +1275,17 @@ class ToolMilling(AppTool, Excellon):
             )
 
         if self.ui.target_radio.get_value() == 'geo':
-            sel_model = self.ui.geo_tools_table.selectionModel()
-            sel_indexes = sel_model.selectedIndexes()
-
-            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-            sel_rows = set()
-            for idx in sel_indexes:
-                sel_rows.add(idx.row())
-            sel_rows = list(sel_rows)
+            # sel_model = self.ui.geo_tools_table.selectionModel()
+            # sel_indexes = sel_model.selectedIndexes()
+            #
+            # # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            # sel_rows = set()
+            # for idx in sel_indexes:
+            #     sel_rows.add(idx.row())
+            # sel_rows = list(sel_rows)
 
             # the last selected row is the current row
+            sel_rows = list(sel_rows)
             current_row = sel_rows[-1]
 
             # #########################################################################################################
