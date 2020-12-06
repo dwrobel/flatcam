@@ -1361,12 +1361,24 @@ class ToolMilling(AppTool, Excellon):
         :rtype:
         """
 
+        # we get the current row in the (geo) tools table for the form fields found in the table
+        if self.ui.target_radio.get_value() == 'geo':
+            t_table = self.ui.geo_tools_table
+        else:
+            t_table = self.ui.tools_table
+        self.current_row = t_table.currentRow()
+
         for storage_key in dict_storage:
             if storage_key in list(self.form_fields.keys()) and storage_key not in \
                     ["toolchange", "toolchangez", "endxy", "endz", "ppname_g", "area_exclusion",
                      "area_shape", "area_strategy", "area_overz"]:
                 try:
-                    self.form_fields[storage_key].set_value(dict_storage[storage_key])
+                    # widgets in the tools table
+                    if storage_key == 'tool_type':
+                        form_val = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
+                        form_val.set_value(dict_storage[storage_key])
+                    else:
+                        self.form_fields[storage_key].set_value(dict_storage[storage_key])
                 except Exception as e:
                     self.app.log.debug("ToolDrilling.storage_to_form() --> %s" % str(e))
                     pass
