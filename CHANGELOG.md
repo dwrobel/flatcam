@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.12.2020
+
+- Milling Tool - working on the data structure
+
 4.12.2020
 
 - in Cutout, 2Sided, Film, NCC, Paint, Panelize and Subtract Tool made sure that the object selection in Project Tab reflects in the selected object in the Tools
