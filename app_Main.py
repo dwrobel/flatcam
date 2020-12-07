@@ -4371,7 +4371,7 @@ class App(QtCore.QObject):
 
     def scale_defaults(self, sfactor, dimensions):
         for dim in dimensions:
-            if dim in ['geometry_cnctooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
+            if dim in ['tools_mill_tooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
                        'tools_paint_tooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
                        'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
                        'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
@@ -4469,7 +4469,7 @@ class App(QtCore.QObject):
             # Geometry Object
             'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
             'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
-            "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
+            "geometry_toolchangexy", 'tools_mill_tooldia', 'geometry_endz', 'geometry_endxy',
             "geometry_extracut_length", "geometry_z_pdepth",
             "geometry_feedrate_probe", "geometry_startz", "geometry_segx", "geometry_segy", "geometry_area_overz",
 
@@ -5521,11 +5521,11 @@ class App(QtCore.QObject):
                 oname = opt_key[len('tools_cutout') + 1:]
                 default_data[oname] = self.options[opt_key]
 
-        if type(self.defaults["geometry_cnctooldia"]) == float:
-            tools_diameters = [self.defaults["geometry_cnctooldia"]]
+        if type(self.defaults["tools_mill_tooldia"]) == float:
+            tools_diameters = [self.defaults["tools_mill_tooldia"]]
         else:
             try:
-                dias = str(self.defaults["geometry_cnctooldia"]).strip('[').strip(']')
+                dias = str(self.defaults["tools_mill_tooldia"]).strip('[').strip(']')
                 tools_string = dias.split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
             except Exception as e:
@@ -5555,7 +5555,7 @@ class App(QtCore.QObject):
                 pass
 
             new_obj.options.update(deepcopy(default_data))
-            new_obj.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
             new_obj.tools = deepcopy(tools)
             for k in new_obj.tools:
                 new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)
@@ -5571,7 +5571,7 @@ class App(QtCore.QObject):
                 return 'fail'
 
             new_obj.options.update(deepcopy(default_data))
-            new_obj.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+            new_obj.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
             new_obj.tools = deepcopy(tools)
             for k in new_obj.tools:
                 new_obj.tools[k]['solid_geometry'] = deepcopy(obj.solid_geometry)

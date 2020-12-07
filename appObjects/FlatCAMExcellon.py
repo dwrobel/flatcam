@@ -910,7 +910,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
+            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 
@@ -1010,7 +1010,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
+            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 

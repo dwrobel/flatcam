@@ -922,7 +922,7 @@ class CutOut(AppTool):
                     geo_obj.options['xmax'] = xmax
                     geo_obj.options['ymax'] = ymax
 
-                    geo_obj.options['cnctooldia'] = str(dia)
+                    geo_obj.options['tools_mill_tooldia'] = str(dia)
                     geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
                     geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1300,7 +1300,7 @@ class CutOut(AppTool):
                     geo_obj.options['xmax'] = xmax
                     geo_obj.options['ymax'] = ymax
 
-                    geo_obj.options['cnctooldia'] = str(dia)
+                    geo_obj.options['tools_mill_tooldia'] = str(dia)
                     geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
                     geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1666,7 +1666,7 @@ class CutOut(AppTool):
                         solid_geo.append(poly.exterior)
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
-            geo_obj.options['cnctooldia'] = str(dia)
+            geo_obj.options['tools_mill_tooldia'] = str(dia)
             geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()

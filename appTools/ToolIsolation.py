@@ -1694,7 +1694,7 @@ class ToolIsolation(AppTool, Gerber):
 
                     def iso_init(geo_obj, fc_obj):
                         # Propagate options
-                        geo_obj.options["cnctooldia"] = str(tool_dia)
+                        geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
                         geo_obj.solid_geometry = deepcopy(new_solid_geo)
 
                         # ############################################################
@@ -1895,7 +1895,7 @@ class ToolIsolation(AppTool, Gerber):
                 tools_storage.pop(tool, None)
 
         def iso_init(geo_obj, app_obj):
-            geo_obj.options["cnctooldia"] = str(tool_dia)
+            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
 
             geo_obj.tools = dict(tools_storage)
             geo_obj.solid_geometry = total_solid_geometry
@@ -2083,7 +2083,7 @@ class ToolIsolation(AppTool, Gerber):
                 tools_storage.pop(tool, None)
 
         def iso_init(geo_obj, app_obj):
-            geo_obj.options["cnctooldia"] = str(tool_dia)
+            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
 
             geo_obj.tools = dict(tools_storage)
             geo_obj.solid_geometry = total_solid_geometry

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.12.2020
+
+- Geometry object - work in upgrade of the data structure
+
 6.12.2020
 
 - Milling Tool - working on the data structure

@@ -491,7 +491,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
             def iso_init(geo_obj, app_obj):
                 # Propagate options
-                geo_obj.options["cnctooldia"] = str(dia)
+                geo_obj.options["tools_mill_tooldia"] = str(dia)
                 geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
 
                 geo_obj.solid_geometry = []
@@ -625,7 +625,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
-                    geo_obj.options["cnctooldia"] = str(dia)
+                    geo_obj.options["tools_mill_tooldia"] = str(dia)
                     geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
 
                     # if milling type is climb then the move is counter-clockwise around features
@@ -774,11 +774,11 @@ class GerberObject(FlatCAMObj, Gerber):
             follow_name = outname
 
         def follow_init(new_obj, app_obj):
-            if type(app_obj.defaults["geometry_cnctooldia"]) == float:
-                tools_list = [app_obj.defaults["geometry_cnctooldia"]]
+            if type(app_obj.defaults["tools_mill_tooldia"]) == float:
+                tools_list = [app_obj.defaults["tools_mill_tooldia"]]
             else:
                 try:
-                    temp_tools = app_obj.defaults["geometry_cnctooldia"].split(",")
+                    temp_tools = app_obj.defaults["tools_mill_tooldia"].split(",")
                     tools_list = [
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
@@ -788,10 +788,10 @@ class GerberObject(FlatCAMObj, Gerber):
 
             # Propagate options
             new_obj.multigeo = True
-            # new_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
+            # new_obj.options["tools_mill_tooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             new_obj.solid_geometry = deepcopy(self.follow_geometry)
 
-            new_obj.options["cnctooldia"] = app_obj.defaults["geometry_cnctooldia"]
+            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
 
             # store here the default data for Geometry Data
             default_data = {}

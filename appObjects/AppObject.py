@@ -261,7 +261,7 @@ class AppObject(QtCore.QObject):
 
             new_obj.tools = {
                 1: {
-                    'tooldia':          float(app.defaults["geometry_cnctooldia"]),
+                    'tooldia':          float(app.defaults["tools_mill_tooldia"]),
                     'offset':           'Path',
                     'offset_value':     0.0,
                     'type':             'Rough',

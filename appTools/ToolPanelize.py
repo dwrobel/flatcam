@@ -665,7 +665,7 @@ class Panelize(AppTool):
                             new_sgeo = [g['solid'] for g in new_obj.apertures[apid]['geometry'] if 'solid' in g]
                             new_sgeo = unary_union(new_sgeo)
                             new_obj.tools[new_tid] = {
-                                'tooldia': self.app.defaults["geometry_cnctooldia"],
+                                'tooldia': self.app.defaults["tools_mill_tooldia"],
                                 'offset': 'Path',
                                 'offset_value': 0.0,
                                 'type': 'Rough',
@@ -675,7 +675,7 @@ class Panelize(AppTool):
                             }
                         new_tid += 1
                         new_obj.tools[new_tid] = {
-                            'tooldia': self.app.defaults["geometry_cnctooldia"],
+                            'tooldia': self.app.defaults["tools_mill_tooldia"],
                             'offset': 'Path',
                             'offset_value': 0.0,
                             'type': 'Rough',

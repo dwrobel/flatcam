@@ -327,8 +327,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # add tooltips
         for it in range(self.ui.pp_excellon_name_cb.count()):
-            self.ui.pp_excellon_name_cb.setItemData(
-                it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+            self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         app_mode = self.app.defaults["global_app_level"]
         # Show/Hide Advanced Options

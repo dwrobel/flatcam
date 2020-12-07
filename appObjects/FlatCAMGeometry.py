@@ -90,14 +90,14 @@ class GeometryObject(FlatCAMObj, Geometry):
             "feedrate_probe": 3.0,
         })
 
-        if "cnctooldia" not in self.options:
-            if type(self.app.defaults["geometry_cnctooldia"]) == float:
-                self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
+        if "tools_mill_tooldia" not in self.options:
+            if type(self.app.defaults["tools_mill_tooldia"]) == float:
+                self.options["tools_mill_tooldia"] = self.app.defaults["tools_mill_tooldia"]
             else:
                 try:
-                    tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                    tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
                     tools_diameters = [eval(a) for a in tools_string if a != '']
-                    self.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+                    self.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
                 except Exception as e:
                     log.debug("FlatCAMObj.GeometryObject.init() --> %s" % str(e))
 
@@ -471,7 +471,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # "toolchangez": self.ui.toolchangez_entry,
             # "endz": self.ui.endz_entry,
             # "endxy": self.ui.endxy_entry,
-            # "cnctooldia": self.ui.addtool_entry,
+            # "tools_mill_tooldia": self.ui.addtool_entry,
             # "area_exclusion": self.ui.exclusion_cb,
             # "area_shape": self.ui.area_shape_radio,
             # "area_strategy": self.ui.strategy_radio,
@@ -533,11 +533,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                 if def_key == opt_key:
                     self.default_data[def_key] = deepcopy(opt_val)
 
-        if type(self.options["cnctooldia"]) == float:
-            tools_list = [self.options["cnctooldia"]]
+        if type(self.options["tools_mill_tooldia"]) == float:
+            tools_list = [self.options["tools_mill_tooldia"]]
         else:
             try:
-                temp_tools = self.options["cnctooldia"].split(",")
+                temp_tools = self.options["tools_mill_tooldia"].split(",")
                 tools_list = [
                     float(eval(dia)) for dia in temp_tools if dia != ''
                 ]
@@ -2595,7 +2595,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :return: None
         """
 
-        tooldia = dia if dia else float(self.options["cnctooldia"])
+        tooldia = dia if dia else float(self.options["tools_mill_tooldia"])
         outname = outname if outname is not None else self.options["name"]
 
         z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
@@ -2974,7 +2974,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.options['feedrate_z'] = float(self.options['feedrate_z']) * factor
         self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
         self.options['endz'] = float(self.options['endz']) * factor
-        # self.options['cnctooldia'] *= factor
+        # self.options['tools_mill_tooldia'] *= factor
         # self.options['painttooldia'] *= factor
         # self.options['paintmargin'] *= factor
         # self.options['paintoverlap'] *= factor

@@ -2426,7 +2426,7 @@ class NonCopperClear(AppTool, Gerber):
                 except KeyError:
                     tools_storage.pop(uid, None)
 
-            geo_obj.options["cnctooldia"] = str(tool)
+            geo_obj.options["tools_mill_tooldia"] = str(tool)
 
             geo_obj.multigeo = True
             geo_obj.tools = dict(tools_storage)
@@ -2688,7 +2688,7 @@ class NonCopperClear(AppTool, Gerber):
                 # area = unary_union(area)
 
             geo_obj.multigeo = True
-            geo_obj.options["cnctooldia"] = '0.0'
+            geo_obj.options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_ncc_plotting"] == 'progressive':
@@ -3281,7 +3281,7 @@ class NonCopperClear(AppTool, Gerber):
                 except KeyError:
                     tools_storage.pop(uid, None)
 
-            geo_obj.options["cnctooldia"] = str(tool)
+            geo_obj.options["tools_mill_tooldia"] = str(tool)
 
             geo_obj.multigeo = True
             geo_obj.tools.clear()
@@ -3681,7 +3681,7 @@ class NonCopperClear(AppTool, Gerber):
                             log.debug("There are no geometries in the cleared polygon.")
 
             geo_obj.multigeo = True
-            geo_obj.options["cnctooldia"] = str(tool)
+            geo_obj.options["tools_mill_tooldia"] = str(tool)
 
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools

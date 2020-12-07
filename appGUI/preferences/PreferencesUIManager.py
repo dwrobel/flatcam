@@ -243,7 +243,7 @@ class PreferencesUIManager:
             "geometry_plot":                self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_multicolored":        self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
             "geometry_circle_steps":        self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia":          self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "tools_mill_tooldia":          self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_merge_fuse_tools":    self.ui.geometry_defaults_form.geometry_gen_group.fuse_tools_cb,
             "geometry_plot_line":           self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
             "geometry_optimization_type":   self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio,

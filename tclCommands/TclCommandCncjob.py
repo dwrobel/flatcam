@@ -128,7 +128,7 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 return
 
-        args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.defaults["geometry_cnctooldia"]
+        args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.defaults["tools_mill_tooldia"]
 
         args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.defaults["geometry_cutz"]
         args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \

@@ -132,9 +132,7 @@ class ToolMilling(AppTool, Excellon):
         self.poly_sel_disconnect_flag = False
 
         # updated in the self.set_tool_ui()
-        self.form_fields = {
-            "tools_mill_milling_type":   self.ui.milling_type_radio,
-        }
+        self.form_fields = {}
 
         self.old_tool_dia = None
         self.poly_drawn = False
@@ -284,59 +282,62 @@ class ToolMilling(AppTool, Excellon):
 
         self.form_fields.update({
             # Excellon properties
-            "milling_type": self.ui.milling_type_radio,
-            "milling_dia": self.ui.mill_dia_entry,
+            "tools_mill_milling_type": self.ui.milling_type_radio,
+            "tools_mill_milling_dia": self.ui.mill_dia_entry,
 
             # Geometry properties
-            "cnctooldia": self.ui.addtool_entry,
+            "tools_mill_tooldia": self.ui.addtool_entry,
             "tools_mill_tool_type": self.ui.geo_tools_table.cellWidget(self.current_row, 2),
-            "offset_type": self.ui.offset_type_combo,
-            "offset": self.ui.offset_entry,
+            "tools_mill_offset_type": self.ui.offset_type_combo,
+            "tools_mill_offset": self.ui.offset_entry,
 
-            "job_type": self.ui.job_type_combo,
-            "polish_margin": self.ui.polish_margin_entry,
-            "polish_overlap": self.ui.polish_over_entry,
-            "polish_method": self.ui.polish_method_combo,
+            "tools_mill_job_type": self.ui.job_type_combo,
+            "tools_mill_polish_margin": self.ui.polish_margin_entry,
+            "tools_mill_polish_overlap": self.ui.polish_over_entry,
+            "tools_mill_polish_method": self.ui.polish_method_combo,
 
-            "vtipdia": self.ui.tipdia_entry,
-            "vtipangle": self.ui.tipangle_entry,
+            "tools_mill_vtipdia": self.ui.tipdia_entry,
+            "tools_mill_vtipangle": self.ui.tipangle_entry,
 
-            "cutz": self.ui.cutz_entry,
-            "multidepth": self.ui.mpass_cb,
-            "depthperpass": self.ui.maxdepth_entry,
+            "tools_mill_cutz": self.ui.cutz_entry,
+            "tools_mill_multidepth": self.ui.mpass_cb,
+            "tools_mill_depthperpass": self.ui.maxdepth_entry,
 
-            "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.xyfeedrate_entry,
-            "feedrate_z": self.ui.feedrate_z_entry,
-            "feedrate_rapid": self.ui.feedrate_rapid_entry,
+            "tools_mill_travelz": self.ui.travelz_entry,
+            "tools_mill_feedrate": self.ui.xyfeedrate_entry,
+            "tools_mill_feedrate_z": self.ui.feedrate_z_entry,
+            "tools_mill_feedrate_rapid": self.ui.feedrate_rapid_entry,
 
-            "extracut": self.ui.extracut_cb,
-            "extracut_length": self.ui.e_cut_entry,
+            "tools_mill_extracut": self.ui.extracut_cb,
+            "tools_mill_extracut_length": self.ui.e_cut_entry,
 
-            "spindlespeed": self.ui.spindlespeed_entry,
-            "dwell": self.ui.dwell_cb,
-            "dwelltime": self.ui.dwelltime_entry,
+            "tools_mill_spindlespeed": self.ui.spindlespeed_entry,
+            "tools_mill_dwell": self.ui.dwell_cb,
+            "tools_mill_dwelltime": self.ui.dwelltime_entry,
 
-            "toolchange": self.ui.toolchange_cb,
-            "toolchangez": self.ui.toolchangez_entry,
+            "tools_mill_toolchange": self.ui.toolchange_cb,
+            "tools_mill_toolchangez": self.ui.toolchangez_entry,
 
-            "endz": self.ui.endz_entry,
-            "endxy": self.ui.endxy_entry,
+            "tools_mill_endz": self.ui.endz_entry,
+            "tools_mill_endxy": self.ui.endxy_entry,
 
-            "z_pdepth": self.ui.pdepth_entry,
-            "feedrate_probe": self.ui.feedrate_probe_entry,
-            "ppname_g": self.ui.pp_geo_name_cb,
+            "tools_mill_z_pdepth": self.ui.pdepth_entry,
+            "tools_mill_feedrate_probe": self.ui.feedrate_probe_entry,
+            "tools_mill_ppname_g": self.ui.pp_geo_name_cb,
 
             # "gcode_type": self.ui.excellon_gcode_type_radio,
-            "area_exclusion": self.ui.exclusion_cb,
-            "area_shape": self.ui.area_shape_radio,
-            "area_strategy": self.ui.strategy_radio,
-            "area_overz": self.ui.over_z_entry,
+            "tools_mill_area_exclusion": self.ui.exclusion_cb,
+            "tools_mill_area_shape": self.ui.area_shape_radio,
+            "tools_mill_area_strategy": self.ui.strategy_radio,
+            "tools_mill_area_overz": self.ui.over_z_entry,
         })
 
         # populate Geometry (milling) preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
             self.ui.pp_geo_name_cb.addItem(name)
+        # and add ToolTips (useful when names are too long)
+        for it in range(self.ui.pp_geo_name_cb.count()):
+            self.ui.pp_geo_name_cb.setItemData( it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         # Fill form fields
         self.to_form()
@@ -379,62 +380,62 @@ class ToolMilling(AppTool, Excellon):
             "solid": False,
             "multicolored": False,
 
-            "tooldia": 0.1,
+            "tools_mill_tooldia": 0.1,
 
-            "offset_type": "Path",
-            "offset": 0.0,
+            "tools_mill_offset_type": "Path",
+            "tools_mill_offset": 0.0,
 
-            "milling_type": "drills",
-            "milling_dia": 0.04,
+            "tools_mill_milling_type": "drills",
+            "tools_mill_milling_dia": 0.04,
 
-            "job_type": 'Rough',
-            "polish_margin": 0.0,
-            "polish_overlap": 10,
-            "polish_method": _("Standard"),
+            "tools_mill_job_type": 'Rough',
+            "tools_mill_polish_margin": 0.0,
+            "tools_mill_polish_overlap": 10,
+            "tools_mill_polish_method": _("Standard"),
 
             "tools_mill_tool_type": 'C1',
-            "vtipdia": 0.1,
-            "vtipangle": 30,
+            "tools_mill_vtipdia": 0.1,
+            "tools_mill_vtipangle": 30,
 
-            "cutz": -0.1,
-            "multidepth": False,
-            "depthperpass": 0.7,
+            "tools_mill_cutz": -0.1,
+            "tools_mill_multidepth": False,
+            "tools_mill_depthperpass": 0.7,
 
-            "travelz": 0.1,
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": 5.0,
-            "feedrate_rapid": 5.0,
+            "tools_mill_travelz": 0.1,
+            "tools_mill_feedrate": self.app.defaults["geometry_feedrate"],
+            "tools_mill_feedrate_z": 5.0,
+            "tools_mill_feedrate_rapid": 5.0,
 
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
+            "tools_mill_extracut": self.app.defaults["geometry_extracut"],
+            "tools_mill_extracut_length": self.app.defaults["geometry_extracut_length"],
 
-            "spindlespeed": 0,
-            "dwell": True,
-            "dwelltime": 1000,
+            "tools_mill_spindlespeed": 0,
+            "tools_mill_dwell": True,
+            "tools_mill_dwelltime": 1000,
 
-            "toolchange": False,
-            "toolchangez": 1.0,
-            "toolchangexy": "0.0, 0.0",
+            "tools_mill_toolchange": False,
+            "tools_mill_toolchangez": 1.0,
+            "tools_mill_toolchangexy": "0.0, 0.0",
 
-            "endz": 2.0,
-            "endxy": '',
+            "tools_mill_endz": 2.0,
+            "tools_mill_endxy": '',
 
-            "startz": None,
+            "tools_mill_startz": None,
 
-            "z_pdepth": -0.02,
-            "feedrate_probe": 3.0,
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "optimization_type": "B",
+            "tools_mill_z_pdepth": -0.02,
+            "tools_mill_feedrate_probe": 3.0,
+            "tools_mill_ppname_g": self.app.defaults["geometry_ppname_g"],
+            "tools_mill_optimization_type": "B",
         }
 
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('tools_mill_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
-        for opt_key, opt_val in self.app.options.items():
             if opt_key.find('geometry_') == 0:
                 oname = opt_key[len('geometry_'):]
                 self.default_data[oname] = deepcopy(opt_val)
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('tools_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
 
         self.obj_name = ""
         self.target_obj = None
@@ -450,7 +451,7 @@ class ToolMilling(AppTool, Excellon):
         # ########################################
 
         self.ui.target_radio.set_value("geo")
-        self.ui.addtool_entry.set_value(self.app.defaults["geometry_cnctooldia"])
+        self.ui.addtool_entry.set_value(self.app.defaults["tools_mill_tooldia"])
 
         self.on_object_changed()
         if self.target_obj:
@@ -1337,7 +1338,7 @@ class ToolMilling(AppTool, Excellon):
         for k in self.form_fields:
             for option in storage:
                 if option.startswith('tools_mill_'):
-                    if k == option.replace('tools_mill_', ''):
+                    if k == option:
                         try:
                             self.form_fields[k].set_value(storage[option])
                         except Exception:
@@ -1370,8 +1371,9 @@ class ToolMilling(AppTool, Excellon):
 
         for storage_key in dict_storage:
             if storage_key in list(self.form_fields.keys()) and storage_key not in \
-                    ["toolchange", "toolchangez", "endxy", "endz", "ppname_g", "area_exclusion",
-                     "area_shape", "area_strategy", "area_overz"]:
+                    ["tools_mill_toolchange", "tools_mill_toolchangez", "tools_mill_endxy", "tools_mill_endz",
+                     "tools_mill_ppname_g", "tools_mill_area_exclusion",
+                     "tools_mill_area_shape", "tools_mill_area_strategy", "tools_mill_area_overz"]:
                 try:
                     # widgets in the tools table
                     if storage_key == 'tools_mill_tool_type':
@@ -1417,8 +1419,9 @@ class ToolMilling(AppTool, Excellon):
         self.current_row = t_table.currentRow()
 
         # those are the general parameters that are common to all tools
-        general_parameters = ["toolchange", "toolchangez", "endxy", "endz", "ppname_g", "area_exclusion",
-                              "area_shape", "area_strategy", "area_overz"]
+        general_parameters = ["tools_mill_toolchange", "tools_mill_toolchangez", "tools_mill_endxy", "tools_mill_endz",
+                              "tools_mill_ppname_g", "tools_mill_area_exclusion",
+                              "tools_mill_area_shape", "tools_mill_area_strategy", "tools_mill_area_overz"]
 
         # update the tool specific parameters
         rows = sorted(set(index.row() for index in used_tools_table.selectedIndexes()))
@@ -2118,12 +2121,12 @@ class ToolMilling(AppTool, Excellon):
             tooldia = float(self.options["tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
+        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
 
-        sort = []
-        for k, v in self.tools.items():
-            sort.append((k, v.get('tooldia')))
-        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        # sort = []
+        # for k, v in self.tools.items():
+        #     sort.append((k, v.get('tooldia')))
+        # sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
@@ -2168,7 +2171,7 @@ class ToolMilling(AppTool, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
+            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
@@ -2234,12 +2237,12 @@ class ToolMilling(AppTool, Excellon):
             tooldia = float(self.options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
-
-        sort = []
-        for k, v in self.tools.items():
-            sort.append((k, v.get('tooldia')))
-        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
+        #
+        # sort = []
+        # for k, v in self.tools.items():
+        #     sort.append((k, v.get('tooldia')))
+        # sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
@@ -2272,7 +2275,7 @@ class ToolMilling(AppTool, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
+            geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
@@ -2558,11 +2561,12 @@ class ToolMilling(AppTool, Excellon):
             job_obj.cnc_tools.clear()
 
             job_obj.options['Tools_in_use'] = tools_in_use
+
             job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
-            job_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
-            job_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
+            job_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
+            job_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
 
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
@@ -2574,11 +2578,15 @@ class ToolMilling(AppTool, Excellon):
                     'tooldia': tooldia_val
                 })
 
-                if dia_cnc_dict['offset'] == 'in':
+                if "optimization_type" not in tools_dict[tooluid_key]['data']:
+                    def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
+                    tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
+
+                if dia_cnc_dict['data']['tools_mill_offset'] == 'in':
                     tool_offset = -dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['offset'].lower() == 'out':
+                elif dia_cnc_dict['data']['tools_mill_offset'].lower() == 'out':
                     tool_offset = dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['offset'].lower() == 'custom':
+                elif dia_cnc_dict['data']['tools_mill_offset'].lower() == 'custom':
                     try:
                         offset_value = float(self.ui.offset_entry.get_value())
                     except ValueError:
@@ -2603,27 +2611,27 @@ class ToolMilling(AppTool, Excellon):
                     'offset_value': tool_offset
                 })
 
-                z_cut = tools_dict[tooluid_key]['data']["cutz"]
-                z_move = tools_dict[tooluid_key]['data']["travelz"]
-                feedrate = tools_dict[tooluid_key]['data']["feedrate"]
-                feedrate_z = tools_dict[tooluid_key]['data']["feedrate_z"]
-                feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
-                multidepth = tools_dict[tooluid_key]['data']["multidepth"]
-                extracut = tools_dict[tooluid_key]['data']["extracut"]
-                extracut_length = tools_dict[tooluid_key]['data']["extracut_length"]
-                depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
-                toolchange = tools_dict[tooluid_key]['data']["toolchange"]
-                toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
-                toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
-                startz = tools_dict[tooluid_key]['data']["startz"]
-                endz = tools_dict[tooluid_key]['data']["endz"]
-                endxy = self.options["endxy"]
-                spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
-                dwell = tools_dict[tooluid_key]['data']["dwell"]
-                dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
-                pp_geometry_name = tools_dict[tooluid_key]['data']["ppname_g"]
+                z_cut = tools_dict[tooluid_key]['data']["tools_mill_cutz"]
+                z_move = tools_dict[tooluid_key]['data']["tools_mill_travelz"]
+                feedrate = tools_dict[tooluid_key]['data']["tools_mill_feedrate"]
+                feedrate_z = tools_dict[tooluid_key]['data']["tools_mill_feedrate_z"]
+                feedrate_rapid = tools_dict[tooluid_key]['data']["tools_mill_feedrate_rapid"]
+                multidepth = tools_dict[tooluid_key]['data']["tools_mill_multidepth"]
+                extracut = tools_dict[tooluid_key]['data']["tools_mill_extracut"]
+                extracut_length = tools_dict[tooluid_key]['data']["tools_mill_extracut_length"]
+                depthpercut = tools_dict[tooluid_key]['data']["tools_mill_depthperpass"]
+                toolchange = tools_dict[tooluid_key]['data']["tools_mill_toolchange"]
+                toolchangez = tools_dict[tooluid_key]['data']["tools_mill_toolchangez"]
+                toolchangexy = tools_dict[tooluid_key]['data']["tools_mill_toolchangexy"]
+                startz = tools_dict[tooluid_key]['data']["tools_mill_startz"]
+                endz = tools_dict[tooluid_key]['data']["tools_mill_endz"]
+                endxy = self.options["tools_mill_endxy"]
+                spindlespeed = tools_dict[tooluid_key]['data']["tools_mill_spindlespeed"]
+                dwell = tools_dict[tooluid_key]['data']["tools_mill_dwell"]
+                dwelltime = tools_dict[tooluid_key]['data']["tools_mill_dwelltime"]
+                pp_geometry_name = tools_dict[tooluid_key]['data']["tools_mill_ppname_g"]
 
-                spindledir = self.app.defaults['geometry_spindledir']
+                spindledir = self.app.defaults['tools_mill__spindledir']
                 tool_solid_geometry = self.solid_geometry
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
@@ -2712,8 +2720,8 @@ class ToolMilling(AppTool, Excellon):
             new_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             new_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
-            new_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
-            new_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
+            new_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
+            new_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not self.target_obj.solid_geometry:
@@ -2737,8 +2745,8 @@ class ToolMilling(AppTool, Excellon):
                 })
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = self.app.defaults["geometry_optimization_type"]
-                    tools_dict[tooluid_key]['data']["optimization_type"] = def_optimization_type
+                    def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
+                    tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 # #####################################################################################################
                 # ############################ COMMON Parameters ######################################################
@@ -2768,7 +2776,7 @@ class ToolMilling(AppTool, Excellon):
                 tools_dict[tooluid_key]['data']['ppname_g'] = self.ui.pp_geo_name_cb.get_value()
 
                 # Offset calculation
-                offset_type = dia_cnc_dict['offset'].lower()
+                offset_type = dia_cnc_dict['tools_mill_offset_type'].lower()
                 if offset_type == 'in':
                     tool_offset = -tooldia_val / 2
                 elif offset_type == 'out':
@@ -2965,121 +2973,6 @@ class ToolMilling(AppTool, Excellon):
 
             self.ui.endz_label.show()
             self.ui.endz_entry.show()
-
-    def on_cnc_button_click(self):
-        self.obj_name = self.ui.object_combo.currentText()
-
-        # Get source object.
-        try:
-            self.target_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
-
-        if self.target_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
-            return
-
-        # Get the tools from the list
-        tools = self.get_selected_tools_list()
-
-        if len(tools) == 0:
-            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
-            # tool number) it means that there are 3 rows (1 tool and 2 totals).
-            # in this case regardless of the selection status of that tool, use it.
-            if self.ui.tools_table.rowCount() == 3:
-                tools.append(self.ui.tools_table.item(0, 0).text())
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Please select one or more tools from the list and try again."))
-                return
-
-        xmin = self.options['xmin']
-        ymin = self.options['ymin']
-        xmax = self.options['xmax']
-        ymax = self.options['ymax']
-
-        job_name = self.options["name"] + "_cnc"
-        pp_excellon_name = self.options["ppname_e"]
-
-        # Object initialization function for app.app_obj.new_object()
-        def job_init(job_obj, app_obj):
-            assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
-
-            app_obj.inform.emit(_("Generating CNCJob..."))
-
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            # ## Add properties to the object
-
-            job_obj.origin_kind = 'excellon'
-
-            job_obj.options['Tools_in_use'] = tool_table_items
-            job_obj.options['type'] = 'Excellon'
-            job_obj.options['ppname_e'] = pp_excellon_name
-
-            job_obj.multidepth = self.options["multidepth"]
-            job_obj.z_depthpercut = self.options["depthperpass"]
-
-            job_obj.z_move = float(self.options["travelz"])
-            job_obj.feedrate = float(self.options["feedrate_z"])
-            job_obj.z_feedrate = float(self.options["feedrate_z"])
-            job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
-
-            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
-            job_obj.spindledir = self.app.defaults['excellon_spindledir']
-            job_obj.dwell = self.options["dwell"]
-            job_obj.dwelltime = float(self.options["dwelltime"])
-
-            job_obj.pp_excellon_name = pp_excellon_name
-
-            job_obj.toolchange_xy_type = "excellon"
-            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
-
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
-
-            job_obj.z_pdepth = float(self.options["z_pdepth"])
-            job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-
-            job_obj.z_cut = float(self.options['cutz'])
-            job_obj.toolchange = self.options["toolchange"]
-            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
-            job_obj.z_toolchange = float(self.options["toolchangez"])
-            job_obj.startz = float(self.options["startz"]) if self.options["startz"] else None
-            job_obj.endz = float(self.options["endz"])
-            job_obj.xy_end = self.options["endxy"]
-            job_obj.excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
-
-            tools_csv = ','.join(tools)
-            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv, use_ui=True)
-
-            if ret_val == 'fail':
-                return 'fail'
-
-            job_obj.gcode_parse()
-            job_obj.create_geometry()
-
-        # To be run in separate thread
-        def job_thread(a_obj):
-            with self.app.proc_container.new('%s...' % _("Generating")):
-                a_obj.app_obj.new_object("cncjob", job_name, job_init)
-
-        # Create promise for the new name.
-        self.app.collection.promise(job_name)
-
-        # Send to worker
-        # self.app.worker.add_task(job_thread, [self.app])
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-
-    def drilling_handler(self, obj):
-        pass
 
     def on_plot_cb_click(self):
         self.target_obj.plot()

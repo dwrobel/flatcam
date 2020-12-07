@@ -1395,7 +1395,7 @@ class ToolsDB2(QtWidgets.QWidget):
         {
             tool_id: {
                 'name': 'new_tool'
-                'tooldia': self.app.defaults["geometry_cnctooldia"]
+                'tooldia': self.app.defaults["tools_mill_tooldia"]
                 'offset': 'Path'
                 'offset_value': 0.0
                 'type':  'Rough',
@@ -2041,11 +2041,11 @@ class ToolsDB2(QtWidgets.QWidget):
             new_name = "new_tool_1"
 
         dict_elem = {'name': new_name}
-        if type(self.app.defaults["geometry_cnctooldia"]) == float:
-            dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        if type(self.app.defaults["tools_mill_tooldia"]) == float:
+            dict_elem['tooldia'] = self.app.defaults["tools_mill_tooldia"]
         else:
             try:
-                tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:
@@ -2751,7 +2751,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         {
 #             tool_id: {
 #                 'name': 'new_tool'
-#                 'tooldia': self.app.defaults["geometry_cnctooldia"]
+#                 'tooldia': self.app.defaults["tools_mill_tooldia"]
 #                 'offset': 'Path'
 #                 'offset_value': 0.0
 #                 'type':  'Rough',
@@ -3288,11 +3288,11 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         dict_elem = {}
 #         dict_elem['name'] = 'new_tool'
-#         if type(self.app.defaults["geometry_cnctooldia"]) == float:
-#             dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+#         if type(self.app.defaults["tools_mill_tooldia"]) == float:
+#             dict_elem['tooldia'] = self.app.defaults["tools_mill_tooldia"]
 #         else:
 #             try:
-#                 tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+#                 tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
 #                 tools_diameters = [eval(a) for a in tools_string if a != '']
 #                 dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
 #             except Exception as e:

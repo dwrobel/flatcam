@@ -237,7 +237,7 @@ class HPGL2:
                                 'tooldia': float('%.*f' %
                                                  (
                                                      self.decimals,
-                                                     float(self.app.defaults['geometry_cnctooldia'])
+                                                     float(self.app.defaults['tools_mill_tooldia'])
                                                  )
                                                  ),
                                 'offset': 'Path',

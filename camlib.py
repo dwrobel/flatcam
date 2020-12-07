@@ -1215,7 +1215,7 @@ class Geometry(object):
             if geos_text_f:
                 self.solid_geometry = self.solid_geometry + geos_text_f
 
-        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float(self.app.defaults["tools_mill_tooldia"])
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
         new_data = {k: v for k, v in self.options.items()}
@@ -1280,7 +1280,7 @@ class Geometry(object):
         else:  # It's shapely geometry
             self.solid_geometry = [self.solid_geometry, geos]
 
-        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float(self.app.defaults["tools_mill_tooldia"])
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
         new_data = {k: v for k, v in self.options.items()}
@@ -5665,11 +5665,11 @@ class CNCjob(Geometry):
         log.debug("%d paths" % len(flat_geometry))
 
         default_dia = None
-        if isinstance(self.app.defaults["geometry_cnctooldia"], float):
-            default_dia = self.app.defaults["geometry_cnctooldia"]
+        if isinstance(self.app.defaults["tools_mill_tooldia"], float):
+            default_dia = self.app.defaults["tools_mill_tooldia"]
         else:
             try:
-                tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                tools_string = self.app.defaults["tools_mill_tooldia"].split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 default_dia = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:

@@ -5279,7 +5279,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def update_options(self, obj):
         if self.paint_tooldia:
-            obj.options['cnctooldia'] = deepcopy(str(self.paint_tooldia))
+            obj.options['tools_mill_tooldia'] = deepcopy(str(self.paint_tooldia))
             self.paint_tooldia = None
             return True
         else:

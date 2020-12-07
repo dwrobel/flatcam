@@ -765,8 +765,8 @@ class ToolPaint(AppTool, Gerber):
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['offset']
-            offset_val = db_tool_val['offset_value']
+            offset = db_tool_val['data']['tools_mill_offset_type']
+            offset_val = db_tool_val['data']['tools_mill_offset']
             typ = db_tool_val['type']
             tool_type = db_tool_val['tool_type']
 
@@ -1915,7 +1915,7 @@ class ToolPaint(AppTool, Gerber):
             if not tools_storage:
                 return 'fail'
 
-            geo_obj.options["cnctooldia"] = str(tool_dia)
+            geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
             # this will turn on the FlatCAMCNCJob plot for multiple tools
             geo_obj.multigeo = True
             geo_obj.multitool = True
@@ -2143,7 +2143,7 @@ class ToolPaint(AppTool, Gerber):
                     break
 
             geo_obj.multigeo = True
-            geo_obj.options["cnctooldia"] = '0.0'
+            geo_obj.options["tools_mill_tooldia"] = '0.0'
 
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_paint_plotting"] == 'progressive':

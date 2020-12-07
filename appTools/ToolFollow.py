@@ -215,11 +215,11 @@ class ToolFollow(AppTool, Gerber):
         """
 
         def follow_init(new_obj, app_obj):
-            if type(app_obj.defaults["geometry_cnctooldia"]) == float:
-                tools_list = [app_obj.defaults["geometry_cnctooldia"]]
+            if type(app_obj.defaults["tools_mill_tooldia"]) == float:
+                tools_list = [app_obj.defaults["tools_mill_tooldia"]]
             else:
                 try:
-                    temp_tools = app_obj.defaults["geometry_cnctooldia"].split(",")
+                    temp_tools = app_obj.defaults["tools_mill_tooldia"].split(",")
                     tools_list = [
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
@@ -249,7 +249,7 @@ class ToolFollow(AppTool, Gerber):
             ]
 
             # Propagate options
-            new_obj.options["cnctooldia"] = app_obj.defaults["geometry_cnctooldia"]
+            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
             new_obj.solid_geometry = follow_geo
             new_obj.tools = {
                 1: {
@@ -283,11 +283,11 @@ class ToolFollow(AppTool, Gerber):
         def follow_init(new_obj, app_obj):
             new_obj.multigeo = True
             
-            if type(app_obj.defaults["geometry_cnctooldia"]) == float:
-                tools_list = [app_obj.defaults["geometry_cnctooldia"]]
+            if type(app_obj.defaults["tools_mill_tooldia"]) == float:
+                tools_list = [app_obj.defaults["tools_mill_tooldia"]]
             else:
                 try:
-                    temp_tools = app_obj.defaults["geometry_cnctooldia"].split(",")
+                    temp_tools = app_obj.defaults["tools_mill_tooldia"].split(",")
                     tools_list = [
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
@@ -307,7 +307,7 @@ class ToolFollow(AppTool, Gerber):
                     new_data[oname] = app_obj.options[opt_key]
 
             # Propagate options
-            new_obj.options["cnctooldia"] = app_obj.defaults["geometry_cnctooldia"]
+            new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
 
             target_geo = unary_union(followed_obj.follow_geometry)
             area_follow = target_geo.intersection(deepcopy(unary_union(self.sel_rect)))
