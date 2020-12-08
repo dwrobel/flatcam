@@ -1831,7 +1831,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tools2_defaults_form = Tools2PreferencesUI(decimals=self.decimals)
         self.util_defaults_form = UtilPreferencesUI(decimals=self.decimals)
 
-        QtWidgets.qApp.installEventFilter(self)
+        QtCore.QCoreApplication.instance().installEventFilter(self)
 
         # ########################################################################
         # ################## RESTORE THE TOOLBAR STATE from file #################
@@ -4101,10 +4101,10 @@ class MainGUI(QtWidgets.QMainWindow):
             # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
             # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
-            # QtWidgets.qApp.sendEvent(self.shell._edit, e)
+            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, e)
             # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
-            # QtWidgets.qApp.sendEvent(self.shell._edit, f)
+            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, f)
 
     def on_shelldock_toggled(self, visibility):
         if visibility is True:

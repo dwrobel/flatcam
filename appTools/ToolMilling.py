@@ -3370,7 +3370,7 @@ class MillingUI:
         # ************************************************************************
 
         # Tool Table for Geometry
-        self.geo_tools_table = FCTable(drag_drop=True)
+        self.geo_tools_table = FCTable(drag_drop=False)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
 
         grid0.addWidget(self.geo_tools_table, 12, 0, 1, 2)

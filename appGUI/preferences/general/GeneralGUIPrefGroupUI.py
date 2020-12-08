@@ -100,7 +100,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.style_combo = FCComboBox()
         self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
         # find current style
-        index = self.style_combo.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
+        current_style = QtCore.QCoreApplication.instance().style().objectName()
+        index = self.style_combo.findText(current_style, QtCore.Qt.MatchFixedString)
         self.style_combo.setCurrentIndex(index)
         self.style_combo.activated[str].connect(self.handle_style)
 

@@ -2653,7 +2653,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.protect_by_name = protect_by_name if isinstance(protect_by_name, list) else None
 
         # Close all detached tabs if the application is closed explicitly
-        QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
+        QtCore.QCoreApplication.instance().aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
 
         # used by the property self.useOldIndex(param)
         self.use_old_index = None

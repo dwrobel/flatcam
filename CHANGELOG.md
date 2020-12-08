@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.12.2020
+
+- few changes in the Milling UI
+- made some changes in the application to prepare for usage of PyQt6
+
 7.12.2020
 
 - Geometry object - work in upgrade of the data structure

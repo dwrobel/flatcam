@@ -3778,7 +3778,7 @@ class App(QtCore.QObject):
 
     @staticmethod
     def kill_app():
-        QtWidgets.qApp.quit()
+        QtCore.QCoreApplication.instance().quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
         # sys.exit(0)
