@@ -334,6 +334,8 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_area_overz": self.ui.over_z_entry,
         })
 
+        # reset the Geometry preprocessor combo
+        self.ui.pp_geo_name_cb.clear()
         # populate Geometry (milling) preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
             self.ui.pp_geo_name_cb.addItem(name)
