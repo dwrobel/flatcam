@@ -4292,6 +4292,15 @@ class FCDock(QtWidgets.QDockWidget):
         super(FCDock, self).__init__(*args)
         self.close_callback = kwargs["close_callback"] if "close_callback" in kwargs else None
 
+        self.setContextMenuPolicy(Qt.PreventContextMenu)
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        if event.button() == Qt.MiddleButton:
+            try:
+                self.close_callback()
+            except Exception:
+                pass
+
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.close_callback()
         super().closeEvent(event)
