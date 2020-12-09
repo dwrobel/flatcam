@@ -344,12 +344,7 @@ class ToolMilling(AppTool, Excellon):
         # Fill form fields
         self.to_form()
 
-        # update the changes in UI depending on the selected preprocessor in Preferences
-        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
-        # self.ui.pp_excellon_name_cb combobox
-        # self.on_pp_changed()
-        #
-        # # Show/Hide Advanced Options
+        # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
 
@@ -661,7 +656,7 @@ class ToolMilling(AppTool, Excellon):
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
-        # self.ui.pp_excellon_name_cb combobox
+        # pp combobox
         self.on_pp_changed()
 
     def on_exc_rebuild_ui(self):
@@ -3106,13 +3101,11 @@ class ToolMilling(AppTool, Excellon):
             self.ui.travelzlabel.hide()
             self.ui.travelz_entry.hide()
 
-            # if in Advanced Mode
-            if self.ui.level.isChecked():
-                try:
-                    self.ui.mpass_cb.hide()
-                    self.ui.maxdepth_entry.hide()
-                except AttributeError:
-                    pass
+            try:
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+            except AttributeError:
+                pass
 
             try:
                 self.ui.frzlabel.hide()

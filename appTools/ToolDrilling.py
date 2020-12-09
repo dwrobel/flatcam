@@ -277,6 +277,8 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################
         self.builduiSig.connect(self.build_tool_ui)
 
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.search_load_db_btn.clicked.connect(self.on_tool_db_load)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
@@ -329,16 +331,9 @@ class ToolDrilling(AppTool, Excellon):
         for it in range(self.ui.pp_excellon_name_cb.count()):
             self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
-        app_mode = self.app.defaults["global_app_level"]
         # Show/Hide Advanced Options
-        if app_mode == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-            self.ui.estartz_label.hide()
-            self.ui.estartz_entry.hide()
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-            self.ui.estartz_label.show()
-            self.ui.estartz_entry.show()
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
         self.ui.tools_frame.show()
 
@@ -481,6 +476,112 @@ class ToolDrilling(AppTool, Excellon):
         except (AttributeError, TypeError):
             pass
         self.ui.object_combo.currentTextChanged.connect(self.on_object_changed)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+
+    def on_level_changed(self, checked):
+
+        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Tool parameters section
+            if loaded_obj:
+                for tool in loaded_obj.tools:
+                    tool_data = loaded_obj.tools[tool]['data']
+
+                    tool_data['tools_drill_multidepth'] = False
+                    tool_data['tools_drill_dwell'] = False
+                    tool_data['tools_drill_drill_slots'] = False
+
+                    tool_data['tools_drill_toolchangexy'] = ''
+                    tool_data['tools_drill_area_exclusion'] = False
+
+            self.ui.mpass_cb.hide()
+            self.ui.maxdepth_entry.hide()
+
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
+
+            self.ui.tool_offset_label.hide()
+            self.ui.offset_entry.hide()
+
+            self.ui.drill_slots_cb.hide()
+
+            # All param section
+            self.ui.all_param_separator_line2.hide()
+            self.ui.apply_param_to_all.hide()
+
+            # General param
+            self.ui.estartz_label.hide()
+            self.ui.estartz_entry.hide()
+            self.ui.endmove_xy_label.hide()
+            self.ui.endxy_entry.hide()
+
+            self.ui.exclusion_cb.hide()
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Tool parameters section
+            if loaded_obj:
+                app_defaults = self.app.defaults
+                for tool in loaded_obj.tools:
+                    tool_data = loaded_obj.tools[tool]['data']
+
+                    tool_data['tools_drill_multidepth'] = app_defaults['tools_drill_multidepth']
+                    tool_data['tools_drill_dwell'] = app_defaults['tools_drill_dwell']
+                    tool_data['tools_drill_drill_slots'] = app_defaults['tools_drill_drill_slots']
+
+                    tool_data['tools_drill_toolchangexy'] = app_defaults['tools_drill_toolchangexy']
+                    tool_data['tools_drill_area_exclusion'] = app_defaults['tools_drill_area_exclusion']
+
+            self.ui.mpass_cb.show()
+            self.ui.maxdepth_entry.show()
+
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
+
+            self.ui.tool_offset_label.show()
+            self.ui.offset_entry.show()
+
+            self.ui.drill_slots_cb.show()
+
+            # All param section
+            self.ui.all_param_separator_line2.show()
+            self.ui.apply_param_to_all.show()
+
+            # General param
+            self.ui.estartz_label.show()
+            self.ui.estartz_entry.show()
+            self.ui.endmove_xy_label.show()
+            self.ui.endxy_entry.show()
+
+            self.ui.exclusion_cb.show()
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
@@ -1318,6 +1419,7 @@ class ToolDrilling(AppTool, Excellon):
         if 'laser' in current_pp.lower():
             self.ui.cutzlabel.hide()
             self.ui.cutz_entry.hide()
+
             try:
                 self.ui.mpass_cb.hide()
                 self.ui.maxdepth_entry.hide()
@@ -1357,11 +1459,14 @@ class ToolDrilling(AppTool, Excellon):
         else:
             self.ui.cutzlabel.show()
             self.ui.cutz_entry.show()
-            try:
-                self.ui.mpass_cb.show()
-                self.ui.maxdepth_entry.show()
-            except AttributeError:
-                pass
+
+            # if in Advanced Mode
+            if self.ui.level.isChecked():
+                try:
+                    self.ui.mpass_cb.show()
+                    self.ui.maxdepth_entry.show()
+                except AttributeError:
+                    pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
 
@@ -1376,16 +1481,19 @@ class ToolDrilling(AppTool, Excellon):
                 self.ui.feedrate_z_entry.show()
             except AttributeError:
                 pass
-            self.ui.dwell_cb.show()
-            self.ui.dwelltime_entry.show()
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
 
-            try:
-                self.ui.tool_offset_label.show()
-                self.ui.offset_entry.show()
-            except AttributeError:
-                pass
+            # if in Advanced Mode
+            if self.ui.level.isChecked():
+                self.ui.dwell_cb.show()
+                self.ui.dwelltime_entry.show()
+
+                try:
+                    self.ui.tool_offset_label.show()
+                    self.ui.offset_entry.show()
+                except AttributeError:
+                    pass
 
     def on_key_press(self, event):
         # modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -2124,7 +2232,7 @@ class DrillingUI:
         self.title_box.addWidget(title_label)
 
         # App Level label
-        self.level = QtWidgets.QLabel("")
+        self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -2135,7 +2243,8 @@ class DrillingUI:
                 "'APP. LEVEL' radio button."
             )
         )
-        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # Grid Layout
@@ -2471,10 +2580,10 @@ class DrillingUI:
         self.grid3.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid3)
 
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line2, 0, 0, 1, 2)
+        self.all_param_separator_line2 = QtWidgets.QFrame()
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.all_param_separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
@@ -2559,8 +2668,8 @@ class DrillingUI:
         self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # End Move X,Y
-        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
-        endmove_xy_label.setToolTip(
+        self.endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        self.endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
@@ -2569,7 +2678,7 @@ class DrillingUI:
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.endxy_entry.setObjectName("e_endxy")
 
-        self.grid3.addWidget(endmove_xy_label, 12, 0)
+        self.grid3.addWidget(self.endmove_xy_label, 12, 0)
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
         # Probe depth
