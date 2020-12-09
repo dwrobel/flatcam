@@ -17,6 +17,8 @@ CHANGELOG for FlatCAM beta
 - Milling Tool - fixed the ever-growing list of preprocessor's
 - in all Object UI's fixed the Properties section columns resize to content on expansion/collapse of the items
 - in Tcl Shell Dock widget make sure that the context menu is not shown on the title bar and middle clicking on the title bar will close the widget
+- Drilling Tool - minor UI change
+- Isolation Tool - remade the 'Beginner/Advanced' Mode
 
 8.12.2020
 

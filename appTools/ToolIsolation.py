@@ -211,6 +211,8 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
         self.ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
@@ -260,52 +262,9 @@ class ToolIsolation(AppTool, Gerber):
         except Exception:
             pass
 
-        app_mode = self.app.defaults["global_app_level"]
-
         # Show/Hide Advanced Options
-        if app_mode == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-
-            self.ui.milling_type_label.hide()
-            self.ui.milling_type_radio.hide()
-
-            self.ui.iso_type_label.hide()
-            self.ui.iso_type_radio.set_value('full')
-            self.ui.iso_type_radio.hide()
-
-            self.ui.rest_cb.set_value(False)
-            self.ui.rest_cb.hide()
-            self.ui.forced_rest_iso_cb.hide()
-
-            self.ui.except_cb.set_value(False)
-            self.ui.except_cb.hide()
-
-            self.ui.type_excobj_radio.hide()
-            self.ui.exc_obj_combo.hide()
-
-            self.ui.select_combo.setCurrentIndex(0)
-            self.ui.select_combo.hide()
-            self.ui.select_label.hide()
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-
-            self.ui.milling_type_label.show()
-            self.ui.milling_type_radio.show()
-
-            self.ui.iso_type_label.show()
-            self.ui.iso_type_radio.set_value(self.app.defaults["tools_iso_isotype"])
-            self.ui.iso_type_radio.show()
-
-            self.ui.rest_cb.set_value(self.app.defaults["tools_iso_rest"])
-            self.ui.rest_cb.show()
-            self.ui.forced_rest_iso_cb.show()
-
-            self.ui.except_cb.set_value(self.app.defaults["tools_iso_isoexcept"])
-            self.ui.except_cb.show()
-
-            self.ui.select_combo.set_value(self.app.defaults["tools_iso_selection"])
-            self.ui.select_combo.show()
-            self.ui.select_label.show()
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -382,6 +341,7 @@ class ToolIsolation(AppTool, Gerber):
             "area_strategy":            self.app.defaults["geometry_area_strategy"],
             "area_overz":               float(self.app.defaults["geometry_area_overz"]),
 
+            "tools_iso_order":          self.app.defaults["tools_iso_order"],
             "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
             "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
             "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
@@ -432,6 +392,123 @@ class ToolIsolation(AppTool, Gerber):
         self.on_rest_machining_check(state=self.app.defaults["tools_iso_rest"])
 
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.hide()
+            self.ui.new_tooldia_lbl.hide()
+            self.ui.new_tooldia_entry.hide()
+            self.ui.find_optimal_button.hide()
+            self.ui.search_and_add_btn.hide()
+            self.ui.addtool_from_db_btn.hide()
+            self.ui.deltool_btn.hide()
+            self.ui.add_tool_separator_line.hide()
+
+            # Tool parameters section
+            if self.iso_tools:
+                for tool in self.iso_tools:
+                    tool_data = self.iso_tools[tool]['data']
+
+                    tool_data['tools_iso_isotype'] = 'full'
+
+            self.ui.milling_type_label.hide()
+            self.ui.milling_type_radio.hide()
+
+            self.ui.iso_type_label.hide()
+            self.ui.iso_type_radio.set_value('full')
+            self.ui.iso_type_radio.hide()
+
+            # All param section
+            self.ui.all_param_separator_line2.hide()
+            self.ui.apply_param_to_all.hide()
+
+            # Common Parameters
+            self.ui.rest_cb.set_value(False)
+            self.ui.rest_cb.hide()
+            self.ui.forced_rest_iso_cb.hide()
+
+            self.ui.except_cb.set_value(False)
+            self.ui.except_cb.hide()
+
+            self.ui.type_excobj_radio.hide()
+            self.ui.exc_obj_combo.hide()
+
+            # Context Menu section
+            self.ui.tools_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.show()
+            self.ui.new_tooldia_lbl.show()
+            self.ui.new_tooldia_entry.show()
+            self.ui.find_optimal_button.show()
+            self.ui.search_and_add_btn.show()
+            self.ui.addtool_from_db_btn.show()
+            self.ui.deltool_btn.show()
+            self.ui.add_tool_separator_line.show()
+
+            # Tool parameters section
+            app_defaults = self.app.defaults
+            if self.iso_tools:
+                for tool in self.iso_tools:
+                    tool_data = self.iso_tools[tool]['data']
+                    tool_data['tools_iso_isotype'] = app_defaults['tools_iso_isotype']
+                    tool_data['tools_iso_rest'] = app_defaults['tools_iso_rest']
+                    tool_data['tools_iso_isoexcept'] = app_defaults['tools_iso_isoexcept']
+
+            self.ui.milling_type_label.show()
+            self.ui.milling_type_radio.show()
+
+            self.ui.iso_type_label.show()
+            self.ui.iso_type_radio.set_value(app_defaults['tools_iso_isotype'])
+            self.ui.iso_type_radio.show()
+
+            # All param section
+            self.ui.all_param_separator_line2.show()
+            self.ui.apply_param_to_all.show()
+
+            # Common Parameters
+            self.ui.rest_cb.set_value(app_defaults['tools_iso_rest'])
+            self.ui.rest_cb.show()
+            self.ui.forced_rest_iso_cb.show()
+
+            self.ui.except_cb.set_value(app_defaults['tools_iso_isoexcept'])
+            self.ui.except_cb.show()
+
+            self.ui.type_excobj_radio.show()
+            self.ui.exc_obj_combo.show()
+
+            # Context Menu section
+            self.ui.tools_table.setupContextMenu()
 
     def rebuild_ui(self):
         # read the table tools uid
@@ -1152,6 +1229,7 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
+        self.ui_disconnect()
 
         filename = self.app.tools_database_path()
 
@@ -1166,18 +1244,13 @@ class ToolIsolation(AppTool, Gerber):
         new_tools_dict = deepcopy(self.default_data)
         updated_tooldia = None
 
-        tool_dias = []
-        for k, v in self.iso_tools.items():
-            for tool_v in v.keys():
-                if tool_v == 'tooldia':
-                    tool_dias.append(self.app.dec_format(v['tooldia'], self.decimals))
-
         # determine the new tool diameter
         if tool_dia is None or tool_dia == 0:
             self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
                                                           "in Float format."))
             self.blockSignals(False)
+            self.ui_connect()
             return
         truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
 
@@ -1195,6 +1268,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.log.error("Could not load tools DB file.")
             self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
             self.blockSignals(False)
+            self.ui_connect()
             self.on_tool_default_add(dia=tool_dia)
             return
 
@@ -1206,6 +1280,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.log.error(str(e))
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             self.blockSignals(False)
+            self.ui_connect()
             self.on_tool_default_add(dia=tool_dia)
             return
 
@@ -1259,6 +1334,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
             self.on_tool_default_add(dia=tool_dia)
             self.blockSignals(False)
+            self.ui_connect()
             return
 
         if tool_found > 1:
@@ -1266,6 +1342,7 @@ class ToolIsolation(AppTool, Gerber):
                 '[WARNING_NOTCL] %s' % _("Cancelled.\n"
                                          "Multiple tools for one tool diameter found in Tools Database."))
             self.blockSignals(False)
+            self.ui_connect()
             return
 
         # if new tool diameter found in Tools Database already in the Tool List then abort
@@ -1287,6 +1364,7 @@ class ToolIsolation(AppTool, Gerber):
             }
         })
         self.blockSignals(False)
+        self.ui_connect()
         self.build_ui()
 
         # select the tool just added
@@ -3095,7 +3173,7 @@ class IsoUI:
         self.title_box.addWidget(title_label)
 
         # App Level label
-        self.level = FCLabel("")
+        self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -3106,7 +3184,8 @@ class IsoUI:
                 "'APP. LEVEL' radio button."
             )
         )
-        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         self.obj_combo_label = FCLabel('<b>%s</b>:' % _("GERBER"))
@@ -3285,10 +3364,10 @@ class IsoUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 11, 0, 1, 2)
+        self.add_tool_separator_line = QtWidgets.QFrame()
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -3381,10 +3460,10 @@ class IsoUI:
         )
         self.grid3.addWidget(self.apply_param_to_all, 22, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 23, 0, 1, 2)
+        self.all_param_separator_line2 = QtWidgets.QFrame()
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.all_param_separator_line2, 23, 0, 1, 2)
 
         # General Parameters
         self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))

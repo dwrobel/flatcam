@@ -515,6 +515,8 @@ class ToolDrilling(AppTool, Excellon):
                     tool_data['tools_drill_toolchangexy'] = ''
                     tool_data['tools_drill_area_exclusion'] = False
 
+            self.ui.search_load_db_btn.hide()
+
             self.ui.mpass_cb.hide()
             self.ui.maxdepth_entry.hide()
 
@@ -559,6 +561,8 @@ class ToolDrilling(AppTool, Excellon):
 
                     tool_data['tools_drill_toolchangexy'] = app_defaults['tools_drill_toolchangexy']
                     tool_data['tools_drill_area_exclusion'] = app_defaults['tools_drill_area_exclusion']
+
+            self.ui.search_load_db_btn.show()
 
             self.ui.mpass_cb.show()
             self.ui.maxdepth_entry.show()
@@ -2606,22 +2610,18 @@ class DrillingUI:
         self.grid3.addWidget(self.gen_param_label, 3, 0, 1, 2)
 
         # Tool change
-        self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
+        self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
         self.toolchange_cb.setToolTip(
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
         self.toolchange_cb.setObjectName("e_toolchange")
-        self.grid3.addWidget(self.toolchange_cb, 5, 0, 1, 2)
 
-        # Toolchange Z
-        self.toolchangez_label = QtWidgets.QLabel('%s:' % _("Tool change Z"))
-        self.toolchangez_label.setToolTip(
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.toolchangez_entry.setToolTip(
             _("Z-axis position (height) for\n"
               "tool change.")
         )
-
-        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setObjectName("e_toolchangez")
 
@@ -2632,8 +2632,9 @@ class DrillingUI:
 
         self.toolchangez_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(self.toolchangez_label, 7, 0)
+        self.grid3.addWidget(self.toolchange_cb, 7, 0)
         self.grid3.addWidget(self.toolchangez_entry, 7, 1)
+        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
 
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))

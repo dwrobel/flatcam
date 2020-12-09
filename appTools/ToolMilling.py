@@ -524,6 +524,9 @@ class ToolMilling(AppTool, Excellon):
             self.ui.level.setChecked(False)
 
     def on_level_changed(self, checked):
+
+        self.target_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+
         if not checked:
             self.ui.level.setText('%s' % _('Beginner'))
             self.ui.level.setStyleSheet("""
