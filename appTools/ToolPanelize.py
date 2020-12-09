@@ -165,29 +165,31 @@ class Panelize(AppTool):
         obj_type = self.ui.type_obj_combo.currentIndex()
         self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.object_combo.setCurrentIndex(0)
-        self.ui.object_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ui.type_obj_combo.get_value()]
 
-        # hide the panel type for Excellons, the panel can be only of type Geometry
-        if self.ui.type_obj_combo.currentText() != _('Excellon'):
+        self.ui.object_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
+
+        # hide the panel type for Excellons, the panel can be only of type Geometry or Gerber
+        if obj_type != 1:   # not Excellon
             self.ui.panel_type_label.setDisabled(False)
             self.ui.panel_type_radio.setDisabled(False)
             self.ui.on_panel_type(val=self.ui.panel_type_radio.get_value())
         else:
             self.ui.panel_type_label.setDisabled(True)
             self.ui.panel_type_radio.setDisabled(True)
-            self.ui.panel_type_radio.set_value('geometry')
             self.ui.optimization_cb.setDisabled(True)
+
+        if obj_type in [0, 2]:
+            # type_box_combo is missing the Excellon therefore it has only index 0 an 1
+            self.ui.type_box_combo.setCurrentIndex(0) if obj_type == 0 else self.ui.type_box_combo.setCurrentIndex(1)
+            self.ui.panel_type_radio.set_value(self.ui.object_combo.obj_type.lower())
 
     def on_type_box_index_changed(self):
         obj_type = self.ui.type_box_combo.currentIndex()
         obj_type = 2 if obj_type == 1 else obj_type
         self.ui.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.box_combo.setCurrentIndex(0)
-        self.ui.box_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
-        }[self.ui.type_box_combo.get_value()]
+
+        self.ui.box_combo.obj_type = {0: "Gerber", 2: "Geometry"}[obj_type]
 
     def on_reference_radio_changed(self, current_val):
         if current_val == 'object':
@@ -209,11 +211,8 @@ class Panelize(AppTool):
                     "gerber": _("Gerber"), "excellon": _("Excellon"), "geometry": _("Geometry")
                 }[kind]
 
-            self.ui.type_obj_combo.set_value(obj_type)
-            self.ui.type_box_combo.set_value(obj_type)
-
-            if kind in ['gerber', 'geometry']:
-                self.ui.panel_type_radio.set_value(kind)
+                self.ui.type_obj_combo.set_value(obj_type)
+                self.ui.type_box_combo.set_value(obj_type)
 
             self.ui.object_combo.set_value(name)
             self.ui.box_combo.set_value(name)

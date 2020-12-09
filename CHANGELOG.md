@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - in Tcl Shell Dock widget make sure that the context menu is not shown on the title bar and middle clicking on the title bar will close the widget
 - Drilling Tool - minor UI change
 - Isolation Tool - remade the 'Beginner/Advanced' Mode
+- Panelize Tool - some UI fixes
 
 8.12.2020
 
