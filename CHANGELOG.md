@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - simplifying the UI for the Milling Tool when in 'Beginner' mode
 - Milling UI - clicking the 'Beginner/Advanced' top button will switch the application mode for the current tool(this change need to be propagated everywhere a 'Beginner' mode is needed)
+- fixed the on_delete() method in the App class; sometime it will delete all files that have similar names
+- made sure that on creation of new objects the adding of the names to the auto-complete list is done properly
 
 8.12.2020
 

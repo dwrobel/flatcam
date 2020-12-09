@@ -4856,8 +4856,8 @@ class App(QtCore.QObject):
                                     "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
                                 )
 
-                    while self.collection.get_selected():
-                        self.delete_first_selected()
+                    for ob in self.collection.get_selected():
+                        self.delete_first_selected(ob)
 
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
@@ -4870,10 +4870,15 @@ class App(QtCore.QObject):
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
-    def delete_first_selected(self):
+    def delete_first_selected(self, del_obj=None):
+
         # Keep this for later
         try:
-            sel_obj = self.collection.get_active()
+            if del_obj is not None:
+                sel_obj = del_obj
+            else:
+                sel_obj = self.collection.get_active()
+
             name = sel_obj.options["name"]
             isPlotted = sel_obj.options["plot"]
         except AttributeError:

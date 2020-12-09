@@ -577,6 +577,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 name += "_1"
         obj.options["name"] = name
 
+        # ############################################################################################################
+        # update the KeyWords list with the name of the file
+        # ############################################################################################################
+        self.app.myKeywords.append(name)
+
         obj.set_ui(obj.ui_type(app=self.app))
         # a way to signal that the object was fully loaded
         obj.load_complete = True

@@ -204,11 +204,6 @@ class AppObject(QtCore.QObject):
                 log.warning("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
 
-        # ############################################################################################################
-        # update the KeyWords list with the name of the file
-        # ############################################################################################################
-        self.app.myKeywords.append(obj.options['name'])
-
         log.debug("Moving new object back to main thread.")
 
         # ############################################################################################################
