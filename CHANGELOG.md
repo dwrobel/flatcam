@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.11.2020
+
+- simplifying the UI for the Milling Tool when in 'Beginner' mode
+- Milling UI - clicking the 'Beginner/Advanced' top button will switch the application mode for the current tool(this change need to be propagated everywhere a 'Beginner' mode is needed)
+
 8.12.2020
 
 - few changes in the Milling UI

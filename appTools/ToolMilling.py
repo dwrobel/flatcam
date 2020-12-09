@@ -12,7 +12,7 @@ from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, F
     FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalTupleEntry, OptionalHideInputSection, FCLabel
 from appParsers.ParseExcellon import Excellon
 
-from camlib import Geometry, grace
+from camlib import grace
 
 from copy import deepcopy
 import math
@@ -20,7 +20,7 @@ import simplejson as json
 import sys
 import traceback
 
-from appObjects.FlatCAMObj import FlatCAMObj
+# from appObjects.FlatCAMObj import FlatCAMObj
 # import numpy as np
 # import math
 
@@ -224,6 +224,8 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################
         self.builduiSig.connect(self.build_ui)
 
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         # add Tool
         self.ui.search_and_add_btn.clicked.connect(self.on_tool_add)
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -337,7 +339,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.pp_geo_name_cb.addItem(name)
         # and add ToolTips (useful when names are too long)
         for it in range(self.ui.pp_geo_name_cb.count()):
-            self.ui.pp_geo_name_cb.setItemData( it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+            self.ui.pp_geo_name_cb.setItemData(it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         # Fill form fields
         self.to_form()
@@ -345,21 +347,36 @@ class ToolMilling(AppTool, Excellon):
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_excellon_name_cb combobox
-        self.on_pp_changed()
-
+        # self.on_pp_changed()
+        #
+        # # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
-        # Show/Hide Advanced Options
-        if app_mode == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-            self.ui.feedrate_rapid_label.hide()
-            self.ui.feedrate_rapid_entry.hide()
-            self.ui.pdepth_label.hide()
-            self.ui.pdepth_entry.hide()
-            self.ui.feedrate_probe_label.hide()
-            self.ui.feedrate_probe_entry.hide()
+        self.change_level(app_mode)
 
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+        # # Show/Hide Advanced Options
+        # if app_mode == 'b':
+        #     self.ui.level.setText('%s' % _('Beginner'))
+        #     self.ui.level.setStyleSheet("""
+        #                                 QToolButton
+        #                                 {
+        #                                     color: green;
+        #                                 }
+        #                                 """)
+        #     self.ui.feedrate_rapid_label.hide()
+        #     self.ui.feedrate_rapid_entry.hide()
+        #     self.ui.pdepth_label.hide()
+        #     self.ui.pdepth_entry.hide()
+        #     self.ui.feedrate_probe_label.hide()
+        #     self.ui.feedrate_probe_entry.hide()
+        #
+        # else:
+        #     self.ui.level.setText('%s' % _('Advanced'))
+        #     self.ui.level.setStyleSheet("""
+        #                                 QToolButton
+        #                                 {
+        #                                     color: red;
+        #                                 }
+        #                                 """)
 
         self.ui.tools_frame.show()
 
@@ -382,13 +399,13 @@ class ToolMilling(AppTool, Excellon):
 
             "tools_mill_tooldia": 0.1,
 
-            "tools_mill_offset_type": "Path",
+            "tools_mill_offset_type": 0,    # _("Path")
             "tools_mill_offset": 0.0,
 
             "tools_mill_milling_type": "drills",
             "tools_mill_milling_dia": 0.04,
 
-            "tools_mill_job_type": 'Rough',
+            "tools_mill_job_type": 0,   # 'Rough'
             "tools_mill_polish_margin": 0.0,
             "tools_mill_polish_overlap": 10,
             "tools_mill_polish_method": _("Standard"),
@@ -426,6 +443,11 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_feedrate_probe": 3.0,
             "tools_mill_ppname_g": self.app.defaults["geometry_ppname_g"],
             "tools_mill_optimization_type": "B",
+
+            "tools_mill_area_exclusion": False,
+            "tools_mill_area_shape": "polygon",
+            "tools_mill_area_strategy": "over",
+            "tools_mill_area_overz": 1.0,
         }
 
         # fill in self.default_data values from self.options
@@ -490,6 +512,157 @@ class ToolMilling(AppTool, Excellon):
 
     def on_plot_clicked(self, state):
         self.target_obj.options['plot'] = True if state else False
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.hide()
+            self.ui.addtool_entry_lbl.hide()
+            self.ui.addtool_entry.hide()
+            self.ui.search_and_add_btn.hide()
+            self.ui.addtool_from_db_btn.hide()
+            self.ui.deltool_btn.hide()
+
+            # Tool parameters section
+            if self.ui.target_radio.get_value() == 'geo':
+                if self.target_obj:
+                    for tool in self.target_obj.tools:
+                        tool_data = self.target_obj.tools[tool]['data']
+
+                        tool_data['tools_mill_offset_type'] = 'Path'
+                        tool_data['tools_mill_offset'] = 0.0
+                        tool_data['tools_mill_job_type'] = 'Rough'
+
+                        tool_data['tools_mill_multidepth'] = False
+                        tool_data['tools_mill_extracut'] = False
+                        tool_data['tools_mill_dwell'] = False
+                        tool_data['tools_mill_toolchangexy'] = ''
+                        tool_data['tools_mill_area_exclusion'] = False
+
+                self.ui.offset_type_lbl.hide()
+                self.ui.offset_type_combo.hide()
+                self.ui.offset_label.hide()
+                self.ui.offset_entry.hide()
+                self.ui.offset_type_lbl.hide()
+                self.ui.offset_separator_line.hide()
+                self.ui.offset_type_lbl.hide()
+
+                self.ui.job_type_lbl.hide()
+                self.ui.job_type_combo.hide()
+                self.ui.job_separator_line.hide()
+
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+
+                self.ui.extracut_cb.hide()
+                self.ui.e_cut_entry.hide()
+
+                self.ui.dwell_cb.hide()
+                self.ui.dwelltime_entry.hide()
+
+                self.ui.endmove_xy_label.hide()
+                self.ui.endxy_entry.hide()
+
+                self.ui.exclusion_cb.hide()
+
+            # All param section
+            self.ui.all_param_separator_line2.hide()
+            self.ui.apply_param_to_all.hide()
+
+            # Context Menu section
+            self.ui.geo_tools_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.show()
+            self.ui.addtool_entry_lbl.show()
+            self.ui.addtool_entry.show()
+            self.ui.search_and_add_btn.show()
+            self.ui.addtool_from_db_btn.show()
+            self.ui.deltool_btn.show()
+
+            # Tool parameters section
+            if self.ui.target_radio.get_value() == 'geo':
+                if self.target_obj:
+                    app_defaults = self.app.defaults
+                    for tool in self.target_obj.tools:
+                        tool_data = self.target_obj.tools[tool]['data']
+
+                        tool_data['tools_mill_offset_type'] = app_defaults['tools_mill_offset_type']
+                        tool_data['tools_mill_offset'] = app_defaults['tools_mill_offset']
+                        tool_data['tools_mill_job_type'] = app_defaults['tools_mill_job_type']
+
+                        tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
+                        tool_data['tools_mill_extracut'] = app_defaults['tools_mill_extracut']
+                        tool_data['tools_mill_dwell'] = app_defaults['tools_mill_dwell']
+                        tool_data['tools_mill_toolchangexy'] = app_defaults['tools_mill_toolchangexy']
+                        tool_data['tools_mill_area_exclusion'] = app_defaults['tools_mill_area_exclusion']
+
+                self.ui.offset_type_lbl.show()
+                self.ui.offset_type_combo.show()
+                self.ui.offset_label.show()
+                self.ui.offset_entry.show()
+                self.ui.offset_type_lbl.show()
+                self.ui.offset_separator_line.show()
+                self.ui.offset_type_lbl.show()
+
+                self.ui.job_type_lbl.show()
+                self.ui.job_type_combo.show()
+                self.ui.job_separator_line.show()
+
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
+
+                self.ui.extracut_cb.show()
+                self.ui.e_cut_entry.show()
+
+                self.ui.dwell_cb.show()
+                self.ui.dwelltime_entry.show()
+
+                self.ui.endmove_xy_label.show()
+                self.ui.endxy_entry.show()
+
+                self.ui.exclusion_cb.show()
+
+            # All param section
+            self.ui.all_param_separator_line2.show()
+            self.ui.apply_param_to_all.show()
+
+            # Context Menu section
+            self.ui.geo_tools_table.setupContextMenu()
+
+        # update the changes in UI depending on the selected preprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_excellon_name_cb combobox
+        self.on_pp_changed()
 
     def on_exc_rebuild_ui(self):
         # read the table tools uid
@@ -998,6 +1171,10 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.polish_method_combo.show()
 
                 self.ui.cutzlabel.setText('%s:' % _("Pressure"))
+                self.ui.cutzlabel.setToolTip(
+                    _("Negative value. The higher the absolute value\n"
+                      "the stronger the pressure of the brush on the material.")
+                )
             else:
                 self.ui.polish_margin_lbl.hide()
                 self.ui.polish_margin_entry.hide()
@@ -1007,6 +1184,10 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.polish_method_combo.hide()
 
                 self.ui.cutzlabel.setText('%s:' % _('Cut Z'))
+                self.ui.cutzlabel.setToolTip(
+                    _("Drill depth (negative)\n"
+                      "below the copper surface.")
+                )
 
     def on_offset_type_changed(self, idx):
         if idx == 3:    # 'Custom'
@@ -1279,7 +1460,7 @@ class ToolMilling(AppTool, Excellon):
             # sel_model = self.ui.geo_tools_table.selectionModel()
             # sel_indexes = sel_model.selectedIndexes()
             #
-            # # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+            # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
             # sel_rows = set()
             # for idx in sel_indexes:
             #     sel_rows.add(idx.row())
@@ -2500,6 +2681,7 @@ class ToolMilling(AppTool, Excellon):
         The actual work is done by the target CNCJobObject object's
         `generate_from_geometry_2()` method.
 
+        :param toolchange:
         :param outname:
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
@@ -2924,11 +3106,13 @@ class ToolMilling(AppTool, Excellon):
             self.ui.travelzlabel.hide()
             self.ui.travelz_entry.hide()
 
-            try:
-                self.ui.mpass_cb.hide()
-                self.ui.maxdepth_entry.hide()
-            except AttributeError:
-                pass
+            # if in Advanced Mode
+            if self.ui.level.isChecked():
+                try:
+                    self.ui.mpass_cb.hide()
+                    self.ui.maxdepth_entry.hide()
+                except AttributeError:
+                    pass
 
             try:
                 self.ui.frzlabel.hide()
@@ -2943,11 +3127,14 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.ui.cutzlabel.show()
             self.ui.cutz_entry.show()
-            try:
-                self.ui.mpass_cb.show()
-                self.ui.maxdepth_entry.show()
-            except AttributeError:
-                pass
+
+            # if in Advanced Mode
+            if self.ui.level.isChecked():
+                try:
+                    self.ui.mpass_cb.show()
+                    self.ui.maxdepth_entry.show()
+                except AttributeError:
+                    pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
             self.ui.travelzlabel.show()
@@ -2961,8 +3148,11 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.feedrate_z_entry.show()
             except AttributeError:
                 pass
-            self.ui.dwell_cb.show()
-            self.ui.dwelltime_entry.show()
+
+            # if in Advanced Mode
+            if self.ui.level.isChecked():
+                self.ui.dwell_cb.show()
+                self.ui.dwelltime_entry.show()
 
             self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
 
@@ -3260,7 +3450,7 @@ class MillingUI:
         self.title_box.addWidget(title_label)
 
         # App Level label
-        self.level = FCLabel("")
+        self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -3271,7 +3461,8 @@ class MillingUI:
                 "'APP. LEVEL' radio button."
             )
         )
-        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # Grid Layout
@@ -3576,7 +3767,7 @@ class MillingUI:
 
         self.offset_type_combo = FCComboBox2()
         self.offset_type_combo.addItems(
-            ["Path", "In", "Out", "Custom"]
+            [_("Path"), _("In"), _("Out"), _("Custom")]
         )
         self.offset_type_combo.setObjectName('mill_offset_type')
 
@@ -3605,10 +3796,10 @@ class MillingUI:
         self.grid1.addWidget(self.offset_label, 6, 0)
         self.grid1.addWidget(self.offset_entry, 6, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid1.addWidget(separator_line, 8, 0, 1, 2)
+        self.offset_separator_line = QtWidgets.QFrame()
+        self.offset_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(self.offset_separator_line, 8, 0, 1, 2)
 
         # Job Type
         self.job_type_lbl = FCLabel('%s:' % _('Job'))
@@ -3622,7 +3813,7 @@ class MillingUI:
 
         self.job_type_combo = FCComboBox2()
         self.job_type_combo.addItems(
-            ['Iso', 'Rough', 'Finish', 'Polish']
+            [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
         )
         self.job_type_combo.setObjectName('mill_job_type')
 
@@ -3682,10 +3873,10 @@ class MillingUI:
         self.polish_method_lbl.hide()
         self.polish_method_combo.hide()
 
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid1.addWidget(separator_line2, 18, 0, 1, 2)
+        self.job_separator_line = QtWidgets.QFrame()
+        self.job_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(self.job_separator_line, 18, 0, 1, 2)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -3941,10 +4132,10 @@ class MillingUI:
         )
         self.grid3.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
 
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line2, 2, 0, 1, 2)
+        self.all_param_separator_line2 = QtWidgets.QFrame()
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.all_param_separator_line2, 2, 0, 1, 2)
 
         # #############################################################################################################
         # #################################### General Parameters #####################################################
@@ -3999,15 +4190,15 @@ class MillingUI:
         self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # End Move X,Y
-        endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
-        endmove_xy_label.setToolTip(
+        self.endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
+        self.endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
-        self.grid3.addWidget(endmove_xy_label, 12, 0)
+        self.grid3.addWidget(self.endmove_xy_label, 12, 0)
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
         # Probe depth

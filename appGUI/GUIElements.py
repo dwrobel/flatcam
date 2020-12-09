@@ -3476,6 +3476,9 @@ class FCTable(QtWidgets.QTableWidget):
     def setupContextMenu(self):
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
 
+    def removeContextMenu(self):
+        self.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+
     def addContextMenu(self, entry, call_function, icon=None):
         action_name = str(entry)
         action = QtWidgets.QAction(self)
