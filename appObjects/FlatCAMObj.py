@@ -908,6 +908,9 @@ class FlatCAMObj(QtCore.QObject):
             self.treeWidget.addChild(
                 location, ['%s:' % _('Copper Area'), '%.*f %s' % (self.decimals, copper_area, 'in2')], True)
 
+        for col in range(self.treeWidget.columnCount()):
+            self.ui.treeWidget.resizeColumnToContents(col)
+
     @staticmethod
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]

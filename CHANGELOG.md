@@ -14,7 +14,8 @@ CHANGELOG for FlatCAM beta
 - fixed the on_delete() method in the App class; sometime it will delete all files that have similar names
 - made sure that on creation of new objects the adding of the names to the auto-complete list is done properly
 - Drilling Tool - remade the 'Beginner/Advanced' Mode
-- Milling Tool - fixed the ever-growing list of preproessors
+- Milling Tool - fixed the ever-growing list of preprocessor's
+- in all Object UI's fixed the Properties section columns resize to content on expansion/collapse of the items
 
 8.12.2020
 

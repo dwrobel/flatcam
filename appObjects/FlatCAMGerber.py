@@ -151,6 +151,8 @@ class GerberObject(FlatCAMObj, Gerber):
         # Properties
         self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
+        self.ui.treeWidget.itemExpanded.connect(self.on_properties_expanded)
+        self.ui.treeWidget.itemCollapsed.connect(self.on_properties_expanded)
 
         # Tools
         self.ui.iso_button.clicked.connect(lambda: self.app.isolation_tool.run(toggle=True))
@@ -366,6 +368,10 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
+
+    def on_properties_expanded(self):
+        for col in range(self.treeWidget.columnCount()):
+            self.ui.treeWidget.resizeColumnToContents(col)
 
     def on_generate_buffer(self):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
