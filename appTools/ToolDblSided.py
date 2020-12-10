@@ -703,7 +703,7 @@ class DsidedUI:
         self.tools_box.addLayout(grid0)
 
         # ## Title Bounds Values
-        self.bv_label = FCLabel("<b>%s:</b>" % _('Bounds Values'))
+        self.bv_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _('Bounds Values').upper())
         self.bv_label.setToolTip(
             _("Select on canvas the object(s)\n"
               "for which to calculate bounds values.")
@@ -790,7 +790,7 @@ class DsidedUI:
         self.calculate_bb_button.setStyleSheet("""
                                                QPushButton
                                                {
-                                                   font-weight: bold;
+                                                    font-weight: bold;
                                                }
                                                """)
         grid0.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
@@ -808,7 +808,7 @@ class DsidedUI:
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
 
-        self.param_label = FCLabel("<b>%s:</b>" % _("Mirror Operation"))
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Mirror Operation").upper())
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
 
         grid1.addWidget(self.param_label, 0, 0, 1, 2)
@@ -943,7 +943,7 @@ class DsidedUI:
         )
         self.mirror_button.setStyleSheet("""
                                 QPushButton
-                                {
+                                {   
                                     font-weight: bold;
                                 }
                                 """)
@@ -963,7 +963,7 @@ class DsidedUI:
         self.tools_box.addLayout(grid4)
 
         # ## Alignment holes
-        self.alignment_label = FCLabel("<b>%s:</b>" % _('PCB Alignment'))
+        self.alignment_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('PCB Alignment').upper())
         self.alignment_label.setToolTip(
             _("Creates an Excellon Object containing the\n"
               "specified alignment holes and their mirror\n"

@@ -1017,12 +1017,12 @@ class ExtractUI:
 
         # grid1.addWidget(FCLabel(""), 0, 0, 1, 2)
 
-        self.extract_drills_label = FCLabel('<b>%s</b>' % _("Extract Drills").upper())
+        self.extract_drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Extract Drills").upper())
         self.extract_drills_label.setToolTip(
             _("Extract an Excellon object from the Gerber pads."))
         grid1.addWidget(self.extract_drills_label, 1, 0, 1, 2)
 
-        self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
+        self.method_label = FCLabel('%s:' % _("Method"))
         self.method_label.setToolTip(
             _("The method for processing pads. Can be:\n"
               "- Fixed Diameter -> all holes will have a set size\n"
@@ -1205,7 +1205,7 @@ class ExtractUI:
         # grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
 
         # EXTRACT SOLDERMASK
-        self.extract_sm_label = FCLabel('<b>%s</b>' % _("Extract Soldermask").upper())
+        self.extract_sm_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _("Extract Soldermask").upper())
         self.extract_sm_label.setToolTip(
             _("Extract soldermask from a given Gerber file."))
         grid3.addWidget(self.extract_sm_label, 18, 0, 1, 2)
@@ -1243,8 +1243,13 @@ class ExtractUI:
                                         """)
         grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid3.addWidget(separator_line, 25, 0, 1, 2)
+
         # EXTRACT CUTOUT
-        self.extract_cut_label = FCLabel('<b>%s</b>' % _("Extract Cutout").upper())
+        self.extract_cut_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Extract Cutout").upper())
         self.extract_cut_label.setToolTip(
             _("Extract a cutout from a given Gerber file."))
         grid3.addWidget(self.extract_cut_label, 26, 0, 1, 2)

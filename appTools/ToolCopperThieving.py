@@ -1294,7 +1294,8 @@ class ThievingUI:
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.copper_fill_label = FCLabel('<b>%s</b>' % _('Parameters'))
+        self.copper_fill_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' %
+                                         _('Thieving Parameters').upper())
         self.copper_fill_label.setToolTip(
             _("Parameters used for this tool.")
         )
@@ -1582,9 +1583,10 @@ class ThievingUI:
         separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
 
-        grid_lay_1.addWidget(FCLabel(''))
+        # grid_lay_1.addWidget(FCLabel(''))
 
-        self.robber_bar_label = FCLabel('<b>%s</b>' % _('Robber Bar Parameters'))
+        self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' %
+                                        _('Robber Bar Parameters').upper())
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
@@ -1639,7 +1641,8 @@ class ThievingUI:
         separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay_1.addWidget(separator_line_2, 10, 0, 1, 3)
 
-        self.patern_mask_label = FCLabel('<b>%s</b>' % _('Pattern Plating Mask'))
+        self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' %
+                                         _('Pattern Plating Mask').upper())
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
@@ -1734,7 +1737,7 @@ class ThievingUI:
                                 """)
         grid_lay_1.addWidget(self.ppm_button, 24, 0, 1, 3)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))

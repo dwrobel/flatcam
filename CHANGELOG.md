@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - Film Tool - remade the 'Beginner/Advanced' Mode
 - 2Sided Tool - remade the 'Beginner/Advanced' Mode
 - Drilling Tool - fixed a bug where this Tool will work on a previous version of the selected Excellon object (in case that the object was altered between launch of the Drilling Tool and the GCode generation)
+- added some color coded titles in some Application Tools that hold multiple functions
 
 9.11.2020
 
