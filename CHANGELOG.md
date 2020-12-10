@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 10.12.2020
 
 - NCC Tool - remade the 'Beginner/Advanced' Mode
+- Paint Tool - remade the 'Beginner/Advanced' Mode
 
 9.11.2020
 

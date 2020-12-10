@@ -168,6 +168,8 @@ class ToolPaint(AppTool, Gerber):
         # #############################################################################
         # ################################# Signals ###################################
         # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.new_tooldia_entry.returnPressed.connect(self.on_tool_add)
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
@@ -586,7 +588,92 @@ class ToolPaint(AppTool, Gerber):
             if self.ui.paintmethod_combo.get_value() == idx:  # if its Laser Lines
                 self.ui.paintmethod_combo.set_value(idx + 1)
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.hide()
+            self.ui.new_tooldia_lbl.hide()
+            self.ui.new_tooldia_entry.hide()
+            self.ui.search_and_add_btn.hide()
+            self.ui.addtool_from_db_btn.hide()
+            self.ui.deltool_btn.hide()
+            self.ui.add_tool_separator_line.hide()
+
+            # Tool parameters section
+            if self.paint_tools:
+                for tool in self.paint_tools:
+                    tool_data = self.paint_tools[tool]['data']
+                    tool_data['tools_paint_rest'] = False
+
+            self.ui.rest_cb.hide()
+
+            # All param section
+            self.ui.all_param_separator_line2.hide()
+            self.ui.apply_param_to_all.hide()
+
+            # Context Menu section
+            self.ui.tools_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.show()
+            self.ui.new_tooldia_lbl.show()
+            self.ui.new_tooldia_entry.show()
+            self.ui.search_and_add_btn.show()
+            self.ui.addtool_from_db_btn.show()
+            self.ui.deltool_btn.show()
+            self.ui.add_tool_separator_line.show()
+
+            # Tool parameters section
+            if self.paint_tools:
+                app_defaults = self.app.defaults
+                for tool in self.paint_tools:
+                    tool_data = self.paint_tools[tool]['data']
+
+                    tool_data['tools_paint_rest'] = app_defaults['tools_paint_rest']
+
+            self.ui.rest_cb.show()
+
+            # All param section
+            self.ui.all_param_separator_line2.show()
+            self.ui.apply_param_to_all.show()
+
+            # Context Menu section
+            self.ui.tools_table.setupContextMenu()
 
     def rebuild_ui(self):
         # read the table tools uid
@@ -2784,6 +2871,17 @@ class PaintUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -2793,17 +2891,29 @@ class PaintUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        title_label.setToolTip(
+            _("Create a Geometry object with\n"
+              "toolpaths to cover exclusively the copper pattern.")
+        )
+        self.title_box.addWidget(title_label)
 
-        self.tools_frame = QtWidgets.QFrame()
-        self.tools_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.tools_frame)
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.tools_frame.setLayout(self.tools_box)
-
-        # ## Form Layout
+        # ## Grid Layout
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -2813,7 +2923,7 @@ class PaintUI:
         # ##### Type of object to be painted #############
         # ################################################
 
-        self.type_obj_combo_label = FCLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be painted.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -2836,11 +2946,10 @@ class PaintUI:
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
 
-        self.object_label = FCLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(_("Object to be painted."))
+        # self.object_label = FCLabel('%s:' % _("Object"))
+        # self.object_label.setToolTip(_("Object to be painted."))
 
-        grid0.addWidget(self.object_label, 2, 0)
-        grid0.addWidget(self.obj_combo, 2, 1)
+        grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -2986,10 +3095,10 @@ class PaintUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 11, 0, 1, 2)
+        self.add_tool_separator_line = QtWidgets.QFrame()
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -3098,10 +3207,10 @@ class PaintUI:
         )
         grid4.addWidget(self.apply_param_to_all, 12, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line, 13, 0, 1, 2)
+        self.all_param_separator_line2 = QtWidgets.QFrame()
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid4.addWidget(self.all_param_separator_line2, 13, 0, 1, 2)
 
         # General Parameters
         self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
