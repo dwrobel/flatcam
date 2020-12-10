@@ -41,34 +41,7 @@ class DblSidedTool(AppTool):
         # ############################################################################################################
         # ######################################### Signals ##########################################################
         # ############################################################################################################
-        self.ui.object_type_radio.activated_custom.connect(self.on_object_type)
-
-        self.ui.add_point_button.clicked.connect(self.on_point_add)
-        self.ui.add_drill_point_button.clicked.connect(self.on_drill_add)
-        self.ui.delete_drill_point_button.clicked.connect(self.on_drill_delete_last)
-        self.ui.box_type_radio.activated_custom.connect(self.on_combo_box_type)
-
-        self.ui.axis_location.group_toggle_fn = self.on_toggle_pointbox
-
-        self.ui.point_entry.textChanged.connect(lambda val: self.ui.align_ref_label_val.set_value(val))
-        self.ui.pick_hole_button.clicked.connect(self.on_pick_hole)
-        self.ui.mirror_button.clicked.connect(self.on_mirror)
-
-        self.ui.xmin_btn.clicked.connect(self.on_xmin_clicked)
-        self.ui.ymin_btn.clicked.connect(self.on_ymin_clicked)
-        self.ui.xmax_btn.clicked.connect(self.on_xmax_clicked)
-        self.ui.ymax_btn.clicked.connect(self.on_ymax_clicked)
-
-        self.ui.center_btn.clicked.connect(
-            lambda: self.ui.point_entry.set_value(self.ui.center_entry.get_value())
-        )
-
-        self.ui.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
-        self.ui.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
         # ############################################################################################################
 
         self.drill_values = ""
@@ -130,6 +103,41 @@ class DblSidedTool(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("2-Sided Tool"))
 
+    def connect_signals_at_init(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
+        self.ui.object_type_radio.activated_custom.connect(self.on_object_type)
+
+        self.ui.add_point_button.clicked.connect(self.on_point_add)
+        self.ui.add_drill_point_button.clicked.connect(self.on_drill_add)
+        self.ui.delete_drill_point_button.clicked.connect(self.on_drill_delete_last)
+        self.ui.box_type_radio.activated_custom.connect(self.on_combo_box_type)
+
+        self.ui.axis_location.group_toggle_fn = self.on_toggle_pointbox
+
+        self.ui.point_entry.textChanged.connect(lambda val: self.ui.align_ref_label_val.set_value(val))
+        self.ui.pick_hole_button.clicked.connect(self.on_pick_hole)
+        self.ui.mirror_button.clicked.connect(self.on_mirror)
+
+        self.ui.xmin_btn.clicked.connect(self.on_xmin_clicked)
+        self.ui.ymin_btn.clicked.connect(self.on_ymin_clicked)
+        self.ui.xmax_btn.clicked.connect(self.on_xmax_clicked)
+        self.ui.ymax_btn.clicked.connect(self.on_ymax_clicked)
+
+        self.ui.center_btn.clicked.connect(
+            lambda: self.ui.point_entry.set_value(self.ui.center_entry.get_value())
+        )
+
+        self.ui.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
+        self.ui.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
         self.reset_fields()
 
@@ -157,6 +165,77 @@ class DblSidedTool(AppTool):
 
         if self.local_connected is True:
             self.disconnect_events()
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.bv_label.hide()
+
+            self.ui.xmin_entry.hide()
+            self.ui.xmin_btn.hide()
+            self.ui.ymin_entry.hide()
+            self.ui.ymin_btn.hide()
+            self.ui.xmax_entry.hide()
+            self.ui.xmax_btn.hide()
+            self.ui.ymax_entry.hide()
+            self.ui.ymax_btn.hide()
+
+            self.ui.center_entry.hide()
+            self.ui.center_btn.hide()
+
+            self.ui.calculate_bb_button.hide()
+            self.ui.bounds_separator_line.hide()
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.bv_label.show()
+
+            self.ui.xmin_entry.show()
+            self.ui.xmin_btn.show()
+            self.ui.ymin_entry.show()
+            self.ui.ymin_btn.show()
+            self.ui.xmax_entry.show()
+            self.ui.xmax_btn.show()
+            self.ui.ymax_entry.show()
+            self.ui.ymax_btn.show()
+
+            self.ui.center_entry.show()
+            self.ui.center_btn.show()
+
+            self.ui.calculate_bb_button.show()
+            self.ui.bounds_separator_line.show()
 
     def on_object_type(self, val):
         obj_type = {'grb': 0, 'exc': 1, 'geo': 2}[val]
@@ -532,23 +611,54 @@ class DsidedUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
+                                        QLabel
+                                        {
+                                            font-size: 16px;
+                                            font-weight: bold;
+                                        }
+                                        """)
+        title_label.setToolTip(
+            _("Create a Geometry object with\n"
+              "toolpaths to cover the space outside the copper pattern.")
+        )
+
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
-        self.layout.addLayout(grid_lay)
+        self.tools_box.addLayout(grid_lay)
 
         # Objects to be mirrored
         self.m_objects_label = FCLabel("<b>%s:</b>" % _("Source Object"))
@@ -590,7 +700,7 @@ class DsidedUI:
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.layout.addLayout(grid0)
+        self.tools_box.addLayout(grid0)
 
         # ## Title Bounds Values
         self.bv_label = FCLabel("<b>%s:</b>" % _('Bounds Values'))
@@ -685,10 +795,10 @@ class DsidedUI:
                                                """)
         grid0.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 2)
+        self.bounds_separator_line = QtWidgets.QFrame()
+        self.bounds_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.bounds_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.bounds_separator_line, 14, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    MIRROR OPERATION    ###########################################################################
@@ -696,7 +806,7 @@ class DsidedUI:
         grid1 = QtWidgets.QGridLayout()
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
-        self.layout.addLayout(grid1)
+        self.tools_box.addLayout(grid1)
 
         self.param_label = FCLabel("<b>%s:</b>" % _("Mirror Operation"))
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
@@ -752,12 +862,12 @@ class DsidedUI:
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coordinates manually.")
         )
-        self.add_point_button.setStyleSheet("""
-                                        QPushButton
-                                        {
-                                            font-weight: bold;
-                                        }
-                                        """)
+        # self.add_point_button.setStyleSheet("""
+        #                                 QPushButton
+        #                                 {
+        #                                     font-weight: bold;
+        #                                 }
+        #                                 """)
         self.add_point_button.setMinimumWidth(60)
 
         grid1.addWidget(self.point_entry, 7, 0, 1, 2)
@@ -850,7 +960,7 @@ class DsidedUI:
         grid4 = QtWidgets.QGridLayout()
         grid4.setColumnStretch(0, 0)
         grid4.setColumnStretch(1, 1)
-        self.layout.addLayout(grid4)
+        self.tools_box.addLayout(grid4)
 
         # ## Alignment holes
         self.alignment_label = FCLabel("<b>%s:</b>" % _('PCB Alignment'))
@@ -914,7 +1024,7 @@ class DsidedUI:
         grid4.addWidget(self.align_ref_label_val, 6, 1)
 
         grid5 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid5)
+        self.tools_box.addLayout(grid5)
 
         # ## Alignment holes
         self.ah_label = FCLabel("%s:" % _('Alignment Drill Coordinates'))
@@ -976,9 +1086,9 @@ class DsidedUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.create_alignment_hole_button)
+        self.tools_box.addWidget(self.create_alignment_hole_button)
 
-        self.layout.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
@@ -992,7 +1102,7 @@ class DsidedUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.reset_button)
+        self.tools_box.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
