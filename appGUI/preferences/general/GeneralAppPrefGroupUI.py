@@ -103,7 +103,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                           "the Selected Tab for all kinds of FlatCAM objects."))
         grid0.addWidget(self.app_level_label, 10, 0, 1, 2)
 
-        self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
+        self.app_level_radio = RadioSet([{'label': _('Beginner'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
         grid0.addWidget(self.app_level_radio, 12, 0, 1, 2)
 

@@ -2321,7 +2321,7 @@ class CutoutUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.tools_box.addWidget(FCLabel(''))
+        # self.tools_box.addWidget(FCLabel(''))
 
         # Form Layout
         grid0 = QtWidgets.QGridLayout()

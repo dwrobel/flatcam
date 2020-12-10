@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - Paint Tool - remade the 'Beginner/Advanced' Mode
 - Cutout Tool - remade the 'Beginner/Advanced' Mode
 - minor changes to the UI to all Tools with 'Beginner/Advanced' Mode
+- Film Tool - remade the 'Beginner/Advanced' Mode
 
 9.11.2020
 

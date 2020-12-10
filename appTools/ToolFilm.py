@@ -57,17 +57,7 @@ class Film(AppTool):
         # #############################################################################################################
         # #####################################    Signals     ########################################################
         # #############################################################################################################
-        self.ui.film_object_button.clicked.connect(self.on_film_creation)
-        self.ui.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
-        self.ui.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
-
-        self.ui.film_type.activated_custom.connect(self.ui.on_film_type)
-        self.ui.source_punch.activated_custom.connect(self.ui.on_punch_source)
-        self.ui.file_type_radio.activated_custom.connect(self.ui.on_file_type)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
         # #############################################################################################################
 
         self.screen_dpi = 96
@@ -152,6 +142,24 @@ class Film(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+L', **kwargs)
 
+    def connect_signals_at_init(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
+        self.ui.film_object_button.clicked.connect(self.on_film_creation)
+        self.ui.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+        self.ui.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
+
+        self.ui.film_type.activated_custom.connect(self.ui.on_film_type)
+        self.ui.source_punch.activated_custom.connect(self.ui.on_punch_source)
+        self.ui.file_type_radio.activated_custom.connect(self.ui.on_file_type)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
         self.reset_fields()
 
@@ -164,7 +172,7 @@ class Film(AppTool):
 
         scale_stroke_width = self.app.defaults["tools_film_scale_stroke"] if \
             self.app.defaults["tools_film_scale_stroke"] else 0.0
-        self.ui.film_scale_stroke_entry.set_value(int(scale_stroke_width))
+        self.ui.film_scale_stroke_entry.set_value(float(scale_stroke_width))
 
         self.ui.punch_cb.set_value(False)
         self.ui.source_punch.set_value('exc')
@@ -189,6 +197,76 @@ class Film(AppTool):
         # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
         self.on_type_obj_index_changed(val='grb')
         self.on_type_box_index_changed(val='grb')
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.film_adj_label.hide()
+            self.ui.film_scale_cb.hide()
+            self.ui.scale_separator_line.hide()
+            self.ui.film_skew_cb.hide()
+            self.ui.skew_separator_line1.hide()
+            self.ui.film_mirror_cb.hide()
+            self.ui.mirror_separator_line2.hide()
+            self.ui.film_scale_stroke_label.hide()
+            self.ui.film_scale_stroke_entry.hide()
+
+            self.ui.film_scale_cb.set_value(False)
+            self.ui.film_skew_cb.set_value(False)
+            self.ui.film_mirror_cb.set_value(False)
+            self.ui.film_scale_stroke_entry.set_value(0.0)
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.film_adj_label.show()
+            self.ui.film_scale_cb.show()
+            self.ui.scale_separator_line.show()
+            self.ui.film_skew_cb.show()
+            self.ui.skew_separator_line1.show()
+            self.ui.film_mirror_cb.show()
+            self.ui.mirror_separator_line2.show()
+            self.ui.film_scale_stroke_label.show()
+            self.ui.film_scale_stroke_entry.show()
+
+            self.ui.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
+            self.ui.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
+            self.ui.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
+
+            scale_stroke_width = self.app.defaults["tools_film_scale_stroke"] if \
+                self.app.defaults["tools_film_scale_stroke"] else 0.0
+            self.ui.film_scale_stroke_entry.set_value(float(scale_stroke_width))
 
     def on_film_creation(self):
         log.debug("ToolFilm.Film.on_film_creation() started ...")
@@ -1007,21 +1085,50 @@ class FilmUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
-                                QLabel
-                                {
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                }
-                                """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
+                                        QLabel
+                                        {
+                                            font-size: 16px;
+                                            font-weight: bold;
+                                        }
+                                        """)
+        title_label.setToolTip(
+            _("Create a positive/negative film for UV exposure.")
+        )
 
-        # Form Layout
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
+        # Grid Layout
         grid0 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid0)
+        self.tools_box.addLayout(grid0)
 
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -1030,7 +1137,7 @@ class FilmUI:
         self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_obj_combo_label = FCLabel('<b>%s</b>:' % _("Object"))
+        self.tf_type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object for which to create the film.\n"
               "The object can be of type: Gerber or Geometry.\n"
@@ -1084,8 +1191,12 @@ class FilmUI:
 
         grid0.addWidget(self.film_adj_label, 5, 0, 1, 2)
 
+        # #############################################################################################################
+        # ############################    Transformations    ##########################################################
+        # #############################################################################################################
+
         # Scale Geometry
-        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film geometry"))
+        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film"))
         self.film_scale_cb.setToolTip(
             _("A value greater than 1 will stretch the film\n"
               "while a value less than 1 will jolt it.")
@@ -1123,13 +1234,13 @@ class FilmUI:
                                                       self.film_scaley_entry
                                                   ])
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        self.scale_separator_line = QtWidgets.QFrame()
+        self.scale_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.scale_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.scale_separator_line, 9, 0, 1, 2)
 
         # Skew Geometry
-        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film geometry"))
+        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film"))
         self.film_skew_cb.setToolTip(
             _("Positive values will skew to the right\n"
               "while negative values will skew to the left.")
@@ -1184,13 +1295,13 @@ class FilmUI:
                                                      self.film_skew_reference
                                                  ])
 
-        separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line1, 14, 0, 1, 2)
+        self.skew_separator_line1 = QtWidgets.QFrame()
+        self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
+        self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.skew_separator_line1, 14, 0, 1, 2)
 
         # Mirror Geometry
-        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film geometry"))
+        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film"))
         self.film_mirror_cb.setToolTip(
             _("Mirror the film geometry on the selected axis or on both.")
         )
@@ -1217,10 +1328,10 @@ class FilmUI:
                                                        self.film_mirror_axis
                                                    ])
 
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line2, 17, 0, 1, 2)
+        self.mirror_separator_line2 = QtWidgets.QFrame()
+        self.mirror_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.mirror_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.mirror_separator_line2, 17, 0, 1, 2)
 
         self.film_param_label = FCLabel('<b>%s</b>' % _("Film Parameters"))
 

@@ -620,7 +620,7 @@ class FollowUI:
                                 """)
         title_label.setToolTip(
             _("Create a Geometry object with\n"
-              "toolpaths to cut around polygons.")
+              "toolpaths to cut through the middle of polygons.")
         )
 
         self.title_box.addWidget(title_label)
