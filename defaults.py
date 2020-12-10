@@ -111,7 +111,7 @@ class FlatCAMDefaults:
         "global_gray_icons": False,
 
         "global_layout": "compact",
-        "global_hover": False,
+        "global_hover_shape": False,
         "global_selection_shape": True,
 
         "global_sel_fill": '#a5a5ffbf',

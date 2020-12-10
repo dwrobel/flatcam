@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - fixed a bug where this Tool will work on a previous version of the selected Excellon object (in case that the object was altered between launch of the Drilling Tool and the GCode generation)
 - added some color coded titles in some Application Tools that hold multiple functions
 - in ObjectCollection class made sure to use the log handler defined in the App class
+- minor changes in App.__init__()
 
 9.11.2020
 

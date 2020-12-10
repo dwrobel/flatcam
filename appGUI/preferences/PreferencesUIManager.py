@@ -81,7 +81,7 @@ class PreferencesUIManager:
             "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
             "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
             "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
-            "global_hover": self.ui.general_defaults_form.general_gui_group.hover_cb,
+            "global_hover_shape": self.ui.general_defaults_form.general_gui_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_group.selection_cb,
 
             "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,

@@ -1115,6 +1115,24 @@ class App(QtCore.QObject):
         if self.plotcanvas == 'fail':
             return
 
+        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
+        # VisPy visuals
+        if self.is_legacy is False:
+            try:
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.tool_shapes = None
+
+            # Storage for Hover Shapes
+            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+        else:
+            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
+
+            # Storage for Hover Shapes
+            # will use the default Matplotlib axes
+            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
+
         end_plot_time = time.time()
         self.used_time = end_plot_time - start_plot_time
         self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
@@ -1127,31 +1145,11 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
-        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
-        # VisPy visuals
-        if self.is_legacy is False:
-            try:
-                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
-            except AttributeError:
-                self.tool_shapes = None
-        else:
-            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
-
-        # Storage for Hover Shapes
-        if self.is_legacy is False:
-            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
-        else:
-            # will use the default Matplotlib axes
-            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
-
         # ###########################################################################################################
         # ############################################### Worker SETUP ##############################################
         # ###########################################################################################################
-        if self.defaults["global_worker_number"]:
-            self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
-        else:
-            self.workers = WorkerStack(workers_number=2)
+        w_number = int(self.defaults["global_worker_number"]) if self.defaults["global_worker_number"] else 2
+        self.workers = WorkerStack(workers_number=w_number)
 
         self.worker_task.connect(self.workers.add_task)
         self.log.debug("Finished creating Workers crew.")
@@ -6687,7 +6685,7 @@ class App(QtCore.QObject):
                     self.selection_type = None
 
                 # hover effect - enabled in Preferences -> General -> appGUI Settings
-                if self.defaults['global_hover']:
+                if self.defaults['global_hover_shape']:
                     for obj in self.collection.get_list():
                         try:
                             # select the object(s) only if it is enabled (plotted)
