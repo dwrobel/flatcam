@@ -60,10 +60,10 @@ class NonCopperClear(AppTool, Gerber):
         # #############################################################################
         self.ui.tools_table.setupContextMenu()
         self.ui.tools_table.addContextMenu(
-            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+            _("Add"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
         )
         self.ui.tools_table.addContextMenu(
-            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+            _("Add from DB"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
         )
         self.ui.tools_table.addContextMenu(
             _("Delete"), lambda:
@@ -223,6 +223,8 @@ class NonCopperClear(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
         # Custom Signal
         self.optimal_found_sig.connect(lambda val: self.ui.new_tooldia_entry.set_value(float(val)))
@@ -482,37 +484,6 @@ class NonCopperClear(AppTool, Gerber):
 
         self.blockSignals(False)
 
-    def on_add_tool_by_key(self):
-        # tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-        #                                text='%s:' % _('Enter a Tool Diameter'),
-        #                                min=0.0001, max=10000.0000, decimals=self.decimals)
-        btn_icon = QtGui.QIcon(self.app.resource_location + '/open_excellon32.png')
-
-        tool_add_popup = FCInputDialogSpinnerButton(title='%s...' % _("New Tool"),
-                                                    text='%s:' % _('Enter a Tool Diameter'),
-                                                    min=0.0001, max=10000.0000, decimals=self.decimals,
-                                                    button_icon=btn_icon,
-                                                    callback=self.on_find_optimal_tooldia,
-                                                    parent=self.app.ui)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
-
-        def find_optimal(valor):
-            tool_add_popup.set_value(float(valor))
-
-        self.optimal_found_sig.connect(find_optimal)
-
-        val, ok = tool_add_popup.get_results()
-        if ok:
-            if float(val) == 0:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter with non-zero value, in Float format."))
-                self.optimal_found_sig.disconnect(find_optimal)
-                return
-            self.on_tool_add(custom_dia=float(val))
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
-        self.optimal_found_sig.disconnect(find_optimal)
-
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_ncc_newdia"]
@@ -573,6 +544,10 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_ncc_milling_type"])
 
         self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_ncc_newdia"])
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
         # init the working variables
         self.default_data.clear()
@@ -657,6 +632,114 @@ class NonCopperClear(AppTool, Gerber):
         self.sel_rect = []
 
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.hide()
+            self.ui.new_tooldia_lbl.hide()
+            self.ui.new_tooldia_entry.hide()
+            self.ui.search_and_add_btn.hide()
+            self.ui.addtool_from_db_btn.hide()
+            self.ui.find_optimal_button.hide()
+            self.ui.deltool_btn.hide()
+            self.ui.add_tool_separator_line.hide()
+
+            # Tool parameters section
+            if self.ncc_tools:
+                for tool in self.ncc_tools:
+                    tool_data = self.ncc_tools[tool]['data']
+
+                    tool_data['tools_ncc_operation'] = "clear"
+                    tool_data['tools_ncc_milling_type'] = "cl"
+
+                    tool_data['tools_ncc_offset_choice'] = False
+                    tool_data['tools_ncc_offset_value'] = 0.0
+                    tool_data['tools_ncc_rest'] = False
+
+            self.ui.op_label.hide()
+            self.ui.op_radio.hide()
+            self.ui.milling_type_label.hide()
+            self.ui.milling_type_radio.hide()
+            self.ui.ncc_choice_offset_cb.hide()
+            self.ui.ncc_offset_spinner.hide()
+
+            self.ui.ncc_rest_cb.hide()
+
+            # All param section
+            self.ui.all_param_separator_line2.hide()
+            self.ui.apply_param_to_all.hide()
+
+            # Context Menu section
+            self.ui.tools_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.tool_sel_label.show()
+            self.ui.new_tooldia_lbl.show()
+            self.ui.new_tooldia_entry.show()
+            self.ui.search_and_add_btn.show()
+            self.ui.addtool_from_db_btn.show()
+            self.ui.find_optimal_button.show()
+            self.ui.deltool_btn.show()
+            self.ui.add_tool_separator_line.show()
+
+            # Tool parameters section
+            if self.ncc_tools:
+                app_defaults = self.app.defaults
+                for tool in self.ncc_tools:
+                    tool_data = self.ncc_tools[tool]['data']
+
+                    tool_data['tools_ncc_operation'] = app_defaults['tools_ncc_operation']
+                    tool_data['tools_ncc_milling_type'] = app_defaults['tools_ncc_milling_type']
+
+                    tool_data['tools_ncc_offset_choice'] = app_defaults['tools_ncc_offset_choice']
+                    tool_data['tools_ncc_offset_value'] = app_defaults['tools_ncc_offset_value']
+                    tool_data['tools_ncc_rest'] = app_defaults['tools_ncc_rest']
+
+            self.ui.op_label.show()
+            self.ui.op_radio.show()
+            self.ui.milling_type_label.show()
+            self.ui.milling_type_radio.show()
+            self.ui.ncc_choice_offset_cb.show()
+            self.ui.ncc_offset_spinner.show()
+
+            self.ui.ncc_rest_cb.show()
+
+            # All param section
+            self.ui.all_param_separator_line2.show()
+            self.ui.apply_param_to_all.show()
+
+            # Context Menu section
+            self.ui.tools_table.setupContextMenu()
 
     def rebuild_ui(self):
         # read the table tools uid
@@ -1317,6 +1400,37 @@ class NonCopperClear(AppTool, Gerber):
 
         if muted is None:
             self.app.inform.emit('[success] %s' % _("Default tool added to Tool Table."))
+
+    def on_tool_add_by_key(self):
+        # tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+        #                                text='%s:' % _('Enter a Tool Diameter'),
+        #                                min=0.0001, max=10000.0000, decimals=self.decimals)
+        btn_icon = QtGui.QIcon(self.app.resource_location + '/open_excellon32.png')
+
+        tool_add_popup = FCInputDialogSpinnerButton(title='%s...' % _("New Tool"),
+                                                    text='%s:' % _('Enter a Tool Diameter'),
+                                                    min=0.0001, max=10000.0000, decimals=self.decimals,
+                                                    button_icon=btn_icon,
+                                                    callback=self.on_find_optimal_tooldia,
+                                                    parent=self.app.ui)
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+        def find_optimal(valor):
+            tool_add_popup.set_value(float(valor))
+
+        self.optimal_found_sig.connect(find_optimal)
+
+        val, ok = tool_add_popup.get_results()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                self.optimal_found_sig.disconnect(find_optimal)
+                return
+            self.on_tool_add(custom_dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+        self.optimal_found_sig.disconnect(find_optimal)
 
     def on_tool_edit(self, item):
         self.blockSignals(True)
@@ -3970,6 +4084,9 @@ class NccUI:
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.tools_frame.setLayout(self.tools_box)
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -3979,13 +4096,34 @@ class NccUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(title_label)
+        title_label.setToolTip(
+            _("Create a Geometry object with\n"
+              "toolpaths to cover the space outside the copper pattern.")
+        )
+
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        self.type_obj_combo_label = FCLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cleared of excess copper.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -4008,10 +4146,10 @@ class NccUI:
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
-        self.object_label = FCLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(_("Object to be cleared of excess copper."))
+        # self.object_label = FCLabel('%s:' % _("Object"))
+        # self.object_label.setToolTip(_("Object to be cleared of excess copper."))
 
-        form_layout.addRow(self.object_label, self.object_combo)
+        form_layout.addRow(self.object_combo)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -4182,10 +4320,10 @@ class NccUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 11, 0, 1, 2)
+        self.add_tool_separator_line = QtWidgets.QFrame()
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -4198,8 +4336,8 @@ class NccUI:
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
         # Operation
-        op_label = FCLabel('%s:' % _('Operation'))
-        op_label.setToolTip(
+        self.op_label = FCLabel('%s:' % _('Operation'))
+        self.op_label.setToolTip(
             _("The 'Operation' can be:\n"
               "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
               "If it's not successful then the non-copper clearing will fail, too.\n"
@@ -4212,7 +4350,7 @@ class NccUI:
         ], orientation='horizontal', stretch=False)
         self.op_radio.setObjectName("n_operation")
 
-        self.grid3.addWidget(op_label, 13, 0)
+        self.grid3.addWidget(self.op_label, 13, 0)
         self.grid3.addWidget(self.op_radio, 13, 1)
 
         # Milling Type Radio Button
@@ -4356,10 +4494,10 @@ class NccUI:
         )
         self.grid3.addWidget(self.apply_param_to_all, 22, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 23, 0, 1, 2)
+        self.all_param_separator_line2 = QtWidgets.QFrame()
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(self.all_param_separator_line2, 23, 0, 1, 2)
 
         # General Parameters
         self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))

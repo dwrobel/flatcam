@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.12.2020
+
+- NCC Tool - remade the 'Beginner/Advanced' Mode
+
 9.11.2020
 
 - simplifying the UI for the Milling Tool when in 'Beginner' mode
