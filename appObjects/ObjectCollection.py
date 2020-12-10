@@ -286,8 +286,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.root_item.append_child(item)
 
         # Create test sub-items
-        # for i in self.root_item.m_child_items:
-        #     print i.data(0)
+        # for i in self.root_item.child_items:
+        #     print(i.data(1))
         #     i.append_child(TreeItem(["empty"]))
 
         # ## Data # ##
@@ -345,7 +345,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.item_selected.connect(self.on_row_selected)
 
     def promise(self, obj_name):
-        log.debug("Object %s has been promised." % obj_name)
+        self.app.log.debug("Object %s has been promised." % obj_name)
         self.promises.add(obj_name)
 
     def has_promises(self):
@@ -362,7 +362,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return len(self.plot_promises) > 0
 
     def on_mouse_down(self, event):
-        log.debug("Mouse button pressed on list")
+        self.app.log.debug("Mouse button pressed on list")
 
     def on_menu_request(self, pos):
 
@@ -520,7 +520,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                         self.app.myKeywords.append(new_name)
                         self.app.shell._edit.set_model_data(self.app.myKeywords)
                     except Exception as e:
-                        log.debug(
+                        self.app.log.debug(
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %
                             str(e))
                     # obj.build_ui()
@@ -553,7 +553,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
     def append(self, obj, active=False, to_index=None):
-        log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]
 
@@ -567,7 +567,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         while name in self.get_names():
             # ## Create a new name
             # Ends with number?
-            log.debug("app_obj.new_object(): Object name (%s) exists, changing." % name)
+            self.app.log.debug("app_obj.new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
             if match:  # Yes: Increment the number!
                 base = match.group(1) or ''
@@ -634,7 +634,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: [xmin, ymin, xmax, ymax]
         :rtype: list
         """
-        log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
 
         # TODO: Move the operation out of here.
 
@@ -652,7 +652,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
+                self.app.log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
 
         return [xmin, ymin, xmax, ymax]
 
@@ -703,7 +703,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # this is not needed any more because now the code editor is created on demand
             # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
-            log.debug(
+            self.app.log.debug(
                 "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
         self.app.object_status_changed.emit(active.obj, 'delete', name)
@@ -756,7 +756,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # this is not needed any more because now the code editor is created on demand
             # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
-            log.debug(
+            self.app.log.debug(
                 "delete_by_name() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
         self.app.object_status_changed.emit(deleted.obj, 'delete', name)
@@ -788,7 +788,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.all_objects_list = self.get_list()
 
     def delete_all(self):
-        log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+        self.app.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
         self.app.object_status_changed.emit(None, 'delete_all', '')
 
@@ -818,7 +818,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             self.app.plotcanvas.redraw()
         except Exception as e:
-            log.debug("ObjectCollection.delete_all() --> %s" % str(e))
+            self.app.log.debug("ObjectCollection.delete_all() --> %s" % str(e))
 
     def get_active(self):
         """
@@ -872,7 +872,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.Select)
         except Exception as e:
-            log.error("[ERROR] Cause: %s" % str(e))
+            self.app.log.error("[ERROR] Cause: %s" % str(e))
             raise
 
     def set_all_active(self):
@@ -982,7 +982,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             try:
                 self.app.ui.properties_scroll_area.takeWidget()
             except Exception as e:
-                log.debug("Nothing to remove. %s" % str(e))
+                self.app.log.debug("ObjectCollection.on_list_selection_changed() -> Nothing to remove. %s" % str(e))
 
             self.app.setup_default_properties_tab()
             return
