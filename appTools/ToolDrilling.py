@@ -1814,6 +1814,9 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s.' % _("Object not found"))
             return
 
+        # update the Excellon Tools
+        self.excellon_tools = obj.tools
+
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
         xmax = obj.options['xmax']
