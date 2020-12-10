@@ -405,6 +405,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.level.setChecked(True)
         else:
             self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
 
     def on_level_changed(self, checked):
         if not checked:

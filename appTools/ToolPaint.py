@@ -606,6 +606,7 @@ class ToolPaint(AppTool, Gerber):
             self.ui.level.setChecked(True)
         else:
             self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
 
     def on_level_changed(self, checked):
         if not checked:
@@ -2892,8 +2893,8 @@ class PaintUI:
                                 }
                                 """)
         title_label.setToolTip(
-            _("Create a Geometry object with\n"
-              "toolpaths to cover exclusively the copper pattern.")
+            _("Create a Geometry object with toolpaths\n"
+              "that cover only the copper pattern.")
         )
         self.title_box.addWidget(title_label)
 

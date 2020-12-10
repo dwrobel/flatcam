@@ -103,23 +103,7 @@ class CutOut(AppTool):
         self.cut_tool_dict = {}
 
         # Signals
-        self.ui.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
-        self.ui.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
-
-        # adding tools
-        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
-        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
-
-        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
-        self.ui.cutout_type_radio.activated_custom.connect(self.on_cutout_type)
-
-        self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
-        self.ui.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
-        self.ui.drillcut_btn.clicked.connect(self.on_drill_cut_click)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
 
     def on_type_obj_changed(self, val):
         obj_type = {'grb': 0, 'geo': 2}[val]
@@ -194,6 +178,30 @@ class CutOut(AppTool):
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+X', **kwargs)
+
+    def connect_signals_at_init(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
+        self.ui.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
+        self.ui.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
+
+        # adding tools
+        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
+        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
+
+        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.ui.cutout_type_radio.activated_custom.connect(self.on_cutout_type)
+
+        self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
+        self.ui.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
+        self.ui.drillcut_btn.clicked.connect(self.on_drill_cut_click)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
         self.reset_fields()
@@ -288,6 +296,112 @@ class CutOut(AppTool):
         self.ui.drill_dia_entry.set_value(float(self.app.defaults["tools_cutout_drill_dia"]))
         self.ui.drill_pitch_entry.set_value(float(self.app.defaults["tools_cutout_drill_pitch"]))
         self.ui.drill_margin_entry.set_value(float(self.app.defaults["tools_cutout_drill_margin"]))
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.convex_box_label.hide()
+            self.ui.convex_box_cb.hide()
+
+            # Add Tool section
+            self.ui.tool_sel_label.hide()
+            self.ui.add_newtool_button.hide()
+            self.ui.addtool_from_db_btn.hide()
+
+            # Tool parameters section
+            if self.cut_tool_dict:
+                tool_data = self.cut_tool_dict['data']
+
+                tool_data['tools_cutout_convexshape'] = False
+                tool_data['tools_cutout_gap_type'] = "b"
+
+            self.ui.gaptype_label.hide()
+            self.ui.gaptype_radio.hide()
+            self.ui.cutout_type_label.hide()
+            self.ui.cutout_type_radio.hide()
+            self.ui.cutout_type_radio.set_value('a')
+            self.ui.tool_param_separator_line.hide()
+
+            self.ui.title_drillcut_label.hide()
+            self.ui.drillcut_object_lbl.hide()
+            self.ui.drillcut_object_combo.hide()
+            self.ui.drill_dia_label.hide()
+            self.ui.drill_dia_entry.hide()
+            self.ui.drill_pitch_label.hide()
+            self.ui.drill_pitch_entry.hide()
+            self.ui.drill_pitch_entry.hide()
+            self.ui.drill_margin_label.hide()
+            self.ui.drill_margin_entry.hide()
+            self.ui.drillcut_btn.hide()
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.convex_box_label.show()
+            self.ui.convex_box_cb.show()
+
+            # Add Tool section
+            self.ui.tool_sel_label.show()
+            self.ui.add_newtool_button.show()
+            self.ui.addtool_from_db_btn.show()
+
+            # Tool parameters section
+            if self.cut_tool_dict:
+                app_defaults = self.app.defaults
+                tool_data = self.cut_tool_dict['data']
+
+                tool_data['tools_cutout_convexshape'] = app_defaults['tools_cutout_convexshape']
+                tool_data['tools_cutout_gap_type'] = app_defaults['tools_cutout_gap_type']
+
+            self.ui.gaptype_label.show()
+            self.ui.gaptype_radio.show()
+            self.ui.cutout_type_label.show()
+            self.ui.cutout_type_radio.show()
+            self.ui.cutout_type_radio.set_value('a')
+            self.ui.tool_param_separator_line.show()
+
+            self.ui.title_drillcut_label.show()
+            self.ui.drillcut_object_lbl.show()
+            self.ui.drillcut_object_combo.show()
+            self.ui.drill_dia_label.show()
+            self.ui.drill_dia_entry.show()
+            self.ui.drill_pitch_label.show()
+            self.ui.drill_pitch_entry.show()
+            self.ui.drill_pitch_entry.show()
+            self.ui.drill_margin_label.show()
+            self.ui.drill_margin_entry.show()
+            self.ui.drillcut_btn.show()
 
     def update_ui(self, tool_dict):
         self.ui.obj_kind_combo.set_value(self.default_data["tools_cutout_kind"])
@@ -2165,6 +2279,17 @@ class CutoutUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -2174,15 +2299,35 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        title_label.setToolTip(
+            _("Create a Geometry object with toolpaths\n"
+              "for cutting out the object from the surrounding material.")
+        )
+        self.title_box.addWidget(title_label)
 
-        self.layout.addWidget(FCLabel(''))
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
+        self.tools_box.addWidget(FCLabel(''))
 
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.layout.addLayout(grid0)
+        self.tools_box.addLayout(grid0)
 
         self.object_label = FCLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip('%s.' % _("Object to be cutout"))
@@ -2596,19 +2741,19 @@ class CutoutUI:
                                 """)
         grid0.addWidget(self.man_gaps_creation_btn, 58, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 60, 0, 1, 2)
+        self.tool_param_separator_line = QtWidgets.QFrame()
+        self.tool_param_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.tool_param_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.tool_param_separator_line, 60, 0, 1, 2)
 
         # grid0.addWidget(FCLabel(""), 62, 0, 1, 2)
 
         # Cut by Drilling Title
-        title_drillcut_label = FCLabel("<b>%s</b>:" % _('Cut by Drilling'))
-        title_drillcut_label.setToolTip(
+        self.title_drillcut_label = FCLabel("<b>%s</b>:" % _('Cut by Drilling'))
+        self.title_drillcut_label.setToolTip(
             _("Create a series of drill holes following a geometry line.")
         )
-        grid0.addWidget(title_drillcut_label, 64, 0, 1, 2)
+        grid0.addWidget(self.title_drillcut_label, 64, 0, 1, 2)
 
         # Drilling Geo Object Label
         self.drillcut_object_lbl = FCLabel('%s:' % _("Geometry"))
