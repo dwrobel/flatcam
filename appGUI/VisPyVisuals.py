@@ -260,7 +260,7 @@ class ShapeCollectionVisual(CompoundVisual):
         self.freeze()
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
-            update=False, layer=1, tolerance=0.01, linewidth=None):
+            update=False, layer=1, tolerance=0.001, linewidth=None):
         """
         Adds shape to collection
         :return:

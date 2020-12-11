@@ -107,9 +107,9 @@ class FlatCAMObj(QtCore.QObject):
 
         try:
             self._drawing_tolerance = float(self.app.defaults["global_tolerance"]) if \
-                self.app.defaults["global_tolerance"] else 0.01
+                self.app.defaults["global_tolerance"] else 0.001
         except ValueError:
-            self._drawing_tolerance = 0.01
+            self._drawing_tolerance = 0.001
 
         self.isHovering = False
         self.notHovering = True

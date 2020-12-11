@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - fixed it to update the UI form also for common parameters on object change
 - new Application Objects will hold all the options that start with 'tools_'
 - Tool Corners - fixed the positions of the drills and for the verification locations in the Drill in Locations and Check in Locations Excellon objects, to take in the consideration the tool diameter
+- modified the default drawing tolerance from 0.01 to 0.001
 
 10.12.2020
 
