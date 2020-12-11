@@ -381,29 +381,29 @@ class ToolCorners(AppTool):
         drill_list = []
 
         if tl_state:
-            x = xmin - margin - line_thickness / 2.0
-            y = ymax + margin + line_thickness / 2.0
+            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if tr_state:
-            x = xmax + margin + line_thickness / 2.0
-            y = ymax + margin + line_thickness / 2.0
+            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if bl_state:
-            x = xmin - margin - line_thickness / 2.0
-            y = ymin - margin - line_thickness / 2.0
+            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if br_state:
-            x = xmax + margin + line_thickness / 2.0
-            y = ymin - margin - line_thickness / 2.0
+            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
@@ -439,7 +439,7 @@ class ToolCorners(AppTool):
     def on_create_check_object(self):
         self.app.call_source = "corners_tool"
 
-        tooldia = self.ui.drill_dia_entry.get_value()
+        tooldia = 0.1 if self.units == 'MM' else 0.0254
 
         if tooldia == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("The tool diameter is zero.")))
@@ -475,36 +475,36 @@ class ToolCorners(AppTool):
         drill_list = []
 
         if tl_state:
-            x = xmin - margin - line_thickness / 2.0
-            y = ymax + margin + line_thickness / 2.0
+            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if tr_state:
-            x = xmax + margin + line_thickness / 2.0
-            y = ymax + margin + line_thickness / 2.0
+            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+            y = ymax + margin + line_thickness / 2.0 - tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if bl_state:
-            x = xmin - margin - line_thickness / 2.0
-            y = ymin - margin - line_thickness / 2.0
+            x = xmin - margin - line_thickness / 2.0 + tooldia / 2.0
+            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         if br_state:
-            x = xmax + margin + line_thickness / 2.0
-            y = ymin - margin - line_thickness / 2.0
+            x = xmax + margin + line_thickness / 2.0 - tooldia / 2.0
+            y = ymin - margin - line_thickness / 2.0 + tooldia / 2.0
             drill_list.append(
                 Point((x, y))
             )
 
         tools = {
             1: {
-                "tooldia": 0.1 if self.units == 'MM' else 0.0254,
+                "tooldia": tooldia,
                 "drills": drill_list,
                 'data': {},
                 "solid_geometry": []

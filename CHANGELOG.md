@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - first tool that benefit from using the object options instead of application defaults; this is useful if an object is recreated on project load
 - Drilling Tool - fixed it to update the UI form also for common parameters on object change
 - new Application Objects will hold all the options that start with 'tools_'
+- Tool Corners - fixed the positions of the drills and for the verification locations in the Drill in Locations and Check in Locations Excellon objects, to take in the consideration the tool diameter
 
 10.12.2020
 
