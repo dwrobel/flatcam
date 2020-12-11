@@ -529,7 +529,7 @@ class ToolCorners(AppTool):
                                                                       filename=None,
                                                                       use_thread=False)
 
-        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
+        outname = '%s_%s' % (str(self.grb_object.options['name']), 'verification')
         ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
 
         self.app.call_source = "app"
