@@ -136,6 +136,7 @@ class AppObject(QtCore.QObject):
                 obj.options[oname] = self.app.options[option]
 
         # add some of the FlatCAM Tools related properties
+        # it is done like this to preserve some kind of order in the keys
         if kind == 'excellon':
             for option in self.app.options:
                 if option.find('tools_drill_') == 0:
@@ -150,7 +151,9 @@ class AppObject(QtCore.QObject):
             for option in self.app.options:
                 if option.find('tools_mill_') == 0:
                     obj.options[option] = self.app.options[option]
-
+            for option in self.app.options:
+                if option.find('tools_') == 0:
+                    obj.options[option] = self.app.options[option]
         # ############################################################################################################
         # ############################################################################################################
 

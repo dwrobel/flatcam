@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - Excellon and Geometry objects no longer have the self.options dict overwritten with the application defaults
 - Drilling Tool - first tool that benefit from using the object options instead of application defaults; this is useful if an object is recreated on project load
 - Drilling Tool - fixed it to update the UI form also for common parameters on object change
+- new Application Objects will hold all the options that start with 'tools_'
 
 10.12.2020
 
