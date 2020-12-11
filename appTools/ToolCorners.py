@@ -62,6 +62,7 @@ class ToolCorners(AppTool):
         self.ui.add_marker_button.clicked.connect(self.add_markers)
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
+        self.ui.check_button.clicked.connect(self.on_create_check_object)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -435,6 +436,108 @@ class ToolCorners(AppTool):
         else:
             self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))
 
+    def on_create_check_object(self):
+        self.app.call_source = "corners_tool"
+
+        tooldia = self.ui.drill_dia_entry.get_value()
+
+        if tooldia == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("The tool diameter is zero.")))
+            return
+
+        line_thickness = self.ui.thick_entry.get_value()
+        margin = self.ui.margin_entry.get_value()
+        tl_state = self.ui.tl_cb.get_value()
+        tr_state = self.ui.tr_cb.get_value()
+        bl_state = self.ui.bl_cb.get_value()
+        br_state = self.ui.br_cb.get_value()
+
+        # get the Gerber object on which the corner marker will be inserted
+        selection_index = self.ui.object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("ToolCorners.add_markers() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.call_source = "app"
+            return
+
+        if tl_state is False and tr_state is False and bl_state is False and br_state is False:
+            self.app.inform.emit("[ERROR_NOTCL] %s." % _("Please select at least a location"))
+            self.app.call_source = "app"
+            return
+
+        xmin, ymin, xmax, ymax = self.grb_object.bounds()
+
+        # list of (x,y) tuples. Store here the drill coordinates
+        drill_list = []
+
+        if tl_state:
+            x = xmin - margin - line_thickness / 2.0
+            y = ymax + margin + line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if tr_state:
+            x = xmax + margin + line_thickness / 2.0
+            y = ymax + margin + line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if bl_state:
+            x = xmin - margin - line_thickness / 2.0
+            y = ymin - margin - line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        if br_state:
+            x = xmax + margin + line_thickness / 2.0
+            y = ymin - margin - line_thickness / 2.0
+            drill_list.append(
+                Point((x, y))
+            )
+
+        tools = {
+            1: {
+                "tooldia": 0.1 if self.units == 'MM' else 0.0254,
+                "drills": drill_list,
+                'data': {},
+                "solid_geometry": []
+            }
+        }
+
+        def obj_init(new_obj, app_inst):
+            new_obj.tools = deepcopy(tools)
+
+            # make sure we use the special preprocessor for checking
+            for tool in tools:
+                new_obj.tools[tool]['data']['tools_drill_ppname_e'] = 'Check_points'
+
+            new_obj.create_geometry()
+            new_obj.options.update({
+                'name': outname,
+                'tools_drill_cutz': -0.1,
+                'tools_drill_ppname_e': 'Check_points'
+            })
+            new_obj.source_file = app_inst.f_handlers.export_excellon(obj_name=new_obj.options['name'],
+                                                                      local_use=new_obj,
+                                                                      filename=None,
+                                                                      use_thread=False)
+
+        outname = '%s_%s' % (str(self.grb_object.options['name']), 'corner_drills')
+        ret_val = self.app.app_obj.new_object("excellon", outname, obj_init)
+
+        self.app.call_source = "app"
+        if ret_val == 'fail':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+        else:
+            self.app.inform.emit('[success] %s' % _("Excellon object with corner drills created."))
+
     def replot(self, obj, run_thread=True):
         def worker_task():
             with self.app.proc_container.new('%s ...' % _("Plotting")):
@@ -511,7 +614,7 @@ class CornersUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(separator_line)
 
-        self.points_label = FCLabel('<b>%s:</b>' % _('Locations'))
+        self.points_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Locations').upper())
         self.points_label.setToolTip(
             _("Locations where to place corner markers.")
         )
@@ -642,7 +745,7 @@ class CornersUI:
         grid_lay.addWidget(separator_line_2, 14, 0, 1, 2)
 
         # Drill is corners
-        self.drills_label = FCLabel('<b>%s:</b>' % _('Drills in Corners'))
+        self.drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Drills in Locations').upper())
         grid_lay.addWidget(self.drills_label, 16, 0, 1, 2)
 
         # Drill Tooldia #
@@ -671,6 +774,32 @@ class CornersUI:
                                         }
                                         """)
         grid_lay.addWidget(self.drill_button, 20, 0, 1, 2)
+
+        separator_line_2 = QtWidgets.QFrame()
+        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line_2, 22, 0, 1, 2)
+
+        # Check is corners
+        self.check_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Check in Locations').upper())
+        grid_lay.addWidget(self.check_label, 24, 0, 1, 2)
+
+        # ## Create an Excellon object for checking the positioning
+        self.check_button = FCButton(_("Create Excellon Object"))
+        self.check_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
+        self.check_button.setToolTip(
+            _("Will create an Excellon object using a special preprocessor.\n"
+              "The spindle will not start and the mounted probe will move to\n"
+              "the corner locations, wait for the user interaction and then\n"
+              "move to the next location until the last one.")
+        )
+        self.check_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+        grid_lay.addWidget(self.check_button, 26, 0, 1, 2)
 
         self.layout.addStretch()
 

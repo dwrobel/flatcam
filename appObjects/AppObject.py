@@ -217,131 +217,6 @@ class AppObject(QtCore.QObject):
 
         return obj
 
-    def new_excellon_object(self):
-        """
-        Creates a new, blank Excellon object.
-
-        :return: None
-        """
-
-        outname = 'new_exc'
-
-        def obj_init(new_obj, app_obj):
-            new_obj.tools = {}
-            new_obj.source_file = ''
-            new_obj.solid_geometry = []
-
-        self.new_object('excellon', outname, obj_init, plot=False)
-
-    def new_geometry_object(self):
-        """
-        Creates a new, blank and single-tool Geometry object.
-
-        :return: None
-        """
-        outname = 'new_geo'
-
-        def initialize(new_obj, app):
-            new_obj.multitool = True
-            new_obj.multigeo = True
-
-            # store here the default data for Geometry Data
-            default_data = {}
-            for opt_key, opt_val in app.options.items():
-                if opt_key.find('geometry' + "_") == 0:
-                    oname = opt_key[len('geometry') + 1:]
-                    default_data[oname] = self.app.options[opt_key]
-                if opt_key.find('tools_') == 0:
-                    default_data[opt_key] = self.app.options[opt_key]
-
-            new_obj.tools = {
-                1: {
-                    'tooldia':          float(app.defaults["tools_mill_tooldia"]),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             'Rough',
-                    'tool_type':        'C1',
-                    'data':             deepcopy(default_data),
-                    'solid_geometry':   []
-                }
-            }
-
-            new_obj.tools[1]['data']['name'] = outname
-
-            new_obj.source_file = ''
-
-        self.new_object('geometry', outname, initialize, plot=False)
-
-    def new_gerber_object(self):
-        """
-        Creates a new, blank Gerber object.
-
-        :return: None
-        """
-
-        def initialize(new_obj, app):
-            new_obj.multitool = False
-            new_obj.source_file = ''
-            new_obj.multigeo = False
-            new_obj.follow = False
-            new_obj.apertures = {}
-            new_obj.solid_geometry = []
-            new_obj.follow_geometry = []
-
-            try:
-                new_obj.options['xmin'] = 0
-                new_obj.options['ymin'] = 0
-                new_obj.options['xmax'] = 0
-                new_obj.options['ymax'] = 0
-            except KeyError:
-                pass
-
-        self.new_object('gerber', 'new_grb', initialize, plot=False)
-
-    def new_script_object(self):
-        """
-        Creates a new, blank TCL Script object.
-
-        :return: None
-        """
-
-        # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-        #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
-        #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-        #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
-        #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-        #                 "ListSys, MillDrills,\n" \
-        #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-        #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
-        #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
-        #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
-        #                 "# SubtractRectangle, Version, WriteGCode\n"
-
-        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
-                          '# %s:\n' % _('TCL Tutorial is here') + \
-                          '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
-                          '# %s:\n' % _("FlatCAM commands list")
-        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
-                                          "(displayed in Tcl Shell).")
-
-        def initialize(new_obj, app):
-            new_obj.source_file = deepcopy(new_source_file)
-
-        outname = 'new_script'
-        self.new_object('script', outname, initialize, plot=False)
-
-    def new_document_object(self):
-        """
-        Creates a new, blank Document object.
-
-        :return: None
-        """
-
-        def initialize(new_obj, app):
-            new_obj.source_file = ""
-
-        self.new_object('document', 'new_document', initialize, plot=False)
-
     def on_object_created(self, obj, plot, auto_select, callback, callback_params):
         """
         Event callback for object creation.
@@ -359,6 +234,9 @@ class AppObject(QtCore.QObject):
         t0 = time.time()  # DEBUG
         log.debug("on_object_created()")
 
+        # #############################################################################################################
+        # ###############################  Add the new object to the Collection  ######################################
+        # #############################################################################################################
         # The Collection might change the name if there is a collision
         self.app.collection.append(obj)
 
@@ -513,3 +391,128 @@ class AppObject(QtCore.QObject):
         :return: None
         """
         self.app.on_zoom_fit()
+
+    def new_excellon_object(self):
+        """
+        Creates a new, blank Excellon object.
+
+        :return: None
+        """
+
+        outname = 'new_exc'
+
+        def obj_init(new_obj, app_obj):
+            new_obj.tools = {}
+            new_obj.source_file = ''
+            new_obj.solid_geometry = []
+
+        self.new_object('excellon', outname, obj_init, plot=False)
+
+    def new_geometry_object(self):
+        """
+        Creates a new, blank and single-tool Geometry object.
+
+        :return: None
+        """
+        outname = 'new_geo'
+
+        def initialize(new_obj, app):
+            new_obj.multitool = True
+            new_obj.multigeo = True
+
+            # store here the default data for Geometry Data
+            default_data = {}
+            for opt_key, opt_val in app.options.items():
+                if opt_key.find('geometry' + "_") == 0:
+                    oname = opt_key[len('geometry') + 1:]
+                    default_data[oname] = self.app.options[opt_key]
+                if opt_key.find('tools_') == 0:
+                    default_data[opt_key] = self.app.options[opt_key]
+
+            new_obj.tools = {
+                1: {
+                    'tooldia':          float(app.defaults["tools_mill_tooldia"]),
+                    'offset':           'Path',
+                    'offset_value':     0.0,
+                    'type':             'Rough',
+                    'tool_type':        'C1',
+                    'data':             deepcopy(default_data),
+                    'solid_geometry':   []
+                }
+            }
+
+            new_obj.tools[1]['data']['name'] = outname
+
+            new_obj.source_file = ''
+
+        self.new_object('geometry', outname, initialize, plot=False)
+
+    def new_gerber_object(self):
+        """
+        Creates a new, blank Gerber object.
+
+        :return: None
+        """
+
+        def initialize(new_obj, app):
+            new_obj.multitool = False
+            new_obj.source_file = ''
+            new_obj.multigeo = False
+            new_obj.follow = False
+            new_obj.apertures = {}
+            new_obj.solid_geometry = []
+            new_obj.follow_geometry = []
+
+            try:
+                new_obj.options['xmin'] = 0
+                new_obj.options['ymin'] = 0
+                new_obj.options['xmax'] = 0
+                new_obj.options['ymax'] = 0
+            except KeyError:
+                pass
+
+        self.new_object('gerber', 'new_grb', initialize, plot=False)
+
+    def new_script_object(self):
+        """
+        Creates a new, blank TCL Script object.
+
+        :return: None
+        """
+
+        # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
+        #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
+        #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
+        #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
+        #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
+        #                 "ListSys, MillDrills,\n" \
+        #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
+        #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
+        #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
+        #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
+        #                 "# SubtractRectangle, Version, WriteGCode\n"
+
+        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
+                          '# %s:\n' % _('TCL Tutorial is here') + \
+                          '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
+                          '# %s:\n' % _("FlatCAM commands list")
+        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
+                                          "(displayed in Tcl Shell).")
+
+        def initialize(new_obj, app):
+            new_obj.source_file = deepcopy(new_source_file)
+
+        outname = 'new_script'
+        self.new_object('script', outname, initialize, plot=False)
+
+    def new_document_object(self):
+        """
+        Creates a new, blank Document object.
+
+        :return: None
+        """
+
+        def initialize(new_obj, app):
+            new_obj.source_file = ""
+
+        self.new_object('document', 'new_document', initialize, plot=False)

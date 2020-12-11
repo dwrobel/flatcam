@@ -7,6 +7,16 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.12.2020
+
+- updated the 'Default_no_M6' preprocessor by removing the Tx command in the Toolchange section to make it compatible with GRBL controllers
+- added a new preprocessor named 'Check_points' which is to be used to check if the PCB is well aligned in position (used by at least the Corners Tool)
+- Tool Corners - added a new feature that creates a verification GCode by moving in the locations positions; modfied the UI a bit
+- Drilling Tool - removed the mandatory Toolchange event added even if the Toolchange was not selected
+- Excellon and Geometry objects no longer have the self.options dict overwritten with the application defaults
+- Drilling Tool - first tool that benefit from using the object options instead of application defaults; this is useful if an object is recreated on project load
+- Drilling Tool - fixed it to update the UI form also for common parameters on object change
+
 10.12.2020
 
 - NCC Tool - remade the 'Beginner/Advanced' Mode

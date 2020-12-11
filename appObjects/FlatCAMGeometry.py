@@ -520,18 +520,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         # store here the default data for Geometry Data
         self.default_data = {}
 
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('geometry' + "_") == 0:
-                oname = opt_key[len('geometry') + 1:]
-                self.default_data[oname] = self.app.options[opt_key]
-            elif opt_key.find('tools_') == 0:
-                self.default_data[opt_key] = self.app.options[opt_key]
+        # for opt_key, opt_val in self.options.items():
+        #     if opt_key.find('geometry' + "_") == 0:
+        #         oname = opt_key[len('geometry') + 1:]
+        #         self.default_data[oname] = self.app.options[opt_key]
+        #     elif opt_key.find('tools_') == 0:
+        #         self.default_data[opt_key] = self.app.options[opt_key]
 
         # fill in self.default_data values from self.options
-        for def_key in self.default_data:
-            for opt_key, opt_val in self.options.items():
-                if def_key == opt_key:
-                    self.default_data[def_key] = deepcopy(opt_val)
+        self.default_data.update(self.options)
 
         if type(self.options["tools_mill_tooldia"]) == float:
             tools_list = [self.options["tools_mill_tooldia"]]

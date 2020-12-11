@@ -123,15 +123,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.units = self.app.defaults['units'].upper()
 
-        # fill in self.options values  for the Drilling Tool from self.app.options
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('tools_drill_') == 0:
-                self.options[opt_key] = deepcopy(opt_val)
-
-        # fill in self.default_data values from self.options
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0 or opt_key.find('tools_drill_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
+        # # fill in self.options values  for the Drilling Tool from self.app.options
+        # for opt_key, opt_val in self.app.options.items():
+        #     if opt_key.find('tools_drill_') == 0:
+        #         self.options[opt_key] = deepcopy(opt_val)
+        #
+        # # fill in self.default_data values from self.options
+        # for opt_key, opt_val in self.app.options.items():
+        #     if opt_key.find('excellon_') == 0 or opt_key.find('tools_drill_') == 0:
+        #         self.default_data[opt_key] = deepcopy(opt_val)
 
         self.form_fields.update({
             "plot":             self.ui.plot_cb,

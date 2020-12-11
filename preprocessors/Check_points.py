@@ -1,15 +1,15 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
-# File Author: Matthieu Berthomé                           #
-# Date: 5/26/2017                                          #
+# File Author: Marius Stanciu                              #
+# Date: 11-Dec-2020                                        #
 # MIT Licence                                              #
 # ##########################################################
 
 from appPreProcessor import *
 
 
-class Default_no_M6(PreProc):
+class Check_points(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -19,8 +19,9 @@ class Default_no_M6(PreProc):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
-        gcode = '(This preprocessor is the default preprocessor used by FlatCAM.)\n'
-        gcode += '(It is made to work with MACH3 compatible motion controllers.)\n\n'
+        gcode = '(This preprocessor is used to check the positioning of the PCB,)\n'
+        gcode += '(by moving a probe - possible a fine drill bit - to custom locations)\n'
+        gcode += '(and wait for user interaction in order to continue to the next point.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -117,7 +118,12 @@ class Default_no_M6(PreProc):
         return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
+        # make sure that the probe will always be above the material
+        cutz_val = -p.z_cut if p.z_cut < 0 else p.z_cut
+        gcode = 'G01 Z' + self.coordinate_format % (p.coords_decimals, cutz_val) + '\n'
+        # wait for user interaction
+        gcode += 'M0'
+        return gcode
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
@@ -131,43 +137,42 @@ class Default_no_M6(PreProc):
             x_toolchange = 0.0
             y_toolchange = 0.0
 
-        no_drills = 1
-
         if int(p.tool) == 1 and p.startz is not None:
             z_toolchange = p.startz
 
-        toolC_formatted = '%.*f' % (p.decimals, p.toolC)
-
         if str(p['options']['type']) == 'Excellon':
-            for i in p['options']['Tools_in_use']:
-                if i[0] == p.tool:
-                    no_drills = i[2]
-
             if toolchangexy is not None:
                 gcode = """
 M5
 G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+G00 X{x_toolchange} Y{y_toolchange} 
+(MSG, Change to Tool T{tool}. WARNING: the following move is FAST G0)
 M0
-G00 Z{z_toolchange}
-        """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-                   y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-                   z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-                   tool=int(p.tool),
-                   t_drills=no_drills,
-                   toolC=toolC_formatted)
+G00 Z{z_move}
+G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it.)
+M0
+(MSG, Changed to Tool T{tool})
+""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           tool=int(p.tool))
+
             else:
                 gcode = """
-M5       
+M5
 G00 Z{z_toolchange}
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+(MSG, Change to Tool T{tool}. WARNING: the following move is FAST G0)
 M0
-G00 Z{z_toolchange}
-        """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-                   tool=int(p.tool),
-                   t_drills=no_drills,
-                   toolC=toolC_formatted)
+G00 Z{z_move}
+G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it.)
+M0
+(MSG, Changed to Tool T{tool})
+""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           tool=int(p.tool))
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
@@ -178,33 +183,40 @@ G00 Z{z_toolchange}
                 gcode = """
 M5
 G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}
-(MSG, Change to Tool Dia = {toolC})
+G00 X{x_toolchange}Y{y_toolchange}    
+(MSG, Change to Tool T{tool}. WARNING: the following move is FAST G0)
 M0
-G00 Z{z_toolchange}
-        """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-                   y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-                   z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-                   tool=int(p.tool),
-                   toolC=toolC_formatted)
-
+G00 Z{z_move}
+G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it.)
+M0
+(MSG, Changed to Tool T{tool})
+""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           tool=int(p.tool))
             else:
                 gcode = """
-M5
+M5  
 G00 Z{z_toolchange}
-(MSG, Change to Tool Dia = {toolC})
+(MSG, Change to Tool T{tool}. WARNING: the following move is FAST G0)
 M0
-G00 Z{z_toolchange}
-        """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-                   tool=int(p.tool),
-                   toolC=toolC_formatted)
+G00 Z{z_move}
+G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it.)
+M0
+(MSG, Changed to Tool T{tool})
+""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           tool=int(p.tool))
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
     def up_to_zero_code(self, p):
-        return 'G01 Z0'
+        return ''
 
     def position_code(self, p):
         return ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
@@ -214,7 +226,7 @@ G00 Z{z_toolchange}
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p)
+        return ('G00 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
         end_coords_xy = p['xy_end']
@@ -231,15 +243,10 @@ G00 Z{z_toolchange}
         return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
-        if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
-        else:
-            return sdir
+        return ''
 
     def dwell_code(self, p):
-        if p.dwelltime:
-            return 'G4 P' + str(p.dwelltime)
+        return ''
 
     def spindle_stop_code(self, p):
         return 'M05'
