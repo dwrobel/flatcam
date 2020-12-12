@@ -681,7 +681,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
 
         # set the Source File attribute with the calculated GCode
-        self.source_file = gc.getvalue()
+        try:
+            # gc is StringIO
+            self.source_file = gc.getvalue()
+        except AttributeError:
+            # gc is text
+            self.source_file = gc
 
         self.ui.al_mode_radio.set_value(self.options['al_mode'])
         self.on_controller_change()
