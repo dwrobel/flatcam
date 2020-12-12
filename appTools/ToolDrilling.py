@@ -348,68 +348,21 @@ class ToolDrilling(AppTool, Excellon):
         self.default_data.clear()
 
         # fill in self.default_data values from self.options
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0:
-                oname = opt_key[len('excellon_'):]
-                self.default_data[oname] = deepcopy(opt_val)
-            if opt_key.find('tools_drill_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
-            if opt_key.find('tools_mill_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
+        # for opt_key, opt_val in self.app.options.items():
+        #     if opt_key.find('excellon_') == 0:
+        #         oname = opt_key[len('excellon_'):]
+        #         self.default_data[oname] = deepcopy(opt_val)
+        #     if opt_key.find('tools_drill_') == 0:
+        #         self.default_data[opt_key] = deepcopy(opt_val)
+        #     if opt_key.find('tools_mill_') == 0:
+        #         self.default_data[opt_key] = deepcopy(opt_val)
+        #
+        if loaded_obj:
+            self.default_data.update(loaded_obj.options)
+        else:
+            self.default_data.update(self.app.options)
 
-        self.default_data.update(
-            {
-                "name": outname + '_drill',
-                "plot": loaded_obj.options["plot"],
-                "solid": loaded_obj.options["solid"],
-                "multicolored": loaded_obj.options["multicolored"],
-                "merge_fuse_tools": loaded_obj.options["merge_fuse_tools"],
-                "format_upper_in": loaded_obj.options["format_upper_in"],
-                "format_lower_in": loaded_obj.options["format_lower_in"],
-                "format_upper_mm": loaded_obj.options["format_upper_mm"],
-                "lower_mm": loaded_obj.options["format_lower_mm"],
-                "zeros": loaded_obj.options["zeros"],
-
-                "tools_drill_tool_order": loaded_obj.options["tools_drill_tool_order"],
-                "tools_drill_cutz": loaded_obj.options["tools_drill_cutz"],
-                "tools_drill_multidepth": loaded_obj.options["tools_drill_multidepth"],
-                "tools_drill_depthperpass": loaded_obj.options["tools_drill_depthperpass"],
-
-                "tools_drill_travelz": loaded_obj.options["tools_drill_travelz"],
-                "tools_drill_endz": loaded_obj.options["tools_drill_endz"],
-                "tools_drill_endxy": loaded_obj.options["tools_drill_endxy"],
-                "tools_drill_feedrate_z": loaded_obj.options["tools_drill_feedrate_z"],
-
-                "tools_drill_spindlespeed": loaded_obj.options["tools_drill_spindlespeed"],
-                "tools_drill_dwell": loaded_obj.options["tools_drill_dwell"],
-                "tools_drill_dwelltime": loaded_obj.options["tools_drill_dwelltime"],
-
-                "tools_drill_toolchange": loaded_obj.options["tools_drill_toolchange"],
-                "tools_drill_toolchangez": loaded_obj.options["tools_drill_toolchangez"],
-                "tools_drill_ppname_e": loaded_obj.options["tools_drill_ppname_e"],
-
-                # Drill Slots
-                "tools_drill_drill_slots": loaded_obj.options["tools_drill_drill_slots"],
-                "tools_drill_drill_overlap": loaded_obj.options["tools_drill_drill_overlap"],
-                "tools_drill_last_drill": loaded_obj.options["tools_drill_last_drill"],
-
-                # Advanced Options
-                "tools_drill_offset": loaded_obj.options["tools_drill_offset"],
-                "tools_drill_toolchangexy": loaded_obj.options["tools_drill_toolchangexy"],
-                "tools_drill_startz": loaded_obj.options["tools_drill_startz"],
-                "tools_drill_feedrate_rapid": loaded_obj.options["tools_drill_feedrate_rapid"],
-                "tools_drill_z_pdepth": loaded_obj.options["tools_drill_z_pdepth"],
-                "tools_drill_feedrate_probe": loaded_obj.options["tools_drill_feedrate_probe"],
-                "tools_drill_spindledir": loaded_obj.options["tools_drill_spindledir"],
-                "tools_drill_f_plunge": loaded_obj.options["tools_drill_f_plunge"],
-                "tools_drill_f_retract": loaded_obj.options["tools_drill_f_retract"],
-
-                "tools_drill_area_exclusion": loaded_obj.options["tools_drill_area_exclusion"],
-                "tools_drill_area_shape": loaded_obj.options["tools_drill_area_shape"],
-                "tools_drill_area_strategy": loaded_obj.options["tools_drill_area_strategy"],
-                "tools_drill_area_overz": loaded_obj.options["tools_drill_area_overz"],
-            }
-        )
+        self.default_data['name'] = outname + '_drill'
 
         self.first_click = False
         self.cursor_pos = None
@@ -433,43 +386,26 @@ class ToolDrilling(AppTool, Excellon):
             pass
         self.build_tool_ui()
 
-        # ########################################
-        # ########################################
-        # ####### Fill in the parameters #########
-        # ########################################
-        # ########################################
-        self.ui.cutz_entry.set_value(loaded_obj.options["tools_drill_cutz"])
-        self.ui.mpass_cb.set_value(loaded_obj.options["tools_drill_multidepth"])
-        self.ui.maxdepth_entry.set_value(loaded_obj.options["tools_drill_depthperpass"])
-        self.ui.travelz_entry.set_value(loaded_obj.options["tools_drill_travelz"])
-        self.ui.feedrate_z_entry.set_value(loaded_obj.options["tools_drill_feedrate_z"])
-        self.ui.feedrate_rapid_entry.set_value(loaded_obj.options["tools_drill_feedrate_rapid"])
-        self.ui.spindlespeed_entry.set_value(loaded_obj.options["tools_drill_spindlespeed"])
-        self.ui.dwell_cb.set_value(loaded_obj.options["tools_drill_dwell"])
-        self.ui.dwelltime_entry.set_value(loaded_obj.options["tools_drill_dwelltime"])
-        self.ui.offset_entry.set_value(loaded_obj.options["tools_drill_offset"])
-        self.ui.toolchange_cb.set_value(loaded_obj.options["tools_drill_toolchange"])
-        self.ui.toolchangez_entry.set_value(loaded_obj.options["tools_drill_toolchangez"])
-        self.ui.estartz_entry.set_value(loaded_obj.options["tools_drill_startz"])
-        self.ui.endz_entry.set_value(loaded_obj.options["tools_drill_endz"])
-        self.ui.endxy_entry.set_value(loaded_obj.options["tools_drill_endxy"])
-        self.ui.pdepth_entry.set_value(loaded_obj.options["tools_drill_z_pdepth"])
-        self.ui.feedrate_probe_entry.set_value(loaded_obj.options["tools_drill_feedrate_probe"])
+        # #############################################################################################################
+        # #############################################################################################################
+        # ################################### Fill in the parameters ##################################################
+        # #############################################################################################################
+        # #############################################################################################################
 
-        if loaded_obj.options["tools_drill_ppname_e"] in pp_list:
-            sel_ppname_e = loaded_obj.options["tools_drill_ppname_e"]
+        # tool parameters
+        for key in self.tool_form_fields:
+            self.tool_form_fields[key].set_value(self.default_data[key])
+        # common parameters
+        for key in self.general_form_fields:
+            self.general_form_fields[key].set_value(self.default_data[key])
+
+        # preprocessor
+        if self.default_data["tools_drill_ppname_e"] in pp_list:
+            sel_ppname_e = self.default_data["tools_drill_ppname_e"]
         else:
             sel_ppname_e = 'default'
         self.ui.pp_excellon_name_cb.set_value(sel_ppname_e)
 
-        self.ui.exclusion_cb.set_value(loaded_obj.options["tools_drill_area_exclusion"])
-        self.ui.strategy_radio.set_value(loaded_obj.options["tools_drill_area_strategy"])
-        self.ui.over_z_entry.set_value(loaded_obj.options["tools_drill_area_overz"])
-        self.ui.area_shape_radio.set_value(loaded_obj.options["tools_drill_area_shape"])
-
-        # Drill slots - part of the Advanced Excellon params
-        self.ui.drill_overlap_entry.set_value(loaded_obj.options["tools_drill_drill_overlap"])
-        self.ui.last_drill_cb.set_value(loaded_obj.options["tools_drill_last_drill"])
         self.ui.drill_overlap_label.hide()
         self.ui.drill_overlap_entry.hide()
         self.ui.last_drill_cb.hide()

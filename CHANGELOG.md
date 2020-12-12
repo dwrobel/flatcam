@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 12.12.2020
 
 - added an experimental 3D area (archball camera)
+- Drilling Tool - fix a bug introduced in the latter changes; when the Tool is launched and there is no Excellon object loaded then the default_data can't be filled in: solved by using the self.app.options in that case
 
 11.12.2020
 
