@@ -2510,6 +2510,7 @@ class CutoutUI:
         )
 
         self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
+        self.gapsize.setRange(0.0000, 10000.0000)
         self.gapsize.set_precision(self.decimals)
 
         grid0.addWidget(self.gapsize_label, 28, 0)
@@ -2560,7 +2561,7 @@ class CutoutUI:
         )
         self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mb_dia_entry.set_precision(self.decimals)
-        self.mb_dia_entry.setRange(0, 100.0000)
+        self.mb_dia_entry.setRange(0, 10000.0000)
 
         grid0.addWidget(self.mb_dia_label, 34, 0)
         grid0.addWidget(self.mb_dia_entry, 34, 1)
@@ -2572,7 +2573,7 @@ class CutoutUI:
         )
         self.mb_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mb_spacing_entry.set_precision(self.decimals)
-        self.mb_spacing_entry.setRange(0, 100.0000)
+        self.mb_spacing_entry.setRange(0, 10000.0000)
 
         grid0.addWidget(self.mb_spacing_label, 36, 0)
         grid0.addWidget(self.mb_spacing_entry, 36, 1)

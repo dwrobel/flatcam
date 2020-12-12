@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - SolderPaste Tool - fixed not recognizing the default tools
 - SolderPaste Tool - fixed the UI
 - SolderPaste Tool - fixed various issues
+- Cutout Tool - made the gap size parameter to take values between 0 and 10000
 
 11.12.2020
 
