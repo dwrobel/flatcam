@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.12.2020
+
+- added an experimental 3D area (archball camera)
+
 11.12.2020
 
 - updated the 'Default_no_M6' preprocessor by removing the Tx command in the Toolchange section to make it compatible with GRBL controllers

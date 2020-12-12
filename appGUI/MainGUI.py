@@ -454,9 +454,9 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/pref.png'),
             '%s\t%s' % (_('Preferences'), _('Shift+P')))
 
-        # ########################################################################
-        # ########################## OPTIONS # ###################################
-        # ########################################################################
+        # #############################################################################################################
+        # ########################################### OPTIONS # ######################################################
+        # #############################################################################################################
 
         self.menuoptions = self.menu.addMenu(_('Options'))
         self.menuoptions_transform_rotate = self.menuoptions.addAction(
@@ -492,9 +492,19 @@ class MainGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuoptions.addSeparator()
 
-        # ########################################################################
-        # ########################## View # ######################################
-        # ########################################################################
+        # ########################### Options ->Experimental ##########################################################
+        self.menuoptions_experimental = self.menuoptions.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/experiment32.png'), _('Experimental'))
+
+        self.menuoptions_experimental_3D_area = self.menuoptions_experimental.addAction(
+            QtGui.QIcon(self.app.resource_location + '/3D_area32.png'),
+            '%s\t%s' % (_('3D Area'), ''))
+        # Separator
+        self.menuoptions.addSeparator()
+
+        # #############################################################################################################
+        # ################################## View # ###################################################################
+        # #############################################################################################################
         self.menuview = self.menu.addMenu(_('View'))
         self.menuviewenable = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot16.png'),

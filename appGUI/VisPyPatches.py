@@ -98,6 +98,9 @@ def apply_patches():
             offset = domain[0]
             scale = domain[1] - domain[0]
 
+            if scale == 0 or not scale:
+                scale = 0.00000001
+
             transforms = self.axis.transforms
             length = self.axis.pos[1] - self.axis.pos[0]  # in logical coords
             n_inches = np.sqrt(np.sum(length ** 2)) / transforms.dpi

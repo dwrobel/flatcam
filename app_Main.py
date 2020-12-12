@@ -73,6 +73,7 @@ from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 # FlatCAM appGUI
 from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
+from appGUI.PlotCanvas3d import *
 from appGUI.MainGUI import *
 from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider
 
@@ -1077,6 +1078,11 @@ class App(QtCore.QObject):
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
         self.log.debug("Finished creating Object Collection.")
+
+        # ###########################################################################################################
+        # ######################################## SETUP 3D Area ####################################################
+        # ###########################################################################################################
+        self.area_3d_tab = QtWidgets.QWidget()
 
         # ###########################################################################################################
         # ######################################## SETUP Plot Area ##################################################
@@ -2101,6 +2107,7 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
         self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
         self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
+        self.ui.menuoptions_experimental_3D_area.triggered.connect(self.on_3d_area)
 
     def connect_menuview_signals(self):
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
@@ -6063,6 +6070,56 @@ class App(QtCore.QObject):
         # detect changes in the Tools in Tools DB, connect signals from table widget in tab
         self.tools_db_tab.ui_connect()
 
+    def on_3d_area(self):
+        if self.is_legacy is True:
+            msg = '[ERROR_NOTCL] %s' % _("Not available for Legacy 2D graphic mode.")
+            self.inform.emit(msg)
+            return
+
+        # add the tab if it was closed
+        try:
+            self.ui.plot_tab_area.addTab(self.area_3d_tab, _("3D Area"))
+            self.area_3d_tab.setObjectName("3D_area_tab")
+        except Exception as e:
+            self.log.debug("App.on_3d_area() --> %s" % str(e))
+            return
+
+        plot_container_3d = QtWidgets.QVBoxLayout()
+        self.area_3d_tab.setLayout(plot_container_3d)
+
+        try:
+            plotcanvas3d = PlotCanvas3d(plot_container_3d, self)
+        except Exception as er:
+            msg_txt = traceback.format_exc()
+            self.log.debug("App.on_3d_area() failed -> %s" % str(er))
+            self.log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+            msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
+            msg += msg_txt
+            self.inform.emit(msg)
+            return 'fail'
+
+        # So it can receive key presses
+        plotcanvas3d.native.setFocus()
+
+        pan_button = 2 if self.defaults["global_pan_button"] == '2' else 3
+        # Set the mouse button for panning
+        plotcanvas3d.view.camera.pan_button_setting = pan_button
+
+        # self.mm = plotcanvas3D.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
+        # self.mp = plotcanvas3D.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
+        # self.mr = plotcanvas3D.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        # self.mdc = plotcanvas3D.graph_event_connect('mouse_double_click', self.on_mouse_double_click_over_plot)
+
+        # Keys over plot enabled
+        # self.kp = plotcanvas3D.graph_event_connect('key_press', self.ui.keyPressEvent)
+
+        # hide coordinates toolbars in the infobar
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
+
+        # Switch plot_area to Area 3D page
+        self.ui.plot_tab_area.setCurrentWidget(self.area_3d_tab)
+
     def on_geometry_tool_add_from_db_executed(self, tool):
         """
         Here add the tool from DB  in the selected geometry object.
@@ -6161,6 +6218,9 @@ class App(QtCore.QObject):
         elif tab_obj_name == "bookmarks_tab":
             self.book_dialog_tab.rebuild_actions()
             self.book_dialog_tab.deleteLater()
+        elif tab_obj_name == '3D_area_tab':
+            self.area_3d_tab.deleteLater()
+            self.area_3d_tab = QtWidgets.QWidget()
         else:
             pass
 
