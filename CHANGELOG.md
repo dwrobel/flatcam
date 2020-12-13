@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.12.2020
+
+- GCode Editor - fixed the issue with the editor toolbar buttons not being updated like for the other editors
+- GCode Editor - the plot_area tab GCode editor that is added will close the Editor when the tab itself is closed
+
 12.12.2020
 
 - added an experimental 3D area (archball camera)

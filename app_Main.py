@@ -2587,231 +2587,233 @@ class App(QtCore.QObject):
         self.ui.menuobjects.setDisabled(False)
 
         # do not update a geometry or excellon object unless it comes out of an editor
-        if self.call_source != 'app':
-            edited_obj = self.collection.get_active()
+        if self.call_source == 'app':
+            return
 
-            if cleanup is None:
-                msgbox = QtWidgets.QMessageBox()
-                msgbox.setText(_("Do you want to save the edited object?"))
-                msgbox.setWindowTitle(_("Exit Editor"))
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        edited_obj = self.collection.get_active()
 
-                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+        if cleanup is None:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setText(_("Do you want to save the edited object?"))
+            msgbox.setWindowTitle(_("Exit Editor"))
+            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
-                msgbox.setDefaultButton(bt_yes)
-                msgbox.exec_()
-                response = msgbox.clickedButton()
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-                if response == bt_yes:
-                    # show the Tools Toolbar
-                    tools_tb = self.ui.toolbartools
-                    if self.old_state_of_tools_toolbar is True:
-                        tools_tb.show()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-                    # clean the Tools Tab
-                    found_idx = None
-                    for idx in range(self.ui.notebook.count()):
-                        if self.ui.notebook.widget(idx).objectName() == "tool_tab":
-                            found_idx = idx
-                            break
-                    if found_idx:
-                        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-                        self.ui.notebook.removeTab(2)
-
-                    if edited_obj.kind == 'geometry':
-                        obj_type = "Geometry"
-                        self.geo_editor.update_fcgeometry(edited_obj)
-                        # self.geo_editor.update_options(edited_obj)
-
-                        # restore GUI to the Selected TAB
-                        # Remove anything else in the appGUI
-                        self.ui.tool_scroll_area.takeWidget()
-
-                        # update the geo object options so it is including the bounding box values
-                        try:
-                            xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
-                            edited_obj.options['xmin'] = xmin
-                            edited_obj.options['ymin'] = ymin
-                            edited_obj.options['xmax'] = xmax
-                            edited_obj.options['ymax'] = ymax
-                        except (AttributeError, ValueError) as e:
-                            self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
-                            self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
-
-                        edited_obj.build_ui()
-                        edited_obj.plot()
-                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
-
-                    elif edited_obj.kind == 'gerber':
-                        obj_type = "Gerber"
-                        self.grb_editor.update_fcgerber()
-                        # self.grb_editor.update_options(edited_obj)
-
-                        # delete the old object (the source object) if it was an empty one
-                        try:
-                            if len(edited_obj.solid_geometry) == 0:
-                                old_name = edited_obj.options['name']
-                                self.collection.delete_by_name(old_name)
-                        except TypeError:
-                            # if the solid_geometry is a single Polygon the len() will not work
-                            # in any case, falling here means that we have something in the solid_geometry, even if only
-                            # a single Polygon, therefore we pass this
-                            pass
-
-                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
-
-                        # restore GUI to the Selected TAB
-                        # Remove anything else in the GUI
-                        self.ui.properties_scroll_area.takeWidget()
-
-                    elif edited_obj.kind == 'excellon':
-                        obj_type = "Excellon"
-                        self.exc_editor.update_fcexcellon(edited_obj)
-                        # self.exc_editor.update_options(edited_obj)
-
-                        # restore GUI to the Selected TAB
-                        # Remove anything else in the GUI
-                        self.ui.tool_scroll_area.takeWidget()
-
-                        # delete the old object (the source object) if it was an empty one
-                        # find if we have drills:
-                        has_drills = None
-                        for tt in edited_obj.tools:
-                            if 'drills' in edited_obj.tools[tt] and edited_obj.tools[tt]['drills']:
-                                has_drills = True
-                                break
-                        # find if we have slots:
-                        has_slots = None
-                        for tt in edited_obj.tools:
-                            if 'slots' in edited_obj.tools[tt] and edited_obj.tools[tt]['slots']:
-                                has_slots = True
-                                break
-                        if has_drills is None and has_slots is None:
-                            old_name = edited_obj.options['name']
-                            self.collection.delete_by_name(name=old_name)
-                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
-
-                    elif edited_obj.kind == 'cncjob':
-                        obj_type = "CNCJob"
-                        self.gcode_editor.update_fcgcode(edited_obj)
-                        # self.exc_editor.update_options(edited_obj)
-
-                        # restore GUI to the Selected TAB
-                        # Remove anything else in the GUI
-                        self.ui.tool_scroll_area.takeWidget()
-                        edited_obj.build_ui()
-
-                        # close the open tab
-                        for idx in range(self.ui.plot_tab_area.count()):
-                            if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
-                                self.ui.plot_tab_area.closeTab(idx)
-                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
-
-                    else:
-                        self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
-                        return
-
-                    self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
-                elif response == bt_no:
-                    # show the Tools Toolbar
-                    tools_tb = self.ui.toolbartools
-                    if self.old_state_of_tools_toolbar is True:
-                        tools_tb.show()
-
-                    # clean the Tools Tab
-                    found_idx = None
-                    for idx in range(self.ui.notebook.count()):
-                        if self.ui.notebook.widget(idx).objectName() == "tool_tab":
-                            found_idx = idx
-                            break
-                    if found_idx:
-                        self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-                        self.ui.notebook.removeTab(2)
-
-                    self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
-
-                    if edited_obj.kind == 'geometry':
-                        self.geo_editor.deactivate()
-                        edited_obj.build_ui()
-                        edited_obj.plot()
-                    elif edited_obj.kind == 'gerber':
-                        self.grb_editor.deactivate_grb_editor()
-                        edited_obj.build_ui()
-                    elif edited_obj.kind == 'excellon':
-                        self.exc_editor.deactivate()
-                        edited_obj.build_ui()
-                    elif edited_obj.kind == 'cncjob':
-                        self.gcode_editor.deactivate()
-                        edited_obj.build_ui()
-
-                        # close the open tab
-                        for idx in range(self.ui.plot_tab_area.count()):
-                            try:
-                                if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
-                                    self.ui.plot_tab_area.closeTab(idx)
-                            except AttributeError:
-                                continue
-                    else:
-                        self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
-                        return
-                elif response == bt_cancel:
-                    return
-
-                # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
-                # edited_obj.build_ui()
-                # Switch notebook to Properties page
-                # self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
-            else:
+            if response == bt_yes:
                 # show the Tools Toolbar
                 tools_tb = self.ui.toolbartools
                 if self.old_state_of_tools_toolbar is True:
                     tools_tb.show()
 
+                # clean the Tools Tab
+                found_idx = None
+                for idx in range(self.ui.notebook.count()):
+                    if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                        found_idx = idx
+                        break
+                if found_idx:
+                    self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+                    self.ui.notebook.removeTab(2)
+
                 if edited_obj.kind == 'geometry':
-                    self.geo_editor.deactivate()
+                    obj_type = "Geometry"
+                    self.geo_editor.update_fcgeometry(edited_obj)
+                    # self.geo_editor.update_options(edited_obj)
+
+                    # restore GUI to the Selected TAB
+                    # Remove anything else in the appGUI
+                    self.ui.tool_scroll_area.takeWidget()
+
+                    # update the geo object options so it is including the bounding box values
+                    try:
+                        xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
+                        edited_obj.options['xmin'] = xmin
+                        edited_obj.options['ymin'] = ymin
+                        edited_obj.options['xmax'] = xmax
+                        edited_obj.options['ymax'] = ymax
+                    except (AttributeError, ValueError) as e:
+                        self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
+                        self.log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+
+                    edited_obj.build_ui()
+                    edited_obj.plot()
+                    self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                 elif edited_obj.kind == 'gerber':
-                    self.grb_editor.deactivate_grb_editor()
+                    obj_type = "Gerber"
+                    self.grb_editor.update_fcgerber()
+                    # self.grb_editor.update_options(edited_obj)
+
+                    # delete the old object (the source object) if it was an empty one
+                    try:
+                        if len(edited_obj.solid_geometry) == 0:
+                            old_name = edited_obj.options['name']
+                            self.collection.delete_by_name(old_name)
+                    except TypeError:
+                        # if the solid_geometry is a single Polygon the len() will not work
+                        # in any case, falling here means that we have something in the solid_geometry, even if only
+                        # a single Polygon, therefore we pass this
+                        pass
+
+                    self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
+                    # restore GUI to the Selected TAB
+                    # Remove anything else in the GUI
+                    self.ui.properties_scroll_area.takeWidget()
+
                 elif edited_obj.kind == 'excellon':
-                    self.exc_editor.deactivate()
+                    obj_type = "Excellon"
+                    self.exc_editor.update_fcexcellon(edited_obj)
+                    # self.exc_editor.update_options(edited_obj)
+
+                    # restore GUI to the Selected TAB
+                    # Remove anything else in the GUI
+                    self.ui.tool_scroll_area.takeWidget()
+
+                    # delete the old object (the source object) if it was an empty one
+                    # find if we have drills:
+                    has_drills = None
+                    for tt in edited_obj.tools:
+                        if 'drills' in edited_obj.tools[tt] and edited_obj.tools[tt]['drills']:
+                            has_drills = True
+                            break
+                    # find if we have slots:
+                    has_slots = None
+                    for tt in edited_obj.tools:
+                        if 'slots' in edited_obj.tools[tt] and edited_obj.tools[tt]['slots']:
+                            has_slots = True
+                            break
+                    if has_drills is None and has_slots is None:
+                        old_name = edited_obj.options['name']
+                        self.collection.delete_by_name(name=old_name)
+                    self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                 elif edited_obj.kind == 'cncjob':
-                    self.gcode_editor.deactivate()
+                    obj_type = "CNCJob"
+                    self.gcode_editor.update_fcgcode(edited_obj)
+                    # self.exc_editor.update_options(edited_obj)
+
+                    # restore GUI to the Selected TAB
+                    # Remove anything else in the GUI
+                    self.ui.tool_scroll_area.takeWidget()
+                    edited_obj.build_ui()
+
+                    # close the open tab
+                    for idx in range(self.ui.plot_tab_area.count()):
+                        if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
+                            self.ui.plot_tab_area.closeTab(idx)
+                    self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                 else:
                     self.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Select a Gerber, Geometry, Excellon or CNCJob object to update."))
+                                     _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
                     return
 
-            # if notebook is hidden we show it
-            if self.ui.splitter.sizes()[0] == 0:
-                self.ui.splitter.setSizes([1, 1])
+                self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
+            elif response == bt_no:
+                # show the Tools Toolbar
+                tools_tb = self.ui.toolbartools
+                if self.old_state_of_tools_toolbar is True:
+                    tools_tb.show()
 
-            for idx in range(self.ui.notebook.count()):
-                # restore the Properties Tab text and color
-                if self.ui.notebook.tabText(idx) == _("Editor"):
-                    self.ui.notebook.tabBar.setTabTextColor(idx, self.old_tab_text_color)
-                    self.ui.notebook.tabBar.setTabText(idx, _("Properties"))
+                # clean the Tools Tab
+                found_idx = None
+                for idx in range(self.ui.notebook.count()):
+                    if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                        found_idx = idx
+                        break
+                if found_idx:
+                    self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+                    self.ui.notebook.removeTab(2)
 
-                # enable the Project Tab
-                if self.ui.notebook.tabText(idx) == _("Project"):
-                    self.ui.notebook.tabBar.setTabEnabled(idx, True)
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
-            # restore the call_source to app
-            self.call_source = 'app'
-            self.log.debug("######################### Closing the EDITOR ################################")
+                if edited_obj.kind == 'geometry':
+                    self.geo_editor.deactivate()
+                    edited_obj.build_ui()
+                    edited_obj.plot()
+                elif edited_obj.kind == 'gerber':
+                    self.grb_editor.deactivate_grb_editor()
+                    edited_obj.build_ui()
+                elif edited_obj.kind == 'excellon':
+                    self.exc_editor.deactivate()
+                    edited_obj.build_ui()
+                elif edited_obj.kind == 'cncjob':
+                    self.gcode_editor.deactivate()
+                    edited_obj.build_ui()
 
-            # edited_obj.plot()
-            self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
-            self.ui.plot_tab_area.protectTab(0)
+                    # close the open tab
+                    for idx in range(self.ui.plot_tab_area.count()):
+                        try:
+                            if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
+                                self.ui.plot_tab_area.closeTab(idx)
+                        except AttributeError:
+                            continue
+                else:
+                    self.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
+                    return
+            elif response == bt_cancel:
+                return
 
-            # restore the notebook tab close method to the app
-            self.ui.notebook.callback_on_close = self.on_close_notebook_tab
+            # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
+            # edited_obj.build_ui()
+            # Switch notebook to Properties page
+            # self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+        else:
+            # show the Tools Toolbar
+            tools_tb = self.ui.toolbartools
+            if self.old_state_of_tools_toolbar is True:
+                tools_tb.show()
 
-            # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-            self.ui.project_frame.setDisabled(False)
+            if edited_obj.kind == 'geometry':
+                self.geo_editor.deactivate()
+            elif edited_obj.kind == 'gerber':
+                self.grb_editor.deactivate_grb_editor()
+            elif edited_obj.kind == 'excellon':
+                self.exc_editor.deactivate()
+            elif edited_obj.kind == 'cncjob':
+                self.gcode_editor.deactivate()
+            else:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Select a Gerber, Geometry, Excellon or CNCJob object to update."))
+                return
+
+        # if notebook is hidden we show it
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
+
+        for idx in range(self.ui.notebook.count()):
+            # restore the Properties Tab text and color
+            if self.ui.notebook.tabText(idx) == _("Editor"):
+                self.ui.notebook.tabBar.setTabTextColor(idx, self.old_tab_text_color)
+                self.ui.notebook.tabBar.setTabText(idx, _("Properties"))
+
+            # enable the Project Tab
+            if self.ui.notebook.tabText(idx) == _("Project"):
+                self.ui.notebook.tabBar.setTabEnabled(idx, True)
+
+        # restore the call_source to app
+        self.call_source = 'app'
+        self.log.debug("######################### Closing the EDITOR ################################")
+
+        # edited_obj.plot()
+        self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
+        self.ui.plot_tab_area.protectTab(0)
+
+        # restore the notebook tab close method to the app
+        self.ui.notebook.callback_on_close = self.on_close_notebook_tab
+
+        # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
+        self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
         """
@@ -6218,9 +6220,11 @@ class App(QtCore.QObject):
         elif tab_obj_name == "bookmarks_tab":
             self.book_dialog_tab.rebuild_actions()
             self.book_dialog_tab.deleteLater()
-        elif tab_obj_name == '3D_area_tab':
+        elif tab_obj_name == "3D_area_tab":
             self.area_3d_tab.deleteLater()
             self.area_3d_tab = QtWidgets.QWidget()
+        elif tab_obj_name == "gcode_editor_tab":
+            self.editor2object()
         else:
             pass
 

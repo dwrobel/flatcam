@@ -71,10 +71,11 @@ class AppGCodeEditor(QtCore.QObject):
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.ui.gcode_editor_tab, '%s' % _("Code Editor"))
         self.ui.gcode_editor_tab.setObjectName('gcode_editor_tab')
+
         # protect the tab that was just added
-        for idx in range(self.app.ui.plot_tab_area.count()):
-            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.ui.gcode_editor_tab.objectName():
-                self.app.ui.plot_tab_area.protectTab(idx)
+        # for idx in range(self.app.ui.plot_tab_area.count()):
+        #     if self.app.ui.plot_tab_area.widget(idx).objectName() == self.ui.gcode_editor_tab.objectName():
+        #         self.app.ui.plot_tab_area.protectTab(idx)
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
@@ -617,9 +618,13 @@ class AppGCodeEditor(QtCore.QObject):
 
     def activate(self):
         self.app.call_source = 'gcode_editor'
+        self.app.ui.editor_exit_btn_ret_action.setVisible(True)
+        self.app.ui.editor_start_btn.setVisible(False)
 
     def deactivate(self):
         self.app.call_source = 'app'
+        self.app.ui.editor_exit_btn_ret_action.setVisible(False)
+        self.app.ui.editor_start_btn.setVisible(True)
 
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
