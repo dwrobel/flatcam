@@ -68,6 +68,14 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.gcode_editor_tab = AppTextEditor(app=self.app, plain_text=True)
         self.edit_area = self.ui.gcode_editor_tab.code_editor
 
+        # add the Exit Editor action to the context menu
+        QtGui.QIcon(self.app.resource_location + '/power16.png'), _("Exit Editor")
+        self.edit_area.add_action_to_context_menu(text=_("Exit Editor"),
+                                                  shortcut=_("Ctrl+S"),
+                                                  icon=QtGui.QIcon(self.app.resource_location + '/power16.png'),
+                                                  callback=self.app.editor2object,
+                                                  separator='before')
+
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.ui.gcode_editor_tab, '%s' % _("Code Editor"))
         self.ui.gcode_editor_tab.setObjectName('gcode_editor_tab')

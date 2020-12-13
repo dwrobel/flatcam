@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - GCode Editor - fixed the issue with the editor toolbar buttons not being updated like for the other editors
 - GCode Editor - the plot_area tab GCode editor that is added will close the Editor when the tab itself is closed
+- SolderPaste Tool - the GCode Viewer will open a AppText Editor Tab with Plain Text
+- GCode Editor - added an Exit action to the context menu in the GCode Editor Tab
 
 12.12.2020
 

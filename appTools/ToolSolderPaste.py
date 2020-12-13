@@ -998,10 +998,10 @@ class SolderPaste(AppTool):
         """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
-        self.text_editor_tab = AppTextEditor(app=self.app)
+        self.text_editor_tab = AppTextEditor(app=self.app, plain_text=True)
 
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.text_editor_tab, _("SP GCode Editor"))
+        self.app.ui.plot_tab_area.addTab(self.text_editor_tab, _("GCode Editor"))
         self.text_editor_tab.setObjectName('solderpaste_gcode_editor_tab')
 
         # Switch plot_area to CNCJob tab
