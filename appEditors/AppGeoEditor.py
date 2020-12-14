@@ -2593,6 +2593,10 @@ class FCSelect(DrawTool):
         # list where we store the overlapped shapes under our mouse left click position
         over_shape_list = []
 
+        if self.draw_app.interdict_selection is True:
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("Selection not allowed. Wait ..."))
+            return
+
         # pos[0] and pos[1] are the mouse click coordinates (x, y)
         for ____ in self.storage.get_objects():
             # first method of click selection -> inconvenient
@@ -3352,6 +3356,10 @@ class AppGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
         self.decimals = app.decimals
+        self.units = self.app.defaults['units']
+
+        # when True the Editor can't do selection due of an ongoing process
+        self.interdict_selection = False
 
         self.geo_edit_widget = QtWidgets.QWidget()
         # ## Box for custom widgets
@@ -3526,7 +3534,6 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_tol_entry.set_precision(self.decimals)
         self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
         self.geo_tol_entry.set_range(0.0000, 10000.0000)
-        self.geo_tol_entry.set_value(10 ** -self.decimals)
 
         grid0.addWidget(simplification_tol_lbl, 32, 0)
         grid0.addWidget(self.geo_tol_entry, 32, 1, 1, 2)
@@ -3820,7 +3827,7 @@ class AppGeoEditor(QtCore.QObject):
         self.is_empty_entry.set_value('None')
         self.is_valid_entry.set_value('None')
         self.geo_vertex_entry.set_value(0.0)
-        self.geo_tol_entry.set_value(10 ** -self.decimals)
+        self.geo_tol_entry.set_value(0.01 if self.units == 'MM' else 0.0004)
         self.geo_zoom.set_value(False)
 
     def build_ui(self):
@@ -3874,6 +3881,7 @@ class AppGeoEditor(QtCore.QObject):
     def update_ui(self):
         self.selected = []
         last_obj_shape = None
+        last_id = None
 
         selected_tree_items = self.tw.selectedItems()
         for sel in selected_tree_items:
@@ -3882,6 +3890,7 @@ class AppGeoEditor(QtCore.QObject):
                     if id(obj_shape) == int(sel.text(0)):
                         self.selected.append(obj_shape)
                         last_obj_shape = obj_shape
+                        last_id = sel.text(0)
                 except ValueError:
                     pass
 
@@ -3969,6 +3978,8 @@ class AppGeoEditor(QtCore.QObject):
             self.geo_coords_entry.setText(str(coords))
             self.geo_vertex_entry.set_value(vertex_nr)
 
+            self.app.inform.emit('%s: %s' % (_("Last selected shape ID"), str(last_id)))
+
     def on_tree_geo_click(self):
 
         try:
@@ -3988,6 +3999,7 @@ class AppGeoEditor(QtCore.QObject):
 
         def task_job():
             with self.app.proc_container.new('%s...' % _("Simplify")):
+                self.interdict_selection = True
                 for sel in selected_tree_items:
                     for obj_shape in self.storage.get_objects():
                         try:
@@ -4004,7 +4016,7 @@ class AppGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(geo), build_ui=False)
 
                 self.plot_all()
-
+                self.interdict_selection = False
                 self.build_ui_sig.emit()
 
         self.app.worker_task.emit({'fcn': task_job, 'params': []})
@@ -4784,7 +4796,9 @@ class AppGeoEditor(QtCore.QObject):
             self.selected = []
             self.selected = sel_objects_list
 
-        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        # #############################################################################################################
+        # #########  if selection is done on canvas update the Tree in Selected Tab with the selection  ###############
+        # #############################################################################################################
         try:
             self.tw.itemClicked.disconnect(self.on_tree_geo_click)
         except (AttributeError, TypeError):
@@ -4802,6 +4816,23 @@ class AppGeoEditor(QtCore.QObject):
                     pass
 
                 iterator += 1
+
+        # #############################################################################################################
+        # ###################  calculate vertex numbers for all selected shapes  ######################################
+        # #############################################################################################################
+        vertex_nr = 0
+        for sha in sel_objects_list:
+            sha_geo_solid = sha.geo
+            if sha_geo_solid.geom_type == 'Polygon':
+                sha_geo_solid_coords = list(sha_geo_solid.exterior.coords)
+            elif sha_geo_solid.geom_type in ['LinearRing', 'LineString']:
+                sha_geo_solid_coords = list(sha_geo_solid.coords)
+            else:
+                sha_geo_solid_coords = []
+
+            vertex_nr += len(sha_geo_solid_coords)
+
+        self.geo_vertex_entry.set_value(vertex_nr)
 
         self.tw.itemClicked.connect(self.on_tree_geo_click)
 
@@ -5153,6 +5184,8 @@ class AppGeoEditor(QtCore.QObject):
         self.activate()
 
         self.set_ui()
+
+        self.units = self.app.defaults['units']
 
         # Hide original geometry
         self.fcgeometry = fcgeometry

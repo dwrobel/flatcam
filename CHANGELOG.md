@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - for all centering functionality, now if the moved object is of 'geometry' kind it will have the source_file attribute updated with DXF code
 - modified the centering in origin functionality to include a selection of choices in a dialog
 - fixed Locate in Object functionality to work in the situations where there are negative bounds values
+- Gerber Editor - the vertex number points are now calculated also for a selection of shapes
+- Geometry Editor - the vertex number points are now calculated also for a selection of shapes
+- Geometry Editor - made sure that the shapes cannot be selected while the simplification is in process because it will mess things
 
 13.12.2020
 

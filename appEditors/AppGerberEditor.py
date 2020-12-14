@@ -2953,7 +2953,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.complete = True
 
-        self.set_ui()
+        self.set_editor_ui()
         self.app.log.debug("Initialization of the Gerber Editor is finished ...")
 
     def make_callback(self, the_tool):
@@ -2990,7 +2990,7 @@ class AppGerberEditor(QtCore.QObject):
         self.tool_shape.pool = pool
         self.pool = pool
 
-    def set_ui(self):
+    def set_editor_ui(self):
         # updated units
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
@@ -3567,7 +3567,6 @@ class AppGerberEditor(QtCore.QObject):
                             current_apid = self.last_aperture_selected
 
                         new_geo['apid'] = deepcopy(current_apid)
-                        print(current_apid)
 
                         if 'solid' in obj_shape.geo:
                             new_geo['geo']['solid'] = obj_shape.geo['solid'].simplify(tolerance=tol)
@@ -3657,6 +3656,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.is_valid_entry.setText(str(validity))
         self.ui.geo_coords_entry.setText(str(coords))
+
         self.ui.geo_vertex_entry.set_value(vertex_nr)
 
     def on_name_activate(self):
@@ -4035,7 +4035,7 @@ class AppGerberEditor(QtCore.QObject):
         #     self.grb_plot_promises.append(ap_code)
         #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_code]})
         #
-        # self.set_ui()
+        # self.set_editor_ui()
         #
         # # do the delayed plot only if there is something to plot (the gerber is not empty)
         # try:
@@ -4196,7 +4196,7 @@ class AppGerberEditor(QtCore.QObject):
     def on_multiprocessing_finished(self):
         self.app.proc_container.update_view_text(' %s' % _("Setting up the UI"))
         self.app.inform.emit('[success] %s.' % _("Adding geometry finished. Preparing the GUI"))
-        self.set_ui()
+        self.set_editor_ui()
         self.build_ui(first_run=True)
         self.plot_all()
 
@@ -4315,9 +4315,6 @@ class AppGerberEditor(QtCore.QObject):
             new_poly = MultiPolygon(poly_buffer)
             new_poly = new_poly.buffer(0.00000001)
             new_poly = new_poly.buffer(-0.00000001)
-
-            # for ad in grb_obj.apertures:
-            #     print(ad, grb_obj.apertures[ad])
 
             try:
                 __ = iter(new_poly)
@@ -4706,6 +4703,25 @@ class AppGerberEditor(QtCore.QObject):
                         self.ui.apertures_table.selectRow(row_to_sel)
                     self.last_aperture_selected = aper
         self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        # #############################################################################################################
+        # ######################### calculate vertex numbers for all selected shapes ##################################
+        # #############################################################################################################
+        vertex_nr = 0
+        for sha in self.selected:
+            sha_geo = sha.geo
+            if 'solid' in sha_geo:
+                sha_geo_solid = sha_geo['solid']
+                if sha_geo_solid.geom_type == 'Polygon':
+                    sha_geo_solid_coords = list(sha_geo_solid.exterior.coords)
+                elif sha_geo_solid.geom_type in ['LinearRing', 'LineString']:
+                    sha_geo_solid_coords = list(sha_geo_solid.coords)
+                else:
+                    sha_geo_solid_coords = []
+
+                vertex_nr += len(sha_geo_solid_coords)
+
+        self.ui.geo_vertex_entry.set_value(vertex_nr)
 
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
         self.plot_all()
