@@ -2082,7 +2082,7 @@ class App(QtCore.QObject):
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
-        self.ui.menuedit_center_in_origin.triggered.connect(self.on_center_in_origin)
+        self.ui.menuedit_center_in_origin.triggered.connect(self.on_custom_origin)
 
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
         self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
@@ -2263,7 +2263,7 @@ class App(QtCore.QObject):
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
         self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
-        self.ui.center_in_origin_btn.triggered.connect(self.on_center_in_origin)
+        self.ui.center_in_origin_btn.triggered.connect(self.on_custom_origin)
 
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
@@ -5088,20 +5088,72 @@ class App(QtCore.QObject):
             worker_task()
         self.should_we_save = True
 
-    def on_center_in_origin(self, use_thread=True):
+    def on_custom_origin(self, use_thread=True):
         """
         Move selected objects to be centered in origin.
         :param use_thread: Control if to use threaded operation. Boolean.
         :return:
         """
 
-        def worker_task():
-            with self.proc_container.new(_("Centering in Origin...")):
-                obj_list = self.collection.get_selected()
+        obj_list = self.collection.get_selected()
 
-                if not obj_list:
-                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
-                    return
+        if not obj_list:
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+            return
+
+        class DialogBoxChoice(QtWidgets.QDialog):
+            def __init__(self, title=None, icon=None, choice='c'):
+                """
+
+                :param title: string with the window title
+                """
+                super(DialogBoxChoice, self).__init__()
+
+                self.ok = False
+
+                self.setWindowIcon(icon)
+                self.setWindowTitle(str(title))
+
+                self.form = QtWidgets.QFormLayout(self)
+
+                self.ref_radio = RadioSet([
+                    {"label": _("Quadrant 1"), "value": "bl"},
+                    {"label": _("Quadrant 2"), "value": "br"},
+                    {"label": _("Quadrant 3"), "value": "tr"},
+                    {"label": _("Quadrant 4"), "value": "tl"},
+                    {"label": _("Center"), "value": "c"}
+                ], orientation='vertical', stretch=False)
+                self.ref_radio.set_value(choice)
+                self.form.addRow(self.ref_radio)
+
+                self.button_box = QtWidgets.QDialogButtonBox(
+                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                    Qt.Horizontal, parent=self)
+                self.form.addRow(self.button_box)
+
+                self.button_box.accepted.connect(self.accept)
+                self.button_box.rejected.connect(self.reject)
+
+                if self.exec_() == QtWidgets.QDialog.Accepted:
+                    self.ok = True
+                    self.location_point = self.ref_radio.get_value()
+                else:
+                    self.ok = False
+                    self.location_point = None
+
+        dia_box = DialogBoxChoice(title='%s ...' % _("Custom Origin"),
+                                  icon=QtGui.QIcon(self.resource_location + '/origin3_32.png'))
+
+        if dia_box.ok is True:
+            try:
+                location_point = dia_box.location_point
+            except Exception:
+                return
+        else:
+            return
+
+        def worker_task():
+            with self.proc_container.new('%s ...' % _("Custom Origin")):
 
                 xminlist = []
                 yminlist = []
@@ -5121,11 +5173,23 @@ class App(QtCore.QObject):
                 y0 = min(yminlist)
                 x1 = max(xmaxlist)
                 y1 = max(ymaxlist)
-                cx = (x1 - x0) / 2 + x0
-                cy = (y1 - y0) / 2 + y0
+
+                if location_point == 'bl':
+                    location = (x0, y0)
+                elif location_point == 'tl':
+                    location = (x0, y1)
+                elif location_point == 'br':
+                    location = (x1, y0)
+                elif location_point == 'tr':
+                    location = (x1, y1)
+                else:
+                    # center
+                    cx = x0 + abs((x1 - x0 ) / 2)
+                    cy = y0 + abs((y1 - y0 ) / 2)
+                    location = (cx, cy)
 
                 for obj in obj_list:
-                    obj.offset((-cx, -cy))
+                    obj.offset((-location[0], -location[1]))
                     self.app_obj.object_changed.emit(obj)
 
                     # Update the object bounding box options
@@ -5365,8 +5429,8 @@ class App(QtCore.QObject):
             location = (loc_b[2], loc_b[3])
         else:
             # center
-            cx = loc_b[0] + ((loc_b[2] - loc_b[0]) / 2)
-            cy = loc_b[1] + ((loc_b[3] - loc_b[1]) / 2)
+            cx = loc_b[0] + abs((loc_b[2] - loc_b[0]) / 2)
+            cy = loc_b[1] + abs((loc_b[3] - loc_b[1]) / 2)
             location = (cx, cy)
 
         self.locate_signal.emit(location, location_point)

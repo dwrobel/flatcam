@@ -433,7 +433,7 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_('Move to Origin'), _('Shift+O')))
         self.menuedit_center_in_origin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin3_32.png'),
-            '%s\t%s' % (_('Center to Origin'), ''))
+            '%s\t%s' % (_('Custom Origin'), ''))
 
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'),
@@ -1026,7 +1026,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.move2origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
         self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Center to Origin'))
+            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Custom Origin'))
 
         self.jmp_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
@@ -2241,7 +2241,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.move2origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
         self.center_in_origin_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Center to Origin'))
+            QtGui.QIcon(self.app.resource_location + '/origin3_32.png'), _('Custom Origin'))
 
         self.jmp_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
