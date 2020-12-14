@@ -2082,6 +2082,7 @@ class App(QtCore.QObject):
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
+        self.ui.menuedit_center_in_origin.triggered.connect(self.on_center_in_origin)
 
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
         self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
@@ -2262,6 +2263,7 @@ class App(QtCore.QObject):
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
         self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
+        self.ui.center_in_origin_btn.triggered.connect(self.on_center_in_origin)
 
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
@@ -4982,7 +4984,9 @@ class App(QtCore.QObject):
                     elif obj.kind == 'excellon':
                         obj.source_file = self.f_handlers.export_excellon(
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
-
+                    elif obj.kind == 'geometry':
+                        obj.source_file = self.f_handlers.export_dxf(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
                 if noplot_sig is False:
                     self.replot_signal.emit([])
 
@@ -5062,6 +5066,7 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.plot()
+                self.plotcanvas.fit_view()
 
                 for obj in obj_list:
                     out_name = obj.options["name"]
@@ -5071,6 +5076,80 @@ class App(QtCore.QObject):
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
                     elif obj.kind == 'excellon':
                         obj.source_file = self.f_handlers.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'geometry':
+                        obj.source_file = self.f_handlers.export_dxf(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                self.inform.emit('[success] %s...' % _('Origin set'))
+
+        if use_thread is True:
+            self.worker_task.emit({'fcn': worker_task, 'params': []})
+        else:
+            worker_task()
+        self.should_we_save = True
+
+    def on_center_in_origin(self, use_thread=True):
+        """
+        Move selected objects to be centered in origin.
+        :param use_thread: Control if to use threaded operation. Boolean.
+        :return:
+        """
+
+        def worker_task():
+            with self.proc_container.new(_("Centering in Origin...")):
+                obj_list = self.collection.get_selected()
+
+                if not obj_list:
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+                    return
+
+                xminlist = []
+                yminlist = []
+                xmaxlist = []
+                ymaxlist = []
+
+                # first get a bounding box to fit all
+                for obj in obj_list:
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    xminlist.append(xmin)
+                    yminlist.append(ymin)
+                    xmaxlist.append(xmax)
+                    ymaxlist.append(ymax)
+
+                # get the minimum x,y for all objects selected
+                x0 = min(xminlist)
+                y0 = min(yminlist)
+                x1 = max(xmaxlist)
+                y1 = max(ymaxlist)
+                cx = (x1 - x0) / 2 + x0
+                cy = (y1 - y0) / 2 + y0
+
+                for obj in obj_list:
+                    obj.offset((-cx, -cy))
+                    self.app_obj.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+
+                for obj in obj_list:
+                    obj.plot()
+                self.plotcanvas.fit_view()
+
+                for obj in obj_list:
+                    out_name = obj.options["name"]
+
+                    if obj.kind == 'gerber':
+                        obj.source_file = self.f_handlers.export_gerber(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'excellon':
+                        obj.source_file = self.f_handlers.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'geometry':
+                        obj.source_file = self.f_handlers.export_dxf(
                             obj_name=out_name, filename=None, local_use=obj, use_thread=False)
 
                 self.inform.emit('[success] %s...' % _('Origin set'))

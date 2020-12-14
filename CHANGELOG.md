@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.12.2020
+
+- added new functionality: centering in origin for a selection of objects
+- for all centering functionality, now if the moved object is of 'geometry' kind it will have the source_file attribute updated with DXF code
+
 13.12.2020
 
 - GCode Editor - fixed the issue with the editor toolbar buttons not being updated like for the other editors
