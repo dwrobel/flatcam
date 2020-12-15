@@ -432,7 +432,7 @@ class Gerber(Geometry):
 
                 # Cleanup #
                 gline = gline.strip(' \r\n')
-                # log.debug("Line=%3s %s" % (line_num, gline))
+                # self.app.log.debug("Line=%3s %s" % (line_num, gline))
 
                 # ###############################################################
                 # ################   Ignored lines   ############################
@@ -471,11 +471,10 @@ class Gerber(Geometry):
                             geo_dict['follow'] = geo_f
 
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        if self.app.defaults['gerber_simplification']:
+                            geo_s = geo_s.simplify(s_tol)
                         if not geo_s.is_empty and geo_s.is_valid:
-                            if self.app.defaults['gerber_simplification']:
-                                poly_buffer.append(geo_s.simplify(s_tol))
-                            else:
-                                poly_buffer.append(geo_s)
+                            poly_buffer.append(geo_s)
 
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
@@ -523,12 +522,12 @@ class Gerber(Geometry):
                         self.gerber_zeros = match.group(1)
                     self.int_digits = int(match.group(3))
                     self.frac_digits = int(match.group(4))
-                    log.debug("Gerber format found. (%s) " % str(gline))
+                    self.app.log.debug("Gerber format found. (%s) " % str(gline))
 
-                    log.debug(
+                    self.app.log.debug(
                         "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
                         "D-no zero supression)" % self.gerber_zeros)
-                    log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
+                    self.app.log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
                     continue
 
                 # ################################################################
@@ -538,7 +537,7 @@ class Gerber(Geometry):
                 match = self.mode_re.search(gline)
                 if match:
                     self.units = match.group(1)
-                    log.debug("Gerber units found = %s" % self.units)
+                    self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
                     # self.convert_units(match.group(1))
                     self.conversion_done = True
@@ -554,14 +553,14 @@ class Gerber(Geometry):
                         self.gerber_zeros = match.group(1)
                     self.int_digits = int(match.group(3))
                     self.frac_digits = int(match.group(4))
-                    log.debug("Gerber format found. (%s) " % str(gline))
-                    log.debug(
+                    self.app.log.debug("Gerber format found. (%s) " % str(gline))
+                    self.app.log.debug(
                         "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
                         "D-no zero suppression)" % self.gerber_zeros)
-                    log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
+                    self.app.log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                     self.units = match.group(5)
-                    log.debug("Gerber units found = %s" % self.units)
+                    self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
                     # self.convert_units(match.group(5))
                     self.conversion_done = True
@@ -583,14 +582,15 @@ class Gerber(Geometry):
 
                         self.int_digits = int(match.group(4))
                         self.frac_digits = int(match.group(5))
-                        log.debug("Gerber format found. (%s) " % str(gline))
-                        log.debug(
+                        self.app.log.debug("Gerber format found. (%s) " % str(gline))
+                        self.app.log.debug(
                             "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
                             "D-no zerosuppressionn)" % self.gerber_zeros)
-                        log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
+                        self.app.log.debug(
+                            "Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                         self.units = match.group(1)
-                        log.debug("Gerber units found = %s" % self.units)
+                        self.app.log.debug("Gerber units found = %s" % self.units)
                         # Changed for issue #80
                         # self.convert_units(match.group(5))
                         self.conversion_done = True
@@ -603,7 +603,7 @@ class Gerber(Geometry):
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
                     self.units = obs_gerber_units
-                    log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
+                    self.app.log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
                     # self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])
                     self.conversion_done = True
@@ -615,7 +615,8 @@ class Gerber(Geometry):
                 match = self.absrel_re.search(gline)
                 if match:
                     absolute = {'0': "Absolute", '1': "Relative"}[match.group(1)]
-                    log.warning("Gerber obsolete coordinates type found = %s (Absolute or Relative) " % absolute)
+                    self.app.log.warning(
+                        "Gerber obsolete coordinates type found = %s (Absolute or Relative) " % absolute)
                     continue
 
                 # ################################################################
@@ -628,7 +629,7 @@ class Gerber(Geometry):
                     match = self.am1_re.search(gline)
                     # Start macro if match, else not an AM, carry on.
                     if match:
-                        log.debug("Starting macro. Line %d: %s" % (line_num, gline))
+                        self.app.log.debug("Starting macro. Line %d: %s" % (line_num, gline))
                         current_macro = match.group(1)
                         self.aperture_macros[current_macro] = ApertureMacro(name=current_macro)
                         if match.group(2):  # Append
@@ -636,13 +637,13 @@ class Gerber(Geometry):
                         if match.group(3):  # Finish macro
                             # self.aperture_macros[current_macro].parse_content()
                             current_macro = None
-                            log.debug("Macro complete in 1 line.")
+                            self.app.log.debug("Macro complete in 1 line.")
                         continue
                 else:  # Continue macro
-                    log.debug("Continuing macro. Line %d." % line_num)
+                    self.app.log.debug("Continuing macro. Line %d." % line_num)
                     match = self.am2_re.search(gline)
                     if match:  # Finish macro
-                        log.debug("End of macro. Line %d." % line_num)
+                        self.app.log.debug("End of macro. Line %d." % line_num)
                         self.aperture_macros[current_macro].append(match.group(1))
                         # self.aperture_macros[current_macro].parse_content()
                         current_macro = None
@@ -673,7 +674,7 @@ class Gerber(Geometry):
 
                         # --- Buffered ---
                         try:
-                            # log.debug("Bare op-code %d." % current_operation_code)
+                            # self.app.log.debug("Bare op-code %d." % current_operation_code)
                             geo_dict = {}
                             flash = self.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
@@ -683,9 +684,8 @@ class Gerber(Geometry):
 
                             if not flash.is_empty:
                                 if self.app.defaults['gerber_simplification']:
-                                    poly_buffer.append(flash.simplify(s_tol))
-                                else:
-                                    poly_buffer.append(flash)
+                                    flash = flash.simplify(s_tol)
+                                poly_buffer.append(flash)
 
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = flash
@@ -710,7 +710,7 @@ class Gerber(Geometry):
                 match = self.tool_re.search(gline)
                 if match:
                     current_aperture = match.group(1)
-                    # log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
+                    # self.app.log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
 
                     # If the aperture value is zero then make it something quite small but with a non-zero value
                     # so it can be processed by FlatCAM.
@@ -719,7 +719,7 @@ class Gerber(Geometry):
                     if self.apertures[current_aperture]["type"] != "AM":
                         if self.apertures[current_aperture]["size"] == 0:
                             self.apertures[current_aperture]["size"] = 10 ** -self.decimals
-                    # log.debug(self.apertures[current_aperture])
+                    # self.app.log.debug(self.apertures[current_aperture])
 
                     # Take care of the current path with the previous tool
                     try:
@@ -741,11 +741,11 @@ class Gerber(Geometry):
                             # --- Buffered ----
                             width = self.apertures[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                            if self.app.defaults['gerber_simplification']:
+                                geo_s = geo_s.simplify(s_tol)
                             if not geo_s.is_empty:
-                                if self.app.defaults['gerber_simplification']:
-                                    poly_buffer.append(geo_s.simplify(s_tol))
-                                else:
-                                    poly_buffer.append(geo_s)
+                                poly_buffer.append(geo_s)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
                                 else:
@@ -781,11 +781,12 @@ class Gerber(Geometry):
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+
                         if not geo_s.is_empty:
                             if self.app.defaults['gerber_simplification']:
-                                poly_buffer.append(geo_s.simplify(s_tol))
-                            else:
-                                poly_buffer.append(geo_s)
+                                geo_s = geo_s.simplify(s_tol)
+
+                            poly_buffer.append(geo_s)
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -832,9 +833,9 @@ class Gerber(Geometry):
                             if geo_s:
                                 if not geo_s.is_empty:
                                     if self.app.defaults['gerber_simplification']:
-                                        poly_buffer.append(geo_s.simplify(s_tol))
-                                    else:
-                                        poly_buffer.append(geo_s)
+                                        geo_s = geo_s.simplify(s_tol)
+
+                                    poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
                                     else:
@@ -880,9 +881,9 @@ class Gerber(Geometry):
                         region_s = region_s.buffer(0, int(self.steps_per_circle))
                     if not region_s.is_empty:
                         if self.app.defaults['gerber_simplification']:
-                            poly_buffer.append(region_s.simplify(s_tol))
-                        else:
-                            poly_buffer.append(region_s)
+                            region_s = region_s.simplify(s_tol)
+
+                        poly_buffer.append(region_s)
 
                         if self.is_lpc is True:
                             geo_dict['clear'] = region_s
@@ -974,9 +975,9 @@ class Gerber(Geometry):
                                     )
                                     if not flash.is_empty:
                                         if self.app.defaults['gerber_simplification']:
-                                            poly_buffer.append(flash.simplify(s_tol))
-                                        else:
-                                            poly_buffer.append(flash)
+                                            flash = flash.simplify(s_tol)
+
+                                        poly_buffer.append(flash)
 
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = flash
@@ -1001,7 +1002,7 @@ class Gerber(Geometry):
                                         maxx = max(path[0][0], path[1][0]) + width / 2
                                         miny = min(path[0][1], path[1][1]) - height / 2
                                         maxy = max(path[0][1], path[1][1]) + height / 2
-                                        log.debug("Coords: %s - %s - %s - %s" % (minx, miny, maxx, maxy))
+                                        self.app.log.debug("Coords: %s - %s - %s - %s" % (minx, miny, maxx, maxy))
 
                                         geo_dict = {}
                                         geo_f = Point([current_x, current_y])
@@ -1010,9 +1011,9 @@ class Gerber(Geometry):
 
                                         geo_s = shply_box(minx, miny, maxx, maxy)
                                         if self.app.defaults['gerber_simplification']:
-                                            poly_buffer.append(geo_s.simplify(s_tol))
-                                        else:
-                                            poly_buffer.append(geo_s)
+                                            geo_s = geo_s.simplify(s_tol)
+
+                                        poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
@@ -1072,7 +1073,7 @@ class Gerber(Geometry):
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
                             except Exception as e:
-                                log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
+                                self.app.log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 if not geo_f.is_empty:
                                     follow_buffer.append(geo_f)
                                     geo_dict['follow'] = geo_f
@@ -1106,20 +1107,20 @@ class Gerber(Geometry):
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo_s.is_empty:
                                         if self.app.defaults['gerber_simplification']:
-                                            poly_buffer.append(geo_s.simplify(s_tol))
-                                        else:
-                                            poly_buffer.append(geo_s)
+                                            geo_s = geo_s.simplify(s_tol)
+
+                                        poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
                             except Exception as e:
-                                log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
+                                self.app.log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 if self.app.defaults['gerber_simplification']:
-                                    poly_buffer.append(geo_s.simplify(s_tol))
-                                else:
-                                    poly_buffer.append(geo_s)
+                                    geo_s = geo_s.simplify(s_tol)
+
+                                poly_buffer.append(geo_s)
 
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
@@ -1163,7 +1164,7 @@ class Gerber(Geometry):
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
                                 except Exception as e:
-                                    log.debug("camlib.Gerber.parse_lines() --> G01 match D03 --> %s" % str(e))
+                                    self.app.log.debug("camlib.Gerber.parse_lines() --> G01 match D03 --> %s" % str(e))
                                     follow_buffer.append(geo_f)
                                     geo_dict['follow'] = geo_f
 
@@ -1174,9 +1175,9 @@ class Gerber(Geometry):
                                 try:
                                     if self.apertures[last_path_aperture]["type"] != 'R':
                                         if self.app.defaults['gerber_simplification']:
-                                            poly_buffer.append(geo_s.simplify(s_tol))
-                                        else:
-                                            poly_buffer.append(geo_s)
+                                            geo_s = geo_s.simplify(s_tol)
+
+                                        poly_buffer.append(geo_s)
 
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
@@ -1184,9 +1185,9 @@ class Gerber(Geometry):
                                             geo_dict['solid'] = geo_s
                                 except Exception:
                                     if self.app.defaults['gerber_simplification']:
-                                        poly_buffer.append(geo_s.simplify(s_tol))
-                                    else:
-                                        poly_buffer.append(geo_s)
+                                        geo_s = geo_s.simplify(s_tol)
+
+                                    poly_buffer.append(geo_s)
 
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
@@ -1219,9 +1220,9 @@ class Gerber(Geometry):
 
                         if not flash.is_empty:
                             if self.app.defaults['gerber_simplification']:
-                                poly_buffer.append(flash.simplify(s_tol))
-                            else:
-                                poly_buffer.append(flash)
+                                flash = flash.simplify(s_tol)
+
+                            poly_buffer.append(flash)
 
                             if self.is_lpc is True:
                                 geo_dict['clear'] = flash
@@ -1239,7 +1240,7 @@ class Gerber(Geometry):
                     current_x = linear_x
                     current_y = linear_y
 
-                    # log.debug("Line_number=%3s X=%s Y=%s (%s)" % (line_num, linear_x, linear_y, gline))
+                    # self.app.log.debug("Line_number=%3s X=%s Y=%s (%s)" % (line_num, linear_x, linear_y, gline))
                     continue
 
                 # ################################################################
@@ -1332,9 +1333,9 @@ class Gerber(Geometry):
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 if self.app.defaults['gerber_simplification']:
-                                    poly_buffer.append(buffered.simplify(s_tol))
-                                else:
-                                    poly_buffer.append(buffered)
+                                    buffered = buffered.simplify(s_tol)
+
+                                poly_buffer.append(buffered)
 
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = buffered
@@ -1399,7 +1400,7 @@ class Gerber(Geometry):
                         ]
 
                         valid = False
-                        log.debug("I: %f  J: %f" % (i, j))
+                        self.app.log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
                             radius = np.sqrt(i ** 2 + j ** 2)
 
@@ -1415,14 +1416,14 @@ class Gerber(Geometry):
                             start = np.arctan2(-j, -i)  # Start angle
                             stop = np.arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
                             angle = abs(arc_angle(start, stop, arcdir[current_interpolation_mode]))
-                            log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
+                            self.app.log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
                                       (current_x, current_y, center[0], center[1], circular_x, circular_y))
-                            log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
+                            self.app.log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
                                       (start * 180 / np.pi, stop * 180 / np.pi, arcdir[current_interpolation_mode],
                                        angle * 180 / np.pi, np.pi / 2 * 180 / np.pi, angle <= (np.pi + 1e-6) / 2))
 
                             if angle <= (np.pi + 1e-6) / 2:
-                                log.debug("########## ACCEPTING ARC ############")
+                                self.app.log.debug("########## ACCEPTING ARC ############")
                                 this_arc = arc(center, radius, start, stop,
                                                arcdir[current_interpolation_mode],
                                                self.steps_per_circle)
@@ -1442,7 +1443,7 @@ class Gerber(Geometry):
                         if valid:
                             continue
                         else:
-                            log.warning("Invalid arc in line %d." % line_num)
+                            self.app.log.warning("Invalid arc in line %d." % line_num)
 
                 # ################################################################
                 # ######### EOF - END OF FILE ####################################
@@ -1454,7 +1455,7 @@ class Gerber(Geometry):
                 # ################################################################
                 # ######### Line did not match any pattern. Warn user.  ##########
                 # ################################################################
-                log.warning("Line ignored (%d): %s" % (line_num, gline))
+                self.app.log.warning("Line ignored (%d): %s" % (line_num, gline))
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
@@ -1485,9 +1486,9 @@ class Gerber(Geometry):
                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo_s.is_empty:
                         if self.app.defaults['gerber_simplification']:
-                            poly_buffer.append(geo_s.simplify(s_tol))
-                        else:
-                            poly_buffer.append(geo_s)
+                            geo_s = geo_s.simplify(s_tol)
+
+                        poly_buffer.append(geo_s)
 
                         if self.is_lpc is True:
                             geo_dict['clear'] = geo_s
@@ -1527,7 +1528,7 @@ class Gerber(Geometry):
             self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), buff_length))
 
             if self.use_buffer_for_union:
-                log.debug("Union by buffer...")
+                self.app.log.debug("Union by buffer...")
 
                 new_poly = MultiPolygon(poly_buffer)
                 if self.app.defaults["gerber_buffering"] == 'full':
@@ -1536,7 +1537,7 @@ class Gerber(Geometry):
                     log.warning("Union(buffer) done.")
 
             else:
-                log.debug("Union by union()...")
+                self.app.log.debug("Union by union()...")
                 new_poly = unary_union(poly_buffer)
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
                 log.warning("Union done.")
@@ -1717,10 +1718,10 @@ class Gerber(Geometry):
         :return:            None
         """
 
-        log.debug("parseGerber.Gerber.bounds()")
+        self.app.log.debug("parseGerber.Gerber.bounds()")
 
         if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
+            self.app.log.debug("solid_geometry is None")
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
@@ -1743,7 +1744,7 @@ class Gerber(Geometry):
                             try:
                                 minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                             except Exception as e:
-                                log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                                self.app.log.debug("camlib.Gerber.bounds() --> %s" % str(e))
                                 return
 
                             minx = min(minx, minx_)
@@ -1771,18 +1772,18 @@ class Gerber(Geometry):
         """
 
         if obj_units.upper() == self.units.upper():
-            log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
             return 1.0
 
         if obj_units.upper() == "MM":
             factor = 25.4
-            log.debug("parseGerber.Gerber.convert_units() --> Factor: 25.4")
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: 25.4")
         elif obj_units.upper() == "IN":
             factor = 1 / 25.4
-            log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(1 / 25.4))
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(1 / 25.4))
         else:
-            log.error("Unsupported units: %s" % str(obj_units))
-            log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
+            self.app.log.error("Unsupported units: %s" % str(obj_units))
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
             return 1.0
 
         self.units = obj_units
@@ -1803,7 +1804,7 @@ class Gerber(Geometry):
         :return: None
         """
 
-        log.debug("appParsers.ParseGerber.Gerber.import_svg()")
+        self.app.log.debug("appParsers.ParseGerber.Gerber.import_svg()")
 
         # Parse into list of shapely objects
         svg_tree = ET.parse(filename)
@@ -1886,7 +1887,7 @@ class Gerber(Geometry):
         :return: None
         """
 
-        log.debug("Parsing DXF file geometry into a Gerber object geometry.")
+        self.app.log.debug("Parsing DXF file geometry into a Gerber object geometry.")
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
@@ -1947,7 +1948,7 @@ class Gerber(Geometry):
         :param point: reference point for scaling operation
         :rtype : None
         """
-        log.debug("parseGerber.Gerber.scale()")
+        self.app.log.debug("parseGerber.Gerber.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -2040,7 +2041,7 @@ class Gerber(Geometry):
                     pass
 
         except Exception as e:
-            log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
+            self.app.log.debug('ParseGerber.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2073,7 +2074,7 @@ class Gerber(Geometry):
         :type vect: tuple
         :return: None
         """
-        log.debug("parseGerber.Gerber.offset()")
+        self.app.log.debug("ParseGerber.Gerber.offset()")
 
         try:
             dx, dy = vect
@@ -2131,7 +2132,7 @@ class Gerber(Geometry):
                             geo_el['clear'] = offset_geom(geo_el['clear'])
 
         except Exception as e:
-            log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
+            self.app.log.debug('ParseGerber.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2158,7 +2159,7 @@ class Gerber(Geometry):
         :type point: list
         :return: None
         """
-        log.debug("parseGerber.Gerber.mirror()")
+        self.app.log.debug("parseGerber.Gerber.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -2206,7 +2207,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = mirror_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
+            self.app.log.debug('ParseGerber.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2230,7 +2231,7 @@ class Gerber(Geometry):
         :param point: reference point for skewing operation
         :return None
         """
-        log.debug("parseGerber.Gerber.skew()")
+        self.app.log.debug("parseGerber.Gerber.skew()")
 
         px, py = point
 
@@ -2280,7 +2281,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = skew_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
+            self.app.log.debug('ParseGerber.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2293,7 +2294,7 @@ class Gerber(Geometry):
         :param point:
         :return:
         """
-        log.debug("parseGerber.Gerber.rotate()")
+        self.app.log.debug("parseGerber.Gerber.rotate()")
 
         px, py = point
 
@@ -2343,7 +2344,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = rotate_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
+            self.app.log.debug('ParseGerber.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
         self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
@@ -2356,7 +2357,7 @@ class Gerber(Geometry):
         :param factor:      True or False (None)
         :return:
         """
-        log.debug("parseGerber.Gerber.buffer()")
+        self.app.log.debug("parseGerber.Gerber.buffer()")
 
         if distance == 0:
             return
@@ -2431,7 +2432,7 @@ class Gerber(Geometry):
                     except KeyError:
                         pass
             except Exception as e:
-                log.debug('camlib.Gerber.buffer() Exception --> %s' % str(e))
+                self.app.log.debug('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
                 return 'fail'
         else:
             try:
@@ -2476,7 +2477,7 @@ class Gerber(Geometry):
                                         geo_p = shply_box(minx, miny, maxx, maxy)
                                         new_geo_el['solid'] = geo_p
                                     else:
-                                        log.debug("appParsers.ParseGerber.Gerber.buffer() --> "
+                                        self.app.log.debug("appParsers.ParseGerber.Gerber.buffer() --> "
                                                   "ap type not supported")
                                 else:
                                     new_geo_el['solid'] = geo_el['follow'].buffer(
@@ -2489,7 +2490,7 @@ class Gerber(Geometry):
 
                     self.apertures[apid]['geometry'] = deepcopy(new_geometry)
             except Exception as e:
-                log.debug('camlib.Gerber.buffer() Exception --> %s' % str(e))
+                self.app.log.debug('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
                 return 'fail'
 
             # make the new solid_geometry

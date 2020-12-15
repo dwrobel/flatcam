@@ -9,7 +9,9 @@ CHANGELOG for FlatCAM beta
 
 15.12.2020
 
-- modified the way that the plotcanvas widget is added
+- modified the way that the PlotCanvas widget is added
+- in ParseGerber class fixed simplification controlled by the Preferences parameter 
+- in ParseGerber class made logs use the self.app.log handler which in turn can output messages in the Tcl Shell
 
 14.12.2020
 
