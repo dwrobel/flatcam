@@ -132,13 +132,12 @@ class PlotCanvasLegacy(QtCore.QObject):
 
     double_click = QtCore.pyqtSignal(object)
 
-    def __init__(self, container, app):
+    def __init__(self, app):
         """
         The constructor configures the Matplotlib figure that
         will contain all plots, creates the base axes and connects
         events to the plotting area.
 
-        :param container: The parent container in which to draw plots.
         :rtype: PlotCanvas
         """
 
@@ -220,7 +219,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.y_margin = 25  # Pixels
 
         # Parent container
-        self.container = container
+        # self.container = container
 
         # Plots go onto a single matplotlib.figure
         self.figure = Figure(dpi=50)
@@ -256,10 +255,6 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.adjust_axes(-10, -10, 100, 100)
         # self.canvas.set_can_focus(True)  # For key press
-
-        # Attach to parent
-        # self.container.attach(self.canvas, 0, 0, 600, 400)
-        self.container.addWidget(self.canvas)  # Qt
 
         # Copy a bitmap of the canvas for quick animation.
         # Update every time the canvas is re-drawn.
@@ -333,6 +328,11 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                         background-color: orange;
                                                     }
                                                     """)
+
+        # Attach to parent
+        self.native = self.canvas   # for API compatibility with 3D plotcanvas
+        # self.container.attach(self.canvas, 0, 0, 600, 400)
+        # self.container.addWidget(self.canvas)  # Qt
 
     def on_toggle_axis(self, signal=None, state=None, silent=None):
         if not state:

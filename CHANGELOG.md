@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.12.2020
+
+- modified the way that the plotcanvas widget is added
+
 14.12.2020
 
 - added new functionality: centering in origin for a selection of objects

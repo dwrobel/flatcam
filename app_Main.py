@@ -1121,6 +1121,9 @@ class App(QtCore.QObject):
         if self.plotcanvas == 'fail':
             return
 
+        # add he PlotCanvas setup to the UI
+        self.on_plotcanvas_add(self.plotcanvas, self.ui.right_layout)
+
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
         if self.is_legacy is False:
@@ -1545,7 +1548,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         self.log.debug("END of constructor. Releasing control.")
         self.log.debug("... Resistance is futile. You will be assimilated ...")
-        self.log.debug("... I disagree. We will not be vaccinated ... We are free!\n")
+        self.log.debug("... I disagree. While we live and breath, we can be free!\n")
 
         # ###########################################################################################################
         # ########################################## SHOW GUI #######################################################
@@ -8049,10 +8052,10 @@ class App(QtCore.QObject):
         if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
             self.is_legacy = True
             self.defaults["global_graphic_engine"] = "2D"
-            plotcanvas = PlotCanvasLegacy(plot_container, self)
+            plotcanvas = PlotCanvasLegacy(self)
         else:
             try:
-                plotcanvas = PlotCanvas(plot_container, self)
+                plotcanvas = PlotCanvas(self)
             except Exception as er:
                 msg_txt = traceback.format_exc()
                 self.log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
@@ -8091,6 +8094,18 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = False
 
         return plotcanvas
+
+    def on_plotcanvas_add(self, plotcanvas_obj, container):
+        """
+
+        :param plotcanvas_obj:  the class that setup the canvas
+        :type plotcanvas_obj:   class
+        :param container:       a layout where to add the native widget of the plotcanvas_obj class
+        :type container:
+        :return:                Nothing
+        :rtype:                 None
+        """
+        container.addWidget(plotcanvas_obj.native)
 
     def on_zoom_fit(self):
         """

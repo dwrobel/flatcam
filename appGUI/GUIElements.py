@@ -2663,7 +2663,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
     From here:
     https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
     """
-    tab_detached = QtCore.pyqtSignal(str)
+    tab_detached = QtCore.pyqtSignal(QtWidgets.QWidget, str)
     tab_attached = QtCore.pyqtSignal(str)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
@@ -2845,7 +2845,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # Create a reference to maintain access to the detached tab
         self.detachedTabs[name] = detachedTab
 
-        self.tab_detached.emit(name)
+        self.tab_detached.emit(detachedTab, name)
 
     def attachTab(self, contentWidget, name, icon, insertAt=None):
         """
@@ -3033,8 +3033,16 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.setObjectName(name)
             self.setWindowTitle(name)
 
+            # create a widget to be set as centraWidget
+            self.c_widget = QtWidgets.QWidget()
+            self.central_layout = QtWidgets.QVBoxLayout()
+            self.c_widget.setLayout(self.central_layout)
+
+            # add our widget to the central layout
             self.contentWidget = contentWidget
-            self.setCentralWidget(self.contentWidget)
+            self.central_layout.addWidget(self.contentWidget)
+
+            self.setCentralWidget(self.c_widget)
             self.contentWidget.show()
 
             self.windowDropFilter = self.WindowDropFilter()

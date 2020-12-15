@@ -31,13 +31,12 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
     Class handling the plotting area in the application.
     """
 
-    def __init__(self, container, fcapp):
+    def __init__(self, fcapp):
         """
         The constructor configures the VisPy figure that
         will contain all plots, creates the base axes and connects
         events to the plotting area.
 
-        :param container: The parent container in which to draw plots.
         :rtype: PlotCanvas
         """
 
@@ -50,9 +49,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.unfreeze()
 
         self.fcapp = fcapp
-
-        # Parent container
-        self.container = container
 
         settings = QtCore.QSettings("Open Source", "FlatCAM")
         if settings.contains("theme"):
@@ -130,9 +126,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # <VisPyCanvas>
         self.create_native()
         self.native.setParent(self.fcapp.ui)
-
-        # <QtCore.QObject>
-        self.container.addWidget(self.native)
 
         # ## AXIS # ##
         self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
@@ -212,11 +205,20 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.c = None
         self.big_cursor = None
+
+        # Parent container
+        # self.container = container
+
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
+
+        # fit everything into view
         self.fit_view()
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
+
+        # <QtCore.QObject>
+        # self.container.addWidget(self.native)
 
     def on_toggle_axis(self, signal=None, state=None, silent=None):
         if not state:
