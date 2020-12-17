@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.12.2020
+
+- fixed the Tcl command export_gcode to return the actual gcode
+
 17.12.2020
 
 - Gerber parser - when simplification is used, the tolerance value will be adjusted by dividing it with 25.4 if the file units are imperial

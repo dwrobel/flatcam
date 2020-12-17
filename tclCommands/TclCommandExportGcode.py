@@ -22,7 +22,6 @@ class TclCommandExportGcode(TclCommandSignaled):
         open_gerber tests/gerber_files/simple1.gbr -outname margin
         isolate margin -dia 3
         cncjob margin_iso
-        cncjob margin_iso
         set EXPORT [export_gcode margin_iso_cnc]
         write_gcode margin_iso_cnc_1 /tmp/file.gcode ${EXPORT}
 
@@ -73,12 +72,11 @@ class TclCommandExportGcode(TclCommandSignaled):
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, CNCjob):
+        if obj.kind != 'cncjob':
             self.raise_tcl_error('Expected CNCjob, got %s %s.' % (name, type(obj)))
 
         if self.app.collection.has_promises():
             self.raise_tcl_error('!!!Promises exists, but should not here!!!')
 
         del args['name']
-        obj.get_gcode(**args)
-        return
+        return obj.get_gcode(**args)
