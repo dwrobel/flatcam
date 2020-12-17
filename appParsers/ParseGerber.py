@@ -540,6 +540,8 @@ class Gerber(Geometry):
                     self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
                     # self.convert_units(match.group(1))
+                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+
                     self.conversion_done = True
                     continue
 
@@ -560,6 +562,8 @@ class Gerber(Geometry):
                     self.app.log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                     self.units = match.group(5)
+                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+
                     self.app.log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
                     # self.convert_units(match.group(5))
@@ -590,6 +594,9 @@ class Gerber(Geometry):
                             "Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                         self.units = match.group(1)
+                        s_tol = float(
+                            self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+
                         self.app.log.debug("Gerber units found = %s" % self.units)
                         # Changed for issue #80
                         # self.convert_units(match.group(5))
@@ -603,6 +610,8 @@ class Gerber(Geometry):
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
                     self.units = obs_gerber_units
+                    s_tol = float(self.app.defaults["gerber_simp_tolerance"]) / 25.4 if self.units == 'IN' else s_tol
+
                     self.app.log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
                     # self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])

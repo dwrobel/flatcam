@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.12.2020
+
+- Gerber parser - when simplification is used, the tolerance value will be adjusted by dividing it with 25.4 if the file units are imperial
+
 15.12.2020
 
 - modified the way that the PlotCanvas widget is added
