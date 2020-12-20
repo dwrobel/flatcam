@@ -4723,6 +4723,19 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.geo_vertex_entry.set_value(vertex_nr)
 
+        # #############################################################################################################
+        # ######################### calculate total area for all selected shapes ######################################
+        # #############################################################################################################
+        t_area = 0
+        for sha in self.selected:
+            sha_geo = sha.geo
+            if 'solid' in sha_geo:
+                sha_geo_solid = sha_geo['solid']
+                if sha_geo_solid.geom_type == 'Polygon':
+                    t_area += sha_geo_solid.area
+
+        self.ui.area_entry.set_value(t_area)
+
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
         self.plot_all()
 

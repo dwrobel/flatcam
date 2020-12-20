@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 18.12.2020
 
 - fixed the Tcl command export_gcode to return the actual gcode
+- Gerber Editor - when doing a selection of polygons, the displayed area is now the cummulated value
 
 17.12.2020
 
