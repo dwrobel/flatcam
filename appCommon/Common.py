@@ -20,6 +20,7 @@ from appTool import AppTool
 
 from copy import deepcopy
 import collections
+from datetime import datetime
 
 import numpy as np
 # from voronoi import Voronoi
@@ -913,20 +914,40 @@ class AppLogging:
         self._log.addHandler(handler)
 
     def info(self, msg):
+        # current date now
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
+
         self._log.info(msg=msg)
-        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+        self.app.inform_shell.emit('[log]INFO %s ***\t%s' % (date, msg))
 
     def debug(self, msg):
+        # current date now
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
+
         self._log.debug(msg=msg)
-        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+        self.app.inform_shell.emit('[log]DEBUG %s ***\t%s' % (date, msg))
 
     def warning(self, msg):
+        # current date now
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
+
         self._log.warning(msg=msg)
-        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+        self.app.inform_shell.emit('[log]WARNING %s ***\t%s' % (date, msg))
 
     def error(self, msg):
+        # current date now
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
+
         self._log.error(msg=msg)
-        self.app.inform_shell.emit('*** LOG ***\t%s' % msg)
+        self.app.inform_shell.emit('[log]ERROR %s ***\t%s' % (date, msg))
 
 
 def farthest_point(origin, points_list):

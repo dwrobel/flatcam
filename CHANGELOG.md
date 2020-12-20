@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - App - trying to speed up the new project creation
 - Tcl Shell - Browser Edit - added Undo/Redo, Cut and Delete selection
 - replace all the exec_() calls with exec() (except one situation in Tcl where I'm not sure of the effect)
+- in verbose log made the messages in Tcl Shell to be displayed in gray color and to include the date
 
 18.12.2020
 

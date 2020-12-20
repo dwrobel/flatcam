@@ -149,8 +149,12 @@ class TermWidget(QWidget):
         elif style.lower() == 'raw':
             text = text
         else:
-            # without span <br/> is ignored!!!
-            text = '<span>%s</span>' % text
+            if text.startswith('[log]'):
+                text = text.replace('[log]', '', 1)
+                text = '<span style="color: gray;">%s</span>' % text
+            else:
+                # without span <br/> is ignored!!!
+                text = '<span>%s</span>' % text
 
         scrollbar = self._browser.verticalScrollBar()
         old_value = scrollbar.value()
@@ -212,6 +216,12 @@ class TermWidget(QWidget):
 
     def add_line_break_to_input(self):
         self._edit.textCursor().insertText('\n')
+
+    def append_input(self, text):
+        """
+        Append text to output widget in bolded style
+        """
+        self._append_to_browser('in', text)
 
     def append_output(self, text):
         """
