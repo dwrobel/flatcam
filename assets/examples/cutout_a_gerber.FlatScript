@@ -3,7 +3,7 @@
 # Will cut a PCB piece with a pattern (Gerber file) out of the surrounding PCB material
 # #####################################################################################
 
-puts "**************** RUNNING an EXAMPLE SCRIPT = Cutout a Gerber file *******************"
+puts "\n**************** RUNNING an EXAMPLE SCRIPT = Cutout a Gerber file *******************\n"
 
 # ----------- START: This is needed only for the examples ----------------
 # first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable

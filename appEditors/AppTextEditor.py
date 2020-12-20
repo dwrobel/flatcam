@@ -25,9 +25,11 @@ if '_' not in builtins.__dict__:
 
 class AppTextEditor(QtWidgets.QWidget):
 
-    def __init__(self, app, text=None, plain_text=None, parent=None):
+    def __init__(self, app, text=None, plain_text=None, color_dict=None, parent=None):
         super().__init__(parent=parent)
 
+        if color_dict is None:
+            color_dict = {}
         self.app = app
         self.plain_text = plain_text
         self.callback = lambda x: None
@@ -51,7 +53,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         # CODE Editor
         if self.plain_text:
-            self.editor_class = FCTextAreaLineNumber()
+            self.editor_class = FCTextAreaLineNumber(color_dict=color_dict)
             self.code_editor = self.editor_class.edit
 
             stylesheet = """

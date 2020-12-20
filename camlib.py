@@ -3306,6 +3306,7 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
             t_gcode += self.doformat(p.z_feedrate_code)
         else:
+            t_gcode += self.doformat(p.z_feedrate_code)
             t_gcode += self.doformat(p.lift_code)
 
         # Spindle start

@@ -2175,7 +2175,7 @@ class MainGUI(QtWidgets.QMainWindow):
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
             msgbox.setDefaultButton(bt_no)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
         if forced_clear is True or response == bt_yes:
@@ -3045,7 +3045,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                         messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
+                        messagebox.exec()
                     return
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
@@ -3205,7 +3205,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                            messagebox.exec_()
+                            messagebox.exec()
 
                     # Paint
                     if key == QtCore.Qt.Key_I or key == 'I':
@@ -3252,7 +3252,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                            messagebox.exec_()
+                            messagebox.exec()
 
                     # Add Text Tool
                     if key == QtCore.Qt.Key_T or key == 'T':
@@ -3274,7 +3274,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                            messagebox.exec_()
+                            messagebox.exec()
 
                     # Flip on X axis
                     if key == QtCore.Qt.Key_X or key == 'X':

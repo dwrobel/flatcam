@@ -178,7 +178,7 @@ class ScriptObject(FlatCAMObj):
         self.app.shell.open_processing()  # Disables input box.
 
         # make sure that the pixmaps are not updated when running this as they will crash
-        # TODO find why the pixmaps load crash when run from this object (perhaps another thread?)
+        # TODO find why the pixmaps for the whole app load crash when run from this object (perhaps another thread?)
         self.app.ui.fcinfo.lock_pmaps = True
 
         self.script_code = self.script_editor_tab.code_editor.toPlainText()

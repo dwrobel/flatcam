@@ -953,7 +953,7 @@ class PreferencesUIManager:
             msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
             if theme_new_val != theme:
@@ -1201,7 +1201,7 @@ class PreferencesUIManager:
             msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
             if response == bt_yes:

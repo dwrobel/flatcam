@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.12.2020
+
+- modified the way the status bar icon is set 
+- Drilling Tool - fixed missing feedrate code when the toolchange is Off
+- AppTextEditor - working on syntax highlighting
+- App - trying to speed up the new project creation
+- Tcl Shell - Browser Edit - added Undo/Redo, Cut and Delete selection
+- replace all the exec_() calls with exec() (except one situation in Tcl where I'm not sure of the effect)
+
 18.12.2020
 
 - fixed the Tcl command export_gcode to return the actual gcode
@@ -5433,7 +5442,7 @@ saving an Excellon object from editor to FlatCAM, selecting drills by left click
 
 19.09.2018
 
-- optimized loading FlatCAM project by double clicking on project file; there is no need to clean up everything by using the function not Thread Safe: on_file_new() because there is nothing to clean since FlatCAM just started.
+- optimized loading FlatCAM project by double clicking on project file; there is no need to clean up everything by using the function not Thread Safe: on_file_new_project() because there is nothing to clean since FlatCAM just started.
 
 - added a workspace delimitation with sizes A3, A4 and landscape or portrait format
 - The Workspace checkbox in Preferences GUI is doing toggle on the workspace

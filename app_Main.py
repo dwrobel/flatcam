@@ -219,6 +219,17 @@ class App(QtCore.QObject):
     # File type and filename
     file_saved = QtCore.pyqtSignal(str, str)
 
+    # close app signal
+    close_app_signal = pyqtSignal()
+
+    # will perform the cleanup operation after a Graceful Exit
+    # usefull for the NCC Tool and Paint Tool where some progressive plotting might leave
+    # graphic residues behind
+    cleanup = pyqtSignal()
+
+    # emitted when the new_project is created in a threaded way
+    new_project_signal = pyqtSignal()
+
     # Percentage of progress
     progress = QtCore.pyqtSignal(int)
 
@@ -249,14 +260,6 @@ class App(QtCore.QObject):
 
     # signal emitted when jumping
     locate_signal = pyqtSignal(tuple, str)
-
-    # close app signal
-    close_app_signal = pyqtSignal()
-
-    # will perform the cleanup operation after a Graceful Exit
-    # usefull for the NCC Tool and Paint Tool where some progressive plotting might leave
-    # graphic residues behind
-    cleanup = pyqtSignal()
 
     proj_selection_changed = pyqtSignal(object, object)
 
@@ -1973,14 +1976,15 @@ class App(QtCore.QObject):
         for act in self.ui.menutool.actions():
             self.ui.menutool.removeAction(act)
 
-    def init_tools(self):
+    def init_tools(self, init_tcl=True):
         """
         Initialize the Tool tab in the notebook side of the central widget.
         Remove the actions in the Tools menu.
         Instantiate again the FlatCAM tools (plugins).
         All this is required when changing the layout: standard, compact etc.
 
-        :return: None
+        :param init_tcl:    Bool. If True will init the Tcl Shell
+        :return:            None
         """
 
         self.log.debug("init_tools()")
@@ -1992,12 +1996,12 @@ class App(QtCore.QObject):
         self.ui.notebook.removeTab(2)
 
         # rebuild the Tools Tab
-        self.ui.tool_tab = QtWidgets.QWidget()
-        self.ui.tool_tab_layout = QtWidgets.QVBoxLayout(self.ui.tool_tab)
-        self.ui.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.ui.notebook.addTab(self.ui.tool_tab, _("Tool"))
-        self.ui.tool_scroll_area = VerticalScrollArea()
-        self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
+        # self.ui.tool_tab = QtWidgets.QWidget()
+        # self.ui.tool_tab_layout = QtWidgets.QVBoxLayout(self.ui.tool_tab)
+        # self.ui.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.ui.notebook.addTab(self.ui.tool_tab, _("Tool"))
+        # self.ui.tool_scroll_area = VerticalScrollArea()
+        # self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
 
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
         # first remove all of them
@@ -2010,7 +2014,7 @@ class App(QtCore.QObject):
 
         # third install all of them
         try:
-            self.install_tools(init_tcl=True)
+            self.install_tools(init_tcl=init_tcl)
         except AttributeError:
             pass
 
@@ -2169,7 +2173,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_geo.triggered.connect(self.app_obj.new_geometry_object)
         self.ui.popmenu_new_grb.triggered.connect(self.app_obj.new_gerber_object)
         self.ui.popmenu_new_exc.triggered.connect(self.app_obj.new_excellon_object)
-        self.ui.popmenu_new_prj.triggered.connect(self.f_handlers.on_file_new)
+        self.ui.popmenu_new_prj.triggered.connect(self.f_handlers.on_file_new_project)
 
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
@@ -2243,7 +2247,7 @@ class App(QtCore.QObject):
         # Toolbar
 
         # File Toolbar Signals
-        # ui.file_new_btn.triggered.connect(self.on_file_new)
+        # ui.file_new_btn.triggered.connect(self.on_file_new_project)
         self.ui.file_open_btn.triggered.connect(self.f_handlers.on_file_openproject)
         self.ui.file_save_btn.triggered.connect(self.f_handlers.on_file_saveproject)
         self.ui.file_open_gerber_btn.triggered.connect(self.f_handlers.on_fileopengerber)
@@ -2285,7 +2289,7 @@ class App(QtCore.QObject):
 
     def on_layout(self, index=None, lay=None, connect_signals=True):
         """
-        Set the toolbars layout (location)
+        Set the toolbars layout (location).
 
         :param connect_signals: Useful when used in the App.__init__(); bool
         :param index:
@@ -2584,7 +2588,8 @@ class App(QtCore.QObject):
         """
         Transfers the Geometry or Excellon from it's editor to the current object.
 
-        :return: None
+        :param cleanup: if True then we closed the app when the editor was open so we close first the editor
+        :return:        None
         """
         self.defaults.report_usage("editor2object()")
 
@@ -2609,7 +2614,7 @@ class App(QtCore.QObject):
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
             if response == bt_yes:
@@ -2843,10 +2848,10 @@ class App(QtCore.QObject):
     @QtCore.pyqtSlot(str, bool)
     def info(self, msg, shell_echo=True):
         """
-        Informs the user. Normally on the status bar, optionally
-        also on the shell.
+        Informs the user. Normally on the status bar, optionally also on the shell.
 
-        :param msg:         Text to write.
+        :param msg:         Text to write. Composed from a first part between brackets which is the level and the rest
+                            which is the message. The level part will control the text color and the used icon
         :type msg:          str
         :param shell_echo:  Control if to display the message msg in the Shell
         :type shell_echo:   bool
@@ -2890,13 +2895,28 @@ class App(QtCore.QObject):
                 self.shell_message(msg)
 
     def info_shell(self, msg, new_line=True):
+        """
+        A handler for a signal that call for printing directly on the Tcl Shell without printing in status bar.
+
+        :param msg:         The message to be printed
+        :type msg:          str
+        :param new_line:    if True then after printing the message add a new line char
+        :type new_line:     bool
+        :return:            None
+        :rtype:             None
+        """
         self.shell_message(msg=msg, new_line=new_line)
 
     def save_to_file(self, content_to_save, txt_content):
         """
         Save something to a file.
 
-        :return: None
+        :param content_to_save: text when is in HTML
+        :type content_to_save:  str
+        :param txt_content:     text that is not HTML
+        :type txt_content:      str
+        :return:                None
+        :rtype:                 None
         """
         self.defaults.report_usage("save_to_file")
         self.log.debug("save_to_file()")
@@ -2966,8 +2986,8 @@ class App(QtCore.QObject):
         Will register the files opened into record dictionaries. The FlatCAM projects has it's own
         dictionary.
 
-        :param kind: type of file that was opened
-        :param filename: the path and file name for the file that was opened
+        :param kind:        type of file that was opened
+        :param filename:    the path and file name for the file that was opened
         :return:
         """
         self.log.debug("register_recent()")
@@ -3339,7 +3359,7 @@ class App(QtCore.QObject):
 
                 closebtn.clicked.connect(self.accept)
 
-        AboutDialog(app=self, parent=self.ui).exec_()
+        AboutDialog(app=self, parent=self.ui).exec()
 
     def on_howto(self):
         """
@@ -3516,14 +3536,14 @@ class App(QtCore.QObject):
                 # BUTTONS section
                 closebtn.clicked.connect(self.accept)
 
-        HowtoDialog(app=self, parent=self.ui).exec_()
+        HowtoDialog(app=self, parent=self.ui).exec()
 
     def install_bookmarks(self, book_dict=None):
         """
         Install the bookmarks actions in the Help menu -> Bookmarks
 
-        :param book_dict: a dict having the actions text as keys and the weblinks as the values
-        :return: None
+        :param book_dict:   a dict having the actions text as keys and the weblinks as the values
+        :return:            None
         """
 
         if book_dict is None:
@@ -3582,7 +3602,8 @@ class App(QtCore.QObject):
 
     def on_bookmarks_manager(self):
         """
-        Adds the bookmark manager in a Tab in Plot Area
+        Adds the bookmark manager in a Tab in Plot Area.
+
         :return:
         """
         for idx in range(self.ui.plot_tab_area.count()):
@@ -3590,7 +3611,7 @@ class App(QtCore.QObject):
                 # there can be only one instance of Bookmark Manager at one time
                 return
 
-        # BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec_()
+        # BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec()
         self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui)
         self.book_dialog_tab.setObjectName("bookmarks_tab")
 
@@ -3609,6 +3630,12 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
 
     def on_backup_site(self):
+        """
+        Called when the user click on the menu entry Help -> Bookmarks -> Backup Site
+
+        :return:    None
+        :rtype:     None
+        """
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("This entry will resolve to another website if:\n\n"
                          "1. FlatCAM.org website is down\n"
@@ -3624,7 +3651,7 @@ class App(QtCore.QObject):
         bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
-        msgbox.exec_()
+        msgbox.exec()
         # response = msgbox.clickedButton()
 
     def final_save(self):
@@ -3653,7 +3680,7 @@ class App(QtCore.QObject):
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
             if response == bt_yes:
@@ -4585,7 +4612,7 @@ class App(QtCore.QObject):
         msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
         msgbox.setDefaultButton(bt_ok)
-        msgbox.exec_()
+        msgbox.exec()
         response = msgbox.clickedButton()
 
         if response == bt_ok:
@@ -4748,7 +4775,7 @@ class App(QtCore.QObject):
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
-                    msgbox.exec_()
+                    msgbox.exec()
 
         # work only if the notebook tab on focus is the Tools_Tab
         if notebook_widget_name == 'tool_tab':
@@ -4838,7 +4865,7 @@ class App(QtCore.QObject):
                 msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
                 msgbox.setDefaultButton(bt_ok)
-                msgbox.exec_()
+                msgbox.exec()
                 response = msgbox.clickedButton()
 
             if self.defaults["global_delete_confirmation"] is False or force_deletion is True:
@@ -5137,7 +5164,7 @@ class App(QtCore.QObject):
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec_() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:
@@ -5401,7 +5428,7 @@ class App(QtCore.QObject):
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec_() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:
@@ -6350,7 +6377,7 @@ class App(QtCore.QObject):
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
-                msgbox.exec_()
+                msgbox.exec()
                 response = msgbox.clickedButton()
 
                 if response == bt_yes:
@@ -7045,10 +7072,12 @@ class App(QtCore.QObject):
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
-        :param start_pos: mouse position when the selection LMB click was done
-        :param end_pos: mouse position when the left mouse button is released
-        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :return:
+        Called when the mouse selects by dragging left mouse button on canvas.
+
+        :param start_pos:   mouse position when the selection LMB click was done
+        :param end_pos:     mouse position when the left mouse button is released
+        :param sel_type:    if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:            None
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
@@ -7097,8 +7126,8 @@ class App(QtCore.QObject):
         """
         Will select objects clicked on canvas
 
-        :param key: for future use in cumulative selection
-        :return:
+        :param key:     a keyboard key. for future use in cumulative selection
+        :return:        None
         """
 
         # list where we store the overlapped objects under our mouse left click position
@@ -7225,27 +7254,35 @@ class App(QtCore.QObject):
             self.log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
 
     def selected_message(self, curr_sel_obj):
+        """
+        Will print a colored message on status bar when the user selects an object on canvas.
+
+        :param curr_sel_obj:    Application object that have geometry: Geometry, Gerber, Excellon, CNCJob
+        :type curr_sel_obj:
+        :return:                None
+        :rtype:                 None
+        """
         if curr_sel_obj:
             if curr_sel_obj.kind == 'gerber':
-                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='green',
                     name=str(curr_sel_obj.options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'excellon':
-                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='brown',
                     name=str(curr_sel_obj.options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'cncjob':
-                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='blue',
                     name=str(curr_sel_obj.options['name']),
                     tx=_("selected"))
                 )
             elif curr_sel_obj.kind == 'geometry':
-                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                self.inform.emit('[selected] <span style="color:{color};">{name}</span> {tx}'.format(
                     color='red',
                     name=str(curr_sel_obj.options['name']),
                     tx=_("selected"))
@@ -8627,6 +8664,8 @@ class MenuFileHandlers(QtCore.QObject):
 
         self.pagesize = {}
 
+        self.app.new_project_signal.connect(self.on_new_project_house_keeping)
+
     def on_fileopengerber(self, signal, name=None):
         """
         File menu callback for opening a Gerber.
@@ -8874,7 +8913,7 @@ class MenuFileHandlers(QtCore.QObject):
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
-            msgbox.exec_()
+            msgbox.exec()
             return
 
         name = obj.options["name"]
@@ -9222,7 +9261,7 @@ class MenuFileHandlers(QtCore.QObject):
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
-            msgbox.exec_()
+            msgbox.exec()
 
             return
 
@@ -9333,31 +9372,33 @@ class MenuFileHandlers(QtCore.QObject):
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
+            msgbox.exec()
             response = msgbox.clickedButton()
 
             if response == bt_yes:
-                self.on_file_saveprojectas()
+                self.on_file_saveprojectas(threaded=True)
             elif response == bt_cancel:
                 return
             elif response == bt_no:
-                self.on_file_new()
+                self.on_file_new_project(threaded=True)
         else:
-            self.on_file_new()
-        self.inform.emit('[success] %s...' % _("New Project created"))
+            self.on_file_new_project(threaded=True)
 
-    def on_file_new(self, cli=None):
+    def on_file_new_project(self, cli=None, threaded=None):
         """
         Returns the application to its startup state. This method is thread-safe.
 
-        :param cli:     Boolean. If True this method was run from command line
-        :return:        None
+        :param cli:         Boolean. If True this method was run from command line
+        :param threaded:    Bool. If True some part of the initialization are done threaded
+        :return:            None
         """
 
-        self.defaults.report_usage("on_file_new")
+        self.defaults.report_usage("on_file_new_project")
 
         # Remove everything from memory
-        self.log.debug("on_file_new()")
+        self.log.debug("on_file_new_project()")
+
+        t0 = time.time()
 
         # close any editor that might be open
         if self.app.call_source != 'app':
@@ -9366,9 +9407,6 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.geo_editor = AppGeoEditor(self.app)
             self.app.exc_editor = AppExcEditor(self.app)
             self.app.grb_editor = AppGerberEditor(self.app)
-
-        # Clear pool
-        self.app.clear_pool()
 
         for obj in self.app.collection.get_list():
             # delete shapes left drawn from mark shape_collections, if any
@@ -9393,9 +9431,6 @@ class MenuFileHandlers(QtCore.QObject):
         # delete the exclusion areas
         self.app.exc_areas.clear_shapes()
 
-        # tcl needs to be reinitialized, otherwise old shell variables etc  remains
-        self.app.shell.init_tcl()
-
         # delete any selection shape on canvas
         self.app.delete_selection_shape()
 
@@ -9414,8 +9449,17 @@ class MenuFileHandlers(QtCore.QObject):
         # Re-fresh project options
         self.app.on_options_app2project()
 
-        # Init FlatCAMTools
-        self.app.init_tools()
+        if threaded is True:
+            self.app.new_project_signal.emit()
+        else:
+            # Clear pool
+            self.app.clear_pool()
+
+            # Init FlatCAMTools
+            self.app.init_tools(init_tcl=True)
+
+            # tcl needs to be reinitialized, otherwise old shell variables etc  remains
+            # self.app.shell.init_tcl()
 
         # Try to close all tabs in the PlotArea but only if the appGUI is active (CLI is None)
         if cli is None:
@@ -9427,7 +9471,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     self.app.ui.plot_tab_area.closeTab(index)
                 except Exception as e:
-                    self.log.debug("App.on_file_new() --> %s" % str(e))
+                    self.log.debug("App.on_file_new_project() --> %s" % str(e))
 
             # # And then add again the Plot Area
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
@@ -9436,7 +9480,26 @@ class MenuFileHandlers(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
+        self.log.debug('%s: %s %s.' % (_("Project created in"), str(time.time() - t0), _("seconds")))
         self.app.ui.set_ui_title(name=_("New Project - Not saved"))
+
+        self.inform.emit('[success] %s...' % _("New Project created"))
+
+    def on_new_project_house_keeping(self):
+        """
+        Do dome of the new project initialization in a threaded way
+
+        :return:
+        :rtype:
+        """
+
+        # Clear pool
+        self.log.debug("New Project: cleaning multiprocessing pool.")
+        self.app.clear_pool()
+
+        # Init FlatCAMTools
+        self.log.debug("New Project: initializing the Tools and Tcl Shell.")
+        self.app.init_tools(init_tcl=True)
 
     def on_filenewscript(self, silent=False):
         """
@@ -10862,7 +10925,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         1) Loads and parses file
         2) Registers the file as recently opened.
-        3) Calls on_file_new()
+        3) Calls on_file_new_project()
         4) Updates options
         5) Calls app_obj.new_object() with the object's from_dict() as init method.
         6) Calls plot_all() if plot=True
@@ -10938,7 +11001,7 @@ class MenuFileHandlers(QtCore.QObject):
         elif cli is True:
             self.app.delete_selection_shape()
         else:
-            self.on_file_new()
+            self.on_file_new_project()
 
         # Project options
         self.app.options.update(d['options'])

@@ -112,7 +112,7 @@ def on_language_apply_click(app, restart=False):
         bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
-        msgbox.exec_()
+        msgbox.exec()
         response = msgbox.clickedButton()
 
         if response == bt_no:
@@ -214,7 +214,7 @@ def restart_program(app, ask=None):
         msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
-        msgbox.exec_()
+        msgbox.exec()
         response = msgbox.clickedButton()
 
         if response == bt_yes:

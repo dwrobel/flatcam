@@ -1901,7 +1901,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         self.menu.addSeparator()
 
         # CUT
-        self. cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
         self.menu.addAction(self.cut_action)
         self.cut_action.triggered.connect(self.cut_text)
 
@@ -2368,7 +2368,7 @@ class FCInputDoubleSpinner(QtWidgets.QDialog):
         self.wdg.set_value(val)
 
     def get_value(self):
-        if self.exec_() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -2435,7 +2435,7 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.wdg.spinner.set_step(val)
 
     def get_value(self):
-        if self.exec_() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.Accepted:
             return [self.wdg.get_value(), True]
         else:
             return [None, False]
@@ -2496,7 +2496,7 @@ class FCInputDialogSlider(QtWidgets.QDialog):
         self.wdg.spinner.set_step(val)
 
     def get_results(self):
-        if self.exec_() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -2567,7 +2567,7 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
         self.wdg.spinner.set_value(val)
 
     def get_results(self):
-        if self.exec_() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -3751,8 +3751,8 @@ class FCTable(QtWidgets.QTableWidget):
         elif rect.bottom() - pos.y() < margin:
             return True
         # noinspection PyTypeChecker
-        return rect.contains(pos, True) and not (int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and \
-               pos.y() >= rect.center().y()
+        drop_enabled = int(self.model().flags(index)) & Qt.ItemIsDropEnabled
+        return rect.contains(pos, True) and not drop_enabled and pos.y() >= rect.center().y()
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):
@@ -3898,7 +3898,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
 
         self.readyToEdit = True
 
-        if self.exec_() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.Accepted:
             self.ok = True
             self.location = self.lineEdit.text()
             self.reference = self.ref_radio.get_value()
@@ -3915,45 +3915,103 @@ class _BrowserTextEdit(QTextEdit):
         self.app = app
         self.find_text = lambda: None
 
-    def contextMenuEvent(self, event):
-        # self.menu = self.createStandardContextMenu(event.pos())
+        self.isUndoAvailable = False
+        self.isRedoAvailable = False
+
+        # Context Menu Construction
         self.menu = QtWidgets.QMenu()
-        tcursor = self.textCursor()
-        txt = tcursor.selectedText()
 
-        copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
-        self.menu.addAction(copy_action)
-        copy_action.triggered.connect(self.copy_text)
-        if txt == '':
-            copy_action.setDisabled(True)
+        # UNDO
+        self.undo_action = QAction('%s\t%s' % (_("Undo"), _('Ctrl+Z')), self)
+        self.menu.addAction(self.undo_action)
+        self.undo_action.triggered.connect(self.undo)
 
-        self.menu.addSeparator()
-
-        sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
-        self.menu.addAction(sel_all_action)
-        sel_all_action.triggered.connect(self.selectAll)
-
-        find_action = QAction('%s\t%s' % (_("Find"), _('Ctrl+F')), self)
-        self.menu.addAction(find_action)
-        find_action.triggered.connect(self.find_text)
+        # REDO
+        self.redo_action = QAction('%s\t%s' % (_("Redo"), _('Ctrl+Y')), self)
+        self.menu.addAction(self.redo_action)
+        self.redo_action.triggered.connect(self.redo)
 
         self.menu.addSeparator()
 
+        # CUT
+        self.cut_action = QAction('%s\t%s' % (_("Cut"), _('Ctrl+X')), self)
+        self.menu.addAction(self.cut_action)
+        self.cut_action.triggered.connect(self.cut_text)
+
+        # Copy
+        self.copy_action = QAction('%s\t%s' % (_("Copy"), _('Ctrl+C')), self)
+        self.menu.addAction(self.copy_action)
+        self.copy_action.triggered.connect(self.copy_text)
+
+        # Delete
+        self.delete_action = QAction('%s\t%s' % (_("Delete"), _('Del')), self)
+        self.menu.addAction(self.delete_action)
+        self.delete_action.triggered.connect(self.delete_text)
+
+        self.menu.addSeparator()
+
+        # Select All
+        self.sel_all_action = QAction('%s\t%s' % (_("Select All"), _('Ctrl+A')), self)
+        self.menu.addAction(self.sel_all_action)
+        self.sel_all_action.triggered.connect(self.selectAll)
+
+        # Find
+        self.find_action = QAction('%s\t%s' % (_("Find"), _('Ctrl+F')), self)
+        self.menu.addAction(self.find_action)
+        self.find_action.triggered.connect(self.find_text)
+
+        self.menu.addSeparator()
+
+        # Save
         if self.app:
-            save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
+            self.save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
             # save_action.setShortcut(QKeySequence(Qt.Key_S))
-            self.menu.addAction(save_action)
-            save_action.triggered.connect(lambda: self.save_log(app=self.app))
+            self.menu.addAction(self.save_action)
+            self.save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
-        clear_action = QAction('%s\t%s' % (_("Clear All"), _('Del')), self)
+        # Clear
+        self.clear_action = QAction('%s\t%s' % (_("Clear All"), _('Shift+Del')), self)
         # clear_action.setShortcut(QKeySequence(Qt.Key_Delete))
-        self.menu.addAction(clear_action)
-        clear_action.triggered.connect(self.clear)
+        self.menu.addAction(self.clear_action)
+        self.clear_action.triggered.connect(self.clear)
 
+        # Close the Dock
         # if self.app:
         #     close_action = QAction(_("Close"), self)
         #     self.menu.addAction(close_action)
         #     close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
+
+        # Signals
+        self.undoAvailable.connect(self.on_undo_available)
+        self.redoAvailable.connect(self.on_redo_available)
+
+    def on_undo_available(self, state):
+        self.isUndoAvailable = state
+
+    def on_redo_available(self, state):
+        self.isRedoAvailable = state
+
+    def contextMenuEvent(self, event):
+        # self.menu = self.createStandardContextMenu(event.pos())
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+
+        if self.isUndoAvailable is True:
+            self.undo_action.setDisabled(False)
+        else:
+            self.undo_action.setDisabled(True)
+
+        if self.isRedoAvailable is True:
+            self.redo_action.setDisabled(False)
+        else:
+            self.redo_action.setDisabled(True)
+
+        if txt == '':
+            self.cut_action.setDisabled(True)
+            self.copy_action.setDisabled(True)
+        else:
+            self.cut_action.setDisabled(False)
+            self.copy_action.setDisabled(False)
 
         self.menu.exec_(event.globalPos())
 
@@ -3968,18 +4026,34 @@ class _BrowserTextEdit(QTextEdit):
             # Copy Text
             elif key == QtCore.Qt.Key_C:
                 self.copy_text()
-            # Copy Text
+            # Find Text
             elif key == QtCore.Qt.Key_F:
                 self.find_text()
             # Save Log
             elif key == QtCore.Qt.Key_S:
                 if self.app:
                     self.save_log(app=self.app)
+            # Cut Text
+            elif key == QtCore.Qt.Key_X:
+                self.cut_text()
+            # Undo Text
+            elif key == QtCore.Qt.Key_Z:
+                if self.isUndoAvailable:
+                    self.undo()
+            # Redo Text
+            elif key == QtCore.Qt.Key_Y:
+                if self.isRedoAvailable:
+                    self.redo()
+
+        if modifiers == QtCore.Qt.ShiftModifier:
+            # Clear all
+            if key == QtCore.Qt.Key_Delete:
+                self.clear()
 
         elif modifiers == QtCore.Qt.NoModifier:
             # Clear all
             if key == QtCore.Qt.Key_Delete:
-                self.clear()
+                self.delete_text()
             # Shell toggle
             if key == QtCore.Qt.Key_S:
                 self.app.ui.toggle_shell_ui()
@@ -3991,6 +4065,26 @@ class _BrowserTextEdit(QTextEdit):
         txt = tcursor.selectedText()
         clipboard.clear()
         clipboard.setText(txt)
+
+    def cut_text(self):
+        tcursor = self.textCursor()
+        clipboard = QtWidgets.QApplication.clipboard()
+
+        txt = tcursor.selectedText()
+        clipboard.clear()
+        clipboard.setText(txt)
+
+        tcursor.removeSelectedText()
+
+    def delete_text(self):
+        tcursor = self.textCursor()
+        txt = tcursor.selectedText()
+        if txt == '':
+            tcursor.deleteChar()
+        else:
+            tcursor.removeSelectedText()
+
+        self.setTextCursor(tcursor)
 
     def clear(self):
         QTextEdit.clear(self)
@@ -4209,14 +4303,162 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
         and from here: https://doc.qt.io/qt-5/qtwidgets-widgets-codeeditor-example.html
         """
 
-        def __init__(self, *args):
+        def __init__(self, *args, color_dict=None):
             FCPlainTextAreaExtended.__init__(self, *args)
+
+            self.color_storage = color_dict if color_dict else {}
 
             # self.setFrameStyle(QFrame.NoFrame)
             self.setFrameStyle(QtWidgets.QFrame.NoFrame)
             self.highlight()
             # self.setLineWrapMode(QPlainTextEdit.NoWrap)
             self.cursorPositionChanged.connect(self.highlight)
+
+            self.highlighter = self.MyHighlighter(self.document())
+
+        class MyHighlighter(QtGui.QSyntaxHighlighter):
+
+            def __init__(self, parent, highlight_rules=None):
+                QtGui.QSyntaxHighlighter.__init__(self, parent)
+                self.parent = parent
+                self.highlightingRules = []
+
+                if highlight_rules is None:
+                    reservedClasses = QtGui.QTextCharFormat()
+                    parameterOperator = QtGui.QTextCharFormat()
+                    delimiter = QtGui.QTextCharFormat()
+                    specialConstant = QtGui.QTextCharFormat()
+                    boolean = QtGui.QTextCharFormat()
+                    number = QtGui.QTextCharFormat()
+                    string = QtGui.QTextCharFormat()
+                    singleQuotedString = QtGui.QTextCharFormat()
+
+                    comment = QtGui.QTextCharFormat()
+                    # comment
+                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("\(.*\)")
+                    comment.setForeground(brush)
+                    rule = (pattern, comment)
+                    self.highlightingRules.append(rule)
+
+                    # Marlin comment
+                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("^;\s*.*$")
+                    comment.setForeground(brush)
+                    rule = (pattern, comment)
+                    self.highlightingRules.append(rule)
+
+                    # Python comment
+                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("^\#\s*.*$")
+                    comment.setForeground(brush)
+                    rule = (pattern, comment)
+                    self.highlightingRules.append(rule)
+
+                    keyword = QtGui.QTextCharFormat()
+                    # keyword
+                    brush = QtGui.QBrush(Qt.blue, Qt.SolidPattern)
+                    keyword.setForeground(brush)
+                    keyword.setFontWeight(QtGui.QFont.Bold)
+                    keywords = ["F", "G", "M", "T"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        rule = (pattern, keyword)
+                        self.highlightingRules.append(rule)
+
+                    # reservedClasses
+                    reservedClasses.setForeground(brush)
+                    reservedClasses.setFontWeight(QtGui.QFont.Bold)
+                    keywords = ["array", "character", "complex", "data.frame", "double", "factor",
+                                "function", "integer", "list", "logical", "matrix", "numeric", "vector"]
+                    for word in keywords:
+                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        rule = (pattern, reservedClasses)
+                        self.highlightingRules.append(rule)
+
+                    # parameter
+                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("\-[0-9a-zA-Z]*\s")
+                    parameterOperator.setForeground(brush)
+                    parameterOperator.setFontWeight(QtGui.QFont.Bold)
+                    rule = (pattern, parameterOperator)
+                    self.highlightingRules.append(rule)
+
+                    # delimiter
+                    pattern = QtCore.QRegExp("[\)\(]+|[\{\}]+|[][]+")
+                    delimiter.setForeground(brush)
+                    delimiter.setFontWeight(QtGui.QFont.Bold)
+                    rule = (pattern, delimiter)
+                    self.highlightingRules.append(rule)
+
+                    # specialConstant
+                    brush = QtGui.QBrush(Qt.green, Qt.SolidPattern)
+                    specialConstant.setForeground(brush)
+                    keywords = ["Inf", "NA", "NaN", "NULL"]
+                    for word in keywords:
+                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        rule = (pattern, specialConstant)
+                        self.highlightingRules.append(rule)
+
+                    # boolean
+                    boolean.setForeground(brush)
+                    keywords = ["TRUE", "True","FALSE", "False"]
+                    for word in keywords:
+                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        rule = (pattern, boolean)
+                        self.highlightingRules.append(rule)
+
+                    # number
+                    # pattern = QtCore.QRegExp("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
+                    # pattern.setMinimal(True)
+                    # number.setForeground(brush)
+                    # rule = (pattern, number)
+                    # self.highlightingRules.append(rule)
+
+                    # string
+                    brush = QtGui.QBrush(Qt.red, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("\".*\"")
+                    pattern.setMinimal(True)
+                    string.setForeground(brush)
+                    rule = (pattern, string)
+                    self.highlightingRules.append(rule)
+
+                    # singleQuotedString
+                    pattern = QtCore.QRegExp("\'.*\'")
+                    pattern.setMinimal(True)
+                    singleQuotedString.setForeground(brush)
+                    rule = (pattern, singleQuotedString)
+                    self.highlightingRules.append(rule)
+                else:
+                    self.highlightingRules = highlight_rules
+
+            def highlightBlock(self, text):
+                """
+
+                :param text:    string
+                :type text:     str
+                :return:
+                :rtype:
+                """
+
+                # go in reverse from the last element to the first
+                for rule in self.highlightingRules[::-1]:
+                    expression = QtCore.QRegExp(rule[0])
+                    index = expression.indexIn(text)
+                    while index >= 0:
+                        length = expression.matchedLength()
+                        self.setFormat(index, length, rule[1])
+                        index = expression.indexIn(text, index + length)
+                self.setCurrentBlockState(0)
+
+        # def format_text_color(self):
+        #     cursor = self.textCursor()
+        #     c_format = cursor.charFormat()
+        #     old_color = c_format.foreground()
+        #
+        #     for key in self.color_storage:
+        #         pass
 
         def highlight(self):
             hi_selection = QTextEdit.ExtraSelection()
@@ -4272,12 +4514,12 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
             painter.end()
 
-    def __init__(self, *args):
+    def __init__(self, *args, color_dict=None):
         QtWidgets.QFrame.__init__(self, *args)
 
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken)
 
-        self.edit = self.PlainTextEdit()
+        self.edit = self.PlainTextEdit(color_dict=color_dict)
         self.number_bar = self.NumberBar(self.edit)
 
         hbox = QtWidgets.QHBoxLayout(self)
@@ -4683,6 +4925,12 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
         layout.addWidget(self.icon)
 
+        self.red_pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
+        self.green_pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
+        self.yellow_pamap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
+        self.blue_pamap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
+        self.gray_pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
+
         self.text = QtWidgets.QLabel(self)
         self.text.setText(_("Application started ..."))
         self.text.setToolTip(_("Hello!"))
@@ -4700,23 +4948,27 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         level = str(level)
 
         if self.lock_pmaps is not True:
-            self.pmap.fill()
-            if level == "ERROR" or level == "ERROR_NOTCL":
-                self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
-            elif level.lower() == "success":
-                self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
-            elif level == "WARNING" or level == "WARNING_NOTCL":
-                self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
-            elif level.lower() == "selected":
-                self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
-            else:
-                self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
+            # self.pmap.fill()
+
+            try:
+                if level == "ERROR" or level == "ERROR_NOTCL":
+                    self.icon.setPixmap(self.red_pmap)
+                elif level.lower() == "success":
+                    self.icon.setPixmap(self.green_pmap)
+                elif level == "WARNING" or level == "WARNING_NOTCL":
+                    self.icon.setPixmap(self.yellow_pamap)
+                elif level.lower() == "selected":
+                    self.icon.setPixmap(self.blue_pamap)
+                else:
+                    self.icon.setPixmap(self.gray_pmap)
+
+            except Exception as e:
+                log.debug("FlatCAMInfoBar.set_status() set Icon --> %s" % str(e))
 
         try:
             self.set_text_(text)
-            self.icon.setPixmap(self.pmap)
         except Exception as e:
-            log.debug("FlatCAMInfoBar.set_status() --> %s" % str(e))
+            self.app.log.debug("FlatCAMInfoBar.set_status() set Text --> %s" % str(e))
 
 
 class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
@@ -4806,7 +5058,7 @@ def message_dialog(title, message, kind="info", parent=None):
             "error": QtWidgets.QMessageBox.Critical}[str(kind)]
     dlg = QtWidgets.QMessageBox(icon, title, message, parent=parent)
     dlg.setText(message)
-    dlg.exec_()
+    dlg.exec()
 
 
 def rreplace(s, old, new, occurrence):

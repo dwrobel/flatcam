@@ -3,7 +3,7 @@
 # Will open a Gerber (and Excellon) file in FlatCAM
 # #####################################################################################
 
-puts "**************** RUNNING an EXAMPLE SCRIPT = Open a file *******************"
+puts "\n**************** RUNNING an EXAMPLE SCRIPT = Open a file *******************\n"
 
 # ----------- START: This is needed only for the examples ----------------
 # first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable 

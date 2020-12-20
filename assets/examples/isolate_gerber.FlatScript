@@ -3,7 +3,7 @@
 # Will isolate copper features in a Gerber file by creating surrounding paths around
 # #####################################################################################
 
-puts "**************** RUNNING an EXAMPLE SCRIPT = Isolate a Gerber file *******************"
+puts "\n**************** RUNNING an EXAMPLE SCRIPT = Isolate a Gerber file *******************\n"
 
 # ----------- START: This is needed only for the examples ----------------
 # first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable
