@@ -49,7 +49,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         self.ui.update_gcode_button.clicked.connect(self.insert_code_snippet_1)
         self.ui.update_gcode_sec_button.clicked.connect(self.insert_code_snippet_2)
-        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object(force_cancel=True))
 
         self.app.log.debug("Initialization of the GCode Editor is finished ...")
 

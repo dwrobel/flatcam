@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.12.2020
+
+- made sure that the GCode Editor does not have a misleading Cancel option when closing the tab
+- made sure that some other part of the program outputs the log messages to the Tcl Shell if the Verbose Log options is set in Preferences
+
 20.12.2020
 
 - modified the way the status bar icon is set 

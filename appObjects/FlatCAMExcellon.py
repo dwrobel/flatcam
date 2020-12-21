@@ -119,7 +119,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         """
         FlatCAMObj.set_ui(self, ui)
 
-        log.debug("ExcellonObject.set_ui()")
+        self.app.log.debug("ExcellonObject.set_ui()")
 
         self.units = self.app.defaults['units'].upper()
 
@@ -730,7 +730,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
                                                                          yform=exc_y_formatted)
         except Exception as e:
-            log.debug(str(e))
+            self.app.log.debug('ExcellonObject.export_excellon() drills -> %s' % str(e))
 
         # slots processing
         try:
@@ -830,10 +830,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
                                 )
         except Exception as e:
-            log.debug(str(e))
+            self.app.log.debug('ExcellonObject.export_excellon() slots -> %s' % str(e))
 
         if not has_drills and not has_slots:
-            log.debug("FlatCAMObj.ExcellonObject.export_excellon() --> Excellon Object is empty: no drills, no slots.")
+            self.app.log.debug("ExcellonObject.export_excellon() --> Excellon Object is empty: no drills, no slots.")
             return 'fail'
 
         return slots_in_file, excellon_code
@@ -882,7 +882,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
-            log.debug("Tools 'all' and sorted are: %s" % str(tools))
+            self.app.log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
@@ -990,7 +990,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
-            log.debug("Tools 'all' and sorted are: %s" % str(tools))
+            self.app.log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
@@ -1074,7 +1074,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.generate_milling_slots(use_thread=False, plot=True)
 
     def convert_units(self, units):
-        log.debug("FlatCAMObj.ExcellonObject.convert_units()")
+        self.app.log.debug("ExcellonObject.convert_units()")
 
         Excellon.convert_units(self, units)
 
@@ -1233,7 +1233,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError) as e:
-            log.debug("ExcellonObject.plot() -> %s" % str(e))
+            self.app.log.debug("ExcellonObject.plot() -> %s" % str(e))
             self.shapes.clear(update=True)
 
         if multicolored:

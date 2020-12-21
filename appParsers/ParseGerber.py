@@ -297,7 +297,7 @@ class Gerber(Geometry):
                                     "modifiers": paramList}
             return apid
 
-        log.warning("Aperture not implemented: %s" % str(apertureType))
+        self.app.log.warning("Aperture not implemented: %s" % str(apertureType))
         return None
 
     def parse_file(self, filename, follow=False):
@@ -451,7 +451,7 @@ class Gerber(Geometry):
                 match = self.lpol_re.search(gline)
                 if match:
                     new_polarity = match.group(1)
-                    # log.info("Polarity CHANGE, LPC = %s, poly_buff = %s" % (self.is_lpc, poly_buffer))
+                    # self.app.log.info("Polarity CHANGE, LPC = %s, poly_buff = %s" % (self.is_lpc, poly_buffer))
                     self.is_lpc = True if new_polarity == 'C' else False
                     try:
                         path_length = len(path)
@@ -708,7 +708,7 @@ class Gerber(Geometry):
                                 self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         except IndexError:
-                            log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
+                            self.app.log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
 
                     continue
 
@@ -1101,14 +1101,14 @@ class Gerber(Geometry):
                                 try:
                                     geo_s = Polygon(path)
                                 except ValueError:
-                                    log.warning("Problem %s %s" % (gline, line_num))
+                                    self.app.log.warning("Problem %s %s" % (gline, line_num))
                                     self.app.inform.emit('[ERROR] %s: %s' %
                                                          (_("Region does not have enough points. "
                                                             "File will be processed but there are parser errors. "
                                                             "Line number"), str(line_num)))
                             else:
                                 if last_path_aperture is None:
-                                    log.warning("No aperture defined for curent path. (%d)" % line_num)
+                                    self.app.log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
                                 geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
 
@@ -1300,13 +1300,13 @@ class Gerber(Geometry):
                         j = 0
 
                     if quadrant_mode is None:
-                        log.error("Found arc without preceding quadrant specification G74 or G75. (%d)" % line_num)
-                        log.error(gline)
+                        self.app.log.error("Found arc without preceding quadrant specification G74 or G75. (%d)" % line_num)
+                        self.app.log.error(gline)
                         continue
 
                     if mode is None and current_interpolation_mode not in [2, 3]:
-                        log.error("Found arc without circular interpolation mode defined. (%d)" % line_num)
-                        log.error(gline)
+                        self.app.log.error("Found arc without circular interpolation mode defined. (%d)" % line_num)
+                        self.app.log.error(gline)
                         continue
                     elif mode is not None:
                         current_interpolation_mode = int(mode)
@@ -1317,7 +1317,7 @@ class Gerber(Geometry):
 
                     # Nothing created! Pen Up.
                     if current_operation_code == 2:
-                        log.warning("Arc with D2. (%d)" % line_num)
+                        self.app.log.warning("Arc with D2. (%d)" % line_num)
                         try:
                             path_length = len(path)
                         except TypeError:
@@ -1327,7 +1327,7 @@ class Gerber(Geometry):
                             geo_dict = {}
 
                             if last_path_aperture is None:
-                                log.warning("No aperture defined for curent path. (%d)" % line_num)
+                                self.app.log.warning("No aperture defined for curent path. (%d)" % line_num)
 
                             # --- BUFFERED ---
                             width = self.apertures[last_path_aperture]["size"]
@@ -1409,7 +1409,7 @@ class Gerber(Geometry):
                         ]
 
                         valid = False
-                        self.app.log.debug("I: %f  J: %f" % (i, j))
+                        self.app.self.app.log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
                             radius = np.sqrt(i ** 2 + j ** 2)
 
@@ -1527,13 +1527,13 @@ class Gerber(Geometry):
 
             try:
                 if buff_length == 0 and sol_geo_length in [0, 1] and self.solid_geometry.area == 0:
-                    log.error("Object is not Gerber file or empty. Aborting Object creation.")
+                    self.app.log.error("Object is not Gerber file or empty. Aborting Object creation.")
                     return 'fail'
             except TypeError as e:
-                log.error("Object is not Gerber file or empty. Aborting Object creation. %s" % str(e))
+                self.app.log.error("Object is not Gerber file or empty. Aborting Object creation. %s" % str(e))
                 return 'fail'
 
-            log.warning("Joining %d polygons." % buff_length)
+            self.app.log.warning("Joining %d polygons." % buff_length)
             self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), buff_length))
 
             if self.use_buffer_for_union:
@@ -1543,13 +1543,13 @@ class Gerber(Geometry):
                 if self.app.defaults["gerber_buffering"] == 'full':
                     new_poly = new_poly.buffer(0.00000001)
                     new_poly = new_poly.buffer(-0.00000001)
-                    log.warning("Union(buffer) done.")
+                    self.app.log.warning("Union(buffer) done.")
 
             else:
                 self.app.log.debug("Union by union()...")
                 new_poly = unary_union(poly_buffer)
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
-                log.warning("Union done.")
+                self.app.log.warning("Union done.")
 
             if current_polarity == 'D':
                 self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
@@ -1610,7 +1610,7 @@ class Gerber(Geometry):
             traceback.print_tb(tb)
             # print traceback.format_exc()
 
-            log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
+            self.app.log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
 
             loc = '%s #%d %s: %s\n' % (_("Gerber Line"), line_num, _("Gerber Line Content"), gline) + repr(err)
             self.app.inform.emit('[ERROR] %s\n%s:' %
@@ -1619,7 +1619,7 @@ class Gerber(Geometry):
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):
 
-        # log.debug('Flashing @%s, Aperture: %s' % (location, aperture))
+        # self.app.log.debug('Flashing @%s, Aperture: %s' % (location, aperture))
 
         if type(location) == list:
             location = Point(location)

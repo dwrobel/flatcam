@@ -2584,12 +2584,13 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-    def editor2object(self, cleanup=None):
+    def editor2object(self, cleanup=None, force_cancel=None):
         """
         Transfers the Geometry or Excellon from it's editor to the current object.
 
-        :param cleanup: if True then we closed the app when the editor was open so we close first the editor
-        :return:        None
+        :param cleanup:         if True then we closed the app when the editor was open so we close first the editor
+        :param force_cancel:    if True always add Cancel button
+        :return:                None
         """
         self.defaults.report_usage("editor2object()")
 
@@ -2611,7 +2612,10 @@ class App(QtCore.QObject):
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            if edited_obj.kind in ["geometry", "gerber", "excellon"] or force_cancel is not None:
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            else:
+                bt_cancel = None
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()

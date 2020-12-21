@@ -278,7 +278,7 @@ class Excellon(Geometry):
                     raise grace
 
                 line_num += 1
-                # log.debug("%3d %s" % (line_num, str(eline)))
+                # self.app.log.debug("%3d %s" % (line_num, str(eline)))
 
                 self.source_file += eline
 
@@ -288,7 +288,7 @@ class Excellon(Geometry):
                 # Excellon files and Gcode share some extensions therefore if we detect G20 or G21 it's GCODe
                 # and we need to exit from here
                 if self.detect_gcode_re.search(eline):
-                    log.warning("This is GCODE mark: %s" % eline)
+                    self.app.log.warning("This is GCODE mark: %s" % eline)
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_('This is GCODE mark'), eline))
                     return
 
@@ -296,14 +296,14 @@ class Excellon(Geometry):
                 if self.hbegin_re.search(eline):
                     in_header = True
                     headerless = False
-                    log.warning("Found start of the header: %s" % eline)
+                    self.app.log.warning("Found start of the header: %s" % eline)
                     continue
 
                 # Allegro Header Begin (;HEADER) #
                 if self.allegro_hbegin_re.search(eline):
                     in_header = True
                     allegro_warning = True
-                    log.warning("Found ALLEGRO start of the header: %s" % eline)
+                    self.app.log.warning("Found ALLEGRO start of the header: %s" % eline)
                     continue
 
                 # Search for Header End #
@@ -317,7 +317,7 @@ class Excellon(Geometry):
                             line_units_found = True
                             line_units = match.group(3)
                             self.convert_units({"MILS": "IN", "MM": "MM"}[line_units])
-                            log.warning("Type of Allegro UNITS found inline in comments: %s" % line_units)
+                            self.app.log.warning("Type of Allegro UNITS found inline in comments: %s" % line_units)
 
                         if match.group(2):
                             name_tool += 1
@@ -330,13 +330,13 @@ class Excellon(Geometry):
                                     'tooldia':  (float(match.group(2)) / 1000)
                                 }
                                 self.tools[name_tool]['tooldia'] = (float(match.group(2)) / 1000)
-                                log.debug("Tool definition: %d %s" % (name_tool, spec))
+                                self.app.log.debug("Tool definition: %d %s" % (name_tool, spec))
                             else:
                                 spec = {
                                     'tooldia': float(match.group(2))
                                 }
                                 self.tools[name_tool]['tooldia'] = float(match.group(2))
-                                log.debug("Tool definition: %d %s" % (name_tool, spec))
+                                self.app.log.debug("Tool definition: %d %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
                     # search for Altium Excellon Format / Sprint Layout who is included as a comment
@@ -347,28 +347,28 @@ class Excellon(Geometry):
 
                         self.excellon_format_upper_in = match.group(1)
                         self.excellon_format_lower_in = match.group(2)
-                        log.warning("Excellon format preset found in comments: %s:%s" %
+                        self.app.log.warning("Excellon format preset found in comments: %s:%s" %
                                     (match.group(1), match.group(2)))
                         continue
                     else:
-                        log.warning("Line ignored, it's a comment: %s" % eline)
+                        self.app.log.warning("Line ignored, it's a comment: %s" % eline)
                 else:
                     if self.hend_re.search(eline):
                         if in_header is False or bool(self.tools) is False:
-                            log.warning("Found end of the header but there is no header: %s" % eline)
-                            log.warning("The only useful data in header are tools, units and format.")
-                            log.warning("Therefore we will create units and format based on defaults.")
+                            self.app.log.warning("Found end of the header but there is no header: %s" % eline)
+                            self.app.log.warning("The only useful data in header are tools, units and format.")
+                            self.app.log.warning("Therefore we will create units and format based on defaults.")
                             headerless = True
                             try:
                                 self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.excellon_units])
                             except Exception as e:
-                                log.warning("Units could not be converted: %s" % str(e))
+                                self.app.log.warning("Units could not be converted: %s" % str(e))
 
                         in_header = False
                         # for Allegro type of Excellons we reset name_tool variable so we can reuse it for toolchange
                         if allegro_warning is True:
                             name_tool = 0
-                        log.warning("Found end of the header: %s" % eline)
+                        self.app.log.warning("Found end of the header: %s" % eline)
 
                         '''
                         In case that the units were not found in the header, we have two choices:
@@ -400,14 +400,14 @@ class Excellon(Geometry):
                     self.units = {"1": "MM", "2": "IN"}[match.group(1)]
 
                     # Modified for issue #80
-                    log.debug("ALternative M71/M72 units found, before conversion: %s" % self.units)
+                    self.app.log.debug("ALternative M71/M72 units found, before conversion: %s" % self.units)
                     self.convert_units(self.units)
-                    log.debug("ALternative M71/M72 units found, after conversion: %s" % self.units)
+                    self.app.log.debug("ALternative M71/M72 units found, after conversion: %s" % self.units)
                     if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                     else:
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                     continue
 
@@ -418,7 +418,7 @@ class Excellon(Geometry):
                     match = self.toolsel_re.search(eline)
                     if match:
                         current_tool = int(match.group(1))
-                        log.debug("Tool change: %s" % current_tool)
+                        self.app.log.debug("Tool change: %s" % current_tool)
                         if bool(headerless):
                             match = self.toolset_hl_re.search(eline)
                             if match:
@@ -457,7 +457,7 @@ class Excellon(Geometry):
                                 self.tools[name]['tooldia'] = diam
                                 self.tools[name]['solid_geometry'] = []
 
-                                log.debug("Tool definition out of header: %s %s" % (name, spec))
+                                self.app.log.debug("Tool definition out of header: %s %s" % (name, spec))
 
                         continue
 
@@ -468,7 +468,7 @@ class Excellon(Geometry):
                         if match or match1:
                             name_tool += 1
                             current_tool = name_tool
-                            log.debug("Tool change for Allegro type of Excellon: %d" % current_tool)
+                            self.app.log.debug("Tool change for Allegro type of Excellon: %d" % current_tool)
                             continue
 
                     # ## Slots parsing for drilled slots (contain G85)
@@ -523,11 +523,11 @@ class Excellon(Geometry):
 
                             if (slot_start_x is None or slot_start_y is None or
                                     slot_stop_x is None or slot_stop_y is None):
-                                log.error("Slots are missing some or all coordinates.")
+                                self.app.log.error("Slots are missing some or all coordinates.")
                                 continue
 
                             # we have a slot
-                            log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
+                            self.app.log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
                                                                                 slot_start_y, slot_stop_x,
                                                                                 slot_stop_y]))
 
@@ -537,7 +537,7 @@ class Excellon(Geometry):
                                 slot_dia = float(self.tools[current_tool]['tooldia'])
                             except Exception:
                                 pass
-                            log.debug(
+                            self.app.log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (
                                     current_tool,
                                     slot_dia
@@ -597,11 +597,11 @@ class Excellon(Geometry):
 
                             if (slot_start_x is None or slot_start_y is None or
                                     slot_stop_x is None or slot_stop_y is None):
-                                log.error("Slots are missing some or all coordinates.")
+                                self.app.log.error("Slots are missing some or all coordinates.")
                                 continue
 
                             # we have a slot
-                            log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
+                            self.app.log.debug('Parsed a slot with coordinates: ' + str([slot_start_x,
                                                                                 slot_start_y, slot_stop_x,
                                                                                 slot_stop_y]))
 
@@ -611,7 +611,7 @@ class Excellon(Geometry):
                                 slot_dia = float(self.tools[current_tool]['tooldia'])
                             except Exception:
                                 pass
-                            log.debug(
+                            self.app.log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (
                                     current_tool,
                                     slot_dia
@@ -688,7 +688,7 @@ class Excellon(Geometry):
                                 return
 
                             if x is None or y is None:
-                                log.error("Missing coordinates")
+                                self.app.log.error("Missing coordinates")
                                 continue
 
                             # ## Excellon Routing parse
@@ -738,7 +738,7 @@ class Excellon(Geometry):
                                     self.tools[current_tool]['drills'].append(Point((x, y)))
                                 else:
                                     self.tools[current_tool]['drills'] = [Point((x, y))]
-                                # log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                                # self.app.log.debug("{:15} {:8} {:8}".format(eline, x, y))
                                 continue
 
                     # ## Coordinates with period: Use literally. # ##
@@ -768,7 +768,7 @@ class Excellon(Geometry):
                             repeating_y = 0
 
                         if x is None or y is None:
-                            log.error("Missing coordinates")
+                            self.app.log.error("Missing coordinates")
                             continue
 
                         # ## Excellon Routing parse
@@ -839,7 +839,7 @@ class Excellon(Geometry):
 
                                     repeat -= 1
                             repeating_x = repeating_y = 0
-                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                            # self.app.log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
                 # ### Header ####
@@ -856,7 +856,7 @@ class Excellon(Geometry):
                         self.tools[name]['tooldia'] = float(match.group(2))
                         self.tools[name]['solid_geometry'] = []
 
-                        log.debug("Tool definition: %s %s" % (name, spec))
+                        self.app.log.debug("Tool definition: %s %s" % (name, spec))
                         continue
 
                     # ## Units and number format # ##
@@ -878,36 +878,36 @@ class Excellon(Geometry):
                                 self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
-                        log.warning("UNITS found inline - Value before conversion: %s" % self.units)
+                        self.app.log.warning("UNITS found inline - Value before conversion: %s" % self.units)
                         self.convert_units(self.units)
-                        log.warning("UNITS found inline - Value after conversion: %s" % self.units)
+                        self.app.log.warning("UNITS found inline - Value after conversion: %s" % self.units)
                         if self.units == 'MM':
-                            log.warning("Excellon format preset is: %s:%s" %
+                            self.app.log.warning("Excellon format preset is: %s:%s" %
                                         (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         else:
-                            log.warning("Excellon format preset is: %s:%s" %
+                            self.app.log.warning("Excellon format preset is: %s:%s" %
                                         (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
-                        log.warning("Type of ZEROS found inline, in header: %s" % self.zeros)
+                        self.app.log.warning("Type of ZEROS found inline, in header: %s" % self.zeros)
                         continue
 
                     # Search for units type again it might be alone on the line
                     if "INCH" in eline:
                         line_units = "IN"
                         # Modified for issue #80
-                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.app.log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
                         self.convert_units(line_units)
-                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                         self.excellon_units_found = "IN"
                         continue
                     elif "METRIC" in eline:
                         line_units = "MM"
                         # Modified for issue #80
-                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.app.log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
                         self.convert_units(line_units)
-                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         self.excellon_units_found = "MM"
                         continue
@@ -916,7 +916,7 @@ class Excellon(Geometry):
                     match = re.search(r'[LT]Z', eline)
                     if match:
                         self.zeros = match.group()
-                        log.warning("Type of ZEROS found: %s" % self.zeros)
+                        self.app.log.warning("Type of ZEROS found: %s" % self.zeros)
                         continue
 
                 # ## Units and number format outside header# ##
@@ -938,20 +938,20 @@ class Excellon(Geometry):
                             self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
-                    log.warning("Type of UNITS found outside header, inline before conversion: %s" % self.units)
+                    self.app.log.warning("Type of UNITS found outside header, inline before conversion: %s" % self.units)
                     self.convert_units(self.units)
-                    log.warning("Type of UNITS found outside header, inline after conversion: %s" % self.units)
+                    self.app.log.warning("Type of UNITS found outside header, inline after conversion: %s" % self.units)
 
                     if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                     else:
-                        log.warning("Excellon format preset is: %s:%s" %
+                        self.app.log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
-                    log.warning("Type of ZEROS found outside header, inline: %s" % self.zeros)
+                    self.app.log.warning("Type of ZEROS found outside header, inline: %s" % self.zeros)
                     continue
 
-                log.warning("Line ignored: %s" % eline)
+                self.app.log.warning("Line ignored: %s" % eline)
 
             # make sure that since we are in headerless mode, we convert the tools only after the file parsing
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
@@ -966,9 +966,9 @@ class Excellon(Geometry):
                 if 'slots' not in self.tools[tool]:
                     self.tools[tool]['slots'] = []
 
-            log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
+            self.app.log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception:
-            log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
+            self.app.log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
             msg += '{e_code} {tx} {l_nr}: {line}\n'.format(
                 e_code='[ERROR]',
@@ -1020,7 +1020,7 @@ class Excellon(Geometry):
                     result = float(number_str) / (10 ** (float(self.excellon_format_lower_mm)))
                 return result
         except Exception as e:
-            log.error("Aborted. Operation could not be completed due of %s" % str(e))
+            self.app.log.error("Aborted. Operation could not be completed due of %s" % str(e))
             return
 
     def create_geometry(self):
@@ -1043,7 +1043,7 @@ class Excellon(Geometry):
         :return: None
         """
 
-        log.debug("appParsers.ParseExcellon.Excellon.create_geometry()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.create_geometry()")
         self.solid_geometry = []
         try:
             # clear the solid_geometry in self.tools
@@ -1081,7 +1081,7 @@ class Excellon(Geometry):
                         self.solid_geometry.append(poly)
 
         except Exception as e:
-            log.debug("appParsers.ParseExcellon.Excellon.create_geometry() -> "
+            self.app.log.debug("appParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
 
@@ -1093,10 +1093,10 @@ class Excellon(Geometry):
         :param flatten:     No used
         """
 
-        log.debug("appParsers.ParseExcellon.Excellon.bounds()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.bounds()")
 
         if self.solid_geometry is None or not self.tools:
-            log.debug("appParsers.ParseExcellon.Excellon -> solid_geometry is None")
+            self.app.log.debug("appParsers.ParseExcellon.Excellon -> solid_geometry is None")
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
@@ -1165,9 +1165,9 @@ class Excellon(Geometry):
         elif obj_units.upper() == "IN":
             factor = 1 / 25.4
         else:
-            log.error("Unsupported units: %s" % str(obj_units))
+            self.app.log.error("Unsupported units: %s" % str(obj_units))
             factor = 1.0
-        log.debug("appParsers.ParseExcellon.Excellon.convert_units() --> Factor: %s" % str(factor))
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.convert_units() --> Factor: %s" % str(factor))
 
         self.units = obj_units
         self.scale(factor, factor)
@@ -1193,7 +1193,7 @@ class Excellon(Geometry):
         :return:            None
         :rtype:             None
         """
-        log.debug("appParsers.ParseExcellon.Excellon.scale()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -1267,7 +1267,7 @@ class Excellon(Geometry):
         :type vect: tuple
         :return: None
         """
-        log.debug("appParsers.ParseExcellon.Excellon.offset()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.offset()")
 
         dx, dy = vect
 
@@ -1336,7 +1336,7 @@ class Excellon(Geometry):
         :type point:        list
         :return:            None
         """
-        log.debug("appParsers.ParseExcellon.Excellon.mirror()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1411,7 +1411,7 @@ class Excellon(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("appParsers.ParseExcellon.Excellon.skew()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.skew()")
 
         if angle_x is None:
             angle_x = 0.0
@@ -1487,7 +1487,7 @@ class Excellon(Geometry):
         :param point:   tuple of coordinates (x, y)
         :return:        None
         """
-        log.debug("appParsers.ParseExcellon.Excellon.rotate()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.rotate()")
 
         if angle == 0:
             return
@@ -1563,7 +1563,7 @@ class Excellon(Geometry):
         :param join:        The type of line joint used by the shapely buffer method: round, square, bevel
         :return:            None
         """
-        log.debug("appParsers.ParseExcellon.Excellon.buffer()")
+        self.app.log.debug("appParsers.ParseExcellon.Excellon.buffer()")
 
         if distance == 0:
             return

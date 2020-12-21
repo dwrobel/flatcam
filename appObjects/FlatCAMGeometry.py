@@ -99,7 +99,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tools_diameters = [eval(a) for a in tools_string if a != '']
                     self.options["tools_mill_tooldia"] = tools_diameters[0] if tools_diameters else 0.0
                 except Exception as e:
-                    log.debug("FlatCAMObj.GeometryObject.init() --> %s" % str(e))
+                    self.app.log.debug("FlatCAMObj.GeometryObject.init() --> %s" % str(e))
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 
@@ -319,7 +319,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # self.update_ui()
         except Exception as e:
             # when the tools table is empty there will be this error but once the table is populated it will go away
-            log.debug(str(e))
+            self.app.log.debug('GeometryObject.build_ui() -> %s' % str(e))
 
         # disable the Plot column in Tool Table if the geometry is SingleGeo as it is not needed
         # and can create some problems
@@ -423,7 +423,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # this one adds the 'name' key and the self.ui.name_entry widget in the self.form_fields dict
         FlatCAMObj.set_ui(self, ui)
 
-        log.debug("GeometryObject.set_ui()")
+        self.app.log.debug("GeometryObject.set_ui()")
 
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
@@ -539,8 +539,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     float(eval(dia)) for dia in temp_tools if dia != ''
                 ]
             except Exception as e:
-                log.error("GeometryObject.set_ui() -> At least one tool diameter needed. "
-                          "Verify in Edit -> Preferences -> Geometry General -> Tool dia. %s" % str(e))
+                self.app.log.error("GeometryObject.set_ui() -> At least one tool diameter needed. "
+                                   "Verify in Edit -> Preferences -> Geometry General -> Tool dia. %s" % str(e))
                 return
 
         self.tooluid += 1
@@ -583,7 +583,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # self.old_toolchangeg_state = self.default_data['toolchange']
 
         if not isinstance(self.ui, GeometryObjectUI):
-            log.debug("Expected a GeometryObjectUI, got %s" % type(self.ui))
+            self.app.log.debug("Expected a GeometryObjectUI, got %s" % type(self.ui))
             return
 
         # #############################################################################################################
@@ -810,7 +810,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.ui.tool_offset_entry.hide()
                     self.ui.tool_offset_lbl.hide()
         except Exception as e:
-            log.debug("set_tool_offset_visibility() --> " + str(e))
+            self.app.log.debug("set_tool_offset_visibility() --> " + str(e))
             return
 
     def on_offset_value_edited(self):
@@ -1085,7 +1085,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.ui_connect()
                     return
             except Exception as e:
-                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.app.log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
                 self.ui_connect()
                 return
 
@@ -1111,7 +1111,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.ui_connect()
                     return
             except Exception as e:
-                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.app.log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
                 self.ui_connect()
                 return
 
@@ -1128,7 +1128,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.ui_connect()
                     return
             except Exception as e:
-                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                self.app.log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
                 return
 
             # #########################################################################################################
@@ -1149,12 +1149,12 @@ class GeometryObject(FlatCAMObj, Geometry):
                             if key == 'tool_type' and value == 'V':
                                 self.on_update_cutz()
             except Exception as e:
-                log.debug("GeometryObject.update_ui() -> %s " % str(e))
+                self.app.log.debug("GeometryObject.update_ui() -> %s " % str(e))
 
         self.ui_connect()
 
     def on_tool_add(self, clicked_state, dia=None, new_geo=None):
-        log.debug("GeometryObject.on_add_tool()")
+        self.app.log.debug("GeometryObject.on_add_tool()")
 
         self.ui_disconnect()
 
@@ -1473,7 +1473,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         self.builduiSig.emit()
                         return
                     except Exception as e:
-                        log.debug("on_tool_copy() --> " + str(e))
+                        self.app.log.debug("on_tool_copy() --> " + str(e))
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
@@ -1490,7 +1490,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.tools[int(max_uid)] = deepcopy(temp_tools[tooluid])
                 temp_tools.clear()
             except Exception as e:
-                log.debug("on_tool_copy() --> " + str(e))
+                self.app.log.debug("on_tool_copy() --> " + str(e))
 
         # if there are no more tools in geo tools table then hide the tool offset
         if not self.tools:
@@ -1574,7 +1574,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         self.builduiSig.emit()
                         return
                     except Exception as e:
-                        log.debug("on_tool_delete() --> " + str(e))
+                        self.app.log.debug("on_tool_delete() --> " + str(e))
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
@@ -1752,7 +1752,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.debug(str(e))
+                        self.app.log.debug('GeometryObject.update_form() -> %s' % str(e))
 
         # this is done here because those buttons control through OptionalInputSelection if some entry's are Enabled
         # or not. But due of using the ui_disconnect() status is no longer updated and I had to do it here
@@ -1763,7 +1763,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     def on_apply_param_to_all_clicked(self):
         if self.ui.geo_tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
         self.ui_disconnect()
@@ -1828,7 +1828,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         if self.ui.geo_tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
+            self.app.log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
         widget_changed = self.sender()
@@ -1838,7 +1838,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             if widget_idx == 1 or widget_idx == 3:
                 self.on_update_cutz()
         except Exception as e:
-            log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
+            self.app.log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
 
         # the original connect() function of the OptionalInputSelection is no longer working because of the
         # ui_diconnect() so I use this 'hack'
@@ -1969,7 +1969,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # points = GeometryObject.get_pts(geo)
                 # msp.add_lwpolyline(points)
         except Exception as e:
-            log.debug(str(e))
+            self.app.log.debug(str(e))
 
         return dwg
 
@@ -2130,7 +2130,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     #             pass
 
     def on_generatecnc_button_click(self):
-        log.debug("Generating CNCJob from Geometry ...")
+        self.app.log.debug("Generating CNCJob from Geometry ...")
         self.app.defaults.report_usage("geometry_on_generatecnc_button")
 
         # this reads the values in the UI form to the self.options dictionary
@@ -2214,7 +2214,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             xmax = self.options['xmax']
             ymax = self.options['ymax']
         except Exception as e:
-            log.debug("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
+            self.app.log.debug("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
             msg += '%s' % str(e)
@@ -2228,7 +2228,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
-            log.debug("Creating a CNCJob out of a single-geometry")
+            self.app.log.debug("Creating a CNCJob out of a single-geometry")
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
             job_obj.options['xmin'] = xmin
@@ -2341,7 +2341,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tool_no=tool_cnt, is_first=is_first)
 
                 if res == 'fail':
-                    log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    self.app.log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
 
                 dia_cnc_dict['gcode'] = res
@@ -2377,7 +2377,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_multi_geometry(job_obj, app_obj):
-            log.debug("Creating a CNCJob out of a multi-geometry")
+            self.app.log.debug("Creating a CNCJob out of a multi-geometry")
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
             job_obj.options['xmin'] = xmin
@@ -2496,7 +2496,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                                    is_first=is_first, is_last=is_last,
                                                                    toolchange=True)
                 if res == 'fail':
-                    log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    self.app.log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
                     dia_cnc_dict['gcode'] = res
@@ -2784,7 +2784,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except grace:
                     return "fail"
                 except Exception as e:
-                    log.debug("Could not Paint the polygons. %s" % str(e))
+                    self.app.log.debug("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                  "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
@@ -2810,7 +2810,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
-        log.debug("FlatCAMObj.GeometryObject.scale()")
+        self.app.log.debug("FlatCAMObj.GeometryObject.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -2898,7 +2898,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
-        log.debug("FlatCAMObj.GeometryObject.offset()")
+        self.app.log.debug("FlatCAMObj.GeometryObject.offset()")
 
         try:
             dx, dy = vect
@@ -2963,7 +2963,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.app.inform.emit('[success] %s' % _("Done."))
 
     def convert_units(self, units):
-        log.debug("FlatCAMObj.GeometryObject.convert_units()")
+        self.app.log.debug("FlatCAMObj.GeometryObject.convert_units()")
 
         self.ui_disconnect()
 
@@ -3231,7 +3231,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             if not self.app.exc_areas.exclusion_areas_storage:
                 self.app.exc_areas.clear_shapes()
         except Exception as err:
-            log.debug('GeometryObject.area_disconnect() -> %s' % str(err))
+            self.app.log.debug('GeometryObject.area_disconnect() -> %s' % str(err))
 
     def plot_element(self, element, color=None, visible=None):
 
@@ -3419,7 +3419,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     try:
                         new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:
-                        log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
+                        self.app.log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
             if type(geo_obj) is list:
@@ -3434,7 +3434,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 try:
                     new_solid_geometry += deepcopy(geo_obj.solid_geometry)
                 except Exception as e:
-                    log.debug("GeometryObject.merge() --> %s" % str(e))
+                    self.app.log.debug("GeometryObject.merge() --> %s" % str(e))
 
                 # find the tool_uid maximum value in the geo_final
                 try:

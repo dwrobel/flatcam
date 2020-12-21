@@ -61,7 +61,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                  feedrate=3.0, feedrate_rapid=3.0, z_cut=-0.002, tooldia=0.0,
                  spindlespeed=None):
 
-        log.debug("Creating CNCJob object...")
+        self.app.log.debug("Creating CNCJob object...")
 
         self.decimals = self.app.decimals
 
@@ -956,7 +956,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             except (ObjectDeleted, AttributeError):
                 self.probing_shapes.clear(update=True)
             except Exception as e:
-                log.debug("CNCJobObject.plot_probing_geo() --> %s" % str(e))
+                self.app.log.debug("CNCJobObject.plot_probing_geo() --> %s" % str(e))
         else:
             self.probing_shapes.clear(update=True)
 
@@ -977,7 +977,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             pts_union = MultiPoint(pts)
             voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
         except Exception as e:
-            log.debug("CNCJobObject.generate_voronoi_geometry() --> %s" % str(e))
+            self.app.log.debug("CNCJobObject.generate_voronoi_geometry() --> %s" % str(e))
             for pt_index in range(len(pts)):
                 new_pts[pt_index] = affinity.translate(
                     new_pts[pt_index], random.random() * 1e-09, random.random() * 1e-09)
@@ -1419,7 +1419,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 try:
                     self.app.inform_shell.emit('\t\t\t: ' + line.decode('utf-8').strip().upper())
                 except Exception as e:
-                    log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
+                    self.app.log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
             if 'ok' in line:
                 result = grbl_out
 
@@ -1442,7 +1442,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     try:
                         self.app.inform_shell.emit(' : ' + line.decode('utf-8').strip().upper())
                     except Exception as e:
-                        log.debug("CNCJobObject.send_grbl_block() --> %s" % str(e))
+                        self.app.log.debug("CNCJobObject.send_grbl_block() --> %s" % str(e))
 
     def on_grbl_get_parameter(self, param):
         if '$' in param:
@@ -1607,7 +1607,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # do nothing here because the Probing GCode for GRBL is obtained differently
             return
         else:
-            log.debug("CNCJobObject.probing_gcode() -> controller not supported")
+            self.app.log.debug("CNCJobObject.probing_gcode() -> controller not supported")
             return
 
         # #############################################################################################################
@@ -1730,7 +1730,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_viewer_tab.load_text(gco, move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_edit_probing_gcode() -->%s' % str(e))
+            self.app.log.debug('FlatCAMCNCJob.on_edit_probing_gcode() -->%s' % str(e))
             return
 
         self.gcode_viewer_tab.t_frame.show()
@@ -1794,7 +1794,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             else:
                 return
         except IOError:
-            log.error("Failed to open height map file: %s" % filename)
+            self.app.log.error("Failed to open height map file: %s" % filename)
             self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open height map file"), filename))
             return
 
@@ -2049,7 +2049,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
             self.gcode_editor_tab.load_text(self.app.gcode_edited, move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_review_code_click() -->%s' % str(e))
+            self.app.log.debug('FlatCAMCNCJob.on_review_code_click() -->%s' % str(e))
             return
 
         self.gcode_editor_tab.t_frame.show()
@@ -2090,7 +2090,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:                        A string with a GCode header
         """
 
-        log.debug("FlatCAMCNCJob.gcode_header()")
+        self.app.log.debug("FlatCAMCNCJob.gcode_header()")
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
         marlin = False
         hpgl = False
@@ -2113,21 +2113,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     probe_pp = True
                     break
         except KeyError:
-            # log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
+            # self.app.log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
             pass
 
         try:
             if 'marlin' in self.options['ppname_e'].lower() or 'repetier' in self.options['ppname_e'].lower():
                 marlin = True
         except KeyError:
-            # log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
+            # self.app.log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
             pass
 
         try:
             if "toolchange_probe" in self.options['ppname_e'].lower():
                 probe_pp = True
         except KeyError:
-            # log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
+            # self.app.log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
             pass
 
         if marlin is True:
