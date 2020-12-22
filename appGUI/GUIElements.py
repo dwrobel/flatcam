@@ -4360,11 +4360,49 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     brush = QtGui.QBrush(Qt.blue, Qt.SolidPattern)
                     keyword.setForeground(brush)
                     keyword.setFontWeight(QtGui.QFont.Bold)
-                    keywords = ["F", "G", "M", "T"]
+                    keywords = ["G", "T"]
                     for word in keywords:
                         # pattern = QtCore.QRegExp("\\b" + word + "\\b")
                         pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
                         rule = (pattern, keyword)
+                        self.highlightingRules.append(rule)
+
+                    keyword1 = QtGui.QTextCharFormat()
+                    # keyword 1
+                    brush = QtGui.QBrush(QtGui.QColor("teal"), Qt.SolidPattern)
+                    keyword1.setForeground(brush)
+                    keyword1.setFontWeight(QtGui.QFont.Bold)
+                    keywords = ["F"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        rule = (pattern, keyword1)
+                        self.highlightingRules.append(rule)
+
+                    # keyword 2
+                    keyword2 = QtGui.QTextCharFormat()
+                    # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
+                    brush = QtGui.QBrush(QtGui.QColor("coral"), Qt.SolidPattern)
+                    keyword2.setForeground(brush)
+                    keyword2.setFontWeight(QtGui.QFont.Bold)
+                    keywords = ["M"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        rule = (pattern, keyword2)
+                        self.highlightingRules.append(rule)
+
+                    # keyword 3
+                    keyword3 = QtGui.QTextCharFormat()
+                    # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
+                    brush = QtGui.QBrush(QtGui.QColor("purple"), Qt.SolidPattern)
+                    keyword3.setForeground(brush)
+                    keyword3.setFontWeight(QtGui.QFont.Bold)
+                    keywords = ["Z"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegExp("\\b" + word + "[\-|\+]?\d+(\.\d*)?\s?" + "\\b")
+                        rule = (pattern, keyword3)
                         self.highlightingRules.append(rule)
 
                     # reservedClasses
