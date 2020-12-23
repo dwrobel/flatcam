@@ -470,9 +470,6 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.mpass_cb.hide()
             self.ui.maxdepth_entry.hide()
 
-            self.ui.dwell_cb.hide()
-            self.ui.dwelltime_entry.hide()
-
             self.ui.tool_offset_label.hide()
             self.ui.offset_entry.hide()
 

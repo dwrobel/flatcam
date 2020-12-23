@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.12.2020
+
+- Dwell and Dwell Time parameters are visible in Beginner Mode
+
 21.12.2020
 
 - made sure that the GCode Editor does not have a misleading Cancel option when closing the tab

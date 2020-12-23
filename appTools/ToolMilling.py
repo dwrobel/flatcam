@@ -579,8 +579,8 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.extracut_cb.hide()
                 self.ui.e_cut_entry.hide()
 
-                self.ui.dwell_cb.hide()
-                self.ui.dwelltime_entry.hide()
+                # self.ui.dwell_cb.hide()
+                # self.ui.dwelltime_entry.hide()
 
                 self.ui.endmove_xy_label.hide()
                 self.ui.endxy_entry.hide()
