@@ -2654,7 +2654,7 @@ class FCSelect(DrawTool):
 
         # if selection is done on canvas update the Tree in Properties Tab with the selection
         try:
-            self.draw_app.tw.itemClicked.disconnect(self.draw_app.on_tree_geo_click)
+            self.draw_app.tw.itemPressed.disconnect(self.draw_app.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
@@ -2671,7 +2671,7 @@ class FCSelect(DrawTool):
 
                 iterator += 1
 
-        self.draw_app.tw.itemClicked.connect(self.draw_app.on_tree_geo_click)
+        self.draw_app.tw.itemPressed.connect(self.draw_app.on_tree_geo_click)
 
         # self.draw_app.tw.itemClicked.emit(self.draw_app.tw.currentItem(), 0)
         self.draw_app.update_ui()
@@ -3393,19 +3393,29 @@ class AppGeoEditor(QtCore.QObject):
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
-        self.title_box.addWidget(FCLabel(''))
 
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # Tree Widget Title
         tw_label = FCLabel('<b>%s</b>:' % _("Geometry Table"))
         tw_label.setToolTip(
             _("The list of geometry elements inside the edited object.")
         )
-        grid0.addWidget(tw_label, 0, 0, 1, 3)
+        self.tools_box.addWidget(tw_label)
 
         # Tree Widget
         self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
@@ -3414,27 +3424,40 @@ class AppGeoEditor(QtCore.QObject):
         self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tw.header().setStretchLastSection(True)
         self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        grid0.addWidget(self.tw, 2, 0, 1, 3)
+        self.tools_box.addWidget(self.tw)
 
         self.geo_font = QtGui.QFont()
         self.geo_font.setBold(True)
         self.geo_parent = self.tw.invisibleRootItem()
 
+        # #############################################################################################################
+        # ############################################ Advanced Editor ################################################
+        # #############################################################################################################
+        self.adv_frame = QtWidgets.QFrame()
+        self.adv_frame.setContentsMargins(0, 0, 0, 0)
+        self.tools_box.addWidget(self.adv_frame)
+
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        grid0.setContentsMargins(0, 0, 0, 0)
+        self.adv_frame.setLayout(grid0)
+
         # Zoom Selection
         self.geo_zoom = FCCheckBox(_("Zoom on selection"))
-        grid0.addWidget(self.geo_zoom, 4, 0, 1, 3)
+        grid0.addWidget(self.geo_zoom, 0, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 3)
+        grid0.addWidget(separator_line, 2, 0, 1, 3)
 
         # Parameters Title
         param_title = FCLabel('<b>%s</b>:' % _("Parameters"))
         param_title.setToolTip(
             _("Geometry parameters.")
         )
-        grid0.addWidget(param_title, 8, 0, 1, 3)
+        grid0.addWidget(param_title, 4, 0, 1, 3)
 
         # Is Valid
         is_valid_lbl = FCLabel('<b>%s</b>:' % _("Is Valid"))
@@ -3659,6 +3682,7 @@ class AppGeoEditor(QtCore.QObject):
         # ####################### GEOMETRY Editor Signals #############################################################
         # #############################################################################################################
         self.build_ui_sig.connect(self.build_ui)
+        self.level.toggled.connect(self.on_level_changed)
 
         self.app.ui.grid_gap_x_entry.textChanged.connect(self.on_gridx_val_changed)
         self.app.ui.grid_gap_y_entry.textChanged.connect(self.on_gridy_val_changed)
@@ -3808,7 +3832,7 @@ class AppGeoEditor(QtCore.QObject):
     def on_gridy_val_changed(self):
         self.entry2option("global_gridy", self.app.ui.grid_gap_y_entry)
 
-    def set_ui(self):
+    def set_editor_ui(self):
         # updated units
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
@@ -3829,6 +3853,10 @@ class AppGeoEditor(QtCore.QObject):
         self.geo_vertex_entry.set_value(0.0)
         self.geo_tol_entry.set_value(0.01 if self.units == 'MM' else 0.0004)
         self.geo_zoom.set_value(False)
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
     def build_ui(self):
         """
@@ -3981,12 +4009,53 @@ class AppGeoEditor(QtCore.QObject):
             self.app.inform.emit('%s: %s' % (_("Last selected shape ID"), str(last_id)))
 
     def on_tree_geo_click(self):
-
         try:
             self.update_ui()
             self.plot_all()
         except Exception as e:
             self.app.log.debug("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.level.setChecked(True)
+        else:
+            self.level.setChecked(False)
+        self.on_level_changed(self.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.level.setText('%s' % _('Beginner'))
+            self.level.setStyleSheet("""
+                                    QToolButton
+                                    {
+                                        color: green;
+                                    }
+                                    """)
+
+            self.adv_frame.hide()
+
+            # Context Menu section
+            # self.tw.removeContextMenu()
+        else:
+            self.level.setText('%s' % _('Advanced'))
+            self.level.setStyleSheet("""
+                                    QToolButton
+                                    {
+                                        color: red;
+                                    }
+                                    """)
+
+            self.adv_frame.show()
+
+            # Context Menu section
+            # self.tw.setupContextMenu()
 
     def on_simplification_click(self):
         self.app.log.debug("AppGeoEditor.on_simplification_click()")
@@ -4124,7 +4193,7 @@ class AppGeoEditor(QtCore.QObject):
         self.item_selected.connect(self.on_geo_elem_selected)
 
         # ## appGUI Events
-        self.tw.itemClicked.connect(self.on_tree_geo_click)
+        self.tw.itemPressed.connect(self.on_tree_geo_click)
         # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
         # self.tw.customContextMenuRequested.connect(self.on_menu_request)
 
@@ -4184,7 +4253,7 @@ class AppGeoEditor(QtCore.QObject):
 
         try:
             # ## appGUI Events
-            self.tw.itemClicked.disconnect(self.on_tree_geo_click)
+            self.tw.itemPressed.disconnect(self.on_tree_geo_click)
             # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
             # self.tw.customContextMenuRequested.connect(self.on_menu_request)
         except (AttributeError, TypeError):
@@ -4800,7 +4869,7 @@ class AppGeoEditor(QtCore.QObject):
         # #########  if selection is done on canvas update the Tree in Selected Tab with the selection  ###############
         # #############################################################################################################
         try:
-            self.tw.itemClicked.disconnect(self.on_tree_geo_click)
+            self.tw.itemPressed.disconnect(self.on_tree_geo_click)
         except (AttributeError, TypeError):
             pass
 
@@ -4834,7 +4903,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.geo_vertex_entry.set_value(vertex_nr)
 
-        self.tw.itemClicked.connect(self.on_tree_geo_click)
+        self.tw.itemPressed.connect(self.on_tree_geo_click)
 
         self.plot_all()
 
@@ -5183,7 +5252,7 @@ class AppGeoEditor(QtCore.QObject):
         self.deactivate()
         self.activate()
 
-        self.set_ui()
+        self.set_editor_ui()
 
         self.units = self.app.defaults['units']
 

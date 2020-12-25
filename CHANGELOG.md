@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - Excellon Editor - added a Beginner/Advanced toggle button; added context menu to Tools Table
 - Excellon Editor - fixed the Tools Table row selection handler
 - GCode Editor - added a Beginner/Advanced toggle button
+- Geometry Editor - added a Beginner/Advanced toggle button
+- Geometry Editor - made sure that on right clicking in the Table the geometric element associated with the row under mouse cursor is selected
 
 23.12.2020
 
