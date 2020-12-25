@@ -1313,7 +1313,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             break
                     if t:
                         fused_tools_dict[t]['drills'] += tool_dict['drills']
-                        fused_tools_dict[t]['slots'] += tool_dict['slots']
+                        if 'slots' in tool_dict and tool_dict['slots']:
+                                fused_tools_dict[t]['slots'] += tool_dict['slots']
                         fused_tools_dict[t]['solid_geometry'] += tool_dict['solid_geometry']
                 else:
                     fused_tools_dict[toolid] = tool_dict
