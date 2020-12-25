@@ -1744,7 +1744,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.ui = AppExcEditorUI(app=self.app)
 
-        self.exc_obj = None
+        self.edited_obj = None
 
         # ## Toolbar events and properties
         self.tools_exc = {}
@@ -1867,6 +1867,8 @@ class AppExcEditor(QtCore.QObject):
         # ######################### Excellon Editor Signals ###########################################################
         # #############################################################################################################
 
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         # connect the toolbar signals
         self.connect_exc_toolbar_signals()
 
@@ -1899,6 +1901,17 @@ class AppExcEditor(QtCore.QObject):
 
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
+        self.ui.tools_table_exc.setupContextMenu()
+        # self.ui.tools_table_exc.addContextMenu(
+        #     _("Add"), self.on_aperture_add,
+        #     icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.tools_table_exc.addContextMenu(
+            _("Delete"), lambda: self.on_tool_delete(),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
         self.app.log.debug("Initialization of the Excellon Editor is finished ...")
 
@@ -1936,7 +1949,7 @@ class AppExcEditor(QtCore.QObject):
 
         return storage
 
-    def set_ui(self):
+    def set_editor_ui(self):
         # updated units
         self.units = self.app.defaults['units'].upper()
 
@@ -1957,15 +1970,15 @@ class AppExcEditor(QtCore.QObject):
         self.sorted_diameters = sorted(sort_temp)
 
         # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
-        if self.exc_obj.diameterless is False:
+        if self.edited_obj.diameterless is False:
             for i in range(len(self.sorted_diameters)):
                 tt_dia = self.sorted_diameters[i]
                 self.tool2tooldia[i + 1] = tt_dia
         else:
             # the Excellon object has diameters that are bogus information, added by the application because the
             # Excellon file has no tool diameter information. In this case do not order the diameter in the table
-            # but use the real order found in the exc_obj.tools
-            for k, v in self.exc_obj.tools.items():
+            # but use the real order found in the edited_obj.tools
+            for k, v in self.edited_obj.tools.items():
                 tool_dia = float('%.*f' % (self.decimals, v['tooldia']))
                 self.tool2tooldia[int(k)] = tool_dia
 
@@ -2000,6 +2013,10 @@ class AppExcEditor(QtCore.QObject):
         self.on_linear_angle_radio()
         self.on_slot_array_linear_angle_radio()
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
     def build_ui(self, first_run=None):
 
         try:
@@ -2017,7 +2034,7 @@ class AppExcEditor(QtCore.QObject):
         self.units = self.app.defaults['units'].upper()
 
         # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.exc_obj.options['name']
+        self.edited_obj_name = self.edited_obj.options['name']
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         sort_temp = []
@@ -2213,6 +2230,44 @@ class AppExcEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Context Menu section
+            # self.ui.tools_table_exc.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Context Menu section
+            # self.ui.tools_table_exc.setupContextMenu()
 
     def on_tool_add(self, tooldia=None):
         self.is_modified = True
@@ -2558,8 +2613,8 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
         # Show original geometry
-        if self.exc_obj:
-            self.exc_obj.visible = True
+        if self.edited_obj:
+            self.edited_obj.visible = True
 
         # hide the UI
         self.ui.drills_frame.hide()
@@ -2672,24 +2727,25 @@ class AppExcEditor(QtCore.QObject):
         # self.storage = AppExcEditor.make_storage()
         self.replot()
 
-    def edit_fcexcellon(self, exc_obj):
+    def edit_fcexcellon(self, edited_obj):
         """
-        Imports the geometry from the given FlatCAM Excellon object
-        into the editor.
+        Imports the geometry from the given FlatCAM Excellon object into the editor.
 
-        :param exc_obj: ExcellonObject object
-        :return: None
+        :param edited_obj:  ExcellonObject object
+        :return:            None
         """
 
         self.deactivate()
         self.activate()
 
-        # Hide original geometry
-        self.exc_obj = exc_obj
-        exc_obj.visible = False
+        # create a reference to the edited object
+        self.edited_obj = edited_obj
 
-        if self.exc_obj:
-            outname = self.exc_obj.options['name']
+        # Hide original geometry
+        edited_obj.visible = False
+
+        if self.edited_obj:
+            outname = self.edited_obj.options['name']
         else:
             outname = ''
 
@@ -2750,8 +2806,8 @@ class AppExcEditor(QtCore.QObject):
 
         self.points_edit = {}
         # build the self.points_edit dict {dimaters: [point_list]}
-        for tool, tool_dict in self.exc_obj.tools.items():
-            tool_dia = self.dec_format(self.exc_obj.tools[tool]['tooldia'])
+        for tool, tool_dict in self.edited_obj.tools.items():
+            tool_dia = self.dec_format(self.edited_obj.tools[tool]['tooldia'])
 
             if 'drills' in tool_dict and tool_dict['drills']:
                 for drill in tool_dict['drills']:
@@ -2762,8 +2818,8 @@ class AppExcEditor(QtCore.QObject):
 
         self.slot_points_edit = {}
         # build the self.slot_points_edit dict {dimaters: {"start": Point, "stop": Point}}
-        for tool, tool_dict in self.exc_obj.tools.items():
-            tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[tool]['tooldia']))
+        for tool, tool_dict in self.edited_obj.tools.items():
+            tool_dia = float('%.*f' % (self.decimals, self.edited_obj.tools[tool]['tooldia']))
 
             if 'slots' in tool_dict and tool_dict['slots']:
                 for slot in tool_dict['slots']:
@@ -2788,7 +2844,7 @@ class AppExcEditor(QtCore.QObject):
         self.ui.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.last_tool_selected = None
 
-        self.set_ui()
+        self.set_editor_ui()
 
         # now that we have data, create the appGUI interface and add it to the Tool Tab
         self.build_ui(first_run=True)
@@ -3043,7 +3099,7 @@ class AppExcEditor(QtCore.QObject):
         """
 
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
-                           self.exc_obj.options['name'])
+                           self.edited_obj.options['name'])
 
         new_tools = n_tools
 
@@ -3081,10 +3137,18 @@ class AppExcEditor(QtCore.QObject):
                                                                              use_thread=False)
             except Exception as e:
                 self.deactivate()
+
+                # make sure that we do not carry the reference of the edited object further along
+                self.edited_obj = None
+
                 self.app.log.error("Error on Edited object creation: %s" % str(e))
                 return
 
             self.deactivate()
+
+            # make sure that we do not carry the reference of the edited object further along
+            self.edited_obj = None
+
             self.app.inform.emit('[success] %s' % _("Excellon editing finished."))
 
     def on_tool_select(self, tool):
@@ -3123,27 +3187,27 @@ class AppExcEditor(QtCore.QObject):
                 self.active_tool = SelectEditorExc(self)
 
     def on_row_selected(self, row, col):
-        if col == 0:
-            key_modifier = QtWidgets.QApplication.keyboardModifiers()
-            if self.app.defaults["global_mselect_key"] == 'Control':
-                modifier_to_use = Qt.ControlModifier
-            else:
-                modifier_to_use = Qt.ShiftModifier
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+        if self.app.defaults["global_mselect_key"] == 'Control':
+            modifier_to_use = Qt.ControlModifier
+        else:
+            modifier_to_use = Qt.ShiftModifier
 
-            if key_modifier == modifier_to_use:
-                pass
-            else:
-                self.selected = []
+        if key_modifier == modifier_to_use:
+            pass
+        else:
+            self.selected = []
 
-            try:
-                selected_dia = self.tool2tooldia[self.ui.tools_table_exc.currentRow() + 1]
-                self.last_tool_selected = int(self.ui.tools_table_exc.currentRow()) + 1
-                for obj in self.storage_dict[selected_dia].get_objects():
-                    self.selected.append(obj)
-            except Exception as e:
-                self.app.log.debug(str(e))
+        try:
+            self.last_tool_selected = int(row) + 1
 
-            self.replot()
+            selected_dia = self.tool2tooldia[self.last_tool_selected]
+            for obj in self.storage_dict[selected_dia].get_objects():
+                self.selected.append(obj)
+        except Exception as e:
+            self.app.log.debug(str(e))
+
+        self.replot()
 
     def on_canvas_click(self, event):
         """
@@ -3920,6 +3984,22 @@ class AppExcEditorUI:
 
         self.title_box.addWidget(self.icon, stretch=0)
         self.title_box.addWidget(self.title_label, stretch=1)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # Object name box
         self.name_box = QtWidgets.QHBoxLayout()

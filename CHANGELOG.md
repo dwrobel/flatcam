@@ -7,6 +7,15 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.12.2020
+
+- merged PR by Dmitriy Klabukov and expanded it a bit
+- Gerber Editor - made sure that when simplification button is clicked the coordinates and vertex points field are cleared
+- Gerber Editor - added a Beginner/Advanced toggle button
+- Gerber Editor - added context menu to Apertures Table and also on row selection in Aperture Table, the area and vertex number fields are updated
+- Excellon Editor - added a Beginner/Advanced toggle button; added context menu to Apertures Table
+- Excellon Editor - fixed the Tools Table row selection handler
+
 23.12.2020
 
 - Dwell and Dwell Time parameters are visible in Beginner Mode

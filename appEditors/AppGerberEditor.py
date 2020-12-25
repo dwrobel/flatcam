@@ -2901,6 +2901,8 @@ class AppGerberEditor(QtCore.QObject):
         self.build_ui_sig.connect(self.build_ui)
         self.update_ui_sig.connect(self.update_ui)
 
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         # connect the toolbar signals
         self.connect_grb_toolbar_signals()
 
@@ -2944,7 +2946,6 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
         self.ui.simplification_btn.clicked.connect(self.on_simplification_click)
-
         self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         self.conversion_factor = 1
@@ -2954,6 +2955,20 @@ class AppGerberEditor(QtCore.QObject):
         self.complete = True
 
         self.set_editor_ui()
+
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
+        self.ui.apertures_table.setupContextMenu()
+        # self.ui.apertures_table.addContextMenu(
+        #     _("Add"), self.on_aperture_add,
+        #     icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.apertures_table.addContextMenu(
+            _("Delete"), lambda: self.on_aperture_delete(),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
+        # self.ui.apertures_table.addContextMenu(
+        #     _("Simplify"), self.on_simplification_click,
+        #     icon=QtGui.QIcon(self.app.resource_location + "/simplify32.png"))
         self.app.log.debug("Initialization of the Gerber Editor is finished ...")
 
     def make_callback(self, the_tool):
@@ -3045,6 +3060,10 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.geo_vertex_entry.set_value(0.0)
         self.ui.geo_tol_entry.set_value(0.01)
         self.ui.geo_zoom.set_value(False)
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
     def build_ui(self, first_run=None):
 
@@ -3545,6 +3564,10 @@ class AppGerberEditor(QtCore.QObject):
         selected_shapes_geos = []
         tol = self.ui.geo_tol_entry.get_value()
 
+        # init the coordinates text field and vertex points field
+        self.ui.geo_coords_entry.set_value('')
+        self.ui.geo_vertex_entry.set_value(0)
+
         def task_job():
             with self.app.proc_container.new('%s...' % _("Simplify")):
                 for obj_shape in self.selected:
@@ -3658,6 +3681,48 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.geo_coords_entry.setText(str(coords))
 
         self.ui.geo_vertex_entry.set_value(vertex_nr)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.shape_frame.hide()
+
+            # Context Menu section
+            # self.ui.apertures_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.shape_frame.show()
+
+            # Context Menu section
+            # self.ui.apertures_table.setupContextMenu()
 
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
@@ -4418,6 +4483,38 @@ class AppGerberEditor(QtCore.QObject):
                 self.selected.append(obj)
         except Exception as e:
             self.app.log.debug(str(e))
+
+        # #########################################################################################################
+        # ######################### calculate vertex numbers for all selected shapes ##############################
+        # #########################################################################################################
+        vertex_nr = 0
+        for sha in self.selected:
+            sha_geo = sha.geo
+            if 'solid' in sha_geo:
+                sha_geo_solid = sha_geo['solid']
+                if sha_geo_solid.geom_type == 'Polygon':
+                    sha_geo_solid_coords = list(sha_geo_solid.exterior.coords)
+                elif sha_geo_solid.geom_type in ['LinearRing', 'LineString']:
+                    sha_geo_solid_coords = list(sha_geo_solid.coords)
+                else:
+                    sha_geo_solid_coords = []
+
+                vertex_nr += len(sha_geo_solid_coords)
+
+        self.ui.geo_vertex_entry.set_value(vertex_nr)
+
+        # #########################################################################################################
+        # ######################### calculate total area for all selected shapes ##################################
+        # #########################################################################################################
+        t_area = 0
+        for sha in self.selected:
+            sha_geo = sha.geo
+            if 'solid' in sha_geo:
+                sha_geo_solid = sha_geo['solid']
+                if sha_geo_solid.geom_type == 'Polygon':
+                    t_area += sha_geo_solid.area
+
+        self.ui.area_entry.set_value(t_area)
 
         self.plot_all()
 
@@ -5378,6 +5475,22 @@ class AppGerberEditorUI:
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Gerber Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # Object name
         self.name_box = QtWidgets.QHBoxLayout()

@@ -1680,6 +1680,12 @@ class FCTextEdit(QtWidgets.QTextEdit):
         tcursor = self.textCursor()
         tcursor.deleteChar()
 
+    def set_value(self, txt):
+        self.setText(txt)
+
+    def get_value(self):
+        return self.toPlainText()
+
 
 class FCTextAreaRich(FCTextEdit):
     def __init__(self, parent=None):
