@@ -13,8 +13,9 @@ CHANGELOG for FlatCAM beta
 - Gerber Editor - made sure that when simplification button is clicked the coordinates and vertex points field are cleared
 - Gerber Editor - added a Beginner/Advanced toggle button
 - Gerber Editor - added context menu to Apertures Table and also on row selection in Aperture Table, the area and vertex number fields are updated
-- Excellon Editor - added a Beginner/Advanced toggle button; added context menu to Apertures Table
+- Excellon Editor - added a Beginner/Advanced toggle button; added context menu to Tools Table
 - Excellon Editor - fixed the Tools Table row selection handler
+- GCode Editor - added a Beginner/Advanced toggle button
 
 23.12.2020
 

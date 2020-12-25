@@ -43,9 +43,11 @@ class AppGCodeEditor(QtCore.QObject):
         self.gcode_obj = None
         self.code_edited = ''
 
-        # #################################################################################
-        # ################### SIGNALS #####################################################
-        # #################################################################################
+        # #############################################################################################################
+        # ####################################### SIGNALS #############################################################
+        # #############################################################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         self.ui.update_gcode_button.clicked.connect(self.insert_code_snippet_1)
         self.ui.update_gcode_sec_button.clicked.connect(self.insert_code_snippet_2)
@@ -53,7 +55,7 @@ class AppGCodeEditor(QtCore.QObject):
 
         self.app.log.debug("Initialization of the GCode Editor is finished ...")
 
-    def set_ui(self):
+    def set_editor_ui(self):
         """
 
         :return:
@@ -117,6 +119,10 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.name_entry.set_value(self.edited_obj_name)
 
         self.activate()
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
     def build_ui(self):
         """
@@ -542,6 +548,48 @@ class AppGCodeEditor(QtCore.QObject):
         else:
             t_table.selectAll()
 
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.snippet_frame.hide()
+
+            # Context Menu section
+            # self.ui.apertures_table.removeContextMenu()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.snippet_frame.show()
+
+            # Context Menu section
+            # self.ui.apertures_table.setupContextMenu()
+
     def handleTextChanged(self):
         """
 
@@ -584,7 +632,7 @@ class AppGCodeEditor(QtCore.QObject):
 
         gcode_text = self.gcode_obj.source_file
 
-        self.set_ui()
+        self.set_editor_ui()
         self.build_ui()
 
         # then append the text from GCode to the text editor
@@ -685,6 +733,22 @@ class AppGCodeEditorUI:
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
         # ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
         self.edit_box.addLayout(self.name_box)
@@ -725,19 +789,32 @@ class AppGCodeEditorUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.edit_box.addWidget(separator_line)
 
+        # #############################################################################################################
+        # ############################################ Shape Properties ###############################################
+        # #############################################################################################################
+        self.snippet_frame = QtWidgets.QFrame()
+        self.snippet_frame.setContentsMargins(0, 0, 0, 0)
+        self.edit_box.addWidget(self.snippet_frame)
+
+        self.snippet_grid = QtWidgets.QGridLayout()
+        # self.snippet_grid.setColumnStretch(0, 0)
+        # self.snippet_grid.setColumnStretch(1, 1)
+        self.snippet_grid.setContentsMargins(0, 0, 0, 0)
+        self.snippet_frame.setLayout(self.snippet_grid)
+
         # Prepend text to GCode
         prependlabel = QtWidgets.QLabel('%s 1:' % _('CNC Code Snippet'))
         prependlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )
-        self.edit_box.addWidget(prependlabel)
+        self.snippet_grid.addWidget(prependlabel, 0, 0)
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
             _("Type here any G-Code commands you would\n"
               "like to insert at the cursor location.")
         )
-        self.edit_box.addWidget(self.prepend_text)
+        self.snippet_grid.addWidget(self.prepend_text, 1, 0)
 
         # Insert Button
         self.update_gcode_button = FCButton(_('Insert Code'))
@@ -745,21 +822,21 @@ class AppGCodeEditorUI:
         self.update_gcode_button.setToolTip(
             _("Insert the code above at the cursor location.")
         )
-        self.edit_box.addWidget(self.update_gcode_button)
+        self.snippet_grid.addWidget(self.update_gcode_button, 2, 0)
 
         # Append text to GCode
         appendlabel = QtWidgets.QLabel('%s 2:' % _('CNC Code Snippet'))
         appendlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )
-        self.edit_box.addWidget(appendlabel)
+        self.snippet_grid.addWidget(appendlabel, 3, 0)
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
             _("Type here any G-Code commands you would\n"
               "like to insert at the cursor location.")
         )
-        self.edit_box.addWidget(self.append_text)
+        self.snippet_grid.addWidget(self.append_text, 4, 0)
 
         # Insert Button
         self.update_gcode_sec_button = FCButton(_('Insert Code'))
@@ -767,9 +844,9 @@ class AppGCodeEditorUI:
         self.update_gcode_sec_button.setToolTip(
             _("Insert the code above at the cursor location.")
         )
-        self.edit_box.addWidget(self.update_gcode_sec_button)
+        self.snippet_grid.addWidget(self.update_gcode_sec_button, 5, 0)
 
-        layout.addStretch()
+        layout.addStretch(1)
 
         # Editor
         self.exit_editor_button = FCButton(_('Exit Editor'))
