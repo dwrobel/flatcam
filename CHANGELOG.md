@@ -18,6 +18,8 @@ CHANGELOG for FlatCAM beta
 - GCode Editor - added a Beginner/Advanced toggle button
 - Geometry Editor - added a Beginner/Advanced toggle button
 - Geometry Editor - made sure that on right clicking in the Table the geometric element associated with the row under mouse cursor is selected
+- Geometry Editor - added the label Beginner/Advanced for uniformity within the app
+- minor string changes
 
 23.12.2020
 

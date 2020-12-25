@@ -651,7 +651,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Basic"))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Beginner"))
 
             self.ui.sal_btn.hide()
             self.ui.sal_btn.setChecked(False)

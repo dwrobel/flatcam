@@ -77,7 +77,7 @@ class ScriptObject(FlatCAMObj):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Basic"))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Beginner"))
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _("Advanced"))
 

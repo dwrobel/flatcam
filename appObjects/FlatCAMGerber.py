@@ -172,7 +172,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
 
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -1560,7 +1560,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         try:
                             grb_final.options[option] = grb.options[option]
                         except KeyError:
-                            self.app.log.warning("Failed to copy option.", option)
+                            log.warning("Failed to copy option.", option)
 
                 try:
                     for geos in grb.solid_geometry:

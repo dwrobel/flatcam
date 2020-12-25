@@ -147,7 +147,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.tools_table.setColumnHidden(5, True)

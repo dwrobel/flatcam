@@ -699,6 +699,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         #
         # self.launch_job.connect(self.mtool_gen_cncjob)
 
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+
     def on_properties(self, state):
         if state:
             self.ui.properties_frame.show()
@@ -3419,7 +3425,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     try:
                         new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:
-                        self.app.log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
+                        log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
             if type(geo_obj) is list:
@@ -3434,7 +3440,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 try:
                     new_solid_geometry += deepcopy(geo_obj.solid_geometry)
                 except Exception as e:
-                    self.app.log.debug("GeometryObject.merge() --> %s" % str(e))
+                    log.debug("GeometryObject.merge() --> %s" % str(e))
 
                 # find the tool_uid maximum value in the geo_final
                 try:
