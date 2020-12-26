@@ -1585,11 +1585,11 @@ class ToolIsolation(AppTool, Gerber):
         if self.ui.valid_cb.get_value() is True:
             self.find_safe_tooldia_multiprocessing()
 
-        def worker_task(iso_obj):
-            with self.app.proc_container.new('%s ...' % _("Isolating")):
-                self.isolate_handler(iso_obj)
+        def worker_task(iso_class):
+            with iso_class.app.proc_container.new('%s ...' % _("Isolating")):
+                iso_class.isolate_handler(iso_class.grb_obj)
 
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [self.grb_obj]})
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def isolate_handler(self, isolated_obj):
         """

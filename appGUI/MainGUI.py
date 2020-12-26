@@ -1251,6 +1251,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
         self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area'))
+        self.grb_import_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import Shape'))
 
         self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
@@ -2458,6 +2460,9 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
         self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area'))
+        self.grb_import_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import Shape'))
+
         self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 

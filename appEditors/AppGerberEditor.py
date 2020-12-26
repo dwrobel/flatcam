@@ -2594,6 +2594,10 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
             pass
         self.draw_app.plot_object.connect(self.after_selection)
 
+        # if the shapes are not visible make them visible
+        if self.draw_app.visible is False:
+            self.draw_app.visible = True
+
     def set_origin(self, origin):
         self.origin = origin
 
@@ -2714,6 +2718,310 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
         # and plot all
+        self.draw_app.plot_all()
+
+    def clean_up(self):
+        self.draw_app.plot_all()
+
+
+class ImportEditorGrb(QtCore.QObject, DrawTool):
+    import_signal = QtCore.pyqtSignal(object)
+
+    def __init__(self, draw_app):
+        super().__init__(draw_app=draw_app)
+        # DrawTool.__init__(self, draw_app)
+        self.name = 'import'
+        self.origin = None
+
+        self.draw_app = draw_app
+        self.storage = self.draw_app.storage_dict
+        # self.selected = self.draw_app.selected
+
+        # here we store all shapes that were selected
+        self.sel_storage = []
+
+        # since SelectEditorGrb tool is activated whenever a tool is exited I place here the reinitialization of the
+        # bending modes using in RegionEditorGrb and TrackEditorGrb
+        self.draw_app.bend_mode = 1
+
+        # here store the selected apertures
+        self.sel_aperture = set()
+
+        # multiprocessing results
+        self.results = []
+
+        self.mp = None
+        self.mr = None
+        self.mm = None
+        self.app = self.draw_app.app
+        self.canvas = self.draw_app.canvas
+
+        self.x = None
+        self.y = None
+        self.pos = None
+        self.snap_x = None
+        self.snap_y = None
+
+        try:
+            self.draw_app.ui.apertures_table.clearSelection()
+        except Exception as e:
+            log.error("FlatCAMGerbEditor.ImportEditorGrb.__init__() --> %s" % str(e))
+
+        self.draw_app.hide_tool('all')
+        self.draw_app.ui.array_frame.hide()
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            log.debug("AppGerberEditor.ImportEditorGrb --> %s" % str(e))
+
+        try:
+            self.import_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.import_signal.connect(self.import_shapes)
+
+        try:
+            self.draw_app.plot_object.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.plot_object.connect(self.plot_import)
+
+        self.import_connect()
+
+        self.draw_app.visible = False
+
+        # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
+        if self.app.ui.grid_snap_btn.isChecked():
+            self.grid_status_memory = True
+            self.app.ui.grid_snap_btn.trigger()
+        else:
+            self.grid_status_memory = False
+
+    def import_connect(self):
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
+        self.mp = self.canvas.graph_event_connect('mouse_press', self.on_mouse_click)
+        self.mm = self.canvas.graph_event_connect('mouse_move', self.on_mouse_move)
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
+        # disconnect old
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_press', self.draw_app.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_move', self.draw_app.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_release', self.draw_app.on_canvas_click_release)
+        else:
+            self.canvas.graph_event_disconnect(self.draw_app.mp)
+            self.canvas.graph_event_disconnect(self.draw_app.mm)
+            self.canvas.graph_event_disconnect(self.draw_app.mr)
+
+    def import_disconnect(self):
+        self.draw_app.mp = self.canvas.graph_event_connect('mouse_press', self.draw_app.on_canvas_click)
+        self.draw_app.mm = self.canvas.graph_event_connect('mouse_move', self.draw_app.on_canvas_move)
+        self.draw_app.mr = self.canvas.graph_event_connect('mouse_release', self.draw_app.on_canvas_click_release)
+
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_press', self.on_mouse_click)
+            self.canvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+        else:
+            self.canvas.graph_event_disconnect(self.mp)
+            self.canvas.graph_event_disconnect(self.mm)
+            self.canvas.graph_event_disconnect(self.mr)
+
+    def on_mouse_click(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
+        # update click position (used also in self.on_mouse_move() )
+        self.pos = self.canvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+        else:
+            self.pos = (self.pos[0], self.pos[1])
+
+        if event.button == 1:
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+
+    def on_mouse_move(self, event):
+        if not self.app.plotcanvas.native.hasFocus():
+            self.app.plotcanvas.native.setFocus()
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            self.event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            self.event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        pos_canvas = self.canvas.translate_coords(event_pos)
+        event.xdata, event.ydata = pos_canvas[0], pos_canvas[1]
+
+        self.x = event.xdata
+        self.y = event.ydata
+
+        self.app.ui.popMenu.mouse_is_panning = False
+
+        # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
+        if event.button == right_button and self.event_is_dragging == 1:
+            self.app.ui.popMenu.mouse_is_panning = True
+            return
+
+        try:
+            x = float(event.xdata)
+            y = float(event.ydata)
+        except TypeError:
+            return
+
+        # Snap coordinates
+        if self.app.grid_status():
+            x, y = self.app.geo_editor.snap(x, y)
+
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
+                                         size=self.app.defaults["global_cursor_size"])
+
+        self.snap_x = x
+        self.snap_y = y
+
+        self.app.mouse = [x, y]
+
+        if self.pos is None:
+            self.pos = (0, 0)
+        self.app.dx = x - self.pos[0]
+        self.app.dy = y - self.pos[1]
+
+        # # update the position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f&nbsp;" % (x, y))
+
+        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+
+        # Selection area on canvas section # ##
+        if self.event_is_dragging == 1 and event.button == 1:
+            dx = pos_canvas[0] - self.pos[0]
+            self.app.delete_selection_shape()
+            if dx < 0:
+                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
+                                                     color=self.app.defaults["global_alt_sel_line"],
+                                                     face_color=self.app.defaults['global_alt_sel_fill'])
+                self.app.selection_type = False
+            else:
+                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
+                self.app.selection_type = True
+        else:
+            self.app.selection_type = None
+
+    def on_mouse_click_release(self, event):
+        left_button = 1
+        right_button = 2 if self.app.is_legacy is False else 3
+
+        event_pos = event.pos if self.app.is_legacy is False else (event.xdata, event.ydata)
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        event_pos = (x, y)
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+        else:
+            curr_pos = (curr_pos[0], curr_pos[1])
+
+        try:
+            if event.button == left_button:
+                if self.app.selection_type is not None:
+                    self.draw_app.app.delete_selection_shape()
+                    self.app.selection_type = None
+                    self.selection_area_handler(self.pos, curr_pos, self.app.selection_type)
+                else:
+                    self.select_handler(curr_pos)
+            elif event.button == right_button:  # right click
+                if self.event_is_dragging is False:
+                    # restore the Grid snapping if it was active before
+                    if self.grid_status_memory is True:
+                        self.app.ui.grid_snap_btn.trigger()
+
+                    self.import_disconnect()
+
+                    # disconnect flags
+                    self.app.tool_shapes.clear(update=True)
+
+                    self.import_shapes()
+                    self.app.inform.emit('[success] %s' % _("Done."))
+                    self.draw_app.select_tool('select')
+
+        except Exception as e:
+            self.app.log.warning("ImportEditorGrb.on_mouse_click_release() RMB click --> Error: %s" % str(e))
+            raise
+
+    def select_handler(self, pos):
+        """
+
+        :param pos: mouse click position
+        :type pos:  tuple
+        :return:    None
+        :rtype:     None
+        """
+        added_poly_count = 0
+
+        for obj in self.app.collection.get_list():
+            if obj.kind == 'gerber':
+                for apid in obj.apertures:
+                    if 'geometry' in obj.apertures[apid]:
+                        for geo_el in obj.apertures[apid]['geometry']:
+                            if 'solid' in geo_el:
+                                solid_geo = geo_el['solid']
+                                if Point(pos).within(solid_geo):
+                                    shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance, layer=0,
+                                                                        shape=solid_geo,
+                                                                        color=self.app.defaults[
+                                                                                  'global_sel_draw_color'] + 'AF',
+                                                                        face_color=self.app.defaults[
+                                                                                       'global_sel_draw_color'] + 'AF',
+                                                                        visible=True)
+                                    added_poly_count += 1
+
+        if added_poly_count > 0:
+            self.app.tool_shapes.redraw()
+            self.app.inform.emit(
+                '%s: %d. %s' % (_("Added polygon"),
+                                int(added_poly_count),
+                                _("Click to add next polygon or right click to start."))
+            )
+        else:
+            self.app.inform.emit(_("No polygon in selection."))
+
+    def selection_area_handler(self, start_pos, end_pos, selection_type):
+        """
+
+        :param start_pos:       mouse selection start position
+        :type start_pos:        tuple
+        :param end_pos:         mouse selection end position
+        :type end_pos:          tuple
+        :param selection_type:  True if selection is left-to-tight mouse drag, False if right-to-left mouse drag
+        :type selection_type:   bool
+        :return:                None
+        :rtype:                 None
+        """
+
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+
+
+    def import_shapes(self):
+        print("shapes added")
+
+    def plot_import(self):
         self.draw_app.plot_all()
 
     def clean_up(self):
@@ -2853,7 +3161,7 @@ class AppGerberEditor(QtCore.QObject):
         self.launched_from_shortcuts = False
 
         def_tol_val = float(self.app.defaults["global_tolerance"])
-        self.tolerance = def_tol_val if self.units == 'MM' else def_tol_val / 20
+        self.tolerance = def_tol_val if self.units == 'MM' else def_tol_val / 25.4
 
         # options of this widget (AppGerberEditor class is a widget)
         self.options = {
@@ -2990,6 +3298,7 @@ class AppGerberEditor(QtCore.QObject):
             "buffer": {"button": self.app.ui.aperture_buffer_btn, "constructor": BufferEditorGrb},
             "scale": {"button": self.app.ui.aperture_scale_btn, "constructor": ScaleEditorGrb},
             "markarea": {"button": self.app.ui.aperture_markarea_btn, "constructor": MarkEditorGrb},
+            "import": {"button": self.app.ui.grb_import_btn, "constructor": ImportEditorGrb},
             "eraser": {"button": self.app.ui.aperture_eraser_btn, "constructor": EraserEditorGrb},
             "copy": {"button": self.app.ui.aperture_copy_btn, "constructor": CopyEditorGrb},
             "transform": {"button": self.app.ui.grb_transform_btn, "constructor": TransformEditorGrb},
@@ -4693,12 +5002,13 @@ class AppGerberEditor(QtCore.QObject):
                         except Exception as e:
                             self.app.log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
 
-                        if self.active_tool.complete is False and not isinstance(self.active_tool, SelectEditorGrb):
-                            self.active_tool.complete = True
-                            self.in_action = False
-                            self.delete_utility_geometry()
-                            self.app.inform.emit('[success] %s' % _("Done."))
-                            self.select_tool('select')
+                        if self.active_tool.complete is False:
+                            if not isinstance(self.active_tool, SelectEditorGrb):
+                                self.active_tool.complete = True
+                                self.in_action = False
+                                self.delete_utility_geometry()
+                                self.app.inform.emit('[success] %s' % _("Done."))
+                                self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
                             self.app.populate_cmenu_grids()
@@ -5025,6 +5335,37 @@ class AppGerberEditor(QtCore.QObject):
             if len(color) == 9:
                 color = color[:7] + 'AF'
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
+
+    @property
+    def visible(self):
+        return self.shapes.visible
+
+    @visible.setter
+    def visible(self, value, threaded=True):
+        log.debug("FlatCAMObj.visible()")
+
+        current_visibility = self.shapes.visible
+
+        # self.shapes.visible = value   # maybe this is slower in VisPy? use enabled property?
+
+        def task(visibility):
+            if visibility is True:
+                if value is False:
+                    self.shapes.visible = False
+            else:
+                if value is True:
+                    self.shapes.visible = True
+
+            # Not all object types has annotations
+            try:
+                self.ma_annotation.visible = value
+            except Exception:
+                pass
+
+        if threaded:
+            self.app.worker_task.emit({'fcn': task, 'params': [current_visibility]})
+        else:
+            task(current_visibility)
 
     # def start_delayed_plot(self, check_period):
     #     """

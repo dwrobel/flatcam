@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.12.2020
+
+- made sure that the Tool menu is disabled when entering into an Editor and re-enabled on Editor exit
+- Gerber Editor - working on a new sub-tool: Import Shape which should allow importing polygons from other Gerber objects
+
 25.12.2020
 
 - merged PR by Dmitriy Klabukov and expanded it a bit

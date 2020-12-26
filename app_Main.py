@@ -2443,8 +2443,6 @@ class App(QtCore.QObject):
         :return: None
         """
         self.defaults.report_usage("object2editor()")
-        # disable the objects menu as it may interfere with the appEditors
-        self.ui.menuobjects.setDisabled(True)
 
         edited_object = self.collection.get_active()
 
@@ -2552,9 +2550,6 @@ class App(QtCore.QObject):
 
             self.gcode_editor.edit_fcgcode(edited_object)
 
-        # make sure that we can't select another object while in Editor Mode:
-        self.ui.project_frame.setDisabled(True)
-
         for idx in range(self.ui.notebook.count()):
             # store the Properties Tab text color here and change the color and text
             if self.ui.notebook.tabText(idx) == _("Properties"):
@@ -2577,6 +2572,13 @@ class App(QtCore.QObject):
         else:
             self.old_state_of_tools_toolbar = False
 
+        # make sure that we can't select another object while in Editor Mode:
+        self.ui.project_frame.setDisabled(True)
+        # disable the objects menu as it may interfere with the appEditors
+        self.ui.menuobjects.setDisabled(True)
+        # disable the tools menu as it makes sense not to be available when in the Editor
+        self.ui.menutool.setDisabled(True)
+
         self.ui.plot_tab_area.setTabText(0, _("EDITOR Area"))
         self.ui.plot_tab_area.protectTab(0)
         self.log.debug("######################### Starting the EDITOR ################################")
@@ -2593,9 +2595,6 @@ class App(QtCore.QObject):
         :return:                None
         """
         self.defaults.report_usage("editor2object()")
-
-        # re-enable the objects menu that was disabled on entry in Editor mode
-        self.ui.menuobjects.setDisabled(False)
 
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source == 'app':
@@ -2814,6 +2813,11 @@ class App(QtCore.QObject):
             # enable the Project Tab
             if self.ui.notebook.tabText(idx) == _("Project"):
                 self.ui.notebook.tabBar.setTabEnabled(idx, True)
+
+        # re-enable the objects menu that was disabled on entry in Editor mode
+        self.ui.menuobjects.setDisabled(False)
+        # re-enable the tool menu that was disabled on entry in Editor mode
+        self.ui.menutool.setDisabled(False)
 
         # restore the call_source to app
         self.call_source = 'app'
