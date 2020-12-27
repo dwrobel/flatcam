@@ -2810,6 +2810,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         else:
             self.grid_status_memory = False
 
+        self.draw_app.app.inform.emit('%s' % _("Select shapes to import them into the edited object."))
+
     def import_connect(self):
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
