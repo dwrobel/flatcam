@@ -2725,7 +2725,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
 
 
 class ImportEditorGrb(QtCore.QObject, DrawTool):
-    import_signal = QtCore.pyqtSignal(object)
+    import_signal = QtCore.pyqtSignal()
 
     def __init__(self, draw_app):
         super().__init__(draw_app=draw_app)
@@ -2737,7 +2737,19 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.storage = self.draw_app.storage_dict
         # self.selected = self.draw_app.selected
 
-        # here we store all shapes that were selected
+        # here we store all shapes that were selected; each item in the list is a dict
+        '''
+        {
+            apid: {
+                'type': '',
+                'size': 0.0,
+                'width': 0.0,
+                'height': 0.0,
+                'geometry': [],
+                'shape_id': 0
+            }
+        }
+        '''
         self.sel_storage = []
 
         # since SelectEditorGrb tool is activated whenever a tool is exited I place here the reinitialization of the
@@ -2957,13 +2969,29 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                     # disconnect flags
                     self.app.tool_shapes.clear(update=True)
 
-                    self.import_shapes()
-                    self.app.inform.emit('[success] %s' % _("Done."))
-                    self.draw_app.select_tool('select')
+                    self.import_signal.emit()
 
         except Exception as e:
             self.app.log.warning("ImportEditorGrb.on_mouse_click_release() RMB click --> Error: %s" % str(e))
             raise
+
+    def get_selected_geos(self):
+        sel_geos = []
+        for ap_dict in self.sel_storage:
+            for geo_el in ap_dict['geometry']:
+                if 'solid' in geo_el.geo:
+                    sel_geos.append(geo_el.geo['solid'])
+
+        return sel_geos
+
+    def get_selected_shape_id(self, geo):
+        idx = 0
+        for ap_dict in self.sel_storage:
+            for geo_el in ap_dict['geometry']:
+                if 'solid' in geo_el.geo:
+                    if geo_el.geo['solid'].equals(geo):
+                        return ap_dict['shape_id'], idx
+            idx += 1
 
     def select_handler(self, pos):
         """
@@ -2983,20 +3011,31 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                             if 'solid' in geo_el:
                                 solid_geo = geo_el['solid']
                                 if Point(pos).within(solid_geo):
-                                    shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance, layer=0,
-                                                                        shape=solid_geo,
-                                                                        color=self.app.defaults[
-                                                                                  'global_sel_draw_color'] + 'AF',
-                                                                        face_color=self.app.defaults[
-                                                                                       'global_sel_draw_color'] + 'AF',
-                                                                        visible=True)
-                                    added_poly_count += 1
+                                    if solid_geo not in self.get_selected_geos():
+                                        shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance, layer=0,
+                                                                            shape=solid_geo,
+                                                                            color=self.app.defaults[
+                                                                                      'global_sel_draw_color'] + 'AF',
+                                                                            face_color=self.app.defaults[
+                                                                                           'global_sel_draw_color'
+                                                                                       ] + 'AF',
+                                                                            visible=True)
+                                        new_ap_dict = {k: v for k, v in obj.apertures[apid].items() if k != 'geometry'}
+                                        new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
+                                        new_ap_dict['shape_id'] = shape_id
+                                        self.sel_storage.append(new_ap_dict)
+                                        added_poly_count += 1
+                                    else:
+                                        solid_geo_shape_id, solid_geo_apdict_idx = self.get_selected_shape_id(solid_geo)
+                                        self.app.tool_shapes.remove(solid_geo_shape_id)
+                                        self.sel_storage.pop(solid_geo_apdict_idx)
+
+        self.app.tool_shapes.redraw()
 
         if added_poly_count > 0:
-            self.app.tool_shapes.redraw()
             self.app.inform.emit(
                 '%s: %d. %s' % (_("Added polygon"),
-                                int(added_poly_count),
+                                int(len(self.sel_storage)),
                                 _("Click to add next polygon or right click to start."))
             )
         else:
@@ -3010,16 +3049,85 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         :param end_pos:         mouse selection end position
         :type end_pos:          tuple
         :param selection_type:  True if selection is left-to-tight mouse drag, False if right-to-left mouse drag
-        :type selection_type:   bool
+        :type selection_type:
         :return:                None
         :rtype:                 None
         """
 
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
-
     def import_shapes(self):
-        print("shapes added")
+        st_dict = self.draw_app.storage_dict
+
+        st_dict_keys = [int(k) for k in st_dict.keys()]
+        if st_dict_keys:
+            max_apid = max(st_dict_keys)
+        else:
+            max_apid = 0
+
+        new_apid = 10 if max_apid == 0 else max_apid + 1
+
+        for ap_dict in self.sel_storage:
+            if ap_dict['type'] == 'REG':
+                added_flag = False
+                for storage in list(st_dict.keys()):
+                    if st_dict[storage]['type'] == 'REG':
+                        st_dict[storage]['geometry'] += ap_dict['geometry']
+                        added_flag = True
+                        break
+
+                if added_flag is False:
+                    st_dict['0'] = {
+                        'type': 'REG',
+                        'size': 0.0,
+                        'geometry': ap_dict['geometry']
+                    }
+            elif ap_dict['type'] == 'C':
+                added_flag = False
+                for storage in list(st_dict.keys()):
+                    if st_dict[storage]['type'] == 'C':
+                        if st_dict[storage]['size'] == ap_dict['size']:
+                            st_dict[storage]['geometry'] += ap_dict['geometry']
+                            added_flag = True
+                            break
+
+                if added_flag is False:
+                    st_dict[str(new_apid)] = {
+                        'type': ap_dict['type'],
+                        'size': ap_dict['size'],
+                        'geometry': ap_dict['geometry']
+                    }
+                    new_apid += 1
+            elif ap_dict['type'] in ['R', 'O']:
+                added_flag = False
+                for storage in list(st_dict.keys()):
+                    if st_dict[storage]['type'] in ['R', 'O']:
+                        if st_dict[storage]['width'] == ap_dict['width'] and \
+                                st_dict[storage]['height'] == ap_dict['height']:
+                            st_dict[storage]['geometry'] += ap_dict['geometry']
+                            added_flag = True
+                            break
+
+                if added_flag is False:
+                    st_dict[str(new_apid)] = {
+                        'type': ap_dict['type'],
+                        'size': ap_dict['size'],
+                        'geometry': ap_dict['geometry']
+                    }
+                    new_apid += 1
+            else:
+                st_dict[str(new_apid)] = {}
+                for k in ap_dict:
+                    if k in ['geometry', 'shape_id']:
+                        continue
+                    st_dict[str(new_apid)][k] = ap_dict[k]
+                st_dict[str(new_apid)]['geometry'] = ap_dict['geometry']
+                new_apid += 1
+
+        self.draw_app.plot_object.emit(None)
+        self.draw_app.build_ui_sig.emit()
+        self.app.inform.emit('[success] %s' % _("Done."))
+        self.draw_app.select_tool('select')
 
     def plot_import(self):
         self.draw_app.plot_all()
