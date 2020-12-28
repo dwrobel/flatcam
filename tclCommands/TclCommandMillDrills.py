@@ -22,7 +22,8 @@ class TclCommandMillDrills(TclCommandSignaled):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['milldrills', 'milld']
 
-    description = '%s %s' % ("--", "Create a Geometry Object for milling drill holes from Excellon.")
+    description = '%s %s' % (
+        "--", "Create a Geometry Object for milling drill holes from Excellon.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -126,19 +127,19 @@ class TclCommandMillDrills(TclCommandSignaled):
 
                 args['tools'] = req_tools
 
-                # no longer needed
-                del args['milled_dias']
-                del args['diatol']
-
                 # Split and put back. We are passing the whole dictionary later.
                 # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
             else:
                 args['tools'] = 'all'
+            # no longer needed, delete from dict if in keys
+            args.pop('milled_dias', None)
+            args.pop('diatol', None)
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 
         if obj.kind != 'excellon':
-            self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
+            self.raise_tcl_error(
+                'Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
 
         if self.app.collection.has_promises():
             self.raise_tcl_error('!!!Promises exists, but should not here!!!')
@@ -146,7 +147,7 @@ class TclCommandMillDrills(TclCommandSignaled):
         try:
             # 'name' is not an argument of obj.generate_milling()
             del args['name']
-
+            print(args)
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling_drills(plot=False, **args)
         except Exception as e:
