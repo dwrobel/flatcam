@@ -2956,8 +2956,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
             if event.button == left_button:
                 if self.app.selection_type is not None:
                     self.draw_app.app.delete_selection_shape()
-                    self.app.selection_type = None
                     self.selection_area_handler(self.pos, curr_pos, self.app.selection_type)
+                    self.app.selection_type = None
                 else:
                     self.select_handler(curr_pos)
             elif event.button == right_button:  # right click
@@ -3006,7 +3006,9 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         added_poly_count = 0
 
         for obj in self.app.collection.get_list():
-            if obj.kind == 'gerber':
+            # only Gerber objects and only those that are active and not the edited object
+            if obj.kind == 'gerber' and obj.options['plot'] is True and \
+                    obj.options['name'] != self.draw_app.gerber_obj.options['name']:
                 for apid in obj.apertures:
                     if 'geometry' in obj.apertures[apid]:
                         for geo_el in obj.apertures[apid]['geometry']:
@@ -3057,6 +3059,73 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         """
 
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+
+        added_poly_count = 0
+
+        color = self.app.defaults['global_sel_draw_color'] + 'AF'
+        face_color = self.app.defaults['global_sel_draw_color'] + 'AF'
+
+        for obj in self.app.collection.get_list():
+            # only Gerber objects and only those that are active and not the edited object
+            if obj.kind == 'gerber' and obj.options['plot'] is True and \
+                    obj.options['name'] != self.draw_app.gerber_obj.options['name']:
+                for apid in obj.apertures:
+                    if 'geometry' in obj.apertures[apid]:
+                        for geo_el in obj.apertures[apid]['geometry']:
+                            if 'solid' in geo_el:
+                                solid_geo = geo_el['solid']
+                                if selection_type is True:
+                                    if solid_geo.within(poly_selection):
+                                        if solid_geo not in self.get_selected_geos():
+                                            shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance,
+                                                                                layer=0,
+                                                                                shape=solid_geo,
+                                                                                color=color,
+                                                                                face_color=face_color,
+                                                                                visible=True)
+                                            new_ap_dict = {
+                                                k: v for k, v in obj.apertures[apid].items() if k != 'geometry'
+                                            }
+                                            new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
+                                            new_ap_dict['shape_id'] = shape_id
+                                            self.sel_storage.append(new_ap_dict)
+                                            added_poly_count += 1
+                                        else:
+                                            solid_geo_shape_id, solid_geo_idx = self.get_selected_shape_id(solid_geo)
+                                            self.app.tool_shapes.remove(solid_geo_shape_id)
+                                            self.sel_storage.pop(solid_geo_idx)
+
+                                if selection_type is False:
+                                    if solid_geo.intersects(poly_selection):
+                                        if solid_geo not in self.get_selected_geos():
+                                            shape_id = self.app.tool_shapes.add(tolerance=obj.drawing_tolerance,
+                                                                                layer=0,
+                                                                                shape=solid_geo,
+                                                                                color=color,
+                                                                                face_color=face_color,
+                                                                                visible=True)
+                                            new_ap_dict = {
+                                                k: v for k, v in obj.apertures[apid].items() if k != 'geometry'
+                                            }
+                                            new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
+                                            new_ap_dict['shape_id'] = shape_id
+                                            self.sel_storage.append(new_ap_dict)
+                                            added_poly_count += 1
+                                        else:
+                                            solid_geo_shape_id, solid_geo_idx = self.get_selected_shape_id(solid_geo)
+                                            self.app.tool_shapes.remove(solid_geo_shape_id)
+                                            self.sel_storage.pop(solid_geo_idx)
+
+        self.app.tool_shapes.redraw()
+
+        if added_poly_count > 0:
+            self.app.inform.emit(
+                '%s: %d. %s' % (_("Added polygon"),
+                                int(len(self.sel_storage)),
+                                _("Click to add next polygon or right click to start."))
+            )
+        else:
+            self.app.inform.emit(_("No polygon in selection."))
 
     def import_shapes(self):
         st_dict = self.draw_app.storage_dict
@@ -3114,6 +3183,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                     st_dict[str(new_apid)] = {
                         'type': ap_dict['type'],
                         'size': ap_dict['size'],
+                        'width': ap_dict['width'],
+                        'height': ap_dict['height'],
                         'geometry': ap_dict['geometry']
                     }
                     new_apid += 1

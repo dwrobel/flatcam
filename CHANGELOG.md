@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.12.2020
+
+- Gerber Editor - Import Shape sub-tool finished (by adding selection by dragging a selection box)
+
 27.12.2020
 
 - Gerber Editor - finished the Import Shape sub-tool single shape select feature
