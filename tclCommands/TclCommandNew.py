@@ -39,4 +39,4 @@ class TclCommandNew(TclCommand):
         :return: None or exception
         """
 
-        self.app.on_file_new_project(cli=True)
+        self.app.f_handlers.on_file_new_project(cli=True)
