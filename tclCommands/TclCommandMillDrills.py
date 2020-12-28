@@ -147,7 +147,7 @@ class TclCommandMillDrills(TclCommandSignaled):
         try:
             # 'name' is not an argument of obj.generate_milling()
             del args['name']
-            print(args)
+
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling_drills(plot=False, **args)
         except Exception as e:
