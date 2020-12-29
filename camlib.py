@@ -3109,6 +3109,8 @@ class CNCjob(Geometry):
         elif zcut == 0:
             self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
             return 'fail'
+        else:
+            return zcut
 
     # used in Tool Drilling
     def excellon_tool_gcode_gen(self, tool, points, tools, first_pt, is_first=False, is_last=False, opt_type='T',
