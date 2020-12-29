@@ -7,7 +7,7 @@
 # ##########################################################
 
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QTextCursor, QPixmap
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
@@ -41,7 +41,12 @@ class TermWidget(QWidget):
         self.app = app
 
         self._browser = _BrowserTextEdit(version=version, app=app)
-        self._browser.setStyleSheet("font: 9pt \"Courier\";")
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 9
+        self._browser.setStyleSheet("font: {0}pt \"Courier\";".format(tb_fsize))
         self._browser.setReadOnly(True)
         self._browser.document().setDefaultStyleSheet(
             self._browser.document().defaultStyleSheet() +
@@ -478,7 +483,8 @@ class FCShell(TermWidget):
                 trc_formated = []
                 for a in reversed(trc):
                     trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
-                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
+                text = "%s\nPython traceback: %s\n%s" % (
+                    exc_value, exc_type, "\n".join(trc_formated))
             else:
                 text = "%s" % error
         else:
