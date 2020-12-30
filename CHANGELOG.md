@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.12.2020
+
+- fixed error in Gerber Editor
+- made some more log.debug messages visible in Tcl Shell
+
 28.12.2020
 
 - Gerber Editor - Import Shape sub-tool finished (by adding selection by dragging a selection box)

@@ -90,7 +90,7 @@ class AppObject(QtCore.QObject):
 
         if callback_params is None:
             callback_params = [None]
-        log.debug("AppObject.new_object()")
+        self.app.log.debug("AppObject.new_object()")
         obj_plot = plot
         obj_autoselected = autoselected
 
@@ -106,7 +106,7 @@ class AppObject(QtCore.QObject):
             "document":     DocumentObject
         }
 
-        log.debug("Calling object constructor...")
+        self.app.log.debug("Calling object constructor...")
 
         # Object creation/instantiation
         obj = classdict[kind](name)
@@ -162,7 +162,7 @@ class AppObject(QtCore.QObject):
         # in a thread-safe way as is is likely that we
         # have been invoked in a separate thread.
         t1 = time.time()
-        log.debug("%f seconds before initialize()." % (t1 - t0))
+        self.app.log.debug("%f seconds before initialize()." % (t1 - t0))
 
         try:
             return_value = initialize(obj, self.app)
@@ -175,11 +175,11 @@ class AppObject(QtCore.QObject):
 
         t2 = time.time()
         msg = "%s %s. %f seconds executing initialize()." % (_("New object with name:"), name, (t2 - t1))
-        log.debug(msg)
+        self.app.log.debug(msg)
         self.app.inform_shell.emit(msg)
 
         if return_value == 'fail':
-            log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
+            self.app.log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
             return "fail"
 
         # ############################################################################################################
@@ -190,7 +190,7 @@ class AppObject(QtCore.QObject):
             self.app.inform.emit('%s: %s' % (_("Converting units to "), self.app.options["units"]))
             obj.convert_units(self.app.options["units"])
             t3 = time.time()
-            log.debug("%f seconds converting units." % (t3 - t2))
+            self.app.log.debug("%f seconds converting units." % (t3 - t2))
 
         # ############################################################################################################
         # Create the bounding box for the object and then add the results to the obj.options
@@ -204,10 +204,10 @@ class AppObject(QtCore.QObject):
                 obj.options['xmax'] = xmax
                 obj.options['ymax'] = ymax
             except Exception as e:
-                log.warning("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
+                self.app.log.warning("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
 
-        log.debug("Moving new object back to main thread.")
+        self.app.log.debug("Moving new object back to main thread.")
 
         # ############################################################################################################
         # Move the object to the main thread and let the app know that it is available.
@@ -235,7 +235,7 @@ class AppObject(QtCore.QObject):
         """
 
         t0 = time.time()  # DEBUG
-        log.debug("on_object_created()")
+        self.app.log.debug("on_object_created()")
 
         # #############################################################################################################
         # ###############################  Add the new object to the Collection  ######################################
@@ -321,7 +321,7 @@ class AppObject(QtCore.QObject):
                         obj.outline_color = self.app.defaults["gerber_plot_line"]
                         obj.fill_color = self.app.defaults["gerber_plot_fill"]
             except Exception as e:
-                log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
+                self.app.log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
 
         # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object
@@ -347,7 +347,7 @@ class AppObject(QtCore.QObject):
 
                 t1 = time.time()  # DEBUG
                 msg = "%f seconds adding object and plotting." % (t1 - t0)
-                log.debug(msg)
+                self.app.log.debug(msg)
                 self.object_plotted.emit(t_obj)
 
                 if t_obj.kind == 'gerber' and self.app.defaults["gerber_buffering"] != 'full' and \
@@ -382,7 +382,7 @@ class AppObject(QtCore.QObject):
         obj.options['xmax'] = xmax
         obj.options['ymax'] = ymax
 
-        log.debug("Object changed, updating the bounding box data on self.options")
+        self.app.log.debug("Object changed, updating the bounding box data on self.options")
         # delete the old selection shape
         self.app.delete_selection_shape()
         self.app.should_we_save = True

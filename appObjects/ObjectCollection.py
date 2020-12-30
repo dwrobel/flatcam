@@ -362,7 +362,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return len(self.plot_promises) > 0
 
     def on_mouse_down(self, event):
-        self.app.log.debug("Mouse button pressed on list")
+        # self.app.log.debug("Mouse button pressed on list")
+        pass
 
     def on_menu_request(self, pos):
 

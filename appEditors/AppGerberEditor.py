@@ -4675,16 +4675,17 @@ class AppGerberEditor(QtCore.QObject):
                                 new_elem = {}
                                 if 'solid' in elem:
                                     solid_geo = elem['solid']
-                                    if not global_clear_geo or global_clear_geo.is_empty:
-                                        pass
-                                    else:
-                                        for clear_geo in global_clear_geo:
-                                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                            # the solid_geometry. We want for clear_geometry just to cut into
-                                            # solid_geometry not to delete it
-                                            if clear_geo.within(solid_geo):
-                                                solid_geo = solid_geo.difference(clear_geo)
+                                    if not global_clear_geo:
+                                        if isinstance(global_clear_geo, Polygon) and global_clear_geo.is_empty:
+                                            pass
+                                        else:
+                                            for clear_geo in global_clear_geo:
+                                                # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                                # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                                # the solid_geometry. We want for clear_geometry just to cut into
+                                                # solid_geometry not to delete it
+                                                if clear_geo.within(solid_geo):
+                                                    solid_geo = solid_geo.difference(clear_geo)
 
                                     new_elem['solid'] = solid_geo
                                 if 'clear' in elem:
