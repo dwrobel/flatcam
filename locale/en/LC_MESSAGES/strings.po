@@ -16934,8 +16934,8 @@ msgstr ""
 "be duplicated in an array of rows and columns."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
-msgstr "Penelization Reference"
+msgid "Panelization Reference"
+msgstr "Panelization Reference"
 
 #: appTools/ToolPanelize.py:717
 msgid ""

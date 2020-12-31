@@ -17155,7 +17155,7 @@ msgstr ""
 "que ele será duplicado em uma matriz de linhas e colunas."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Referência para Criação de Painel"
 
 #: appTools/ToolPanelize.py:717

@@ -17151,7 +17151,7 @@ msgstr ""
 "de linii și coloane."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Referintă panelizare"
 
 #: appTools/ToolPanelize.py:717

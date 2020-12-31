@@ -16936,7 +16936,7 @@ msgstr ""
 "sütun dizisinde çoğaltılacak olan nesne anlamına gelir."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Panel Olarak Kullanılacak Nesne"
 
 #: appTools/ToolPanelize.py:717

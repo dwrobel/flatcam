@@ -17349,7 +17349,7 @@ msgstr ""
 "ser duplicado en una matriz de filas y columnas."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Ref. de penelización"
 
 #: appTools/ToolPanelize.py:717

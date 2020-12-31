@@ -17316,7 +17316,7 @@ msgstr ""
 "être dupliqué dans un tableau de lignes et de colonnes."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Référence de pénalisation"
 
 #: appTools/ToolPanelize.py:717

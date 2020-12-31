@@ -17066,7 +17066,7 @@ msgstr ""
 "duplicato in una matrice di righe e colonne."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Riferimento pannellizzazione"
 
 #: appTools/ToolPanelize.py:717

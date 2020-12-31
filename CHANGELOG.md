@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - added the modifications made by Andre Spahlinger in PR #333
 - replaced all usages of QFormLayout with QGridLayout
 - fixed parseDXF() class imports to work with newer versions of ezdxf module (starting with 0.15) - contribution of Maurizio D'Addona and Hans Boot
+- fixed a string ("Penelization Reference") by Hans Boot contribution.
 
 30.12.2020
 

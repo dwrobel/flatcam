@@ -17235,7 +17235,7 @@ msgstr ""
 "in einem Array von Zeilen und Spalten dupliziert werden."
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr "Penelisierungshinweis"
 
 #: appTools/ToolPanelize.py:717

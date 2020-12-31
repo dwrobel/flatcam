@@ -1042,7 +1042,7 @@ class PanelizeUI:
         grid0.addWidget(self.object_combo, 4, 0, 1, 2)
 
         # Type of box Panel object
-        self.box_label = FCLabel("<b>%s:</b>" % _("Penelization Reference"))
+        self.box_label = FCLabel("<b>%s:</b>" % _("Panelization Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"

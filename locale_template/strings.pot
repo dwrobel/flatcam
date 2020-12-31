@@ -14639,7 +14639,7 @@ msgid ""
 msgstr ""
 
 #: appTools/ToolPanelize.py:715
-msgid "Penelization Reference"
+msgid "Panelization Reference"
 msgstr ""
 
 #: appTools/ToolPanelize.py:717
