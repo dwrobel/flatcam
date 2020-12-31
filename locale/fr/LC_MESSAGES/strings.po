@@ -17317,7 +17317,7 @@ msgstr ""
 
 #: appTools/ToolPanelize.py:715
 msgid "Panelization Reference"
-msgstr "Référence de pénalisation"
+msgstr "Référence de panélisation"
 
 #: appTools/ToolPanelize.py:717
 msgid ""

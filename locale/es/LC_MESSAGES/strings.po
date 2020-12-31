@@ -17350,7 +17350,7 @@ msgstr ""
 
 #: appTools/ToolPanelize.py:715
 msgid "Panelization Reference"
-msgstr "Ref. de penelización"
+msgstr "Ref. de panelización"
 
 #: appTools/ToolPanelize.py:717
 msgid ""
