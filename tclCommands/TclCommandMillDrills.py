@@ -105,7 +105,7 @@ class TclCommandMillDrills(TclCommandSignaled):
                 req_tools = set()
                 for tool in obj.tools:
                     for req_dia in diameters:
-                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["tooldia"])))
                         req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                         if 'diatol' in args:
