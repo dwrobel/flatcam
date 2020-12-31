@@ -46,6 +46,7 @@ sudo -H python3 -m pip install --upgrade \
 	reportlab \
 	svglib \
 	pyserial \
+	testresources \
 	pikepdf
 
 sudo -H easy_install -U distribute

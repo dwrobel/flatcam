@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - fixed a string ("Penelization Reference") by Hans Boot contribution.
 - fixed a string ("Penelization Reference") translations by Hans Boot contribution.
 - fixed issue with not being able to mill holes in a Excellon object part of a loaded project (JSON serialization makes all keys in dictionary strings so I had to make sure that the obj.tools dict keys are made integers on project reconstruction)
+- added needed 'testresources' module in the setup_ubuntu.sh script - Hans Boot contribution
 
 30.12.2020
 
