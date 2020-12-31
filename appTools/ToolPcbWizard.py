@@ -333,7 +333,7 @@ class PcbWizard(AppTool):
                 app_obj.log.debug("Could not import Excellon object.")
                 return "fail"
             except Exception as e:
-                app_obj.log.debug("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
+                app_obj.log.error("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
                 msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
                 msg += app_obj.traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -342,7 +342,7 @@ class PcbWizard(AppTool):
             # populate excellon_obj.solid_geometry list
             ret = excellon_obj.create_geometry()
             if ret == 'fail':
-                app_obj.log.debug("Could not create geometry for Excellon object.")
+                app_obj.log.error("Could not create geometry for Excellon object.")
                 return "fail"
 
             for tool in excellon_obj.tools:

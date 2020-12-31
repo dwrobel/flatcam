@@ -488,7 +488,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             else:
                 dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
         except Exception as e:
-            log.debug("PlotCanvasLegacy.draw_workspace() --> %s" % str(e))
+            log.error("PlotCanvasLegacy.draw_workspace() --> %s" % str(e))
             return
 
         if self.app.defaults['global_workspace_orientation'] == 'l':
@@ -621,7 +621,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     # this happen at app initialization since self.app.geo_editor does not exist yet
                     # I could reshuffle the object instantiating order but what's the point?
                     # I could crash something else and that's pythonic, too
-                    log.debug("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
+                    log.error("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
             else:
                 try:
                     self.ch_line.set_markeredgewidth(self.app.defaults["global_cursor_width"])
@@ -668,7 +668,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     self.cv_line.remove()
                     self.canvas.draw_idle()
                 except Exception as e:
-                    log.debug("PlotCanvasLegacy.clear_cursor() big_cursor is True --> %s" % str(e))
+                    log.error("PlotCanvasLegacy.clear_cursor() big_cursor is True --> %s" % str(e))
             self.canvas.restore_region(self.background)
             self.canvas.blit(self.axes.bbox)
 
@@ -1336,7 +1336,7 @@ class ShapeCollectionLegacy:
         try:
             self.app.plotcanvas.auto_adjust_axes()
         except Exception as e:
-            log.debug("ShapeCollectionLegacy.clear() --> %s" % str(e))
+            log.error("ShapeCollectionLegacy.clear() --> %s" % str(e))
 
         if update is True:
             self.redraw()
@@ -1376,7 +1376,7 @@ class ShapeCollectionLegacy:
                                                  )
                             self.axes.add_patch(patch)
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() excellon poly --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() excellon poly --> %s" % str(e))
                     else:
                         try:
                             if isinstance(local_shapes[element]['shape'], Polygon):
@@ -1389,7 +1389,7 @@ class ShapeCollectionLegacy:
                                 x, y = local_shapes[element]['shape'].coords.xy
                                 self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() excellon no poly --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() excellon no poly --> %s" % str(e))
                 elif obj_type == 'geometry':
                     if type(local_shapes[element]['shape']) == Polygon:
                         try:
@@ -1403,7 +1403,7 @@ class ShapeCollectionLegacy:
                                                linestyle='-',
                                                linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() geometry poly --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() geometry poly --> %s" % str(e))
                     elif type(local_shapes[element]['shape']) == LineString or \
                             type(local_shapes[element]['shape']) == LinearRing:
 
@@ -1413,7 +1413,7 @@ class ShapeCollectionLegacy:
                                            linestyle='-',
                                            linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() geometry no poly --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() geometry no poly --> %s" % str(e))
                 elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
                         linespec = '-'
@@ -1440,7 +1440,7 @@ class ShapeCollectionLegacy:
                             log.warning("A geometry component was not a polygon:")
                             log.warning(str(element))
                         except Exception as e:
-                            log.debug(
+                            log.error(
                                 "PlotCanvasLegacy.ShepeCollectionLegacy.redraw() gerber 'solid' --> %s" % str(e))
                     else:
                         try:
@@ -1450,7 +1450,7 @@ class ShapeCollectionLegacy:
                                 x, y = ints.coords.xy
                                 self.axes.plot(x, y, linespec, linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() gerber no 'solid' --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() gerber no 'solid' --> %s" % str(e))
                 elif obj_type == 'cncjob':
 
                     if local_shapes[element]['face_color'] is None:
@@ -1463,7 +1463,7 @@ class ShapeCollectionLegacy:
                             self.axes.plot(x, y, linespec, color=linecolor,
                                            linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() cncjob with face_color --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() cncjob with face_color --> %s" % str(e))
                     else:
                         try:
                             path_num += 1
@@ -1486,7 +1486,7 @@ class ShapeCollectionLegacy:
                                                  linewidth=local_shapes[element]['linewidth'])
                             self.axes.add_patch(patch)
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() cncjob no face_color --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() cncjob no face_color --> %s" % str(e))
                 elif obj_type == 'utility':
                     # not a FlatCAM object, must be utility
                     if local_shapes[element]['face_color']:
@@ -1500,7 +1500,7 @@ class ShapeCollectionLegacy:
 
                             self.axes.add_patch(patch)
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() utility poly with face_color --> %s" % str(e))
+                            log.error("ShapeCollectionLegacy.redraw() utility poly with face_color --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
                             try:
@@ -1515,7 +1515,7 @@ class ShapeCollectionLegacy:
                                         self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
                                                        linewidth=local_shapes[element]['linewidth'])
                             except Exception as e:
-                                log.debug("ShapeCollectionLegacy.redraw() utility poly no face_color --> %s" % str(e))
+                                log.error("ShapeCollectionLegacy.redraw() utility poly no face_color --> %s" % str(e))
                         else:
                             try:
                                 if local_shapes[element]['shape'] is not None:
@@ -1523,7 +1523,7 @@ class ShapeCollectionLegacy:
                                     self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
                                                    linewidth=local_shapes[element]['linewidth'])
                             except Exception as e:
-                                log.debug("ShapeCollectionLegacy.redraw() utility lines no face_color --> %s" % str(e))
+                                log.error("ShapeCollectionLegacy.redraw() utility lines no face_color --> %s" % str(e))
         self.app.plotcanvas.auto_adjust_axes()
 
     def set(self, text, pos, visible=True, font_size=16, color=None):
@@ -1553,7 +1553,7 @@ class ShapeCollectionLegacy:
             try:
                 self.axes.annotate(text[idx], xy=pos[idx], xycoords='data', fontsize=font_size, color=color)
             except Exception as e:
-                log.debug("ShapeCollectionLegacy.set() --> %s" % str(e))
+                log.error("ShapeCollectionLegacy.set() --> %s" % str(e))
 
         self.app.plotcanvas.auto_adjust_axes()
 

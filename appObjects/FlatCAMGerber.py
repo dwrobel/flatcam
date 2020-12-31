@@ -741,7 +741,7 @@ class GerberObject(FlatCAMObj, Gerber):
         try:
             geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
         except Exception as e:
-            self.app.log.debug('GerberObject.isolate().generate_envelope() --> %s' % str(e))
+            self.app.log.error('GerberObject.isolate().generate_envelope() --> %s' % str(e))
             return 'fail'
 
         if invert:
@@ -763,7 +763,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     self.app.log.debug("GerberObject.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
                               type(geom))
             except Exception as e:
-                self.app.log.debug("GerberObject.isolate().generate_envelope() Error --> %s" % str(e))
+                self.app.log.error("GerberObject.isolate().generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
 
@@ -874,7 +874,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.clear_plot_apertures()
                 self.mark_shapes.enabled = False
             except Exception as e:
-                self.app.log.debug(" GerberObject.on_aperture_visibility_changed() --> %s" % str(e))
+                self.app.log.error(" GerberObject.on_aperture_visibility_changed() --> %s" % str(e))
 
     def convert_units(self, units):
         """
@@ -999,7 +999,7 @@ class GerberObject(FlatCAMObj, Gerber):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
         except Exception as e:
-            self.app.log.debug("GerberObject.plot() --> %s" % str(e))
+            self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
@@ -1060,7 +1060,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 except (ObjectDeleted, AttributeError):
                     app_obj.clear_plot_apertures()
                 except Exception as e:
-                    self.app.log.debug("GerberObject.plot_aperture() --> %s" % str(e))
+                    self.app.log.error("GerberObject.plot_aperture() --> %s" % str(e))
 
         if run_thread:
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
@@ -1083,7 +1083,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     try:
                         self.mark_shapes.remove(shape_key)
                     except Exception as e:
-                        self.app.log.debug("GerberObject.clear_plot_apertures() -> %s" % str(e))
+                        self.app.log.error("GerberObject.clear_plot_apertures() -> %s" % str(e))
 
                 self.mark_shapes_storage[aperture] = []
                 self.mark_shapes.redraw()
@@ -1330,7 +1330,8 @@ class GerberObject(FlatCAMObj, Gerber):
 
                                             # gerber_code += "D02*\n"
                                 except Exception as e:
-                                    self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() 'follow' --> %s" % str(e))
+                                    self.app.log.error(
+                                        "FlatCAMObj.GerberObject.export_gerber() 'follow' --> %s" % str(e))
                         if 'clear' in geo_elem:
                             geo = geo_elem['clear']
                             if not geo.is_empty:
@@ -1364,7 +1365,7 @@ class GerberObject(FlatCAMObj, Gerber):
                                 gerber_code += 'G37*\n'
                                 gerber_code += '%LPD*%\n'
         except Exception as e:
-            self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() '0' aperture --> %s" % str(e))
+            self.app.log.error("FlatCAMObj.GerberObject.export_gerber() '0' aperture --> %s" % str(e))
 
         for apid in self.apertures:
             if apid == '0':
@@ -1415,7 +1416,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
                                         # gerber_code += "D02*\n"
                         except Exception as e:
-                            self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() 'follow' --> %s" % str(e))
+                            self.app.log.error("FlatCAMObj.GerberObject.export_gerber() 'follow' --> %s" % str(e))
 
                         try:
                             if 'clear' in geo_elem:
@@ -1519,7 +1520,7 @@ class GerberObject(FlatCAMObj, Gerber):
                                         # gerber_code += "D02*\n"
                                     gerber_code += '%LPD*%\n'
                         except Exception as e:
-                            self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() 'clear' --> %s" % str(e))
+                            self.app.log.error("FlatCAMObj.GerberObject.export_gerber() 'clear' --> %s" % str(e))
 
         if not self.apertures:
             self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() --> Gerber Object is empty: no apertures.")

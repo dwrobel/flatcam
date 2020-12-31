@@ -1815,7 +1815,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
                 self.ui.tree_widget.blockSignals(False)
             except Exception as e:
-                self.app.log.debug("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
+                self.app.log.error("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
 
         header = self.ui.tree_widget.header()
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
@@ -2049,7 +2049,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:
-                self.app.log.debug("ToolDB.on_tool_add() --> %s" % str(e))
+                self.app.log.error("ToolDB.on_tool_add() --> %s" % str(e))
                 return
 
         dict_elem['offset'] = 'Path'
@@ -2191,7 +2191,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     with open(filename, "w") as f:
                         json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
                 except Exception as e:
-                    self.app.log.debug("App.on_save_tools_db() --> %s" % str(e))
+                    self.app.log.error("App.on_save_tools_db() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                     return
             except Exception:
@@ -2297,7 +2297,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
                     f.close()
                 except Exception as e:
-                    self.app.log.debug("ToolsDB.on_save_tools_db() --> %s" % str(e))
+                    self.app.log.error("ToolsDB.on_save_tools_db() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                     return
 

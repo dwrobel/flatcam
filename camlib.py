@@ -1706,7 +1706,7 @@ class Geometry(object):
                     if prog_plot:
                         self.plot_temp_shapes(line)
             except Exception as e:
-                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
         else:
             # First line
@@ -1743,7 +1743,7 @@ class Geometry(object):
                     if prog_plot:
                         self.plot_temp_shapes(line)
             except Exception as e:
-                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                log.error('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
                 return None
 
         if prog_plot:
@@ -1872,7 +1872,7 @@ class Geometry(object):
             new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
             new_line = new_line.intersection(margin_poly)
         except Exception as e:
-            log.debug('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
+            log.error('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
             return None
 
         try:
@@ -3215,7 +3215,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
+            log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
             self.xy_toolchange = [0, 0]
 
         # End position parameters
@@ -3240,7 +3240,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
+            log.error("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         # Probe parameters
@@ -3629,7 +3629,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
+            log.error("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
         self.z_toolchange = tool_dict['toolchangez']
@@ -3649,7 +3649,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
+            log.error("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
             pass
 
         self.extracut = tool_dict['extracut']
@@ -3885,7 +3885,7 @@ class CNCjob(Geometry):
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
+            log.error("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
         # XY_end parameter
@@ -5341,7 +5341,7 @@ class CNCjob(Geometry):
                                                            "but now there is only one value, not two."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
+            log.error("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
@@ -5677,7 +5677,7 @@ class CNCjob(Geometry):
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 default_dia = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:
-                self.app.log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+                self.app.log.error("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
 
         try:
             self.tooldia = float(tooldia) if tooldia else default_dia
@@ -5735,7 +5735,7 @@ class CNCjob(Geometry):
                     self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+            log.error("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
@@ -6883,7 +6883,7 @@ class CNCjob(Geometry):
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=new_color)
         except Exception as e:
-            log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
+            log.error("CNCJob.plot2() --> annotations --> %s" % str(e))
             if self.app.is_legacy is False:
                 obj.annotation.clear(update=True)
 
@@ -8531,7 +8531,7 @@ def three_point_circle(p1, p2, p3):
     try:
         T = solve(np.transpose(np.array([-b1, b2])), a1 - a2)
     except Exception as e:
-        log.debug("camlib.three_point_circle() --> %s" % str(e))
+        log.error("camlib.three_point_circle() --> %s" % str(e))
         return
 
     # Center

@@ -133,7 +133,7 @@ class ScriptObject(FlatCAMObj):
             # self.script_editor_tab.code_editor.setPlainText(self.source_file)
             self.script_editor_tab.load_text(self.source_file, move_to_end=True)
         except Exception as e:
-            log.debug("ScriptObject.set_ui() --> %s" % str(e))
+            log.error("ScriptObject.set_ui() --> %s" % str(e))
 
         self.script_editor_tab.t_frame.show()
 
@@ -208,7 +208,7 @@ class ScriptObject(FlatCAMObj):
                 except tk.TclError:
                     old_line = old_line + tcl_command_line + '\n'
                 except Exception as e:
-                    log.debug("ScriptObject.handleRunCode() --> %s" % str(e))
+                    log.error("ScriptObject.handleRunCode() --> %s" % str(e))
 
         if old_line != '':
             # it means that the script finished with an error

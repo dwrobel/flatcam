@@ -199,7 +199,7 @@ class ToolMove(AppTool):
                                         sel_obj.source_file = self.app.f_handlers.export_excellon(
                                             obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
                             except Exception as err:
-                                log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(err)))
+                                log.error('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(err)))
                                 return "fail"
 
                             # time to plot the moved objects

@@ -505,11 +505,11 @@ class Distance(AppTool):
                         angle += 360
                     self.ui.angle_entry.set_value('%.*f' % (self.decimals, angle))
                 except Exception as e:
-                    log.debug("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
+                    log.error("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
                     pass
 
         except Exception as e:
-            log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
+            log.error("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
             self.app.ui.rel_position_label.setText("")
 

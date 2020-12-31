@@ -757,7 +757,7 @@ class ToolExtract(AppTool):
             new_geo_follow = geo_buf.exterior
             new_geo_solid = new_geo_follow.buffer(buff_radius)
         except Exception as e:
-            log.debug("ToolExtrct.on_extrct_cutout_click() -> %s" % str(e))
+            log.error("ToolExtrct.on_extrct_cutout_click() -> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
             return
 

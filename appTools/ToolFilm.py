@@ -723,7 +723,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
+                    log.error("FilmTool.export_negative() --> PNG output --> %s" % str(e))
                     return 'fail'
             else:   # PDF
                 try:
@@ -773,7 +773,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.debug("FilmTool.export_negative() --> PDF output --> %s" % str(e))
+                    log.error("FilmTool.export_negative() --> PDF output --> %s" % str(e))
                     return 'fail'
 
             if self.app.defaults["global_open_style"] is False:
@@ -787,7 +787,7 @@ class Film(AppTool):
                     try:
                         make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                     except Exception as e:
-                        log.debug("export_negative() process -> %s" % str(e))
+                        log.error("export_negative() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
@@ -997,7 +997,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
+                    log.error("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'
             else:
                 try:
@@ -1046,7 +1046,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.debug("FilmTool.export_positive() --> PDF output --> %s" % str(e))
+                    log.error("FilmTool.export_positive() --> PDF output --> %s" % str(e))
                     return 'fail'
 
             if self.app.defaults["global_open_style"] is False:
@@ -1062,7 +1062,7 @@ class Film(AppTool):
                                            transparency_level=transparency_level,
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                     except Exception as e:
-                        log.debug("export_positive() process -> %s" % str(e))
+                        log.error("export_positive() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})

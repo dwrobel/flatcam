@@ -1082,7 +1082,7 @@ class Gerber(Geometry):
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
                             except Exception as e:
-                                self.app.log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
+                                self.app.log.error("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 if not geo_f.is_empty:
                                     follow_buffer.append(geo_f)
                                     geo_dict['follow'] = geo_f
@@ -1125,7 +1125,7 @@ class Gerber(Geometry):
                                         else:
                                             geo_dict['solid'] = geo_s
                             except Exception as e:
-                                self.app.log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
+                                self.app.log.error("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 if self.app.defaults['gerber_simplification']:
                                     geo_s = geo_s.simplify(s_tol)
 
@@ -1173,7 +1173,7 @@ class Gerber(Geometry):
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
                                 except Exception as e:
-                                    self.app.log.debug("camlib.Gerber.parse_lines() --> G01 match D03 --> %s" % str(e))
+                                    self.app.log.error("camlib.Gerber.parse_lines() --> G01 match D03 --> %s" % str(e))
                                     follow_buffer.append(geo_f)
                                     geo_dict['follow'] = geo_f
 
@@ -1753,7 +1753,7 @@ class Gerber(Geometry):
                             try:
                                 minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                             except Exception as e:
-                                self.app.log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                                self.app.log.error("camlib.Gerber.bounds() --> %s" % str(e))
                                 return
 
                             minx = min(minx, minx_)
@@ -2050,7 +2050,7 @@ class Gerber(Geometry):
                     pass
 
         except Exception as e:
-            self.app.log.debug('ParseGerber.Gerber.scale() Exception --> %s' % str(e))
+            self.app.log.error('ParseGerber.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2141,7 +2141,7 @@ class Gerber(Geometry):
                             geo_el['clear'] = offset_geom(geo_el['clear'])
 
         except Exception as e:
-            self.app.log.debug('ParseGerber.Gerber.offset() Exception --> %s' % str(e))
+            self.app.log.error('ParseGerber.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2216,7 +2216,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = mirror_geom(geo_el['clear'])
         except Exception as e:
-            self.app.log.debug('ParseGerber.Gerber.mirror() Exception --> %s' % str(e))
+            self.app.log.error('ParseGerber.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2290,7 +2290,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = skew_geom(geo_el['clear'])
         except Exception as e:
-            self.app.log.debug('ParseGerber.Gerber.skew() Exception --> %s' % str(e))
+            self.app.log.error('ParseGerber.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -2353,7 +2353,7 @@ class Gerber(Geometry):
                         if 'clear' in geo_el:
                             geo_el['clear'] = rotate_geom(geo_el['clear'])
         except Exception as e:
-            self.app.log.debug('ParseGerber.Gerber.rotate() Exception --> %s' % str(e))
+            self.app.log.error('ParseGerber.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
         self.app.inform.emit('[success] %s' % _("Done."))
         self.app.proc_container.new_text = ''
@@ -2441,7 +2441,7 @@ class Gerber(Geometry):
                     except KeyError:
                         pass
             except Exception as e:
-                self.app.log.debug('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
+                self.app.log.error('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
                 return 'fail'
         else:
             try:
@@ -2499,7 +2499,7 @@ class Gerber(Geometry):
 
                     self.apertures[apid]['geometry'] = deepcopy(new_geometry)
             except Exception as e:
-                self.app.log.debug('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
+                self.app.log.error('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
                 return 'fail'
 
             # make the new solid_geometry

@@ -247,7 +247,7 @@ class ParseFont:
             try:
                 name, family = ParseFont.get_font_name(font)
             except Exception as e:
-                log.debug("ParseFont.get_fonts_by_types() --> Could not get the font name. %s" % str(e))
+                log.error("ParseFont.get_fonts_by_types() --> Could not get the font name. %s" % str(e))
                 continue
 
             if 'Bold' in name and 'Italic' in name:
@@ -303,7 +303,7 @@ class ParseFont:
                 path_filename = regular_dict[font_name]
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Font not supported, try another one."))
-            log.debug("[ERROR_NOTCL] Font Loading: %s" % str(e))
+            log.error("[ERROR_NOTCL] Font Loading: %s" % str(e))
             return "flatcam font parse failed"
 
         face = ft.Face(path_filename)

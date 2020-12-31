@@ -336,7 +336,7 @@ class ToolDrilling(AppTool, Excellon):
         try:
             loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         except Exception as err:
-            self.app.log.debug("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
+            self.app.log.error("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
             return
 
         if loaded_obj:
@@ -441,7 +441,7 @@ class ToolDrilling(AppTool, Excellon):
         try:
             loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
         except Exception as err:
-            self.app.log.debug("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
+            self.app.log.error("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
             return
 
         if not checked:
@@ -1177,7 +1177,7 @@ class ToolDrilling(AppTool, Excellon):
                     self.ui_connect()
                     return
             except Exception as e:
-                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 self.blockSignals(False)
                 self.ui_connect()
                 return
@@ -1202,7 +1202,7 @@ class ToolDrilling(AppTool, Excellon):
                     try:
                         self.tool_form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.debug("ToolDrilling.storage_to_form() --> %s" % str(e))
+                        log.error("ToolDrilling.storage_to_form() --> %s" % str(e))
                         pass
 
         # update the Common parameters
@@ -1212,7 +1212,7 @@ class ToolDrilling(AppTool, Excellon):
                     try:
                         self.general_form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.debug("ToolDrilling.storage_to_form() -> common parameters --> %s" % str(e))
+                        log.error("ToolDrilling.storage_to_form() -> common parameters --> %s" % str(e))
                         pass
 
     def form_to_storage(self):

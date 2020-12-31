@@ -581,7 +581,7 @@ class RulesCheck(AppTool):
                     # minimize the number of distances by not taking into considerations those that are too small
                     dist = abs(geo.exterior.distance(s_geo))
                 except Exception as e:
-                    log.debug("RulesCheck.check_gerber_annular_ring() --> %s" % str(e))
+                    log.error("RulesCheck.check_gerber_annular_ring() --> %s" % str(e))
 
                 if dist > 0:
                     if float(dist) < float(size):
@@ -672,7 +672,7 @@ class RulesCheck(AppTool):
                 try:
                     copper_copper_clearance = float(self.ui.clearance_copper2copper_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Copper to Copper clearance"),
                         _("Value is not valid.")))
@@ -732,7 +732,7 @@ class RulesCheck(AppTool):
                 try:
                     copper_outline_clearance = float(self.ui.clearance_copper2ol_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Copper to Outline clearance"),
                         _("Value is not valid.")))
@@ -769,7 +769,7 @@ class RulesCheck(AppTool):
                 try:
                     silk_silk_clearance = float(self.ui.clearance_silk2silk_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Silk to Silk clearance"),
                         _("Value is not valid.")))
@@ -841,7 +841,7 @@ class RulesCheck(AppTool):
                 try:
                     silk_sm_clearance = float(self.ui.clearance_silk2sm_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Silk to Solder Mask Clearance"),
                         _("Value is not valid.")))
@@ -895,7 +895,7 @@ class RulesCheck(AppTool):
                 try:
                     copper_outline_clearance = float(self.ui.clearance_copper2ol_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Silk to Outline Clearance"),
                         _("Value is not valid.")))
@@ -933,7 +933,7 @@ class RulesCheck(AppTool):
                 try:
                     sm_sm_clearance = float(self.ui.clearance_sm2sm_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Minimum Solder Mask Sliver"),
                         _("Value is not valid.")))
@@ -998,7 +998,7 @@ class RulesCheck(AppTool):
                 try:
                     ring_val = float(self.ui.ring_integrity_entry.get_value())
                 except Exception as e:
-                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    log.error("RulesCheck.execute.worker_job() --> %s" % str(e))
                     app_obj.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Minimum Annular Ring"),
                         _("Value is not valid.")))

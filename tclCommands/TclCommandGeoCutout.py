@@ -176,7 +176,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("TclCommandGeoCutout --> %s" % str(e))
+            log.error("TclCommandGeoCutout --> %s" % str(e))
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
@@ -308,7 +308,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 try:
                     geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2, follow=None)
                 except Exception as exc:
-                    log.debug("TclCommandGeoCutout.execute() --> %s" % str(exc))
+                    log.error("TclCommandGeoCutout.execute() --> %s" % str(exc))
                     return 'fail'
 
                 if gaps_u == 8 or gaps_u == '2lr':

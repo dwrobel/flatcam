@@ -205,7 +205,7 @@ class ToolFiducials(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolFiducials.execute() --> %s" % str(e))
+            log.error("ToolFiducials.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -496,7 +496,7 @@ class ToolFiducials(AppTool):
         try:
             self.sm_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolFiducials.add_soldermask_opening() --> %s" % str(e))
+            log.error("ToolFiducials.add_soldermask_opening() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -607,7 +607,7 @@ class ToolFiducials(AppTool):
                 copper_obj.options['xmax'] = c
                 copper_obj.options['ymax'] = d
             except Exception as e:
-                log.debug("ToolFiducials.on_exit() copper_obj bounds error --> %s" % str(e))
+                log.error("ToolFiducials.on_exit() copper_obj bounds error --> %s" % str(e))
 
         for ob_name in self.sm_obj_set:
             try:
@@ -627,7 +627,7 @@ class ToolFiducials(AppTool):
                 sm_obj.options['xmax'] = c
                 sm_obj.options['ymax'] = d
             except Exception as e:
-                log.debug("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
+                log.error("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
 
         # Events ID
         self.mr = None

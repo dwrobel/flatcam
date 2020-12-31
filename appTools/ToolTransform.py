@@ -487,7 +487,7 @@ class ToolTransform(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Buffer done'))
 
                 except Exception as e:
-                    self.app.log.debug("ToolTransform.on_buffer_action() --> %s" % str(e))
+                    self.app.log.error("ToolTransform.on_buffer_action() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 

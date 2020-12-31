@@ -142,7 +142,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolCorners.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -365,7 +365,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolCorners.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -459,7 +459,7 @@ class ToolCorners(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCorners.add_markers() --> %s" % str(e))
+            log.error("ToolCorners.add_markers() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             self.app.call_source = "app"
             return
@@ -568,7 +568,7 @@ class ToolCorners(AppTool):
             self.grb_object.options['xmax'] = c
             self.grb_object.options['ymax'] = d
         except Exception as e:
-            log.debug("ToolCorners.on_exit() copper_obj bounds error --> %s" % str(e))
+            log.error("ToolCorners.on_exit() copper_obj bounds error --> %s" % str(e))
 
         self.app.call_source = "app"
         self.app.inform.emit('[success] %s' % _("A Gerber object with corner markers was created."))

@@ -490,10 +490,10 @@ class App(QtCore.QObject):
                                 else:
                                     self.cmd_line_headless = None
                     except Exception as e:
-                        self.log.debug('App.__init__() -->%s' % str(e))
+                        self.log.error('App.__init__() -->%s' % str(e))
                         return
             except FileNotFoundError as e:
-                self.log.debug(str(e))
+                self.log.error(str(e))
                 pass
 
             if portable is False:
@@ -1283,22 +1283,22 @@ class App(QtCore.QObject):
         try:
             self.geo_editor = AppGeoEditor(self)
         except Exception as es:
-            self.log.debug("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
+            self.log.error("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
 
         try:
             self.exc_editor = AppExcEditor(self)
         except Exception as es:
-            self.log.debug("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
+            self.log.error("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
 
         try:
             self.grb_editor = AppGerberEditor(self)
         except Exception as es:
-            self.log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
+            self.log.error("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
 
         try:
             self.gcode_editor = AppGCodeEditor(self)
         except Exception as es:
-            self.log.debug("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
+            self.log.error("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
@@ -1695,7 +1695,7 @@ class App(QtCore.QObject):
                         #                        'params': [project_name, run_from_arg]})
                         self.f_handlers.open_project(filename=project_name, run_from_arg=run_from_arg)
                 except Exception as e:
-                    self.log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
+                    self.log.error("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
             elif '.FlatConfig'.lower() in argument.lower():
                 try:
@@ -1710,7 +1710,7 @@ class App(QtCore.QObject):
                         #                        'params': [file_name, run_from_arg]})
                         self.f_handlers.open_config_file(file_name, run_from_arg=run_from_arg)
                 except Exception as e:
-                    self.log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
+                    self.log.error("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
             elif '.FlatScript'.lower() in argument.lower() or '.TCL'.lower() in argument.lower():
                 try:
@@ -1725,7 +1725,7 @@ class App(QtCore.QObject):
                             self.ui.plot_tab_area.setCurrentWidget(self.ui.plot_tab)
                         self.f_handlers.on_filerunscript(name=file_name)
                 except Exception as e:
-                    self.log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+                    self.log.error("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
             elif 'quit'.lower() in argument.lower() or 'exit'.lower() in argument.lower():
                 self.log.debug("App.on_startup_args() --> Quit event.")
@@ -2285,7 +2285,7 @@ class App(QtCore.QObject):
         try:
             self.connect_tools_signals_to_toolbar()
         except Exception as err:
-            self.log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
+            self.log.error("App.connect_toolbar_signals() tools signals -> %s" % str(err))
 
     def on_layout(self, index=None, lay=None, connect_signals=True):
         """
@@ -2417,14 +2417,14 @@ class App(QtCore.QObject):
             if connect_signals is True:
                 self.connect_toolbar_signals()
         except Exception as e:
-            self.log.debug(
+            self.log.error(
                 "App.on_layout() - connect toolbar signals -> %s" % str(e))
 
         # Editor Toolbars Signals
         try:
             self.connect_editors_toolbar_signals()
         except Exception as err:
-            self.log.debug("App.on_layout() - connect editor signals -> %s" % str(err))
+            self.log.error("App.on_layout() - connect editor signals -> %s" % str(err))
 
         self.ui.grid_snap_btn.setChecked(True)
 
@@ -3806,7 +3806,7 @@ class App(QtCore.QObject):
             if sys.platform == 'win32' or sys.platform == 'linux':
                 self.new_launch.stop.emit()
         except Exception as err:
-            self.log.debug("App.quit_application() --> %s" % str(err))
+            self.log.error("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
@@ -3814,7 +3814,7 @@ class App(QtCore.QObject):
             if sys.platform == 'win32' or sys.platform == 'linux':
                 self.listen_th.quit()
         except Exception as e:
-            self.log.debug("App.quit_application() --> %s" % str(e))
+            self.log.error("App.quit_application() --> %s" % str(e))
 
         # terminate workers
         # self.workers.__del__()
@@ -3860,7 +3860,7 @@ class App(QtCore.QObject):
                 try:
                     data = f.readlines()
                 except Exception as e:
-                    self.log.debug('App.__init__() -->%s' % str(e))
+                    self.log.error('App.__init__() -->%s' % str(e))
                     return
         except FileNotFoundError:
             pass
@@ -4429,7 +4429,7 @@ class App(QtCore.QObject):
                     try:
                         tools_diameters = eval(self.defaults[dim])
                     except Exception as e:
-                        self.log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
+                        self.log.error("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
                         continue
                 elif isinstance(self.defaults[dim], (float, int)):
                     tools_diameters = [self.defaults[dim]]
@@ -4454,7 +4454,7 @@ class App(QtCore.QObject):
                 try:
                     val = float(self.defaults[dim]) * sfactor
                 except Exception as e:
-                    self.log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
+                    self.log.error('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
                     continue
 
                 self.defaults[dim] = self.dec_format(val, self.decimals)
@@ -4464,7 +4464,7 @@ class App(QtCore.QObject):
                     try:
                         val = float(self.defaults[dim]) * sfactor
                     except Exception as e:
-                        self.log.debug(
+                        self.log.error(
                             'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
                         )
                         continue
@@ -4939,7 +4939,7 @@ class App(QtCore.QObject):
                     # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
                     self.plotcanvas.figure.delaxes(self.collection.get_active().shapes.axes)
                 except Exception as e:
-                    self.log.debug("App.delete_first_selected() --> %s" % str(e))
+                    self.log.error("App.delete_first_selected() --> %s" % str(e))
 
             self.plotcanvas.auto_adjust_axes()
 
@@ -5575,7 +5575,7 @@ class App(QtCore.QObject):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as err:
-                app_obj.debug("App.on_copy_command() --> %s" % str(err))
+                app_obj.error("App.on_copy_command() --> %s" % str(err))
 
             try:
                 obj_init.source_file = deepcopy(obj.source_file)
@@ -5634,7 +5634,7 @@ class App(QtCore.QObject):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                app_obj.debug("on_copy_object2() --> %s" % str(ee))
+                app_obj.error("on_copy_object2() --> %s" % str(ee))
 
         def initialize_gerber(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
@@ -5684,7 +5684,7 @@ class App(QtCore.QObject):
                 try:
                     obj.options['name'] = text
                 except Exception as e:
-                    self.log.warning(
+                    self.log.error(
                         "App.on_rename_object() --> Could not rename the object in the list. --> %s" % str(e))
 
     def convert_any2geo(self):
@@ -5722,7 +5722,7 @@ class App(QtCore.QObject):
                 tools_string = dias.split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
             except Exception as e:
-                self.log.debug("App.convert_any2geo() --> %s" % str(e))
+                self.log.error("App.convert_any2geo() --> %s" % str(e))
                 return 'fail'
 
         tools = {}
@@ -5785,7 +5785,7 @@ class App(QtCore.QObject):
                     self.app_obj.new_object("geometry", outname, initialize_from_gerber)
 
             except Exception as e:
-                self.log.debug("Convert any 2 geo operation failed: %s" % str(e))
+                self.log.error("Convert any 2 geo operation failed: %s" % str(e))
 
     def convert_any2gerber(self):
         """
@@ -6186,7 +6186,7 @@ class App(QtCore.QObject):
             with open(filename) as f:
                 __ = f.read()
         except Exception as eros:
-            self.log.debug("The tools DB file is not loaded: %s" % str(eros))
+            self.log.error("The tools DB file is not loaded: %s" % str(eros))
             self.log.error("Could not access tools DB file. The file may be locked,\n"
                            "not existing or doesn't have the read permissions.\n"
                            "Check to see if exists, it should be here: %s\n"
@@ -6236,7 +6236,7 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
             self.tools_db_tab.setObjectName("database_tab")
         except Exception as e:
-            self.log.debug("App.on_tools_database() --> %s" % str(e))
+            self.log.error("App.on_tools_database() --> %s" % str(e))
             return
 
         # delete the absolute and relative position and messages in the infobar
@@ -6264,7 +6264,7 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.addTab(self.area_3d_tab, _("3D Area"))
             self.area_3d_tab.setObjectName("3D_area_tab")
         except Exception as e:
-            self.log.debug("App.on_3d_area() --> %s" % str(e))
+            self.log.error("App.on_3d_area() --> %s" % str(e))
             return
 
         plot_container_3d = QtWidgets.QVBoxLayout()
@@ -6274,8 +6274,8 @@ class App(QtCore.QObject):
             plotcanvas3d = PlotCanvas3d(plot_container_3d, self)
         except Exception as er:
             msg_txt = traceback.format_exc()
-            self.log.debug("App.on_3d_area() failed -> %s" % str(er))
-            self.log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+            self.log.error("App.on_3d_area() failed -> %s" % str(er))
+            self.log.error("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
             msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
             msg += msg_txt
             self.inform.emit(msg)
@@ -6826,7 +6826,7 @@ class App(QtCore.QObject):
 
             self.on_mouse_move_over_plot(event, origin_click=True)
         except Exception as e:
-            self.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
+            self.log.error("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
 
     def on_mouse_double_click_over_plot(self, event):
         if event.button == 1:
@@ -6961,7 +6961,7 @@ class App(QtCore.QObject):
                             pass
 
             except Exception as e:
-                self.log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
+                self.log.error("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
                 self.ui.position_label.setText("")
                 self.ui.rel_position_label.setText("")
                 self.mouse = None
@@ -7032,7 +7032,7 @@ class App(QtCore.QObject):
                         self.delete_selection_shape()
                         self.delete_hover_shape()
                     except Exception as e:
-                        self.log.warning(
+                        self.log.error(
                             "FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
                         return
             else:
@@ -7047,7 +7047,7 @@ class App(QtCore.QObject):
                         self.selection_area_handler(self.pos, pos, self.selection_type)
                         self.selection_type = None
                     except Exception as e:
-                        self.log.warning(
+                        self.log.error(
                             "FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
                         return
                 else:
@@ -7074,7 +7074,7 @@ class App(QtCore.QObject):
 
                             self.delete_hover_shape()
                     except Exception as e:
-                        self.log.warning(
+                        self.log.error(
                             "FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
                         return
 
@@ -7128,7 +7128,7 @@ class App(QtCore.QObject):
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
                 # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
                 # In this case poly_obj creation (see above) will fail
-                self.log.debug("App.selection_area_handler() --> %s" % str(e))
+                self.log.error("App.selection_area_handler() --> %s" % str(e))
 
     def select_objects(self, key=None):
         """
@@ -7635,7 +7635,7 @@ class App(QtCore.QObject):
         try:
             self.source_editor_tab.load_text(file.getvalue(), clear_text=True, move_to_start=True)
         except Exception as e:
-            self.log.debug('App.on_view_source() -->%s' % str(e))
+            self.log.error('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))
             return
 
@@ -8058,7 +8058,7 @@ class App(QtCore.QObject):
         except Exception as e:
             self.log.error("Could not parse information about latest version.")
             self.inform.emit('[ERROR_NOTCL] %s' % _("Could not parse information about latest version."))
-            self.log.debug("json.load(): %s" % str(e))
+            self.log.error("json.load(): %s" % str(e))
             f.close()
             return
 
@@ -8103,8 +8103,8 @@ class App(QtCore.QObject):
                 plotcanvas = PlotCanvas(self)
             except Exception as er:
                 msg_txt = traceback.format_exc()
-                self.log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
-                self.log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+                self.log.error("App.on_plotcanvas_setup() failed -> %s" % str(er))
+                self.log.error("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
                 msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
                 msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
                          "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
@@ -8299,7 +8299,7 @@ class App(QtCore.QObject):
         try:
             self.delete_selection_shape()
         except Exception as e:
-            self.log.debug("App.disable_plots() --> %s" % str(e))
+            self.log.error("App.disable_plots() --> %s" % str(e))
 
         self.collection.update_view()
 
@@ -9479,7 +9479,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     self.app.ui.plot_tab_area.closeTab(index)
                 except Exception as e:
-                    self.log.debug("App.on_file_new_project() --> %s" % str(e))
+                    self.log.error("App.on_file_new_project() --> %s" % str(e))
 
             # # And then add again the Plot Area
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
@@ -9647,7 +9647,7 @@ class MenuFileHandlers(QtCore.QObject):
                 if silent is False:
                     self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
             except Exception as e:
-                self.app.debug("App.on_filerunscript() -> %s" % str(e))
+                self.app.error("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)
 
     def on_file_saveproject(self, silent=False):
@@ -9870,8 +9870,7 @@ class MenuFileHandlers(QtCore.QObject):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                self.log.warning(
-                    "DEV WARNING: Tried to get bounds of empty geometry in App.save_pdf(). %s" % str(e))
+                self.log.error("Tried to get bounds of empty geometry in App.save_pdf(). %s" % str(e))
 
         # Determine bounding area for svg export
         bounds = [xmin, ymin, xmax, ymax]
@@ -9936,7 +9935,7 @@ class MenuFileHandlers(QtCore.QObject):
                 renderPDF.draw(drawing, my_canvas, 0, 0)
                 my_canvas.save()
         except Exception as e:
-            self.log.debug("MenuFileHandlers.save_pdf() --> PDF output --> %s" % str(e))
+            self.log.error("MenuFileHandlers.save_pdf() --> PDF output --> %s" % str(e))
             return 'fail'
 
         self.inform.emit('[success] %s: %s' % (_("PDF file saved to"), file_name))
@@ -10216,7 +10215,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return exported_excellon
             except Exception as e:
-                self.log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
+                self.log.error("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10351,7 +10350,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return exported_gerber
             except Exception as e:
-                self.debug("App.export_gerber.make_gerber() --> %s" % str(e))
+                self.error("App.export_gerber.make_gerber() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10417,7 +10416,7 @@ class MenuFileHandlers(QtCore.QObject):
                 else:
                     return dxf_code
             except Exception as e:
-                self.log.debug("App.export_dxf.make_dxf() --> %s" % str(e))
+                self.log.error("App.export_dxf.make_dxf() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -10585,7 +10584,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.log.error(str(err))
                 return "fail"
             except Exception as e:
-                app_obj.log.debug("App.open_gerber() --> %s" % str(e))
+                app_obj.log.error("App.open_gerber() --> %s" % str(e))
                 msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -10787,7 +10786,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.log.error(str(err))
                 return "fail"
             except Exception as e:
-                app_obj.log.debug("App.open_hpgl2() --> %s" % str(e))
+                app_obj.log.error("App.open_hpgl2() --> %s" % str(e))
                 msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -10852,7 +10851,7 @@ class MenuFileHandlers(QtCore.QObject):
                 app_obj.log.error(str(err))
                 return "fail"
             except Exception as e:
-                app_obj.log.debug("App.open_script() -> %s" % str(e))
+                app_obj.log.error("App.open_script() -> %s" % str(e))
                 msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -10987,7 +10986,7 @@ class MenuFileHandlers(QtCore.QObject):
         try:
             d = json.load(f, object_hook=dict2obj)
         except Exception as e:
-            self.log.error(
+            self.log.debug(
                 "Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
                 (filename, str(e)))
             f.close()
@@ -11029,7 +11028,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     obj_inst.from_dict(obj)
                 except Exception as erro:
-                    app_inst.log('MenuFileHandlers.open_project() --> ' + str(erro))
+                    app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
                     return 'fail'
 
             self.log.debug(
@@ -11083,7 +11082,7 @@ class MenuFileHandlers(QtCore.QObject):
                 if current_object:
                     current_object.read_form()
             except Exception as e:
-                self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
+                self.log.error("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
 
             # Serialize the whole project
             d = {

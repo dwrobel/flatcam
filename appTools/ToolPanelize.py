@@ -229,7 +229,7 @@ class Panelize(AppTool):
         try:
             panel_source_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("Panelize.on_panelize() --> %s" % str(e))
+            log.error("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -243,7 +243,7 @@ class Panelize(AppTool):
         try:
             box = self.app.collection.get_by_name(boxname)
         except Exception as e:
-            log.debug("Panelize.on_panelize() --> %s" % str(e))
+            log.error("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), boxname))
             return
 
@@ -969,7 +969,7 @@ class Panelize(AppTool):
                     panelize_worker()
                     app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
                     return
 
         self.app.collection.promise(self.outname)

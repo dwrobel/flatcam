@@ -617,7 +617,7 @@ class ToolCalibration(AppTool):
         try:
             self.cal_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCalibration.on_cal_button_click() --> %s" % str(e))
+            log.error("ToolCalibration.on_cal_button_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
             return
 
@@ -657,7 +657,7 @@ class ToolCalibration(AppTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                app.log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
+                app.log.error("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -683,7 +683,7 @@ class ToolCalibration(AppTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as err:
-                log.debug("ToolCalibration.new_calibrated_object.initialize_gerber() --> %s" % str(err))
+                log.error("ToolCalibration.new_calibrated_object.initialize_gerber() --> %s" % str(err))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -721,7 +721,7 @@ class ToolCalibration(AppTool):
             elif obj.kind.lower() == 'geometry':
                 self.app.app_obj.new_object("geometry", str(obj_name), initialize_geometry)
         except Exception as e:
-            log.debug("ToolCalibration.new_calibrated_object() --> %s" % str(e))
+            log.error("ToolCalibration.new_calibrated_object() --> %s" % str(e))
             return "Operation failed: %s" % str(e)
 
     def disconnect_cal_events(self):

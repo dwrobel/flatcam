@@ -33,7 +33,7 @@ def dxfline2shapely(line):
         stop = (line.dxf.end[0], line.dxf.end[1])
 
     except Exception as e:
-        log.debug(str(e))
+        log.error(str(e))
         return None
 
     geo = LineString([start, stop])

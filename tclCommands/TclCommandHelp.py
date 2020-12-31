@@ -107,7 +107,7 @@ class TclCommandHelp(TclCommand):
                         else:
                             cnt += 1
                 except Exception as err:
-                    self.app.log.debug("tclCommands.TclCommandHelp() when run as 'help' --> %s" % str(err))
+                    self.app.log.error("tclCommands.TclCommandHelp() when run as 'help' --> %s" % str(err))
                     displayed_text = ['> %s' % cmd for cmd in sorted(self.app.shell.tcl_commands_storage)]
 
                 cmd_enum += '<br>'.join(displayed_text)

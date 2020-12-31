@@ -558,7 +558,7 @@ class PdfParser:
                                 new_el = {'solid': pdf_geo, 'follow': pdf_geo}
                                 apertures_dict[ap_to_use]['geometry'].append(deepcopy(new_el))
                     except Exception as e:
-                        log.debug(
+                        log.error(
                             "line %d: %s ||| PdfParser.parse_pdf() Store Stroke geo -> %s" % (line_nr, pline, str(e))
                         )
                 else:

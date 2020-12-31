@@ -730,7 +730,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
                                                                          yform=exc_y_formatted)
         except Exception as e:
-            self.app.log.debug('ExcellonObject.export_excellon() drills -> %s' % str(e))
+            self.app.log.error('ExcellonObject.export_excellon() drills -> %s' % str(e))
 
         # slots processing
         try:
@@ -830,7 +830,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
                                 )
         except Exception as e:
-            self.app.log.debug('ExcellonObject.export_excellon() slots -> %s' % str(e))
+            self.app.log.error('ExcellonObject.export_excellon() slots -> %s' % str(e))
 
         if not has_drills and not has_slots:
             self.app.log.debug("ExcellonObject.export_excellon() --> Excellon Object is empty: no drills, no slots.")

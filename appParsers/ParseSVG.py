@@ -175,7 +175,7 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
     try:
         rings = MultiLineString(rings)
     except Exception as e:
-        log.debug("ParseSVG.path2shapely() MString --> %s" % str(e))
+        log.error("ParseSVG.path2shapely() MString --> %s" % str(e))
         return None
 
     if len(rings) > 0:
@@ -567,7 +567,7 @@ def getsvgtext(node, object_type, app, units='MM'):
 
             geo = [(scale(g, 1.0, -1.0)) for g in geo]
         except Exception as e:
-            log.debug(str(e))
+            log.error(str(e))
     else:
         geo = None
 

@@ -362,7 +362,7 @@ class Excellon(Geometry):
                             try:
                                 self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.excellon_units])
                             except Exception as e:
-                                self.app.log.warning("Units could not be converted: %s" % str(e))
+                                self.app.log.error("Units could not be converted: %s" % str(e))
 
                         in_header = False
                         # for Allegro type of Excellons we reset name_tool variable so we can reuse it for toolchange
@@ -1081,7 +1081,7 @@ class Excellon(Geometry):
                         self.solid_geometry.append(poly)
 
         except Exception as e:
-            self.app.log.debug("appParsers.ParseExcellon.Excellon.create_geometry() -> "
+            self.app.log.error("appParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
 

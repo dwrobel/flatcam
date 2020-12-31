@@ -172,7 +172,7 @@ class QRCode(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("QRCode.execute() --> %s" % str(e))
+            log.error("QRCode.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -218,7 +218,7 @@ class QRCode(AppTool):
                     a, b, c, d = self.qrcode_utility_geometry.bounds
                     self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
                 except Exception as ee:
-                    log.debug("QRCode.make() bounds error --> %s" % str(ee))
+                    log.error("QRCode.make() bounds error --> %s" % str(ee))
 
                 app_obj.call_source = 'qrcode_tool'
                 app_obj.inform.emit(_("Click on the DESTINATION point ..."))
@@ -320,7 +320,7 @@ class QRCode(AppTool):
             self.grb_object.options['xmax'] = c
             self.grb_object.options['ymax'] = d
         except Exception as e:
-            log.debug("QRCode.make() bounds error --> %s" % str(e))
+            log.error("QRCode.make() bounds error --> %s" % str(e))
 
         try:
             for geo in self.qrcode_geometry:

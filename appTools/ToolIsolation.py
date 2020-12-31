@@ -787,7 +787,7 @@ class ToolIsolation(AppTool, Gerber):
                 else:
                     return
             except Exception as e:
-                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 return
 
             # update the QLabel that shows for which Tool we have the parameters in the UI form
@@ -804,7 +804,7 @@ class ToolIsolation(AppTool, Gerber):
                                 if key == 'data':
                                     self.storage_to_form(tooluid_value['data'])
                 except Exception as e:
-                    log.debug("ToolIsolation ---> update_ui() " + str(e))
+                    log.error("ToolIsolation ---> update_ui() " + str(e))
             else:
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -819,7 +819,7 @@ class ToolIsolation(AppTool, Gerber):
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
-                        log.debug("ToolIsolation.storage_to_form() --> %s" % str(e))
+                        log.error("ToolIsolation.storage_to_form() --> %s" % str(e))
                         pass
 
     def form_to_storage(self):
@@ -1126,7 +1126,7 @@ class ToolIsolation(AppTool, Gerber):
                         # reset the value to prepare for another isolation
                         self.safe_tooldia = None
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1223,7 +1223,7 @@ class ToolIsolation(AppTool, Gerber):
                                         (_("Optimal tool diameter found"), str(min_dist_truncated),
                                          self.units.lower()))
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
                     return
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
@@ -1533,7 +1533,7 @@ class ToolIsolation(AppTool, Gerber):
             self.blockSignals(False)
             return
         except Exception as e:
-            log.debug(str(e))
+            log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
         self.blockSignals(False)
@@ -2929,7 +2929,7 @@ class ToolIsolation(AppTool, Gerber):
             geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
                                                    passes=nr_passes, prog_plot=prog_plot)
         except Exception as e:
-            log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
+            log.error('ToolIsolation.generate_envelope() --> %s' % str(e))
             return 'fail'
 
         if invert:
@@ -2951,7 +2951,7 @@ class ToolIsolation(AppTool, Gerber):
                     log.debug("ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" %
                               type(geom))
             except Exception as e:
-                log.debug("ToolIsolation.generate_envelope() Error --> %s" % str(e))
+                log.error("ToolIsolation.generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
 
@@ -3077,7 +3077,7 @@ class ToolIsolation(AppTool, Gerber):
                     log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
                               type(work_geo))
             except Exception as e:
-                log.debug("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
+                log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
                 return 'fail', 'fail'
 
         if env_iso_type == 0:  # exterior

@@ -204,7 +204,7 @@ class AppObject(QtCore.QObject):
                 obj.options['xmax'] = xmax
                 obj.options['ymax'] = ymax
             except Exception as e:
-                self.app.log.warning("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
+                self.app.log.error("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
 
         self.app.log.debug("Moving new object back to main thread.")
@@ -321,7 +321,7 @@ class AppObject(QtCore.QObject):
                         obj.outline_color = self.app.defaults["gerber_plot_line"]
                         obj.fill_color = self.app.defaults["gerber_plot_fill"]
             except Exception as e:
-                self.app.log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
+                self.app.log.error("AppObject.new_object() -> setting colors error. %s" % str(e))
 
         # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object

@@ -663,7 +663,7 @@ class FCEntry3(FCEntry):
         try:
             return float(eval(value))
         except Exception as e:
-            log.warning("Could not parse value in entry: %s" % str(e))
+            log.error("Could not parse value in entry: %s" % str(e))
             return None
 
 
@@ -1099,7 +1099,7 @@ class FCSpinner(QtWidgets.QSpinBox):
         try:
             k = int(val)
         except Exception as e:
-            log.debug(str(e))
+            log.error(str(e))
             return
         self.setValue(k)
 
@@ -1514,7 +1514,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         try:
             k = float(val)
         except Exception as e:
-            log.debug(str(e))
+            log.error(str(e))
             return
         self.setValue(k)
 
@@ -3216,7 +3216,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 try:
                     pixmap = self.parent().widget(self.tabAt(self.dragStartPos)).grab()
                 except Exception as e:
-                    log.debug("GUIElements.FCDetachable. FCTabBar.mouseMoveEvent() --> %s" % str(e))
+                    log.error("GUIElements.FCDetachable. FCTabBar.mouseMoveEvent() --> %s" % str(e))
                     return
 
                 targetPixmap = QtGui.QPixmap(pixmap.size())
@@ -5007,12 +5007,12 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
                     self.icon.setPixmap(self.gray_pmap)
 
             except Exception as e:
-                log.debug("FlatCAMInfoBar.set_status() set Icon --> %s" % str(e))
+                self.app.log.error("FlatCAMInfoBar.set_status() set Icon --> %s" % str(e))
 
         try:
             self.set_text_(text)
         except Exception as e:
-            self.app.log.debug("FlatCAMInfoBar.set_status() set Text --> %s" % str(e))
+            self.app.log.error("FlatCAMInfoBar.set_status() set Text --> %s" % str(e))
 
 
 class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):

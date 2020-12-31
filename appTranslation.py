@@ -157,14 +157,14 @@ def apply_language(domain, lang=None):
             current_lang = gettext.translation(str(domain), localedir=languages_dir(), languages=[lang_code])
             current_lang.install()
         except Exception as e:
-            log.debug("FlatCAMTranslation.apply_language() --> %s. Perhaps is Cx_freeze-ed?" % str(e))
+            log.error("FlatCAMTranslation.apply_language() --> %s. Perhaps is Cx_freeze-ed?" % str(e))
             try:
                 current_lang = gettext.translation(str(domain),
                                                    localedir=languages_dir_cx_freeze(),
                                                    languages=[lang_code])
                 current_lang.install()
             except Exception as e:
-                log.debug("FlatCAMTranslation.apply_language() --> %s" % str(e))
+                log.error("FlatCAMTranslation.apply_language() --> %s" % str(e))
 
         return name
 
@@ -193,13 +193,13 @@ def restart_program(app, ask=None):
         # app.new_launch.thread_exit = True
         # app.new_launch.listener.close()
     except Exception as err:
-        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
+        log.error("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     # try to quit the QThread that run ArgsThread class
     try:
         app.listen_th.quit()
     except Exception as err:
-        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
+        log.error("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()

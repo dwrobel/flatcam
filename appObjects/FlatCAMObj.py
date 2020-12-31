@@ -222,7 +222,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.ui.properties_scroll_area.takeWidget()
             # self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         except Exception as e:
-            self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
+            self.app.log.error("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
 
         self.app.ui.properties_scroll_area.setWidget(self.ui)
         # self.ui.setMinimumWidth(100)
@@ -275,7 +275,7 @@ class FlatCAMObj(QtCore.QObject):
             factor = float(self.ui.scale_entry.get_value())
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
-            log.debug("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
+            log.error("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
             return
 
         if type(factor) != float:
@@ -327,7 +327,7 @@ class FlatCAMObj(QtCore.QObject):
             try:
                 self.set_form_item(option)
             except Exception as err:
-                self.app.log.warning("Unexpected error: %s" % str(sys.exc_info()), str(err))
+                self.app.log.error("Unexpected error: %s" % str(sys.exc_info()), str(err))
 
     def read_form(self):
         """
@@ -523,7 +523,7 @@ class FlatCAMObj(QtCore.QObject):
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
                 except Exception as ee:
-                    log.debug("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
+                    log.error("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
                 if self.app.defaults['units'].lower() == 'mm':
@@ -554,7 +554,7 @@ class FlatCAMObj(QtCore.QObject):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
+                        log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
 
                     try:
                         for tool_k in obj_prop.cnc_tools:
@@ -564,7 +564,7 @@ class FlatCAMObj(QtCore.QObject):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
+                        log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
                 else:
                     try:
                         if obj_prop.tools:
@@ -579,7 +579,7 @@ class FlatCAMObj(QtCore.QObject):
                                 xmax.append(x1)
                                 ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.add_properties_items() not cncjob tools --> %s" % str(ee))
+                        log.error("FlatCAMObj.add_properties_items() not cncjob tools --> %s" % str(ee))
 
                 if xmin and ymin and xmax and ymax:
                     xmin = min(xmin)
@@ -640,7 +640,7 @@ class FlatCAMObj(QtCore.QObject):
                             area_chull = max(area_chull_list)
                     except Exception as er:
                         area_chull = None
-                        log.debug("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
+                        log.error("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
 
             if self.app.defaults['units'].lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100

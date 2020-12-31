@@ -222,8 +222,8 @@ class TclCommandPanelize(TclCommand):
                             try:
                                 obj_fin.options[option] = obj.options[option]
                             except Exception as e:
-                                app_obj.log.warning("Failed to copy option: %s" % str(option))
-                                app_obj.log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
+                                app_obj.log.error("Failed to copy option: %s" % str(option))
+                                app_obj.log.error("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
 
                     for row in range(rows):
                         currentx = 0.0
@@ -303,7 +303,7 @@ class TclCommandPanelize(TclCommand):
                     panelize_2()
                     app_obj.inform.emit('[success] %s' % _("Done."))
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
                     return
 
             self.app.collection.promise(outname)

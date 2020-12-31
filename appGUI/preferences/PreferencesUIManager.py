@@ -689,7 +689,7 @@ class PreferencesUIManager:
             try:
                 self.defaults[option] = self.defaults_form_fields[option].get_value()
             except Exception as e:
-                log.debug("App.defaults_read_form() --> %s" % str(e))
+                log.error("App.defaults_read_form() --> %s" % str(e))
 
     def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """

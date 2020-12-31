@@ -210,7 +210,7 @@ class ToolSub(AppTool):
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
+            log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -228,7 +228,7 @@ class ToolSub(AppTool):
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
+            log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
@@ -438,7 +438,7 @@ class ToolSub(AppTool):
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_subtract_geo_click() --> %s" % str(e))
+            log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_geo_obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -451,7 +451,7 @@ class ToolSub(AppTool):
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
-            log.debug("ToolSub.on_subtract_geo_click() --> %s" % str(e))
+            log.error("ToolSub.on_subtract_geo_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.sub_geo_obj_name))
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
@@ -592,7 +592,7 @@ class ToolSub(AppTool):
                     for tool in geo_obj.tools:
                         geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
                 except Exception as e:
-                    app_obj.log.debug("ToolSub.new_geo_object() --> %s" % str(e))
+                    app_obj.log.error("ToolSub.new_geo_object() --> %s" % str(e))
                 geo_obj.multigeo = False
 
         with self.app.proc_container.new('%s...' % _("Generating")):
@@ -659,7 +659,7 @@ class ToolSub(AppTool):
                 log.debug("ToolSub --> Periodic check finished.")
         except Exception as e:
             self.job_finished.emit(False)
-            log.debug("ToolSub().periodic_check_handler() --> %s" % str(e))
+            log.error("ToolSub().periodic_check_handler() --> %s" % str(e))
             traceback.print_exc()
 
     def on_job_finished(self, succcess):

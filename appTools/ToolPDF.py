@@ -205,7 +205,7 @@ class ToolPDF(AppTool):
             #         try:
             #             self.pdf_decompressed[short_name] += (decomp.decode('latin1') + '\r\n')
             #         except Exception as e:
-            #             log.debug("ToolPDF.open_pdf() -> decoding error -> %s" % str(e))
+            #             log.error("ToolPDF.open_pdf() -> decoding error -> %s" % str(e))
             #     self.pdf_decompressed[short_name] = decomp_file
 
             if self.pdf_decompressed[short_name] == '':
@@ -226,7 +226,7 @@ class ToolPDF(AppTool):
                 self.parsing_promises.remove(short_name)
                 time.sleep(0.1)
         except Exception as e:
-            log.debug("ToolPDF.open_pdf() --> %s" % str(e))
+            log.error("ToolPDF.open_pdf() --> %s" % str(e))
         self.app.inform.emit('[success] %s: %s' % (_("Opened"),  str(filename)))
 
     def layer_rendering_as_excellon(self, filename, ap_dict, layer_nr):

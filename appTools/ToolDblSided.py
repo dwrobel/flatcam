@@ -531,7 +531,7 @@ class DblSidedTool(AppTool):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                log.warning("DEV WARNING: Tried to get bounds of empty geometry in DblSidedTool. %s" % str(e))
+                log.error("Tried to get bounds of empty geometry in DblSidedTool. %s" % str(e))
 
         self.ui.xmin_entry.set_value(xmin)
         self.ui.ymin_entry.set_value(ymin)

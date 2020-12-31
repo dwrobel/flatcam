@@ -157,7 +157,7 @@ class DrawTool(object):
                     try:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     except Exception as e:
-                        log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                        log.error("camlib.Gerber.bounds() --> %s" % str(e))
                         return
 
                     minx = min(minx, minx_)
@@ -382,7 +382,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
         try:
             self.geometry = DrawToolShape(self.util_shape(self.points))
         except Exception as e:
-            log.debug("PadEditorGrb.make() --> %s" % str(e))
+            log.error("PadEditorGrb.make() --> %s" % str(e))
 
         self.draw_app.in_action = False
         self.complete = True
@@ -623,7 +623,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
                     return DrawToolUtilityShape(utility_list)
                 except Exception as e:
-                    log.debug(str(e))
+                    log.error(str(e))
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -1000,7 +1000,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.RegionEditorGrb --> %s" % str(e))
+            log.error("AppGerberEditor.RegionEditorGrb --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1128,7 +1128,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                     }
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
-                    log.debug("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
+                    log.error("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
             else:
                 geo_sol = Point(self.temp_points).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
                 new_geo_el = {
@@ -1367,7 +1367,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.TrackEditorGrb.__init__() --> %s" % str(e))
+            log.error("AppGerberEditor.TrackEditorGrb.__init__() --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location +
                                                   '/aero_path%s.png' % self.draw_app.bend_mode))
@@ -1534,7 +1534,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
+                log.error("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
@@ -1573,7 +1573,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
+                log.error("AppGerberEditor.TrackEditorGrb.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
@@ -1703,7 +1703,7 @@ class DiscEditorGrb(ShapeToolEditorGrb):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.DiscEditorGrb --> %s" % str(e))
+            log.error("AppGerberEditor.DiscEditorGrb --> %s" % str(e))
 
         self.draw_app.current_storage = self.storage_obj
 
@@ -1741,7 +1741,7 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.DiscSemiEditorGrb --> %s" % str(e))
+            log.error("AppGerberEditor.DiscSemiEditorGrb --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2447,7 +2447,7 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             try:
                 self.draw_app.ui.apertures_table.cellPressed.disconnect()
             except Exception as e:
-                log.debug("AppGerberEditor.EraserEditorGrb.click_release() --> %s" % str(e))
+                log.error("AppGerberEditor.EraserEditorGrb.click_release() --> %s" % str(e))
 
             self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             for aper in sel_aperture:
@@ -2580,7 +2580,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
+            log.error("AppGerberEditor.SelectEditorGrb --> %s" % str(e))
 
         try:
             self.selection_triggered.disconnect()
@@ -2697,7 +2697,7 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         try:
             self.draw_app.ui.apertures_table.cellPressed.disconnect()
         except Exception as e:
-            log.debug("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
+            log.error("AppGerberEditor.SelectEditorGrb.click_release() --> %s" % str(e))
 
         for shape_s in self.draw_app.selected:
             for storage in self.draw_app.storage_dict:
@@ -2785,7 +2785,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("AppGerberEditor.ImportEditorGrb --> %s" % str(e))
+            log.error("AppGerberEditor.ImportEditorGrb --> %s" % str(e))
 
         try:
             self.import_signal.disconnect()
@@ -2974,7 +2974,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                     self.import_signal.emit()
 
         except Exception as e:
-            self.app.log.warning("ImportEditorGrb.on_mouse_click_release() RMB click --> Error: %s" % str(e))
+            self.app.log.error("ImportEditorGrb.on_mouse_click_release() RMB click --> Error: %s" % str(e))
             raise
 
     def get_selected_geos(self):
@@ -4282,7 +4282,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            self.app.log.debug("AppGerberEditor.deactivate_grb_editor() --> %s" % str(e))
+            self.app.log.error("AppGerberEditor.deactivate_grb_editor() --> %s" % str(e))
 
         self.clear()
 
@@ -4534,7 +4534,7 @@ class AppGerberEditor(QtCore.QObject):
             # we activate this after the initial build as we don't need to see the tool been populated
             self.ui.apertures_table.itemChanged.connect(self.on_tool_edit)
         except Exception as e:
-            self.app.log.debug("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
+            self.app.log.error("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
 
         # apply the conversion factor on the obj.apertures
         conv_apertures = deepcopy(self.gerber_obj.apertures)
@@ -4574,7 +4574,7 @@ class AppGerberEditor(QtCore.QObject):
         #                 else:
         #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
         #             except Exception as e:
-        #                 self.app.log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+        #                 self.app.log.error("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
         #
         #         # Check promises and clear if exists
         #         while True:
@@ -4706,7 +4706,7 @@ class AppGerberEditor(QtCore.QObject):
                                 app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_code, ap_dict))
                             )
                     except Exception as ee:
-                        self.app.log.debug(
+                        self.app.log.error(
                             "AppGerberEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
                         traceback.print_exc()
 
@@ -4745,7 +4745,7 @@ class AppGerberEditor(QtCore.QObject):
                 else:
                     storage_dict[k] = aperture_dict[k]
             except Exception as e:
-                log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                log.error("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
 
         return [aperture_id, storage_dict]
 
@@ -4774,7 +4774,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.plot_thread.stop()
         except Exception as e:
-            self.app.log.debug("AppGerberEditor.update_fcgerber() --> %s" % str(e))
+            self.app.log.error("AppGerberEditor.update_fcgerber() --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -4973,7 +4973,7 @@ class AppGerberEditor(QtCore.QObject):
             for obj in self.storage_dict[selected_ap_code]['geometry']:
                 self.selected.append(obj)
         except Exception as e:
-            self.app.log.debug(str(e))
+            self.app.log.error(str(e))
 
         # #########################################################################################################
         # ######################### calculate vertex numbers for all selected shapes ##############################
@@ -5182,7 +5182,7 @@ class AppGerberEditor(QtCore.QObject):
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
                         except Exception as e:
-                            self.app.log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
+                            self.app.log.error("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
 
                         if self.active_tool.complete is False:
                             if not isinstance(self.active_tool, SelectEditorGrb):
@@ -5225,7 +5225,7 @@ class AppGerberEditor(QtCore.QObject):
                                     else:
                                         self.select_tool("select")
         except Exception as e:
-            self.app.log.warning("AppGerberEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
+            self.app.log.error("AppGerberEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -5243,7 +5243,7 @@ class AppGerberEditor(QtCore.QObject):
                     # if self.selected:
                     #     self.plot_all()
         except Exception as e:
-            self.app.log.warning("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
+            self.app.log.error("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -5282,7 +5282,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.ui.apertures_table.cellPressed.disconnect()
         except Exception as e:
-            self.app.log.debug("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
+            self.app.log.error("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
 
         self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
@@ -5826,7 +5826,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = []
                 self.storage_dict[apcode]['geometry'] = temp_storage
             except Exception as e:
-                self.app.log.debug("AppGerberEditor.buffer() --> %s" % str(e))
+                self.app.log.error("AppGerberEditor.buffer() --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
                 return
 
@@ -5890,7 +5890,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = temp_storage
 
             except Exception as e:
-                self.app.log.debug("AppGerberEditor.on_scale() --> %s" % str(e))
+                self.app.log.error("AppGerberEditor.on_scale() --> %s" % str(e))
 
         self.plot_all()
         self.app.inform.emit('[success] %s' % _("Done."))
@@ -5965,7 +5965,7 @@ class AppGerberEditor(QtCore.QObject):
             if tool_name == 'markarea' or tool_name == 'all':
                 self.ui.ma_tool_frame.hide()
         except Exception as e:
-            self.app.log.debug("AppGerberEditor.hide_tool() --> %s" % str(e))
+            self.app.log.error("AppGerberEditor.hide_tool() --> %s" % str(e))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
 
@@ -7541,7 +7541,7 @@ class TransformEditorTool(AppTool):
                 self.app.inform.emit('[success] %s...' % _('Buffer done'))
 
             except Exception as e:
-                self.app.log.debug("TransformEditorTool.on_buffer_action() --> %s" % str(e))
+                self.app.log.error("TransformEditorTool.on_buffer_action() --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                 return
 
@@ -7672,6 +7672,6 @@ def get_shapely_list_bounds(geometry_list):
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
         except Exception as e:
-            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+            log.error("Tried to get bounds of empty geometry. --> %s" % str(e))
 
     return [xmin, ymin, xmax, ymax]

@@ -574,7 +574,7 @@ class ToolFollow(AppTool, Gerber):
                         self.app.plotcanvas.graph_event_disconnect(self.mm)
                         self.app.plotcanvas.graph_event_disconnect(self.kp)
                 except Exception as e:
-                    log.debug("ToolFollow.on_key_press() _1 --> %s" % str(e))
+                    log.error("ToolFollow.on_key_press() _1 --> %s" % str(e))
 
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                       self.app.on_mouse_click_over_plot)

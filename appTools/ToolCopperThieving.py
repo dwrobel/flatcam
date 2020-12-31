@@ -244,7 +244,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.on_add_robber_bar_click() --> %s" % str(e))
+            log.error("ToolCopperThieving.on_add_robber_bar_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -342,7 +342,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.on_add_copper_thieving_click() --> %s" % str(e))
+            log.error("ToolCopperThieving.on_add_copper_thieving_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
@@ -606,7 +606,7 @@ class ToolCopperThieving(AppTool):
                 else:
                     working_obj = ref_obj
             except Exception as e:
-                log.debug("ToolCopperThieving.copper_thieving() --> %s" % str(e))
+                log.error("ToolCopperThieving.copper_thieving() --> %s" % str(e))
                 return 'fail'
 
             tool_obj.app.proc_container.update_view_text(' %s' % _("Working..."))
@@ -647,7 +647,7 @@ class ToolCopperThieving(AppTool):
                             return 'fail'
 
                 except Exception as e:
-                    log.debug("ToolCopperFIll.copper_thieving()  'itself'  --> %s" % str(e))
+                    log.error("ToolCopperFIll.copper_thieving()  'itself'  --> %s" % str(e))
                     tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                     return 'fail'
             elif ref_selected == 'area':
@@ -669,7 +669,7 @@ class ToolCopperThieving(AppTool):
                     try:
                         __ = iter(geo_n)
                     except Exception as e:
-                        log.debug("ToolCopperFIll.copper_thieving() 'box' --> %s" % str(e))
+                        log.error("ToolCopperFIll.copper_thieving() 'box' --> %s" % str(e))
                         geo_n = [geo_n]
 
                     geo_buff_list = []
@@ -962,7 +962,7 @@ class ToolCopperThieving(AppTool):
         try:
             self.sm_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.on_add_ppm_click() --> %s" % str(e))
+            log.error("ToolCopperThieving.on_add_ppm_click() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 

@@ -1519,7 +1519,7 @@ class TransformEditorTool(AppTool):
                     self.app.inform.emit('[success] %s...' % _('Buffer done'))
 
                 except Exception as e:
-                    self.app.log.debug("TransformEditorTool.on_buffer_action() --> %s" % str(e))
+                    self.app.log.error("TransformEditorTool.on_buffer_action() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s.' % (_("Action was not executed"), str(e)))
                     return
 
@@ -1986,7 +1986,7 @@ class DrawTool(object):
                     try:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     except Exception as e:
-                        log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                        log.error("camlib.Gerber.bounds() --> %s" % str(e))
                         return
 
                     minx = min(minx, minx_)
@@ -3004,7 +3004,7 @@ class FCText(FCShapeTool):
             try:
                 self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
             except Exception as e:
-                log.debug("Font geometry is empty or incorrect: %s" % str(e))
+                log.error("Font geometry is empty or incorrect: %s" % str(e))
                 self.draw_app.app.inform.emit('[ERROR] %s: %s' %
                                               (_("Font not supported. Only Regular, Bold, Italic and BoldItalic are "
                                                  "supported. Error"), str(e)))
@@ -3796,7 +3796,7 @@ class AppGeoEditor(QtCore.QObject):
             self.options[opt] = float(text_value)
         except Exception as e:
             entry.set_value(self.app.defaults[opt])
-            self.app.log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
+            self.app.log.error("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
             return
 
     def grid_changed(self, goption, gentry):
@@ -4013,7 +4013,7 @@ class AppGeoEditor(QtCore.QObject):
             self.update_ui()
             self.plot_all()
         except Exception as e:
-            self.app.log.debug("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
+            self.app.log.error("APpGeoEditor.on_tree_selection_change() -> %s" % str(e))
 
     def change_level(self, level):
         """
@@ -4265,7 +4265,7 @@ class AppGeoEditor(QtCore.QObject):
         #     for w in sel_tab_widget_list:
         #         w.setEnabled(True)
         # except Exception as e:
-        #     self.app.log.debug("AppGeoEditor.deactivate() --> %s" % str(e))
+        #     self.app.log.error("AppGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         try:
@@ -4275,7 +4275,7 @@ class AppGeoEditor(QtCore.QObject):
             # clear the Tree
             self.clear_tree_sig.emit()
         except Exception as err:
-            self.app.log.debug("AppGeoEditor.deactivate() --> %s" % str(err))
+            self.app.log.error("AppGeoEditor.deactivate() --> %s" % str(err))
 
         # hide the UI
         self.geo_frame.hide()
@@ -4824,7 +4824,7 @@ class AppGeoEditor(QtCore.QObject):
                                 self.app.inform.emit('[success] %s' % _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
-            self.app.log.warning("FLatCAMGeoEditor.on_canvas_click_release() --> Error: %s" % str(e))
+            self.app.log.error("FLatCAMGeoEditor.on_canvas_click_release() --> Error: %s" % str(e))
             return
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -5126,7 +5126,7 @@ class AppGeoEditor(QtCore.QObject):
                     self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
                                        type(geom))
             except Exception as e:
-                self.app.log.debug("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
+                self.app.log.error("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
         shape_list = []
@@ -5556,7 +5556,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.build_ui_sig.emit()
                     editor_self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
-                    editor_self.app.log.debug(str(e))
+                    editor_self.app.log.error(str(e))
 
         self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
@@ -5581,7 +5581,7 @@ class AppGeoEditor(QtCore.QObject):
                     editor_self.build_ui_sig.emit()
                     editor_self.app.inform.emit('[success] %s' % _("Done."))
                 except Exception as e:
-                    editor_self.app.log.debug(str(e))
+                    editor_self.app.log.error(str(e))
 
         self.app.worker_task.emit({'fcn': work_task, 'params': [self]})
 
@@ -5603,7 +5603,7 @@ class AppGeoEditor(QtCore.QObject):
                         for linestring in target.geo:
                             editor_self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
                     except Exception as e:
-                        editor_self.app.log.warning("Current LinearString does not intersect the target. %s" % str(e))
+                        editor_self.app.log.error("Current LinearString does not intersect the target. %s" % str(e))
                 else:
                     editor_self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
                     return
@@ -5907,7 +5907,7 @@ class AppGeoEditor(QtCore.QObject):
                             if cp is not None:
                                 local_results += list(cp.get_objects())
                         except Exception as e:
-                            editor_self.app.log.debug("Could not Paint the polygons. %s" % str(e))
+                            editor_self.app.log.error("Could not Paint the polygons. %s" % str(e))
                             editor_self.app.inform.emit(
                                 '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                       "Or a different method of Paint"), str(e))
@@ -5994,6 +5994,6 @@ def get_shapely_list_bounds(geometry_list):
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
         except Exception as e:
-            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+            log.error("Tried to get bounds of empty geometry. --> %s" % str(e))
 
     return [xmin, ymin, xmax, ymax]

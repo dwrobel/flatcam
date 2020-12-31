@@ -190,7 +190,7 @@ class SolderPaste(AppTool):
         try:
             dias = [float(eval(dia)) for dia in dias_option.split(",") if dia != '']
         except Exception as err:
-            self.app.log.debug("SolderPaste.set_tool_ui() -> nozzle dias -> %s" % str(err))
+            self.app.log.error("SolderPaste.set_tool_ui() -> nozzle dias -> %s" % str(err))
             self.app.log.error("At least one Nozzle tool diameter needed. "
                                "Verify in Edit -> Preferences -> TOOLS -> Solder Paste Tools.")
             return
@@ -313,7 +313,7 @@ class SolderPaste(AppTool):
         try:
             tooluid = int(self.ui.tools_table.item(current_row, 2).text())
         except Exception as e:
-            self.app.log.debug("Tool missing. Add a tool in Tool Table. %s" % str(e))
+            self.app.log.error("Tool missing. Add a tool in Tool Table. %s" % str(e))
             return
 
         # update the form
@@ -323,7 +323,7 @@ class SolderPaste(AppTool):
                 if int(tooluid_key) == tooluid:
                     self.set_form(deepcopy(tooluid_value['data']))
         except Exception as e:
-            self.app.log.debug("ToolSolderPaste ---> update_ui() " + str(e))
+            self.app.log.error("ToolSolderPaste ---> update_ui() " + str(e))
 
         self.ui_connect()
 
@@ -616,7 +616,7 @@ class SolderPaste(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
             return
         except Exception as e:
-            self.app.log.debug(str(e))
+            self.app.log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tools deleted from Tool Table."))
         self.build_ui()
@@ -816,7 +816,7 @@ class SolderPaste(AppTool):
                         try:
                             geo_obj.tools[tooluid]['solid_geometry'].append(geo)
                         except Exception as e:
-                            self.app.log.debug('ToolSolderPaste.on_create_geo() --> %s' % str(e))
+                            self.app.log.error('ToolSolderPaste.on_create_geo() --> %s' % str(e))
                     else:
                         rest_geo.append(g)
 
@@ -913,7 +913,7 @@ class SolderPaste(AppTool):
             xmax = obj.options['xmax']
             ymax = obj.options['ymax']
         except Exception as e:
-            self.app.log.debug("SolderPaste.on_create_gcode() --> %s\n" % str(e))
+            self.app.log.error("SolderPaste.on_create_gcode() --> %s\n" % str(e))
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
             msg += 'SolderPaste.on_create_gcode() --> %s' % str(e)
             msg += traceback.format_exc()
@@ -1046,7 +1046,7 @@ class SolderPaste(AppTool):
         # try:
         #     lines = StringIO(gcode)
         # except Exception as e:
-        #     self.app.log.debug("ToolSolderpaste.on_view_gcode() --> %s" % str(e))
+        #     self.app.log.error("ToolSolderpaste.on_view_gcode() --> %s" % str(e))
         #     self.app.inform.emit('[ERROR_NOTCL] %s...' % _("No Gcode in the object"))
         #     return
 
@@ -1056,7 +1056,7 @@ class SolderPaste(AppTool):
             #     self.text_editor_tab.code_editor.append(proc_line)
             self.text_editor_tab.load_text(gcode, move_to_start=True)
         except Exception as e:
-            self.app.log.debug('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
+            self.app.log.error('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s --> %s' % ('ToolSolderPaste.on_view_gcode()', str(e)))
             return
 

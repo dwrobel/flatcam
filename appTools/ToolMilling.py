@@ -697,7 +697,7 @@ class ToolMilling(AppTool, Excellon):
                 new_tools[new_uid] = deepcopy(self.tools[current_uid])
                 new_uid += 1
         except Exception as err:
-            self.app.log.debug("ToolMilling.on_geo_rebuild_ui() -> %s" % str(err))
+            self.app.log.error("ToolMilling.on_geo_rebuild_ui() -> %s" % str(err))
             return
 
         self.tools = new_tools
@@ -1484,7 +1484,7 @@ class ToolMilling(AppTool, Excellon):
                     self.ui_connect()
                     return
             except Exception as e:
-                self.app.log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                self.app.log.error("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
                 self.ui_connect()
                 return
 
@@ -1501,7 +1501,7 @@ class ToolMilling(AppTool, Excellon):
                     self.ui_connect()
                     return
             except Exception as e:
-                self.app.log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                self.app.log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 self.ui_connect()
                 return
         self.ui_connect()
@@ -1565,7 +1565,7 @@ class ToolMilling(AppTool, Excellon):
                     else:
                         self.form_fields[storage_key].set_value(dict_storage[storage_key])
                 except Exception as e:
-                    self.app.log.debug("ToolDrilling.storage_to_form() --> %s" % str(e))
+                    self.app.log.error("ToolDrilling.storage_to_form() --> %s" % str(e))
                     pass
 
     def form_to_storage(self):
@@ -1626,7 +1626,7 @@ class ToolMilling(AppTool, Excellon):
                             else:
                                 self.target_obj.tools[tooluid_key]['data'][form_key] = form_val.get_value()
                         except Exception as e:
-                            self.app.log.debug("ToolMilling.form_to_storage() --> %s" % str(e))
+                            self.app.log.error("ToolMilling.form_to_storage() --> %s" % str(e))
 
         # update the general parameters in all tools
         for general_option in general_parameters:
@@ -1635,7 +1635,7 @@ class ToolMilling(AppTool, Excellon):
                 try:
                     self.target_obj.tools[tool]['data'][general_option] = new_opt_val
                 except Exception as err:
-                    self.app.log.debug("ToolMilling.form_to_storage() general parameters --> %s" % str(err))
+                    self.app.log.error("ToolMilling.form_to_storage() general parameters --> %s" % str(err))
         self.ui_connect()
 
     def on_tooltable_cellwidget_change(self):
@@ -2149,7 +2149,7 @@ class ToolMilling(AppTool, Excellon):
                         self.builduiSig.emit()
                         return
                     except Exception as e:
-                        self.app.log.debug("on_tool_copy() --> " + str(e))
+                        self.app.log.error("on_tool_copy() --> " + str(e))
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
@@ -2166,7 +2166,7 @@ class ToolMilling(AppTool, Excellon):
                     self.target_obj.tools[int(max_uid)] = deepcopy(temp_tools[tooluid])
                 temp_tools.clear()
             except Exception as e:
-                self.app.log.debug("on_tool_copy() --> " + str(e))
+                self.app.log.error("on_tool_copy() --> " + str(e))
 
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
@@ -2214,7 +2214,7 @@ class ToolMilling(AppTool, Excellon):
                         self.builduiSig.emit()
                         return
                     except Exception as e:
-                        self.app.log.debug("on_tool_delete() --> " + str(e))
+                        self.app.log.error("on_tool_delete() --> " + str(e))
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
@@ -2582,7 +2582,7 @@ class ToolMilling(AppTool, Excellon):
                 except grace:
                     return "fail"
                 except Exception as e:
-                    self.app.log.debug("Could not Paint the polygons. %s" % str(e))
+                    self.app.log.error("Could not Paint the polygons. %s" % str(e))
                     mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
                                                  "Or a different method of Paint"), str(e))
                     self.app.inform.emit(mssg)
@@ -2709,7 +2709,7 @@ class ToolMilling(AppTool, Excellon):
             xmax = self.target_obj.options['xmax']
             ymax = self.target_obj.options['ymax']
         except Exception as e:
-            self.app.log.debug("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
+            self.app.log.error("FlatCAMObj.GeometryObject.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
             msg += '%s' % str(e)

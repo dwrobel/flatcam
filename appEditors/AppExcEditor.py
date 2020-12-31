@@ -493,7 +493,7 @@ class DrillArray(FCShapeTool):
 
                     return DrawToolUtilityShape(utility_list)
                 except Exception as e:
-                    log.debug("DrillArray.utility_geometry -- circular -> %s" % str(e))
+                    log.error("DrillArray.utility_geometry -- circular -> %s" % str(e))
 
     def circular_util_shape(self, radius, angle):
         self.drill_direction = self.draw_app.ui.drill_array_dir_radio.get_value()
@@ -808,7 +808,7 @@ class SlotAdd(FCShapeTool):
         try:
             self.geometry = DrawToolShape(self.util_shape(self.points))
         except Exception as e:
-            log.debug("SlotAdd.make() --> %s" % str(e))
+            log.error("SlotAdd.make() --> %s" % str(e))
 
         # add the point to drills/slots if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -1032,7 +1032,7 @@ class SlotArray(FCShapeTool):
 
                     return DrawToolUtilityShape(utility_list)
                 except Exception as e:
-                    log.debug("SlotArray.utility_geometry -- circular -> %s" % str(e))
+                    log.error("SlotArray.utility_geometry -- circular -> %s" % str(e))
 
     def circular_util_shape(self, radius, angle):
         self.slot_direction = self.draw_app.ui.slot_array_direction_radio.get_value()
@@ -3205,7 +3205,7 @@ class AppExcEditor(QtCore.QObject):
             for obj in self.storage_dict[selected_dia].get_objects():
                 self.selected.append(obj)
         except Exception as e:
-            self.app.log.debug(str(e))
+            self.app.log.error(str(e))
 
         self.replot()
 
@@ -3330,7 +3330,7 @@ class AppExcEditor(QtCore.QObject):
                         self.app.ui.popMenu.popup(self.app.cursor.pos())
 
         except Exception as e:
-            self.app.log.warning("AppExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
+            self.app.log.error("AppExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -3348,7 +3348,7 @@ class AppExcEditor(QtCore.QObject):
                     if self.selected:
                         self.replot()
         except Exception as e:
-            self.app.log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
+            self.app.log.error("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def on_canvas_move(self, event):
@@ -4588,7 +4588,7 @@ def get_shapely_list_bounds(geometry_list):
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
         except Exception as e:
-            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+            log.error("Tried to get bounds of empty geometry. --> %s" % str(e))
 
     return [xmin, ymin, xmax, ymax]
 

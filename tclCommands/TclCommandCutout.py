@@ -98,7 +98,7 @@ class TclCommandCutout(TclCommand):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("TclCommandCutout.execute() --> %s" % str(e))
+            log.error("TclCommandCutout.execute() --> %s" % str(e))
             return "Could not retrieve object: %s" % name
 
         def geo_init_me(geo_obj, app_obj):

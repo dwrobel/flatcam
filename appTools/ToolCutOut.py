@@ -731,7 +731,7 @@ class CutOut(AppTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_freeform_cutout() --> %s" % str(e))
+            log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -908,7 +908,7 @@ class CutOut(AppTool):
                         else:
                             object_geo = cutout_obj.solid_geometry
                     except Exception as err:
-                        log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
+                        log.error("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
                         object_geo = cutout_obj.solid_geometry
                 else:
                     if cutout_obj.multigeo is False:
@@ -1104,7 +1104,7 @@ class CutOut(AppTool):
                     # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
@@ -1117,7 +1117,7 @@ class CutOut(AppTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_rectangular_cutout() --> %s" % str(e))
+            log.error("CutOut.on_rectangular_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -1482,7 +1482,7 @@ class CutOut(AppTool):
                     # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
                     app_obj.should_we_save = True
                 except Exception as ee:
-                    log.debug(str(ee))
+                    log.error(str(ee))
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
@@ -1499,7 +1499,7 @@ class CutOut(AppTool):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_freeform_cutout() --> %s" % str(e))
+            log.error("CutOut.on_freeform_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -1591,7 +1591,7 @@ class CutOut(AppTool):
         try:
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
+            log.error("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -1623,7 +1623,7 @@ class CutOut(AppTool):
         try:
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
+            log.error("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return
 
@@ -1720,7 +1720,7 @@ class CutOut(AppTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("CutOut.on_manual_geo() --> %s" % str(e))
+            log.error("CutOut.on_manual_geo() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
