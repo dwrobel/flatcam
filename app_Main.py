@@ -3696,7 +3696,7 @@ class App(QtCore.QObject):
                     self.trayIcon.hide()
                 except Exception:
                     pass
-                self.on_file_saveprojectas(use_thread=True, quit_action=True)
+                self.f_handlers.on_file_saveprojectas(use_thread=True, quit_action=True)
             elif response == bt_no:
                 try:
                     self.trayIcon.hide()

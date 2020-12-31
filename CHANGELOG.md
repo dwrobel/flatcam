@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.12.2020
+
+- fixed the issue with not saving the project on program close if selecting the 'Yes' option.
+
 30.12.2020
 
 - fixed error in Gerber Editor
