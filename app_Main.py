@@ -11024,15 +11024,30 @@ class MenuFileHandlers(QtCore.QObject):
         self.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            def obj_init(obj_inst, app_inst):
-                try:
-                    obj_inst.from_dict(obj)
-                except Exception as erro:
-                    app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
-                    return 'fail'
-
             self.log.debug(
                 "Recreating from opened project an %s object: %s" % (obj['kind'].capitalize(), obj['options']['name']))
+
+            def obj_init(new_obj, app_inst):
+
+                def worker_task():
+                    with app_inst.proc_container.new('%s...' % _("Opening")):
+                        try:
+                            new_obj.from_dict(obj)
+
+                            # try to make the keys in the tools dictionary to be integers
+                            # JSON serialization makes them strings
+                            # not all FlatCAM objects have the 'tools' dictionary attribute
+                            try:
+                                new_obj.tools = {
+                                    int(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
+                                }
+                            except AttributeError:
+                                pass
+                        except Exception as erro:
+                            app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
+                            return 'fail'
+
+                app_inst.worker_task.emit({'fcn': worker_task, 'params': []})
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
