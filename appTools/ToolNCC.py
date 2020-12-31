@@ -4120,9 +4120,11 @@ class NccUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_layout)
+        # ## Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid0)
 
         self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
@@ -4136,7 +4138,8 @@ class NccUI:
         self.type_obj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
                                         {'label': _("Gerber"), 'value': 'gerber'}])
 
-        form_layout.addRow(self.type_obj_combo_label, self.type_obj_radio)
+        grid0.addWidget(self.type_obj_combo_label, 0, 0)
+        grid0.addWidget(self.type_obj_radio, 0, 1)
 
         # ################################################
         # ##### The object to be copper cleaned ##########
@@ -4150,12 +4153,12 @@ class NccUI:
         # self.object_label = FCLabel('%s:' % _("Object"))
         # self.object_label.setToolTip(_("Object to be cleared of excess copper."))
 
-        form_layout.addRow(self.object_combo)
+        grid0.addWidget(self.object_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.tools_box.addWidget(separator_line)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
         self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
@@ -4163,10 +4166,10 @@ class NccUI:
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for copper clearing.")
         )
-        self.tools_box.addWidget(self.tools_table_label)
+        grid0.addWidget(self.tools_table_label, 6, 0, 1, 2)
 
         self.tools_table = FCTable(drag_drop=True)
-        self.tools_box.addWidget(self.tools_table)
+        grid0.addWidget(self.tools_table, 8, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID
@@ -4207,9 +4210,9 @@ class NccUI:
         #       "- Clear -> the regular non-copper clearing."))
 
         grid1 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid1)
 
         # Tool order
         self.ncc_order_label = FCLabel('%s:' % _('Tool order'))

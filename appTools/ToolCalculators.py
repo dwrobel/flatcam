@@ -452,63 +452,70 @@ class CalcUI:
         grid_units_layout.addWidget(self.mm_entry, 1, 0)
         grid_units_layout.addWidget(self.inch_entry, 1, 1)
 
-        # ##############################
-        # ## V-shape Tool Calculator ###
-        # ##############################
+        # #############################################################################################################
+        # ################################ V-shape Tool Calculator ####################################################
+        # #############################################################################################################
+        grid_vshape = QtWidgets.QGridLayout()
+        grid_vshape.setColumnStretch(0, 0)
+        grid_vshape.setColumnStretch(1, 1)
+        self.layout.addLayout(grid_vshape)
+
         self.v_shape_spacer_label = FCLabel(" ")
-        self.layout.addWidget(self.v_shape_spacer_label)
+        grid_vshape.addWidget(self.v_shape_spacer_label, 0, 0, 1, 2)
 
         # ## Title of the V-shape Tools Calculator
         v_shape_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.v_shapeName)
-        self.layout.addWidget(v_shape_title_label)
+        grid_vshape.addWidget(v_shape_title_label, 2, 0, 1, 2)
 
-        # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
-
+        # Tip Diameter
         self.tipDia_label = FCLabel('%s:' % _("Tip Diameter"))
+        self.tipDia_label.setToolTip(
+            _("This is the tool tip diameter.\n"
+              "It is specified by manufacturer.")
+        )
+
         self.tipDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipDia_entry.set_precision(self.decimals)
         self.tipDia_entry.set_range(0.0, 10000.0000)
         self.tipDia_entry.setSingleStep(0.1)
 
-        # self.tipDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.tipDia_label.setToolTip(
-            _("This is the tool tip diameter.\n"
-              "It is specified by manufacturer.")
-        )
+        grid_vshape.addWidget(self.tipDia_label, 4, 0)
+        grid_vshape.addWidget(self.tipDia_entry, 4, 1)
+
+        # Tip Angle
         self.tipAngle_label = FCLabel('%s:' % _("Tip Angle"))
+        self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
+                                         "It is specified by manufacturer."))
+
         self.tipAngle_entry = FCSpinner(callback=self.confirmation_message_int)
         self.tipAngle_entry.set_range(0, 180)
         self.tipAngle_entry.set_step(5)
 
-        # self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
-                                         "It is specified by manufacturer."))
+        grid_vshape.addWidget(self.tipAngle_label, 6, 0)
+        grid_vshape.addWidget(self.tipAngle_entry, 6, 1)
 
+        # Cut Z
         self.cutDepth_label = FCLabel('%s:' % _("Cut Z"))
+        self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
+                                         "In the CNCJob is the CutZ parameter."))
+
         self.cutDepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutDepth_entry.set_range(-10000.0000, 10000.0000)
         self.cutDepth_entry.set_precision(self.decimals)
 
-        # self.cutDepth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
-                                         "In the CNCJob is the CutZ parameter."))
+        grid_vshape.addWidget(self.cutDepth_label, 8, 0)
+        grid_vshape.addWidget(self.cutDepth_entry, 8, 1)
 
+        # Tool Diameter
         self.effectiveToolDia_label = FCLabel('%s:' % _("Tool Diameter"))
-        self.effectiveToolDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.effectiveToolDia_entry.set_precision(self.decimals)
-
-        # self.effectiveToolDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.effectiveToolDia_label.setToolTip(_("This is the tool diameter to be entered into\n"
                                                  "FlatCAM Gerber section.\n"
                                                  "In the CNCJob section it is called >Tool dia<."))
-        # self.effectiveToolDia_entry.setEnabled(False)
+        self.effectiveToolDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.effectiveToolDia_entry.set_precision(self.decimals)
 
-        form_layout.addRow(self.tipDia_label, self.tipDia_entry)
-        form_layout.addRow(self.tipAngle_label, self.tipAngle_entry)
-        form_layout.addRow(self.cutDepth_label, self.cutDepth_entry)
-        form_layout.addRow(self.effectiveToolDia_label, self.effectiveToolDia_entry)
+        grid_vshape.addWidget(self.effectiveToolDia_label, 10, 0)
+        grid_vshape.addWidget(self.effectiveToolDia_entry, 10, 1)
 
         # ## Buttons
         self.calculate_vshape_button = FCButton(_("Calculate"))
@@ -519,13 +526,17 @@ class CalcUI:
               "depending on which is desired and which is known. ")
         )
 
-        self.layout.addWidget(self.calculate_vshape_button)
+        grid_vshape.addWidget(self.calculate_vshape_button, 12, 0, 1, 2)
 
-        # ####################################
-        # ## ElectroPlating Tool Calculator ##
-        # ####################################
+        # #############################################################################################################
+        # ############################## ElectroPlating Tool Calculator ###############################################
+        # #############################################################################################################
+        grid_electro = QtWidgets.QGridLayout()
+        grid_electro.setColumnStretch(0, 0)
+        grid_electro.setColumnStretch(1, 1)
+        self.layout.addLayout(grid_electro)
 
-        self.layout.addWidget(FCLabel(""))
+        grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
 
         # ## Title of the ElectroPlating Tools Calculator
         plate_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.eplateName)
@@ -533,13 +544,7 @@ class CalcUI:
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
         )
-        self.layout.addWidget(plate_title_label)
-
-        # ## Plate Form Layout
-        grid2 = QtWidgets.QGridLayout()
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
-        self.layout.addLayout(grid2)
+        grid_electro.addWidget(plate_title_label, 2, 0, 1, 2)
 
         # Area Calculation
         self.area_sel_label = FCLabel('%s:' % _("Area Calculation"))
@@ -551,8 +556,8 @@ class CalcUI:
             {"label": _("Area"), "value": "a"}
         ], stretch=False)
 
-        grid2.addWidget(self.area_sel_label, 0, 0)
-        grid2.addWidget(self.area_sel_radio, 1, 0, 1, 2)
+        grid_electro.addWidget(self.area_sel_label, 4, 0)
+        grid_electro.addWidget(self.area_sel_radio, 6, 0, 1, 2)
 
         # BOARD LENGTH
         self.pcblengthlabel = FCLabel('%s:' % _("Board Length"))
@@ -569,8 +574,8 @@ class CalcUI:
         l_hlay.addWidget(self.pcblength_entry)
         l_hlay.addWidget(self.length_unit)
 
-        grid2.addWidget(self.pcblengthlabel, 2, 0)
-        grid2.addLayout(l_hlay, 2, 1)
+        grid_electro.addWidget(self.pcblengthlabel, 8, 0)
+        grid_electro.addLayout(l_hlay, 8, 1)
 
         # BOARD WIDTH
         self.pcbwidthlabel = FCLabel('%s:' % _("Board Width"))
@@ -587,8 +592,8 @@ class CalcUI:
         w_hlay.addWidget(self.pcbwidth_entry)
         w_hlay.addWidget(self.width_unit)
 
-        grid2.addWidget(self.pcbwidthlabel, 4, 0)
-        grid2.addLayout(w_hlay, 4, 1)
+        grid_electro.addWidget(self.pcbwidthlabel, 10, 0)
+        grid_electro.addLayout(w_hlay, 10, 1)
 
         # AREA
         self.area_label = FCLabel('%s:' % _("Area"))
@@ -605,13 +610,13 @@ class CalcUI:
         a_hlay.addWidget(self.area_entry)
         a_hlay.addWidget(self.area_unit)
 
-        grid2.addWidget(self.area_label, 6, 0)
-        grid2.addLayout(a_hlay, 6, 1)
+        grid_electro.addWidget(self.area_label, 12, 0)
+        grid_electro.addLayout(a_hlay, 12, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid2.addWidget(separator_line, 7, 0, 1, 2)
+        grid_electro.addWidget(separator_line, 14, 0, 1, 2)
 
         # DENSITY
         self.cdensity_label = FCLabel('%s:' % _("Current Density"))
@@ -630,8 +635,8 @@ class CalcUI:
         d_hlay.addWidget(self.cdensity_entry)
         d_hlay.addWidget(density_unit)
 
-        grid2.addWidget(self.cdensity_label, 8, 0)
-        grid2.addLayout(d_hlay, 8, 1)
+        grid_electro.addWidget(self.cdensity_label, 16, 0)
+        grid_electro.addLayout(d_hlay, 16, 1)
 
         # COPPER GROWTH
         self.growth_label = FCLabel('%s:' % _("Copper Growth"))
@@ -650,8 +655,8 @@ class CalcUI:
         g_hlay.addWidget(self.growth_entry)
         g_hlay.addWidget(growth_unit)
 
-        grid2.addWidget(self.growth_label, 10, 0)
-        grid2.addLayout(g_hlay, 10, 1)
+        grid_electro.addWidget(self.growth_label, 18, 0)
+        grid_electro.addLayout(g_hlay, 18, 1)
 
         # CURRENT
         self.cvaluelabel = FCLabel('%s:' % _("Current Value"))
@@ -671,8 +676,8 @@ class CalcUI:
         c_hlay.addWidget(self.cvalue_entry)
         c_hlay.addWidget(current_unit)
 
-        grid2.addWidget(self.cvaluelabel, 12, 0)
-        grid2.addLayout(c_hlay, 12, 1)
+        grid_electro.addWidget(self.cvaluelabel, 20, 0)
+        grid_electro.addLayout(c_hlay, 20, 1)
 
         # TIME
         self.timelabel = FCLabel('%s:' % _("Time"))
@@ -692,8 +697,8 @@ class CalcUI:
         t_hlay.addWidget(self.time_entry)
         t_hlay.addWidget(time_unit)
 
-        grid2.addWidget(self.timelabel, 14, 0)
-        grid2.addLayout(t_hlay, 14, 1)
+        grid_electro.addWidget(self.timelabel, 22, 0)
+        grid_electro.addLayout(t_hlay, 22, 1)
 
         # ## Buttons
         self.calculate_plate_button = FCButton(_("Calculate"))
@@ -702,9 +707,9 @@ class CalcUI:
             _("Calculate the current intensity value and the procedure time,\n"
               "depending on the parameters above")
         )
-        self.layout.addWidget(self.calculate_plate_button)
+        grid_electro.addWidget(self.calculate_plate_button, 24, 0, 1, 2)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

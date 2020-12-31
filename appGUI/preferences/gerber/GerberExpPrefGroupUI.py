@@ -35,8 +35,10 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_options_label)
 
-        form = QtWidgets.QFormLayout()
-        self.layout.addLayout(form)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         # Gerber Units
         self.gerber_units_label = FCLabel('%s:' % _('Units'))
@@ -50,7 +52,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Gerber file.")
         )
 
-        form.addRow(self.gerber_units_label, self.gerber_units_radio)
+        grid0.addWidget(self.gerber_units_label, 0, 0)
+        grid0.addWidget(self.gerber_units_radio, 0, 1)
 
         # Gerber format
         self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
@@ -90,7 +93,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
         hlay1.addStretch()
 
-        form.addRow(self.digits_label, hlay1)
+        grid0.addWidget(self.digits_label, 2, 0)
+        grid0.addLayout(hlay1, 2, 1)
 
         # Gerber Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
@@ -113,6 +117,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are kept.")
         )
 
-        form.addRow(self.zeros_label, self.zeros_radio)
+        grid0.addWidget(self.zeros_label, 4, 0)
+        grid0.addWidget(self.zeros_radio, 4, 1)
 
         self.layout.addStretch()

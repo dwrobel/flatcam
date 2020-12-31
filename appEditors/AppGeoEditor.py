@@ -81,15 +81,19 @@ class BufferSelectionTool(AppTool):
         self.buffer_tools_box.setContentsMargins(0, 0, 0, 0)
         self.buffer_tool_frame.setLayout(self.buffer_tools_box)
 
-        # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.buffer_tools_box.addLayout(form_layout)
+        # Grid Layout
+        grid_buffer = QtWidgets.QGridLayout()
+        grid_buffer.setColumnStretch(0, 0)
+        grid_buffer.setColumnStretch(1, 1)
+        self.buffer_tools_box.addLayout(grid_buffer)
 
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(0.0000, 9910000.0000)
-        form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
+        grid_buffer.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
+        grid_buffer.addWidget(self.buffer_distance_entry, 0, 1)
+
         self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
@@ -101,11 +105,12 @@ class BufferSelectionTool(AppTool):
         self.buffer_corner_cb.addItem(_("Round"))
         self.buffer_corner_cb.addItem(_("Square"))
         self.buffer_corner_cb.addItem(_("Beveled"))
-        form_layout.addRow(self.buffer_corner_lbl, self.buffer_corner_cb)
+        grid_buffer.addWidget(self.buffer_corner_lbl, 2, 0)
+        grid_buffer.addWidget(self.buffer_corner_cb, 2, 1)
 
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
-        self.buffer_tools_box.addLayout(hlay)
+        grid_buffer.addLayout(hlay, 4, 0, 1, 2)
 
         self.buffer_int_button = FCButton(_("Buffer Interior"))
         hlay.addWidget(self.buffer_int_button)
@@ -113,12 +118,12 @@ class BufferSelectionTool(AppTool):
         hlay.addWidget(self.buffer_ext_button)
 
         hlay1 = QtWidgets.QHBoxLayout()
-        self.buffer_tools_box.addLayout(hlay1)
+        grid_buffer.addLayout(hlay1, 6, 0, 1, 2)
 
         self.buffer_button = FCButton(_("Full Buffer"))
         hlay1.addWidget(self.buffer_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # Signals
         self.buffer_button.clicked.connect(self.on_buffer)
@@ -249,9 +254,11 @@ class TextInputTool(AppTool):
                         """)
         self.text_tools_box.addWidget(title_label)
 
-        # Form Layout
-        self.form_layout = QtWidgets.QFormLayout()
-        self.text_tools_box.addLayout(self.form_layout)
+        # Grid Layout
+        self.grid_text = QtWidgets.QGridLayout()
+        self.grid_text.setColumnStretch(0, 0)
+        self.grid_text.setColumnStretch(1, 1)
+        self.text_tools_box.addLayout(self.grid_text)
 
         # Font type
         if sys.platform == "win32":
@@ -265,7 +272,8 @@ class TextInputTool(AppTool):
 
         self.font_type_cb = QtWidgets.QFontComboBox(self)
         self.font_type_cb.setCurrentFont(f_current)
-        self.form_layout.addRow(FCLabel('%s:' % _("Font")), self.font_type_cb)
+        self.grid_text.addWidget(FCLabel('%s:' % _("Font")), 0, 0)
+        self.grid_text.addWidget(self.font_type_cb, 0, 1)
 
         # Flag variables to show if font is bold, italic, both or none (regular)
         self.font_bold = False
@@ -338,23 +346,23 @@ class TextInputTool(AppTool):
         self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.form_layout.addRow(FCLabel('%s:' % _("Size")), hlay)
+        self.grid_text.addWidget(FCLabel('%s:' % _("Size")), 2, 0)
+        self.grid_text.addLayout(hlay, 2, 1)
 
         # Text input
+        self.grid_text.addWidget(FCLabel('%s:' % _("Text")), 4, 0, 1, 2)
+
         self.text_input_entry = FCTextAreaRich()
         self.text_input_entry.setTabStopWidth(12)
         self.text_input_entry.setMinimumHeight(200)
         # self.text_input_entry.setMaximumHeight(150)
         self.text_input_entry.setCurrentFont(f_current)
         self.text_input_entry.setFontPointSize(10)
-        self.form_layout.addRow(FCLabel('%s:' % _("Text")), self.text_input_entry)
+        self.grid_text.addWidget(self.text_input_entry, 6, 0, 1, 2)
 
         # Buttons
-        hlay1 = QtWidgets.QHBoxLayout()
-        self.form_layout.addRow("", hlay1)
-        hlay1.addStretch()
         self.apply_button = FCButton(_("Apply"))
-        hlay1.addWidget(self.apply_button)
+        self.grid_text.addWidget(self.apply_button, 8, 0, 1, 2)
 
         # self.layout.addStretch()
 

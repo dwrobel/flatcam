@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 from appTool import AppTool
-from appGUI.GUIElements import FCEntry
+from appGUI.GUIElements import FCEntry, FCLabel, FCButton
 
 from shapely.ops import nearest_points
 from shapely.geometry import Point, MultiPolygon
@@ -239,40 +239,28 @@ class DistMinUI:
         self.units = self.app.defaults['units'].lower()
 
         # ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
+        title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
         self.layout.addWidget(title_label)
 
-        # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
-
-        self.units_label = QtWidgets.QLabel('%s:' % _("Units"))
+        # ## Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+        
+        # Units
+        self.units_label = FCLabel('%s:' % _("Units"))
         self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
-        self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
+        self.units_value = FCLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
         self.units_value.setDisabled(True)
 
-        self.start_label = QtWidgets.QLabel("%s:" % _('First object point'))
+        grid0.addWidget(self.units_label, 0, 0)
+        grid0.addWidget(self.units_value, 0, 1)
+        
+        # Start
+        self.start_label = FCLabel("%s:" % _('First object point'))
         self.start_label.setToolTip(_("This is first object point coordinates.\n"
                                       "This is the start point for measuring distance."))
-
-        self.stop_label = QtWidgets.QLabel("%s:" % _('Second object point'))
-        self.stop_label.setToolTip(_("This is second object point coordinates.\n"
-                                     "This is the end point for measuring distance."))
-
-        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
-        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
-
-        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
-        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
-
-        self.angle_label = QtWidgets.QLabel('%s:' % _("Angle"))
-        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
-
-        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
-        self.total_distance_label.setToolTip(_("This is the point to point Euclidean distance."))
-
-        self.half_point_label = QtWidgets.QLabel("<b>%s:</b>" % _('Half Point'))
-        self.half_point_label.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 
         self.start_entry = FCEntry()
         self.start_entry.setReadOnly(True)
@@ -280,54 +268,92 @@ class DistMinUI:
         self.start_entry.setToolTip(_("This is first object point coordinates.\n"
                                       "This is the start point for measuring distance."))
 
+        grid0.addWidget(self.start_label, 2, 0)
+        grid0.addWidget(self.start_entry, 2, 1)
+        
+        # Stop
+        self.stop_label = FCLabel("%s:" % _('Second object point'))
+        self.stop_label.setToolTip(_("This is second object point coordinates.\n"
+                                     "This is the end point for measuring distance."))
+        
         self.stop_entry = FCEntry()
         self.stop_entry.setReadOnly(True)
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.stop_entry.setToolTip(_("This is second object point coordinates.\n"
                                      "This is the end point for measuring distance."))
 
+        grid0.addWidget(self.stop_label, 4, 0)
+        grid0.addWidget(self.stop_entry, 4, 1)
+        
+        # DX
+        self.distance_x_label = FCLabel('%s:' % _("Dx"))
+        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
+
         self.distance_x_entry = FCEntry()
         self.distance_x_entry.setReadOnly(True)
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
+
+        grid0.addWidget(self.distance_x_label, 6, 0)
+        grid0.addWidget(self.distance_x_entry, 6, 1)
+        
+        # DY
+        self.distance_y_label = FCLabel('%s:' % _("Dy"))
+        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setReadOnly(True)
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
+        grid0.addWidget(self.distance_y_label, 8, 0)
+        grid0.addWidget(self.distance_y_entry, 8, 1)
+        
+        # Angle
+        self.angle_label = FCLabel('%s:' % _("Angle"))
+        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
+
         self.angle_entry = FCEntry()
         self.angle_entry.setReadOnly(True)
         self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
+
+        grid0.addWidget(self.angle_label, 10, 0)
+        grid0.addWidget(self.angle_entry, 10, 1)
+        
+        # Total Distance
+        self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidean distance."))
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setReadOnly(True)
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidean distance."))
 
+        grid0.addWidget(self.total_distance_label, 12, 0)
+        grid0.addWidget(self.total_distance_entry, 12, 1)
+        
+        # Half Point
+        self.half_point_label = FCLabel("<b>%s:</b>" % _('Half Point'))
+        self.half_point_label.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
+
         self.half_point_entry = FCEntry()
         self.half_point_entry.setReadOnly(True)
         self.half_point_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.half_point_entry.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 
-        self.measure_btn = QtWidgets.QPushButton(_("Measure"))
-        self.layout.addWidget(self.measure_btn)
+        grid0.addWidget(self.half_point_label, 14, 0)
+        grid0.addWidget(self.half_point_entry, 14, 1)
+        
+        self.measure_btn = FCButton(_("Measure"))
+        grid0.addWidget(self.measure_btn, 16, 0, 1, 2)
 
-        self.jump_hp_btn = QtWidgets.QPushButton(_("Jump to Half Point"))
-        self.layout.addWidget(self.jump_hp_btn)
+        self.jump_hp_btn = FCButton(_("Jump to Half Point"))
         self.jump_hp_btn.setDisabled(True)
+        
+        grid0.addWidget(self.jump_hp_btn, 18, 0, 1, 2)
 
-        form_layout.addRow(self.units_label, self.units_value)
-        form_layout.addRow(self.start_label, self.start_entry)
-        form_layout.addRow(self.stop_label, self.stop_entry)
-        form_layout.addRow(self.distance_x_label, self.distance_x_entry)
-        form_layout.addRow(self.distance_y_label, self.distance_y_entry)
-        form_layout.addRow(self.angle_label, self.angle_entry)
-        form_layout.addRow(self.total_distance_label, self.total_distance_entry)
-        form_layout.addRow(self.half_point_label, self.half_point_entry)
-
-        self.layout.addStretch()
+        self.layout.addStretch(1)
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
 

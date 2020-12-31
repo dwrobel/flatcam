@@ -8,7 +8,7 @@
 from PyQt5 import QtGui, QtWidgets
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
+from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel
 
 import os
 
@@ -114,7 +114,7 @@ class ToolImage(AppTool):
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"),
                                                                  directory=self.app.get_last_folder(), filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=_filter)
 
         filename = str(filename)
         type_obj = self.ui.tf_type_obj_combo.get_value()
@@ -166,6 +166,7 @@ class ToolImage(AppTool):
             return
 
         def obj_init(geo_obj, app_obj):
+            app_obj.log.debug("ToolIamge.import_image() -> importing image as geometry")
             geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
             geo_obj.multigeo = False
 
@@ -194,7 +195,7 @@ class ImageUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -204,9 +205,11 @@ class ImageUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        # Form Layout
-        ti_form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(ti_form_layout)
+        # Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         # Type of object to create for the image
         self.tf_type_obj_combo = FCComboBox()
@@ -215,45 +218,44 @@ class ImageUI:
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+        self.tf_type_obj_combo_label = FCLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object to create from the image.\n"
               "It can be of type: Gerber or Geometry.")
 
         )
-        ti_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
+        grid0.addWidget(self.tf_type_obj_combo_label, 0, 0)
+        grid0.addWidget(self.tf_type_obj_combo, 0, 1)
 
         # DPI value of the imported image
         self.dpi_entry = FCSpinner(callback=self.confirmation_message_int)
         self.dpi_entry.set_range(0, 99999)
-        self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
+        self.dpi_label = FCLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(_("Specify a DPI value for the image."))
-        ti_form_layout.addRow(self.dpi_label, self.dpi_entry)
+        grid0.addWidget(self.dpi_label, 2, 0)
+        grid0.addWidget(self.dpi_entry, 2, 1)
 
-        self.emty_lbl = QtWidgets.QLabel("")
-        self.layout.addWidget(self.emty_lbl)
+        grid0.addWidget(FCLabel(''), 4, 0, 1, 2)
 
-        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b></font>" % _('Level of detail'))
-        self.layout.addWidget(self.detail_label)
-
-        ti2_form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(ti2_form_layout)
+        self.detail_label = FCLabel("<font size=4><b>%s:</b></font>" % _('Level of detail'))
+        grid0.addWidget(self.detail_label, 6, 0, 1, 2)
 
         # Type of image interpretation
         self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
                                     {'label': 'Color', 'value': 'color'}])
-        self.image_type_label = QtWidgets.QLabel("<b>%s:</b>" % _('Image type'))
+        self.image_type_label = FCLabel("<b>%s:</b>" % _('Image type'))
         self.image_type_label.setToolTip(
             _("Choose a method for the image interpretation.\n"
               "B/W means a black & white image. Color means a colored image.")
         )
-        ti2_form_layout.addRow(self.image_type_label, self.image_type)
+        grid0.addWidget(self.image_type_label, 8, 0)
+        grid0.addWidget(self.image_type, 8, 1)
 
         # Mask value of the imported image when image monochrome
         self.mask_bw_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_bw_entry.set_range(0, 255)
 
-        self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
+        self.mask_bw_label = FCLabel("%s <b>B/W</b>:" % _('Mask value'))
         self.mask_bw_label.setToolTip(
             _("Mask for monochrome image.\n"
               "Takes values between [0 ... 255].\n"
@@ -262,55 +264,59 @@ class ImageUI:
               "0 means no detail and 255 means everything \n"
               "(which is totally black).")
         )
-        ti2_form_layout.addRow(self.mask_bw_label, self.mask_bw_entry)
+        grid0.addWidget(self.mask_bw_label, 10, 0)
+        grid0.addWidget(self.mask_bw_entry, 10, 1)
 
         # Mask value of the imported image for RED color when image color
         self.mask_r_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_r_entry.set_range(0, 255)
 
-        self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
+        self.mask_r_label = FCLabel("%s <b>R:</b>" % _('Mask value'))
         self.mask_r_label.setToolTip(
             _("Mask for RED color.\n"
               "Takes values between [0 ... 255].\n"
               "Decides the level of details to include\n"
               "in the resulting geometry.")
         )
-        ti2_form_layout.addRow(self.mask_r_label, self.mask_r_entry)
+        grid0.addWidget(self.mask_r_label, 12, 0)
+        grid0.addWidget(self.mask_r_entry, 12, 1)
 
         # Mask value of the imported image for GREEN color when image color
         self.mask_g_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_g_entry.set_range(0, 255)
 
-        self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
+        self.mask_g_label = FCLabel("%s <b>G:</b>" % _('Mask value'))
         self.mask_g_label.setToolTip(
             _("Mask for GREEN color.\n"
               "Takes values between [0 ... 255].\n"
               "Decides the level of details to include\n"
               "in the resulting geometry.")
         )
-        ti2_form_layout.addRow(self.mask_g_label, self.mask_g_entry)
+        grid0.addWidget(self.mask_g_label, 14, 0)
+        grid0.addWidget(self.mask_g_entry, 14, 1)
 
         # Mask value of the imported image for BLUE color when image color
         self.mask_b_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_b_entry.set_range(0, 255)
 
-        self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))
+        self.mask_b_label = FCLabel("%s <b>B:</b>" % _('Mask value'))
         self.mask_b_label.setToolTip(
             _("Mask for BLUE color.\n"
               "Takes values between [0 ... 255].\n"
               "Decides the level of details to include\n"
               "in the resulting geometry.")
         )
-        ti2_form_layout.addRow(self.mask_b_label, self.mask_b_entry)
+        grid0.addWidget(self.mask_b_label, 16, 0)
+        grid0.addWidget(self.mask_b_entry, 16, 1)
 
         # Buttons
         self.import_button = QtWidgets.QPushButton(_("Import image"))
         self.import_button.setToolTip(
             _("Open a image of raster type and then import it in FlatCAM.")
         )
-        self.layout.addWidget(self.import_button)
+        grid0.addWidget(self.import_button, 18, 0, 1, 2)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         self.on_image_type(val=False)
 

@@ -1159,26 +1159,28 @@ class SolderUI:
         self.layout.addWidget(title_label)
 
         # ## Form Layout
-        obj_form_layout = QtWidgets.QFormLayout()
+        obj_form_layout = QtWidgets.QGridLayout()
+        obj_form_layout.setColumnStretch(0, 0)
+        obj_form_layout.setColumnStretch(1, 1)
         self.layout.addLayout(obj_form_layout)
 
         # ## Gerber Object to be used for solderpaste dispensing
+        self.object_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
+        self.object_label.setToolTip(_("Gerber Solderpaste object."))
+
         self.obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
         self.obj_combo.obj_type = "Gerber"
 
-        self.object_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
-        self.object_label.setToolTip(_("Gerber Solderpaste object.")
-                                     )
-        obj_form_layout.addRow(self.object_label)
-        obj_form_layout.addRow(self.obj_combo)
+        obj_form_layout.addWidget(self.object_label, 0, 0, 1, 2)
+        obj_form_layout.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        obj_form_layout.addRow(separator_line)
+        obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
@@ -1186,10 +1188,10 @@ class SolderUI:
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for dispensing solder paste.")
         )
-        self.layout.addWidget(self.tools_table_label)
+        obj_form_layout.addWidget(self.tools_table_label, 6, 0, 1, 2)
 
         self.tools_table = FCTable()
-        self.layout.addWidget(self.tools_table)
+        obj_form_layout.addWidget(self.tools_table, 8, 0, 1, 2)
 
         self.tools_table.setColumnCount(3)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), ''])

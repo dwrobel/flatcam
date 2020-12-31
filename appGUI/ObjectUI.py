@@ -2910,11 +2910,14 @@ class DocumentObjectUI(ObjectUI):
         h_lay.addStretch()
 
         # ##############################################################
-        # ############ FORM LAYOUT #####################################
+        # ############ Grid LAYOUT #####################################
         # ##############################################################
 
-        self.form_box = QtWidgets.QFormLayout()
-        self.custom_box.addLayout(self.form_box)
+        self.grid0 = QtWidgets.QGridLayout()
+        self.grid0.setColumnStretch(0, 0)
+        self.grid0.setColumnStretch(1, 1)
+        self.grid0.setColumnStretch(2, 0)
+        self.custom_box.addLayout(self.grid0)
 
         # Font
         self.font_type_label = FCLabel('%s:' % _("Font Type"))
@@ -2931,27 +2934,27 @@ class DocumentObjectUI(ObjectUI):
         self.font_type_cb = QtWidgets.QFontComboBox(self)
         self.font_type_cb.setCurrentFont(f_current)
 
-        self.form_box.addRow(self.font_type_label, self.font_type_cb)
+        self.grid0.addWidget(self.font_type_label, 0, 0)
+        self.grid0.addWidget(self.font_type_cb, 0, 1)
 
         # Font Size
         self.font_size_label = FCLabel('%s:' % _("Font Size"))
 
+        size_hlay = QtWidgets.QHBoxLayout()
+
         self.font_size_cb = FCComboBox()
         self.font_size_cb.setEditable(True)
         self.font_size_cb.setMinimumContentsLength(3)
-        self.font_size_cb.setMaximumWidth(70)
+        # self.font_size_cb.setMaximumWidth(70)
 
         font_sizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
                       '15', '16', '18', '20', '22', '24', '26', '28',
                       '32', '36', '40', '44', '48', '54', '60', '66',
                       '72', '80', '88', '96']
 
-        for i in font_sizes:
-            self.font_size_cb.addItem(i)
+        self.font_size_cb.addItems(font_sizes)
 
-        size_hlay = QtWidgets.QHBoxLayout()
         size_hlay.addWidget(self.font_size_cb)
-        size_hlay.addStretch()
 
         self.font_bold_tb = QtWidgets.QToolButton()
         self.font_bold_tb.setCheckable(True)
@@ -2967,7 +2970,8 @@ class DocumentObjectUI(ObjectUI):
         self.font_under_tb.setIcon(QtGui.QIcon(self.resource_loc + '/underline32.png'))
         size_hlay.addWidget(self.font_under_tb)
 
-        self.form_box.addRow(self.font_size_label, size_hlay)
+        self.grid0.addWidget(self.font_size_label, 2, 0)
+        self.grid0.addLayout(size_hlay, 2, 1)
 
         # Alignment Choices
         self.alignment_label = FCLabel('%s:' % _("Alignment"))
@@ -2994,39 +2998,48 @@ class DocumentObjectUI(ObjectUI):
         self.al_justify_tb.setIcon(QtGui.QIcon(self.resource_loc + '/align_justify32.png'))
         al_hlay.addWidget(self.al_justify_tb)
 
-        self.form_box.addRow(self.alignment_label, al_hlay)
+        al_hlay.addStretch()
+
+        self.grid0.addWidget(self.alignment_label, 4, 0)
+        self.grid0.addLayout(al_hlay, 4, 1)
 
         # Font Color
         self.font_color_label = FCLabel('%s:' % _('Font Color'))
         self.font_color_label.setToolTip(
            _("Set the font color for the selected text")
         )
+
+        self.grid0_child_1 = QtWidgets.QHBoxLayout()
+
         self.font_color_entry = FCEntry()
         self.font_color_button = FCButton()
         self.font_color_button.setFixedSize(15, 15)
 
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.font_color_entry)
-        self.form_box_child_1.addWidget(self.font_color_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.grid0_child_1.addWidget(self.font_color_entry)
+        self.grid0_child_1.addWidget(self.font_color_button)
+        self.grid0_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        self.form_box.addRow(self.font_color_label, self.form_box_child_1)
+        self.grid0.addWidget(self.font_color_label, 6, 0)
+        self.grid0.addLayout(self.grid0_child_1, 6, 1)
 
         # Selection Color
         self.sel_color_label = FCLabel('%s:' % _('Selection Color'))
         self.sel_color_label.setToolTip(
            _("Set the selection color when doing text selection.")
         )
+
+        self.grid0_child_2 = QtWidgets.QHBoxLayout()
+
         self.sel_color_entry = FCEntry()
         self.sel_color_button = FCButton()
         self.sel_color_button.setFixedSize(15, 15)
 
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.sel_color_entry)
-        self.form_box_child_2.addWidget(self.sel_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.grid0_child_2.addWidget(self.sel_color_entry)
+        self.grid0_child_2.addWidget(self.sel_color_button)
+        self.grid0_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        self.form_box.addRow(self.sel_color_label, self.form_box_child_2)
+        self.grid0.addWidget(self.sel_color_label, 8, 0)
+        self.grid0.addLayout(self.grid0_child_2, 8, 1)
 
         # Tab size
         self.tab_size_label = FCLabel('%s:' % _('Tab Size'))
@@ -3036,8 +3049,9 @@ class DocumentObjectUI(ObjectUI):
         self.tab_size_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.tab_size_spinner.set_range(0, 1000)
 
-        self.form_box.addRow(self.tab_size_label, self.tab_size_spinner)
+        self.grid0.addWidget(self.tab_size_label, 10, 0)
+        self.grid0.addWidget(self.tab_size_spinner, 10, 1)
 
-        self.custom_box.addStretch()
+        self.custom_box.addStretch(1)
 
 # end of file

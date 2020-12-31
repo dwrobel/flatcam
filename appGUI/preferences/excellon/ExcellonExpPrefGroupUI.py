@@ -34,8 +34,10 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_options_label)
 
-        form = QtWidgets.QFormLayout()
-        self.layout.addLayout(form)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         # Excellon Units
         self.excellon_units_label = FCLabel('%s:' % _('Units'))
@@ -49,7 +51,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Excellon file.")
         )
 
-        form.addRow(self.excellon_units_label, self.excellon_units_radio)
+        grid0.addWidget(self.excellon_units_label, 0, 0)
+        grid0.addWidget(self.excellon_units_radio, 0, 1)
 
         # Excellon non-decimal format
         self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
@@ -85,7 +88,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
         hlay1.addStretch()
 
-        form.addRow(self.digits_label, hlay1)
+        grid0.addWidget(self.digits_label, 2, 0)
+        grid0.addLayout(hlay1, 2, 1)
 
         # Select the Excellon Format
         self.format_label = FCLabel("%s:" % _("Format"))
@@ -108,7 +112,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "or TZ = trailing zeros are kept.")
         )
 
-        form.addRow(self.format_label, self.format_radio)
+        grid0.addWidget(self.format_label, 4, 0)
+        grid0.addWidget(self.format_radio, 4, 1)
 
         # Excellon Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
@@ -131,7 +136,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are removed.")
         )
 
-        form.addRow(self.zeros_label, self.zeros_radio)
+        grid0.addWidget(self.zeros_label, 6, 0)
+        grid0.addWidget(self.zeros_radio, 6, 1)
 
         # Slot type
         self.slot_type_label = FCLabel('%s:' % _('Slot type'))
@@ -154,9 +160,12 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "using the Drilled slot command (G85).")
         )
 
-        form.addRow(self.slot_type_label, self.slot_type_radio)
+        grid0.addWidget(self.slot_type_label, 8, 0)
+        grid0.addWidget(self.slot_type_radio, 8, 1)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
+
+        # Signals
         self.format_radio.activated_custom.connect(self.optimization_selection)
 
     def optimization_selection(self):

@@ -5152,7 +5152,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                self.form = QtWidgets.QFormLayout(self)
+                grid0 = QtWidgets.QGridLayout(self)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Quadrant 1"), "value": "bl"},
@@ -5162,12 +5162,12 @@ class App(QtCore.QObject):
                     {"label": _("Center"), "value": "c"}
                 ], orientation='vertical', stretch=False)
                 self.ref_radio.set_value(choice)
-                self.form.addRow(self.ref_radio)
+                grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
                     QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
                     Qt.Horizontal, parent=self)
-                self.form.addRow(self.button_box)
+                grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
@@ -5416,7 +5416,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                self.form = QtWidgets.QFormLayout(self)
+                grid0 = QtWidgets.QGridLayout(self)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Bottom Left"), "value": "bl"},
@@ -5426,12 +5426,12 @@ class App(QtCore.QObject):
                     {"label": _("Center"), "value": "c"}
                 ], orientation='vertical', stretch=False)
                 self.ref_radio.set_value(choice)
-                self.form.addRow(self.ref_radio)
+                grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
                     QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
                     Qt.Horizontal, parent=self)
-                self.form.addRow(self.button_box)
+                grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)

@@ -78,17 +78,21 @@ class BookmarkManager(QtWidgets.QWidget):
         new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
-        form0 = QtWidgets.QFormLayout()
-        new_vlay.addLayout(form0)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        new_vlay.addLayout(grid0)
 
         title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
         self.title_entry = FCEntry()
-        form0.addRow(title_lbl, self.title_entry)
+        grid0.addWidget(title_lbl, 0, 0)
+        grid0.addWidget(self.title_entry, 0, 1)
 
         link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
         self.link_entry = FCEntry()
         self.link_entry.set_value('http://')
-        form0.addRow(link_lbl, self.link_entry)
+        grid0.addWidget(link_lbl, 2, 0)
+        grid0.addWidget(self.link_entry, 2, 1)
 
         # Buttons Layout
         button_hlay = QtWidgets.QHBoxLayout()

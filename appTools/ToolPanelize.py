@@ -1000,6 +1000,11 @@ class PanelizeUI:
                                 """)
         self.layout.addWidget(title_label)
 
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+
         self.object_label = FCLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip(
             _("Specify the type of object to be panelized\n"
@@ -1008,13 +1013,11 @@ class PanelizeUI:
               "in the Object combobox.")
         )
 
-        self.layout.addWidget(self.object_label)
-
-        # Form Layout
-        form_layout_0 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_0)
+        grid0.addWidget(self.object_label, 0, 0, 1, 2)
 
         # Type of object to be panelized
+        self.type_object_label = FCLabel('%s:' % _("Object Type"))
+
         self.type_obj_combo = FCComboBox()
         self.type_obj_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
@@ -1022,9 +1025,8 @@ class PanelizeUI:
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.type_object_label = FCLabel('%s:' % _("Object Type"))
-
-        form_layout_0.addRow(self.type_object_label, self.type_obj_combo)
+        grid0.addWidget(self.type_object_label, 2, 0)
+        grid0.addWidget( self.type_obj_combo, 2, 1)
 
         # Object to be panelized
         self.object_combo = FCComboBox()
@@ -1036,15 +1038,10 @@ class PanelizeUI:
             _("Object to be panelized. This means that it will\n"
               "be duplicated in an array of rows and columns.")
         )
-        form_layout_0.addRow(self.object_combo)
 
-        # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
+        grid0.addWidget(self.object_combo, 4, 0, 1, 2)
 
         # Type of box Panel object
-        self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
-                                         {'label': _('Bounding Box'), 'value': 'bbox'}])
         self.box_label = FCLabel("<b>%s:</b>" % _("Penelization Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
@@ -1056,8 +1053,11 @@ class PanelizeUI:
               "to this reference object therefore maintaining the panelized\n"
               "objects in sync.")
         )
-        form_layout.addRow(self.box_label)
-        form_layout.addRow(self.reference_radio)
+        grid0.addWidget(self.box_label, 6, 0, 1, 2)
+
+        self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
+                                         {'label': _('Bounding Box'), 'value': 'bbox'}])
+        grid0.addWidget(self.reference_radio, 8, 0, 1, 2)
 
         # Type of Box Object to be used as an envelope for panelization
         self.type_box_combo = FCComboBox()
@@ -1075,7 +1075,8 @@ class PanelizeUI:
               "The selection here decide the type of objects that will be\n"
               "in the Box Object combobox.")
         )
-        form_layout.addRow(self.type_box_combo_label, self.type_box_combo)
+        grid0.addWidget(self.type_box_combo_label, 10, 0)
+        grid0.addWidget(self.type_box_combo, 10, 1)
 
         # Box
         self.box_combo = FCComboBox()
@@ -1087,12 +1088,12 @@ class PanelizeUI:
             _("The actual object that is used as container for the\n "
               "selected object that is to be panelized.")
         )
-        form_layout.addRow(self.box_combo)
+        grid0.addWidget(self.box_combo, 12, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        form_layout.addRow(separator_line)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         panel_data_label = FCLabel("<b>%s:</b>" % _("Panel Data"))
         panel_data_label.setToolTip(
@@ -1103,7 +1104,7 @@ class PanelizeUI:
               "The spacings will set the distance between any two\n"
               "elements of the panel array.")
         )
-        form_layout.addRow(panel_data_label)
+        grid0.addWidget(panel_data_label, 16, 0, 1, 2)
 
         # Spacing Columns
         self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1115,7 +1116,8 @@ class PanelizeUI:
             _("Spacing between columns of the desired panel.\n"
               "In current units.")
         )
-        form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
+        grid0.addWidget(self.spacing_columns_label, 18, 0)
+        grid0.addWidget(self.spacing_columns, 18, 1)
 
         # Spacing Rows
         self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1127,32 +1129,35 @@ class PanelizeUI:
             _("Spacing between rows of the desired panel.\n"
               "In current units.")
         )
-        form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
+        grid0.addWidget(self.spacing_rows_label, 20, 0)
+        grid0.addWidget(self.spacing_rows, 20, 1)
 
         # Columns
         self.columns = FCSpinner(callback=self.confirmation_message_int)
-        self.columns.set_range(0, 9999)
+        self.columns.set_range(0, 10000)
 
         self.columns_label = FCLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
         )
-        form_layout.addRow(self.columns_label, self.columns)
+        grid0.addWidget(self.columns_label, 22, 0)
+        grid0.addWidget(self.columns, 22, 1)
 
         # Rows
         self.rows = FCSpinner(callback=self.confirmation_message_int)
-        self.rows.set_range(0, 9999)
+        self.rows.set_range(0, 10000)
 
         self.rows_label = FCLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
         )
-        form_layout.addRow(self.rows_label, self.rows)
+        grid0.addWidget(self.rows_label, 24, 0)
+        grid0.addWidget(self.rows, 24, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        form_layout.addRow(separator_line)
+        grid0.addWidget(separator_line, 26, 0, 1, 2)
 
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
@@ -1163,8 +1168,8 @@ class PanelizeUI:
               "- Gerber\n"
               "- Geometry")
         )
-        form_layout.addRow(self.panel_type_label)
-        form_layout.addRow(self.panel_type_radio)
+        grid0.addWidget(self.panel_type_label, 28, 0)
+        grid0.addWidget(self.panel_type_radio, 28, 1)
 
         # Path optimization
         self.optimization_cb = FCCheckBox('%s' % _("Path Optimization"))
@@ -1174,7 +1179,7 @@ class PanelizeUI:
               "any two overlapping Line elements in the panel\n"
               "and will remove the overlapping parts, keeping only one of them.")
         )
-        form_layout.addRow(self.optimization_cb)
+        grid0.addWidget(self.optimization_cb, 30, 0, 1, 2)
 
         # Constrains
         self.constrain_cb = FCCheckBox('%s:' % _("Constrain panel within"))
@@ -1185,29 +1190,31 @@ class PanelizeUI:
               "the final panel will have as many columns and rows as\n"
               "they fit completely within selected area.")
         )
-        form_layout.addRow(self.constrain_cb)
+        grid0.addWidget(self.constrain_cb, 32, 0, 1, 2)
 
         self.x_width_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.x_width_entry.set_precision(4)
-        self.x_width_entry.set_range(0, 9999)
+        self.x_width_entry.set_precision(self.decimals)
+        self.x_width_entry.set_range(0.0000, 10000.0000)
 
         self.x_width_lbl = FCLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
         )
-        form_layout.addRow(self.x_width_lbl, self.x_width_entry)
+        grid0.addWidget(self.x_width_lbl, 34, 0)
+        grid0.addWidget(self.x_width_entry, 34, 1)
 
         self.y_height_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.y_height_entry.set_range(0, 9999)
-        self.y_height_entry.set_precision(4)
+        self.y_height_entry.set_range(0, 10000)
+        self.y_height_entry.set_precision(self.decimals)
 
         self.y_height_lbl = FCLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")
         )
-        form_layout.addRow(self.y_height_lbl, self.y_height_entry)
+        grid0.addWidget(self.y_height_lbl, 36, 0)
+        grid0.addWidget(self.y_height_entry, 36, 1)
 
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
@@ -1215,7 +1222,7 @@ class PanelizeUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        form_layout.addRow(separator_line)
+        grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Buttons
         self.panelize_object_button = FCButton(_("Panelize Object"))
@@ -1231,9 +1238,9 @@ class PanelizeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.panelize_object_button)
+        grid0.addWidget(self.panelize_object_button, 40, 0, 1, 2)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

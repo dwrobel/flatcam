@@ -1384,29 +1384,33 @@ class RulesUI:
         self.layout.addWidget(self.all_cb)
 
         # Form Layout
-        self.form_layout_1 = QtWidgets.QFormLayout()
-        self.layout.addLayout(self.form_layout_1)
+        self.grid_lay1 = QtWidgets.QGridLayout()
+        self.grid_lay1.setColumnStretch(0, 0)
+        self.grid_lay1.setColumnStretch(1, 1)
+        self.layout.addLayout(self.grid_lay1)
 
-        self.form_layout_1.addRow(FCLabel(""))
+        self.grid_lay1.addWidget(FCLabel(""), 0, 0, 1, 2)
 
         # Trace size
         self.trace_size_cb = FCCheckBox('%s:' % _("Trace Size"))
         self.trace_size_cb.setToolTip(
             _("This checks if the minimum size for traces is met.")
         )
-        self.form_layout_1.addRow(self.trace_size_cb)
+        self.grid_lay1.addWidget(self.trace_size_cb, 2, 0, 1, 2)
 
         # Trace size value
-        self.trace_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.trace_size_entry.set_range(0.00001, 999.99999)
-        self.trace_size_entry.set_precision(self.decimals)
-        self.trace_size_entry.setSingleStep(0.1)
-
         self.trace_size_lbl = FCLabel('%s:' % _("Min value"))
         self.trace_size_lbl.setToolTip(
             _("Minimum acceptable trace size.")
         )
-        self.form_layout_1.addRow(self.trace_size_lbl, self.trace_size_entry)
+
+        self.trace_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.trace_size_entry.set_range(0.0000, 10000.0000)
+        self.trace_size_entry.set_precision(self.decimals)
+        self.trace_size_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.trace_size_lbl, 4, 0)
+        self.grid_lay1.addWidget(self.trace_size_entry, 4, 1)
 
         self.ts = OptionalInputSection(self.trace_size_cb, [self.trace_size_lbl, self.trace_size_entry])
 
@@ -1416,19 +1420,21 @@ class RulesUI:
             _("This checks if the minimum clearance between copper\n"
               "features is met.")
         )
-        self.form_layout_1.addRow(self.clearance_copper2copper_cb)
+        self.grid_lay1.addWidget(self.clearance_copper2copper_cb, 6, 0, 1, 2)
 
         # Copper2copper clearance value
-        self.clearance_copper2copper_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_copper2copper_entry.set_range(0.00001, 999.99999)
-        self.clearance_copper2copper_entry.set_precision(self.decimals)
-        self.clearance_copper2copper_entry.setSingleStep(0.1)
-
         self.clearance_copper2copper_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_copper2copper_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry)
+
+        self.clearance_copper2copper_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_copper2copper_entry.set_range(0.0000, 10000.0000)
+        self.clearance_copper2copper_entry.set_precision(self.decimals)
+        self.clearance_copper2copper_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_copper2copper_lbl, 8, 0)
+        self.grid_lay1.addWidget(self.clearance_copper2copper_entry, 8, 1)
 
         self.c2c = OptionalInputSection(
             self.clearance_copper2copper_cb, [self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry])
@@ -1439,19 +1445,21 @@ class RulesUI:
             _("This checks if the minimum clearance between copper\n"
               "features and the outline is met.")
         )
-        self.form_layout_1.addRow(self.clearance_copper2ol_cb)
+        self.grid_lay1.addWidget(self.clearance_copper2ol_cb, 10, 0, 1, 2)
 
         # Copper2outline clearance value
-        self.clearance_copper2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_copper2ol_entry.set_range(0.00001, 999.99999)
-        self.clearance_copper2ol_entry.set_precision(self.decimals)
-        self.clearance_copper2ol_entry.setSingleStep(0.1)
-
         self.clearance_copper2ol_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_copper2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry)
+
+        self.clearance_copper2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_copper2ol_entry.set_range(0.0000, 10000.0000)
+        self.clearance_copper2ol_entry.set_precision(self.decimals)
+        self.clearance_copper2ol_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_copper2ol_lbl, 12, 0)
+        self.grid_lay1.addWidget(self.clearance_copper2ol_entry, 12, 1)
 
         self.c2ol = OptionalInputSection(
             self.clearance_copper2ol_cb, [self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry])
@@ -1462,19 +1470,21 @@ class RulesUI:
             _("This checks if the minimum clearance between silkscreen\n"
               "features and silkscreen features is met.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2silk_cb)
+        self.grid_lay1.addWidget(self.clearance_silk2silk_cb, 14, 0, 1, 2)
 
         # Copper2silkscreen clearance value
-        self.clearance_silk2silk_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_silk2silk_entry.set_range(0.00001, 999.99999)
-        self.clearance_silk2silk_entry.set_precision(self.decimals)
-        self.clearance_silk2silk_entry.setSingleStep(0.1)
-
         self.clearance_silk2silk_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2silk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry)
+
+        self.clearance_silk2silk_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_silk2silk_entry.set_range(0.0000, 10000.0000)
+        self.clearance_silk2silk_entry.set_precision(self.decimals)
+        self.clearance_silk2silk_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_silk2silk_lbl, 16, 0)
+        self.grid_lay1.addWidget(self.clearance_silk2silk_entry, 16, 1)
 
         self.s2s = OptionalInputSection(
             self.clearance_silk2silk_cb, [self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry])
@@ -1485,19 +1495,21 @@ class RulesUI:
             _("This checks if the minimum clearance between silkscreen\n"
               "features and soldermask features is met.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2sm_cb)
+        self.grid_lay1.addWidget(self.clearance_silk2sm_cb, 18, 0, 1, 2)
 
         # Silkscreen2soldermask clearance value
-        self.clearance_silk2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_silk2sm_entry.set_range(0.00001, 999.99999)
-        self.clearance_silk2sm_entry.set_precision(self.decimals)
-        self.clearance_silk2sm_entry.setSingleStep(0.1)
-
         self.clearance_silk2sm_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry)
+
+        self.clearance_silk2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_silk2sm_entry.set_range(0.0000, 10000.0000)
+        self.clearance_silk2sm_entry.set_precision(self.decimals)
+        self.clearance_silk2sm_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_silk2sm_lbl, 20, 0)
+        self.grid_lay1.addWidget(self.clearance_silk2sm_entry, 20, 1)
 
         self.s2sm = OptionalInputSection(
             self.clearance_silk2sm_cb, [self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry])
@@ -1508,19 +1520,21 @@ class RulesUI:
             _("This checks if the minimum clearance between silk\n"
               "features and the outline is met.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2ol_cb)
+        self.grid_lay1.addWidget(self.clearance_silk2ol_cb, 22, 0, 1, 2)
 
         # Silk2outline clearance value
-        self.clearance_silk2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_silk2ol_entry.set_range(0.00001, 999.99999)
-        self.clearance_silk2ol_entry.set_precision(self.decimals)
-        self.clearance_silk2ol_entry.setSingleStep(0.1)
-
         self.clearance_silk2ol_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_silk2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry)
+
+        self.clearance_silk2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_silk2ol_entry.set_range(0.0000, 10000.0000)
+        self.clearance_silk2ol_entry.set_precision(self.decimals)
+        self.clearance_silk2ol_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_silk2ol_lbl, 24, 0)
+        self.grid_lay1.addWidget(self.clearance_silk2ol_entry, 24, 1)
 
         self.s2ol = OptionalInputSection(
             self.clearance_silk2ol_cb, [self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry])
@@ -1531,19 +1545,22 @@ class RulesUI:
             _("This checks if the minimum clearance between soldermask\n"
               "features and soldermask features is met.")
         )
-        self.form_layout_1.addRow(self.clearance_sm2sm_cb)
+        self.grid_lay1.addWidget(self.clearance_sm2sm_cb, 26, 0, 1, 2)
 
         # Soldermask2soldermask clearance value
-        self.clearance_sm2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_sm2sm_entry.set_range(0.00001, 999.99999)
-        self.clearance_sm2sm_entry.set_precision(self.decimals)
-        self.clearance_sm2sm_entry.setSingleStep(0.1)
 
         self.clearance_sm2sm_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_sm2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry)
+
+        self.clearance_sm2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_sm2sm_entry.set_range(0.0000, 10000.0000)
+        self.clearance_sm2sm_entry.set_precision(self.decimals)
+        self.clearance_sm2sm_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_sm2sm_lbl, 28, 0)
+        self.grid_lay1.addWidget(self.clearance_sm2sm_entry, 28, 1)
 
         self.sm2sm = OptionalInputSection(
             self.clearance_sm2sm_cb, [self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry])
@@ -1554,24 +1571,26 @@ class RulesUI:
             _("This checks if the minimum copper ring left by drilling\n"
               "a hole into a pad is met.")
         )
-        self.form_layout_1.addRow(self.ring_integrity_cb)
+        self.grid_lay1.addWidget(self.ring_integrity_cb, 30, 0, 1, 2)
 
         # Ring integrity value
-        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.ring_integrity_entry.set_range(0.00001, 999.99999)
-        self.ring_integrity_entry.set_precision(self.decimals)
-        self.ring_integrity_entry.setSingleStep(0.1)
-
         self.ring_integrity_lbl = FCLabel('%s:' % _("Min value"))
         self.ring_integrity_lbl.setToolTip(
             _("Minimum acceptable ring value.")
         )
-        self.form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
+
+        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.ring_integrity_entry.set_range(0.0000, 10000.0000)
+        self.ring_integrity_entry.set_precision(self.decimals)
+        self.ring_integrity_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.ring_integrity_lbl, 32, 0)
+        self.grid_lay1.addWidget(self.ring_integrity_entry, 32, 1)
 
         self.anr = OptionalInputSection(
             self.ring_integrity_cb, [self.ring_integrity_lbl, self.ring_integrity_entry])
 
-        self.form_layout_1.addRow(FCLabel(""))
+        self.grid_lay1.addWidget(FCLabel(''), 34, 0, 1, 2)
 
         # Hole2Hole clearance
         self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
@@ -1579,19 +1598,21 @@ class RulesUI:
             _("This checks if the minimum clearance between a drill hole\n"
               "and another drill hole is met.")
         )
-        self.form_layout_1.addRow(self.clearance_d2d_cb)
+        self.grid_lay1.addWidget(self.clearance_d2d_cb, 36, 0, 1, 2)
 
         # Hole2Hole clearance value
-        self.clearance_d2d_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_d2d_entry.set_range(0.00001, 999.99999)
-        self.clearance_d2d_entry.set_precision(self.decimals)
-        self.clearance_d2d_entry.setSingleStep(0.1)
-
         self.clearance_d2d_lbl = FCLabel('%s:' % _("Min value"))
         self.clearance_d2d_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        self.form_layout_1.addRow(self.clearance_d2d_lbl, self.clearance_d2d_entry)
+
+        self.clearance_d2d_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_d2d_entry.set_range(0.0000, 10000.0000)
+        self.clearance_d2d_entry.set_precision(self.decimals)
+        self.clearance_d2d_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.clearance_d2d_lbl, 38, 0)
+        self.grid_lay1.addWidget(self.clearance_d2d_entry, 38, 1)
 
         self.d2d = OptionalInputSection(
             self.clearance_d2d_cb, [self.clearance_d2d_lbl, self.clearance_d2d_entry])
@@ -1602,28 +1623,26 @@ class RulesUI:
             _("This checks if the drill holes\n"
               "sizes are above the threshold.")
         )
-        self.form_layout_1.addRow(self.drill_size_cb)
+        self.grid_lay1.addWidget(self.drill_size_cb, 40, 0, 1, 2)
 
-        # Drile holes value
-        self.drill_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.drill_size_entry.set_range(0.00001, 999.99999)
-        self.drill_size_entry.set_precision(self.decimals)
-        self.drill_size_entry.setSingleStep(0.1)
-
+        # Drills holes value
         self.drill_size_lbl = FCLabel('%s:' % _("Min value"))
         self.drill_size_lbl.setToolTip(
             _("Minimum acceptable drill size.")
         )
-        self.form_layout_1.addRow(self.drill_size_lbl, self.drill_size_entry)
+
+        self.drill_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_size_entry.set_range(0.0000, 10000.0000)
+        self.drill_size_entry.set_precision(self.decimals)
+        self.drill_size_entry.setSingleStep(0.1)
+
+        self.grid_lay1.addWidget(self.drill_size_lbl, 42, 0)
+        self.grid_lay1.addWidget(self.drill_size_entry, 42, 1)
 
         self.ds = OptionalInputSection(
             self.drill_size_cb, [self.drill_size_lbl, self.drill_size_entry])
 
         # Buttons
-        hlay_2 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay_2)
-
-        # hlay_2.addStretch()
         self.run_button = FCButton(_("Run Rules Check"))
         self.run_button.setIcon(QtGui.QIcon(self.app.resource_location + '/rules32.png'))
         self.run_button.setToolTip(
@@ -1637,9 +1656,9 @@ class RulesUI:
                                     font-weight: bold;
                                 }
                                 """)
-        hlay_2.addWidget(self.run_button)
+        self.grid_lay1.addWidget(self.run_button, 44, 0, 1, 2)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
@@ -1658,8 +1677,8 @@ class RulesUI:
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
     def on_all_cb_changed(self, state):
-        cb_items = [self.form_layout_1.itemAt(i).widget() for i in range(self.form_layout_1.count())
-                    if isinstance(self.form_layout_1.itemAt(i).widget(), FCCheckBox)]
+        cb_items = [self.grid_lay1.itemAt(i).widget() for i in range(self.grid_lay1.count())
+                    if isinstance(self.grid_lay1.itemAt(i).widget(), FCCheckBox)]
 
         for cb in cb_items:
             if state:

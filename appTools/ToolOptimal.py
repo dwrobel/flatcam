@@ -425,9 +425,11 @@ class OptimalUI:
         self.layout.addWidget(title_label)
         self.layout.addWidget(FCLabel(""))
 
-        # ## Form Layout
-        form_lay = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_lay)
+        # ## Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         # ## Gerber Object to mirror
         self.gerber_object_combo = FCComboBox()
@@ -440,13 +442,13 @@ class OptimalUI:
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
-        form_lay.addRow(self.gerber_object_label)
-        form_lay.addRow(self.gerber_object_combo)
+        grid0.addWidget(self.gerber_object_label, 0, 0, 1, 2)
+        grid0.addWidget(self.gerber_object_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        form_lay.addRow(separator_line)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Precision = nr of decimals
         self.precision_label = FCLabel('%s:' % _("Precision"))
@@ -455,12 +457,13 @@ class OptimalUI:
         self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
-        form_lay.addRow(self.precision_label, self.precision_spinner)
+        grid0.addWidget(self.precision_label, 6, 0)
+        grid0.addWidget(self.precision_spinner, 6, 1)
 
         # Results Title
         self.title_res_label = FCLabel('<b>%s:</b>' % _("Minimum distance"))
         self.title_res_label.setToolTip(_("Display minimum distance between copper features."))
-        form_lay.addRow(self.title_res_label)
+        grid0.addWidget(self.title_res_label, 8, 0, 1, 2)
 
         # Result value
         self.result_label = FCLabel('%s:' % _("Determined"))
@@ -474,19 +477,21 @@ class OptimalUI:
         hlay.addWidget(self.result_entry)
         hlay.addWidget(self.units_lbl)
 
-        form_lay.addRow(self.result_label, hlay)
+        grid0.addWidget(self.units_lbl, 10, 0)
+        grid0.addLayout(hlay, 10, 1)
 
         # Frequency of minimum encounter
         self.freq_label = FCLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
         self.freq_entry = FCEntry()
         self.freq_entry.setReadOnly(True)
-        form_lay.addRow(self.freq_label, self.freq_entry)
+        grid0.addWidget(self.freq_label, 12, 0)
+        grid0.addWidget(self.freq_entry, 12, 1)
 
         # Control if to display the locations of where the minimum was found
         self.locations_cb = FCCheckBox(_("Minimum points coordinates"))
         self.locations_cb.setToolTip(_("Coordinates for points where minimum distance was found."))
-        form_lay.addRow(self.locations_cb)
+        grid0.addWidget(self.locations_cb, 14, 0, 1, 2)
 
         # Locations where minimum was found
         self.locations_textb = FCTextArea()
@@ -501,7 +506,7 @@ class OptimalUI:
                              """
 
         self.locations_textb.setStyleSheet(stylesheet)
-        form_lay.addRow(self.locations_textb)
+        grid0.addWidget(self.locations_textb, 16, 0, 1, 2)
 
         # Jump button
         self.locate_button = FCButton(_("Jump to selected position"))
@@ -511,19 +516,19 @@ class OptimalUI:
         )
         self.locate_button.setMinimumWidth(60)
         self.locate_button.setDisabled(True)
-        form_lay.addRow(self.locate_button)
+        grid0.addWidget(self.locate_button, 18, 0, 1, 2)
 
         # Other distances in Gerber
         self.title_second_res_label = FCLabel('<b>%s:</b>' % _("Other distances"))
         self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
                                                  "the minimum to the maximum, not including the absolute minimum."))
-        form_lay.addRow(self.title_second_res_label)
+        grid0.addWidget(self.title_second_res_label, 20, 0, 1, 2)
 
         # Control if to display the locations of where the minimum was found
         self.sec_locations_cb = FCCheckBox(_("Other distances points coordinates"))
         self.sec_locations_cb.setToolTip(_("Other distances and the coordinates for points\n"
                                            "where the distance was found."))
-        form_lay.addRow(self.sec_locations_cb)
+        grid0.addWidget(self.sec_locations_cb, 22, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.sec_locations_frame = QtWidgets.QFrame()
@@ -606,7 +611,7 @@ class OptimalUI:
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

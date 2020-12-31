@@ -398,9 +398,11 @@ class WizardUI:
 
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Load files")))
 
-        # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
+        # Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         self.excellon_label = FCLabel('%s:' % _("Excellon file"))
         self.excellon_label.setToolTip(
@@ -408,14 +410,16 @@ class WizardUI:
               "Usually it has a .DRL extension")
         )
         self.excellon_brn = FCButton(_("Open"))
-        form_layout.addRow(self.excellon_label, self.excellon_brn)
+        grid0.addWidget(self.excellon_label, 0, 0)
+        grid0.addWidget(self.excellon_brn, 0, 1)
 
         self.inf_label = FCLabel('%s:' % _("INF file"))
         self.inf_label.setToolTip(
             _("Load the INF file.")
         )
         self.inf_btn = FCButton(_("Open"))
-        form_layout.addRow(self.inf_label, self.inf_btn)
+        grid0.addWidget(self.inf_label, 2, 0)
+        grid0.addWidget(self.inf_btn, 2, 1)
 
         self.tools_table = FCTable()
         self.layout.addWidget(self.tools_table)
@@ -433,9 +437,12 @@ class WizardUI:
 
         self.layout.addWidget(FCLabel(""))
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
-        # Form Layout
-        form_layout1 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout1)
+
+        # Grid Layout
+        grid01 = QtWidgets.QGridLayout()
+        grid01.setColumnStretch(0, 0)
+        grid01.setColumnStretch(1, 1)
+        self.layout.addLayout(grid01)
 
         # Integral part of the coordinates
         self.int_entry = FCSpinner(callback=self.confirmation_message_int)
@@ -444,7 +451,8 @@ class WizardUI:
         self.int_label.setToolTip(
             _("The number of digits for the integral part of the coordinates.")
         )
-        form_layout1.addRow(self.int_label, self.int_entry)
+        grid01.addWidget(self.int_label, 0, 0)
+        grid01.addWidget(self.int_entry, 0, 1)
 
         # Fractional part of the coordinates
         self.frac_entry = FCSpinner(callback=self.confirmation_message_int)
@@ -453,7 +461,8 @@ class WizardUI:
         self.frac_label.setToolTip(
             _("The number of digits for the fractional part of the coordinates.")
         )
-        form_layout1.addRow(self.frac_label, self.frac_entry)
+        grid01.addWidget(self.frac_label, 2, 0)
+        grid01.addWidget(self.frac_entry, 2, 1)
 
         # Zeros suppression for coordinates
         self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
@@ -467,7 +476,8 @@ class WizardUI:
               "- TZ = trailing zeros are kept\n"
               "- No Suppression = no zero suppression")
         )
-        form_layout1.addRow(self.zeros_label, self.zeros_radio)
+        grid01.addWidget(self.zeros_label, 4, 0)
+        grid01.addWidget(self.zeros_radio, 4, 1)
 
         # Units type
         self.units_radio = RadioSet([{'label': _('Inch'), 'value': 'INCH'},
@@ -477,7 +487,8 @@ class WizardUI:
             _("The type of units that the coordinates and tool\n"
               "diameters are using. Can be INCH or MM.")
         )
-        form_layout1.addRow(self.units_label, self.units_radio)
+        grid01.addWidget(self.units_label, 6, 0)
+        grid01.addWidget(self.units_radio, 6, 1)
 
         # Buttons
 
@@ -488,9 +499,9 @@ class WizardUI:
               "One usually has .DRL extension while\n"
               "the other has .INF extension.")
         )
-        self.layout.addWidget(self.import_button)
+        grid01.addWidget(self.import_button, 8, 0, 1, 2)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

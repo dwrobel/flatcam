@@ -3859,7 +3859,9 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
 
-        self.form = QtWidgets.QFormLayout(self)
+        grid0 = QtWidgets.QGridLayout(self)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         self.ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
@@ -3872,12 +3874,13 @@ class DialogBoxRadio(QtWidgets.QDialog):
             {"label": _("Relative"), "value": "rel"}
         ], orientation='horizontal', stretch=False)
         self.ref_radio.set_value(reference)
-        self.form.addRow(self.ref_label, self.ref_radio)
+        grid0.addWidget(self.ref_label, 0, 0)
+        grid0.addWidget(self.ref_radio, 0, 1)
 
-        self.form.addRow(QtWidgets.QLabel(''))
+        grid0.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 2)
 
         self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
-        self.form.addRow(self.wdg_label)
+        grid0.addWidget(self.wdg_label, 4, 0, 1, 2)
 
         self.loc_label = QtWidgets.QLabel('%s:' % _("Location"))
         self.loc_label.setToolTip(
@@ -3890,11 +3893,12 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
         self.lineEdit.selectAll()
         self.lineEdit.setFocus()
-        self.form.addRow(self.loc_label, self.lineEdit)
+        grid0.addWidget(self.loc_label, 6, 0)
+        grid0.addWidget(self.lineEdit, 6, 1)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
                                                      orientation=Qt.Horizontal, parent=self)
-        self.form.addRow(self.button_box)
+        grid0.addWidget(self.button_box, 8, 0, 1, 2)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
         self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))

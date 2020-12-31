@@ -6316,16 +6316,19 @@ class AppGerberEditorUI:
         )
         self.buffer_tools_box.addWidget(buf_title_lbl)
 
-        # Form Layout
-        buf_form_layout = QtWidgets.QFormLayout()
-        self.buffer_tools_box.addLayout(buf_form_layout)
+        # Grid Layout
+        buff_grid = QtWidgets.QGridLayout()
+        buff_grid.setColumnStretch(0, 0)
+        buff_grid.setColumnStretch(1, 1)
+        self.buffer_tools_box.addLayout(buff_grid)
 
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
-        buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
+        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0 ,0 )
+        buff_grid.addWidget(self.buffer_distance_entry, 0, 1)
 
         # Buffer Corner
         self.buffer_corner_lbl = FCLabel('%s:' % _("Buffer corner"))
@@ -6339,12 +6342,13 @@ class AppGerberEditorUI:
         self.buffer_corner_cb.addItem(_("Round"))
         self.buffer_corner_cb.addItem(_("Square"))
         self.buffer_corner_cb.addItem(_("Beveled"))
-        buf_form_layout.addRow(self.buffer_corner_lbl, self.buffer_corner_cb)
+        buff_grid.addWidget(self.buffer_corner_lbl, 2, 0)
+        buff_grid.addWidget(self.buffer_corner_cb, 2, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        buf_form_layout.addRow(separator_line)
+        buff_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # Buttons
         hlay_buf = QtWidgets.QHBoxLayout()
@@ -6372,9 +6376,11 @@ class AppGerberEditorUI:
         )
         self.scale_tools_box.addWidget(scale_title_lbl)
 
-        # Form Layout
-        scale_form_layout = QtWidgets.QFormLayout()
-        self.scale_tools_box.addLayout(scale_form_layout)
+        # Grid Layout
+        scale_grid = QtWidgets.QGridLayout()
+        scale_grid.setColumnStretch(0, 0)
+        scale_grid.setColumnStretch(1, 1)
+        self.scale_tools_box.addLayout(scale_grid)
 
         self.scale_factor_lbl = FCLabel('%s:' % _("Scale factor"))
         self.scale_factor_lbl.setToolTip(
@@ -6385,20 +6391,18 @@ class AppGerberEditorUI:
         self.scale_factor_entry.set_precision(self.decimals)
         self.scale_factor_entry.set_range(0.0000, 10000.0000)
 
-        scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
+        scale_grid.addWidget(self.scale_factor_lbl, 0, 0)
+        scale_grid.addWidget(self.scale_factor_entry, 0, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        scale_form_layout.addRow(separator_line)
+        scale_grid.addWidget(separator_line, 2, 0, 1, 2)
 
         # Buttons
-        hlay_scale = QtWidgets.QHBoxLayout()
-        self.scale_tools_box.addLayout(hlay_scale)
-
         self.scale_button = FCButton(_("Scale"))
-        self.scale_button.setIcon(QtGui.QIcon(self.app.resource_location + '/clean32.png'))
-        hlay_scale.addWidget(self.scale_button)
+        self.scale_button.setIcon(QtGui.QIcon(self.app.resource_location + '/scale32.png'))
+        scale_grid.addWidget(self.scale_button, 4, 0, 1, 2)
 
         # #############################################################################################################
         # ######################################### Mark Area TOOL ####################################################
@@ -6424,9 +6428,12 @@ class AppGerberEditorUI:
         self.ma_tools_box.addWidget(ma_title_lbl)
 
         # Form Layout
-        ma_form_layout = QtWidgets.QFormLayout()
-        self.ma_tools_box.addLayout(ma_form_layout)
+        mark_grid = QtWidgets.QGridLayout()
+        mark_grid.setColumnStretch(0, 0)
+        mark_grid.setColumnStretch(1, 1)
+        self.ma_tools_box.addLayout(mark_grid)
 
+        # Upper Threshold
         self.ma_upper_threshold_lbl = FCLabel('%s:' % _("Area UPPER threshold"))
         self.ma_upper_threshold_lbl.setToolTip(
             _("The threshold value, all areas less than this are marked.\n"
@@ -6436,6 +6443,10 @@ class AppGerberEditorUI:
         self.ma_upper_threshold_entry.set_precision(self.decimals)
         self.ma_upper_threshold_entry.set_range(0, 10000)
 
+        mark_grid.addWidget(self.ma_upper_threshold_lbl, 0, 0)
+        mark_grid.addWidget(self.ma_upper_threshold_entry, 0, 1)
+
+        # Lower Threshold
         self.ma_lower_threshold_lbl = FCLabel('%s:' % _("Area LOWER threshold"))
         self.ma_lower_threshold_lbl.setToolTip(
             _("The threshold value, all areas more than this are marked.\n"
@@ -6445,12 +6456,12 @@ class AppGerberEditorUI:
         self.ma_lower_threshold_entry.set_precision(self.decimals)
         self.ma_lower_threshold_entry.set_range(0, 10000)
 
-        ma_form_layout.addRow(self.ma_lower_threshold_lbl, self.ma_lower_threshold_entry)
-        ma_form_layout.addRow(self.ma_upper_threshold_lbl, self.ma_upper_threshold_entry)
+        mark_grid.addWidget(self.ma_lower_threshold_lbl, 2, 0)
+        mark_grid.addWidget(self.ma_lower_threshold_entry, 2, 1)
 
         # Buttons
         hlay_ma = QtWidgets.QHBoxLayout()
-        self.ma_tools_box.addLayout(hlay_ma)
+        mark_grid.addLayout(hlay_ma, 4, 0, 1, 2)
 
         self.ma_threshold_button = FCButton(_("Mark"))
         self.ma_threshold_button.setIcon(QtGui.QIcon(self.app.resource_location + '/markarea32.png'))
