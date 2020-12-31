@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed the issue with not saving the project on program close if selecting the 'Yes' option.
 - all the logs done on Exception are now errors (with the exception of few places where the Exception is expected)
+- added the modifications made by Andre Spahlinger in PR #333
 
 30.12.2020
 
