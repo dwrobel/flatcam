@@ -131,7 +131,7 @@ class ScriptObject(FlatCAMObj):
 
         try:
             # self.script_editor_tab.code_editor.setPlainText(self.source_file)
-            self.script_editor_tab.load_text(self.source_file, move_to_end=True)
+            self.script_editor_tab.load_text(self.script_code, move_to_end=True)
         except Exception as e:
             log.debug("ScriptObject.set_ui() --> %s" % str(e))
 
@@ -158,7 +158,7 @@ class ScriptObject(FlatCAMObj):
 
     def parse_file(self, filename):
         """
-        Will set an attribute of the object, self.source_file, with the parsed data.
+        Will set an attribute of the object, self.script_code, with the parsed data.
 
         :param filename:    Tcl Script file to parse
         :return:            None
@@ -167,7 +167,8 @@ class ScriptObject(FlatCAMObj):
             script_content = opened_script.readlines()
             script_content = ''.join(script_content)
 
-        self.source_file = script_content
+        self.script_code = script_content
+        self.source_file = filename
 
     def handle_run_code(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
@@ -184,7 +185,31 @@ class ScriptObject(FlatCAMObj):
         self.script_code = self.script_editor_tab.code_editor.toPlainText()
 
         old_line = ''
-        for tcl_command_line in self.script_code.splitlines():
+        
+        # set tcl info script to actual scriptfile
+        set_tcl_script_name='''proc procExists p {{
+        return uplevel 1 [expr {{[llength [info command $p]] > 0}}]
+        }}
+
+        #set alreadydefined [procExists "info_original"]
+        #if  {{${{alreadydefined}}==0}} {{
+        if  {{[procExists "info_original"]==0}} {{
+        rename info info_original
+        }}
+        proc info args {{
+            switch [lindex $args 0] {{
+                script {{
+                    return "{0}"
+                }}
+                default {{
+                    return [uplevel info_original $args]
+                }}
+            }}
+        }}'''.format(self.source_file)
+
+
+
+        for tcl_command_line in set_tcl_script_name.splitlines()+self.script_code.splitlines():
             # do not process lines starting with '#' = comment and empty lines
             if not tcl_command_line.startswith('#') and tcl_command_line != '':
                 # id FlatCAM is run in Windows then replace all the slashes with

@@ -1931,8 +1931,9 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        # shell tool has t obe initialized always first because other tools print messages in the Shell Dock
-        self.shell = FCShell(app=self, version=self.version)
+        # shell tool has to be initialized always first because other tools print messages in the Shell Dock, but only if it not al´ready exists
+        if (hasattr(self,"shell") and self.shell is None) or hasattr(self,"shell")==False:
+            self.shell = FCShell(app=self, version=self.version)
 
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
