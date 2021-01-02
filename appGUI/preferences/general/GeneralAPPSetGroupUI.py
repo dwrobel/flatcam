@@ -3,7 +3,6 @@ from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
     FCColorEntry, FCLabel
-from appGUI.preferences import settings
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +12,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class GeneralAPPSetGroupUI(OptionsGroupUI):
@@ -242,7 +235,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("textbox_font_size"):
-            self.textbox_font_size_spinner.set_value(settings.value('textbox_font_size', type=int))
+            self.textbox_font_size_spinner.set_value(qsettings.value('textbox_font_size', type=int))
         else:
             self.textbox_font_size_spinner.set_value(10)
 
@@ -261,7 +254,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("hud_font_size"):
-            self.hud_font_size_spinner.set_value(settings.value('hud_font_size', type=int))
+            self.hud_font_size_spinner.set_value(qsettings.value('hud_font_size', type=int))
         else:
             self.hud_font_size_spinner.set_value(8)
 
@@ -410,18 +403,6 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
 
         grid0.addWidget(self.toggle_tooltips_cb, 33, 0, 1, 2)
-
-        # Machinist settings that allow unsafe settings
-        self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
-        self.machinist_cb.setToolTip(
-            _("If checked, some of the application settings will be allowed\n"
-              "to have values that are usually unsafe to use.\n"
-              "Like Z travel negative values or Z Cut positive values.\n"
-              "It will applied at the next application start.\n"
-              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
-        )
-
-        grid0.addWidget(self.machinist_cb, 34, 0, 1, 2)
 
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()

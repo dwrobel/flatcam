@@ -3789,10 +3789,6 @@ class App(QtCore.QObject):
             )
 
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
-            stgs.setValue(
-                'machinist',
-                1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
-            )
 
             # This will write the setting to the platform specific storage.
             del stgs

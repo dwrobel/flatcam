@@ -29,12 +29,6 @@ class ToolsDB2UI:
         self.type_item_options = ['Iso', 'Rough', 'Finish']
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if settings.contains("machinist"):
-            self.machinist_setting = settings.value('machinist', type=int)
-        else:
-            self.machinist_setting = 0
-
         self.g_lay = grid_layout
 
         tree_layout = QtWidgets.QVBoxLayout()
@@ -907,10 +901,7 @@ class ToolsDB2UI:
         self.drill_cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_cutz_entry.set_precision(self.decimals)
 
-        if self.machinist_setting == 0:
-            self.drill_cutz_entry.set_range(-10000.0000, 0.0000)
-        else:
-            self.drill_cutz_entry.set_range(-10000.0000, 10000.0000)
+        self.drill_cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_cutz_entry.setSingleStep(0.1)
         self.drill_cutz_entry.setObjectName("gdb_e_cutz")
@@ -976,10 +967,7 @@ class ToolsDB2UI:
         self.drill_travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_travelz_entry.set_precision(self.decimals)
 
-        if self.machinist_setting == 0:
-            self.drill_travelz_entry.set_range(0.00001, 10000.0000)
-        else:
-            self.drill_travelz_entry.set_range(-10000.0000, 10000.0000)
+        self.drill_travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.drill_travelz_entry.setSingleStep(0.1)
         self.drill_travelz_entry.setObjectName("gdb_e_travelz")
@@ -1002,7 +990,7 @@ class ToolsDB2UI:
         )
         self.drill_feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_feedrate_z_entry.set_precision(self.decimals)
-        self.drill_feedrate_z_entry.set_range(0.0, 910000.0000)
+        self.drill_feedrate_z_entry.set_range(0.0, 10000.0000)
         self.drill_feedrate_z_entry.setSingleStep(0.1)
         self.drill_feedrate_z_entry.setObjectName("gdb_e_feedratez")
 
@@ -1191,10 +1179,7 @@ class ToolsDB2UI:
         self.cutout_thin_depth_entry.set_precision(self.decimals)
         self.cutout_thin_depth_entry.setObjectName('gdb_ct_gap_depth')
 
-        if self.machinist_setting == 0:
-            self.cutout_thin_depth_entry.setRange(-10000.0000, -0.00001)
-        else:
-            self.cutout_thin_depth_entry.setRange(-10000.0000, 10000.0000)
+        self.cutout_thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.cutout_thin_depth_entry.setSingleStep(0.1)
 
         self.grid6.addWidget(self.thin_depth_label, 17, 0)
@@ -3120,10 +3105,8 @@ class ToolsDB2(QtWidgets.QWidget):
 #         cutz_item = FCDoubleSpinner()
 #         cutz_item.set_precision(self.decimals)
 #         cutz_item.setSingleStep(0.1)
-#         if self.app.defaults['global_machinist_setting']:
-#             cutz_item.set_range(-10000.0000, 10000.0000)
-#         else:
-#             cutz_item.set_range(-10000.0000, -0.0000)
+
+#         cutz_item.set_range(-10000.0000, -0.0000)
 #
 #         cutz_item.set_value(float(data['cutz']))
 #         widget.setCellWidget(row, 7, cutz_item)
@@ -3166,10 +3149,8 @@ class ToolsDB2(QtWidgets.QWidget):
 #         travelz_item = FCDoubleSpinner()
 #         travelz_item.set_precision(self.decimals)
 #         travelz_item.setSingleStep(0.1)
-#         if self.app.defaults['global_machinist_setting']:
-#             travelz_item.set_range(-10000.0000, 10000.0000)
-#         else:
-#             travelz_item.set_range(0.0000, 10000.0000)
+
+#         travelz_item.set_range(0.0000, 10000.0000)
 #
 #         travelz_item.set_value(float(data['travelz']))
 #         widget.setCellWidget(row, 12, travelz_item)
@@ -3234,10 +3215,8 @@ class ToolsDB2(QtWidgets.QWidget):
 #         toolchangez_item = FCDoubleSpinner()
 #         toolchangez_item.set_precision(self.decimals)
 #         toolchangez_item.setSingleStep(0.1)
-#         if self.app.defaults['global_machinist_setting']:
-#             toolchangez_item.set_range(-10000.0000, 10000.0000)
-#         else:
-#             toolchangez_item.set_range(0.0000, 10000.0000)
+
+#         toolchangez_item.set_range(0.0000, 10000.0000)
 #
 #         toolchangez_item.set_value(float(data['toolchangez']))
 #         widget.setCellWidget(row, 24, toolchangez_item)
@@ -3248,10 +3227,8 @@ class ToolsDB2(QtWidgets.QWidget):
 #         endz_item = FCDoubleSpinner()
 #         endz_item.set_precision(self.decimals)
 #         endz_item.setSingleStep(0.1)
-#         if self.app.defaults['global_machinist_setting']:
-#             endz_item.set_range(-10000.0000, 10000.0000)
-#         else:
-#             endz_item.set_range(0.0000, 10000.0000)
+
+#         endz_item.set_range(0.0000, 10000.0000)
 #
 #         endz_item.set_value(float(data['endz']))
 #         widget.setCellWidget(row, 26, endz_item)

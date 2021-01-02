@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
 
 from appGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
 from appGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
@@ -12,12 +11,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):

@@ -22,12 +22,6 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-settings = QtCore.QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
-
 
 class ObjectUI(QtWidgets.QWidget):
     """
@@ -1217,10 +1211,7 @@ class GeometryObjectUI(ObjectUI):
         # self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.cutz_entry.set_precision(self.decimals)
         #
-        # if machinist_setting == 0:
-        #     self.cutz_entry.set_range(-10000.0000, 0.0000)
-        # else:
-        #     self.cutz_entry.set_range(-10000.0000, 10000.0000)
+        # self.cutz_entry.set_range(-10000.0000, 10000.0000)
         #
         # self.cutz_entry.setSingleStep(0.1)
         #

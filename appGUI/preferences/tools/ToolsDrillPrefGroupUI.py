@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
     OptionalInputSection, NumericalEvalEntry, FCLabel
@@ -12,12 +12,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class ToolsDrillPrefGroupUI(OptionsGroupUI):
@@ -61,11 +55,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
 
         self.cutz_entry = FCDoubleSpinner()
-
-        if machinist_setting == 0:
-            self.cutz_entry.set_range(-10000.0000, 0.0000)
-        else:
-            self.cutz_entry.set_range(-10000.0000, 10000.0000)
+        self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.set_precision(self.decimals)
@@ -103,11 +93,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.travelz_entry.set_range(0.0001, 10000.0000)
-        else:
-            self.travelz_entry.set_range(-10000.0000, 10000.0000)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(travelzlabel, 5, 0)
         grid0.addWidget(self.travelz_entry, 5, 1, 1, 2)
@@ -129,11 +115,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0001, 10000.0000)
-        else:
-            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
+        self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(toolchangezlabel, 7, 0)
         grid0.addWidget(self.toolchangez_entry, 7, 1, 1, 2)
@@ -146,11 +128,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.endz_entry = FCDoubleSpinner()
         self.endz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.endz_entry.set_range(0.0000, 10000.0000)
-        else:
-            self.endz_entry.set_range(-10000.0000, 10000.0000)
+        self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         grid0.addWidget(endz_label, 8, 0)
         grid0.addWidget(self.endz_entry, 8, 1, 1, 2)

@@ -12,12 +12,6 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
-
 log = logging.getLogger('base2')
 
 
@@ -114,7 +108,6 @@ class PreferencesUIManager:
             "global_allow_edit_in_project_tab": self.ui.general_defaults_form.general_app_set_group.allow_edit_cb,
             "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
-            "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
 
             "global_bookmarks_limit": self.ui.general_defaults_form.general_app_set_group.bm_limit_spinner,
             "global_activity_icon": self.ui.general_defaults_form.general_app_set_group.activity_combo,
@@ -998,11 +991,6 @@ class PreferencesUIManager:
         # save the HUD font size
         hud_fsize = self.ui.general_defaults_form.general_app_set_group.hud_font_size_spinner.get_value()
         settgs.setValue('hud_font_size', hud_fsize)
-
-        settgs.setValue(
-            'machinist',
-            1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
-        )
 
         # This will write the setting to the platform specific storage.
         del settgs

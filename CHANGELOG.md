@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.01.2021
+
+- removed the 'machinist setting' and allow all over the app the usages of both negative and positive values (where it is the case)
+
 31.12.2020
 
 - fixed the issue with not saving the project on program close if selecting the 'Yes' option.

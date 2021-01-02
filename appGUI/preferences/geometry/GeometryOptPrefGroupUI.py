@@ -1,9 +1,8 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCSpinner, FCComboBox, \
     NumericalEvalTupleEntry, FCLabel
-from appGUI.preferences import machinist_setting
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +12,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class GeometryOptPrefGroupUI(OptionsGroupUI):
@@ -52,11 +45,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "below the copper surface.")
         )
         self.cutz_entry = FCDoubleSpinner()
-
-        if machinist_setting == 0:
-            self.cutz_entry.set_range(-10000.0000, 0.0000)
-        else:
-            self.cutz_entry.set_range(-10000.0000, 10000.0000)
+        self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.setSingleStep(0.1)
@@ -105,11 +94,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "moving without cutting.")
         )
         self.travelz_entry = FCDoubleSpinner()
-
-        if machinist_setting == 0:
-            self.travelz_entry.set_range(0.0001, 10000.0000)
-        else:
-            self.travelz_entry.set_range(-10000.0000, 10000.0000)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
@@ -137,11 +122,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             )
         )
         self.toolchangez_entry = FCDoubleSpinner()
-
-        if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.000, 10000.0000)
-        else:
-            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
+        self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
@@ -157,11 +138,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "the last move at the end of the job.")
         )
         self.endz_entry = FCDoubleSpinner()
-
-        if machinist_setting == 0:
-            self.endz_entry.set_range(0.000, 10000.0000)
-        else:
-            self.endz_entry.set_range(-10000.0000, 10000.0000)
+        self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.set_precision(self.decimals)
         self.endz_entry.setSingleStep(0.1)

@@ -33,12 +33,6 @@ if '_' not in builtins.__dict__:
 
 log = logging.getLogger('base')
 
-settings = QtCore.QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
-
 
 class CutOut(AppTool):
 
@@ -2453,11 +2447,7 @@ class CutoutUI:
         )
         self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.cutz_entry.setRange(-10000.0000, -0.00001)
-        else:
-            self.cutz_entry.setRange(-10000.0000, 10000.0000)
+        self.cutz_entry.setRange(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -2545,10 +2535,7 @@ class CutoutUI:
         )
         self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thin_depth_entry.set_precision(self.decimals)
-        if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-10000.0000, -0.00001)
-        else:
-            self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
+        self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.thin_depth_label, 32, 0)

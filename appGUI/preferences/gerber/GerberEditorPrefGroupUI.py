@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCLabel, RadioSet, NumericalEvalTupleEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -11,12 +10,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class GerberEditorPrefGroupUI(OptionsGroupUI):
@@ -47,7 +40,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
               "large number of geometric elements.")
         )
         self.sel_limit_entry = FCSpinner()
-        self.sel_limit_entry.set_range(0, 9999)
+        self.sel_limit_entry.set_range(0, 10000)
 
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
@@ -98,7 +91,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
 
         self.grb_array_size_entry = FCSpinner()
-        self.grb_array_size_entry.set_range(0, 9999)
+        self.grb_array_size_entry.set_range(0, 10000)
 
         grid0.addWidget(self.grb_array_size_label, 4, 0)
         grid0.addWidget(self.grb_array_size_entry, 4, 1)
@@ -198,7 +191,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_buff_entry = FCDoubleSpinner()
         self.grb_buff_entry.set_precision(self.decimals)
-        self.grb_buff_entry.set_range(-9999, 9999)
+        self.grb_buff_entry.set_range(-10000, 10000)
 
         grid0.addWidget(self.grb_buff_label, 14, 0)
         grid0.addWidget(self.grb_buff_entry, 14, 1)
@@ -213,7 +206,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_scale_entry = FCDoubleSpinner()
         self.grb_scale_entry.set_precision(self.decimals)
-        self.grb_scale_entry.set_range(0, 9999)
+        self.grb_scale_entry.set_range(0, 10000)
 
         grid0.addWidget(self.grb_scale_label, 16, 0)
         grid0.addWidget(self.grb_scale_entry, 16, 1)
@@ -228,7 +221,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_ma_low_entry = FCDoubleSpinner()
         self.grb_ma_low_entry.set_precision(self.decimals)
-        self.grb_ma_low_entry.set_range(0, 9999)
+        self.grb_ma_low_entry.set_range(0, 10000)
 
         grid0.addWidget(self.grb_ma_low_label, 18, 0)
         grid0.addWidget(self.grb_ma_low_entry, 18, 1)
@@ -240,7 +233,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_ma_high_entry = FCDoubleSpinner()
         self.grb_ma_high_entry.set_precision(self.decimals)
-        self.grb_ma_high_entry.set_range(0, 9999)
+        self.grb_ma_high_entry.set_range(0, 10000)
 
         grid0.addWidget(self.grb_ma_high_label, 19, 0)
         grid0.addWidget(self.grb_ma_high_entry, 19, 1)

@@ -1,6 +1,3 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
-
 from appGUI.GUIElements import FCCheckBox, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -11,13 +8,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
-
 
 class ToolsSubPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):

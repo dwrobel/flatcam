@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -11,12 +10,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class Tools2CThievingPrefGroupUI(OptionsGroupUI):
@@ -48,7 +41,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         )
 
         self.circlesteps_entry = FCSpinner()
-        self.circlesteps_entry.set_range(1, 9999)
+        self.circlesteps_entry.set_range(1, 10000)
 
         grid_lay.addWidget(self.circle_steps_lbl, 2, 0)
         grid_lay.addWidget(self.circlesteps_entry, 2, 1)

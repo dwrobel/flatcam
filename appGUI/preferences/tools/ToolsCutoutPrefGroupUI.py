@@ -1,8 +1,6 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel
-from appGUI.preferences import machinist_setting
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -12,12 +10,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-settings = QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
 
 
 class ToolsCutoutPrefGroupUI(OptionsGroupUI):
@@ -64,11 +56,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.cutz_entry.setRange(-10000.0000, 0.0000)
-        else:
-            self.cutz_entry.setRange(-10000.0000, 10000.0000)
+        self.cutz_entry.setRange(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
 
@@ -173,10 +161,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
         self.thin_depth_entry = FCDoubleSpinner()
         self.thin_depth_entry.set_precision(self.decimals)
-        if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-10000.0000, -0.00001)
-        else:
-            self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
+        self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.thin_depth_label, 9, 0)

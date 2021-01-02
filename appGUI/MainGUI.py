@@ -15,7 +15,6 @@ from PyQt5.QtCore import QSettings
 import platform
 
 from appGUI.GUIElements import *
-from appGUI.preferences import settings
 from appGUI.preferences.cncjob.CNCJobPreferencesUI import CNCJobPreferencesUI
 from appGUI.preferences.excellon.ExcellonPreferencesUI import ExcellonPreferencesUI
 from appGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
@@ -1886,7 +1885,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("toolbar_lock"):
-            lock_val = settings.value('toolbar_lock')
+            lock_val = qsettings.value('toolbar_lock')
             if lock_val == 'true':
                 lock_state = True
                 self.lock_action.setChecked(True)

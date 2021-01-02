@@ -1,6 +1,5 @@
 from PyQt5 import QtCore
 from appGUI.GUIElements import OptionalInputSection
-from appGUI.preferences import settings
 from appGUI.preferences.OptionUI import *
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI2
 
@@ -267,15 +266,6 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
                 label_text="Enable ToolTips",
                 label_tooltip="Check this box if you want to have toolTips displayed\n"
                               "when hovering with mouse over items throughout the App."
-            ),
-            CheckboxOptionUI(
-                option="global_machinist_setting",
-                label_text="Allow Machinist Unsafe Settings",
-                label_tooltip="If checked, some of the application settings will be allowed\n"
-                              "to have values that are usually unsafe to use.\n"
-                              "Like Z travel negative values or Z Cut positive values.\n"
-                              "It will applied at the next application start.\n"
-                              "<<WARNING>>: Don't change this unless you know what you are doing !!!"
             ),
             SpinnerOptionUI(
                 option="global_bookmarks_limit",

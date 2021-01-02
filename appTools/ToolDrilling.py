@@ -37,12 +37,6 @@ if '_' not in builtins.__dict__:
 
 log = logging.getLogger('base')
 
-settings = QtCore.QSettings("Open Source", "FlatCAM")
-if settings.contains("machinist"):
-    machinist_setting = settings.value('machinist', type=int)
-else:
-    machinist_setting = 0
-
 
 class ToolDrilling(AppTool, Excellon):
     builduiSig = QtCore.pyqtSignal()
@@ -2345,11 +2339,7 @@ class DrillingUI:
 
         self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.cutz_entry.set_range(-10000.0000, 0.0000)
-        else:
-            self.cutz_entry.set_range(-10000.0000, 10000.0000)
+        self.cutz_entry.set_range(-10000.0000, 10000.0000)
 
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("e_cutz")
@@ -2391,11 +2381,7 @@ class DrillingUI:
 
         self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.travelz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.travelz_entry.set_range(0.00001, 10000.0000)
-        else:
-            self.travelz_entry.set_range(-10000.0000, 10000.0000)
+        self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("e_travelz")
@@ -2593,11 +2579,7 @@ class DrillingUI:
         )
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setObjectName("e_toolchangez")
-
-        if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0, 10000.0000)
-        else:
-            self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
+        self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -2626,11 +2608,7 @@ class DrillingUI:
         self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.endz_entry.set_precision(self.decimals)
         self.endz_entry.setObjectName("e_endz")
-
-        if machinist_setting == 0:
-            self.endz_entry.set_range(0.0, 10000.0000)
-        else:
-            self.endz_entry.set_range(-10000.0000, 10000.0000)
+        self.endz_entry.set_range(-10000.0000, 10000.0000)
 
         self.endz_entry.setSingleStep(0.1)
 

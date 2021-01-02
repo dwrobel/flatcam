@@ -151,7 +151,6 @@ class FlatCAMDefaults:
         "global_allow_edit_in_project_tab": False,
         "global_open_style": True,
         "global_toggle_tooltips": True,
-        "global_machinist_setting": False,
         "global_bookmarks": dict(),
         "global_bookmarks_limit": 10,
         "global_activity_icon": 'Ball green',
