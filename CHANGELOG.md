@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 2.01.2021
 
 - removed the 'machinist setting' and allow all over the app the usages of both negative and positive values (where it is the case)
+- applied the changes from Andre Spahlinger from PR's #332 and #334
 
 31.12.2020
 
@@ -20,7 +21,7 @@ CHANGELOG for FlatCAM beta
 - fixed parseDXF() class imports to work with newer versions of ezdxf module (starting with 0.15) - contribution of Maurizio D'Addona and Hans Boot
 - fixed a string ("Penelization Reference") by Hans Boot contribution.
 - fixed a string ("Penelization Reference") translations by Hans Boot contribution.
-- fixed issue with not being able to mill holes in a Excellon object part of a loaded project (JSON serialization makes all keys in dictionary strings so I had to make sure that the obj.tools dict keys are made integers on project reconstruction)
+- fixed issue with not being able to mill holes in an Excellon object part of a loaded project (JSON serialization makes all keys in the dictionary into strings so I had to make sure that the obj.tools dict keys are made integers on project reconstruction)
 - added needed 'testresources' module in the setup_ubuntu.sh script - Hans Boot contribution
 
 30.12.2020
