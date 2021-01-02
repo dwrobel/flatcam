@@ -1150,8 +1150,11 @@ class ToolMilling(AppTool, Excellon):
 
     def on_object_selection_changed(self, current, previous):
         try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            self.ui.object_combo.set_value(name)
+            sel_obj = current.indexes()[0].internalPointer().obj
+            name = sel_obj.options['name']
+            kind = sel_obj.kind
+            if kind in ['geometry', 'excellon']:
+                self.ui.object_combo.set_value(name)
         except IndexError:
             pass
 

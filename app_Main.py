@@ -1202,6 +1202,7 @@ class App(QtCore.QObject):
         self.follow_tool = None
         self.drilling_tool = None
         self.milling_tool = None
+        self.levelling_tool = None
 
         self.optimal_tool = None
         self.transform_tool = None
@@ -1920,6 +1921,10 @@ class App(QtCore.QObject):
         self.milling_tool.install(icon=QtGui.QIcon(self.resource_location + '/milling_tool32.png'),
                                   pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
 
+        self.levelling_tool = ToolLevelling(self)
+        self.levelling_tool.install(icon=QtGui.QIcon(self.resource_location + '/level32.png'),
+                                    pos=self.ui.menuoptions_experimental, separator=True)
+
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
                                           pos=self.ui.menutool)
@@ -2192,6 +2197,7 @@ class App(QtCore.QObject):
 
         self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
         self.ui.mill_btn.triggered.connect(lambda: self.milling_tool.run(toggle=True))
+        self.ui.level_btn.triggered.connect(lambda: self.levelling_tool.run(toggle=True))
 
         self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
         self.ui.follow_btn.triggered.connect(lambda: self.follow_tool.run(toggle=True))

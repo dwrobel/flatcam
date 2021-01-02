@@ -386,19 +386,6 @@ class FlatCAMDefaults:
         # CNC Job Advanced Options
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
-        # Autolevelling
-        "cncjob_al_status": False,
-        "cncjob_al_mode": 'grid',
-        "cncjob_al_method": 'v',
-        "cncjob_al_rows": 4,
-        "cncjob_al_columns": 4,
-        "cncjob_al_travelz": 2.0,
-        "cncjob_al_probe_depth": -1.0,
-        "cncjob_al_probe_fr": 120,
-        "cncjob_al_controller": 'MACH3',
-        "cncjob_al_grbl_jog_step": 5,
-        "cncjob_al_grbl_jog_fr": 1500,
-        "cncjob_al_grbl_travelz": 15.0,
 
         # CNC Job (GCode) Editor
         "cncjob_prepend": "",
@@ -467,6 +454,20 @@ class FlatCAMDefaults:
 
         # Milling Tool
         "tools_mill_tool_type": 'C1',
+
+        # Autolevelling Tool
+        "tools_al_status": False,
+        "tools_al_mode": 'grid',
+        "tools_al_method": 'v',
+        "tools_al_rows": 4,
+        "tools_al_columns": 4,
+        "tools_al_travelz": 2.0,
+        "tools_al_probe_depth": -1.0,
+        "tools_al_probe_fr": 120,
+        "tools_al_controller": 'MACH3',
+        "tools_al_grbl_jog_step": 5,
+        "tools_al_grbl_jog_fr": 1500,
+        "tools_al_grbl_travelz": 15.0,
 
         # NCC Tool
         "tools_ncc_tools": "1.0, 0.5",

@@ -1067,6 +1067,10 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.mill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
+        self.level_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling Tool"))
+        self.level_btn.setDisabled(True)
+        self.level_btn.setToolTip("DISABLED. Work in progress!")
 
         self.toolbartools.addSeparator()
 
@@ -2282,6 +2286,10 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
         self.mill_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
+        self.level_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling Tool"))
+        self.level_btn.setDisabled(True)
+        self.level_btn.setToolTip("DISABLED. Work in progress!")
 
         self.toolbartools.addSeparator()
 
