@@ -148,7 +148,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     req_tools = set()
                     for tool in obj.tools:
                         for req_dia in diameters:
-                            obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                            obj_dia_form = float(
+                                '%.*f' % (obj.decimals, float(obj.tools[tool]["tooldia"])))
                             req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                             if 'diatol' in args:
@@ -157,11 +158,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                 tolerance = 0.0 if tolerance < 0.0 else tolerance
                                 tolerance = 1.0 if tolerance > 1.0 else tolerance
                                 if math.isclose(obj_dia_form, req_dia_form, rel_tol=tolerance):
-                                    req_tools.add(tool)
+                                    req_tools.add(str(tool))
                                     nr_diameters -= 1
                             else:
                                 if obj_dia_form == req_dia_form:
-                                    req_tools.add(tool)
+                                    req_tools.add(str(tool))
                                     nr_diameters -= 1
 
                     if nr_diameters > 0:
@@ -174,10 +175,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
                     # expecting as tools parameter
                     tools = ','.join(req_tools)
+                    tools += ','
 
                     # no longer needed
                     del args['drilled_dias']
-                    del args['diatol']
+                    args.pop('diatol', None)
 
                     # Split and put back. We are passing the whole dictionary later.
                     # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
