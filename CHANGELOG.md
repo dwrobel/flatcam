@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - removed the 'machinist setting' and allow all over the app the usages of both negative and positive values (where it is the case)
 - applied the changes from Andre Spahlinger from PR's #332 and #334
 - moved all the Levelling stuff out of the CNCjob Properties Tab to its own tool, Levelling Tool. The functionality itself is not finished yet.
+- Levelling Tool - changed the Beginner mode
+- Levelling Tool - moved all the Levelling Preferences into its own category
 
 31.12.2020
 

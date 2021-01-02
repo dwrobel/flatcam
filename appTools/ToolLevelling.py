@@ -129,7 +129,7 @@ class ToolLevelling(AppTool, CNCjob):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFollow()")
-        log.debug("ToolFOllow().run() was launched ...")
+        log.debug("ToolLevelling().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it
@@ -313,6 +313,8 @@ class ToolLevelling(AppTool, CNCjob):
             pass
         self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
 
+        self.build_tool_ui()
+
     def on_object_changed(self):
 
         # load the object
@@ -379,6 +381,10 @@ class ToolLevelling(AppTool, CNCjob):
                                         }
                                         """)
 
+            self.ui.al_title.hide()
+            self.ui.show_al_table.hide()
+            self.ui.al_probe_points_table.hide()
+
             # Context Menu section
             # self.ui.al_probe_points_table.removeContextMenu()
         else:
@@ -389,6 +395,11 @@ class ToolLevelling(AppTool, CNCjob):
                                             color: red;
                                         }
                                         """)
+
+            self.ui.al_title.show()
+            self.ui.show_al_table.show()
+            if self.ui.show_al_table.get_value():
+                self.ui.al_probe_points_table.show()
 
             # Context Menu section
             # self.ui.al_probe_points_table.setupContextMenu()
@@ -1711,15 +1722,15 @@ class LevelUI:
         grid0.setColumnStretch(1, 1)
         self.al_box.addLayout(grid0)
 
-        al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
-        al_title.setToolTip(_("Generate GCode that will obtain the height map"))
+        self.al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
+        self.al_title.setToolTip(_("Generate GCode that will obtain the height map"))
 
         self.show_al_table = FCCheckBox(_("Show"))
         self.show_al_table.setToolTip(_("Toggle the display of the Probe Points table."))
         self.show_al_table.setChecked(True)
 
         hor_lay = QtWidgets.QHBoxLayout()
-        hor_lay.addWidget(al_title)
+        hor_lay.addWidget(self.al_title)
         hor_lay.addStretch()
         hor_lay.addWidget(self.show_al_table, alignment=QtCore.Qt.AlignRight)
 

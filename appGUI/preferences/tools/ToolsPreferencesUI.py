@@ -9,6 +9,8 @@ from appGUI.preferences.tools.ToolsPanelizePrefGroupUI import ToolsPanelizePrefG
 from appGUI.preferences.tools.ToolsFilmPrefGroupUI import ToolsFilmPrefGroupUI
 from appGUI.preferences.tools.Tools2sidedPrefGroupUI import Tools2sidedPrefGroupUI
 
+from appGUI.preferences.tools.ToolsLevelPrefGroupUI import ToolsLevelPrefGroupUI
+
 from appGUI.preferences.tools.ToolsCutoutPrefGroupUI import ToolsCutoutPrefGroupUI
 from appGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
 from appGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGroupUI
@@ -50,6 +52,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_2sided_group = Tools2sidedPrefGroupUI(decimals=self.decimals)
         self.tools_2sided_group.setMinimumWidth(220)
 
+        self.tools_level_group = ToolsLevelPrefGroupUI(decimals=self.decimals)
+        self.tools_level_group.setMinimumWidth(220)
+
         self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals)
         self.tools_film_group.setMinimumWidth(220)
 
@@ -74,7 +79,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay = QtWidgets.QVBoxLayout()
 
         self.vlay.addWidget(self.tools_iso_group)
-        self.vlay.addWidget(self.tools_2sided_group)
+        self.vlay.addWidget(self.tools_level_group)
         self.vlay.addWidget(self.tools_cutout_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
@@ -84,6 +89,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_ncc_group)
         self.vlay2.addWidget(self.tools_paint_group)
+        self.vlay2.addWidget(self.tools_2sided_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_film_group)

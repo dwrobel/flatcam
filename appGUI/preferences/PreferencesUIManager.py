@@ -308,18 +308,6 @@ class PreferencesUIManager:
             # CNC Job Advanced Options
             "cncjob_annotation_fontsize":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
-            # Autolevelling
-            "cncjob_al_mode":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_mode_radio,
-            "cncjob_al_method":             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_method_radio,
-            "cncjob_al_rows":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_rows_entry,
-            "cncjob_al_columns":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_columns_entry,
-            "cncjob_al_travelz":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.ptravelz_entry,
-            "cncjob_al_probe_depth":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.pdepth_entry,
-            "cncjob_al_probe_fr":           self.ui.cncjob_defaults_form.cncjob_adv_opt_group.feedrate_probe_entry,
-            "cncjob_al_controller":         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_controller_combo,
-            "cncjob_al_grbl_jog_step":      self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_step_entry,
-            "cncjob_al_grbl_jog_fr":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_fr_entry,
-            "cncjob_al_grbl_travelz":       self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_travelz_entry,
 
             # CNC Job (GCode) Editor
             "cncjob_prepend":               self.ui.cncjob_defaults_form.cncjob_editor_group.prepend_text,
@@ -348,6 +336,21 @@ class PreferencesUIManager:
             "tools_iso_force":          self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
             "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
             "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
+
+            # Milling Tool
+
+            # Autolevelling Tool
+            "tools_al_mode":             self.ui.tools_defaults_form.tools_level_group.al_mode_radio,
+            "tools_al_method":           self.ui.tools_defaults_form.tools_level_group.al_method_radio,
+            "tools_al_rows":             self.ui.tools_defaults_form.tools_level_group.al_rows_entry,
+            "tools_al_columns":          self.ui.tools_defaults_form.tools_level_group.al_columns_entry,
+            "tools_al_travelz":          self.ui.tools_defaults_form.tools_level_group.ptravelz_entry,
+            "tools_al_probe_depth":      self.ui.tools_defaults_form.tools_level_group.pdepth_entry,
+            "tools_al_probe_fr":         self.ui.tools_defaults_form.tools_level_group.feedrate_probe_entry,
+            "tools_al_controller":       self.ui.tools_defaults_form.tools_level_group.al_controller_combo,
+            "tools_al_grbl_jog_step":    self.ui.tools_defaults_form.tools_level_group.jog_step_entry,
+            "tools_al_grbl_jog_fr":      self.ui.tools_defaults_form.tools_level_group.jog_fr_entry,
+            "tools_al_grbl_travelz":     self.ui.tools_defaults_form.tools_level_group.jog_travelz_entry,
 
             # Drilling Tool
             "tools_drill_tool_order":   self.ui.tools_defaults_form.tools_drill_group.order_radio,
