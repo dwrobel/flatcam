@@ -191,8 +191,6 @@ class ScriptObject(FlatCAMObj):
         return uplevel 1 [expr {{[llength [info command $p]] > 0}}]
         }}
 
-        #set alreadydefined [procExists "info_original"]
-        #if  {{${{alreadydefined}}==0}} {{
         if  {{[procExists "info_original"]==0}} {{
         rename info info_original
         }}
