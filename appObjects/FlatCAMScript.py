@@ -54,6 +54,7 @@ class ScriptObject(FlatCAMObj):
         self.ser_attrs = ['options', 'kind', 'source_file']
         self.source_file = ''
         self.script_code = ''
+        self.script_filename=''
 
         self.units_found = self.app.defaults['units']
 
@@ -131,7 +132,7 @@ class ScriptObject(FlatCAMObj):
 
         try:
             # self.script_editor_tab.code_editor.setPlainText(self.source_file)
-            self.script_editor_tab.load_text(self.script_code, move_to_end=True)
+            self.script_editor_tab.load_text(self.source_file, move_to_end=True)
         except Exception as e:
             log.debug("ScriptObject.set_ui() --> %s" % str(e))
 
@@ -158,7 +159,7 @@ class ScriptObject(FlatCAMObj):
 
     def parse_file(self, filename):
         """
-        Will set an attribute of the object, self.script_code, with the parsed data.
+        Will set an attribute of the object, self.source_file, with the parsed data.
 
         :param filename:    Tcl Script file to parse
         :return:            None
@@ -167,8 +168,8 @@ class ScriptObject(FlatCAMObj):
             script_content = opened_script.readlines()
             script_content = ''.join(script_content)
 
-        self.script_code = script_content
-        self.source_file = filename
+        self.source_file = script_content
+        self.script_filename = filename
 
     def handle_run_code(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
@@ -203,7 +204,7 @@ class ScriptObject(FlatCAMObj):
                     return [uplevel info_original $args]
                 }}
             }}
-        }}'''.format(self.source_file)
+        }}'''.format(self.script_filename)
 
 
 
