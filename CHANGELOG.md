@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - fixed the Tcl Commands: new_geometry, new_gerber and new_excellon to create correct objects. New Geometry object created with the new_geometry Tcl command accept now the usage of add_circle/polygon/polyline/rectangle Tcl commands
 - updated the autocompleter list for the Tcl commands with missing Tcl commands names
 - added three new Tcl Commands: add_aperture (adds an aperture to a Gerber object), add_drill and add_slot (add a drill/slot to an Excellon object)
+- added a new parameter to the New Tcl command named -reset. If set False (or 0) the TCL instance will not be recreated, allowing to keep the TCL variable content on the new project.
+- included the modifications from PR #336 from Andre Spahlinger
 
 2.01.2021
 

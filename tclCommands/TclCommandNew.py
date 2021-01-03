@@ -17,7 +17,9 @@ class TclCommandNew(TclCommand):
     arg_names = collections.OrderedDict()
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
-    option_types = collections.OrderedDict()
+    option_types = collections.OrderedDict([
+        ('reset', str),
+    ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
     required = []
@@ -25,8 +27,11 @@ class TclCommandNew(TclCommand):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Starts a new project. Clears objects from memory.",
-        'args': collections.OrderedDict(),
-        'examples': ['new']
+        'args': collections.OrderedDict([
+            ('reset', 'If True/0 or missing (default value) or no value provided then the Tcl is re-instantiated '
+                      'thus resetting all its variables.'),
+        ]),
+        'examples': ['new', 'new -reset False']
     }
 
     def execute(self, args, unnamed_args):
@@ -39,4 +44,9 @@ class TclCommandNew(TclCommand):
         :return: None or exception
         """
 
-        self.app.f_handlers.on_file_new_project(cli=True)
+        reset_tcl = True
+        if 'reset' in args:
+            if args['reset'] and (args['reset'] == '0' or args['reset'].lower() == 'false'):
+                reset_tcl = False
+
+        self.app.f_handlers.on_file_new_project(cli=True, reset_tcl=reset_tcl)

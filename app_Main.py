@@ -1842,6 +1842,7 @@ class App(QtCore.QObject):
         if init_tcl:
             # shell tool has to be initialized always first because other tools print messages in the Shell Dock
             self.shell = FCShell(app=self, version=self.version)
+            self.log.debug("TCL was re-instantiated. TCL variables are reset.")
 
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
@@ -9396,11 +9397,13 @@ class MenuFileHandlers(QtCore.QObject):
         else:
             self.on_file_new_project(threaded=True)
 
-    def on_file_new_project(self, cli=None, threaded=None):
+    def on_file_new_project(self, cli=None, reset_tcl=True, threaded=None):
         """
         Returns the application to its startup state. This method is thread-safe.
 
         :param cli:         Boolean. If True this method was run from command line
+        :param reset_tcl:   Boolean. If False, on new project creation the Tcl instance is not recreated, therefore it
+                            will remember all the previous variables. If True then the Tcl is re-instantiated.
         :param threaded:    Bool. If True some part of the initialization are done threaded
         :return:            None
         """
@@ -9468,7 +9471,10 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.clear_pool()
 
             # Init FlatCAMTools
-            self.app.init_tools(init_tcl=True)
+            if reset_tcl is True:
+                self.app.init_tools(init_tcl=True)
+            else:
+                self.app.init_tools(init_tcl=False)
 
             # tcl needs to be reinitialized, otherwise old shell variables etc  remains
             # self.app.shell.init_tcl()
