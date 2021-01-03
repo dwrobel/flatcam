@@ -395,14 +395,16 @@ class AppObject(QtCore.QObject):
         """
         self.app.on_zoom_fit()
 
-    def new_excellon_object(self):
+    def new_excellon_object(self, new_name=None):
         """
         Creates a new, blank Excellon object.
 
-        :return: None
+        :param new_name:    new name for the new Geometry object
+        :type new_name:     str
+        :return:            None
         """
 
-        outname = 'new_exc'
+        outname = 'new_exc' if new_name is None else new_name
 
         def obj_init(new_obj, app_obj):
             new_obj.tools = {}
@@ -411,13 +413,16 @@ class AppObject(QtCore.QObject):
 
         self.new_object('excellon', outname, obj_init, plot=False)
 
-    def new_geometry_object(self):
+    def new_geometry_object(self, new_name=None):
         """
         Creates a new, blank and single-tool Geometry object.
 
-        :return: None
+        :param new_name:    new name for the new Geometry object
+        :type new_name:     str
+        :return:            None
         """
-        outname = 'new_geo'
+
+        outname = 'new_geo' if new_name is None else new_name
 
         def initialize(new_obj, app):
             new_obj.multitool = True
@@ -450,12 +455,16 @@ class AppObject(QtCore.QObject):
 
         self.new_object('geometry', outname, initialize, plot=False)
 
-    def new_gerber_object(self):
+    def new_gerber_object(self, new_name=None):
         """
         Creates a new, blank Gerber object.
 
-        :return: None
+        :param new_name:    new name for the new Geometry object
+        :type new_name:     str
+        :return:            None
         """
+
+        outname = 'new_geo' if new_name is None else new_name
 
         def initialize(new_obj, app):
             new_obj.multitool = False
@@ -474,14 +483,18 @@ class AppObject(QtCore.QObject):
             except KeyError:
                 pass
 
-        self.new_object('gerber', 'new_grb', initialize, plot=False)
+        self.new_object('gerber', outname, initialize, plot=False)
 
-    def new_script_object(self):
+    def new_script_object(self, new_name=None):
         """
         Creates a new, blank TCL Script object.
 
-        :return: None
+        :param new_name:    new name for the new Geometry object
+        :type new_name:     str
+        :return:            None
         """
+
+        outname = 'new_script' if new_name is None else new_name
 
         # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
         #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
@@ -505,17 +518,20 @@ class AppObject(QtCore.QObject):
         def initialize(new_obj, app):
             new_obj.source_file = deepcopy(new_source_file)
 
-        outname = 'new_script'
         self.new_object('script', outname, initialize, plot=False)
 
-    def new_document_object(self):
+    def new_document_object(self, new_name=None):
         """
         Creates a new, blank Document object.
 
-        :return: None
+        :param new_name:    new name for the new Geometry object
+        :type new_name:     str
+        :return:            None
         """
+
+        outname = 'new_document' if new_name is None else new_name
 
         def initialize(new_obj, app):
             new_obj.source_file = ""
 
-        self.new_object('document', 'new_document', initialize, plot=False)
+        self.new_object('document', outname, initialize, plot=False)

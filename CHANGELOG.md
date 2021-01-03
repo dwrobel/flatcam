@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.01.2021
+
+- fixed the Tcl Commands: new_geometry, new_gerber and new_excellon to create correct objects. New Geometry object created with the new_geometry Tcl command accept now the usage of add_circle/polygon/polyline/rectangle Tcl commands
+- updated the autocompleter list for the Tcl commands with missing Tcl commands names
+- added three new Tcl Commands: add_aperture (adds an aperture to a Gerber object), add_drill and add_slot (add a drill/slot to an Excellon object)
+
 2.01.2021
 
 - removed the 'machinist setting' and allow all over the app the usages of both negative and positive values (where it is the case)

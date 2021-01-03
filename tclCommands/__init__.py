@@ -2,10 +2,13 @@ import pkgutil
 import sys
 
 # allowed command modules (please append them alphabetically ordered)
+import tclCommands.TclCommandAddAperture
 import tclCommands.TclCommandAddCircle
+import tclCommands.TclCommandAddDrill
 import tclCommands.TclCommandAddPolygon
 import tclCommands.TclCommandAddPolyline
 import tclCommands.TclCommandAddRectangle
+import tclCommands.TclCommandAddSlot
 import tclCommands.TclCommandAlignDrill
 import tclCommands.TclCommandAlignDrillGrid
 import tclCommands.TclCommandBbox

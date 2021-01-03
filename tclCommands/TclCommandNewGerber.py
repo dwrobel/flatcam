@@ -59,21 +59,4 @@ class TclCommandNewGerber(TclCommandSignaled):
         else:
             name = 'new_grb'
 
-        def initialize(grb_obj, app_obj):
-            grb_obj.multitool = False
-            grb_obj.source_file = []
-            grb_obj.multigeo = False
-            grb_obj.follow = False
-            grb_obj.apertures = {}
-            grb_obj.solid_geometry = []
-            grb_obj.follow_geometry = []
-
-            try:
-                grb_obj.options['xmin'] = 0
-                grb_obj.options['ymin'] = 0
-                grb_obj.options['xmax'] = 0
-                grb_obj.options['ymax'] = 0
-            except KeyError:
-                pass
-
-        self.app.app_obj.new_object('gerber', name, initialize, plot=False)
+        self.app.app_obj.new_gerber_object(new_name=name)

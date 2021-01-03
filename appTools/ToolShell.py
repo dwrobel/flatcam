@@ -552,7 +552,7 @@ class FCShell(TermWidget):
         """
 
         self.display_tcl_error(text)
-        raise self.TclErrorException(text)
+        # raise self.TclErrorException(text)
 
     class TclErrorException(Exception):
         """

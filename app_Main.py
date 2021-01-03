@@ -604,7 +604,8 @@ class App(QtCore.QObject):
         # ####################################### Auto-complete KEYWORDS ############################################
         # ######################## Setup after the Defaults class was instantiated ##################################
         # ###########################################################################################################
-        self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
+        self.tcl_commands_list = ['add_aperture', 'add_circle', 'add_drill', 'add_poly', 'add_polygon', 'add_polyline',
+                                  'add_rectangle', 'add_rect', 'add_slot',
                                   'aligndrill', 'aligndrillgrid', 'bbox', 'clear', 'cncjob', 'cutout',
                                   'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
                                   'export_exc',
@@ -613,7 +614,8 @@ class App(QtCore.QObject):
                                   'interiors', 'isolate', 'join_excellon',
                                   'join_geometry', 'list_sys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
-                                  'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
+                                  'ncr', 'new', 'new_geometry', 'new_gerber', 'new_excellon', 'non_copper_regions',
+                                  'offset',
                                   'open_dxf', 'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'open_svg',
                                   'options', 'origin',
                                   'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_flatcam',

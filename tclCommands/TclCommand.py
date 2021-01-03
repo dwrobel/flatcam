@@ -264,17 +264,17 @@ class TclCommand(object):
 
         raise unknown_exception
 
-    def raise_tcl_error(self, text):
-        """
-        this method  pass exception from python into TCL as error, so we get stacktrace and reason
-        :param text: text of error
-        :return: raise exception
-        """
-
-        # because of signaling we cannot call error to TCL from here but when task
-        # is finished also non-signaled are handled here to better exception
-        # handling and  displayed after command is finished
-        raise self.app.shell.TclErrorException(text)
+    # def raise_tcl_error(self, text):
+    #     """
+    #     this method  pass exception from python into TCL as error, so we get stacktrace and reason
+    #     :param text: text of error
+    #     :return: raise exception
+    #     """
+    #
+    #     # because of signaling we cannot call error to TCL from here but when task
+    #     # is finished also non-signaled are handled here to better exception
+    #     # handling and  displayed after command is finished
+    #     raise self.app.shell.TclErrorException(text)
 
     def execute_wrapper(self, *args):
         """
@@ -310,7 +310,7 @@ class TclCommand(object):
         :return: None, output text or exception
         """
 
-        raise NotImplementedError("Please Implement this method")
+        return "Not Implemented Error -> Incorrect call."
 
 
 class TclCommandSignaled(TclCommand):
@@ -330,7 +330,7 @@ class TclCommandSignaled(TclCommand):
 
     @abc.abstractmethod
     def execute(self, args, unnamed_args):
-        raise NotImplementedError("Please Implement this method")
+        return "Not Implemented Error -> Incorrect call."
 
     output = None
 

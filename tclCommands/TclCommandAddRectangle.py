@@ -7,7 +7,7 @@ class TclCommandAddRectangle(TclCommandSignaled):
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['add_rectangle']
+    aliases = ['add_rect', 'add_rectangle']
 
     description = '%s %s' % ("--", "Creates a rectangle in the given Geometry object.")
 
