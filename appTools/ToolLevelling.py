@@ -929,7 +929,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_columns_label.setDisabled(False)
             self.ui.al_method_lbl.setDisabled(False)
             self.ui.al_method_radio.setDisabled(False)
-            self.ui.al_method_radio.set_value(self.app.defaults['cncjob_al_method'])
+            self.ui.al_method_radio.set_value(self.app.defaults['tools_al_method'])
 
     def on_method_radio(self, val):
         if val == 'b':
@@ -1182,7 +1182,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         step = self.ui.jog_step_entry.get_value(),
         feedrate = self.ui.jog_fr_entry.get_value()
-        travelz = float(self.app.defaults["cncjob_al_grbl_travelz"])
+        travelz = float(self.app.defaults["tools_al_grbl_travelz"])
 
         if direction == 'xplus':
             cmd = "$J=G91 %s X%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
