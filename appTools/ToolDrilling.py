@@ -1968,6 +1968,11 @@ class ToolDrilling(AppTool, Excellon):
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
             job_obj.multitool = True
 
+            # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
+            # but it is here for uniformity between the Geometry and Excellon objects
+            job_obj.segx = self.app.defaults["geometry_segx"]
+            job_obj.segy = self.app.defaults["geometry_segy"]
+
             # first drill point
             job_obj.xy_toolchange = self.app.defaults["tools_drill_toolchangexy"]
             x_tc, y_tc = [0, 0]

@@ -293,7 +293,7 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.al_method_radio.set_value('v')
 
         target_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        if target_obj:
+        if target_obj and target_obj.is_segmented_gcode is True:
             self.ui.al_frame.setDisabled(False)
             self.ui.al_mode_radio.set_value(target_obj.options['tools_al_mode'])
             self.on_controller_change()
@@ -327,7 +327,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
             return
 
-        if target_obj is None:
+        if target_obj is None or target_obj.is_segmented_gcode is False:
             self.ui.al_frame.setDisabled(True)
         else:
             self.ui.al_frame.setDisabled(False)

@@ -2769,6 +2769,9 @@ class CNCjob(Geometry):
         # search for toolchange code: M6
         self.re_toolchange = re.compile(r'^\s*(M6)$')
 
+        # tells if the generated Gcode is segmented for autolevelling
+        self.is_segmented_gcode = False
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
@@ -3121,6 +3124,12 @@ class CNCjob(Geometry):
         :rtype:             tuple
         """
         log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
+
+        # detect if GCode is segmented for autolevelling or not
+        # it does not matter for the Excellon codes because we are not going to autolevel GCode out of Excellon
+        # but it is here for uniformity between the Geometry and Excellon objects
+        if self.segx > 0 and self.segy > 0 and self.is_segmented_gcode is False:
+            self.is_segmented_gcode = True
 
         self.exc_tools = deepcopy(tools)
         t_gcode = ''
@@ -6912,6 +6921,10 @@ class CNCjob(Geometry):
         if len(coords) < 2 or self.segx <= 0 and self.segy <= 0:
             return list(coords)
 
+        # flag that the generated gcode was segmented for autolevelling
+        if self.is_segmented_gcode is False:
+            self.is_segmented_gcode = True
+
         path = [coords[0]]
 
         # break the line in either x or y dimension only
@@ -7155,7 +7168,8 @@ class CNCjob(Geometry):
 
         gcode = ""
 
-        path = list(target_linear.coords)
+        # path = list(target_linear.coords)
+        path = self.segment(target_linear.coords)
         p = self.pp_geometry
 
         self.coordinates_type = self.app.defaults["cncjob_coords_type"]

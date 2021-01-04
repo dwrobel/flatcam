@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.01.2020
+
+- Levelling Tool - disable the UI if the Gcode is not segmented for autolevelling (perhaps recreate the GCode as segmented?)
+- in camlib.CNCjob class fixed the linear2gcode_extra() method to be able to do GCode segmentation.
+
 3.01.2021
 
 - fixed the Tcl Commands: new_geometry, new_gerber and new_excellon to create correct objects. New Geometry object created with the new_geometry Tcl command accept now the usage of add_circle/polygon/polyline/rectangle Tcl commands
