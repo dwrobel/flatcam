@@ -287,6 +287,7 @@ class FCShell(TermWidget):
         self.app = app
 
         self.tcl_commands_storage = {}
+	self.tcl = None
 
         self.init_tcl()
 
