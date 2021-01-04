@@ -54,6 +54,7 @@ class ScriptObject(FlatCAMObj):
         self.ser_attrs = ['options', 'kind', 'source_file']
         self.source_file = ''
         self.script_code = ''
+        self.script_filename=''
 
         self.units_found = self.app.defaults['units']
 
@@ -168,6 +169,7 @@ class ScriptObject(FlatCAMObj):
             script_content = ''.join(script_content)
 
         self.source_file = script_content
+        self.script_filename = filename
 
     def handle_run_code(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
@@ -184,7 +186,29 @@ class ScriptObject(FlatCAMObj):
         self.script_code = self.script_editor_tab.code_editor.toPlainText()
 
         old_line = ''
-        for tcl_command_line in self.script_code.splitlines():
+        
+        # set tcl info script to actual scriptfile
+        set_tcl_script_name='''proc procExists p {{
+        return uplevel 1 [expr {{[llength [info command $p]] > 0}}]
+        }}
+
+        if  {{[procExists "info_original"]==0}} {{
+        rename info info_original
+        }}
+        proc info args {{
+            switch [lindex $args 0] {{
+                script {{
+                    return "{0}"
+                }}
+                default {{
+                    return [uplevel info_original $args]
+                }}
+            }}
+        }}'''.format(self.script_filename)
+
+
+
+        for tcl_command_line in set_tcl_script_name.splitlines()+self.script_code.splitlines():
             # do not process lines starting with '#' = comment and empty lines
             if not tcl_command_line.startswith('#') and tcl_command_line != '':
                 # id FlatCAM is run in Windows then replace all the slashes with
