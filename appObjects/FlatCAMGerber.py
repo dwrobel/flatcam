@@ -510,8 +510,8 @@ class GerberObject(FlatCAMObj, Gerber):
                     tool_type = 'V'
                 else:
                     new_cutz = self.app.defaults['geometry_cutz']
-                    new_vtipdia = self.app.defaults['geometry_vtipdia']
-                    new_vtipangle = self.app.defaults['geometry_vtipangle']
+                    new_vtipdia = self.app.defaults['tools_mill_vtipdia']
+                    new_vtipangle = self.app.defaults['tools_mill_vtipangle']
                     tool_type = 'C1'
 
                 # store here the default data for Geometry Data
@@ -655,8 +655,8 @@ class GerberObject(FlatCAMObj, Gerber):
                         tool_type = 'V'
                     else:
                         new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['geometry_vtipdia']
-                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        new_vtipdia = self.app.defaults['tools_mill_vtipdia']
+                        new_vtipangle = self.app.defaults['tools_mill_vtipangle']
                         tool_type = 'C1'
 
                     # store here the default data for Geometry Data

@@ -1124,6 +1124,9 @@ class ToolMilling(AppTool, Excellon):
         self.build_ui()
 
     def on_object_changed(self):
+        if not self.app.ui.notebook.tabText(2) != _("Milling Tool"):
+            return
+
         # handle the Plot checkbox
         self.plot_cb_handler()
         

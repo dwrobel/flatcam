@@ -305,7 +305,16 @@ class ToolIsolation(AppTool, Gerber):
 
         # init the working variables
         self.default_data.clear()
-        self.default_data = {
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
+
+            if option.find('tools_mill_') == 0 or option.find('tools_iso_') == 0:
+                self.default_data[option] = self.app.options[option]
+
+        self.default_data.update({
             "name":                     outname + '_iso',
             "plot":                     self.app.defaults["geometry_plot"],
             "cutz":                     float(self.app.defaults["tools_iso_tool_cutz"]),
@@ -340,21 +349,7 @@ class ToolIsolation(AppTool, Gerber):
             "area_shape":               self.app.defaults["geometry_area_shape"],
             "area_strategy":            self.app.defaults["geometry_area_strategy"],
             "area_overz":               float(self.app.defaults["geometry_area_overz"]),
-
-            "tools_iso_order":          self.app.defaults["tools_iso_order"],
-            "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
-            "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
-            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
-
-            "tools_iso_rest":           self.app.defaults["tools_iso_rest"],
-            "tools_iso_combine_passes": self.app.defaults["tools_iso_combine_passes"],
-            "tools_iso_isoexcept":      self.app.defaults["tools_iso_isoexcept"],
-            "tools_iso_selection":      self.app.defaults["tools_iso_selection"],
-            "tools_iso_poly_ints":      self.app.defaults["tools_iso_poly_ints"],
-            "tools_iso_force":          self.app.defaults["tools_iso_force"],
-            "tools_iso_area_shape":     self.app.defaults["tools_iso_area_shape"]
-        }
+        })
 
         try:
             dias = [float(self.app.defaults["tools_iso_tooldia"])]

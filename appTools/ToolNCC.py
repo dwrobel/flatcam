@@ -555,8 +555,8 @@ class NonCopperClear(AppTool, Gerber):
             "name":                     '_ncc',
             "plot":                     self.app.defaults["geometry_plot"],
             "cutz":                     float(self.app.defaults["geometry_cutz"]),
-            "vtipdia":                  float(self.app.defaults["geometry_vtipdia"]),
-            "vtipangle":                float(self.app.defaults["geometry_vtipangle"]),
+            "vtipdia":                  float(self.app.defaults["tools_mill_vtipdia"]),
+            "vtipangle":                float(self.app.defaults["tools_mill_vtipangle"]),
             "travelz":                  self.app.defaults["geometry_travelz"],
             "feedrate":                 self.app.defaults["geometry_feedrate"],
             "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
@@ -4662,7 +4662,7 @@ class NccUI:
                                 }
                                 """)
         self.tools_box.addWidget(self.generate_ncc_button)
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

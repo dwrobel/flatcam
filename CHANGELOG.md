@@ -7,7 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
-4.01.2020
+5.01.2021
+
+- changing some parameters from 'geometry_' to 'tools_mill_' format
+
+4.01.2021
 
 - Levelling Tool - disable the UI if the Gcode is not segmented for autolevelling (perhaps recreate the GCode as segmented?)
 - in camlib.CNCjob class fixed the linear2gcode_extra() method to be able to do GCode segmentation.
