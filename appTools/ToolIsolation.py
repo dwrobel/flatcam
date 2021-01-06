@@ -1419,8 +1419,8 @@ class ToolIsolation(AppTool, Gerber):
                 'tooldia':          truncated_tooldia,
                 'offset':           'Path',
                 'offset_value':     0.0,
-                'type': '           Iso',
-                'tool_type':        'V',
+                'type':             'Iso' if self.app.defaults["tools_iso_tool_type"] == 'V' else 'Rough',
+                'tool_type':        deepcopy(self.app.defaults["tools_iso_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
             }

@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - allowed some more parameters to have negative values (tool diameters especially)
 - some more tools now have a Beginner/Advanced mode
 - for QRCode and Subtraction Tools added also a Beginner/Advanced mode
+- in NCC Tool fixed issue #486 where creating Area Selection shapes of type Square with Grid snap OFF will not use the first click position
+- fixed a bug in Paint Tool when doing Painting Area Selection and nothing is no polygon is in the selections to be painted
+- fixed Isolation, Paint and NCC Tools to use the Tool Type parameter from Preferences on adding new tools and also setting the 'type' key in tools dict correctly
 
 5.01.2021
 

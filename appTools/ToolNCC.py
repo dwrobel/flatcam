@@ -1380,7 +1380,7 @@ class NonCopperClear(AppTool, Gerber):
                 'tooldia':          truncated_tooldia,
                 'offset':           'Path',
                 'offset_value':     0.0,
-                'type':             'Iso',
+                'type':             'Iso' if self.app.defaults["tools_ncc_tool_type"] == 'V' else 'Rough',
                 'tool_type':        deepcopy(self.app.defaults["tools_ncc_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
@@ -1678,9 +1678,7 @@ class NonCopperClear(AppTool, Gerber):
                     self.first_click = True
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the area."))
 
-                    self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                    if self.app.grid_status():
-                        self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+                    self.cursor_pos = (curr_pos[0], curr_pos[1])
                 else:
                     self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                     self.app.delete_selection_shape()

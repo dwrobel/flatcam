@@ -978,8 +978,8 @@ class ToolPaint(AppTool, Gerber):
                 'tooldia':          truncated_tooldia,
                 'offset':           'Path',
                 'offset_value':     0.0,
-                'type':             'Iso',
-                'tool_type':        'V',
+                'type':             'Iso' if self.app.defaults["tools_paint_tool_type"] == 'V' else 'Rough',
+                'tool_type':        deepcopy(self.app.defaults["tools_paint_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
             }
@@ -1919,7 +1919,8 @@ class ToolPaint(AppTool, Gerber):
                         poly_buf.append(buffered_pol)
 
                 if not poly_buf:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' % _("There is no geometry to process or the tool diameter is too big."))
                     continue
 
                 # variables to display the percentage of work done
@@ -2067,7 +2068,8 @@ class ToolPaint(AppTool, Gerber):
             poly_buf = unary_union(poly_buf)
 
             if not poly_buf:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s' % _("There is no geometry to process or the tool diameter is too big."))
                 return 'fail'
 
             # variables to display the percentage of work done
@@ -2512,7 +2514,7 @@ class ToolPaint(AppTool, Gerber):
             # ## If iterable, expand recursively.
             try:
                 for geo in geometry:
-                    if geo is not None:
+                    if geo and not geo.is_empty and geo.is_valid:
                         recurse(geometry=geo, reset=False)
 
             # ## Not iterable, do the actual indexing and add.
@@ -2544,13 +2546,14 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Painting area task started.")))
 
         geo_to_paint = target_geo.intersection(sel_obj)
-        painted_area = recurse(geo_to_paint)
 
         # No polygon?
-        if not painted_area:
+        if not geo_to_paint or geo_to_paint.is_empty:
             self.app.log.warning('No polygon found.')
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
+
+        painted_area = recurse(geo_to_paint, reset=True)
 
         self.paint_geo(obj, painted_area, tooldia=tooldia, order=order, method=method, outname=outname,
                        tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)

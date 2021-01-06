@@ -470,7 +470,7 @@ class FlatCAMDefaults:
         "tools_al_grbl_travelz": 15.0,
 
         # NCC Tool
-        "tools_ncc_tools": "1.0, 0.5",
+        "tools_ncc_tools": "0.5",
         "tools_ncc_order": 'rev',
         "tools_ncc_operation": 'clear',
         "tools_ncc_overlap": 40,
