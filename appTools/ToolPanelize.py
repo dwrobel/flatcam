@@ -46,7 +46,10 @@ class Panelize(AppTool):
         self.ui = PanelizeUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
 
-        # Signals
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.reference_radio.activated_custom.connect(self.on_reference_radio_changed)
         self.ui.panelize_object_button.clicked.connect(self.on_panelize)
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
@@ -161,6 +164,10 @@ class Panelize(AppTool):
         self.on_type_obj_index_changed()
         self.on_type_box_index_changed()
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
     def on_type_obj_index_changed(self):
         obj_type = self.ui.type_obj_combo.currentIndex()
         self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -218,6 +225,62 @@ class Panelize(AppTool):
             self.ui.box_combo.set_value(name)
         except Exception:
             pass
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.panel_type_label.hide()
+            self.ui.panel_type_radio.hide()
+            self.ui.optimization_cb.hide()
+
+            self.ui.constrain_cb.hide()
+            self.ui.x_width_lbl.hide()
+            self.ui.x_width_entry.hide()
+            self.ui.y_height_lbl.hide()
+            self.ui.y_height_entry.hide()
+            self.ui.separator_line.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.panel_type_label.show()
+            self.ui.panel_type_radio.show()
+            self.ui.optimization_cb.show()
+
+            self.ui.constrain_cb.show()
+            self.ui.x_width_lbl.show()
+            self.ui.x_width_entry.show()
+            self.ui.y_height_lbl.show()
+            self.ui.y_height_entry.show()
+            self.ui.separator_line.show()
 
     def on_panelize(self):
         name = self.ui.object_combo.currentText()
@@ -989,6 +1052,9 @@ class PanelizeUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -998,7 +1064,22 @@ class PanelizeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
@@ -1219,10 +1300,10 @@ class PanelizeUI:
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 38, 0, 1, 2)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.separator_line, 38, 0, 1, 2)
 
         # Buttons
         self.panelize_object_button = FCButton(_("Panelize Object"))

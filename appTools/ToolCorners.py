@@ -58,7 +58,10 @@ class ToolCorners(AppTool):
 
         self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
 
-        # SIGNALS
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.add_marker_button.clicked.connect(self.add_markers)
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
@@ -121,6 +124,62 @@ class ToolCorners(AppTool):
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
         self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.drills_label.hide()
+            self.ui.drill_dia_label.hide()
+            self.ui.drill_dia_entry.hide()
+            self.ui.drill_button.hide()
+
+            self.ui.separator_line_2.hide()
+
+            self.ui.check_label.hide()
+            self.ui.check_button.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.drills_label.show()
+            self.ui.drill_dia_label.show()
+            self.ui.drill_dia_entry.show()
+            self.ui.drill_button.show()
+
+            self.ui.separator_line_2.show()
+
+            self.ui.check_label.show()
+            self.ui.check_button.show()
 
     def on_toggle_all(self, val):
         self.ui.bl_cb.set_value(val)
@@ -583,6 +642,9 @@ class CornersUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -592,7 +654,23 @@ class CornersUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
         self.layout.addWidget(FCLabel(""))
 
         # Gerber object #
@@ -775,10 +853,10 @@ class CornersUI:
                                         """)
         grid_lay.addWidget(self.drill_button, 20, 0, 1, 2)
 
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line_2, 22, 0, 1, 2)
+        self.separator_line_2 = QtWidgets.QFrame()
+        self.separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(self.separator_line_2, 22, 0, 1, 2)
 
         # Check is corners
         self.check_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Check in Locations').upper())

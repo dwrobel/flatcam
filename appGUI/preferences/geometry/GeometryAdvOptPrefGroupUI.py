@@ -236,7 +236,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 10000.0000)
+        self.over_z_entry.set_range(-10000.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid1.addWidget(self.over_z_label, 18, 0)
@@ -264,7 +264,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.polish_dia_entry = FCDoubleSpinner()
         self.polish_dia_entry.set_precision(self.decimals)
-        self.polish_dia_entry.set_range(0.000, 10000.0000)
+        self.polish_dia_entry.set_range(-10000.000, 10000.0000)
 
         grid1.addWidget(self.polish_dia_lbl, 24, 0)
         grid1.addWidget(self.polish_dia_entry, 24, 1)

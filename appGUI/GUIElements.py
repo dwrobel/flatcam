@@ -21,6 +21,7 @@ import re
 import logging
 import html
 import sys
+import inspect
 
 import gettext
 import appTranslation as fcTranslate
@@ -97,7 +98,8 @@ class RadioSet(QtWidgets.QWidget):
             if choice['value'] == val:
                 choice['radio'].setChecked(True)
                 return
-        log.error("Value given is not part of this RadioSet: %s" % str(val))
+        log.error(str(inspect.stack()[1][3]) + " -> Value given is not part of this RadioSet: %s" % str(val))
+        log.error(str(self.choices))
 
     def setOptionsDisabled(self, options: list, val: bool) -> None:
         for option in self.choices:

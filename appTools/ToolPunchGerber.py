@@ -73,8 +73,9 @@ class ToolPunchGerber(AppTool, Gerber):
         self.toolName = self.ui.toolName
 
         # #############################################################################
-        # ## Signals
+        # ############################ SIGNALS ########################################
         # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.method_punch.activated_custom.connect(self.on_method)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         self.ui.punch_object_button.clicked.connect(self.on_punch_object_click)
@@ -225,6 +226,10 @@ class ToolPunchGerber(AppTool, Gerber):
         # list of dicts to store the selection result in the manual selection
         self.manual_pads = []
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
     def build_tool_ui(self):
         self.ui_disconnect()
 
@@ -348,6 +353,50 @@ class ToolPunchGerber(AppTool, Gerber):
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
         self.ui_connect()
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.sel_label.hide()
+            self.ui.punch_type_label.hide()
+            self.ui.punch_type_radio.hide()
+            self.ui.separator_line3.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.sel_label.show()
+            self.ui.punch_type_label.show()
+            self.ui.punch_type_radio.show()
+            self.ui.separator_line3.show()
 
     def on_select_all(self, state):
         self.ui_disconnect()
@@ -1894,6 +1943,9 @@ class PunchUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -1903,7 +1955,22 @@ class PunchUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
 
         # Punch Drill holes
         self.layout.addWidget(FCLabel(""))
@@ -2241,10 +2308,10 @@ class PunchUI:
         sel_hlay.addWidget(self.clear_all_btn)
         grid0.addLayout(sel_hlay, 22, 0, 1, 2)
 
-        separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line3, 24, 0, 1, 2)
+        self.separator_line3 = QtWidgets.QFrame()
+        self.separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.separator_line3, 24, 0, 1, 2)
 
         # Buttons
         self.punch_object_button = FCButton(_("Punch Gerber"))

@@ -69,7 +69,10 @@ class ToolFollow(AppTool, Gerber):
         # it is made False by first click to signify that the shape is complete
         self.poly_drawn = False
 
-        # Signals
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.selectmethod_radio.activated_custom.connect(self.ui.on_selection)
         self.ui.generate_geometry_button.clicked.connect(self.on_generate_geometry_click)
 
@@ -131,6 +134,54 @@ class ToolFollow(AppTool, Gerber):
         self.points = []
         self.poly_drawn = False
         self.area_sel_disconnect_flag = False
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.select_label.hide()
+            self.ui.selectmethod_radio.hide()
+            self.ui.param_title.hide()
+            self.ui.separator_line.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            # Add Tool section
+            self.ui.select_label.show()
+            self.ui.selectmethod_radio.show()
+            self.ui.param_title.show()
+            self.ui.separator_line.show()
 
     def on_generate_geometry_click(self):
         obj_name = self.ui.object_combo.currentText()
@@ -625,6 +676,21 @@ class FollowUI:
 
         self.title_box.addWidget(title_label)
 
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
         self.obj_combo_label = FCLabel('<b>%s</b>:' % _("GERBER"))
         self.obj_combo_label.setToolTip(
             _("Source object for following geometry.")
@@ -658,8 +724,8 @@ class FollowUI:
         grid0.addWidget(self.param_title, 0, 0, 1, 2)
 
         # Polygon selection
-        selectlabel = FCLabel('%s:' % _('Selection'))
-        selectlabel.setToolTip(
+        self.select_label = FCLabel('%s:' % _('Selection'))
+        self.select_label.setToolTip(
             _("Selection of area to be processed.\n"
               "- 'All Polygons' - the process will start after click.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be processed.")
@@ -668,7 +734,7 @@ class FollowUI:
         self.selectmethod_radio = RadioSet([{'label': _("All"), 'value': 'all'},
                                             {'label': _("Area Selection"), 'value': 'area'}])
 
-        grid0.addWidget(selectlabel, 2, 0)
+        grid0.addWidget(self.select_label, 2, 0)
         grid0.addWidget(self.selectmethod_radio, 2, 1)
 
         # Area Selection shape
@@ -686,10 +752,10 @@ class FollowUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 2)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.separator_line, 6, 0, 1, 2)
 
         self.generate_geometry_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_geometry_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))

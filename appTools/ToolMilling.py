@@ -4300,7 +4300,7 @@ class MillingUI:
         self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
                                        "an interdiction area."))
         self.over_z_entry = FCDoubleSpinner()
-        self.over_z_entry.set_range(0.000, 10000.0000)
+        self.over_z_entry.set_range(-10000.0000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
         grid_a1.addWidget(self.over_z_label, 2, 0)

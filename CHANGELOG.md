@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.01.2021
+
+- allowed some more parameters to have negative values (tool diameters especially)
+- some more tools now have a Beginner/Advanced mode
+
 5.01.2021
 
 - changing some parameters from 'geometry_' to 'tools_mill_' format

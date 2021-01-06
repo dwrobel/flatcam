@@ -4264,7 +4264,7 @@ class NccUI:
 
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 10000.0000)
+        self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName(_("Tool Dia"))
 
         new_tool_lay.addWidget(self.new_tooldia_entry)

@@ -311,7 +311,7 @@ class ToolIsolation(AppTool, Gerber):
                 oname = option[len(kind) + 1:]
                 self.default_data[oname] = self.app.options[option]
 
-            if option.find('tools_mill_') == 0 or option.find('tools_iso_') == 0:
+            if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
 
         self.default_data.update({
@@ -451,6 +451,9 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.type_excobj_radio.hide()
             self.ui.exc_obj_combo.hide()
 
+            self.ui.select_label.hide()
+            self.ui.select_combo.hide()
+
             # Context Menu section
             self.ui.tools_table.removeContextMenu()
         else:
@@ -502,6 +505,9 @@ class ToolIsolation(AppTool, Gerber):
 
             self.ui.type_excobj_radio.show()
             self.ui.exc_obj_combo.show()
+
+            self.ui.select_label.show()
+            self.ui.select_combo.show()
 
             # Context Menu section
             self.ui.tools_table.setupContextMenu()
@@ -3180,7 +3186,6 @@ class IsoUI:
                 "'APP. LEVEL' radio button."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -3299,7 +3304,7 @@ class IsoUI:
 
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 10000.0000)
+        self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName("i_new_tooldia")
 
         new_tool_lay.addWidget(self.new_tooldia_entry)

@@ -119,7 +119,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
-        self.newdia_entry.set_range(0.000, 10000.0000)
+        self.newdia_entry.set_range(-10000.000, 10000.0000)
         self.newdia_entry.setObjectName(_("Tool Dia"))
 
         grid0.addWidget(self.newdialabel, 5, 0)

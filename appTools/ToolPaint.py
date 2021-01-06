@@ -3048,7 +3048,7 @@ class PaintUI:
         )
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
-        self.new_tooldia_entry.set_range(0.000, 10000.0000)
+        self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName('p_tool_dia')
 
         self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
