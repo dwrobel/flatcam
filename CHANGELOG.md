@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in NCC Tool fixed issue #486 where creating Area Selection shapes of type Square with Grid snap OFF will not use the first click position
 - fixed a bug in Paint Tool when doing Painting Area Selection and nothing is no polygon is in the selections to be painted
 - fixed Isolation, Paint and NCC Tools to use the Tool Type parameter from Preferences on adding new tools and also setting the 'type' key in tools dict correctly
+- fixed the export_dxf and export_svg Tcl commands
 
 5.01.2021
 

@@ -55,6 +55,14 @@ class TclCommandExportDXF(TclCommand):
         :param unnamed_args:
         :return:
         """
+        if 'name' not in args:
+            return "Failed. The Geometry object name to be exported was not provided."
+
+        source_obj_name = args['name']
+
         if 'filename' not in args:
-            args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['name']
-        self.app.f_handlers.export_dxf(use_thread=False, local_use=None, **args)
+            filename = self.app.defaults["global_last_save_folder"] + '/' + args['name']
+        else:
+            filename = args['filename']
+
+        self.app.f_handlers.export_dxf(obj_name=source_obj_name, filename=filename, local_use=None, use_thread=False)

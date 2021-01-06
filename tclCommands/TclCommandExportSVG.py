@@ -20,7 +20,6 @@ class TclCommandExportSVG(TclCommand):
     arg_names = collections.OrderedDict([
         ('name', str),
         ('filename', str),
-        ('scale_stroke_factor', float)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
@@ -51,4 +50,18 @@ class TclCommandExportSVG(TclCommand):
         :return:
         """
 
-        self.app.f_handlers.export_svg(**args)
+        if 'name' not in args:
+            return "Failed. The Geometry object name to be exported was not provided."
+
+        source_obj_name = args['name']
+
+        if 'filename' not in args:
+            filename = self.app.defaults["global_last_save_folder"] + '/' + args['name']
+        else:
+            filename = args['filename']
+
+        if 'scale_stroke_factor' in args and args['scale_stroke_factor'] != 0.0:
+            str_factor = args['scale_stroke_factor']
+        else:
+            str_factor = 0.0
+        self.app.f_handlers.export_svg(obj_name=source_obj_name, filename=filename, scale_stroke_factor=str_factor)
