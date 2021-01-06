@@ -71,7 +71,10 @@ class QRCode(AppTool):
 
         self.old_back_color = ''
 
-        # Signals #
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.qrcode_button.clicked.connect(self.execute)
         self.ui.export_cb.stateChanged.connect(self.on_export_frame)
         self.ui.export_png_button.clicked.connect(self.export_png_file)
@@ -154,6 +157,49 @@ class QRCode(AppTool):
         self.ui.back_color_entry.set_value(self.app.defaults['tools_qrcode_back_color'])
         self.ui.back_color_button.setStyleSheet("background-color:%s" %
                                                 str(self.app.defaults['tools_qrcode_back_color'])[:7])
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+            self.ui.export_cb.hide()
+            self.ui.export_frame.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
+
+            self.ui.export_cb.show()
+            if self.ui.export_cb.get_value():
+                self.ui.export_frame.show()
 
     def on_export_frame(self, state):
         self.ui.export_frame.setVisible(state)
@@ -657,6 +703,9 @@ class QRcodeUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -666,7 +715,23 @@ class QRcodeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
         self.layout.addWidget(QtWidgets.QLabel(''))
 
         # ## Grid Layout
@@ -733,8 +798,8 @@ class QRcodeUI:
         self.version_entry.set_range(1, 40)
         self.version_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.version_label, 1, 0)
-        grid_lay.addWidget(self.version_entry, 1, 1)
+        grid_lay.addWidget(self.version_label, 2, 0)
+        grid_lay.addWidget(self.version_entry, 2, 1)
 
         # ERROR CORRECTION #
         self.error_label = QtWidgets.QLabel('%s:' % _("Error correction"))
@@ -756,8 +821,8 @@ class QRcodeUI:
               "Q = maximum 25%% errors can be corrected\n"
               "H = maximum 30%% errors can be corrected.")
         )
-        grid_lay.addWidget(self.error_label, 2, 0)
-        grid_lay.addWidget(self.error_radio, 2, 1)
+        grid_lay.addWidget(self.error_label, 4, 0)
+        grid_lay.addWidget(self.error_radio, 4, 1)
 
         # BOX SIZE #
         self.bsize_label = QtWidgets.QLabel('%s:' % _("Box Size"))
@@ -769,8 +834,8 @@ class QRcodeUI:
         self.bsize_entry.set_range(1, 9999)
         self.bsize_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.bsize_label, 3, 0)
-        grid_lay.addWidget(self.bsize_entry, 3, 1)
+        grid_lay.addWidget(self.bsize_label, 6, 0)
+        grid_lay.addWidget(self.bsize_entry, 6, 1)
 
         # BORDER SIZE #
         self.border_size_label = QtWidgets.QLabel('%s:' % _("Border Size"))
@@ -782,8 +847,8 @@ class QRcodeUI:
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.border_size_label, 4, 0)
-        grid_lay.addWidget(self.border_size_entry, 4, 1)
+        grid_lay.addWidget(self.border_size_label, 8, 0)
+        grid_lay.addWidget(self.border_size_entry, 8, 1)
 
         # POLARITY CHOICE #
         self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))
@@ -800,8 +865,8 @@ class QRcodeUI:
               "be added as positive. If it is added to a Copper Gerber\n"
               "file then perhaps the QRCode can be added as negative.")
         )
-        grid_lay.addWidget(self.pol_label, 7, 0)
-        grid_lay.addWidget(self.pol_radio, 7, 1)
+        grid_lay.addWidget(self.pol_label, 10, 0)
+        grid_lay.addWidget(self.pol_radio, 10, 1)
 
         # BOUNDING BOX TYPE #
         self.bb_label = QtWidgets.QLabel('%s:' % _("Bounding Box"))
@@ -815,8 +880,13 @@ class QRcodeUI:
             _("The bounding box, meaning the empty space that surrounds\n"
               "the QRCode geometry, can have a rounded or a square shape.")
         )
-        grid_lay.addWidget(self.bb_label, 8, 0)
-        grid_lay.addWidget(self.bb_radio, 8, 1)
+        grid_lay.addWidget(self.bb_label, 12, 0)
+        grid_lay.addWidget(self.bb_radio, 12, 1)
+
+        self.separator_line_2 = QtWidgets.QFrame()
+        self.separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(self.separator_line_2, 14, 0, 1, 2)
 
         # Export QRCode
         self.export_cb = FCCheckBox(_("Export QRCode"))
@@ -824,7 +894,7 @@ class QRcodeUI:
             _("Show a set of controls allowing to export the QRCode\n"
               "to a SVG file or an PNG file.")
         )
-        grid_lay.addWidget(self.export_cb, 9, 0, 1, 2)
+        grid_lay.addWidget(self.export_cb, 16, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.export_frame = QtWidgets.QFrame()
@@ -924,7 +994,7 @@ class QRcodeUI:
                                 """)
         self.layout.addWidget(self.qrcode_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))

@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - allowed some more parameters to have negative values (tool diameters especially)
 - some more tools now have a Beginner/Advanced mode
+- for QRCode and Subtraction Tools added also a Beginner/Advanced mode
 
 5.01.2021
 

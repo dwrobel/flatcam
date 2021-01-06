@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
+from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox, FCLabel
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
 from shapely.ops import unary_union
@@ -86,7 +86,10 @@ class ToolSub(AppTool):
         self.pool = self.app.pool
         self.results = []
 
-        # Signals
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.intersect_btn.clicked.connect(self.on_subtract_gerber_click)
         self.ui.intersect_geo_btn.clicked.connect(self.on_subtract_geo_click)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -185,6 +188,50 @@ class ToolSub(AppTool):
         self.ui.tools_frame.show()
         self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
         self.ui.delete_sources_cb.setChecked(self.app.defaults["tools_sub_delete_sources"])
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+            self.ui.delete_sources_cb.hide()
+            self.ui.separator_line.hide()
+            self.ui.extra_empty_label.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
+
+            self.ui.delete_sources_cb.show()
+            self.ui.separator_line.show()
+            self.ui.extra_empty_label.show()
 
     def on_subtract_gerber_click(self):
         # reset previous values
@@ -703,8 +750,11 @@ class SubUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -712,8 +762,24 @@ class SubUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.title_box.addWidget(title_label)
+
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+
+        self.layout.addWidget(FCLabel(""))
 
         self.tools_frame = QtWidgets.QFrame()
         self.tools_frame.setContentsMargins(0, 0, 0, 0)
@@ -735,14 +801,15 @@ class SubUI:
         )
         grid0.addWidget(self.delete_sources_cb, 0, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 3)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(self.separator_line, 2, 0, 1, 3)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 4, 0, 1, 2)
+        self.extra_empty_label = FCLabel('')
+        grid0.addWidget(self.extra_empty_label, 4, 0, 1, 2)
 
-        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
+        self.gerber_title = FCLabel("<b>%s</b>" % _("GERBER"))
         grid0.addWidget(self.gerber_title, 6, 0, 1, 2)
 
         # Target Gerber Object
@@ -753,7 +820,7 @@ class SubUI:
         self.target_gerber_combo.is_last = True
         self.target_gerber_combo.obj_type = "Gerber"
 
-        self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
+        self.target_gerber_label = FCLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
             _("Gerber object from which to subtract\n"
               "the subtractor Gerber object.")
@@ -769,7 +836,7 @@ class SubUI:
         self.sub_gerber_combo.is_last = True
         self.sub_gerber_combo.obj_type = "Gerber"
 
-        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
+        self.sub_gerber_label = FCLabel('%s:' % _("Subtractor"))
         self.sub_gerber_label.setToolTip(
             _("Gerber object that will be subtracted\n"
               "from the target Gerber object.")
@@ -793,9 +860,9 @@ class SubUI:
                                 }
                                 """)
         grid0.addWidget(self.intersect_btn, 12, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 14, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 14, 0, 1, 2)
 
-        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
+        self.geo_title = FCLabel("<b>%s</b>" % _("GEOMETRY"))
         grid0.addWidget(self.geo_title, 16, 0, 1, 2)
 
         # Target Geometry Object
@@ -806,7 +873,7 @@ class SubUI:
         self.target_geo_combo.is_last = True
         self.target_geo_combo.obj_type = "Geometry"
 
-        self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
+        self.target_geo_label = FCLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
             _("Geometry object from which to subtract\n"
               "the subtractor Geometry object.")
@@ -822,7 +889,7 @@ class SubUI:
         self.sub_geo_combo.is_last = True
         self.sub_geo_combo.obj_type = "Geometry"
 
-        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
+        self.sub_geo_label = FCLabel('%s:' % _("Subtractor"))
         self.sub_geo_label.setToolTip(
             _("Geometry object that will be subtracted\n"
               "from the target Geometry object.")
@@ -850,9 +917,10 @@ class SubUI:
                                 """)
 
         grid0.addWidget(self.intersect_geo_btn, 24, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
 
-        self.tools_box.addStretch()
+        grid0.addWidget(FCLabel(''), 26, 0, 1, 2)
+
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))

@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
 from shapely.geometry import box as box
@@ -79,7 +79,10 @@ class ToolFiducials(AppTool):
 
         self.handlers_connected = False
 
-        # SIGNALS
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.add_cfid_button.clicked.connect(self.add_fiducials)
         self.ui.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
 
@@ -154,6 +157,55 @@ class ToolFiducials(AppTool):
 
         self.copper_obj_set = set()
         self.sm_obj_set = set()
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: green;
+                                        }
+                                        """)
+
+            self.ui.separator_line.hide()
+            self.ui.fid_type_label.hide()
+            self.ui.fid_type_radio.hide()
+            self.ui.line_thickness_label.hide()
+            self.ui.line_thickness_entry.hide()
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                        QToolButton
+                                        {
+                                            color: red;
+                                        }
+                                        """)
+
+            self.ui.separator_line.show()
+            self.ui.fid_type_label.show()
+            self.ui.fid_type_radio.show()
+            self.ui.line_thickness_label.show()
+            self.ui.line_thickness_entry.show()
 
     def on_second_point(self, val):
         if val == 'no':
@@ -699,8 +751,11 @@ class FidoUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+        
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -708,10 +763,26 @@ class FidoUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.title_box.addWidget(title_label)
 
-        self.points_label = QtWidgets.QLabel('<b>%s:</b>' % _('Fiducials Coordinates'))
+        # App Level label
+        self.level = QtWidgets.QToolButton()
+        self.level.setToolTip(
+            _(
+                "BASIC is suitable for a beginner. Many parameters\n"
+                "are hidden from the user in this mode.\n"
+                "ADVANCED mode will make available all parameters.\n\n"
+                "To change the application LEVEL, go to:\n"
+                "Edit -> Preferences -> General and check:\n"
+                "'APP. LEVEL' radio button."
+            )
+        )
+        self.level.setCheckable(True)
+        self.title_box.addWidget(self.level)
+        
+        self.layout.addWidget(FCLabel(""))
+
+        self.points_label = FCLabel('<b>%s:</b>' % _('Fiducials Coordinates'))
         self.points_label.setToolTip(
             _("A table with the fiducial points coordinates,\n"
               "in the format (x, y).")
@@ -807,14 +878,14 @@ class FidoUI:
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # DIAMETER #
-        self.size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.size_label = FCLabel('%s:' % _("Size"))
         self.size_label.setToolTip(
             _("This set the fiducial diameter if fiducial type is circular,\n"
               "otherwise is the size of the fiducial.\n"
@@ -830,7 +901,7 @@ class FidoUI:
         grid_lay.addWidget(self.fid_size_entry, 1, 1)
 
         # MARGIN #
-        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label = FCLabel('%s:' % _("Margin"))
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
@@ -847,7 +918,7 @@ class FidoUI:
             {'label': _('Auto'), 'value': 'auto'},
             {"label": _("Manual"), "value": "manual"}
         ], stretch=False)
-        self.mode_label = QtWidgets.QLabel(_("Mode:"))
+        self.mode_label = FCLabel(_("Mode:"))
         self.mode_label.setToolTip(
             _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")
@@ -861,7 +932,7 @@ class FidoUI:
             {"label": _("Down"), "value": "down"},
             {"label": _("None"), "value": "no"}
         ], stretch=False)
-        self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
+        self.pos_label = FCLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
               "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
@@ -871,10 +942,10 @@ class FidoUI:
         grid_lay.addWidget(self.pos_label, 4, 0)
         grid_lay.addWidget(self.pos_radio, 4, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line, 5, 0, 1, 2)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(self.separator_line, 5, 0, 1, 2)
 
         # Fiducial type #
         self.fid_type_radio = RadioSet([
@@ -882,7 +953,7 @@ class FidoUI:
             {"label": _("Cross"), "value": "cross"},
             {"label": _("Chess"), "value": "chess"}
         ], stretch=False)
-        self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
+        self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
               "- 'Circular' - this is the regular fiducial.\n"
@@ -893,7 +964,7 @@ class FidoUI:
         grid_lay.addWidget(self.fid_type_radio, 6, 1)
 
         # Line Thickness #
-        self.line_thickness_label = QtWidgets.QLabel('%s:' % _("Line thickness"))
+        self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
         self.line_thickness_label.setToolTip(
             _("Thickness of the line that makes the fiducial.")
         )
@@ -917,7 +988,7 @@ class FidoUI:
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label = FCLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which will be added a copper thieving.")
         )
@@ -926,7 +997,7 @@ class FidoUI:
         grid_lay.addWidget(self.grb_object_combo, 10, 0, 1, 2)
 
         # ## Insert Copper Fiducial
-        self.add_cfid_button = QtWidgets.QPushButton(_("Add Fiducial"))
+        self.add_cfid_button = FCButton(_("Add Fiducial"))
         self.add_cfid_button.setIcon(QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'))
         self.add_cfid_button.setToolTip(
             _("Will add a polygon on the copper layer to serve as fiducial.")
@@ -945,7 +1016,7 @@ class FidoUI:
         grid_lay.addWidget(separator_line_2, 12, 0, 1, 2)
 
         # Soldermask Gerber object #
-        self.sm_object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Soldermask Gerber"))
+        self.sm_object_label = FCLabel('<b>%s:</b>' % _("Soldermask Gerber"))
         self.sm_object_label.setToolTip(
             _("The Soldermask Gerber object.")
         )
@@ -959,7 +1030,7 @@ class FidoUI:
         grid_lay.addWidget(self.sm_object_combo, 14, 0, 1, 2)
 
         # ## Insert Soldermask opening for Fiducial
-        self.add_sm_opening_button = QtWidgets.QPushButton(_("Add Soldermask Opening"))
+        self.add_sm_opening_button = FCButton(_("Add Soldermask Opening"))
         self.add_sm_opening_button.setToolTip(
             _("Will add a polygon on the soldermask layer\n"
               "to serve as fiducial opening.\n"
@@ -977,7 +1048,7 @@ class FidoUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
