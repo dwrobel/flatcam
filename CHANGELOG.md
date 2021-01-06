@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - fixed a bug in Paint Tool when doing Painting Area Selection and nothing is no polygon is in the selections to be painted
 - fixed Isolation, Paint and NCC Tools to use the Tool Type parameter from Preferences on adding new tools and also setting the 'type' key in tools dict correctly
 - fixed the export_dxf and export_svg Tcl commands
+- fixed issue #489 - missing `pywin` module requirement in the `requirements.txt` file
 
 5.01.2021
 
