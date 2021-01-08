@@ -236,52 +236,61 @@ class PreferencesUIManager:
             "geometry_plot":                self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_multicolored":        self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
             "geometry_circle_steps":        self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "tools_mill_tooldia":          self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_merge_fuse_tools":    self.ui.geometry_defaults_form.geometry_gen_group.fuse_tools_cb,
             "geometry_plot_line":           self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
-            "geometry_optimization_type":   self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio,
-            "geometry_search_time":         self.ui.geometry_defaults_form.geometry_gen_group.optimization_time_entry,
 
             # Geometry Options
-            "geometry_cutz":            self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz":         self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate":        self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z":      self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
-            "geometry_spindlespeed":    self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell":           self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime":       self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g":        self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange":      self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez":     self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz":            self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
-            "geometry_endxy":           self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
-            "geometry_depthperpass":    self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth":      self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
-
-            # Geometry Advanced Options
-            "geometry_toolchangexy":    self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
-            "geometry_startz":          self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
-            "geometry_extracut":        self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
-            "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
-            "geometry_z_pdepth":        self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
-            "geometry_feedrate_probe":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
-            "geometry_spindledir":      self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
-            "geometry_f_plunge":        self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
             "geometry_segx":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
-            "geometry_area_exclusion":  self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
-            "geometry_area_shape":      self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
-            "geometry_area_strategy":   self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
-            "geometry_area_overz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
+
+            # Geometry Options
+            "tools_mill_tooldia":       self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            # "tools_mill_offset_type":   0,  # _('Path')
+            # "tools_mill_offset":        0.0,
+            # "tools_mill_job_type":      0,  # 'Rough'
+            # "tools_mill_vtipdia": 0.1,
+            # "tools_mill_vtipangle": 30,
+
+            "tools_mill_cutz":            self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
+            "tools_mill_travelz":         self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
+            "tools_mill_feedrate":        self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
+            "tools_mill_feedrate_z":      self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
+            "tools_mill_spindlespeed":    self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
+            "tools_mill_dwell":           self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
+            "tools_mill_dwelltime":       self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
+            "tools_mill_ppname_g":        self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
+            "tools_mill_toolchange":      self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
+            "tools_mill_toolchangez":     self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
+            "tools_mill_endz":            self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
+            "tools_mill_endxy":           self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
+            "tools_mill_depthperpass":    self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
+            "tools_mill_multidepth":      self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
+
+            # Geometry Advanced Options
+            "tools_mill_toolchangexy":    self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
+            "tools_mill_startz":          self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
+            "tools_mill_feedrate_rapid":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
+            "tools_mill_extracut":        self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
+            "tools_mill_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
+            "tools_mill_z_pdepth":        self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
+            "tools_mill_feedrate_probe":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
+            "tools_mill_spindledir":      self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
+            "tools_mill_f_plunge":        self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
+
+            "tools_mill_area_exclusion":  self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
+            "tools_mill_area_shape":      self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
+            "tools_mill_area_strategy":   self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
+            "tools_mill_area_overz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
             # Polish
-            "geometry_polish":          self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_cb,
-            "geometry_polish_dia":      self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_dia_entry,
-            "geometry_polish_pressure": self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_pressure_entry,
-            "geometry_polish_travelz":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_travelz_entry,
-            "geometry_polish_margin":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_margin_entry,
-            "geometry_polish_overlap":  self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_over_entry,
-            "geometry_polish_method":   self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_method_combo,
+            "tools_mill_polish":            self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_cb,
+            "geometry_polish_dia":          self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_dia_entry,
+            "geometry_polish_pressure":     self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_pressure_entry,
+            "geometry_polish_travelz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_travelz_entry,
+            "tools_mill_polish_margin":     self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_margin_entry,
+            "tools_mill_polish_overlap":    self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_over_entry,
+            "tools_mill_polish_method":     self.ui.geometry_defaults_form.geometry_adv_opt_group.polish_method_combo,
+            "tools_mill_optimization_type": self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio,
+            "tools_mill_search_time":       self.ui.geometry_defaults_form.geometry_gen_group.optimization_time_entry,
 
             # Geometry Editor
             "geometry_editor_sel_limit":        self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
@@ -338,6 +347,7 @@ class PreferencesUIManager:
             "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
 
             # Milling Tool
+            # "tools_mill_milling_type": 'both',
 
             # Autolevelling Tool
             "tools_al_mode":             self.ui.tools_defaults_form.tools_level_group.al_mode_radio,

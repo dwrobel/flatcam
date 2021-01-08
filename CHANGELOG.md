@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 8.01.2021
 
 - added the toggle button for Beginner/Advanced mode for the CNCjob, Geometry, Gerber, Excellon Objects UI (Properties Tab)
+- some changes in PreferencesManager due of Milling Tool changing names of the geometry defaults to tools_mill_ defaults
 
 6.01.2021
 

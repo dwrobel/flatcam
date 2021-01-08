@@ -343,6 +343,7 @@ class FlatCAMDefaults:
         "tools_mill_area_shape": "polygon",
         "tools_mill_area_strategy": "over",
         "tools_mill_area_overz": 1.0,
+        # Polish
         "tools_mill_polish": False,
         "tools_mill_polish_margin": 0.0,
         "tools_mill_polish_overlap": 5,
