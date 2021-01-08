@@ -141,6 +141,11 @@ class GerberObject(FlatCAMObj, Gerber):
         assert isinstance(self.ui, GerberObjectUI), \
             "Expected a GerberObjectUI, got %s" % type(self.ui)
 
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
@@ -171,16 +176,8 @@ class GerberObject(FlatCAMObj, Gerber):
         self.do_buffer_signal.connect(self.on_generate_buffer)
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
-
-            self.ui.apertures_table_label.hide()
-            self.ui.aperture_table_visibility_cb.hide()
-
-            self.ui.follow_cb.hide()
-
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -197,6 +194,49 @@ class GerberObject(FlatCAMObj, Gerber):
 
         self.build_ui()
         self.units_found = self.app.defaults['units']
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+            self.ui.apertures_table_label.hide()
+            self.ui.aperture_table_visibility_cb.set_value(False)
+            self.ui.aperture_table_visibility_cb.hide()
+
+            self.ui.follow_cb.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
+
+            self.ui.apertures_table_label.show()
+            self.ui.aperture_table_visibility_cb.show()
+
+            self.ui.follow_cb.show()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)

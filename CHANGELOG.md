@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.01.2021
+
+- added the toggle button for Beginner/Advanced mode for the CNCjob, Geometry, Gerber, Excellon Objects UI (Properties Tab)
+
 6.01.2021
 
 - allowed some more parameters to have negative values (tool diameters especially)

@@ -65,8 +65,8 @@ class ObjectUI(QtWidgets.QWidget):
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        # ## App Level label
-        self.level = FCLabel("")
+        # App Level label
+        self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -77,7 +77,7 @@ class ObjectUI(QtWidgets.QWidget):
                 "'APP. LEVEL' radio button."
             )
         )
-        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # ## Box box for custom widgets

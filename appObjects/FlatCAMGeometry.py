@@ -649,7 +649,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         # self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
         #     self.ui.e_cut_entry.setDisabled(True)
         # self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
-        #
+
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         # Plot state signals
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
@@ -700,10 +702,41 @@ class GeometryObject(FlatCAMObj, Geometry):
         # self.launch_job.connect(self.mtool_gen_cncjob)
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
         else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
 
     def on_properties(self, state):
         if state:

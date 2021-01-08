@@ -145,26 +145,17 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.to_form()
 
-        # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Beginner'))
-
-            self.ui.tools_table.setColumnHidden(4, True)
-            self.ui.tools_table.setColumnHidden(5, True)
-            self.ui.table_visibility_cb.set_value(True)
-            self.ui.table_visibility_cb.hide()
-            self.ui.autoload_db_cb.set_value(False)
-            self.ui.autoload_db_cb.hide()
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-            self.ui.table_visibility_cb.show()
-            self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
-            self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
-            self.ui.autoload_db_cb.show()
-
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
@@ -195,6 +186,51 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
 
         self.units_found = self.app.defaults['units']
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+            self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.tools_table.setColumnHidden(5, True)
+            self.ui.table_visibility_cb.set_value(True)
+            self.ui.table_visibility_cb.hide()
+            self.ui.autoload_db_cb.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
+
+            self.ui.tools_table.setColumnHidden(4, False)
+            self.ui.tools_table.setColumnHidden(5, False)
+            self.ui.table_visibility_cb.show()
+            self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
+            self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
+            self.ui.autoload_db_cb.show()
 
     def build_ui(self):
         """

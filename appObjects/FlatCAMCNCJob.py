@@ -453,6 +453,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # ##################################### SIGNALS CONNECTIONS ###################################################
         # #############################################################################################################
 
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         # annotation signal
         try:
             self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
@@ -509,6 +511,46 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except AttributeError:
             # gc is text
             self.source_file = gc
+
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+            self.ui.annotation_cb.hide()
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
+
+            self.ui.annotation_cb.show()
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
