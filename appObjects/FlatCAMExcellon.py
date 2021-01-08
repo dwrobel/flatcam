@@ -187,6 +187,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.units_found = self.app.defaults['units']
 
+        xmin, ymin, xmax, ymax = self.bounds()
+        center_coords = (
+            xmin + abs((xmax - xmin) / 2),
+            ymin + abs((ymax - ymin) / 2)
+        )
+        self.ui.offsetvector_entry.set_value(str(center_coords))
+
     def change_level(self, level):
         """
 

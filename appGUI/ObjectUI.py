@@ -127,7 +127,6 @@ class ObjectUI(QtWidgets.QWidget):
 
             # ### Offset ####
             self.offsetvector_entry = NumericalEvalTupleEntry(border_color='#0069A9')
-            self.offsetvector_entry.setText("(0.0, 0.0)")
             self.offsetvector_entry.setToolTip(
                 _("Amount by which to move the object\n"
                   "in the x and y axes in (x, y) format.\n"
