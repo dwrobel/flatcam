@@ -467,48 +467,59 @@ class ToolPaint(AppTool, Gerber):
         self.paint_tools.clear()
         self.tooluid = 0
 
+        # init the working variables
         self.default_data.clear()
-        self.default_data.update({
-            "name":                 '_paint',
-            "plot":                 self.app.defaults["geometry_plot"],
-            "cutz":                 float(self.app.defaults["tools_paint_cutz"]),
-            "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
-            "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
-            "travelz":              float(self.app.defaults["geometry_travelz"]),
-            "feedrate":             float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z":           float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid":       float(self.app.defaults["geometry_feedrate_rapid"]),
-            "dwell":                self.app.defaults["geometry_dwell"],
-            "dwelltime":            float(self.app.defaults["geometry_dwelltime"]),
-            "multidepth":           self.app.defaults["geometry_multidepth"],
-            "ppname_g":             self.app.defaults["geometry_ppname_g"],
-            "depthperpass":         float(self.app.defaults["geometry_depthperpass"]),
-            "extracut":             self.app.defaults["geometry_extracut"],
-            "extracut_length":      self.app.defaults["geometry_extracut_length"],
-            "toolchange":           self.app.defaults["geometry_toolchange"],
-            "toolchangez":          float(self.app.defaults["geometry_toolchangez"]),
-            "endz":                 float(self.app.defaults["geometry_endz"]),
-            "endxy":                self.app.defaults["geometry_endxy"],
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
 
-            "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
-            "startz":               self.app.defaults["geometry_startz"],
+            if option.find('tools_') == 0:
+                self.default_data[option] = self.app.options[option]
 
-            "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
-            "area_shape":           self.app.defaults["geometry_area_shape"],
-            "area_strategy":        self.app.defaults["geometry_area_strategy"],
-            "area_overz":           float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type":    self.app.defaults["geometry_optimization_type"],
-
-            "tooldia":              self.app.defaults["tools_paint_tooldia"],
-            "tools_paint_offset":   self.app.defaults["tools_paint_offset"],
-            "tools_paint_method":    self.app.defaults["tools_paint_method"],
-            "tools_paint_selectmethod":   self.app.defaults["tools_paint_selectmethod"],
-            "tools_paint_connect":    self.app.defaults["tools_paint_connect"],
-            "tools_paint_contour":   self.app.defaults["tools_paint_contour"],
-            "tools_paint_overlap":   self.app.defaults["tools_paint_overlap"],
-            "tools_paint_rest":      self.app.defaults["tools_paint_rest"],
-        })
+        # self.default_data.clear()
+        # self.default_data.update({
+        #     "name":                 '_paint',
+        #     "plot":                 self.app.defaults["geometry_plot"],
+        #     "cutz":                 float(self.app.defaults["tools_paint_cutz"]),
+        #     "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
+        #     "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
+        #     "travelz":              float(self.app.defaults["geometry_travelz"]),
+        #     "feedrate":             float(self.app.defaults["geometry_feedrate"]),
+        #     "feedrate_z":           float(self.app.defaults["geometry_feedrate_z"]),
+        #     "feedrate_rapid":       float(self.app.defaults["geometry_feedrate_rapid"]),
+        #     "dwell":                self.app.defaults["geometry_dwell"],
+        #     "dwelltime":            float(self.app.defaults["geometry_dwelltime"]),
+        #     "multidepth":           self.app.defaults["geometry_multidepth"],
+        #     "ppname_g":             self.app.defaults["geometry_ppname_g"],
+        #     "depthperpass":         float(self.app.defaults["geometry_depthperpass"]),
+        #     "extracut":             self.app.defaults["geometry_extracut"],
+        #     "extracut_length":      self.app.defaults["geometry_extracut_length"],
+        #     "toolchange":           self.app.defaults["geometry_toolchange"],
+        #     "toolchangez":          float(self.app.defaults["geometry_toolchangez"]),
+        #     "endz":                 float(self.app.defaults["geometry_endz"]),
+        #     "endxy":                self.app.defaults["geometry_endxy"],
+        #
+        #     "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
+        #     "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
+        #     "startz":               self.app.defaults["geometry_startz"],
+        #
+        #     "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
+        #     "area_shape":           self.app.defaults["geometry_area_shape"],
+        #     "area_strategy":        self.app.defaults["geometry_area_strategy"],
+        #     "area_overz":           float(self.app.defaults["geometry_area_overz"]),
+        #     "optimization_type":    self.app.defaults["geometry_optimization_type"],
+        #
+        #     "tooldia":              self.app.defaults["tools_paint_tooldia"],
+        #     "tools_paint_offset":   self.app.defaults["tools_paint_offset"],
+        #     "tools_paint_method":    self.app.defaults["tools_paint_method"],
+        #     "tools_paint_selectmethod":   self.app.defaults["tools_paint_selectmethod"],
+        #     "tools_paint_connect":    self.app.defaults["tools_paint_connect"],
+        #     "tools_paint_contour":   self.app.defaults["tools_paint_contour"],
+        #     "tools_paint_overlap":   self.app.defaults["tools_paint_overlap"],
+        #     "tools_paint_rest":      self.app.defaults["tools_paint_rest"],
+        # })
 
         # ## Init the GUI interface
         self.ui.order_radio.set_value(self.app.defaults["tools_paint_order"])

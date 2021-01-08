@@ -231,56 +231,67 @@ class CutOut(AppTool):
 
         self.ui.dia.set_value(float(self.app.defaults["tools_cutout_tooldia"]))
 
-        self.default_data.update({
-            "plot": True,
+        # init the working variables
+        self.default_data.clear()
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
 
-            "cutz": float(self.app.defaults["geometry_cutz"]),
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
+            if option.find('tools_') == 0:
+                self.default_data[option] = self.app.options[option]
 
-            "vtipdia": float(self.app.defaults["tools_mill_vtipdia"]),
-            "vtipangle": float(self.app.defaults["tools_mill_vtipangle"]),
-            "travelz": float(self.app.defaults["geometry_travelz"]),
-            "feedrate": float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
-            "spindledir": self.app.defaults["geometry_spindledir"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
-            "startz": self.app.defaults["geometry_startz"],
-            "endz": float(self.app.defaults["geometry_endz"]),
-            "endxy": self.app.defaults["geometry_endxy"],
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type": self.app.defaults["geometry_optimization_type"],
-
-            # Cutout
-            "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
-            "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
-            "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
-            "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
-            "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
-            "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
-            "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
-            "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
-            "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
-
-            "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
-            "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
-            "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
-            "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
-            "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
-
-        })
+        # self.default_data.update({
+        #     "plot": True,
+        #
+        #     "cutz": float(self.app.defaults["geometry_cutz"]),
+        #     "multidepth": self.app.defaults["geometry_multidepth"],
+        #     "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
+        #
+        #     "vtipdia": float(self.app.defaults["tools_mill_vtipdia"]),
+        #     "vtipangle": float(self.app.defaults["tools_mill_vtipangle"]),
+        #     "travelz": float(self.app.defaults["geometry_travelz"]),
+        #     "feedrate": float(self.app.defaults["geometry_feedrate"]),
+        #     "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+        #     "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
+        #     "spindlespeed": self.app.defaults["geometry_spindlespeed"],
+        #     "dwell": self.app.defaults["geometry_dwell"],
+        #     "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
+        #     "spindledir": self.app.defaults["geometry_spindledir"],
+        #     "ppname_g": self.app.defaults["geometry_ppname_g"],
+        #     "extracut": self.app.defaults["geometry_extracut"],
+        #     "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
+        #     "toolchange": self.app.defaults["geometry_toolchange"],
+        #     "toolchangexy": self.app.defaults["geometry_toolchangexy"],
+        #     "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+        #     "startz": self.app.defaults["geometry_startz"],
+        #     "endz": float(self.app.defaults["geometry_endz"]),
+        #     "endxy": self.app.defaults["geometry_endxy"],
+        #     "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+        #     "area_shape": self.app.defaults["geometry_area_shape"],
+        #     "area_strategy": self.app.defaults["geometry_area_strategy"],
+        #     "area_overz": float(self.app.defaults["geometry_area_overz"]),
+        #     "optimization_type": self.app.defaults["geometry_optimization_type"],
+        #
+        #     # Cutout
+        #     "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
+        #     "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
+        #     "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
+        #     "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
+        #     "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
+        #     "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
+        #     "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
+        #     "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
+        #     "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
+        #
+        #     "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
+        #     "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
+        #     "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
+        #     "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
+        #     "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
+        #
+        # })
         tool_dia = float(self.app.defaults["tools_cutout_tooldia"])
         self.on_tool_add(custom_dia=tool_dia)
 
@@ -568,56 +579,67 @@ class CutOut(AppTool):
     def on_tool_default_add(self, dia=None, muted=None):
 
         dia = dia if dia else str(self.app.defaults["tools_cutout_tooldia"])
-        self.default_data.update({
-            "plot": True,
 
-            "cutz": float(self.app.defaults["geometry_cutz"]),
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
+        # init the working variables
+        self.default_data.clear()
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
 
-            "vtipdia": float(self.app.defaults["tools_mill_vtipdia"]),
-            "vtipangle": float(self.app.defaults["tools_mill_vtipangle"]),
-            "travelz": float(self.app.defaults["geometry_travelz"]),
-            "feedrate": float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
-            "spindledir": self.app.defaults["geometry_spindledir"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
-            "startz": self.app.defaults["geometry_startz"],
-            "endz": float(self.app.defaults["geometry_endz"]),
-            "endxy": self.app.defaults["geometry_endxy"],
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type": self.app.defaults["geometry_optimization_type"],
-
-            # Cutout
-            "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
-            "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
-            "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
-            "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
-            "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
-            "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
-            "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
-            "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
-            "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
-
-            "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
-            "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
-            "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
-            "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
-            "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
-
-        })
+            if option.find('tools_') == 0:
+                self.default_data[option] = self.app.options[option]
+        # self.default_data.update({
+        #     "plot": True,
+        #
+        #     "cutz": float(self.app.defaults["geometry_cutz"]),
+        #     "multidepth": self.app.defaults["geometry_multidepth"],
+        #     "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
+        #
+        #     "vtipdia": float(self.app.defaults["tools_mill_vtipdia"]),
+        #     "vtipangle": float(self.app.defaults["tools_mill_vtipangle"]),
+        #     "travelz": float(self.app.defaults["geometry_travelz"]),
+        #     "feedrate": float(self.app.defaults["geometry_feedrate"]),
+        #     "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+        #     "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
+        #     "spindlespeed": self.app.defaults["geometry_spindlespeed"],
+        #     "dwell": self.app.defaults["geometry_dwell"],
+        #     "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
+        #     "spindledir": self.app.defaults["geometry_spindledir"],
+        #     "ppname_g": self.app.defaults["geometry_ppname_g"],
+        #     "extracut": self.app.defaults["geometry_extracut"],
+        #     "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
+        #     "toolchange": self.app.defaults["geometry_toolchange"],
+        #     "toolchangexy": self.app.defaults["geometry_toolchangexy"],
+        #     "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+        #     "startz": self.app.defaults["geometry_startz"],
+        #     "endz": float(self.app.defaults["geometry_endz"]),
+        #     "endxy": self.app.defaults["geometry_endxy"],
+        #     "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+        #     "area_shape": self.app.defaults["geometry_area_shape"],
+        #     "area_strategy": self.app.defaults["geometry_area_strategy"],
+        #     "area_overz": float(self.app.defaults["geometry_area_overz"]),
+        #     "optimization_type": self.app.defaults["geometry_optimization_type"],
+        #
+        #     # Cutout
+        #     "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
+        #     "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
+        #     "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
+        #     "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
+        #     "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
+        #     "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
+        #     "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
+        #     "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
+        #     "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
+        #
+        #     "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
+        #     "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
+        #     "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
+        #     "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
+        #     "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
+        #
+        # })
 
         self.cut_tool_dict.update({
             'tooldia': dia,

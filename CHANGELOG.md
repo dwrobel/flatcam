@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - added the toggle button for Beginner/Advanced mode for the CNCjob, Geometry, Gerber, Excellon Objects UI (Properties Tab)
 - some changes in PreferencesManager due of Milling Tool changing names of the geometry defaults to tools_mill_ defaults
 - for Excellon, Geometry and Gerber objects now in the Object UI (Properties Tab) by default the Offset field is populated with the coordinates of the center of the current object
+- for NCC, Cutout, Paint, Milling Tools made sure that the tool data dict is populated correctly
 
 6.01.2021
 

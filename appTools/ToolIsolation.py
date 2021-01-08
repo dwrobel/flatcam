@@ -314,42 +314,42 @@ class ToolIsolation(AppTool, Gerber):
             if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
 
-        self.default_data.update({
-            "name":                     outname + '_iso',
-            "plot":                     self.app.defaults["geometry_plot"],
-            "cutz":                     float(self.app.defaults["tools_iso_tool_cutz"]),
-            "vtipdia":                  float(self.app.defaults["tools_iso_tool_vtipdia"]),
-            "vtipangle":                float(self.app.defaults["tools_iso_tool_vtipangle"]),
-            "travelz":                  self.app.defaults["geometry_travelz"],
-            "feedrate":                 self.app.defaults["geometry_feedrate"],
-            "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
-
-            "multidepth":               self.app.defaults["geometry_multidepth"],
-            "ppname_g":                 self.app.defaults["geometry_ppname_g"],
-            "depthperpass":             self.app.defaults["geometry_depthperpass"],
-            "extracut":                 self.app.defaults["geometry_extracut"],
-            "extracut_length":          self.app.defaults["geometry_extracut_length"],
-            "toolchange":               self.app.defaults["geometry_toolchange"],
-            "toolchangez":              self.app.defaults["geometry_toolchangez"],
-            "endz":                     self.app.defaults["geometry_endz"],
-            "endxy":                    self.app.defaults["geometry_endxy"],
-
-            "dwell":                    self.app.defaults["geometry_dwell"],
-            "dwelltime":                self.app.defaults["geometry_dwelltime"],
-            "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
-            "spindledir":               self.app.defaults["geometry_spindledir"],
-
-            "optimization_type":        self.app.defaults["geometry_optimization_type"],
-            "search_time":              self.app.defaults["geometry_search_time"],
-            "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
-            "startz":                   self.app.defaults["geometry_startz"],
-
-            "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
-            "area_shape":               self.app.defaults["geometry_area_shape"],
-            "area_strategy":            self.app.defaults["geometry_area_strategy"],
-            "area_overz":               float(self.app.defaults["geometry_area_overz"]),
-        })
+        # self.default_data.update({
+        #     "name":                     outname + '_iso',
+        #     "plot":                     self.app.defaults["geometry_plot"],
+        #     "cutz":                     float(self.app.defaults["tools_iso_tool_cutz"]),
+        #     "vtipdia":                  float(self.app.defaults["tools_iso_tool_vtipdia"]),
+        #     "vtipangle":                float(self.app.defaults["tools_iso_tool_vtipangle"]),
+        #     "travelz":                  self.app.defaults["geometry_travelz"],
+        #     "feedrate":                 self.app.defaults["geometry_feedrate"],
+        #     "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
+        #     "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
+        #
+        #     "multidepth":               self.app.defaults["geometry_multidepth"],
+        #     "ppname_g":                 self.app.defaults["geometry_ppname_g"],
+        #     "depthperpass":             self.app.defaults["geometry_depthperpass"],
+        #     "extracut":                 self.app.defaults["geometry_extracut"],
+        #     "extracut_length":          self.app.defaults["geometry_extracut_length"],
+        #     "toolchange":               self.app.defaults["geometry_toolchange"],
+        #     "toolchangez":              self.app.defaults["geometry_toolchangez"],
+        #     "endz":                     self.app.defaults["geometry_endz"],
+        #     "endxy":                    self.app.defaults["geometry_endxy"],
+        #
+        #     "dwell":                    self.app.defaults["geometry_dwell"],
+        #     "dwelltime":                self.app.defaults["geometry_dwelltime"],
+        #     "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
+        #     "spindledir":               self.app.defaults["geometry_spindledir"],
+        #
+        #     "optimization_type":        self.app.defaults["geometry_optimization_type"],
+        #     "search_time":              self.app.defaults["geometry_search_time"],
+        #     "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
+        #     "startz":                   self.app.defaults["geometry_startz"],
+        #
+        #     "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
+        #     "area_shape":               self.app.defaults["geometry_area_shape"],
+        #     "area_strategy":            self.app.defaults["geometry_area_strategy"],
+        #     "area_overz":               float(self.app.defaults["geometry_area_overz"]),
+        # })
 
         try:
             dias = [float(self.app.defaults["tools_iso_tooldia"])]

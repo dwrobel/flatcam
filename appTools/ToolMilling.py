@@ -382,64 +382,74 @@ class ToolMilling(AppTool, Excellon):
 
         # init the working variables
         self.default_data.clear()
-        self.default_data = {
-            "name":                     outname + '_mill',
-            "plot":                     self.app.defaults["excellon_plot"],
-            "solid": False,
-            "multicolored": False,
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
 
-            "tools_mill_tooldia": 0.1,
+            if option.find('tools_') == 0:
+                self.default_data[option] = self.app.options[option]
 
-            "tools_mill_offset_type": 0,    # _("Path")
-            "tools_mill_offset": 0.0,
-
-            "tools_mill_milling_type": "drills",
-            "tools_mill_milling_dia": 0.04,
-
-            "tools_mill_job_type": 0,   # 'Rough'
-            "tools_mill_polish_margin": 0.0,
-            "tools_mill_polish_overlap": 10,
-            "tools_mill_polish_method": _("Standard"),
-
-            "tools_mill_tool_type": 'C1',
-            "tools_mill_vtipdia": 0.1,
-            "tools_mill_vtipangle": 30,
-
-            "tools_mill_cutz": -0.1,
-            "tools_mill_multidepth": False,
-            "tools_mill_depthperpass": 0.7,
-
-            "tools_mill_travelz": 0.1,
-            "tools_mill_feedrate": self.app.defaults["geometry_feedrate"],
-            "tools_mill_feedrate_z": 5.0,
-            "tools_mill_feedrate_rapid": 5.0,
-
-            "tools_mill_extracut": self.app.defaults["geometry_extracut"],
-            "tools_mill_extracut_length": self.app.defaults["geometry_extracut_length"],
-
-            "tools_mill_spindlespeed": 0,
-            "tools_mill_dwell": True,
-            "tools_mill_dwelltime": 1000,
-
-            "tools_mill_toolchange": False,
-            "tools_mill_toolchangez": 1.0,
-            "tools_mill_toolchangexy": "0.0, 0.0",
-
-            "tools_mill_endz": 2.0,
-            "tools_mill_endxy": '',
-
-            "tools_mill_startz": None,
-
-            "tools_mill_z_pdepth": -0.02,
-            "tools_mill_feedrate_probe": 3.0,
-            "tools_mill_ppname_g": self.app.defaults["geometry_ppname_g"],
-            "tools_mill_optimization_type": "B",
-
-            "tools_mill_area_exclusion": False,
-            "tools_mill_area_shape": "polygon",
-            "tools_mill_area_strategy": "over",
-            "tools_mill_area_overz": 1.0,
-        }
+        # self.default_data.clear()
+        # self.default_data = {
+        #     "name":                     outname + '_mill',
+        #     "plot":                     self.app.defaults["excellon_plot"],
+        #     "solid": False,
+        #     "multicolored": False,
+        #
+        #     "tools_mill_tooldia": 0.1,
+        #
+        #     "tools_mill_offset_type": 0,    # _("Path")
+        #     "tools_mill_offset": 0.0,
+        #
+        #     "tools_mill_milling_type": "drills",
+        #     "tools_mill_milling_dia": 0.04,
+        #
+        #     "tools_mill_job_type": 0,   # 'Rough'
+        #     "tools_mill_polish_margin": 0.0,
+        #     "tools_mill_polish_overlap": 10,
+        #     "tools_mill_polish_method": _("Standard"),
+        #
+        #     "tools_mill_tool_type": 'C1',
+        #     "tools_mill_vtipdia": 0.1,
+        #     "tools_mill_vtipangle": 30,
+        #
+        #     "tools_mill_cutz": -0.1,
+        #     "tools_mill_multidepth": False,
+        #     "tools_mill_depthperpass": 0.7,
+        #
+        #     "tools_mill_travelz": 0.1,
+        #     "tools_mill_feedrate": self.app.defaults["geometry_feedrate"],
+        #     "tools_mill_feedrate_z": 5.0,
+        #     "tools_mill_feedrate_rapid": 5.0,
+        #
+        #     "tools_mill_extracut": self.app.defaults["geometry_extracut"],
+        #     "tools_mill_extracut_length": self.app.defaults["geometry_extracut_length"],
+        #
+        #     "tools_mill_spindlespeed": 0,
+        #     "tools_mill_dwell": True,
+        #     "tools_mill_dwelltime": 1000,
+        #
+        #     "tools_mill_toolchange": False,
+        #     "tools_mill_toolchangez": 1.0,
+        #     "tools_mill_toolchangexy": "0.0, 0.0",
+        #
+        #     "tools_mill_endz": 2.0,
+        #     "tools_mill_endxy": '',
+        #
+        #     "tools_mill_startz": None,
+        #
+        #     "tools_mill_z_pdepth": -0.02,
+        #     "tools_mill_feedrate_probe": 3.0,
+        #     "tools_mill_ppname_g": self.app.defaults["geometry_ppname_g"],
+        #     "tools_mill_optimization_type": "B",
+        #
+        #     "tools_mill_area_exclusion": False,
+        #     "tools_mill_area_shape": "polygon",
+        #     "tools_mill_area_strategy": "over",
+        #     "tools_mill_area_overz": 1.0,
+        # }
 
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():

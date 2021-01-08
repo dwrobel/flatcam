@@ -551,51 +551,59 @@ class NonCopperClear(AppTool, Gerber):
 
         # init the working variables
         self.default_data.clear()
-        self.default_data = {
-            "name":                     '_ncc',
-            "plot":                     self.app.defaults["geometry_plot"],
-            "cutz":                     float(self.app.defaults["geometry_cutz"]),
-            "vtipdia":                  float(self.app.defaults["tools_mill_vtipdia"]),
-            "vtipangle":                float(self.app.defaults["tools_mill_vtipangle"]),
-            "travelz":                  self.app.defaults["geometry_travelz"],
-            "feedrate":                 self.app.defaults["geometry_feedrate"],
-            "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
-            "dwell":                    self.app.defaults["geometry_dwell"],
-            "dwelltime":                self.app.defaults["geometry_dwelltime"],
-            "multidepth":               self.app.defaults["geometry_multidepth"],
-            "ppname_g":                 self.app.defaults["geometry_ppname_g"],
-            "depthperpass":             self.app.defaults["geometry_depthperpass"],
-            "extracut":                 self.app.defaults["geometry_extracut"],
-            "extracut_length":          self.app.defaults["geometry_extracut_length"],
-            "toolchange":               self.app.defaults["geometry_toolchange"],
-            "toolchangez":              self.app.defaults["geometry_toolchangez"],
-            "endz":                     self.app.defaults["geometry_endz"],
-            "endxy":                    self.app.defaults["geometry_endxy"],
+        kind = 'geometry'
+        for option in self.app.options:
+            if option.find(kind + "_") == 0:
+                oname = option[len(kind) + 1:]
+                self.default_data[oname] = self.app.options[option]
 
-            "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
-            "startz":                   self.app.defaults["geometry_startz"],
-
-            "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
-            "area_shape":               self.app.defaults["geometry_area_shape"],
-            "area_strategy":            self.app.defaults["geometry_area_strategy"],
-            "area_overz":               float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type":        self.app.defaults["geometry_optimization_type"],
-
-            "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
-            "tools_ncc_margin":         self.app.defaults["tools_ncc_margin"],
-            "tools_ncc_method":         self.app.defaults["tools_ncc_method"],
-            "tools_ncc_connect":        self.app.defaults["tools_ncc_connect"],
-            "tools_ncc_contour":        self.app.defaults["tools_ncc_contour"],
-            "tools_ncc_overlap":        self.app.defaults["tools_ncc_overlap"],
-            "tools_ncc_rest":           self.app.defaults["tools_ncc_rest"],
-            "tools_ncc_ref":            self.app.defaults["tools_ncc_ref"],
-            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-            "tools_ncc_milling_type":   self.app.defaults["tools_ncc_milling_type"],
-            "tools_ncc_check_valid":    self.app.defaults["tools_ncc_check_valid"],
-        }
+            if option.find('tools_') == 0:
+                self.default_data[option] = self.app.options[option]
+        # self.default_data = {
+        #     "name":                     '_ncc',
+        #     "plot":                     self.app.defaults["geometry_plot"],
+        #     "cutz":                     float(self.app.defaults["geometry_cutz"]),
+        #     "vtipdia":                  float(self.app.defaults["tools_mill_vtipdia"]),
+        #     "vtipangle":                float(self.app.defaults["tools_mill_vtipangle"]),
+        #     "travelz":                  self.app.defaults["geometry_travelz"],
+        #     "feedrate":                 self.app.defaults["geometry_feedrate"],
+        #     "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
+        #     "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
+        #     "dwell":                    self.app.defaults["geometry_dwell"],
+        #     "dwelltime":                self.app.defaults["geometry_dwelltime"],
+        #     "multidepth":               self.app.defaults["geometry_multidepth"],
+        #     "ppname_g":                 self.app.defaults["geometry_ppname_g"],
+        #     "depthperpass":             self.app.defaults["geometry_depthperpass"],
+        #     "extracut":                 self.app.defaults["geometry_extracut"],
+        #     "extracut_length":          self.app.defaults["geometry_extracut_length"],
+        #     "toolchange":               self.app.defaults["geometry_toolchange"],
+        #     "toolchangez":              self.app.defaults["geometry_toolchangez"],
+        #     "endz":                     self.app.defaults["geometry_endz"],
+        #     "endxy":                    self.app.defaults["geometry_endxy"],
+        #
+        #     "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
+        #     "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
+        #     "startz":                   self.app.defaults["geometry_startz"],
+        #
+        #     "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
+        #     "area_shape":               self.app.defaults["geometry_area_shape"],
+        #     "area_strategy":            self.app.defaults["geometry_area_strategy"],
+        #     "area_overz":               float(self.app.defaults["geometry_area_overz"]),
+        #     "optimization_type":        self.app.defaults["geometry_optimization_type"],
+        #
+        #     "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
+        #     "tools_ncc_margin":         self.app.defaults["tools_ncc_margin"],
+        #     "tools_ncc_method":         self.app.defaults["tools_ncc_method"],
+        #     "tools_ncc_connect":        self.app.defaults["tools_ncc_connect"],
+        #     "tools_ncc_contour":        self.app.defaults["tools_ncc_contour"],
+        #     "tools_ncc_overlap":        self.app.defaults["tools_ncc_overlap"],
+        #     "tools_ncc_rest":           self.app.defaults["tools_ncc_rest"],
+        #     "tools_ncc_ref":            self.app.defaults["tools_ncc_ref"],
+        #     "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
+        #     "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
+        #     "tools_ncc_milling_type":   self.app.defaults["tools_ncc_milling_type"],
+        #     "tools_ncc_check_valid":    self.app.defaults["tools_ncc_check_valid"],
+        # }
 
         try:
             dias = [float(self.app.defaults["tools_ncc_tools"])]
