@@ -521,10 +521,10 @@ class CutOut(AppTool):
             if truncated_tooldia == db_tooldia:
                 tool_found += 1
                 for d in db_tool_val['data']:
-                    if d.find('tools_cutout') == 0:
+                    if d.find('tools_cutout_') == 0:
                         new_tools_dict[d] = db_tool_val['data'][d]
                     elif d.find('tools_') == 0:
-                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        # don't need data for other App Tools; this tests after 'tools_cutout_'
                         continue
                     else:
                         new_tools_dict[d] = db_tool_val['data'][d]
@@ -533,10 +533,10 @@ class CutOut(AppTool):
                 tool_found += 1
                 updated_tooldia = db_tooldia
                 for d in db_tool_val['data']:
-                    if d.find('tools_cutout') == 0:
+                    if d.find('tools_cutout_') == 0:
                         new_tools_dict[d] = db_tool_val['data'][d]
                     elif d.find('tools_') == 0:
-                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        # don't need data for other App Tools; this tests after 'tools_cutout_'
                         continue
                     else:
                         new_tools_dict[d] = db_tool_val['data'][d]

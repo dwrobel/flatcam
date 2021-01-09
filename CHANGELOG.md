@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.1.2021
+
+- attempting to fix issue #492 - when checking for tools present in the database there were some errors in the NCC, ISO, MILL, PAINT and CUTOUT Tools
+
 8.01.2021
 
 - added the toggle button for Beginner/Advanced mode for the CNCjob, Geometry, Gerber, Excellon Objects UI (Properties Tab)
