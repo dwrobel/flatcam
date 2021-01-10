@@ -101,7 +101,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except Exception as e:
                     self.app.log.error("FlatCAMObj.GeometryObject.init() --> %s" % str(e))
 
-        self.options["startz"] = self.app.defaults["geometry_startz"]
+        self.options["tools_mill_startz"] = self.app.defaults["tools_mill_startz"]
 
         # this will hold the tool unique ID that is useful when having multiple tools with same diameter
         self.tooluid = 0
