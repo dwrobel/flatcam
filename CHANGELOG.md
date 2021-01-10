@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - attempting to fix issue #492 - when checking for tools present in the database there were some errors in the NCC, ISO, MILL, PAINT and CUTOUT Tools
 - minor change in Geometry Object
+- some changes in Tools Database and in Cutout Tool; working to update to new milling parameters
 
 8.01.2021
 

@@ -675,9 +675,9 @@ class CutOut(AppTool):
 
         # FIXME when the Geometry UI milling functionality will be transferred in the Milling Tool this needs changes
         tool_from_db['data']["tools_cutout_tooldia"] = deepcopy(tool["tooldia"])
-        tool_from_db['data']["tools_cutout_z"] = deepcopy(tool_from_db['data']["cutz"])
-        tool_from_db['data']["tools_cutout_mdepth"] = deepcopy(tool_from_db['data']["multidepth"])
-        tool_from_db['data']["tools_cutout_depthperpass"] = deepcopy(tool_from_db['data']["depthperpass"])
+        tool_from_db['data']["tools_cutout_z"] = deepcopy(tool_from_db['data']["tools_mill_cutz"])
+        tool_from_db['data']["tools_cutout_mdepth"] = deepcopy(tool_from_db['data']["tools_mill_multidepth"])
+        tool_from_db['data']["tools_cutout_depthperpass"] = deepcopy(tool_from_db['data']["tools_mill_depthperpass"])
 
         self.cut_tool_dict.update(tool_from_db)
         self.cut_tool_dict['solid_geometry'] = []
@@ -1053,18 +1053,18 @@ class CutOut(AppTool):
                     geo_obj.options['ymax'] = ymax
 
                     geo_obj.options['tools_mill_tooldia'] = str(dia)
-                    geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
-                    geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
-                    geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    geo_obj.options['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.options['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.options['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
                     geo_obj.tools[1] = deepcopy(self.cut_tool_dict)
                     geo_obj.tools[1]['tooldia'] = str(dia)
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                     geo_obj.tools[1]['data']['name'] = outname
-                    geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-                    geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                    geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
                     if not gaps_solid_geo:
                         pass
@@ -1074,9 +1074,9 @@ class CutOut(AppTool):
                         geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
 
                         geo_obj.tools[9999]['data']['name'] = outname
-                        geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                        geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                        geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
                         # plot this tool in a different color
                         geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
 
@@ -1440,9 +1440,9 @@ class CutOut(AppTool):
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                     geo_obj.tools[1]['data']['name'] = outname
-                    geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-                    geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                    geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
                     if not gaps_solid_geo:
                         pass
@@ -1452,9 +1452,9 @@ class CutOut(AppTool):
                         geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
 
                         geo_obj.tools[9999]['data']['name'] = outname
-                        geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                        geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                        geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
                         geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
 
                 def excellon_init(exc_obj, app_o):
@@ -1700,9 +1700,9 @@ class CutOut(AppTool):
 
             self.man_cutout_obj.tools[1]['solid_geometry'] = new_solid_geometry
             self.man_cutout_obj.tools[1]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
-            self.man_cutout_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-            self.man_cutout_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-            self.man_cutout_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+            self.man_cutout_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+            self.man_cutout_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+            self.man_cutout_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
         except KeyError:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No tool in the Geometry object."))
             return
@@ -1717,9 +1717,9 @@ class CutOut(AppTool):
                 self.man_cutout_obj.tools[9999]['solid_geometry'] = [gaps_solid_geo]
 
                 self.man_cutout_obj.tools[9999]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
-                self.man_cutout_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                self.man_cutout_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                self.man_cutout_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                self.man_cutout_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                self.man_cutout_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                self.man_cutout_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
                 self.man_cutout_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
             else:
                 self.man_cutout_obj.tools[9999]['solid_geometry'].append(gaps_solid_geo)
@@ -1810,9 +1810,9 @@ class CutOut(AppTool):
             geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
             geo_obj.tools[1]['data']['name'] = outname
-            geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+            geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
+            geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+            geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.app_obj.new_object('geometry', outname, geo_init)
