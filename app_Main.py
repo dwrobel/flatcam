@@ -155,9 +155,9 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # ################################### Version and VERSION DATE ##################################################
     # ###############################################################################################################
-    version = "Unstable Version"
-    # version = 8.994
-    version_date = "2020/12/7"
+    version = "Unstable"
+    # version = 8.995
+    version_date = "2021/2/7"
     beta = True
 
     engine = '3D'
@@ -2196,7 +2196,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
     def connect_tools_signals_to_toolbar(self):
-        self.log.debug(" -> Connecting Tools Toolbar Signals")
+        self.log.debug(" -> Connecting Plugin Toolbar Signals")
 
         self.ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
         self.ui.mill_btn.triggered.connect(lambda: self.milling_tool.run(toggle=True))
@@ -2327,7 +2327,7 @@ class App(QtCore.QObject):
             self.ui.removeToolBar(self.ui.toolbaredit)
             self.ui.removeToolBar(self.ui.toolbarview)
             self.ui.removeToolBar(self.ui.toolbarshell)
-            self.ui.removeToolBar(self.ui.toolbartools)
+            self.ui.removeToolBar(self.ui.toolbarplugins)
             self.ui.removeToolBar(self.ui.exc_edit_toolbar)
             self.ui.removeToolBar(self.ui.geo_edit_toolbar)
             self.ui.removeToolBar(self.ui.grb_edit_toolbar)
@@ -2350,9 +2350,9 @@ class App(QtCore.QObject):
             self.ui.toolbarshell.setObjectName('Shell_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
 
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
+            self.ui.toolbarplugins = QtWidgets.QToolBar('Plugin Toolbar')
+            self.ui.toolbarplugins.setObjectName('Plugins_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarplugins)
 
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
@@ -2389,9 +2389,9 @@ class App(QtCore.QObject):
             self.ui.toolbarshell.setObjectName('Shell_TB')
             self.ui.addToolBar(self.ui.toolbarshell)
 
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(self.ui.toolbartools)
+            self.ui.toolbarplugins = QtWidgets.QToolBar('Plugin Toolbar')
+            self.ui.toolbarplugins.setObjectName('Plugins_TB')
+            self.ui.addToolBar(self.ui.toolbarplugins)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
             # self.ui.exc_edit_toolbar.setVisible(False)
@@ -2574,10 +2574,10 @@ class App(QtCore.QObject):
         self.delete_selection_shape()
 
         # hide the Tools Toolbar
-        tools_tb = self.ui.toolbartools
-        if tools_tb.isVisible():
+        plugins_tb = self.ui.toolbarplugins
+        if plugins_tb.isVisible():
             self.old_state_of_tools_toolbar = True
-            tools_tb.hide()
+            plugins_tb.hide()
         else:
             self.old_state_of_tools_toolbar = False
 
@@ -2631,9 +2631,9 @@ class App(QtCore.QObject):
 
             if response == bt_yes:
                 # show the Tools Toolbar
-                tools_tb = self.ui.toolbartools
+                plugins_tb = self.ui.toolbarplugins
                 if self.old_state_of_tools_toolbar is True:
-                    tools_tb.show()
+                    plugins_tb.show()
 
                 # clean the Tools Tab
                 found_idx = None
@@ -2742,9 +2742,9 @@ class App(QtCore.QObject):
                 self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
             elif response == bt_no:
                 # show the Tools Toolbar
-                tools_tb = self.ui.toolbartools
+                plugins_tb = self.ui.toolbarplugins
                 if self.old_state_of_tools_toolbar is True:
-                    tools_tb.show()
+                    plugins_tb.show()
 
                 # clean the Tools Tab
                 found_idx = None
@@ -2792,9 +2792,9 @@ class App(QtCore.QObject):
             # self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
         else:
             # show the Tools Toolbar
-            tools_tb = self.ui.toolbartools
+            plugins_tb = self.ui.toolbarplugins
             if self.old_state_of_tools_toolbar is True:
-                tools_tb.show()
+                plugins_tb.show()
 
             if edited_obj.kind == 'geometry':
                 self.geo_editor.deactivate()
@@ -3091,7 +3091,7 @@ class App(QtCore.QObject):
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
 
                 title = QtWidgets.QLabel(
-                    "<font size=8><B>FlatCAM</B></font><BR>"
+                    "<font size=8><B>FlatCAM Evo</B></font><BR>"
                     "{title}<BR>"
                     "<BR>"
                     "<BR>"
@@ -3099,7 +3099,7 @@ class App(QtCore.QObject):
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\"><b>{down}</B></a><BR>"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">"
                     "<B>{issue}</B></a><BR>".format(
-                        title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
+                        title=_("PCB Manufacturing files Viewer/Editor with Plugins"),
                         devel=_("Development"),
                         down=_("DOWNLOAD"),
                         issue=_("Issue tracker"))
@@ -3110,7 +3110,7 @@ class App(QtCore.QObject):
 
                 tab_widget = QtWidgets.QTabWidget()
                 description_label = QtWidgets.QLabel(
-                    "FlatCAM {version} {beta} ({date}) - {arch}<br>"
+                    "FlatCAM Evo {version} {beta} ({date}) - {arch}<br>"
                     "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>".format(
                         version=version,
                         beta=('BETA' if beta else ''),

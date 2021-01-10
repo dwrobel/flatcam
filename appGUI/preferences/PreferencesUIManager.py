@@ -1115,7 +1115,7 @@ class PreferencesUIManager:
         if self.ui.toolbarview.isVisible():
             tb_status += 4
 
-        if self.ui.toolbartools.isVisible():
+        if self.ui.toolbarplugins.isVisible():
             tb_status += 8
 
         if self.ui.exc_edit_toolbar.isVisible():

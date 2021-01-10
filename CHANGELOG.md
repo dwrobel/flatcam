@@ -14,6 +14,8 @@ CHANGELOG for FlatCAM beta
 - renamed the app to FlatCAM Evo in order to make a difference from FlatCAM app which follows its own path
 - modified the splash image to reflect the new naming of the app
 - modified some of the documents (License, Readme) in the app to reflect the actual reality in 2021
+- made more changes in the names; Tools Toolbar is now Plugin Toolbar
+- the detachable tabs are now not detachable by default after first install
 
 9.1.2021
 

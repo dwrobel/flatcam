@@ -29,7 +29,7 @@ class FlatCAMDefaults:
         "root_folder_path": '',
         "global_serial": 0,
         "global_stats": dict(),
-        "global_tabs_detachable": True,
+        "global_tabs_detachable": False,
 
         "global_coordsbar_show": True,
         "global_delta_coordsbar_show": False,
