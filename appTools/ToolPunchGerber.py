@@ -162,7 +162,7 @@ class ToolPunchGerber(AppTool, Gerber):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -191,7 +191,7 @@ class ToolPunchGerber(AppTool, Gerber):
         self.set_tool_ui()
         self.build_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Punch Tool"))
+        self.app.ui.notebook.setTabText(2, _("Punch Geber"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+H', **kwargs)

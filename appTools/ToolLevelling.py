@@ -144,7 +144,7 @@ class ToolLevelling(AppTool, CNCjob):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -171,7 +171,7 @@ class ToolLevelling(AppTool, CNCjob):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Levelling Tool"))
+        self.app.ui.notebook.setTabText(2, _("Levelling"))
 
     def connect_signals_at_init(self):
         self.build_al_table_sig.connect(self.build_al_table)
@@ -1637,7 +1637,7 @@ class ToolLevelling(AppTool, CNCjob):
 
 
 class LevelUI:
-    toolName = _("Levelling Tool")
+    toolName = _("Levelling")
 
     def __init__(self, layout, app):
         self.app = app

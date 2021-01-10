@@ -107,7 +107,7 @@ class ToolFiducials(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -135,7 +135,7 @@ class ToolFiducials(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Fiducials Tool"))
+        self.app.ui.notebook.setTabText(2, _("Fiducials"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
@@ -744,7 +744,7 @@ class ToolFiducials(AppTool):
 
 class FidoUI:
 
-    toolName = _("Fiducials Tool")
+    toolName = _("Fiducials")
 
     def __init__(self, layout, app):
         self.app = app

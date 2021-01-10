@@ -230,7 +230,7 @@ class ToolDrilling(AppTool, Excellon):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -263,7 +263,7 @@ class ToolDrilling(AppTool, Excellon):
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
-        self.app.ui.notebook.setTabText(2, _("Drilling Tool"))
+        self.app.ui.notebook.setTabText(2, _("Drilling"))
 
     def connect_signals_at_init(self):
         # #############################################################################
@@ -2171,7 +2171,7 @@ class ToolDrilling(AppTool, Excellon):
 
 class DrillingUI:
 
-    toolName = _("Drilling Tool")
+    toolName = _("Drilling")
 
     def __init__(self, layout, app):
         self.app = app

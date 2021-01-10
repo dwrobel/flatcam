@@ -96,7 +96,7 @@ class ToolFollow(AppTool, Gerber):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -123,7 +123,7 @@ class ToolFollow(AppTool, Gerber):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Follow Tool"))
+        self.app.ui.notebook.setTabText(2, _("Follow"))
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
@@ -643,7 +643,7 @@ class ToolFollow(AppTool, Gerber):
 
 class FollowUI:
 
-    toolName = _("Follow Tool")
+    toolName = _("Follow")
 
     def __init__(self, layout, app):
         self.app = app

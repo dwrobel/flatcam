@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.01.2021
+
+- renamed the Tool menu category to Plugins
+- for all the plugins optimized the plugin name
+- renamed the app to FlatCAM Evo in order to make a difference from FlatCAM app which follows its own path
+- modified the splash image to reflect the new naming of the app
+- modified some of the documents (License, Readme) in the app to reflect the actual reality in 2021
+
 9.1.2021
 
 - attempting to fix issue #492 - when checking for tools present in the database there were some errors in the NCC, ISO, MILL, PAINT and CUTOUT Tools

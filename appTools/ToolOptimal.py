@@ -91,7 +91,7 @@ class ToolOptimal(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -118,7 +118,7 @@ class ToolOptimal(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
+        self.app.ui.notebook.setTabText(2, _("Find Optimal"))
 
     def set_tool_ui(self):
         self.ui.result_entry.set_value(0.0)
@@ -405,7 +405,7 @@ class ToolOptimal(AppTool):
 
 class OptimalUI:
 
-    toolName = _("Optimal Tool")
+    toolName = _("Find Optimal")
 
     def __init__(self, layout, app):
         self.app = app

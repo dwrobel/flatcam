@@ -138,7 +138,7 @@ class ToolSub(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -165,7 +165,7 @@ class ToolSub(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
+        self.app.ui.notebook.setTabText(2, _("Subtract"))
 
     def on_object_selection_changed(self, current, previous):
         try:
@@ -743,7 +743,7 @@ class ToolSub(AppTool):
 
 class SubUI:
 
-    toolName = _("Subtract Tool")
+    toolName = _("Subtract")
 
     def __init__(self, layout, app):
         self.app = app
@@ -762,6 +762,9 @@ class SubUI:
                                     font-weight: bold;
                                 }
                                 """)
+        title_label.setToolTip(
+            _("A plugin to help subtract a Gerber/Geometry object from another of the same type.")
+        )
         self.title_box.addWidget(title_label)
 
         # App Level label

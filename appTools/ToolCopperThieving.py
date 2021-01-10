@@ -113,7 +113,7 @@ class ToolCopperThieving(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -141,7 +141,7 @@ class ToolCopperThieving(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
+        self.app.ui.notebook.setTabText(2, _("Copper Thieving"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+J', **kwargs)
@@ -1243,7 +1243,7 @@ class ToolCopperThieving(AppTool):
 
 class ThievingUI:
 
-    toolName = _("Copper Thieving Tool")
+    toolName = _("Copper Thieving")
 
     def __init__(self, layout, app):
         self.app = app

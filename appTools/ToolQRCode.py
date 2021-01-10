@@ -104,7 +104,7 @@ class QRCode(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -132,7 +132,7 @@ class QRCode(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("QRCode Tool"))
+        self.app.ui.notebook.setTabText(2, _("QRCode"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
@@ -696,7 +696,7 @@ class QRCode(AppTool):
 
 class QRcodeUI:
 
-    toolName = _("QRCode Tool")
+    toolName = _("QRCode")
 
     def __init__(self, layout, app):
         self.app = app

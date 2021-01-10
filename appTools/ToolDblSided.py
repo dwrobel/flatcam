@@ -74,7 +74,7 @@ class DblSidedTool(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -101,7 +101,7 @@ class DblSidedTool(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("2-Sided Tool"))
+        self.app.ui.notebook.setTabText(2, _("2-Sided"))
 
     def connect_signals_at_init(self):
         # #############################################################################
@@ -604,7 +604,7 @@ class DblSidedTool(AppTool):
 
 class DsidedUI:
 
-    toolName = _("2-Sided PCB")
+    toolName = _("2-Sided")
 
     def __init__(self, layout, app):
         self.app = app

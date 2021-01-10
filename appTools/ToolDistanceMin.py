@@ -76,11 +76,11 @@ class DistanceMin(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
-        self.app.ui.notebook.setTabText(2, _("Minimum Distance Tool"))
+        self.app.ui.notebook.setTabText(2, _("Minimum Distance"))
 
         # Remove anything else in the appGUI
         self.app.ui.tool_scroll_area.takeWidget()
@@ -230,7 +230,7 @@ class DistanceMin(AppTool):
 
 class DistMinUI:
 
-    toolName = _("Minimum Distance Tool")
+    toolName = _("Minimum Distance")
 
     def __init__(self, layout, app):
         self.app = app

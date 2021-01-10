@@ -63,7 +63,7 @@ class ToolInvertGerber(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -90,7 +90,7 @@ class ToolInvertGerber(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Invert Tool"))
+        self.app.ui.notebook.setTabText(2, _("Invert Gerber"))
 
     def set_tool_ui(self):
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
@@ -187,7 +187,7 @@ class ToolInvertGerber(AppTool):
 
 class InvertUI:
     
-    toolName = _("Invert Gerber Tool")
+    toolName = _("Invert Gerber")
 
     def __init__(self, layout, app):
         self.app = app

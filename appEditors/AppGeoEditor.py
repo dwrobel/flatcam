@@ -149,7 +149,7 @@ class BufferSelectionTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -389,7 +389,7 @@ class TextInputTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -605,7 +605,7 @@ class PaintOptionsTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -1100,7 +1100,7 @@ class TransformEditorTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 

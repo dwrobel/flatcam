@@ -109,7 +109,7 @@ class Film(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -137,7 +137,7 @@ class Film(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Film Tool"))
+        self.app.ui.notebook.setTabText(2, _("Film"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+L', **kwargs)
@@ -1078,7 +1078,7 @@ class Film(AppTool):
 
 class FilmUI:
 
-    toolName = _("Film PCB")
+    toolName = _("Film")
 
     def __init__(self, layout, app):
         self.app = app

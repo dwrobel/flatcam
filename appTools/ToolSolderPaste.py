@@ -104,7 +104,7 @@ class SolderPaste(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -132,7 +132,7 @@ class SolderPaste(AppTool):
         self.set_tool_ui()
         self.build_ui()
 
-        self.app.ui.notebook.setTabText(2, _("SolderPaste Tool"))
+        self.app.ui.notebook.setTabText(2, _("SP Dispenser"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
@@ -1140,7 +1140,7 @@ class SolderPaste(AppTool):
 
 class SolderUI:
 
-    toolName = _("Solder Paste Tool")
+    toolName = _("SP Dispenser")
 
     def __init__(self, layout, app, solder_class):
         self.app = app
@@ -1156,6 +1156,9 @@ class SolderUI:
                                    font-weight: bold;
                                }
                                """)
+        title_label.setToolTip(
+            _("A plugin to help dispense solder paste on the PCB pads using a CNC machine.")
+        )
         self.layout.addWidget(title_label)
 
         # ## Form Layout

@@ -47,12 +47,12 @@ class AppTool(QtWidgets.QWidget):
         before = None
 
         # 'pos' is the menu where the Action has to be installed
-        # if no 'pos' kwarg is provided then by default our Action will be installed in the menutool
+        # if no 'pos' kwarg is provided then by default our Action will be installed in the menu_plugins
         # as it previously was
         if 'pos' in kwargs:
             pos = kwargs['pos']
         else:
-            pos = self.app.ui.menutool
+            pos = self.app.ui.menu_plugins
 
         # 'before' is the Action in the menu stated by 'pos' kwarg, before which we want our Action to be installed
         # if 'before' kwarg is not provided, by default our Action will be added in the last place.

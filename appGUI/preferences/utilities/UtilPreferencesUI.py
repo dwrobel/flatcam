@@ -34,4 +34,4 @@ class UtilPreferencesUI(QtWidgets.QWidget):
         self.layout.addWidget(self.fa_gerber_group)
         self.layout.addWidget(self.kw_group)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)

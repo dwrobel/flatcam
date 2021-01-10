@@ -7073,7 +7073,7 @@ class TransformEditorTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 

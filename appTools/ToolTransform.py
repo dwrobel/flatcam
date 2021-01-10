@@ -73,7 +73,7 @@ class ToolTransform(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -100,7 +100,7 @@ class ToolTransform(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Transform Tool"))
+        self.app.ui.notebook.setTabText(2, _("Object Transform"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
@@ -544,6 +544,9 @@ class TransformUI:
                                     font-weight: bold;
                                 }
                                 """)
+        title_label.setToolTip(
+            _("A plugin that allow geometry transformation.")
+        )
         self.layout.addWidget(title_label)
         self.layout.addWidget(FCLabel(""))
 

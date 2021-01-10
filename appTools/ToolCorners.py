@@ -83,7 +83,7 @@ class ToolCorners(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -111,7 +111,7 @@ class ToolCorners(AppTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Corners Tool"))
+        self.app.ui.notebook.setTabText(2, _("Corners"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
@@ -635,7 +635,7 @@ class ToolCorners(AppTool):
 
 class CornersUI:
 
-    toolName = _("Corner Markers Tool")
+    toolName = _("Corner Markers")
 
     def __init__(self, layout, app):
         self.app = app

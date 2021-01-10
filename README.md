@@ -1,6 +1,7 @@
-FlatCAM BETA (c) 2019 - by Marius Stanciu
+FlatCAM Evo (c) 2019 - by Marius Stanciu
+
 Based on FlatCAM: 
-2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
+2D Computer-Aided PCB Manufacturing by (c) 2014-2018 Juan Pablo Caram
 =====================================================================
 
 FlatCAM is a program for preparing CNC jobs for making PCBs on a CNC router.
@@ -11,7 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 
 -------------------------- Installation instructions ----------------
 
-Works with Python version 3.5 or greater and PyQt5.
+Works with Python version 3.6 or greater and PyQt5.
 More on the YouTube channel: https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_
 
 You can contact me on my email address found in the app in:
@@ -42,8 +43,8 @@ pip -V
 
 - look in the requirements.txt file (found in the sources folder) and install all the dependencies using the pip package. 
 The required wheels can be downloaded either from:
-https://www.lfd.uci.edu/~gohlke/pythonlibs/
-or
+https://www.lfd.uci.edu/~gohlke/pythonlibs/ (Recommended)
+or if the required modules cannot be found in the previous source use:
 https://pypi.org/
  
 You can download all the required wheels files into a folder (e.g D:\my_folder) and install them from Command Prompt like this:

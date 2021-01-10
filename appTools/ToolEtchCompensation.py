@@ -68,7 +68,7 @@ class ToolEtchCompensation(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -95,7 +95,7 @@ class ToolEtchCompensation(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Etch Compensation Tool"))
+        self.app.ui.notebook.setTabText(2, _("Etch Compensation"))
 
     def set_tool_ui(self):
         self.ui.thick_entry.set_value(18.0)
@@ -266,7 +266,7 @@ class ToolEtchCompensation(AppTool):
 
 class EtchUI:
 
-    toolName = _("Etch Compensation Tool")
+    toolName = _("Etch Compensation")
 
     def __init__(self, layout, app):
         self.app = app

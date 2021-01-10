@@ -1420,7 +1420,7 @@ class App(QtCore.QObject):
         self.connect_menuview_signals()
 
         # Tool Signals
-        self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
+        self.ui.menu_plugins_shell.triggered.connect(self.ui.toggle_shell_ui)
         # the rest are auto-inserted
 
         # Help Signals
@@ -1859,7 +1859,7 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menu_plugins,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
 
@@ -1883,46 +1883,46 @@ class App(QtCore.QObject):
 
         self.sub_tool = ToolSub(self)
         self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
-                              pos=self.ui.menutool, separator=True)
+                              pos=self.ui.menu_plugins, separator=True)
 
         self.rules_tool = RulesCheck(self)
         self.rules_tool.install(icon=QtGui.QIcon(self.resource_location + '/rules32.png'),
-                                pos=self.ui.menutool, separator=False)
+                                pos=self.ui.menu_plugins, separator=False)
 
         self.optimal_tool = ToolOptimal(self)
         self.optimal_tool.install(icon=QtGui.QIcon(self.resource_location + '/open_excellon32.png'),
-                                  pos=self.ui.menutool, separator=True)
+                                  pos=self.ui.menu_plugins, separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon(self.resource_location + '/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin, separator=True)
 
         self.cutout_tool = CutOut(self)
-        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut32.png'), pos=self.ui.menutool,
+        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut32.png'), pos=self.ui.menu_plugins,
                                  before=self.sub_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
-        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc32.png'), pos=self.ui.menutool,
+        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc32.png'), pos=self.ui.menu_plugins,
                                   before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
-        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint20_1.png'), pos=self.ui.menutool,
+        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint20_1.png'), pos=self.ui.menu_plugins,
                                 before=self.sub_tool.menuAction, separator=True)
 
         self.isolation_tool = ToolIsolation(self)
-        self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menutool,
+        self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menu_plugins,
                                     before=self.sub_tool.menuAction, separator=True)
 
         self.follow_tool = ToolFollow(self)
-        self.follow_tool.install(icon=QtGui.QIcon(self.resource_location + '/follow32.png'), pos=self.ui.menutool,
+        self.follow_tool.install(icon=QtGui.QIcon(self.resource_location + '/follow32.png'), pos=self.ui.menu_plugins,
                                  before=self.sub_tool.menuAction, separator=True)
 
         self.drilling_tool = ToolDrilling(self)
         self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/extract_drill32.png'),
-                                   pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
+                                   pos=self.ui.menu_plugins, before=self.sub_tool.menuAction, separator=True)
         self.milling_tool = ToolMilling(self)
         self.milling_tool.install(icon=QtGui.QIcon(self.resource_location + '/milling_tool32.png'),
-                                  pos=self.ui.menutool, before=self.sub_tool.menuAction, separator=True)
+                                  pos=self.ui.menu_plugins, before=self.sub_tool.menuAction, separator=True)
 
         self.levelling_tool = ToolLevelling(self)
         self.levelling_tool.install(icon=QtGui.QIcon(self.resource_location + '/level32.png'),
@@ -1930,27 +1930,27 @@ class App(QtCore.QObject):
 
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
-                                          pos=self.ui.menutool)
+                                          pos=self.ui.menu_plugins)
 
         self.fiducial_tool = ToolFiducials(self)
         self.fiducial_tool.install(icon=QtGui.QIcon(self.resource_location + '/fiducials_32.png'),
-                                   pos=self.ui.menutool)
+                                   pos=self.ui.menu_plugins)
 
         self.qrcode_tool = QRCode(self)
         self.qrcode_tool.install(icon=QtGui.QIcon(self.resource_location + '/qrcode32.png'),
-                                 pos=self.ui.menutool)
+                                 pos=self.ui.menu_plugins)
 
         self.punch_tool = ToolPunchGerber(self)
-        self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menutool)
+        self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menu_plugins)
 
         self.invert_tool = ToolInvertGerber(self)
-        self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menutool)
+        self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
 
         self.corners_tool = ToolCorners(self)
-        self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'), pos=self.ui.menutool)
+        self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'), pos=self.ui.menu_plugins)
 
         self.etch_tool = ToolEtchCompensation(self)
-        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etch_32.png'), pos=self.ui.menutool)
+        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etch_32.png'), pos=self.ui.menu_plugins)
 
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
@@ -1981,8 +1981,8 @@ class App(QtCore.QObject):
         Will remove all the actions in the Tool menu.
         :return: None
         """
-        for act in self.ui.menutool.actions():
-            self.ui.menutool.removeAction(act)
+        for act in self.ui.menu_plugins.actions():
+            self.ui.menu_plugins.removeAction(act)
 
     def init_tools(self, init_tcl=True):
         """
@@ -2016,9 +2016,9 @@ class App(QtCore.QObject):
         self.remove_tools()
 
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
-        self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
+        self.ui.menu_plugins_shell = self.ui.menu_plugins.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
                                                            '&Command Line\tS')
-        self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
+        self.ui.menu_plugins_shell.triggered.connect(self.ui.toggle_shell_ui)
 
         # third install all of them
         try:
@@ -2586,7 +2586,7 @@ class App(QtCore.QObject):
         # disable the objects menu as it may interfere with the appEditors
         self.ui.menuobjects.setDisabled(True)
         # disable the tools menu as it makes sense not to be available when in the Editor
-        self.ui.menutool.setDisabled(True)
+        self.ui.menu_plugins.setDisabled(True)
 
         self.ui.plot_tab_area.setTabText(0, _("EDITOR Area"))
         self.ui.plot_tab_area.protectTab(0)
@@ -2826,7 +2826,7 @@ class App(QtCore.QObject):
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
         # re-enable the tool menu that was disabled on entry in Editor mode
-        self.ui.menutool.setDisabled(False)
+        self.ui.menu_plugins.setDisabled(False)
 
         # restore the call_source to app
         self.call_source = 'app'
@@ -3240,12 +3240,12 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Author")), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("BETA Maintainer >= 2019")), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 4, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0)
 

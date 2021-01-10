@@ -212,7 +212,7 @@ class ToolPaint(AppTool, Gerber):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Tool"))
+                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -244,7 +244,7 @@ class ToolPaint(AppTool, Gerber):
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
-        self.app.ui.notebook.setTabText(2, _("Paint Tool"))
+        self.app.ui.notebook.setTabText(2, _("Paint"))
 
     def on_toggle_all_rows(self):
         """
@@ -2879,7 +2879,7 @@ class ToolPaint(AppTool, Gerber):
 
 class PaintUI:
 
-    toolName = _("Paint Tool")
+    toolName = _("Paint")
 
     def __init__(self, layout, app):
         self.app = app

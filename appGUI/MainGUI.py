@@ -584,11 +584,11 @@ class MainGUI(QtWidgets.QMainWindow):
             '%s\t%s' % (_('Deselect All'), ''))
 
         # ########################################################################
-        # ########################## Tool # ######################################
+        # ########################## Plugins # ######################################
         # ########################################################################
-        self.menutool = QtWidgets.QMenu(_('Tool'))
-        self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(
+        self.menu_plugins = QtWidgets.QMenu(_('Plugins'))
+        self.menu_plugins_action = self.menu.addMenu(self.menu_plugins)
+        self.menu_plugins_shell = self.menu_plugins.addAction(
             QtGui.QIcon(self.app.resource_location + '/shell16.png'),
             '%s\t%s' % (_('Command Line'), _('S')))
 
@@ -1815,7 +1815,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
-        self.setWindowTitle('FlatCAM %s %s - %s' %
+        self.setWindowTitle('FlatCAM Evo %s %s - %s' %
                             (self.app.version,
                              ('BETA' if self.app.beta else ''),
                              platform.architecture()[0])
@@ -1960,7 +1960,7 @@ class MainGUI(QtWidgets.QMainWindow):
         :param name: String that store the project path and project name
         :return: None
         """
-        title = 'FlatCAM %s %s - %s - [%s]    %s' % (
+        title = 'FlatCAM Evo %s %s - %s - [%s]    %s' % (
             self.app.version, ('BETA' if self.app.beta else ''), platform.architecture()[0], self.app.engine, name)
         self.setWindowTitle(title)
 
