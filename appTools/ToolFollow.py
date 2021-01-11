@@ -281,13 +281,12 @@ class ToolFollow(AppTool, Gerber):
             # store here the default data for Geometry Data
             new_data = {}
 
-            for opt_key, opt_val in app_obj.options.items():
+            for opt_key in app_obj.options:
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
                     new_data[oname] = app_obj.options[opt_key]
-                if opt_key.find('tools_mill' + "_") == 0:
-                    oname = opt_key[len('tools_mill') + 1:]
-                    new_data[oname] = app_obj.options[opt_key]
+                if opt_key.find('tools_') == 0:
+                    new_data[opt_key] = app_obj.options[opt_key]
 
             try:
                 __ = iter(followed_obj.follow_geometry)
@@ -298,6 +297,10 @@ class ToolFollow(AppTool, Gerber):
                 g for g in followed_obj.follow_geometry if g and not g.is_empty and g.is_valid and
                                                            g.geom_type != 'Point'
             ]
+
+            if not follow_geo:
+                self.app.log.warning("ToolFollow.follow_geo() -> Empty Follow Geometry")
+                return 'fail'
 
             # Propagate options
             new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]

@@ -2307,10 +2307,10 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.options["name"] + "_mill"
+            outname = self.target_obj.options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.options["tooldia"])
+            tooldia = float(self.target_obj.options["tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
@@ -2364,7 +2364,7 @@ class ToolMilling(AppTool, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
+            geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -2423,10 +2423,10 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.options["name"] + "_mill"
+            outname = self.target_obj.options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.options["slot_tooldia"])
+            tooldia = float(self.target_obj.options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]['tooldia'])
@@ -2468,7 +2468,7 @@ class ToolMilling(AppTool, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
+            geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -2766,20 +2766,20 @@ class ToolMilling(AppTool, Excellon):
                 tool_cnt += 1
 
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = app_obj.dec_format(float(tools_dict[tooluid_key]['tooldia']), self.decimals)
+                tooldia_val = app_obj.dec_format(float(tools_dict[tooluid_key]['tools_mill_tooldia']), self.decimals)
                 dia_cnc_dict.update({
-                    'tooldia': tooldia_val
+                    'tools_mill_tooldia': tooldia_val
                 })
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
-                if dia_cnc_dict['data']['tools_mill_offset'] == 'in':
-                    tool_offset = -dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset'].lower() == 'out':
-                    tool_offset = dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset'].lower() == 'custom':
+                if dia_cnc_dict['data']['tools_mill_offset'] == 1:  # 'in'
+                    tool_offset = -dia_cnc_dict['tools_mill_tooldia'] / 2
+                elif dia_cnc_dict['data']['tools_mill_offset'] == 2: # 'out'
+                    tool_offset = dia_cnc_dict['tools_mill_tooldia'] / 2
+                elif dia_cnc_dict['data']['tools_mill_offset'] == 3: # 'custom'
                     try:
                         offset_value = float(self.ui.offset_entry.get_value())
                     except ValueError:
@@ -2801,7 +2801,7 @@ class ToolMilling(AppTool, Excellon):
                     tool_offset = 0.0
 
                 dia_cnc_dict.update({
-                    'offset_value': tool_offset
+                    'tools_mill_offset_value': tool_offset
                 })
 
                 z_cut = tools_dict[tooluid_key]['data']["tools_mill_cutz"]
@@ -2818,13 +2818,13 @@ class ToolMilling(AppTool, Excellon):
                 toolchangexy = tools_dict[tooluid_key]['data']["tools_mill_toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["tools_mill_startz"]
                 endz = tools_dict[tooluid_key]['data']["tools_mill_endz"]
-                endxy = self.options["tools_mill_endxy"]
+                endxy = self.target_obj.options["tools_mill_endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["tools_mill_spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["tools_mill_dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["tools_mill_dwelltime"]
                 pp_geometry_name = tools_dict[tooluid_key]['data']["tools_mill_ppname_g"]
 
-                spindledir = self.app.defaults['tools_mill__spindledir']
+                spindledir = self.app.defaults['tools_mill_spindledir']
                 tool_solid_geometry = self.solid_geometry
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
@@ -2844,7 +2844,7 @@ class ToolMilling(AppTool, Excellon):
                 tol = glob_tol / 20 if self.units.lower() == 'in' else glob_tol
 
                 res, start_gcode = job_obj.generate_from_geometry_2(
-                    self, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
+                    self.target_obj, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,

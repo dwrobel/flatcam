@@ -932,7 +932,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # if this dict is not empty then the object is a Geometry object
         if self.cnc_tools:
             first_key = next(iter(self.cnc_tools))
-            include_header = self.app.preprocessors[self.cnc_tools[first_key]['data']['ppname_g']].include_header
+            include_header = self.app.preprocessors[self.cnc_tools[first_key]['data']['tools_mill_ppname_g']]
+            include_header = include_header.include_header
 
         # if this dict is not empty then the object is an Excellon object
         if self.exc_cnc_tools:
@@ -997,8 +998,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             hpgl = False
             if self.cnc_tools:
                 for key in self.cnc_tools:
-                    if 'ppname_g' in self.cnc_tools[key]['data']:
-                        if 'hpgl' in self.cnc_tools[key]['data']['ppname_g']:
+                    if 'tools_mill_ppname_g' in self.cnc_tools[key]['data']:
+                        if 'hpgl' in self.cnc_tools[key]['data']['tools_mill_ppname_g']:
                             hpgl = True
                             break
             elif self.exc_cnc_tools:
@@ -1238,11 +1239,18 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Geometry shapes plotting
         try:
             if self.multitool is False:  # single tool usage
-                try:
-                    dia_plot = float(self.options["tooldia"])
-                except ValueError:
-                    # we may have a tuple with only one element and a comma
-                    dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                if self.origin_kind == "excellon":
+                    try:
+                        dia_plot = float(self.options["tooldia"])
+                    except ValueError:
+                        # we may have a tuple with only one element and a comma
+                        dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                else:
+                    try:
+                        dia_plot = float(self.options["tools_mill_tooldia"])
+                    except ValueError:
+                        # we may have a tuple with only one element and a comma
+                        dia_plot = [float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''][0]
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # I do this so the travel lines thickness will reflect the tool diameter
@@ -1261,7 +1269,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     # multiple tools usage
                     if self.cnc_tools:
                         for tooluid_key in self.cnc_tools:
-                            tooldia = self.app.dec_format(float(self.cnc_tools[tooluid_key]['tooldia']), self.decimals)
+                            tooldia = self.app.dec_format(
+                                float(self.cnc_tools[tooluid_key]['tools_mill_tooldia']),
+                                self.decimals
+                            )
                             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 

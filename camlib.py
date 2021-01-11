@@ -3501,13 +3501,13 @@ class CNCjob(Geometry):
         tool_dict = tools[tool]['data']
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
-        self.postdata['toolC'] = float(tools[tool]['tooldia'])
-        self.tooldia = float(tools[tool]['tooldia'])
+        self.postdata['toolC'] = float(tools[tool]['tools_mill_tooldia'])
+        self.tooldia = float(tools[tool]['tools_mill_tooldia'])
         self.use_ui = True
         self.tolerance = tolerance
 
         # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'
-        opt_type = tool_dict['optimization_type']
+        opt_type = tool_dict['tools_mill_optimization_type']
         opt_time = tool_dict['search_time'] if 'search_time' in tool_dict else 'R'
 
         if opt_type == 'M':
@@ -3522,17 +3522,17 @@ class CNCjob(Geometry):
             log.debug("Using no path optimization.")
 
         # Preprocessor
-        self.pp_geometry_name = tool_dict['ppname_g']
+        self.pp_geometry_name = tool_dict['tools_mill_ppname_g']
         self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
         # Offset the Geometry if it is the case
-        if tools[tool]['offset'].lower() == 'in':
+        if tools[tool]['tools_mill_offset'] == 1:  # 'in'
             tool_offset = -float(tools[tool]['tooldia']) / 2.0
-        elif tools[tool]['offset'].lower() == 'out':
+        elif tools[tool]['tools_mill_offset'] == 2: # 'out'
             tool_offset = float(tools[tool]['tooldia']) / 2.0
-        elif tools[tool]['offset'].lower() == 'custom':
-            tool_offset = tools[tool]['offset_value']
+        elif tools[tool]['tools_mill_offset'] == 3: # 'custom'
+            tool_offset = tools[tool]['tools_mill_offset_value']
         else:
             tool_offset = 0.0
 
@@ -3593,31 +3593,31 @@ class CNCjob(Geometry):
             self.z_depthpercut = abs(self.z_cut)
 
         # Depth parameters
-        self.z_cut = float(tool_dict['cutz'])
-        self.multidepth = tool_dict['multidepth']
-        self.z_depthpercut = float(tool_dict['depthperpass'])
-        self.z_move = float(tool_dict['travelz'])
-        self.f_plunge = self.app.defaults["geometry_f_plunge"]
+        self.z_cut = float(tool_dict['tools_mill_cutz'])
+        self.multidepth = tool_dict['tools_mill_multidepth']
+        self.z_depthpercut = float(tool_dict['tools_mill_depthperpass'])
+        self.z_move = float(tool_dict['tools_mill_travelz'])
+        self.f_plunge = self.app.defaults["tools_mill_f_plunge"]
 
-        self.feedrate = float(tool_dict['feedrate'])
-        self.z_feedrate = float(tool_dict['feedrate_z'])
-        self.feedrate_rapid = float(tool_dict['feedrate_rapid'])
+        self.feedrate = float(tool_dict['tools_mill_feedrate'])
+        self.z_feedrate = float(tool_dict['tools_mill_feedrate_z'])
+        self.feedrate_rapid = float(tool_dict['tools_mill_feedrate_rapid'])
 
-        self.spindlespeed = float(tool_dict['spindlespeed'])
+        self.spindlespeed = float(tool_dict['tools_mill_spindlespeed'])
         try:
-            self.spindledir = tool_dict['spindledir']
+            self.spindledir = tool_dict['tools_mill_spindledir']
         except KeyError:
-            self.spindledir = self.app.defaults["geometry_spindledir"]
+            self.spindledir = self.app.defaults["tools_mill_spindledir"]
 
-        self.dwell = tool_dict['dwell']
-        self.dwelltime = float(tool_dict['dwelltime'])
+        self.dwell = tool_dict['tools_mill_dwell']
+        self.dwelltime = float(tool_dict['tools_mill_dwelltime'])
 
-        self.startz = float(tool_dict['startz']) if tool_dict['startz'] else None
+        self.startz = float(tool_dict['tools_mill_startz']) if tool_dict['tools_mill_startz'] else None
         if self.startz == '':
             self.startz = None
 
-        self.z_end = float(tool_dict['endz'])
-        self.xy_end = tool_dict['endxy']
+        self.z_end = float(tool_dict['tools_mill_endz'])
+        self.xy_end = tool_dict['tools_mill_endxy']
         try:
             if self.xy_end == '' or self.xy_end is None:
                 self.xy_end = None
@@ -3636,8 +3636,8 @@ class CNCjob(Geometry):
             log.error("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
             self.xy_end = [0, 0]
 
-        self.z_toolchange = tool_dict['toolchangez']
-        self.xy_toolchange = tool_dict["toolchangexy"]
+        self.z_toolchange = tool_dict['tools_mill_toolchangez']
+        self.xy_toolchange = tool_dict["tools_mill_toolchangexy"]
         try:
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
@@ -3656,8 +3656,8 @@ class CNCjob(Geometry):
             log.error("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
             pass
 
-        self.extracut = tool_dict['extracut']
-        self.extracut_length = tool_dict['extracut_length']
+        self.extracut = tool_dict['tools_mill_extracut']
+        self.extracut_length = tool_dict['tools_mill_extracut_length']
 
         # Probe parameters
         # self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
@@ -5555,7 +5555,7 @@ class CNCjob(Geometry):
         )
         return self.gcode
 
-    def generate_from_geometry_2(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
+    def generate_from_geometry_2(self, geo_obj, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
                                  spindledir='CW', dwell=False, dwelltime=None, multidepth=False, depthpercut=None,
                                  toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0", extracut=False,
@@ -5568,7 +5568,7 @@ class CNCjob(Geometry):
         ----------------------
         Uses RTree to find the nearest path to follow.
 
-        :param geometry:
+        :param geo_obj:
         :param append:
         :param tooldia:
         :param offset:
@@ -5601,7 +5601,7 @@ class CNCjob(Geometry):
         log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
-        if not geometry.solid_geometry:
+        if not geo_obj.solid_geometry:
             self.app.inform.emit(
                 '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
             )
@@ -5639,7 +5639,7 @@ class CNCjob(Geometry):
             offset_for_use = offset
 
             if offset < 0:
-                a, b, c, d = bounds_rec(geometry.solid_geometry)
+                a, b, c, d = bounds_rec(geo_obj.solid_geometry)
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
@@ -5654,7 +5654,7 @@ class CNCjob(Geometry):
                 elif -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
                     offset_for_use = offset - 0.0000000001
 
-            for it in geometry.solid_geometry:
+            for it in geo_obj.solid_geometry:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
                     c = it.coords
@@ -5662,7 +5662,7 @@ class CNCjob(Geometry):
                         it = Polygon(it)
                 temp_solid_geometry.append(it.buffer(offset_for_use, join_style=2))
         else:
-            temp_solid_geometry = geometry.solid_geometry
+            temp_solid_geometry = geo_obj.solid_geometry
 
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
@@ -5688,24 +5688,24 @@ class CNCjob(Geometry):
             self.app.inform.emit('[ERROR] %s' % _("Failed."))
             return 'fail'
 
-        self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
-        self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
+        self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["tools_mill_cutz"]
+        self.z_move = float(z_move) if z_move is not None else self.app.defaults["tools_mill_travelz"]
 
-        self.feedrate = float(feedrate) if feedrate is not None else self.app.defaults["geometry_feedrate"]
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
+        self.feedrate = float(feedrate) if feedrate is not None else self.app.defaults["tools_mill_feedrate"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["tools_mill_feedrate_z"]
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid is not None else \
-            self.app.defaults["geometry_feedrate_rapid"]
+            self.app.defaults["tools_mill_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 and spindlespeed is not None else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
+        self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["tools_mill_dwelltime"]
 
-        self.startz = float(startz) if startz is not None and startz != '' else self.app.defaults["geometry_startz"]
+        self.startz = float(startz) if startz is not None and startz != '' else self.app.defaults["tools_mill_startz"]
 
-        self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
+        self.z_end = float(endz) if endz is not None else self.app.defaults["tools_mill_endz"]
 
-        self.xy_end = endxy if endxy != '' and endxy else self.app.defaults["geometry_endxy"]
+        self.xy_end = endxy if endxy != '' and endxy else self.app.defaults["tools_mill_endxy"]
         self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
 
         if self.xy_end is not None and self.xy_end != '':
@@ -5718,9 +5718,10 @@ class CNCjob(Geometry):
 
         self.z_depthpercut = float(depthpercut) if depthpercut is not None and depthpercut != 0 else abs(self.z_cut)
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else \
+            self.app.defaults["tools_mill_toolchangez"]
         self.extracut_length = float(extracut_length) if extracut_length is not None else \
-            self.app.defaults["geometry_extracut_length"]
+            self.app.defaults["tools_mill_extracut_length"]
 
         try:
             if toolchangexy == '':
@@ -5739,7 +5740,7 @@ class CNCjob(Geometry):
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
-        self.f_plunge = self.app.defaults["geometry_f_plunge"]
+        self.f_plunge = self.app.defaults["tools_mill_f_plunge"]
 
         if self.z_cut is None:
             if 'laser' not in self.pp_geometry_name:
@@ -5762,7 +5763,7 @@ class CNCjob(Geometry):
         elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
             self.app.inform.emit(
                 '[WARNING] %s: %s' % (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                      geometry.options['name'])
+                                      geo_obj.options['name'])
             )
             return 'fail'
 
@@ -6388,10 +6389,11 @@ class CNCjob(Geometry):
                     if len(pos_xy) != 2:
                         pos_xy = (0, 0)
         else:
-            if self.app.defaults["geometry_toolchangexy"] == '' or self.app.defaults["geometry_toolchangexy"] is None:
+            if self.app.defaults["tools_mill_toolchangexy"] == '' or \
+                    self.app.defaults["tools_mill_toolchangexy"] is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = self.app.defaults["geometry_toolchangexy"]
+                pos_xy = self.app.defaults["tools_mill_toolchangexy"]
                 try:
                     pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
                 except Exception:

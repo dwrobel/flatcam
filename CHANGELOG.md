@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.01.2021
+
+- working on Tool Follow, Milling Tool, camlib to adapt them to the new changes in the Geometry Object
+
 10.01.2021
 
 - renamed the Tool menu category to Plugins
