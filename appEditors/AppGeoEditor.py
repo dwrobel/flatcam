@@ -5273,7 +5273,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.select_tool("select")
 
-        if self.app.defaults['geometry_spindledir'] == 'CW':
+        if self.app.defaults['tools_mill_spindledir'] == 'CW':
             if self.app.defaults['geometry_editor_milling_type'] == 'cl':
                 milling_type = 1  # CCW motion = climb milling (spindle is rotating CW)
             else:

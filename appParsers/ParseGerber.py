@@ -790,22 +790,48 @@ class Gerber(Geometry):
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        if not geo_s.is_valid:
+                            self.app.log.warning(
+                                "Found invalid Gerber geometry at line: %s. Fixing..." % str(line_num))
+                            geo_s = geo_s.buffer(0.0000001, int(self.steps_per_circle))
 
-                        if not geo_s.is_empty:
-                            if self.app.defaults['gerber_simplification']:
-                                geo_s = geo_s.simplify(s_tol)
+                        if not geo_s.is_valid:
+                            self.app.log.warning(
+                                "Failed to fix the invalid Geometry found at line: %s" % str(line_num))
+                        else:
+                            if last_path_aperture not in self.apertures:
+                                self.apertures[last_path_aperture] = {}
+                            if 'geometry' not in self.apertures[last_path_aperture]:
+                                self.apertures[last_path_aperture]['geometry'] = []
+                            try:
+                                for pol in geo_s:
+                                    if not pol.is_empty:
+                                        # is it possible that simplification creates an Empty Geometry ?????
+                                        if self.app.defaults['gerber_simplification']:
+                                            pol = pol.simplify(s_tol)
 
-                            poly_buffer.append(geo_s)
-                            if self.is_lpc is True:
-                                geo_dict['clear'] = geo_s
-                            else:
-                                geo_dict['solid'] = geo_s
+                                        poly_buffer.append(pol)
+                                        if self.is_lpc is True:
+                                            geo_dict['clear'] = pol
+                                        else:
+                                            geo_dict['solid'] = pol
 
-                        if last_path_aperture not in self.apertures:
-                            self.apertures[last_path_aperture] = {}
-                        if 'geometry' not in self.apertures[last_path_aperture]:
-                            self.apertures[last_path_aperture]['geometry'] = []
-                        self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                                    if not pol.is_empty:
+                                        self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                            except TypeError:
+                                if not geo_s.is_empty:
+                                    # is it possible that simplification creates an Empty Geometry ?????
+                                    if self.app.defaults['gerber_simplification']:
+                                        geo_s = geo_s.simplify(s_tol)
+
+                                    poly_buffer.append(geo_s)
+                                    if self.is_lpc is True:
+                                        geo_dict['clear'] = geo_s
+                                    else:
+                                        geo_dict['solid'] = geo_s
+
+                                if not geo_s.is_empty:
+                                    self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         path = [path[-1]]
 
@@ -844,6 +870,8 @@ class Gerber(Geometry):
                                     if self.app.defaults['gerber_simplification']:
                                         geo_s = geo_s.simplify(s_tol)
 
+                                    if not geo_s.is_valid:
+                                        print("Not valid: ", line_num)
                                     poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
@@ -880,27 +908,76 @@ class Gerber(Geometry):
                     else:
                         region_geo = Polygon(path)
 
-                    region_f = region_geo.exterior
-                    if not region_f.is_empty:
-                        follow_buffer.append(region_f)
-                        geo_dict['follow'] = region_f
-
                     region_s = region_geo
-                    if not region_s.is_valid:
-                        region_s = region_s.buffer(0, int(self.steps_per_circle))
+
                     if not region_s.is_empty:
-                        if self.app.defaults['gerber_simplification']:
-                            region_s = region_s.simplify(s_tol)
+                        if not region_s.is_valid:
+                            self.app.log.warning(
+                                "Found invalid Gerber geometry at line: %s. Fixing..." % str(line_num))
+                            region_s = region_s.buffer(0.0000001, int(self.steps_per_circle))
 
-                        poly_buffer.append(region_s)
+                            if not region_s.is_valid:
+                                self.app.log.warning(
+                                    "Failed to fix the invalid Geometry found at line: %s" % str(line_num))
+                            else:
+                                try:
+                                    for pol in region_s:
+                                        # is it possible that simplification creates an Empty Geometry ?????
+                                        if self.app.defaults['gerber_simplification']:
+                                            pol = pol.simplify(s_tol)
 
-                        if self.is_lpc is True:
-                            geo_dict['clear'] = region_s
+                                        pol_f = pol.exterior
+                                        if not pol_f.is_empty:
+                                            follow_buffer.append(pol_f)
+                                            geo_dict['follow'] = pol
+
+                                        poly_buffer.append(pol)
+
+                                        if self.is_lpc is True:
+                                            geo_dict['clear'] = pol
+                                        else:
+                                            geo_dict['solid'] = pol
+
+                                        if not pol.is_empty:
+                                            self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                                except TypeError:
+                                    # is it possible that simplification creates an Empty Geometry ?????
+                                    if self.app.defaults['gerber_simplification']:
+                                        region_s = region_s.simplify(s_tol)
+
+                                    region_f = region_s.exterior
+                                    if not region_f.is_empty:
+                                        follow_buffer.append(region_f)
+                                        geo_dict['follow'] = region_f
+
+                                    poly_buffer.append(region_s)
+
+                                    if self.is_lpc is True:
+                                        geo_dict['clear'] = region_s
+                                    else:
+                                        geo_dict['solid'] = region_s
+
+                                    if not region_s.is_empty:
+                                        self.apertures['0']['geometry'].append(deepcopy(geo_dict))
                         else:
-                            geo_dict['solid'] = region_s
+                            # is it possible that simplification creates an Empty Geometry ?????
+                            if self.app.defaults['gerber_simplification']:
+                                region_s = region_s.simplify(s_tol)
 
-                    if not region_s.is_empty or not region_f.is_empty:
-                        self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                            region_f = region_s.exterior
+                            if not region_f.is_empty:
+                                follow_buffer.append(region_f)
+                                geo_dict['follow'] = region_f
+
+                            poly_buffer.append(region_s)
+
+                            if self.is_lpc is True:
+                                geo_dict['clear'] = region_s
+                            else:
+                                geo_dict['solid'] = region_s
+
+                            if not region_s.is_empty:
+                                self.apertures['0']['geometry'].append(deepcopy(geo_dict))
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
