@@ -452,71 +452,86 @@ class AppGCodeEditor(QtCore.QObject):
 
                 # first I search for the tool
                 found_tool = self.edit_area.find('T%d' % tool_no, flags)
-                if found_tool is False:
-                    continue
-
-                # once the tool found then I set the text Cursor position to the tool Tx position
-                my_text_cursor = self.edit_area.textCursor()
-                tool_pos = my_text_cursor.selectionStart()
-                my_text_cursor.setPosition(tool_pos)
-
-                # I search for the first finding of the first line in the Tool GCode
-                f = self.edit_area.find(str(text_list[0]), flags)
-                if f is False:
-                    continue
-
-                # once found I set the text Cursor position here
-                my_text_cursor = self.edit_area.textCursor()
-                start_sel = my_text_cursor.selectionStart()
-
-                # I search for the next find of M6 (which belong to the next tool
-                m6 = self.edit_area.find('M6', flags)
-                if m6 is False:
-                    # this mean that we are in the last tool, we take all to the end
-                    self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                if found_tool is True:
+                    # once the tool found then I set the text Cursor position to the tool Tx position
                     my_text_cursor = self.edit_area.textCursor()
-                    end_sel = my_text_cursor.selectionEnd()
-                else:
-                    pos_list = []
+                    tool_pos = my_text_cursor.selectionStart()
+                    my_text_cursor.setPosition(tool_pos)
 
+                    # I search for the first finding of the first line in the Tool GCode
+                    f = self.edit_area.find(str(text_list[0]), flags)
+                    if f is False:
+                        continue
+
+                    # once found I set the text Cursor position here
                     my_text_cursor = self.edit_area.textCursor()
-                    m6_pos = my_text_cursor.selectionEnd()
+                    start_sel = my_text_cursor.selectionStart()
 
-                    # move cursor back to the start of the tool gcode so the find method will work on the tool gcode
-                    t_curs = self.edit_area.textCursor()
-                    t_curs.setPosition(start_sel)
-                    self.edit_area.setTextCursor(t_curs)
-
-                    # search for all findings of the last line in the tool gcode
-                    # yet, we may find in multiple locations or in the gcode that belong to other tools
-                    while True:
-                        f = self.edit_area.find(str(text_list[-1]), flags)
-                        if f is False:
-                            break
-                        my_text_cursor = self.edit_area.textCursor()
-                        pos_list.append(my_text_cursor.selectionEnd())
-
-                    # now we find a position that is less than the m6_pos but also the closest (maximum)
-                    belong_to_tool_list = []
-                    for last_line_pos in pos_list:
-                        if last_line_pos < m6_pos:
-                            belong_to_tool_list.append(last_line_pos)
-                    if belong_to_tool_list:
-                        end_sel = max(belong_to_tool_list)
-                    else:
+                    # I search for the next find of M6 (which belong to the next tool
+                    m6 = self.edit_area.find('M6', flags)
+                    if m6 is False:
                         # this mean that we are in the last tool, we take all to the end
                         self.edit_area.moveCursor(QtGui.QTextCursor.End)
                         my_text_cursor = self.edit_area.textCursor()
                         end_sel = my_text_cursor.selectionEnd()
+                    else:
+                        pos_list = []
 
-                my_text_cursor.setPosition(start_sel)
-                my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
-                self.edit_area.setTextCursor(my_text_cursor)
+                        my_text_cursor = self.edit_area.textCursor()
+                        m6_pos = my_text_cursor.selectionEnd()
 
-                tool_selection = QtWidgets.QTextEdit.ExtraSelection()
-                tool_selection.cursor = self.edit_area.textCursor()
-                tool_selection.format.setFontUnderline(True)
-                sel_list.append(tool_selection)
+                        # move cursor back to the start of the tool gcode so the find method will work on the tool gcode
+                        t_curs = self.edit_area.textCursor()
+                        t_curs.setPosition(start_sel)
+                        self.edit_area.setTextCursor(t_curs)
+
+                        # search for all findings of the last line in the tool gcode
+                        # yet, we may find in multiple locations or in the gcode that belong to other tools
+                        while True:
+                            f = self.edit_area.find(str(text_list[-1]), flags)
+                            if f is False:
+                                break
+                            my_text_cursor = self.edit_area.textCursor()
+                            pos_list.append(my_text_cursor.selectionEnd())
+
+                        # now we find a position that is less than the m6_pos but also the closest (maximum)
+                        belong_to_tool_list = []
+                        for last_line_pos in pos_list:
+                            if last_line_pos < m6_pos:
+                                belong_to_tool_list.append(last_line_pos)
+                        if belong_to_tool_list:
+                            end_sel = max(belong_to_tool_list)
+                        else:
+                            # this mean that we are in the last tool, we take all to the end
+                            self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                            my_text_cursor = self.edit_area.textCursor()
+                            end_sel = my_text_cursor.selectionEnd()
+
+                    my_text_cursor.setPosition(start_sel)
+                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+                    self.edit_area.setTextCursor(my_text_cursor)
+
+                    tool_selection = QtWidgets.QTextEdit.ExtraSelection()
+                    tool_selection.cursor = self.edit_area.textCursor()
+                    tool_selection.format.setFontUnderline(True)
+                    sel_list.append(tool_selection)
+                else:
+                    # no Toolchange event
+                    f = self.edit_area.find(str(text_list[0]), flags)
+                    if f is False:
+                        # maybe the text start is deleted in editing
+                        continue
+                    # once the tool found then I set the text Cursor position to the start of the only tool used
+                    my_text_cursor = self.edit_area.textCursor()
+                    start_sel = my_text_cursor.selectionStart()
+
+                    self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                    my_text_cursor = self.edit_area.textCursor()
+                    end_sel = my_text_cursor.selectionEnd()
+
+                    my_text_cursor.setPosition(start_sel)
+                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+                    self.edit_area.setTextCursor(my_text_cursor)
 
         self.edit_area.setExtraSelections(sel_list)
 

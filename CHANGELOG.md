@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - working on the Follow Tool and Milling Tool
 - working on the Isolation Tool and Milling Tool
+- fixed GCode Editor such that selection of the only tool present when the GCode ie generated without Toolchange event will select all the actual working GCode
 
 12.01.2021
 
