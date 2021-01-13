@@ -1270,7 +1270,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     if self.cnc_tools:
                         for tooluid_key in self.cnc_tools:
                             tooldia = self.app.dec_format(
-                                float(self.cnc_tools[tooluid_key]['tools_mill_tooldia']),
+                                float(self.cnc_tools[tooluid_key]['data']['tools_mill_tooldia']),
                                 self.decimals
                             )
                             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']

@@ -316,7 +316,8 @@ class ToolFollow(AppTool, Gerber):
                     'solid_geometry': new_obj.solid_geometry
                 }
             }
-
+            for d in new_data:
+                print(d, new_data[d])
         ret = self.app.app_obj.new_object("geometry", outname, follow_init)
         if ret == 'fail':
             self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed to create Follow Geometry."))
@@ -356,12 +357,12 @@ class ToolFollow(AppTool, Gerber):
                 if opt_key.find('geometry' + "_") == 0:
                     oname = opt_key[len('geometry') + 1:]
                     new_data[oname] = app_obj.options[opt_key]
-                if opt_key.find('tools_mill' + "_") == 0:
-                    oname = opt_key[len('tools_mill') + 1:]
-                    new_data[oname] = app_obj.options[opt_key]
+                if opt_key.find('tools_') == 0:
+                    new_data[opt_key] = app_obj.options[opt_key]
 
             # Propagate options
             new_obj.options["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
+            new_data["tools_mill_tooldia"] = app_obj.defaults["tools_mill_tooldia"]
 
             target_geo = unary_union(followed_obj.follow_geometry)
             area_follow = target_geo.intersection(deepcopy(unary_union(self.sel_rect)))

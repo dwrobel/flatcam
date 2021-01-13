@@ -2766,10 +2766,9 @@ class ToolMilling(AppTool, Excellon):
                 tool_cnt += 1
 
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = app_obj.dec_format(float(tools_dict[tooluid_key]['tools_mill_tooldia']), self.decimals)
-                dia_cnc_dict.update({
-                    'tools_mill_tooldia': tooldia_val
-                })
+                tooldia_val = app_obj.dec_format(
+                    float(tools_dict[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
+                dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
@@ -2800,9 +2799,7 @@ class ToolMilling(AppTool, Excellon):
                 else:
                     tool_offset = 0.0
 
-                dia_cnc_dict.update({
-                    'tools_mill_offset_value': tool_offset
-                })
+                dia_cnc_dict['data']['tools_mill_offset_value'] = tool_offset
 
                 z_cut = tools_dict[tooluid_key]['data']["tools_mill_cutz"]
                 z_move = tools_dict[tooluid_key]['data']["tools_mill_travelz"]
@@ -2932,10 +2929,9 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
 
                 # Tooldia update
-                tooldia_val = app_obj.dec_format(float(tools_dict[tooluid_key]['tooldia']), self.decimals)
-                dia_cnc_dict.update({
-                    'tooldia': tooldia_val
-                })
+                tooldia_val = app_obj.dec_format(
+                    float(tools_dict[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
+                dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
@@ -2969,12 +2965,12 @@ class ToolMilling(AppTool, Excellon):
                 tools_dict[tooluid_key]['data']['ppname_g'] = self.ui.pp_geo_name_cb.get_value()
 
                 # Offset calculation
-                offset_type = dia_cnc_dict['tools_mill_offset_type'].lower()
-                if offset_type == 'in':
+                offset_type = dia_cnc_dict['tools_mill_offset_type']
+                if offset_type == 1:    # 'in'
                     tool_offset = -tooldia_val / 2
-                elif offset_type == 'out':
+                elif offset_type == 2:  # 'out'
                     tool_offset = tooldia_val / 2
-                elif offset_type == 'custom':
+                elif offset_type == 3:  # 'custom'
                     offset_value = self.ui.offset_entry.get_value()
                     if offset_value:
                         tool_offset = float(offset_value)
@@ -2987,9 +2983,7 @@ class ToolMilling(AppTool, Excellon):
                 else:
                     tool_offset = 0.0
 
-                dia_cnc_dict.update({
-                    'offset_value': tool_offset
-                })
+                dia_cnc_dict['data']['tools_mill_offset_value'] = tool_offset
 
                 # Solid Geometry
                 tool_solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']

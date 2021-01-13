@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.01.2021
+
+- working on the Follow Tool and Milling Tool
+
 12.01.2021
 
 - in Gerber parser added a fix for Gerber region geometry that is self-intersecting
