@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 13.01.2021
 
 - working on the Follow Tool and Milling Tool
+- working on the Isolation Tool and Milling Tool
 
 12.01.2021
 

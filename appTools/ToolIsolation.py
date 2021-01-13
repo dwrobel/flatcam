@@ -1722,8 +1722,8 @@ class ToolIsolation(AppTool, Gerber):
 
                 iso_except = self.ui.except_cb.get_value()
 
+                tool_dia = tools_storage[tool]['tooldia']
                 for i in range(passes):
-                    tool_dia = tools_storage[tool]['tooldia']
                     tool_type = tools_storage[tool]['tool_type']
 
                     iso_offset = tool_dia * ((2 * i + 1) / 2.0000001) - (i * overlap * tool_dia)
@@ -1775,6 +1775,8 @@ class ToolIsolation(AppTool, Gerber):
                     def iso_init(geo_obj, fc_obj):
                         # Propagate options
                         geo_obj.options["tools_mill_tooldia"] = str(tool_dia)
+                        tool_data["tools_mill_tooldia"] = float(tool_dia)
+
                         geo_obj.solid_geometry = deepcopy(new_solid_geo)
 
                         # ############################################################
@@ -1958,7 +1960,7 @@ class ToolIsolation(AppTool, Gerber):
                             'solid_geometry':   deepcopy(new_solid_geo)
                         }
                     })
-
+                    tools_storage[tool]['data']['tools_mill_tooldia'] = float(tool_dia)
                     total_solid_geometry += new_solid_geo
 
                     # if the geometry is all isolated
@@ -2150,6 +2152,7 @@ class ToolIsolation(AppTool, Gerber):
                     'solid_geometry':   deepcopy(new_solid_geo)
                 }
             })
+            tools_storage[tool]['data']['tools_mill_tooldia'] = float(tool_dia)
 
             total_solid_geometry += new_solid_geo
 

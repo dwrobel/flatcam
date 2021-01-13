@@ -3501,14 +3501,14 @@ class CNCjob(Geometry):
         tool_dict = tools[tool]['data']
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
-        self.postdata['toolC'] = float(tools[tool]['tools_mill_tooldia'])
-        self.tooldia = float(tools[tool]['tools_mill_tooldia'])
+        self.postdata['toolC'] = float(tool_dict['tools_mill_tooldia'])
+        self.tooldia = float(tool_dict['tools_mill_tooldia'])
         self.use_ui = True
         self.tolerance = tolerance
 
         # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'
         opt_type = tool_dict['tools_mill_optimization_type']
-        opt_time = tool_dict['search_time'] if 'search_time' in tool_dict else 'R'
+        opt_time = tool_dict['tools_mill_search_time'] if 'tools_mill_search_time' in tool_dict else 'R'
 
         if opt_type == 'M':
             log.debug("Using OR-Tools Metaheuristic Guided Local Search path optimization.")
@@ -3527,12 +3527,12 @@ class CNCjob(Geometry):
         p = self.pp_geometry
 
         # Offset the Geometry if it is the case
-        if tools[tool]['tools_mill_offset'] == 1:  # 'in'
-            tool_offset = -float(tools[tool]['tooldia']) / 2.0
-        elif tools[tool]['tools_mill_offset'] == 2: # 'out'
-            tool_offset = float(tools[tool]['tooldia']) / 2.0
-        elif tools[tool]['tools_mill_offset'] == 3: # 'custom'
-            tool_offset = tools[tool]['tools_mill_offset_value']
+        if tool_dict['tools_mill_offset'] == 1:  # 'in'
+            tool_offset = -float(tool_dict['tools_mill_tooldia']) / 2.0
+        elif tool_dict['tools_mill_offset'] == 2: # 'out'
+            tool_offset = float(tool_dict['tools_mill_tooldia']) / 2.0
+        elif tool_dict['tools_mill_offset'] == 3: # 'custom'
+            tool_offset = tool_dict['tools_mill_offset_value']
         else:
             tool_offset = 0.0
 

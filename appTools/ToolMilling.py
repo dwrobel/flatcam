@@ -2965,7 +2965,7 @@ class ToolMilling(AppTool, Excellon):
                 tools_dict[tooluid_key]['data']['ppname_g'] = self.ui.pp_geo_name_cb.get_value()
 
                 # Offset calculation
-                offset_type = dia_cnc_dict['tools_mill_offset_type']
+                offset_type = dia_cnc_dict['data']['tools_mill_offset_type']
                 if offset_type == 1:    # 'in'
                     tool_offset = -tooldia_val / 2
                 elif offset_type == 2:  # 'out'
