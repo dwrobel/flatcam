@@ -423,7 +423,7 @@ class FlatCAMDefaults:
         "tools_drill_multidepth": False,
         "tools_drill_depthperpass": 0.7,
         "tools_drill_travelz": 2,
-        "tools_drill_endz": 0.5,
+        "tools_drill_endz": 15,
         "tools_drill_endxy": None,
 
         "tools_drill_feedrate_z": 300,

@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - some changes in the GUI elements and some updates in the Cutout Tool
 - fixes in Panelize and Cutout Tool (Panelize has issues when exporting Gerber with aperture macros)
+- changed the Drilling Tool such that when an Excellon Object was generated to use the 'Check_points' preprocessor then only that preprocessor will be available and usable
 
 13.01.2021
 
