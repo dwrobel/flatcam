@@ -52,6 +52,7 @@ class RadioSet(QtWidgets.QWidget):
         :type choices: list
         """
         super(RadioSet, self).__init__(parent)
+
         self.choices = copy(choices)
         if orientation == 'horizontal':
             layout = QtWidgets.QHBoxLayout()
@@ -77,10 +78,11 @@ class RadioSet(QtWidgets.QWidget):
 
         self.group_toggle_fn = lambda: None
 
-    def on_toggle(self):
+    def on_toggle(self, checked):
         # log.debug("Radio toggled")
-        radio = self.sender()
-        if radio.isChecked():
+        # radio = self.sender()
+
+        if checked:
             self.group_toggle_fn()
             ret_val = str(self.get_value())
             self.activated_custom.emit(ret_val)

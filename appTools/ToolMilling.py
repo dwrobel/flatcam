@@ -1297,22 +1297,22 @@ class ToolMilling(AppTool, Excellon):
             if isinstance(current_widget, FCCheckBox):
                 try:
                     current_widget.stateChanged.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, RuntimeError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
                     current_widget.activated_custom.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, RuntimeError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
                 try:
                     current_widget.returnPressed.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, RuntimeError):
                     pass
             elif isinstance(current_widget, FCComboBox):
                 try:
                     current_widget.currentIndexChanged.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, RuntimeError):
                     pass
 
         try:

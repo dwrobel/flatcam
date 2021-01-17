@@ -1062,6 +1062,7 @@ class CutOut(AppTool):
                     geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
                     geo_obj.tools[1]['data']['name'] = outname
+                    geo_obj.tools[1]['data']['tools_mill_tooldia'] = str(dia)
                     geo_obj.tools[1]['data']['tools_mill_cutz'] = self.ui.cutz_entry.get_value()
                     geo_obj.tools[1]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                     geo_obj.tools[1]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
@@ -1074,6 +1075,7 @@ class CutOut(AppTool):
                         geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
 
                         geo_obj.tools[9999]['data']['name'] = outname
+                        geo_obj.tools[9999]['data']['tools_mill_tooldia'] = str(dia)
                         geo_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
                         geo_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
                         geo_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()

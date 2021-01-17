@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.01.2021
+
+- some changes in the GUI elements and some updates in the Cutout Tool
+
 13.01.2021
 
 - working on the Follow Tool and Milling Tool
