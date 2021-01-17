@@ -719,6 +719,7 @@ class Gerber(Geometry):
                 match = self.tool_re.search(gline)
                 if match:
                     current_aperture = match.group(1)
+
                     # self.app.log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
 
                     # If the aperture value is zero then make it something quite small but with a non-zero value

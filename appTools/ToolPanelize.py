@@ -554,8 +554,21 @@ class Panelize(AppTool):
 
                                         # panelization
                                         pol_nr = 0
-                                        for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
-                                            trans_geo = translate_recursion(geo_el)
+
+                                        trans_geo = translate_recursion(panel_source_obj.tools[tool]['solid_geometry'])
+                                        try:
+                                            for trans_it in trans_geo:
+                                                if not trans_it.is_empty:
+                                                    new_obj.tools[tool]['solid_geometry'].append(trans_it)
+
+                                                # update progress
+                                                pol_nr += 1
+                                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                                                if old_disp_number < disp_number <= 100:
+                                                    app_obj.proc_container.update_view_text(
+                                                        ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
+                                                    old_disp_number = disp_number
+                                        except TypeError:
                                             if not trans_geo.is_empty:
                                                 new_obj.tools[tool]['solid_geometry'].append(trans_geo)
 

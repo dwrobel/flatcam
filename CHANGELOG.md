@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 17.01.2021
 
 - some changes in the GUI elements and some updates in the Cutout Tool
+- fixes in Panelize and Cutout Tool (Panelize has issues when exporting Gerber with aperture macros)
 
 13.01.2021
 

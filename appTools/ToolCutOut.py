@@ -1693,7 +1693,10 @@ class CutOut(AppTool):
 
         # first subtract geometry for the total solid_geometry
         new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
-        new_solid_geometry = linemerge(new_solid_geometry)
+        try:
+            new_solid_geometry = linemerge(new_solid_geometry)
+        except ValueError:
+            pass
         self.man_cutout_obj.solid_geometry = new_solid_geometry
 
         # then do it on each tool in the manual cutout Geometry object
