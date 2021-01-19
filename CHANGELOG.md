@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.01.2021
+
+- fixed the Gerber export to convert all the aperture macros to regions and therefore export also the data from aperture macros
+
 17.01.2021
 
 - some changes in the GUI elements and some updates in the Cutout Tool
