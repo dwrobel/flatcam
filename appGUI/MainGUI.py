@@ -3773,7 +3773,7 @@ class MainGUI(QtWidgets.QMainWindow):
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
-                    self.app.editor2object()
+                    self.app.editor2object(force_cancel=True)
                     return
             # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:

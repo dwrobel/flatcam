@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - added ability to see the verbose log when importing SVG's (if set in preferences)
 - added some more logs to the SVG import
+- fixed minor issue with not having the Cancel option on exiting the GCode Editor through the Toolbar button
 
 19.01.2021
 

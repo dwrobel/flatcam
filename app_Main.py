@@ -2271,7 +2271,7 @@ class App(QtCore.QObject):
 
         # Edit Toolbar Signals
         self.ui.editor_start_btn.triggered.connect(self.object2editor)
-        self.ui.editor_exit_btn.clicked.connect(lambda: self.editor2object())
+        self.ui.editor_exit_btn.clicked.connect(lambda: self.editor2object(force_cancel=True))
         self.ui.copy_btn.triggered.connect(self.on_copy_command)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
