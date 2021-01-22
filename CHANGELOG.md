@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed minor issue with not having the Cancel option on exiting the GCode Editor through the Toolbar button
 - in Gerber Editor fixed the canvas context menu not showing
 - made sure that the Offset fields in the Properties Tab are updated on object: move, origin change, transformations
+- when doing 'Set Origin' the right mouse click will cancel the action
 
 19.01.2021
 

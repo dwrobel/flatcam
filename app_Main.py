@@ -367,7 +367,11 @@ class App(QtCore.QObject):
         # Variable to be used for situations when we don't want the LMB click on canvas to auto open the Project Tab
         self.click_noproject = False
 
+        # store here the mouse cursor
         self.cursor = None
+
+        # while True no canvas context menu will be showen
+        self.inhibit_context_menu = False
 
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
@@ -4976,8 +4980,10 @@ class App(QtCore.QObject):
         # and ask him to click on the desired position
         self.defaults.report_usage("on_set_origin()")
 
-        def origin_replot():
+        self.inform.emit(_('Click to set the origin ...'))
+        self.inhibit_context_menu = True
 
+        def origin_replot():
             def worker_task():
                 with self.proc_container.new('%s...' % _("Plotting")):
                     for obj in self.collection.get_list():
@@ -4986,12 +4992,12 @@ class App(QtCore.QObject):
                 if self.is_legacy:
                     self.plotcanvas.graph_event_disconnect(self.mp_zc)
                 else:
-                    self.plotcanvas.graph_event_disconnect('mouse_press', self.on_set_zero_click)
+                    self.plotcanvas.graph_event_disconnect('mouse_release', self.on_set_zero_click)
+                self.inhibit_context_menu = False
 
             self.worker_task.emit({'fcn': worker_task, 'params': []})
 
-        self.inform.emit(_('Click to set the origin ...'))
-        self.mp_zc = self.plotcanvas.graph_event_connect('mouse_press', self.on_set_zero_click)
+        self.mp_zc = self.plotcanvas.graph_event_connect('mouse_release', self.on_set_zero_click)
 
         # first disconnect it as it may have been used by something else
         try:
@@ -5010,6 +5016,11 @@ class App(QtCore.QObject):
         :return:
         """
         noplot_sig = noplot
+
+        if self.is_legacy is False:
+            right_button = 2
+        else:
+            right_button = 3
 
         def worker_task():
             with self.proc_container.new(_("Setting Origin...")):
@@ -5084,6 +5095,10 @@ class App(QtCore.QObject):
             else:
                 worker_task()
             self.should_we_save = True
+        elif event is not None and event.button == right_button:
+            if self.ui.popMenu.mouse_is_panning is False:
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+                self.inhibit_context_menu = False
 
     def on_move2origin(self, use_thread=True):
         """
@@ -7048,9 +7063,10 @@ class App(QtCore.QObject):
         if event.button == right_button and self.ui.popMenu.mouse_is_panning is False:  # right click
             self.ui.popMenu.mouse_is_panning = False
 
-            self.cursor = QtGui.QCursor()
-            self.populate_cmenu_grids()
-            self.ui.popMenu.popup(self.cursor.pos())
+            if self.inhibit_context_menu is False:
+                self.cursor = QtGui.QCursor()
+                self.populate_cmenu_grids()
+                self.ui.popMenu.popup(self.cursor.pos())
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
