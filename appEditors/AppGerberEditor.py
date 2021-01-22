@@ -2598,6 +2598,8 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         if self.draw_app.visible is False:
             self.draw_app.visible = True
 
+        self.complete = True
+
     def set_origin(self, origin):
         self.origin = origin
 
@@ -4354,6 +4356,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.app.collection.view.clicked.disconnect()
 
+        # Canvas context Menu
         self.app.ui.popmenu_copy.triggered.disconnect()
         self.app.ui.popmenu_delete.triggered.disconnect()
         self.app.ui.popmenu_move.triggered.disconnect()
@@ -4397,6 +4400,7 @@ class AppGerberEditor(QtCore.QObject):
             self.canvas.graph_event_disconnect(self.mm)
             self.canvas.graph_event_disconnect(self.mr)
 
+        # Canvas context Mneu
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.on_copy_button)
         except (TypeError, AttributeError):
@@ -4417,7 +4421,6 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 
         # Gerber Editor
-
         try:
             self.app.ui.grb_draw_pad.triggered.disconnect(self.on_pad_add)
         except (TypeError, AttributeError):
@@ -4471,6 +4474,7 @@ class AppGerberEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
+        # disconnect the Jump signal
         try:
             self.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
