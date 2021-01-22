@@ -189,6 +189,12 @@ class ToolMove(AppTool):
                                     sel_obj.options['xmax'] = c
                                     sel_obj.options['ymax'] = d
 
+                                    try:
+                                        sel_obj.set_offset_values()
+                                    except AttributeError:
+                                        # not all objects have this method
+                                        pass
+
                                 # update the source_file with the new positions
                                 for sel_obj in obj_list:
                                     out_name = sel_obj.options["name"]

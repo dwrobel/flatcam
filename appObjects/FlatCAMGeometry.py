@@ -685,16 +685,19 @@ class GeometryObject(FlatCAMObj, Geometry):
         #
         # self.launch_job.connect(self.mtool_gen_cncjob)
 
-        xmin, ymin, xmax, ymax = self.bounds()
-        center_coords = (
-            xmin + abs((xmax - xmin) / 2),
-            ymin + abs((ymax - ymin) / 2)
-        )
-        self.ui.offsetvector_entry.set_value(str(center_coords))
+        self.set_offset_values()
 
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
+
+    def set_offset_values(self):
+        xmin, ymin, xmax, ymax = self.bounds()
+        center_coords = (
+            self.app.dec_format((xmin + abs((xmax - xmin) / 2)), self.decimals),
+            self.app.dec_format((ymin + abs((ymax - ymin) / 2)), self.decimals)
+        )
+        self.ui.offsetvector_entry.set_value(str(center_coords))
 
     def change_level(self, level):
         """

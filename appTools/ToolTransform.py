@@ -321,6 +321,13 @@ class ToolTransform(AppTool):
                             sel_obj.rotate(-num, point=(px, py))
                             self.app.app_obj.object_changed.emit(sel_obj)
 
+                            # make sure to update the Offset field in Properties Tab
+                            try:
+                                sel_obj.set_offset_values()
+                            except AttributeError:
+                                # not all objects have this attribute
+                                pass
+
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
                         sel_obj.plot()
@@ -393,6 +400,14 @@ class ToolTransform(AppTool):
                             # add information to the object that it was changed and how much
                             sel_obj.options['skew_x'] = xvalue
                             sel_obj.options['skew_y'] = yvalue
+
+                            # make sure to update the Offset field in Properties Tab
+                            try:
+                                sel_obj.set_offset_values()
+                            except AttributeError:
+                                # not all objects have this attribute
+                                pass
+
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
@@ -419,6 +434,14 @@ class ToolTransform(AppTool):
                             # add information to the object that it was changed and how much
                             sel_obj.options['scale_x'] = xfactor
                             sel_obj.options['scale_y'] = yfactor
+
+                            # make sure to update the Offset field in Properties Tab
+                            try:
+                                sel_obj.set_offset_values()
+                            except AttributeError:
+                                # not all objects have this attribute
+                                pass
+
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
@@ -448,6 +471,14 @@ class ToolTransform(AppTool):
                                 sel_obj.offset((0, num))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['offset_y'] = num
+
+                            # make sure to update the Offset field in Properties Tab
+                            try:
+                                sel_obj.set_offset_values()
+                            except AttributeError:
+                                # not all objects have this attribute
+                                pass
+
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
 

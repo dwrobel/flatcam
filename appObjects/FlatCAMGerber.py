@@ -195,10 +195,13 @@ class GerberObject(FlatCAMObj, Gerber):
         self.build_ui()
         self.units_found = self.app.defaults['units']
 
+        self.set_offset_values()
+
+    def set_offset_values(self):
         xmin, ymin, xmax, ymax = self.bounds()
         center_coords = (
-            xmin + abs((xmax - xmin) / 2),
-            ymin + abs((ymax - ymin) / 2)
+            self.app.dec_format((xmin + abs((xmax - xmin) / 2)), self.decimals),
+            self.app.dec_format((ymin + abs((ymax - ymin) / 2)), self.decimals)
         )
         self.ui.offsetvector_entry.set_value(str(center_coords))
 

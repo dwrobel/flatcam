@@ -2609,6 +2609,8 @@ class App(QtCore.QObject):
         if self.call_source == 'app':
             return
 
+        # This is the object that exit from the Editor. It may be the edited object but it can be a new object
+        # created by the Editor
         edited_obj = self.collection.get_active()
 
         if cleanup is None:
@@ -2738,6 +2740,13 @@ class App(QtCore.QObject):
                     self.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
                     return
+
+                # make sure to update the Offset field in Properties Tab
+                try:
+                    edited_obj.set_offset_values()
+                except AttributeError:
+                    # not all objects have this attribute
+                    pass
 
                 self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
             elif response == bt_no:
@@ -5016,6 +5025,14 @@ class App(QtCore.QObject):
                     obj.options['ymin'] = b
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
+
+                    # make sure to update the Offset field in Properties Tab
+                    try:
+                        obj.set_offset_values()
+                    except AttributeError:
+                        # not all objects have this attribute
+                        pass
+
                 self.inform.emit('[success] %s...' % _('Origin set'))
 
                 for obj in obj_list:
@@ -5107,6 +5124,13 @@ class App(QtCore.QObject):
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
 
+                    # make sure to update the Offset field in Properties Tab
+                    try:
+                        obj.set_offset_values()
+                    except AttributeError:
+                        # not all objects have this attribute
+                        pass
+
                 for obj in obj_list:
                     obj.plot()
                 self.plotcanvas.fit_view()
@@ -5133,7 +5157,7 @@ class App(QtCore.QObject):
 
     def on_custom_origin(self, use_thread=True):
         """
-        Move selected objects to be centered in origin.
+        Move selected objects to be centered in certain standard locations of the object (corners and center).
         :param use_thread: Control if to use threaded operation. Boolean.
         :return:
         """
@@ -5241,6 +5265,13 @@ class App(QtCore.QObject):
                     obj.options['ymin'] = b
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
+
+                    # make sure to update the Offset field in Properties Tab
+                    try:
+                        obj.set_offset_values()
+                    except AttributeError:
+                        # not all objects have this attribute
+                        pass
 
                 for obj in obj_list:
                     obj.plot()
@@ -6603,6 +6634,14 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.skew(num, 0, point=(xminimal, yminimal))
+
+                    # make sure to update the Offset field in Properties Tab
+                    try:
+                        obj.set_offset_values()
+                    except AttributeError:
+                        # not all objects have this attribute
+                        pass
+
                     obj.plot()
                     self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' % _("Skew on X axis done."))
@@ -6643,6 +6682,14 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.skew(0, num, point=(xminimal, yminimal))
+
+                    # make sure to update the Offset field in Properties Tab
+                    try:
+                        obj.set_offset_values()
+                    except AttributeError:
+                        # not all objects have this attribute
+                        pass
+
                     obj.plot()
                     self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' % _("Skew on Y axis done."))
