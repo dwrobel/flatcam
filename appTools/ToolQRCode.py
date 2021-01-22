@@ -486,6 +486,8 @@ class QRCode(AppTool):
         :return: None
         """
 
+        self.app.log.debug("QRCode.import_svg()")
+
         # Parse into list of shapely objects
         svg_tree = ET.parse(filename)
         svg_root = svg_tree.getroot()
@@ -497,16 +499,21 @@ class QRCode(AppTool):
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
-        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor)
+        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor, app=self.app)
+
+        self.app.log.debug("QRCode.import_svg(). Finished parsing the SVG geometry.")
 
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+            self.app.log.debug("QRCode.import_svg(). SVG geometry was flipped.")
 
         # flatten the svg geometry for the case when the QRCode SVG is added into a Gerber object
         solid_geometry = list(self.flatten_list(geos))
 
         geos_text = getsvgtext(svg_root, object_type, app=self.app, units=units)
         if geos_text is not None:
+            self.app.log.debug("QRCode.import_svg(). Processing SVG text.")
+
             geos_text_f = []
             if flip:
                 # Change origin to bottom left

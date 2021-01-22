@@ -1151,7 +1151,7 @@ class Geometry(object):
         :return:            None
         """
 
-        log.debug("camlib.Geometry.import_svg()")
+        self.app.log.debug("camlib.Geometry.import_svg()")
 
         # Parse into list of shapely objects
         svg_tree = ET.parse(filename)
@@ -1166,9 +1166,13 @@ class Geometry(object):
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
 
-        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor)
+        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor, app=self.app)
+
+        self.app.log.debug("camlib.Geometry.import_svg(). Finished parsing the SVG geometry.")
+
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+            self.app.log.debug("camlib.Geometry.import_svg(). SVG geometry was flipped.")
 
         # trying to optimize the resulting geometry by merging contiguous lines
         geos = list(self.flatten_list(geos))
@@ -1180,7 +1184,13 @@ class Geometry(object):
             else:
                 geos_lines.append(g)
 
-        merged_lines = linemerge(geos_lines)
+        try:
+            merged_lines = linemerge(geos_lines)
+        except Exception:
+            merged_lines = geos_lines
+            self.app.log.error(
+                'camlib.Geometry.import_svg(). Could not merge the lines, working with the original SVG geometry.')
+
         geos = geos_polys
         try:
             for ml in merged_lines:
@@ -1204,7 +1214,9 @@ class Geometry(object):
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
 
         geos_text = getsvgtext(svg_root, object_type, app=self.app, units=units)
+
         if geos_text is not None:
+            self.app.log.debug("camlib.Geometry.import_svg(). Processing SVG text.")
             geos_text_f = []
             if flip:
                 # Change origin to bottom left

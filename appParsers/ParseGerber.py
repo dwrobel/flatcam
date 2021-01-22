@@ -73,15 +73,17 @@ class Gerber(Geometry):
 
     def __init__(self, steps_per_circle=None):
         """
-        The constructor takes no parameters. Use ``gerber.parse_files()``
-        or ``gerber.parse_lines()`` to populate the object from Gerber source.
+        Use ``gerber.parse_files()`` or ``gerber.parse_lines()`` to populate the object from Gerber source.
 
         :return: Gerber object
         :rtype: Gerber
         """
 
         # How to approximate a circle with lines.
-        self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
+        if steps_per_circle is None:
+            self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
+        else:
+            self.steps_per_circle = steps_per_circle
         self.decimals = self.app.decimals
 
         # Initialize parent
@@ -1905,9 +1907,13 @@ class Gerber(Geometry):
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['gerber_circle_steps']
         factor = svgparse_viewbox(svg_root)
-        geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor)
+        geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor, app=self.app)
+
+        self.app.log.debug("appParsers.ParseGerber.Gerber.import_svg(). Finished parsing the SVG geometry.")
+
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+            self.app.log.debug("appParsers.ParseGerber.Gerber.import_svg(). SVG geometry was flipped.")
 
         # Add to object
         if self.solid_geometry is None:

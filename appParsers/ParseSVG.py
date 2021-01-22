@@ -393,7 +393,7 @@ def svgpolygon2shapely(polygon, n_points=64, factor=1.0):
     # return LinearRing(points)
 
 
-def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
+def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=None):
     """
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
@@ -405,11 +405,18 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
     :param res:         resolution to be used for circles buffering
     :param factor:      correction factor due of virtual units
     :type factor:       float
+    :param app:         Application reference
+
     :return:            List of Shapely geometry
     :rtype:             list
     """
     if root is None:
         root = node
+
+    if app is not None:
+        log = app.log
+    else:
+        log = logging.getLogger('base2')
 
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
     geo = []
@@ -417,7 +424,7 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
     # Recurse
     if len(node) > 0:
         for child in node:
-            subgeo = getsvggeo(child, object_type, root=root, units=units, res=res, factor=factor)
+            subgeo = getsvggeo(child, object_type, root=root, units=units, res=res, factor=factor, app=app)
             if subgeo is not None:
                 geo += subgeo
     # Parse
@@ -465,7 +472,10 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
         href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
         ref = root.find(".//*[@id='%s']" % href.replace('#', ''))
         if ref is not None:
-            geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor)
+            geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor, app=app)
+
+    elif kind in ['defs', 'namedview', 'format', 'type', 'title']:
+        log.warning('SVG Element not supported: %s. Skipping to next.' % kind)
 
     else:
         log.warning("Unknown kind: " + kind)
@@ -568,11 +578,12 @@ def getsvgtext(node, object_type, app, units='MM'):
             geo = [(scale(g, 1.0, -1.0)) for g in geo]
         except Exception as e:
             log.error(str(e))
+            geo = None
     else:
         geo = None
 
     # ignore transformation for unknown kind
-    if geo is not None:
+    if geo and geo is not None:
         # Transformations
         if 'transform' in node.attrib:
             trstr = node.get('transform')
@@ -596,6 +607,9 @@ def getsvgtext(node, object_type, app, units='MM'):
                     geo = [affine_transform(geoi, tr[1:]) for geoi in geo]
                 else:
                     raise Exception('Unknown transformation: %s', tr)
+
+    if not geo:
+        geo = None
 
     return geo
 

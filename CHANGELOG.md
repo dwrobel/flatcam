@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.01.2021
+
+- added ability to see the verbose log when importing SVG's (if set in preferences)
+- added some more logs to the SVG import
+
 19.01.2021
 
 - fixed the Gerber export to convert all the aperture macros to regions and therefore export also the data from aperture macros
