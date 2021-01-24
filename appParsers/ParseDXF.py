@@ -7,7 +7,9 @@
 
 from shapely.geometry import LineString
 from shapely.affinity import rotate
-from ezdxf.math import Vec3 as ezdxf_vector
+#FIXME: No such class as Vec3 in ezdxf.0.15.1, instead there is Vector "ImportError: cannot import name 'Vec3' from 'ezdxf.math" 
+#from ezdxf.math import Vec3 as ezdxf_vector
+from ezdxf.math import Vector as ezdxf_vector
 
 from appParsers.ParseFont import *
 from appParsers.ParseDXF_Spline import *

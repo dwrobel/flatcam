@@ -879,9 +879,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         for tool in tools:
             if tooldia > self.tools[tool]["tooldia"]:
-                mseg = '[ERROR_NOTCL] %s %s: %s' % (_("Milling tool for DRILLS is larger than hole size. Cancelled."),
+                mseg = '[ERROR_NOTCL] %s %s: %s (tool = %s, hole = %s)' % (_("Milling tool for DRILLS is larger than hole size. Cancelled."),
                                                     _("Tool"),
-                                                    str(tool))
+                                                    str(tool),
+						    str(tooldia),
+						    str(self.tools[tool]["tooldia"]))
                 self.app.inform.emit(mseg)
                 return False, "Error: Milling tool is larger than hole."
 
@@ -920,7 +922,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
                         geo_obj.solid_geometry.append(drill.buffer(0.0000001).exterior)
                     else:
                         geo_obj.solid_geometry.append(drill.buffer(buffer_value).exterior)
-
         if use_thread:
             def geo_thread(a_obj):
                 a_obj.app_obj.new_object("geometry", outname, geo_init, plot=plot)
