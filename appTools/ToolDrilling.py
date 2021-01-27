@@ -306,19 +306,25 @@ class ToolDrilling(AppTool, Excellon):
         except Exception:
             pass
 
+        try:
+            loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+        except Exception as err:
+            self.app.log.error("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
+            return
+
         # reset the Excellon preprocessor combo
         self.ui.pp_excellon_name_cb.clear()
         # populate Excellon preprocessor combobox list
-        pp_list = []
-        for name in self.app.preprocessors.keys():
-            # the HPGL preprocessor or Paste_ are not for Excellon job therefore don't add it
-            if name in ['hpgl', 'Paste_1']:
-                continue
-            elif name == 'Check_points':
-                pp_list = [name]
-                break
-            pp_list.append(name)
-        pp_list.sort()
+        if loaded_obj.options['tools_drill_ppname_e'] == 'Check_points':
+            pp_list = ['Check_points']
+        else:
+            pp_list = []
+            for name in self.app.preprocessors.keys():
+                # the HPGL preprocessor or Paste_ are not for Excellon job therefore don't add it
+                if name in ['hpgl', 'Paste_1']:
+                    continue
+                pp_list.append(name)
+            pp_list.sort()
         if 'default' in pp_list:
             pp_list.remove('default')
             pp_list.insert(0, 'default')
@@ -329,12 +335,6 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
-
-        try:
-            loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        except Exception as err:
-            self.app.log.error("ToolDrilling -> Loaded Excellon object error. %s" % str(err))
-            return
 
         if loaded_obj:
             outname = loaded_obj.options['name']

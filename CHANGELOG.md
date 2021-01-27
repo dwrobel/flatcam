@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.01.2021
+
+- some fixes in Drilling Tool and in camlib.py file
+
 21.01.2021
 
 - added ability to see the verbose log when importing SVG's (if set in preferences)

@@ -612,7 +612,7 @@ class Geometry(object):
             self.options['xmax'] = xmax
             self.options['ymax'] = ymax
         except Exception as e:
-            log.error("Failed. The object has no bounds properties. %s" % str(e))
+            self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
     def add_polygon(self, points, tool=None):
         """
@@ -653,7 +653,7 @@ class Geometry(object):
             self.options['xmax'] = xmax
             self.options['ymax'] = ymax
         except Exception as e:
-            log.error("Failed. The object has no bounds properties. %s" % str(e))
+            self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
     def add_polyline(self, points, tool=None):
         """
@@ -677,7 +677,7 @@ class Geometry(object):
             try:
                 self.solid_geometry = self.solid_geometry.union(new_line)
             except Exception as e:
-                log.error("Failed to run union on polylines. %s" % str(e))
+                self.app.log.error("Failed to run union on polylines. %s" % str(e))
                 return "fail"
 
         # add in tools solid_geometry
@@ -694,7 +694,7 @@ class Geometry(object):
             self.options['xmax'] = xmax
             self.options['ymax'] = ymax
         except Exception as e:
-            log.error("Failed. The object has no bounds properties. %s" % str(e))
+            self.app.log.error("Failed. The object has no bounds properties. %s" % str(e))
 
     def is_empty(self):
         if isinstance(self.solid_geometry, BaseGeometry) or isinstance(self.solid_geometry, Polygon) or \
@@ -732,7 +732,7 @@ class Geometry(object):
             if isinstance(target, LineString) or isinstance(target, LineString) or isinstance(target, MultiLineString):
                 diffs.append(target.difference(toolgeo))
             else:
-                log.warning("Not implemented.")
+                self.app.log.warning("Not implemented.")
 
         self.solid_geometry = unary_union(diffs)
 
@@ -746,10 +746,10 @@ class Geometry(object):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("camlib.Geometry.bounds()")
+        self.app.log.debug("camlib.Geometry.bounds()")
 
         if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
+            self.app.log.debug("solid_geometry is None")
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
@@ -7558,7 +7558,7 @@ class CNCjob(Geometry):
         :rtype:             tuple
         """
 
-        log.debug("camlib.CNCJob.bounds()")
+        self.app.log.debug("camlib.CNCJob.bounds()")
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -7606,6 +7606,8 @@ class CNCjob(Geometry):
                     maxy = -np.Inf
                     try:
                         for geo in v['solid_geometry']:
+                            if isinstance(geo, list):
+                                geo = unary_union(geo)
                             if geo.is_empty:
                                 continue
                             minx_, miny_, maxx_, maxy_ = bounds_rec(geo)
