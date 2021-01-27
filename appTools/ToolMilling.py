@@ -130,29 +130,6 @@ class ToolMilling(AppTool, Excellon):
 
         self.old_tool_dia = None
         self.poly_drawn = False
-        self.connect_signals_at_init()
-
-        # #############################################################################################################
-        # ############################### TOOLS TABLE context menu ####################################################
-        # #############################################################################################################
-        self.ui.geo_tools_table.setupContextMenu()
-        self.ui.geo_tools_table.addContextMenu(
-            _("Pick from DB"), self.on_tool_add_from_db_clicked,
-            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Copy"), self.on_tool_copy,
-            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
-        self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
-
-        # #############################################################################################################
-        # ############################## EXCLUSION TABLE context menu #################################################
-        # #############################################################################################################
-        self.ui.exclusion_table.setupContextMenu()
-        self.ui.exclusion_table.addContextMenu(
-            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
-        )
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
@@ -212,7 +189,7 @@ class ToolMilling(AppTool, Excellon):
 
         self.app.ui.notebook.setTabText(2, _("Milling"))
 
-    def connect_signals_at_init(self):
+    def connect_signals(self):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
@@ -263,9 +240,178 @@ class ToolMilling(AppTool, Excellon):
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
+    def disconnect_signals(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        try:
+            self.builduiSig.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.level.toggled.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # add Tool
+        try:
+            self.ui.search_and_add_btn.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.deltool_btn.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.addtool_from_db_btn.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.target_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.job_type_combo.currentIndexChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.offset_type_combo.currentIndexChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.pp_geo_name_cb.activated.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # V tool shape params changed
+        try:
+            self.ui.tipdia_entry.valueChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tipangle_entry.valueChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.apply_param_to_all.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tools_table.drag_drop_sig.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # Exclusion areas signals
+        try:
+            self.ui.exclusion_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_table.lost_focus.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_table.itemClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.add_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.delete_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.delete_sel_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.strategy_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # Geo Tools Table signals
+        try:
+            self.ui.geo_tools_table.drag_drop_sig.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # Generate CNCJob
+        try:
+            self.launch_job.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.generate_cnc_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # When object selection on canvas change
+        # self.app.collection.view.selectionModel().selectionChanged.disconnect()
+        try:
+            self.app.proj_selection_changed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # Reset Tool
+        try:
+            self.ui.reset_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
+        try:
+            self.app.cleanup.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def set_context_menu(self):
+
+        # #############################################################################################################
+        # ############################### TOOLS TABLE context menu ####################################################
+        # #############################################################################################################
+        self.ui.geo_tools_table.setupContextMenu()
+        self.ui.geo_tools_table.addContextMenu(
+            _("Pick from DB"), self.on_tool_add_from_db_clicked,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Copy"), self.on_tool_copy,
+            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
+        self.ui.geo_tools_table.addContextMenu(
+            _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
+
+        # #############################################################################################################
+        # ############################## EXCLUSION TABLE context menu #################################################
+        # #############################################################################################################
+        self.ui.exclusion_table.setupContextMenu()
+        self.ui.exclusion_table.addContextMenu(
+            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        )
+
+    def unset_context_menu(self):
+        self.ui.geo_tools_table.removeContextMenu()
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
+
+        if self.ui is None:
+            self.ui = MillingUI(layout=self.layout, app=self.app)
+            self.toolName = self.ui.toolName
+
+        self.unset_context_menu()
+        self.set_context_menu()
+
+        self.disconnect_signals()
+        self.connect_signals()
 
         # try to select in the Gerber combobox the active object
         try:
