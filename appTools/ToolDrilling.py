@@ -1330,9 +1330,9 @@ class ToolDrilling(AppTool, Excellon):
                     if option_changed in self.tool_form_fields:
                         new_option_value = self.tool_form_fields[option_changed].get_value()
                         if option_changed in tooluid_val:
-                            tooluid_val[option_changed] = new_option_value
+                            self.excellon_tools[tooluid_key][option_changed] = new_option_value
                         if option_changed in tooluid_val['data']:
-                            tooluid_val['data'][option_changed] = new_option_value
+                            self.excellon_tools[tooluid_key]['data'][option_changed] = new_option_value
 
         # update general parameters
         # they are updated for all tools
@@ -1340,9 +1340,9 @@ class ToolDrilling(AppTool, Excellon):
             if option_changed in self.general_form_fields:
                 new_option_value = self.general_form_fields[option_changed].get_value()
                 if option_changed in tooluid_val:
-                    tooluid_val[option_changed] = new_option_value
+                    self.excellon_tools[tooluid_key][option_changed] = new_option_value
                 if option_changed in tooluid_val['data']:
-                    tooluid_val['data'][option_changed] = new_option_value
+                    self.excellon_tools[tooluid_key]['data'][option_changed] = new_option_value
 
         self.ui_connect()
 
