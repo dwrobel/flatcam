@@ -199,16 +199,7 @@ class ToolDrilling(AppTool, Excellon):
             "e_area_shape":             "tools_drill_area_shape",
         }
 
-        # #############################################################################################################
-        # ############################## EXCLUSION TABLE context menu #################################################
-        # #############################################################################################################
-        self.ui.exclusion_table.setupContextMenu()
-        self.ui.exclusion_table.addContextMenu(
-            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
-        )
-
         self.poly_drawn = False
-        self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
@@ -265,7 +256,7 @@ class ToolDrilling(AppTool, Excellon):
 
         self.app.ui.notebook.setTabText(2, _("Drilling"))
 
-    def connect_signals_at_init(self):
+    def connect_main_signals(self):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
@@ -294,8 +285,104 @@ class ToolDrilling(AppTool, Excellon):
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
+    def disconnect_main_signals(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        try:
+            self.builduiSig.disconnect()
+
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.level.toggled.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.search_load_db_btn.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.apply_param_to_all.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.generate_cnc_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tools_table.drag_drop_sig.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # Exclusion areas signals
+        try:
+            self.ui.exclusion_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_table.lost_focus.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_table.itemClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.add_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.delete_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.delete_sel_area_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.strategy_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.pp_excellon_name_cb.activated.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.reset_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
+        try:
+            self.app.cleanup.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def set_context_menu(self):
+        # #############################################################################################################
+        # ############################## EXCLUSION TABLE context menu #################################################
+        # #############################################################################################################
+        self.ui.exclusion_table.setupContextMenu()
+        self.ui.exclusion_table.addContextMenu(
+            _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        )
+
+    def unset_context_menu(self):
+        self.ui.exclusion_table.removeContextMenu()
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        if self.ui is None:
+            self.ui = DrillingUI(layout=self.layout, app=self.app)
+            self.toolName = self.ui.toolName
+
+        self.disconnect_main_signals()
+        self.connect_main_signals()
+
+        self.unset_context_menu()
+        self.set_context_menu()
 
         # try to select in the Excellon combobox the active object
         try:
@@ -1224,7 +1311,7 @@ class ToolDrilling(AppTool, Excellon):
             # Excellon Tool Table has 2 rows by default
             return
 
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
@@ -1257,7 +1344,7 @@ class ToolDrilling(AppTool, Excellon):
                 if option_changed in tooluid_val['data']:
                     tooluid_val['data'][option_changed] = new_option_value
 
-        self.blockSignals(False)
+        self.ui_connect()
 
     def get_selected_tools_list(self):
         """

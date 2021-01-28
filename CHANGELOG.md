@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - some fixes in Drilling Tool and in camlib.py file
 - working on Milling Tool
+- working in Drilling Tool to make it more robust
 
 21.01.2021
 
