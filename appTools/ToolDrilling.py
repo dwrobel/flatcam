@@ -402,13 +402,13 @@ class ToolDrilling(AppTool, Excellon):
         # reset the Excellon preprocessor combo
         self.ui.pp_excellon_name_cb.clear()
         # populate Excellon preprocessor combobox list
-        if loaded_obj.options['tools_drill_ppname_e'] == 'Check_points':
+        if loaded_obj and loaded_obj.options['tools_drill_ppname_e'] == 'Check_points':
             pp_list = ['Check_points']
         else:
             pp_list = []
             for name in self.app.preprocessors.keys():
                 # the HPGL preprocessor or Paste_ are not for Excellon job therefore don't add it
-                if name in ['hpgl', 'Paste_1']:
+                if name in ['hpgl', 'Paste_1', 'Check_points']:
                     continue
                 pp_list.append(name)
             pp_list.sort()

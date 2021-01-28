@@ -12,7 +12,9 @@ CHANGELOG for FlatCAM beta
 - some fixes in Drilling Tool and in camlib.py file
 - working on Milling Tool
 - working in Drilling Tool to make it more robust
-
+- Drilling Tool - fixed an issue with dropping the changes done in the UI
+- Drilling Tool - fixed an issue when Drilling Tool is open and the last Excellon object is deleted
+  
 21.01.2021
 
 - added ability to see the verbose log when importing SVG's (if set in preferences)
