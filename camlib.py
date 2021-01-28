@@ -3144,6 +3144,8 @@ class CNCjob(Geometry):
             self.is_segmented_gcode = True
 
         self.exc_tools = deepcopy(tools)
+        self.tool = str(tool)
+
         t_gcode = ''
 
         # holds the temporary coordinates of the processed drill point
@@ -3179,7 +3181,6 @@ class CNCjob(Geometry):
         # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
         # #########################################################################################################
         # #########################################################################################################
-        self.tool = str(tool)
         # Preprocessor
         p = self.pp_excellon
 

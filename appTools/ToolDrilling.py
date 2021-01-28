@@ -1864,7 +1864,8 @@ class ToolDrilling(AppTool, Excellon):
             return
 
         # update the Excellon Tools
-        self.excellon_tools = obj.tools
+        # we don't do it here since it will break any changes we've done in the Drilling Tool UI
+        # self.excellon_tools = obj.tools
 
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
