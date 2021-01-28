@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - working in Drilling Tool to make it more robust
 - Drilling Tool - fixed an issue with dropping the changes done in the UI
 - Drilling Tool - fixed an issue when Drilling Tool is open and the last Excellon object is deleted
+- fixed an issue in Tool Cutout - when using the thin gaps the 9999 tool number is not accepted by Mach3
   
 21.01.2021
 

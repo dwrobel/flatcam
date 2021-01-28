@@ -1070,17 +1070,17 @@ class CutOut(AppTool):
                     if not gaps_solid_geo:
                         pass
                     else:
-                        geo_obj.tools[9999] = deepcopy(self.cut_tool_dict)
-                        geo_obj.tools[9999]['tooldia'] = str(dia)
-                        geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+                        geo_obj.tools[99] = deepcopy(self.cut_tool_dict)
+                        geo_obj.tools[99]['tooldia'] = str(dia)
+                        geo_obj.tools[99]['solid_geometry'] = gaps_solid_geo
 
-                        geo_obj.tools[9999]['data']['name'] = outname
-                        geo_obj.tools[9999]['data']['tools_mill_tooldia'] = str(dia)
-                        geo_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
-                        geo_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
-                        geo_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        geo_obj.tools[99]['data']['name'] = outname
+                        geo_obj.tools[99]['data']['tools_mill_tooldia'] = str(dia)
+                        geo_obj.tools[99]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[99]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
                         # plot this tool in a different color
-                        geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                        geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:
@@ -1449,15 +1449,15 @@ class CutOut(AppTool):
                     if not gaps_solid_geo:
                         pass
                     else:
-                        geo_obj.tools[9999] = deepcopy(self.cut_tool_dict)
-                        geo_obj.tools[9999]['tooldia'] = str(dia)
-                        geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+                        geo_obj.tools[99] = deepcopy(self.cut_tool_dict)
+                        geo_obj.tools[99]['tooldia'] = str(dia)
+                        geo_obj.tools[99]['solid_geometry'] = gaps_solid_geo
 
-                        geo_obj.tools[9999]['data']['name'] = outname
-                        geo_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
-                        geo_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
-                        geo_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
-                        geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                        geo_obj.tools[99]['data']['name'] = outname
+                        geo_obj.tools[99]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[99]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        geo_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
 
                 def excellon_init(exc_obj, app_o):
                     if not holes:
@@ -1714,20 +1714,20 @@ class CutOut(AppTool):
 
         dia = self.ui.dia.get_value()
         if gaps_solid_geo:
-            if 9999 not in self.man_cutout_obj.tools:
+            if 99 not in self.man_cutout_obj.tools:
                 self.man_cutout_obj.tools.update({
-                    9999: self.cut_tool_dict
+                    99: self.cut_tool_dict
                 })
-                self.man_cutout_obj.tools[9999]['tooldia'] = str(dia)
-                self.man_cutout_obj.tools[9999]['solid_geometry'] = [gaps_solid_geo]
+                self.man_cutout_obj.tools[99]['tooldia'] = str(dia)
+                self.man_cutout_obj.tools[99]['solid_geometry'] = [gaps_solid_geo]
 
-                self.man_cutout_obj.tools[9999]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
-                self.man_cutout_obj.tools[9999]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
-                self.man_cutout_obj.tools[9999]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
-                self.man_cutout_obj.tools[9999]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
-                self.man_cutout_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                self.man_cutout_obj.tools[99]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
+                self.man_cutout_obj.tools[99]['data']['tools_mill_cutz'] = self.ui.thin_depth_entry.get_value()
+                self.man_cutout_obj.tools[99]['data']['tools_mill_multidepth'] = self.ui.mpass_cb.get_value()
+                self.man_cutout_obj.tools[99]['data']['tools_mill_depthperpass'] = self.ui.maxdepth_entry.get_value()
+                self.man_cutout_obj.tools[99]['data']['override_color'] = "#29a3a3fa"
             else:
-                self.man_cutout_obj.tools[9999]['solid_geometry'].append(gaps_solid_geo)
+                self.man_cutout_obj.tools[99]['solid_geometry'].append(gaps_solid_geo)
 
         self.man_cutout_obj.plot(plot_tool=1)
         self.app.inform.emit('%s' % _("Added manual Bridge Gap. Left click to add another or right click to finish."))

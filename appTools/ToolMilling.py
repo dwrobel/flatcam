@@ -1565,13 +1565,13 @@ class ToolMilling(AppTool, Excellon):
                 self.update_ui()
 
             # synchronize selection in the Geometry Milling Tool Table with the selection in the Geometry UI Tool Table
-            self.target_obj.ui.geo_tools_table.clearSelection()
-            current_selection_mode = self.target_obj.ui.geo_tools_table.selectionMode()
-            self.target_obj.ui.geo_tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-            for row in range(self.target_obj.ui.geo_tools_table.rowCount()):
-                if row in sel_rows:
-                    self.target_obj.ui.geo_tools_table.selectRow(row)
-            self.target_obj.ui.geo_tools_table.setSelectionMode(current_selection_mode)
+            # self.target_obj.ui.geo_tools_table.clearSelection()
+            # current_selection_mode = self.target_obj.ui.geo_tools_table.selectionMode()
+            # self.target_obj.ui.geo_tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            # for row in range(self.target_obj.ui.geo_tools_table.rowCount()):
+            #     if row in sel_rows:
+            #         self.target_obj.ui.geo_tools_table.selectRow(row)
+            # self.target_obj.ui.geo_tools_table.setSelectionMode(current_selection_mode)
 
             # mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
             # for index in sel_indexes:
@@ -1715,7 +1715,7 @@ class ToolMilling(AppTool, Excellon):
                 try:
                     # widgets in the tools table
                     if storage_key == 'tools_mill_tool_type':
-                        print(dict_storage['tools_mill_tool_type'])
+                        # print(dict_storage['tools_mill_tool_type'])
                         form_val = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
                         form_val.set_value(dict_storage['tools_mill_tool_type'])
                     else:
