@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.01.2021
+
+- added a new preprocessor by Georg Ziegler, used with a laser (cleaned it for PEP8)
+
 27.01.2021
 
 - some fixes in Drilling Tool and in camlib.py file
