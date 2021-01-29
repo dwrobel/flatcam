@@ -360,7 +360,7 @@ class ToolIsolation(AppTool, Gerber):
                 dias = self.app.defaults["tools_iso_tooldia"]
 
         if not dias:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> Isolation Tools.")
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> Isolation Tools.")
             return
 
         self.tooluid = 0

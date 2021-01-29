@@ -6614,11 +6614,11 @@ msgstr ""
 "il ritaglio della scheda."
 
 #: appGUI/ObjectUI.py:418 appGUI/ObjectUI.py:765 appGUI/ObjectUI.py:1848
-msgid "UTILTIES"
+msgid "Utilities"
 msgstr "UTILITA'"
 
 #: appGUI/ObjectUI.py:420 appGUI/ObjectUI.py:767 appGUI/ObjectUI.py:1850
-msgid "Show the Utilties."
+msgid "Show the Utilities."
 msgstr "Mostra utilità."
 
 #: appGUI/ObjectUI.py:444 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32

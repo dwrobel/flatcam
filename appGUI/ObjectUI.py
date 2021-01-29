@@ -343,7 +343,7 @@ class GerberObjectUI(ObjectUI):
         separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line1, 13, 0, 1, 3)
 
-        self.tool_lbl = FCLabel('<b>%s</b>' % _("TOOLS"))
+        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
         grid0.addWidget(self.tool_lbl, 14, 0, 1, 3)
 
         # Isolation Tool - will create isolation paths around the copper features
@@ -362,7 +362,7 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.iso_button, 16, 0, 1, 3)
 
         # ## Clear non-copper regions
-        self.generate_ncc_button = FCButton(_('NCC Tool'))
+        self.generate_ncc_button = FCButton(_('NCC'))
         self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
@@ -377,7 +377,7 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.generate_ncc_button, 18, 0, 1, 3)
 
         # ## Board cutout
-        self.generate_cutout_button = FCButton(_('Cutout Tool'))
+        self.generate_cutout_button = FCButton(_('Cutout'))
         self.generate_cutout_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cut32.png'))
         self.generate_cutout_button.setToolTip(
             _("Generate the geometry for\n"
@@ -392,7 +392,7 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.generate_cutout_button, 20, 0, 1, 3)
 
         # Follow Tool
-        self.generate_follow_button = FCButton(_('Follow Tool'))
+        self.generate_follow_button = FCButton(_('Follow'))
         self.generate_follow_button.setIcon(QtGui.QIcon(self.app.resource_location + '/follow32.png'))
         self.generate_follow_button.setToolTip(
             _("Generate a 'Follow' geometry.\n"
@@ -408,9 +408,9 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(separator_line, 24, 0, 1, 3)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
-        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setToolTip(_("Show the Utilities."))
         self.util_button.setStyleSheet("""
                                       QPushButton
                                       {
@@ -719,11 +719,11 @@ class ExcellonObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 0, 0, 1, 2)
 
-        self.tool_lbl = FCLabel('<b>%s</b>' % _("TOOLS"))
+        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
         grid2.addWidget(self.tool_lbl, 2, 0, 1, 2)
 
         # Drilling Tool - will create GCode for drill holes
-        self.drill_button = FCButton(_('Drilling Tool'))
+        self.drill_button = FCButton(_('Drilling'))
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'))
         self.drill_button.setToolTip(
             _("Generate GCode from the drill holes in an Excellon object.")
@@ -737,7 +737,7 @@ class ExcellonObjectUI(ObjectUI):
         grid2.addWidget(self.drill_button, 4, 0, 1, 2)
 
         # Milling Tool - will create GCode for slot holes
-        self.milling_button = FCButton(_('Milling Tool'))
+        self.milling_button = FCButton(_('Milling'))
         self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
         self.milling_button.setToolTip(
             _("Generate a Geometry for milling drills or slots in an Excellon object.")
@@ -756,9 +756,9 @@ class ExcellonObjectUI(ObjectUI):
         grid2.addWidget(separator_line, 8, 0, 1, 2)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
-        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setToolTip(_("Show the Utilities."))
         self.util_button.setStyleSheet("""
                                       QPushButton
                                       {
@@ -1785,14 +1785,14 @@ class GeometryObjectUI(ObjectUI):
         # #############################################################################################################
         # ############################################ Tools ##########################################################
         # #############################################################################################################
-        self.tools_label = FCLabel('<b>%s</b>' % _('TOOLS'))
+        self.tools_label = FCLabel('<b>%s</b>' % _('Plugins'))
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
         self.grid4.addWidget(self.tools_label, 32, 0, 1, 2)
 
         # Milling Tool - will create GCode for slot holes
-        self.milling_button = FCButton(_('Milling Tool'))
+        self.milling_button = FCButton(_('Milling'))
         self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
         self.milling_button.setToolTip(
             _("Generate a CNCJob by milling a Geometry.")
@@ -1806,7 +1806,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.addWidget(self.milling_button, 34, 0, 1, 2)
 
         # Paint Button
-        self.paint_tool_button = FCButton(_('Paint Tool'))
+        self.paint_tool_button = FCButton(_('Paint'))
         self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
         self.paint_tool_button.setToolTip(
             _("Creates tool paths to cover the\n"
@@ -1816,7 +1816,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.addWidget(self.paint_tool_button, 36, 0, 1, 2)
 
         # NCC Tool
-        self.generate_ncc_button = FCButton(_('NCC Tool'))
+        self.generate_ncc_button = FCButton(_('NCC'))
         self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
@@ -1836,9 +1836,9 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.addWidget(separator_line, 40, 0, 1, 2)
 
         # UTILITIES BUTTON
-        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
         self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
-        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setToolTip(_("Show the Utilities."))
         self.util_button.setStyleSheet("""
                                         QPushButton
                                         {

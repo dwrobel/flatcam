@@ -572,7 +572,7 @@ class ToolPaint(AppTool, Gerber):
                 diameters = self.app.defaults["tools_paint_tooldia"]
 
         if not diameters:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Plugins -> NCC Tools.")
             self.build_ui()
 
             # if the Paint Method is "Single" disable the tool table context menu

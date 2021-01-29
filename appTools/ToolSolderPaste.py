@@ -192,7 +192,7 @@ class SolderPaste(AppTool):
         except Exception as err:
             self.app.log.error("SolderPaste.set_tool_ui() -> nozzle dias -> %s" % str(err))
             self.app.log.error("At least one Nozzle tool diameter needed. "
-                               "Verify in Edit -> Preferences -> TOOLS -> Solder Paste Tools.")
+                               "Verify in Edit -> Preferences -> Plugins -> Solder Paste Tools.")
             return
 
         self.tooluid = 0

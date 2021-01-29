@@ -5985,11 +5985,11 @@ msgid ""
 msgstr ""
 
 #: appGUI/ObjectUI.py:418 appGUI/ObjectUI.py:765 appGUI/ObjectUI.py:1848
-msgid "UTILTIES"
+msgid "Utilities"
 msgstr ""
 
 #: appGUI/ObjectUI.py:420 appGUI/ObjectUI.py:767 appGUI/ObjectUI.py:1850
-msgid "Show the Utilties."
+msgid "Show the Utilities."
 msgstr ""
 
 #: appGUI/ObjectUI.py:444 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32

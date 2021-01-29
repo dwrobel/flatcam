@@ -1527,7 +1527,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
         self.tools_tab = QtWidgets.QWidget()
-        self.pref_tab_area.addTab(self.tools_tab, _("TOOLS"))
+        self.pref_tab_area.addTab(self.tools_tab, '%s' % _("Plugins").upper())
         self.tools_tab_lay = QtWidgets.QVBoxLayout()
         self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools_tab.setLayout(self.tools_tab_lay)
@@ -1536,7 +1536,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
         self.tools2_tab = QtWidgets.QWidget()
-        self.pref_tab_area.addTab(self.tools2_tab, _("TOOLS 2"))
+        self.pref_tab_area.addTab(self.tools2_tab, '%s %s' % (_("Plugins").upper(), str(2)))
         self.tools2_tab_lay = QtWidgets.QVBoxLayout()
         self.tools2_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools2_tab.setLayout(self.tools2_tab_lay)

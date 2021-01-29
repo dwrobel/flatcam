@@ -6593,11 +6593,11 @@ msgid ""
 msgstr "PCB'yi kesmek için kesim şekilleri oluşturun."
 
 #: appGUI/ObjectUI.py:418 appGUI/ObjectUI.py:765 appGUI/ObjectUI.py:1848
-msgid "UTILTIES"
+msgid "Utilities"
 msgstr "ARAÇLAR"
 
 #: appGUI/ObjectUI.py:420 appGUI/ObjectUI.py:767 appGUI/ObjectUI.py:1850
-msgid "Show the Utilties."
+msgid "Show the Utilities."
 msgstr "Araçları göster."
 
 #: appGUI/ObjectUI.py:444 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32

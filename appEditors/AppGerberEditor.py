@@ -7135,7 +7135,7 @@ class TransformEditorTool(AppTool):
             return
 
         self.draw_app.select_tool("select")
-        self.app.ui.notebook.setTabText(2, "Tools")
+        self.app.ui.notebook.setTabText(2, "Plugins")
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
         self.app.ui.splitter.setSizes([0, 1])

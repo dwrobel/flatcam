@@ -165,7 +165,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.generate_cutout_button.clicked.connect(lambda: self.app.cutout_tool.run(toggle=True))
         self.ui.generate_follow_button.clicked.connect(lambda: self.app.follow_tool.run(toggle=True))
 
-        # Utilties
+        # Utilities
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
