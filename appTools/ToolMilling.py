@@ -2887,14 +2887,14 @@ class ToolMilling(AppTool, Excellon):
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
-        def job_init_single_geometry(job_obj, app_obj):
+        def job_init_single_geometry(new_cncjob_obj, app_obj):
             self.app.log.debug("Creating a CNCJob out of a single-geometry")
-            assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
+            assert new_cncjob_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(new_cncjob_obj)
 
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
+            new_cncjob_obj.options['xmin'] = xmin
+            new_cncjob_obj.options['ymin'] = ymin
+            new_cncjob_obj.options['xmax'] = xmax
+            new_cncjob_obj.options['ymax'] = ymax
 
             # count the tools
             tool_cnt = 0
@@ -2902,17 +2902,17 @@ class ToolMilling(AppTool, Excellon):
             # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
-            job_obj.multitool = True
-            job_obj.multigeo = False
-            job_obj.cnc_tools.clear()
+            new_cncjob_obj.multitool = True
+            new_cncjob_obj.multigeo = False
+            new_cncjob_obj.cnc_tools.clear()
 
-            job_obj.options['Tools_in_use'] = tools_in_use
+            new_cncjob_obj.options['Tools_in_use'] = tools_in_use
 
-            job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
-            job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
+            new_cncjob_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
+            new_cncjob_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
-            job_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
-            job_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
 
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
@@ -2977,13 +2977,13 @@ class ToolMilling(AppTool, Excellon):
                 spindledir = self.app.defaults['tools_mill_spindledir']
                 tool_solid_geometry = self.solid_geometry
 
-                job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
-                job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
+                new_cncjob_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
+                new_cncjob_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
                 # Propagate options
-                job_obj.options["tooldia"] = tooldia_val
-                job_obj.options['type'] = 'Geometry'
-                job_obj.options['tool_dia'] = tooldia_val
+                new_cncjob_obj.options["tooldia"] = tooldia_val
+                new_cncjob_obj.options['type'] = 'Geometry'
+                new_cncjob_obj.options['tool_dia'] = tooldia_val
 
                 tool_lst = list(tools_dict.keys())
                 is_first = True if tooluid_key == tool_lst[0] else False
@@ -2993,7 +2993,7 @@ class ToolMilling(AppTool, Excellon):
                 glob_tol = float(self.app.defaults['global_tolerance'])
                 tol = glob_tol / 20 if self.units.lower() == 'in' else glob_tol
 
-                res, start_gcode = job_obj.generate_from_geometry_2(
+                res, start_gcode = new_cncjob_obj.generate_from_geometry_2(
                     self.target_obj, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
@@ -3010,16 +3010,16 @@ class ToolMilling(AppTool, Excellon):
 
                 dia_cnc_dict['gcode'] = res
                 if start_gcode != '':
-                    job_obj.gc_start = start_gcode
+                    new_cncjob_obj.gc_start = start_gcode
 
                 total_gcode += res
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                job_obj.toolchange_xy_type = "geometry"
+                new_cncjob_obj.toolchange_xy_type = "geometry"
 
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse()
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
@@ -3031,23 +3031,23 @@ class ToolMilling(AppTool, Excellon):
                 except Exception as er:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(er)))
 
-                job_obj.cnc_tools.update({
+                new_cncjob_obj.cnc_tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
 
-            job_obj.source_file = job_obj.gc_start + total_gcode
+            new_cncjob_obj.source_file = new_cncjob_obj.gc_start + total_gcode
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
-        def job_init_multi_geometry(new_obj, app_obj):
+        def job_init_multi_geometry(new_cncjob_obj, app_obj):
             self.app.log.debug("Creating a CNCJob out of a multi-geometry")
-            assert new_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(new_obj)
+            assert new_cncjob_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(new_cncjob_obj)
 
-            new_obj.options['xmin'] = xmin
-            new_obj.options['ymin'] = ymin
-            new_obj.options['xmax'] = xmax
-            new_obj.options['ymax'] = ymax
+            new_cncjob_obj.options['xmin'] = xmin
+            new_cncjob_obj.options['ymin'] = ymin
+            new_cncjob_obj.options['xmax'] = xmax
+            new_cncjob_obj.options['ymax'] = ymax
 
             # count the tools
             tool_cnt = 0
@@ -3055,16 +3055,16 @@ class ToolMilling(AppTool, Excellon):
             # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
-            new_obj.multitool = True
-            new_obj.multigeo = True
-            new_obj.cnc_tools.clear()
+            new_cncjob_obj.multitool = True
+            new_cncjob_obj.multigeo = True
+            new_cncjob_obj.cnc_tools.clear()
 
-            new_obj.options['Tools_in_use'] = tools_in_use
-            new_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
-            new_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
+            new_cncjob_obj.options['Tools_in_use'] = tools_in_use
+            new_cncjob_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
+            new_cncjob_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
-            new_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
-            new_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not self.target_obj.solid_geometry:
@@ -3142,13 +3142,13 @@ class ToolMilling(AppTool, Excellon):
                 tool_solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']
 
                 # Coordinates
-                new_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
-                new_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
+                new_cncjob_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
+                new_cncjob_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
                 # Propagate options
-                new_obj.options["tooldia"] = tooldia_val
-                new_obj.options['type'] = 'Geometry'
-                new_obj.options['tool_dia'] = tooldia_val
+                new_cncjob_obj.options["tooldia"] = tooldia_val
+                new_cncjob_obj.options['type'] = 'Geometry'
+                new_cncjob_obj.options['tool_dia'] = tooldia_val
 
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
@@ -3158,10 +3158,10 @@ class ToolMilling(AppTool, Excellon):
                 tool_lst = list(tools_dict.keys())
                 is_first = True if tooluid_key == tool_lst[0] else False
                 is_last = True if tooluid_key == tool_lst[-1] else False
-                res, start_gcode = new_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
-                                                                   tolerance=tol,
-                                                                   is_first=is_first, is_last=is_last,
-                                                                   toolchange=is_toolchange)
+                res, start_gcode = new_cncjob_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
+                                                                          tolerance=tol,
+                                                                          is_first=is_first, is_last=is_last,
+                                                                          toolchange=is_toolchange)
                 if res == 'fail':
                     self.app.log.debug("ToolMilling.mtool_gen_cncjob() --> geometry_tool_gcode_gen() failed")
                     return 'fail'
@@ -3171,10 +3171,10 @@ class ToolMilling(AppTool, Excellon):
                 total_gcode += res
 
                 if start_gcode != '':
-                    new_obj.gc_start = start_gcode
+                    new_cncjob_obj.gc_start = start_gcode
 
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = new_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse()
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
@@ -3190,15 +3190,15 @@ class ToolMilling(AppTool, Excellon):
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                new_obj.toolchange_xy_type = "geometry"
+                new_cncjob_obj.toolchange_xy_type = "geometry"
 
                 # Update the CNCJob tools dictionary
-                new_obj.cnc_tools.update({
+                new_cncjob_obj.cnc_tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
 
-            new_obj.source_file = total_gcode
+            new_cncjob_obj.source_file = total_gcode
 
         if use_thread:
             # To be run in separate thread
