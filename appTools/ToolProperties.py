@@ -147,7 +147,7 @@ class Properties(AppTool):
         # make sure that the FCTree widget columns are resized to content
         self.treeWidget.resize_sig.emit()
 
-        self.app.ui.notebook.setTabText(2, _("Properties Tool"))
+        self.app.ui.notebook.setTabText(2, _("Properties"))
 
     def addItems(self, obj):
         parent = self.treeWidget.invisibleRootItem()
