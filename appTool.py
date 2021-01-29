@@ -21,7 +21,7 @@ if '_' not in builtins.__dict__:
 
 class AppTool(QtWidgets.QWidget):
 
-    toolName = "FlatCAM Generic Tool"
+    pluginName = "FlatCAM Generic Tool"
 
     def __init__(self, app, parent=None):
         """
@@ -67,9 +67,9 @@ class AppTool(QtWidgets.QWidget):
 
         # set the text name of the Action, which will be displayed in the menu
         if shortcut is None:
-            self.menuAction.setText(self.toolName)
+            self.menuAction.setText(self.pluginName)
         else:
-            self.menuAction.setText(self.toolName + '\t%s' % shortcut)
+            self.menuAction.setText(self.pluginName + '\t%s' % shortcut)
 
         # add a ToolTip to the new Action
         # self.menuAction.setToolTip(self.toolTip) # currently not available
@@ -85,21 +85,25 @@ class AppTool(QtWidgets.QWidget):
 
     def run(self):
 
-        if self.app.tool_tab_locked is True:
+        if self.app.plugin_tab_locked is True:
             return
         # Remove anything else in the appGUI
-        self.app.ui.tool_scroll_area.takeWidget()
+        self.app.ui.plugin_scroll_area.takeWidget()
 
         # Put ourselves in the appGUI
-        self.app.ui.tool_scroll_area.setWidget(self)
+        self.app.ui.plugin_scroll_area.setWidget(self)
 
         # Switch notebook to tool page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         # Set the tool name as the widget object name
-        self.app.ui.tool_scroll_area.widget().setObjectName(self.toolName)
+        self.app.ui.plugin_scroll_area.widget().setObjectName(self.pluginName)
 
         self.show()
+
+    def clear_ui(self):
+        for i in reversed(range(self.layout.count())):
+            self.layout.itemAt(i).widget().setParent(None)
 
     def draw_tool_selection_shape(self, old_coords, coords, **kwargs):
         """

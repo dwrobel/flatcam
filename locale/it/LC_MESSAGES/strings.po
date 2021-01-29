@@ -22243,5 +22243,5 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid "%s/Project_%s"
 #~ msgstr "%s/Project_%s"
 
-#~ msgid "tool_tab"
-#~ msgstr "tool_tab"
+#~ msgid "plugin_tab"
+#~ msgstr "plugin_tab"

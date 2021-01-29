@@ -440,7 +440,7 @@ class App(QtCore.QObject):
         self.call_source = 'app'
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
-        self.tool_tab_locked = False
+        self.plugin_tab_locked = False
 
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
@@ -2008,12 +2008,12 @@ class App(QtCore.QObject):
         self.ui.notebook.removeTab(2)
 
         # rebuild the Tools Tab
-        # self.ui.tool_tab = QtWidgets.QWidget()
-        # self.ui.tool_tab_layout = QtWidgets.QVBoxLayout(self.ui.tool_tab)
-        # self.ui.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
-        # self.ui.notebook.addTab(self.ui.tool_tab, _("Tool"))
-        # self.ui.tool_scroll_area = VerticalScrollArea()
-        # self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
+        # self.ui.plugin_tab = QtWidgets.QWidget()
+        # self.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.ui.plugin_tab)
+        # self.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.ui.notebook.addTab(self.ui.plugin_tab, _("Tool"))
+        # self.ui.plugin_scroll_area = VerticalScrollArea()
+        # self.ui.plugin_tab_layout.addWidget(self.ui.plugin_scroll_area)
 
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
         # first remove all of them
@@ -2644,7 +2644,7 @@ class App(QtCore.QObject):
                 # clean the Tools Tab
                 found_idx = None
                 for idx in range(self.ui.notebook.count()):
-                    if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                    if self.ui.notebook.widget(idx).objectName() == "plugin_tab":
                         found_idx = idx
                         break
                 if found_idx:
@@ -2658,7 +2658,7 @@ class App(QtCore.QObject):
 
                     # restore GUI to the Selected TAB
                     # Remove anything else in the appGUI
-                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.plugin_scroll_area.takeWidget()
 
                     # update the geo object options so it is including the bounding box values
                     try:
@@ -2704,7 +2704,7 @@ class App(QtCore.QObject):
 
                     # restore GUI to the Selected TAB
                     # Remove anything else in the GUI
-                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.plugin_scroll_area.takeWidget()
 
                     # delete the old object (the source object) if it was an empty one
                     # find if we have drills:
@@ -2731,7 +2731,7 @@ class App(QtCore.QObject):
 
                     # restore GUI to the Selected TAB
                     # Remove anything else in the GUI
-                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.plugin_scroll_area.takeWidget()
                     edited_obj.build_ui()
 
                     # close the open tab
@@ -2762,7 +2762,7 @@ class App(QtCore.QObject):
                 # clean the Tools Tab
                 found_idx = None
                 for idx in range(self.ui.notebook.count()):
-                    if self.ui.notebook.widget(idx).objectName() == "tool_tab":
+                    if self.ui.notebook.widget(idx).objectName() == "plugin_tab":
                         found_idx = idx
                         break
                 if found_idx:
@@ -4804,26 +4804,26 @@ class App(QtCore.QObject):
                     msgbox.exec()
 
         # work only if the notebook tab on focus is the Tools_Tab
-        if notebook_widget_name == 'tool_tab':
+        if notebook_widget_name == 'plugin_tab':
             try:
-                tool_widget = self.ui.tool_scroll_area.widget().objectName()
+                tool_widget = self.ui.plugin_scroll_area.widget().objectName()
             except AttributeError:
                 return
 
             # and only if the tool is NCC Tool
-            if tool_widget == self.ncclear_tool.toolName:
+            if tool_widget == self.ncclear_tool.pluginName:
                 self.ncclear_tool.on_add_tool_by_key()
 
             # and only if the tool is Paint Area Tool
-            elif tool_widget == self.paint_tool.toolName:
+            elif tool_widget == self.paint_tool.pluginName:
                 self.paint_tool.on_add_tool_by_key()
 
             # and only if the tool is Solder Paste Dispensing Tool
-            elif tool_widget == self.paste_tool.toolName:
+            elif tool_widget == self.paste_tool.pluginName:
                 self.paste_tool.on_add_tool_by_key()
 
             # and only if the tool is Isolation Tool
-            elif tool_widget == self.isolation_tool.toolName:
+            elif tool_widget == self.isolation_tool.pluginName:
                 self.isolation_tool.on_add_tool_by_key()
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
@@ -4837,23 +4837,23 @@ class App(QtCore.QObject):
                 self.collection.get_active().on_tool_delete()
 
         # work only if the notebook tab on focus is the Tools_Tab
-        elif notebook_widget_name == 'tool_tab':
-            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+        elif notebook_widget_name == 'plugin_tab':
+            tool_widget = self.ui.plugin_scroll_area.widget().objectName()
 
             # and only if the tool is NCC Tool
-            if tool_widget == self.ncclear_tool.toolName:
+            if tool_widget == self.ncclear_tool.pluginName:
                 self.ncclear_tool.on_tool_delete()
 
             # and only if the tool is Paint Tool
-            elif tool_widget == self.paint_tool.toolName:
+            elif tool_widget == self.paint_tool.pluginName:
                 self.paint_tool.on_tool_delete()
 
             # and only if the tool is Solder Paste Dispensing Tool
-            elif tool_widget == self.paste_tool.toolName:
+            elif tool_widget == self.paste_tool.pluginName:
                 self.paste_tool.on_tool_delete()
 
             # and only if the tool is Isolation Tool
-            elif tool_widget == self.isolation_tool.toolName:
+            elif tool_widget == self.isolation_tool.pluginName:
                 self.isolation_tool.on_tool_delete()
         else:
             self.on_delete()
@@ -7316,7 +7316,7 @@ class App(QtCore.QObject):
                 if self.call_source == 'app':
                     if self.click_noproject is False:
                         # if the Tool Tab is in focus don't change focus to Project Tab
-                        if not self.ui.notebook.currentWidget() is self.ui.tool_tab:
+                        if not self.ui.notebook.currentWidget() is self.ui.plugin_tab:
                             self.ui.notebook.setCurrentWidget(self.ui.project_tab)
                     else:
                         # restore auto open the Project Tab

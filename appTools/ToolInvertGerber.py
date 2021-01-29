@@ -38,7 +38,7 @@ class ToolInvertGerber(AppTool):
         # ######################### Tool GUI ##########################################
         # #############################################################################
         self.ui = InvertUI(layout=self.layout, app=self.app)
-        self.toolName = self.ui.toolName
+        self.pluginName = self.ui.pluginName
 
         self.ui.invert_btn.clicked.connect(self.on_grb_invert)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -58,21 +58,21 @@ class ToolInvertGerber(AppTool):
             # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
             found_idx = None
             for idx in range(self.app.ui.notebook.count()):
-                if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                     found_idx = idx
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
                 # focus on Tool Tab
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
             try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName and found_idx:
+                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName and found_idx:
                     # if the Tool Tab is not focused, focus on it
-                    if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                    if not self.app.ui.notebook.currentWidget() is self.app.ui.plugin_tab:
                         # focus on Tool Tab
-                        self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
                     else:
                         # else remove the Tool Tab
                         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
@@ -187,7 +187,7 @@ class ToolInvertGerber(AppTool):
 
 class InvertUI:
     
-    toolName = _("Invert Gerber")
+    pluginName = _("Invert Gerber")
 
     def __init__(self, layout, app):
         self.app = app
@@ -195,7 +195,7 @@ class InvertUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {

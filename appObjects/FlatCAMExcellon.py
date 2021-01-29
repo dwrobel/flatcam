@@ -956,12 +956,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
+            # get the plugin_table items in a list of row items
+            plugin_table_items = self.get_selected_tools_table_items()
             # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
+            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            geo_obj.options['Tools_in_use'] = tool_table_items
+            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
@@ -1056,12 +1056,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
+            # get the plugin_table items in a list of row items
+            plugin_table_items = self.get_selected_tools_table_items()
             # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
+            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            geo_obj.options['Tools_in_use'] = tool_table_items
+            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
@@ -1186,7 +1186,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         check_row = 0
 
         for tool_key in self.tools:
-            # find the geo_tool_table row associated with the tool_key
+            # find the geo_plugin_table row associated with the tool_key
             for row in range(self.ui.tools_table.rowCount()):
                 tool_item = int(self.ui.tools_table.item(row, 0).text())
                 if tool_item == int(tool_key):

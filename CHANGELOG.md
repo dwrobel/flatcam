@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.01.2021
+
+- some refactoring
+- working on Milling Tool and Drilling Tool: made sure that the plugin UI is initialized only when the plugin (Tool) is run in order to avoid errors like (wrapped C++ objects was deleted)
+
 28.01.2021
 
 - added a new preprocessor by Georg Ziegler, used with a laser (cleaned it for PEP8)
@@ -5207,7 +5212,7 @@ now there is a Tool Table in CNC Object UI and each tool GCode can be enabled or
 - if a geometry is a closed shape then create a Polygon out of it
 - some fixes in Non Copper Clearing Tool
 - Geometry Tool table: added option to delete_tool function for delete_all
-- Geometry Tool table: added ability to delete even the last tool in tool_table and added an warning if the user try to generate a CNC Job without a tool in tool table
+- Geometry Tool table: added ability to delete even the last tool in plugin_table and added an warning if the user try to generate a CNC Job without a tool in tool table
 - if a geometry is painted inside the Geometry Editor then it will store the tool diameter used for this painting. Only one tool cn be stored (the last one) so if multiple paintings are done with different tools in the same geometry it will store only the last used tool.
 - if multiple geometries have different tool diameters associated (contain a paint geometry) they aren't allowed to be joined and a message is displayed letting the user know
 
@@ -5377,7 +5382,7 @@ Of course one can edit the isolation geometry and delete the isolation for the g
 
 19.10.2018
 
-- solved some value update bugs in tool_table in Excellon Editor when editing tools followed by deleting another tool,
+- solved some value update bugs in plugin_table in Excellon Editor when editing tools followed by deleting another tool,
 and then re-adding the just-deleted tool.
 - added support for chaining blocks in DXF Import
 - fixed the DXF arc import
@@ -5681,7 +5686,7 @@ saving an Excellon object from editor to FlatCAM, selecting drills by left click
 - added awareness for missing coordinates in Gerber parsing. It will try to use the previous coordinates but if there are not any those lines will be ignored and an Warning will be printed in Tcl Shell.
 - fixed TCL commands AlignDrillGrid and DrilCncJob
 - added TCL script file load_and_run support in GUI
-- made the tool_table in Excellon to automatically adjust the table height depending on the number of rows such that all the rows will be displayed.
+- made the plugin_table in Excellon to automatically adjust the table height depending on the number of rows such that all the rows will be displayed.
 - structural changes in the Excellon build_ui()
 - icon changes and menu compress
 

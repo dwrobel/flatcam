@@ -1149,7 +1149,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 return
 
             # #########################################################################################################
-            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # update the form with the V-Shape fields if V-Shape selected in the geo_plugin_table
             # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
             # #########################################################################################################
             try:
@@ -3386,7 +3386,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         for tooluid_key in self.tools:
             solid_geometry = self.tools[tooluid_key]['solid_geometry']
 
-            # find the geo_tool_table row associated with the tooluid_key
+            # find the geo_plugin_table row associated with the tooluid_key
             for row in range(self.ui.geo_tools_table.rowCount()):
                 tooluid_item = int(self.ui.geo_tools_table.item(row, 5).text())
                 if tooluid_item == int(tooluid_key):

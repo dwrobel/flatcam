@@ -24522,5 +24522,5 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "%s/Project_%s"
 #~ msgstr "%s/Projeto_%s"
 
-#~ msgid "tool_tab"
-#~ msgstr "tool_tab"
+#~ msgid "plugin_tab"
+#~ msgstr "plugin_tab"

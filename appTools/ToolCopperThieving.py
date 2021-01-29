@@ -49,7 +49,7 @@ class ToolCopperThieving(AppTool):
         # ######################### Tool GUI ##########################################
         # #############################################################################
         self.ui = ThievingUI(layout=self.layout, app=self.app)
-        self.toolName = self.ui.toolName
+        self.pluginName = self.ui.pluginName
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -108,21 +108,21 @@ class ToolCopperThieving(AppTool):
             # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
             found_idx = None
             for idx in range(self.app.ui.notebook.count()):
-                if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                     found_idx = idx
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
                 # focus on Tool Tab
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
             try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName and found_idx:
+                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName and found_idx:
                     # if the Tool Tab is not focused, focus on it
-                    if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                    if not self.app.ui.notebook.currentWidget() is self.app.ui.plugin_tab:
                         # focus on Tool Tab
-                        self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
                     else:
                         # else remove the Tool Tab
                         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
@@ -1243,7 +1243,7 @@ class ToolCopperThieving(AppTool):
 
 class ThievingUI:
 
-    toolName = _("Copper Thieving")
+    pluginName = _("Copper Thieving")
 
     def __init__(self, layout, app):
         self.app = app
@@ -1252,7 +1252,7 @@ class ThievingUI:
         self.layout = layout
 
         # ## Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {

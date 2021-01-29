@@ -24,7 +24,7 @@ log = logging.getLogger('base')
 
 class ToolMove(AppTool):
 
-    toolName = _("Move")
+    pluginName = _("Move")
     replot_signal = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
@@ -65,7 +65,7 @@ class ToolMove(AppTool):
     def run(self, toggle):
         self.app.defaults.report_usage("ToolMove()")
 
-        if self.app.tool_tab_locked is True:
+        if self.app.plugin_tab_locked is True:
             return
         self.toggle()
 

@@ -41,7 +41,7 @@ class ToolPDF(AppTool):
     Reference here: https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
     Return a list of geometries
     """
-    toolName = _("PDF Import Tool")
+    pluginName = _("PDF Import Tool")
 
     def __init__(self, app):
         AppTool.__init__(self, app)

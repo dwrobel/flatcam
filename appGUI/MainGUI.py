@@ -1414,15 +1414,15 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## TOOL Tab # ##################################
         # ########################################################################
-        self.tool_tab = QtWidgets.QWidget()
-        self.tool_tab.setObjectName("tool_tab")
-        self.tool_tab_layout = QtWidgets.QVBoxLayout(self.tool_tab)
-        self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
-        # self.notebook.addTab(self.tool_tab, _("Tool"))
+        self.plugin_tab = QtWidgets.QWidget()
+        self.plugin_tab.setObjectName("plugin_tab")
+        self.plugin_tab_layout = QtWidgets.QVBoxLayout(self.plugin_tab)
+        self.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.notebook.addTab(self.plugin_tab, _("Tool"))
 
-        self.tool_scroll_area = VerticalScrollArea()
-        # self.tool_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.tool_tab_layout.addWidget(self.tool_scroll_area)
+        self.plugin_scroll_area = VerticalScrollArea()
+        # self.plugin_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.plugin_tab_layout.addWidget(self.plugin_scroll_area)
 
         # ########################################################################
         # ########################## RIGHT Widget # ##############################
@@ -3910,7 +3910,7 @@ class MainGUI(QtWidgets.QMainWindow):
         elif name == 'properties':
             self.notebook.setCurrentWidget(self.properties_tab)
         elif name == 'tool':
-            self.notebook.setCurrentWidget(self.tool_tab)
+            self.notebook.setCurrentWidget(self.plugin_tab)
 
     def createPopupMenu(self):
         menu = super().createPopupMenu()

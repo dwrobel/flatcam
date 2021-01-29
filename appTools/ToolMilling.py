@@ -55,8 +55,8 @@ class ToolMilling(AppTool, Excellon):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = MillingUI(layout=self.layout, app=self.app)
-        self.toolName = self.ui.toolName
+        self.ui = None
+        self.pluginName = _("Milling")
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -146,21 +146,21 @@ class ToolMilling(AppTool, Excellon):
             # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
             found_idx = None
             for idx in range(self.app.ui.notebook.count()):
-                if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+                if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                     found_idx = idx
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
                 # focus on Tool Tab
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
             try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName and found_idx:
+                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName and found_idx:
                     # if the Tool Tab is not focused, focus on it
-                    if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                    if not self.app.ui.notebook.currentWidget() is self.app.ui.plugin_tab:
                         # focus on Tool Tab
-                        self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
                     else:
                         # else remove the Tool Tab
                         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
@@ -176,6 +176,7 @@ class ToolMilling(AppTool, Excellon):
                 self.app.ui.splitter.setSizes([1, 1])
 
         AppTool.run(self)
+
         self.set_tool_ui()
 
         # reset those objects on a new run
@@ -399,13 +400,15 @@ class ToolMilling(AppTool, Excellon):
     def unset_context_menu(self):
         self.ui.geo_tools_table.removeContextMenu()
 
+    def init_ui(self):
+        self.ui = MillingUI(layout=self.layout, app=self.app, name=self.pluginName)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
-        if self.ui is None:
-            self.ui = MillingUI(layout=self.layout, app=self.app)
-            self.toolName = self.ui.toolName
+        self.clear_ui()
+        self.init_ui()
 
         self.unset_context_menu()
         self.set_context_menu()
@@ -485,10 +488,6 @@ class ToolMilling(AppTool, Excellon):
 
         # Fill form fields
         self.to_form()
-
-        # Show/Hide Advanced Options
-        app_mode = self.app.defaults["global_app_level"]
-        self.change_level(app_mode)
 
         # # Show/Hide Advanced Options
         # if app_mode == 'b':
@@ -637,6 +636,10 @@ class ToolMilling(AppTool, Excellon):
         # handle the Plot checkbox
         self.plot_cb_handler()
 
+        # Show/Hide Advanced Options
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
+
     def plot_cb_handler(self):
         # load the Milling object
         self.obj_name = self.ui.object_combo.currentText()
@@ -658,7 +661,8 @@ class ToolMilling(AppTool, Excellon):
             self.ui.plot_cb.set_value(self.target_obj.options['plot'])
 
     def on_plot_clicked(self, state):
-        self.target_obj.options['plot'] = True if state else False
+        if self.target_obj:
+            self.target_obj.options['plot'] = True if state else False
 
     def change_level(self, level):
         """
@@ -1298,8 +1302,11 @@ class ToolMilling(AppTool, Excellon):
 
         if self.target_obj is None:
             self.ui.param_frame.setDisabled(True)
+            self.ui.plot_cb.setDisabled(True)
         else:
             self.ui.param_frame.setDisabled(False)
+            self.ui.plot_cb.setDisabled(False)
+
             self.obj_tools = self.target_obj.tools
             # set the object as active so the Properties is populated by whatever object is selected
             if self.obj_name and self.obj_name != '':
@@ -1582,11 +1589,11 @@ class ToolMilling(AppTool, Excellon):
 
         sel_rows = set()
         if self.ui.target_radio.get_value() == 'exc':
-            tool_table = self.ui.tools_table
+            plugin_table = self.ui.tools_table
         else:
-            tool_table = self.ui.geo_tools_table
+            plugin_table = self.ui.geo_tools_table
 
-        table_items = tool_table.selectedItems()
+        table_items = plugin_table.selectedItems()
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
@@ -1604,7 +1611,7 @@ class ToolMilling(AppTool, Excellon):
 
         if len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form
-            tooluid = int(tool_table.item(list(sel_rows)[0], 0).text())
+            tooluid = int(plugin_table.item(list(sel_rows)[0], 0).text())
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
             )
@@ -1628,7 +1635,7 @@ class ToolMilling(AppTool, Excellon):
             current_row = sel_rows[-1]
 
             # #########################################################################################################
-            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # update the form with the V-Shape fields if V-Shape selected in the geo_plugin_table
             # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
             # #########################################################################################################
             try:
@@ -1647,7 +1654,7 @@ class ToolMilling(AppTool, Excellon):
         for c_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
             try:
-                item = tool_table.item(c_row, 3)
+                item = plugin_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = item.text()
                     if self.ui.target_radio.get_value() == 'geo':
@@ -2502,12 +2509,12 @@ class ToolMilling(AppTool, Excellon):
 
             # ## Add properties to the object
 
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
+            # get the plugin_table items in a list of row items
+            plugin_table_items = self.get_selected_tools_table_items()
             # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
+            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            geo_obj.options['Tools_in_use'] = tool_table_items
+            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
@@ -2606,12 +2613,12 @@ class ToolMilling(AppTool, Excellon):
             app_obj.inform.emit(_("Generating slot milling geometry..."))
 
             # ## Add properties to the object
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
+            # get the plugin_table items in a list of row items
+            plugin_table_items = self.get_selected_tools_table_items()
             # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
+            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            geo_obj.options['Tools_in_use'] = tool_table_items
+            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
@@ -3339,7 +3346,7 @@ class ToolMilling(AppTool, Excellon):
         for tooluid_key in self.target_obj.tools:
             solid_geometry = self.target_obj.tools[tooluid_key]['solid_geometry']
 
-            # find the geo_tool_table row associated with the tooluid_key
+            # find the geo_plugin_table row associated with the tooluid_key
             for row in range(self.ui.geo_tools_table.rowCount()):
                 tooluid_item = int(self.ui.geo_tools_table.item(row, 3).text())
                 if tooluid_item == int(tooluid_key):
@@ -3566,9 +3573,7 @@ class ToolMilling(AppTool, Excellon):
 
 class MillingUI:
 
-    toolName = _("Milling")
-
-    def __init__(self, layout, app):
+    def __init__(self, layout, app, name):
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
@@ -3584,7 +3589,7 @@ class MillingUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % name)
         title_label.setStyleSheet("""
                                 QLabel
                                 {

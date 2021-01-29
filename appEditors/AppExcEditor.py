@@ -1339,7 +1339,7 @@ class ResizeEditorExc(FCShapeTool):
             dia_on_row = self.draw_app.ui.tools_table_exc.item(row, 1).text()
             self.selected_dia_set.add(float(dia_on_row))
 
-        # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
+        # since we add a new tool, we update also the intial state of the plugin_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.draw_app.tool2tooldia[len(self.draw_app.olddia_newdia)] = new_dia
 
@@ -1414,9 +1414,9 @@ class ResizeEditorExc(FCShapeTool):
                         # remove the geometry with the old size
                         self.current_storage.remove(select_shape)
 
-                        # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted
+                        # a hack to make the plugin_table display less drills per diameter when shape(drill) is deleted
                         # self.points_edit it's only useful first time when we load the data into the storage
-                        # but is still used as reference when building tool_table in self.build_ui()
+                        # but is still used as reference when building plugin_table in self.build_ui()
                         # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                         # deleting self.points_edit elements (doesn't matter who but just the number)
                         # solved the display issue.
@@ -1439,10 +1439,10 @@ class ResizeEditorExc(FCShapeTool):
 
                         sel_shapes_to_be_deleted.append(select_shape)
 
-                        # a hack to make the tool_table display more drills/slots per diameter when shape(drill/slot)
+                        # a hack to make the plugin_table display more drills/slots per diameter when shape(drill/slot)
                         # is added.
                         # self.points_edit it's only useful first time when we load the data into the storage
-                        # but is still used as reference when building tool_table in self.build_ui()
+                        # but is still used as reference when building plugin_table in self.build_ui()
                         # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                         # deleting self.points_edit elements (doesn't matter who but just the number)
                         # solved the display issue.
@@ -1766,7 +1766,7 @@ class AppExcEditor(QtCore.QObject):
         # here store the tools dict for the new excellon object
         self.new_tools = {}
 
-        # dictionary to store the tool_row and diameters in Tool_table
+        # dictionary to store the tool_row and diameters in plugin_table
         # it will be updated everytime self.build_ui() is called
         self.olddia_newdia = {}
 
@@ -1956,7 +1956,7 @@ class AppExcEditor(QtCore.QObject):
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
 
-        # update the olddia_newdia dict to make sure we have an updated state of the tool_table
+        # update the olddia_newdia dict to make sure we have an updated state of the plugin_table
         for key in self.points_edit:
             self.olddia_newdia[key] = key
 
@@ -2296,7 +2296,7 @@ class AppExcEditor(QtCore.QObject):
                                                           "Save and reedit Excellon if you need to add this tool. "))
             return
 
-        # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
+        # since we add a new tool, we update also the initial state of the plugin_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
 
@@ -2414,7 +2414,7 @@ class AppExcEditor(QtCore.QObject):
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
             destination_storage = self.storage_dict[new_dia]
 
-        # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
+        # since we add a new tool, we update also the intial state of the plugin_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = new_dia
 
@@ -3780,9 +3780,9 @@ class AppExcEditor(QtCore.QObject):
             if del_shape in self.storage_dict[storage].get_objects():
                 if isinstance(del_shape.geo, MultiLineString):
                     self.storage_dict[storage].remove(del_shape)
-                    # a hack to make the tool_table display less drills per diameter
+                    # a hack to make the plugin_table display less drills per diameter
                     # self.points_edit it's only useful first time when we load the data into the storage
-                    # but is still used as referecen when building tool_table in self.build_ui()
+                    # but is still used as referecen when building plugin_table in self.build_ui()
                     # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                     # deleting self.points_edit elements (doesn't matter who but just the number)
                     # solved the display issue.
@@ -3806,15 +3806,15 @@ class AppExcEditor(QtCore.QObject):
         self.delete_selected()
         self.replot()
 
-    def select_tool(self, toolname):
+    def select_tool(self, pluginName):
         """
         Selects a drawing tool. Impacts the object and appGUI.
 
-        :param toolname:    Name of the tool.
+        :param pluginName:    Name of the tool.
         :return:            None
         """
-        self.tools_exc[toolname]["button"].setChecked(True)
-        self.on_tool_select(toolname)
+        self.tools_exc[pluginName]["button"].setChecked(True)
+        self.on_tool_select(pluginName)
 
     def set_selected(self, sel_shape):
 

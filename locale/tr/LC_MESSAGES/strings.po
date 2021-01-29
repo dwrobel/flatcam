@@ -25751,5 +25751,5 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "%s/Project_%s"
 #~ msgstr "%s/Project_%s"
 
-#~ msgid "tool_tab"
-#~ msgstr "tool_tab"
+#~ msgid "plugin_tab"
+#~ msgstr "plugin_tab"

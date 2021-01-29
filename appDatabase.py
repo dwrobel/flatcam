@@ -1788,7 +1788,7 @@ class ToolsDB2(QtWidgets.QWidget):
             dia = dict_val['tooldia']
 
             try:
-                # self.add_tool_table_line(row, name=t_name, tooldict=dict_val)
+                # self.add_plugin_table_line(row, name=t_name, tooldict=dict_val)
                 self.ui.tree_widget.blockSignals(True)
                 try:
                     item = self.ui.tree_widget.addParentEditable(
@@ -1800,7 +1800,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
                 self.ui.tree_widget.blockSignals(False)
             except Exception as e:
-                self.app.log.error("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
+                self.app.log.error("ToolDB.build_db_ui.add_plugin_table_line() --> %s" % str(e))
 
         header = self.ui.tree_widget.header()
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
@@ -2096,10 +2096,10 @@ class ToolsDB2(QtWidgets.QWidget):
         :return:
         """
         for item in self.ui.tree_widget.selectedItems():
-            toolname_to_remove = item.data(0, QtCore.Qt.DisplayRole)
+            pluginName_to_remove = item.data(0, QtCore.Qt.DisplayRole)
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
-                if int(toolname_to_remove) == int(toolid):
+                if int(pluginName_to_remove) == int(toolid):
                     # remove from the storage
                     self.db_tool_dict.pop(toolid, None)
 
@@ -2692,19 +2692,19 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app_ui.plot_tab_area.removeTab(idx)
         self.app.inform.emit('%s' % _("Cancelled adding tool from DB."))
 
-    # def resize_new_tool_table_widget(self, min_size, max_size):
+    # def resize_new_plugin_table_widget(self, min_size, max_size):
     #     """
     #     Resize the table widget responsible for adding new tool in the Tool Database
     #
-    #     :param min_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
-    #     :param max_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+    #     :param min_size: passed by rangeChanged signal or the self.new_plugin_table_widget.horizontalScrollBar()
+    #     :param max_size: passed by rangeChanged signal or the self.new_plugin_table_widget.horizontalScrollBar()
     #     :return:
     #     """
     #     t_height = self.t_height
     #     if max_size > min_size:
-    #         t_height = self.t_height + self.new_tool_table_widget.verticalScrollBar().height()
+    #         t_height = self.t_height + self.new_plugin_table_widget.verticalScrollBar().height()
     #
-    #     self.new_tool_table_widget.setMaximumHeight(t_height)
+    #     self.new_plugin_table_widget.setMaximumHeight(t_height)
 
     def closeEvent(self, QCloseEvent):
         super().closeEvent(QCloseEvent)
@@ -3030,9 +3030,9 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #             t_name = dict_val['name']
 #             try:
-#                 self.add_tool_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
+#                 self.add_plugin_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
 #             except Exception as e:
-#                 self.app.log.debug("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
+#                 self.app.log.debug("ToolDB.build_db_ui.add_plugin_table_line() --> %s" % str(e))
 #             vertical_header = self.table_widget.verticalHeader()
 #             vertical_header.hide()
 #
@@ -3054,7 +3054,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         self.ui_connect()
 #
-#     def add_tool_table_line(self, row, name, widget, tooldict):
+#     def add_plugin_table_line(self, row, name, widget, tooldict):
 #         data = tooldict['data']
 #
 #         nr_crt = row + 1
@@ -3315,10 +3315,10 @@ class ToolsDB2(QtWidgets.QWidget):
 #         """
 #         for model_index in self.table_widget.selectionModel().selectedRows():
 #             # index = QtCore.QPersistentModelIndex(model_index)
-#             toolname_to_remove = self.table_widget.item(model_index.row(), 0).text()
+#             pluginName_to_remove = self.table_widget.item(model_index.row(), 0).text()
 #
 #             for toolid, dict_val in list(self.db_tool_dict.items()):
-#                 if int(toolname_to_remove) == int(toolid):
+#                 if int(pluginName_to_remove) == int(toolid):
 #                     # remove from the storage
 #                     self.db_tool_dict.pop(toolid, None)
 #
@@ -3601,19 +3601,19 @@ class ToolsDB2(QtWidgets.QWidget):
 #                 self.app_ui.plot_tab_area.removeTab(idx)
 #         self.app.inform.emit('%s' % _("Cancelled adding tool from DB."))
 #
-#     # def resize_new_tool_table_widget(self, min_size, max_size):
+#     # def resize_new_plugin_table_widget(self, min_size, max_size):
 #     #     """
 #     #     Resize the table widget responsible for adding new tool in the Tool Database
 #     #
-#     #     :param min_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
-#     #     :param max_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+#     #     :param min_size: passed by rangeChanged signal or the self.new_plugin_table_widget.horizontalScrollBar()
+#     #     :param max_size: passed by rangeChanged signal or the self.new_plugin_table_widget.horizontalScrollBar()
 #     #     :return:
 #     #     """
 #     #     t_height = self.t_height
 #     #     if max_size > min_size:
-#     #         t_height = self.t_height + self.new_tool_table_widget.verticalScrollBar().height()
+#     #         t_height = self.t_height + self.new_plugin_table_widget.verticalScrollBar().height()
 #     #
-#     #     self.new_tool_table_widget.setMaximumHeight(t_height)
+#     #     self.new_plugin_table_widget.setMaximumHeight(t_height)
 #
 #     def closeEvent(self, QCloseEvent):
 #         super().closeEvent(QCloseEvent)

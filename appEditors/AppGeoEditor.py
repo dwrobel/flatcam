@@ -54,7 +54,7 @@ class BufferSelectionTool(AppTool):
     Simple input for buffer distance.
     """
 
-    toolName = _("Buffer Selection")
+    pluginName = _("Buffer Selection")
 
     def __init__(self, app, draw_app):
         AppTool.__init__(self, app)
@@ -63,7 +63,7 @@ class BufferSelectionTool(AppTool):
         self.decimals = app.decimals
 
         # Title
-        title_label = FCLabel("%s" % ('Editor ' + self.toolName))
+        title_label = FCLabel("%s" % ('Editor ' + self.pluginName))
         title_label.setStyleSheet("""
                         QLabel
                         {
@@ -144,14 +144,14 @@ class BufferSelectionTool(AppTool):
         # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
         found_idx = None
         for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                 found_idx = idx
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         self.app.ui.notebook.callback_on_close = self.on_tab_close
 
@@ -222,7 +222,7 @@ class TextInputTool(AppTool):
     Simple input for buffer distance.
     """
 
-    toolName = _("Text Input Tool")
+    pluginName = _("Text Input Tool")
 
     def __init__(self, app, draw_app):
         AppTool.__init__(self, app)
@@ -244,7 +244,7 @@ class TextInputTool(AppTool):
         self.text_tool_frame.setLayout(self.text_tools_box)
 
         # Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                         QLabel
                         {
@@ -384,14 +384,14 @@ class TextInputTool(AppTool):
         # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
         found_idx = None
         for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                 found_idx = idx
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         self.app.ui.notebook.callback_on_close = self.on_tab_close
 
@@ -463,7 +463,7 @@ class PaintOptionsTool(AppTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    toolName = _("Paint Tool")
+    pluginName = _("Paint Tool")
 
     def __init__(self, app, fcdraw):
         AppTool.__init__(self, app)
@@ -473,7 +473,7 @@ class PaintOptionsTool(AppTool):
         self.decimals = self.app.decimals
 
         # Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                         QLabel
                         {
@@ -600,14 +600,14 @@ class PaintOptionsTool(AppTool):
         # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
         found_idx = None
         for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                 found_idx = idx
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         self.app.ui.notebook.callback_on_close = self.on_tab_close
 
@@ -675,7 +675,7 @@ class TransformEditorTool(AppTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    toolName = _("Transform Tool")
+    pluginName = _("Transform Tool")
     rotateName = _("Rotate")
     skewName = _("Skew/Shear")
     scaleName = _("Scale")
@@ -691,7 +691,7 @@ class TransformEditorTool(AppTool):
         self.decimals = self.app.decimals
 
         # ## Title
-        title_label = FCLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -1095,23 +1095,23 @@ class TransformEditorTool(AppTool):
         # if the Tool Tab is hidden display it, else hide it but only if the objectName is the same
         found_idx = None
         for idx in range(self.app.ui.notebook.count()):
-            if self.app.ui.notebook.widget(idx).objectName() == "tool_tab":
+            if self.app.ui.notebook.widget(idx).objectName() == "plugin_tab":
                 found_idx = idx
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.tool_tab, _("Plugin"))
+            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
         self.app.ui.notebook.callback_on_close = self.on_tab_close
 
         if toggle:
             try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                if self.app.ui.plugin_scroll_area.widget().objectName() == self.pluginName:
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 else:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
             except AttributeError:
                 pass
 
@@ -5164,15 +5164,15 @@ class AppGeoEditor(QtCore.QObject):
 
         return storage
 
-    def select_tool(self, toolname):
+    def select_tool(self, pluginName):
         """
         Selects a drawing tool. Impacts the object and appGUI.
 
-        :param toolname: Name of the tool.
+        :param pluginName: Name of the tool.
         :return: None
         """
-        self.tools[toolname]["button"].setChecked(True)
-        self.on_tool_select(toolname)
+        self.tools[pluginName]["button"].setChecked(True)
+        self.on_tool_select(pluginName)
 
     def set_selected(self, shape):
 
