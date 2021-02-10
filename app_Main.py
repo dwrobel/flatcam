@@ -9329,7 +9329,7 @@ class MenuFileHandlers(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, GeometryObject):
+        if obj.kind != 'geometry':
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setIcon(QtWidgets.QMessageBox.Warning)
@@ -9338,7 +9338,6 @@ class MenuFileHandlers(QtCore.QObject):
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
-
             return
 
         name = self.app.collection.get_active().options["name"]

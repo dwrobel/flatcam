@@ -964,7 +964,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
+            geo_obj.options["multidepth"] = app_obj.defaults["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution

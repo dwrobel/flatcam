@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.02.2021
+
+- fix of Tcl command AlignDrill by Bogusz Jagoda
+- small changes in FlatCAMExcellon.py file to fix milling the drill holes (due of the new changes in Geometry data structure)
+
 29.01.2021
 
 - some refactoring

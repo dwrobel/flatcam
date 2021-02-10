@@ -178,7 +178,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
             # populate init_obj.tools dict
             init_obj.tools = {
-                '1': {
+                1: {
                     'tooldia':          tooldia,
                     'drills':           deepcopy(drills),
                     'solid_geometry':   init_obj.solid_geometry
