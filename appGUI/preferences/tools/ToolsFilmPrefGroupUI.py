@@ -159,20 +159,21 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_skewy_label, 10, 0)
         grid0.addWidget(self.film_skewy_entry, 10, 1)
 
-        self.film_skew_ref_label = FCLabel('%s:' % _("Reference"))
-        self.film_skew_ref_label.setToolTip(
-            _("The reference point to be used as origin for the skew.\n"
+        self.film_ref_label = FCLabel('%s:' % _("Reference"))
+        self.film_ref_label.setToolTip(
+            _("The reference point to be used as origin for the adjustment.\n"
               "It can be one of the four points of the geometry bounding box.")
         )
-        self.film_skew_reference = RadioSet([{'label': _('Bottom Left'), 'value': 'bottomleft'},
-                                             {'label': _('Top Left'), 'value': 'topleft'},
-                                             {'label': _('Bottom Right'), 'value': 'bottomright'},
-                                             {'label': _('Top right'), 'value': 'topright'}],
-                                            orientation='vertical',
-                                            stretch=False)
+        self.film_reference = RadioSet([{'label': _('Center'), 'value': 'center'},
+                                        {'label': _('Bottom Left'), 'value': 'bottomleft'},
+                                        {'label': _('Top Left'), 'value': 'topleft'},
+                                        {'label': _('Bottom Right'), 'value': 'bottomright'},
+                                        {'label': _('Top right'), 'value': 'topright'}],
+                                       orientation='vertical',
+                                       stretch=False)
 
-        grid0.addWidget(self.film_skew_ref_label, 11, 0)
-        grid0.addWidget(self.film_skew_reference, 11, 1)
+        grid0.addWidget(self.film_ref_label, 11, 0)
+        grid0.addWidget(self.film_reference, 11, 1)
 
         # Mirror Geometry
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film geometry"))

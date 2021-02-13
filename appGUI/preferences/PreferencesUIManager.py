@@ -479,7 +479,7 @@ class PreferencesUIManager:
             "tools_film_skew_cb": self.ui.tools_defaults_form.tools_film_group.film_skew_cb,
             "tools_film_skew_x_entry": self.ui.tools_defaults_form.tools_film_group.film_skewx_entry,
             "tools_film_skew_y_entry": self.ui.tools_defaults_form.tools_film_group.film_skewy_entry,
-            "tools_film_skew_ref_radio": self.ui.tools_defaults_form.tools_film_group.film_skew_reference,
+            "tools_film_ref_radio": self.ui.tools_defaults_form.tools_film_group.film_reference,
             "tools_film_mirror_cb": self.ui.tools_defaults_form.tools_film_group.film_mirror_cb,
             "tools_film_mirror_axis_radio": self.ui.tools_defaults_form.tools_film_group.film_mirror_axis,
             "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,

@@ -160,7 +160,7 @@ class ToolTransform(AppTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
                 return "fail"
         elif ref_val == 2:  # "Point" reference
-            point_val = self.uipoint_entry.get_value()
+            point_val = self.ui.point_entry.get_value()
             try:
                 px, py = eval('{}'.format(point_val))
                 return px, py

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.02.2021
+
+- fixed a bug in Transform Tool when calculating the point reference
+- working in Film Tool to add the reference for all adjustments
+
 10.02.2021
 
 - fix of Tcl command AlignDrill by Bogusz Jagoda
