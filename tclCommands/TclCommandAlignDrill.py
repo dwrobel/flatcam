@@ -173,7 +173,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
                     drills.append(point_mirror)
 
             init_obj.tools = {
-                '1': {
+                1: {
                     'tooldia': tooldia,
                     'drills': drills,
                     'solid_geometry': []
