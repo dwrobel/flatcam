@@ -122,15 +122,15 @@ class TclCommandPaint(TclCommand):
         if 'method' in args:
             method = args['method']
             if method == "standard":
-                method = _("Standard")
+                method = 0  # _("Standard")
             elif method == "seed":
-                method = _("Seed")
+                method = 1  # _("Seed")
             elif method == "lines":
-                method = _("Lines")
+                method = 2  # _("Lines")
             elif method == "laser_lines":
-                method = _("Laser_lines")
+                method = 3  # _("Laser_lines")
             else:
-                method = _("Combo")
+                method = 4  # _("Combo")
         else:
             method = str(self.app.defaults["tools_paint_method"])
 
