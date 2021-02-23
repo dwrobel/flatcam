@@ -93,9 +93,9 @@ class TclCommandMillSlots(TclCommandSignaled):
         else:
             args['use_thread'] = False
 
-        if not obj.slots:
-            self.raise_tcl_error("The Excellon object has no slots: %s" % name)
-
+#        if not obj.slots:
+#            self.raise_tcl_error("The Excellon object has no slots: %s" % name)
+#
         # units = self.app.defaults['units'].upper()
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
@@ -105,7 +105,7 @@ class TclCommandMillSlots(TclCommandSignaled):
                 req_tools = set()
                 for tool in obj.tools:
                     for req_dia in diameters:
-                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["tooldia"])))
                         req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                         if 'diatol' in args:
@@ -128,8 +128,8 @@ class TclCommandMillSlots(TclCommandSignaled):
                 args['tools'] = req_tools
 
                 # no longer needed
-                del args['milled_dias']
-                del args['diatol']
+                args.pop('milled_dias', None)
+                args.pop('diatol', None)
 
                 # Split and put back. We are passing the whole dictionary later.
                 # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
