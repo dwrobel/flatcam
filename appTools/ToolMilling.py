@@ -767,7 +767,7 @@ class ToolMilling(AppTool, Excellon):
             # Tool parameters section
             if self.ui.target_radio.get_value() == 'geo':
                 if self.target_obj:
-                    app_defaults = self.app.defaults
+                    app_defaults = self.target_obj.options
                     for tool in self.target_obj.tools:
                         tool_data = self.target_obj.tools[tool]['data']
 
@@ -2267,6 +2267,7 @@ class ToolMilling(AppTool, Excellon):
 
         # update Tool dia
         self.target_obj.tools[tooluid]['tooldia'] = tool_dia
+        self.target_obj.tools[tooluid]['data']['tools_mill_tooldia'] = tool_dia
 
         # update Cut Z if the tool has a V shape tool
         if self.ui.geo_tools_table.cellWidget(current_row, 2).get_value() == 'V':
@@ -2863,8 +2864,8 @@ class ToolMilling(AppTool, Excellon):
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
         tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()
-        segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
-        segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
+        segx = segx if segx is not None else float(self.target_obj.options['segx'])
+        segy = segy if segy is not None else float(self.target_obj.options['segy'])
 
         try:
             xmin = self.target_obj.options['xmin']
@@ -2908,11 +2909,11 @@ class ToolMilling(AppTool, Excellon):
 
             new_cncjob_obj.options['Tools_in_use'] = tools_in_use
 
-            new_cncjob_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
-            new_cncjob_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
+            new_cncjob_obj.segx = segx
+            new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(self.target_obj.options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(self.target_obj.options["tools_mill_feedrate_probe"])
 
             total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
@@ -2924,7 +2925,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
+                    def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 if dia_cnc_dict['data']['tools_mill_offset'] == 1:  # 'in'
@@ -3060,11 +3061,11 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.cnc_tools.clear()
 
             new_cncjob_obj.options['Tools_in_use'] = tools_in_use
-            new_cncjob_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
-            new_cncjob_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
+            new_cncjob_obj.segx = segx
+            new_cncjob_obj.segy = segy
 
-            new_cncjob_obj.z_pdepth = float(self.app.defaults["tools_mill_z_pdepth"])
-            new_cncjob_obj.feedrate_probe = float(self.app.defaults["tools_mill_feedrate_probe"])
+            new_cncjob_obj.z_pdepth = float(self.target_obj.options["tools_mill_z_pdepth"])
+            new_cncjob_obj.feedrate_probe = float(self.target_obj.options["tools_mill_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not self.target_obj.solid_geometry:
@@ -3087,7 +3088,7 @@ class ToolMilling(AppTool, Excellon):
                 dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
-                    def_optimization_type = self.app.defaults["tools_mill_optimization_type"]
+                    def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
                 # #####################################################################################################
@@ -3717,6 +3718,7 @@ class MillingUI:
         # Tool Table for Geometry
         self.geo_tools_table = FCTable(drag_drop=False)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         grid0.addWidget(self.geo_tools_table, 12, 0, 1, 2)
 

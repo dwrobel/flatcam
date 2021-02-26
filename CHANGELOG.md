@@ -9,7 +9,8 @@ CHANGELOG for FlatCAM beta
 
 26.02.2021
 
-- fixes in Drilling & Milling Tools for the error: "RuntimeError: wrapped C/C++ object of type ... has been deleted"
+- fixes in Drilling & Milling Plugins for the error: "RuntimeError: wrapped C/C++ object of type ... has been deleted"
+- Milling Tool (Plugin) - fix to use the tool diameter set in the Milling plugin tool; selection in the Tools Table is now by row
 
 13.02.2021
 
