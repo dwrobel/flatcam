@@ -244,31 +244,31 @@ class GerberObjectUI(ObjectUI):
                                       """)
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
-        # PROPERTIES CB
-        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
-        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
-        self.properties_button.setToolTip(_("Show the Properties."))
-        self.properties_button.setStyleSheet("""
+        # INFO CB
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.info_button.setToolTip(_("Show the Object Attributes."))
+        self.info_button.setStyleSheet("""
                                       QPushButton
                                       {
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.properties_button, 6, 0, 1, 3)
+        grid0.addWidget(self.info_button, 6, 0, 1, 3)
 
-        # PROPERTIES Frame
-        self.properties_frame = QtWidgets.QFrame()
-        self.properties_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.properties_frame, 7, 0, 1, 3)
-        self.properties_box = QtWidgets.QVBoxLayout()
-        self.properties_box.setContentsMargins(0, 0, 0, 0)
-        self.properties_frame.setLayout(self.properties_box)
-        self.properties_frame.hide()
+        # INFO Frame
+        self.info_frame = QtWidgets.QFrame()
+        self.info_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.info_box = QtWidgets.QVBoxLayout()
+        self.info_box.setContentsMargins(0, 0, 0, 0)
+        self.info_frame.setLayout(self.info_box)
+        self.info_frame.hide()
 
         self.treeWidget = FCTree(columns=2)
 
-        self.properties_box.addWidget(self.treeWidget)
-        self.properties_box.setStretch(0, 0)
+        self.info_box.addWidget(self.treeWidget)
+        self.info_box.setStretch(0, 0)
 
         # ### Gerber Apertures ####
         self.apertures_table_label = FCLabel('%s:' % _('Apertures'))
@@ -594,31 +594,31 @@ class ExcellonObjectUI(ObjectUI):
                                       """)
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
-        # PROPERTIES CB
-        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
-        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
-        self.properties_button.setToolTip(_("Show the Properties."))
-        self.properties_button.setStyleSheet("""
+        # INFO CB
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.info_button.setToolTip(_("Show the Object Attributes."))
+        self.info_button.setStyleSheet("""
                                       QPushButton
                                       {
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.properties_button, 6, 0, 1, 3)
+        grid0.addWidget(self.info_button, 6, 0, 1, 3)
 
-        # PROPERTIES Frame
-        self.properties_frame = QtWidgets.QFrame()
-        self.properties_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.properties_frame, 7, 0, 1, 3)
-        self.properties_box = QtWidgets.QVBoxLayout()
-        self.properties_box.setContentsMargins(0, 0, 0, 0)
-        self.properties_frame.setLayout(self.properties_box)
-        self.properties_frame.hide()
+        # INFO Frame
+        self.info_frame = QtWidgets.QFrame()
+        self.info_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.info_box = QtWidgets.QVBoxLayout()
+        self.info_box.setContentsMargins(0, 0, 0, 0)
+        self.info_frame.setLayout(self.info_box)
+        self.info_frame.hide()
 
         self.treeWidget = FCTree(columns=2)
 
-        self.properties_box.addWidget(self.treeWidget)
-        self.properties_box.setStretch(0, 0)
+        self.info_box.addWidget(self.treeWidget)
+        self.info_box.setStretch(0, 0)
 
         # ### Tools Drills ####
         self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
@@ -915,31 +915,31 @@ class GeometryObjectUI(ObjectUI):
                                       """)
         grid_header.addWidget(self.editor_button, 4, 0, 1, 3)
 
-        # PROPERTIES CB
-        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
-        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
-        self.properties_button.setToolTip(_("Show the Properties."))
-        self.properties_button.setStyleSheet("""
+        # INFO CB
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.info_button.setToolTip(_("Show the Object Attributes."))
+        self.info_button.setStyleSheet("""
                                       QPushButton
                                       {
                                           font-weight: bold;
                                       }
                                       """)
-        grid_header.addWidget(self.properties_button, 6, 0, 1, 3)
+        grid_header.addWidget(self.info_button, 6, 0, 1, 3)
 
-        # PROPERTIES Frame
-        self.properties_frame = QtWidgets.QFrame()
-        self.properties_frame.setContentsMargins(0, 0, 0, 0)
-        grid_header.addWidget(self.properties_frame, 7, 0, 1, 3)
-        self.properties_box = QtWidgets.QVBoxLayout()
-        self.properties_box.setContentsMargins(0, 0, 0, 0)
-        self.properties_frame.setLayout(self.properties_box)
-        self.properties_frame.hide()
+        # INFO Frame
+        self.info_frame = QtWidgets.QFrame()
+        self.info_frame.setContentsMargins(0, 0, 0, 0)
+        grid_header.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.info_box = QtWidgets.QVBoxLayout()
+        self.info_box.setContentsMargins(0, 0, 0, 0)
+        self.info_frame.setLayout(self.info_box)
+        self.info_frame.hide()
 
         self.treeWidget = FCTree(columns=2)
 
-        self.properties_box.addWidget(self.treeWidget)
-        self.properties_box.setStretch(0, 0)
+        self.info_box.addWidget(self.treeWidget)
+        self.info_box.setStretch(0, 0)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Tools widgets
         # this way I can hide/show the frame
@@ -2008,31 +2008,31 @@ class CNCObjectUI(ObjectUI):
                                        """)
         f_lay.addWidget(self.editor_button, 4, 0, 1, 3)
 
-        # PROPERTIES CB
-        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
-        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
-        self.properties_button.setToolTip(_("Show the Properties."))
-        self.properties_button.setStyleSheet("""
+        # INFO CB
+        self.info_button = FCButton('%s' % _("INFO"), checkable=True)
+        self.info_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.info_button.setToolTip(_("Show the Object Attributes."))
+        self.info_button.setStyleSheet("""
                                       QPushButton
                                       {
                                           font-weight: bold;
                                       }
                                       """)
-        f_lay.addWidget(self.properties_button, 6, 0, 1, 3)
+        f_lay.addWidget(self.info_button, 6, 0, 1, 3)
 
-        # PROPERTIES Frame
-        self.properties_frame = QtWidgets.QFrame()
-        self.properties_frame.setContentsMargins(0, 0, 0, 0)
-        f_lay.addWidget(self.properties_frame, 7, 0, 1, 3)
-        self.properties_box = QtWidgets.QVBoxLayout()
-        self.properties_box.setContentsMargins(0, 0, 0, 0)
-        self.properties_frame.setLayout(self.properties_box)
-        self.properties_frame.hide()
+        # INFO Frame
+        self.info_frame = QtWidgets.QFrame()
+        self.info_frame.setContentsMargins(0, 0, 0, 0)
+        f_lay.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.info_box = QtWidgets.QVBoxLayout()
+        self.info_box.setContentsMargins(0, 0, 0, 0)
+        self.info_frame.setLayout(self.info_box)
+        self.info_frame.hide()
 
         self.treeWidget = FCTree(columns=2)
 
-        self.properties_box.addWidget(self.treeWidget)
-        self.properties_box.setStretch(0, 0)
+        self.info_box.addWidget(self.treeWidget)
+        self.info_box.setStretch(0, 0)
 
         # Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))

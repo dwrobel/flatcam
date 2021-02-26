@@ -1212,7 +1212,7 @@ class App(QtCore.QObject):
 
         self.optimal_tool = None
         self.transform_tool = None
-        self.properties_tool = None
+        self.report_tool = None
         self.pdf_tool = None
         self.image_tool = None
         self.pcb_wizard_tool = None
@@ -1960,9 +1960,9 @@ class App(QtCore.QObject):
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
                                     pos=self.ui.menuoptions, separator=True)
 
-        self.properties_tool = Properties(self)
-        self.properties_tool.install(icon=QtGui.QIcon(self.resource_location + '/properties32.png'),
-                                     pos=self.ui.menuoptions)
+        self.report_tool = ObjectReport(self)
+        self.report_tool.install(icon=QtGui.QIcon(self.resource_location + '/properties32.png'),
+                                 pos=self.ui.menuoptions)
 
         self.pdf_tool = ToolPDF(self)
         self.pdf_tool.install(icon=QtGui.QIcon(self.resource_location + '/pdf32.png'),
@@ -7525,7 +7525,7 @@ class App(QtCore.QObject):
         """
 
         self.defaults.report_usage("obj_properties()")
-        self.properties_tool.run(toggle=True)
+        self.report_tool.run(toggle=True)
 
     def on_project_context_save(self):
         """

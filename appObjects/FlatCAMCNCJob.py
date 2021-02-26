@@ -479,7 +479,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # Properties
-        self.ui.properties_button.toggled.connect(self.on_properties)
+        self.ui.info_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
         self.ui.treeWidget.itemExpanded.connect(self.on_properties_expanded)
         self.ui.treeWidget.itemCollapsed.connect(self.on_properties_expanded)
@@ -579,9 +579,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def on_properties(self, state):
         if state:
-            self.ui.properties_frame.show()
+            self.ui.info_frame.show()
         else:
-            self.ui.properties_frame.hide()
+            self.ui.info_frame.hide()
             return
 
         self.ui.treeWidget.clear()

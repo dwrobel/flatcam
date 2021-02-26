@@ -167,7 +167,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # Properties
-        self.ui.properties_button.toggled.connect(self.on_properties)
+        self.ui.info_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
         self.ui.treeWidget.itemExpanded.connect(self.on_properties_expanded)
         self.ui.treeWidget.itemCollapsed.connect(self.on_properties_expanded)
@@ -667,9 +667,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def on_properties(self, state):
         if state:
-            self.ui.properties_frame.show()
+            self.ui.info_frame.show()
         else:
-            self.ui.properties_frame.hide()
+            self.ui.info_frame.hide()
             return
 
         self.ui.treeWidget.clear()
@@ -1064,7 +1064,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = app_obj.defaults["geometry_multidepth"]
+            geo_obj.options["tools_mill_multidepth"] = app_obj.defaults["tools_mill_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution

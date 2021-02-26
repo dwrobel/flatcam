@@ -13,6 +13,10 @@ CHANGELOG for FlatCAM beta
 - Milling Tool (Plugin) - fix to use the tool diameter set in the Milling plugin tool; selection in the Tools Table is now by row
 - Film Tool - made sure that the reference point is used for all transformations in case of positive film
 - Film Tool - made sure that the reference point is used for all transformations in case of negative film; negative film now use the color setting from Preferences too
+- changed some confusing strings regarding the 'Properties'
+- Properties Tool is now ObjectReport Tool
+- fixed some attributes in Milling Slots Excellon Object utilities functionality
+- fixed some issues in the translated strings .po files
 
 13.02.2021
 

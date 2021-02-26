@@ -27,8 +27,8 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class Properties(AppTool):
-    pluginName = _("Properties")
+class ObjectReport(AppTool):
+    pluginName = _("Object Report")
 
     calculations_finished = QtCore.pyqtSignal(float, float, float, float, float, object)
 
@@ -41,12 +41,12 @@ class Properties(AppTool):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
         # this way I can hide/show the frame
-        self.properties_frame = QtWidgets.QFrame()
-        self.properties_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.properties_frame)
-        self.properties_box = QtWidgets.QVBoxLayout()
-        self.properties_box.setContentsMargins(0, 0, 0, 0)
-        self.properties_frame.setLayout(self.properties_box)
+        self.info_frame = QtWidgets.QFrame()
+        self.info_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.info_frame)
+        self.info_box = QtWidgets.QVBoxLayout()
+        self.info_box.setContentsMargins(0, 0, 0, 0)
+        self.info_frame.setLayout(self.info_box)
 
         # ## Title
         # title_label = QtWidgets.QLabel("%s" % self.pluginName)
@@ -57,19 +57,19 @@ class Properties(AppTool):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        # self.properties_box.addWidget(title_label)
+        # self.info_box.addWidget(title_label)
 
         self.treeWidget = FCTree(columns=2)
         self.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.treeWidget.setStyleSheet("QTreeWidget {border: 0px;}")
 
-        self.properties_box.addWidget(self.treeWidget)
-        # self.properties_box.setStretch(0, 0)
+        self.info_box.addWidget(self.treeWidget)
+        # self.info_box.setStretch(0, 0)
 
         self.calculations_finished.connect(self.show_area_chull)
 
     def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolProperties()")
+        self.app.defaults.report_usage("ToolReport()")
 
         if self.app.plugin_tab_locked is True:
             return
@@ -122,14 +122,15 @@ class Properties(AppTool):
     def set_tool_ui(self):
         # this reset the TreeWidget
         self.treeWidget.clear()
-        self.properties_frame.show()
+        self.info_frame.show()
 
     def properties(self):
         obj_list = self.app.collection.get_selected()
         if not obj_list:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object is selected."))
-            self.app.ui.notebook.setTabText(2, _("Plugins"))
-            self.properties_frame.hide()
+            # self.app.ui.notebook.setTabText(2, _("Plugins"))
+            # self.info_frame.hide()
+            self.app.ui.notebook.removeTab(2)
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             return
 
@@ -137,7 +138,7 @@ class Properties(AppTool):
         try:
             self.app.delete_selection_shape()
         except Exception as e:
-            log.error("ToolProperties.Properties.properties() --> %s" % str(e))
+            log.error("ToolReport.Properties.properties() --> %s" % str(e))
 
         # populate the properties items
         for obj in obj_list:
@@ -147,7 +148,7 @@ class Properties(AppTool):
         # make sure that the FCTree widget columns are resized to content
         self.treeWidget.resize_sig.emit()
 
-        self.app.ui.notebook.setTabText(2, _("Properties"))
+        self.app.ui.notebook.setTabText(2, _("Object Report"))
 
     def addItems(self, obj):
         parent = self.treeWidget.invisibleRootItem()

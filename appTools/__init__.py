@@ -28,7 +28,7 @@ from appTools.ToolOptimal import ToolOptimal
 from appTools.ToolPanelize import Panelize
 from appTools.ToolPcbWizard import PcbWizard
 from appTools.ToolPDF import ToolPDF
-from appTools.ToolProperties import Properties
+from appTools.ToolReport import ObjectReport
 
 from appTools.ToolQRCode import QRCode
 from appTools.ToolRulesCheck import RulesCheck

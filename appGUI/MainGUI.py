@@ -2970,7 +2970,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Properties Tool
                 if key == QtCore.Qt.Key_P:
-                    self.app.properties_tool.run(toggle=True)
+                    self.app.report_tool.run(toggle=True)
                     return
 
                 # Change Units
