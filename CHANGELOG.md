@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.02.2021
+
+- fixes in Drilling & Milling Tools for the error: "RuntimeError: wrapped C/C++ object of type ... has been deleted"
+
 13.02.2021
 
 - fixed a bug in Transform Tool when calculating the point reference

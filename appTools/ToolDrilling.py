@@ -176,9 +176,10 @@ class ToolDrilling(AppTool, Excellon):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
+        self.set_tool_ui()
+
         AppTool.run(self)
 
-        self.set_tool_ui()
         self.on_object_changed()
         # self.build_tool_ui()
 
