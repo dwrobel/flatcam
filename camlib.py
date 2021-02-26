@@ -2285,7 +2285,7 @@ class Geometry(object):
     def export_svg(self, scale_stroke_factor=0.00,
                    scale_factor_x=None, scale_factor_y=None,
                    skew_factor_x=None, skew_factor_y=None,
-                   skew_reference='center', scale_reference='center',
+                   skew_reference='center', scale_reference='center', mirror_reference='center',
                    mirror=None):
         """
         Exports the Geometry Object as a SVG Element
@@ -2305,26 +2305,46 @@ class Geometry(object):
         else:
             geom_svg = unary_union(self.flatten())
 
+        xmin, ymin, xmax, ymax = geom_svg.bounds
+
         skew_ref = 'center'
-        if skew_reference != 'center':
-            xmin, ymin, xmax, ymax = geom_svg.bounds
-            if skew_reference == 'topleft':
-                skew_ref = (xmin, ymax)
-            elif skew_reference == 'bottomleft':
-                skew_ref = (xmin, ymin)
-            elif skew_reference == 'topright':
-                skew_ref = (xmax, ymax)
-            elif skew_reference == 'bottomright':
-                skew_ref = (xmax, ymin)
+        if skew_reference == 'topleft':
+            skew_ref = (xmin, ymax)
+        elif skew_reference == 'bottomleft':
+            skew_ref = (xmin, ymin)
+        elif skew_reference == 'topright':
+            skew_ref = (xmax, ymax)
+        elif skew_reference == 'bottomright':
+            skew_ref = (xmax, ymin)
+
+        scale_ref = 'center'
+        if scale_reference == 'topleft':
+            scale_ref = (xmin, ymax)
+        elif scale_reference == 'bottomleft':
+            scale_ref = (xmin, ymin)
+        elif scale_reference == 'topright':
+            scale_ref = (xmax, ymax)
+        elif scale_reference == 'bottomright':
+            scale_ref = (xmax, ymin)
+
+        mirror_ref = 'center'
+        if mirror_reference == 'topleft':
+            mirror_ref = (xmin, ymax)
+        elif mirror_reference == 'bottomleft':
+            mirror_ref = (xmin, ymin)
+        elif mirror_reference == 'topright':
+            mirror_ref = (xmax, ymax)
+        elif mirror_reference == 'bottomright':
+            mirror_ref = (xmax, ymin)
 
         geom = geom_svg
 
         if scale_factor_x and not scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_reference)
+            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_ref)
         elif not scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_reference)
+            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_ref)
         elif scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_reference)
+            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_ref)
 
         if skew_factor_x and not skew_factor_y:
             geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
@@ -2335,11 +2355,11 @@ class Geometry(object):
 
         if mirror:
             if mirror == 'x':
-                geom = affinity.scale(geom_svg, 1.0, -1.0)
+                geom = affinity.scale(geom_svg, 1.0, -1.0, origin=mirror_ref)
             if mirror == 'y':
-                geom = affinity.scale(geom_svg, -1.0, 1.0)
+                geom = affinity.scale(geom_svg, -1.0, 1.0, origin=mirror_ref)
             if mirror == 'both':
-                geom = affinity.scale(geom_svg, -1.0, -1.0)
+                geom = affinity.scale(geom_svg, -1.0, -1.0, origin=mirror_ref)
 
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
         # If 0 or less which is invalid then default to 0.01

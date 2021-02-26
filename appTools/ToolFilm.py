@@ -321,7 +321,11 @@ class Film(AppTool):
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
-        skew_reference = 'center'
+
+        try:
+            reference_point = self.ui.film_reference.get_value()
+        except Exception:
+            reference_point = 'center'
 
         if self.ui.film_scale_cb.get_value():
             if self.ui.film_scalex_entry.get_value() != 1.0:
@@ -334,7 +338,6 @@ class Film(AppTool):
             if self.ui.film_skewy_entry.get_value() != 0.0:
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
 
-            skew_reference = self.ui.film_reference.get_value()
         if self.ui.film_mirror_cb.get_value():
             if self.ui.film_mirror_axis.get_value() != 'none':
                 mirror = self.ui.film_mirror_axis.get_value()
@@ -361,10 +364,7 @@ class Film(AppTool):
 
         filename = str(filename)
 
-        if str(filename) == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-            return
-        else:
+        if str(filename) != "":
             pagesize = self.ui.pagesize_combo.get_value()
             orientation = self.ui.orientation_radio.get_value()
             color = self.app.defaults['tools_film_color']
@@ -373,11 +373,15 @@ class Film(AppTool):
                                  scale_stroke_factor=factor,
                                  scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
+                                 reference_point=reference_point,
                                  mirror=mirror,
                                  pagesize_val=pagesize, orientation_val=orientation, color_val=color, opacity_val=1.0,
                                  ftype=ftype
                                  )
+            return
+
+        # if we reach here then the filename is null
+        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
     def generate_positive_punched_film(self, name, boxname, source, factor, ftype='svg'):
 
@@ -464,7 +468,11 @@ class Film(AppTool):
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
-        skew_reference = 'center'
+
+        try:
+            reference_point = self.ui.film_reference.get_value()
+        except Exception:
+            reference_point = 'center'
 
         if self.ui.film_scale_cb.get_value():
             if self.ui.film_scalex_entry.get_value() != 1.0:
@@ -477,7 +485,6 @@ class Film(AppTool):
             if self.ui.film_skewy_entry.get_value() != 0.0:
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
 
-            skew_reference = self.ui.film_reference.get_value()
         if self.ui.film_mirror_cb.get_value():
             if self.ui.film_mirror_axis.get_value() != 'none':
                 mirror = self.ui.film_mirror_axis.get_value()
@@ -517,14 +524,14 @@ class Film(AppTool):
                                  scale_stroke_factor=factor,
                                  scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
+                                 reference_point=reference_point,
                                  mirror=mirror, ftype=ftype
                                  )
 
     def export_negative(self, obj_name, box_name, filename, boundary,
                         scale_stroke_factor=0.00,
                         scale_factor_x=1, scale_factor_y=1,
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                        skew_factor_x=None, skew_factor_y=None, reference_point='center',
                         mirror=None,
                         use_thread=True, ftype='svg'):
         """
@@ -540,9 +547,9 @@ class Film(AppTool):
         :param scale_factor_y:      factor to scale the svg geometry on the Y axis
         :param skew_factor_x:       factor to skew the svg geometry on the X axis
         :param skew_factor_y:       factor to skew the svg geometry on the Y axis
-        :param skew_reference:      reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft',
+        :param reference_point:      reference to use for transformation. Can be 'bottomleft', 'bottomright', 'topleft',
                                     'topright', 'center' and those are the 5 points of the bounding box of the
-                                    geometry to be skewed.
+                                    geometry to be altered.
         :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param use_thread: if to be run in a separate thread; boolean
         :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
@@ -602,15 +609,15 @@ class Film(AppTool):
                 box_geo = unary_union(box.flatten())
 
             skew_ref = 'center'
-            if skew_reference != 'center':
+            if reference_point != 'center':
                 xmin, ymin, xmax, ymax = box_geo.bounds
-                if skew_reference == 'topleft':
+                if reference_point == 'topleft':
                     skew_ref = (xmin, ymax)
-                elif skew_reference == 'bottomleft':
+                elif reference_point == 'bottomleft':
                     skew_ref = (xmin, ymin)
-                elif skew_reference == 'topright':
+                elif reference_point == 'topright':
                     skew_ref = (xmax, ymax)
-                elif skew_reference == 'bottomright':
+                elif reference_point == 'bottomright':
                     skew_ref = (xmax, ymin)
 
             transformed_box_geo = box_geo
@@ -647,7 +654,7 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=scale_reference, skew_reference=skew_reference
+                                          scale_reference=scale_reference, skew_reference=reference_point
                                           )
 
             uom = obj.units.lower()
@@ -804,8 +811,8 @@ class Film(AppTool):
     def export_positive(self, obj_name, box_name, filename,
                         scale_stroke_factor=0.00,
                         scale_factor_x=1, scale_factor_y=1,
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
+                        skew_factor_x=None, skew_factor_y=None, reference_point='center',
+                        mirror=None, orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
 
         """
@@ -819,8 +826,9 @@ class Film(AppTool):
         :param scale_factor_y:      factor to scale the geometry on the Y axis
         :param skew_factor_x:       factor to skew the geometry on the X axis
         :param skew_factor_y:       factor to skew the geometry on the Y axis
-        :param skew_reference:      reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft',
-        'topright' and those are the 4 points of the bounding box of the geometry to be skewed.
+        :param reference_point:     reference to use for transformation. Can be 'bottomleft', 'bottomright', 'topleft',
+                                    'topright' and those are the 4 points of the bounding box of the geometry
+                                    to be altered.
         :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param orientation_val:
         :param pagesize_val:
@@ -863,12 +871,11 @@ class Film(AppTool):
         def make_positive_film(p_size, orientation, color, transparency_level, scale_factor_x, scale_factor_y):
             log.debug("FilmTool.export_positive().make_positive_film()")
 
-            scale_reference = 'center'
-
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
 
             new_png_dpi = self.ui.png_dpi_spinner.get_value()
             dpi_rate = new_png_dpi / self.screen_dpi
+
             # Determine bounding area for svg export
             bounds = box.bounds()
             tr_scale_reference = (bounds[0], bounds[1])
@@ -876,7 +883,6 @@ class Film(AppTool):
             if dpi_rate != 1 and ftype == 'png':
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
-                scale_reference = (bounds[0], bounds[1])
 
             if box.kind.lower() == 'geometry':
                 flat_geo = []
@@ -889,44 +895,41 @@ class Film(AppTool):
             else:
                 box_geo = unary_union(box.flatten())
 
-            skew_ref = 'center'
-            if skew_reference != 'center':
-                xmin, ymin, xmax, ymax = box_geo.bounds
-                if skew_reference == 'topleft':
-                    skew_ref = (xmin, ymax)
-                elif skew_reference == 'bottomleft':
-                    skew_ref = (xmin, ymin)
-                elif skew_reference == 'topright':
-                    skew_ref = (xmax, ymax)
-                elif skew_reference == 'bottomright':
-                    skew_ref = (xmax, ymin)
+            xmin, ymin, xmax, ymax = box_geo.bounds
+            ref_val = 'center'
+            if reference_point == 'topleft':
+                ref_val = (xmin, ymax)
+            elif reference_point == 'bottomleft':
+                ref_val = (xmin, ymin)
+            elif reference_point == 'topright':
+                ref_val = (xmax, ymax)
+            elif reference_point == 'bottomright':
+                ref_val = (xmax, ymin)
 
             transformed_box_geo = box_geo
 
             if scale_factor_x and not scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0,
-                                                     origin=tr_scale_reference)
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_val)
             elif not scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y,
-                                                     origin=tr_scale_reference)
+                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_val)
             elif scale_factor_x and scale_factor_y:
                 transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
-                                                     origin=tr_scale_reference)
+                                                     origin=ref_val)
 
             if skew_factor_x and not skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=skew_ref)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_val)
             elif not skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=skew_ref)
+                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_val)
             elif skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=skew_ref)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=ref_val)
 
             if mirror:
                 if mirror == 'x':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin=ref_val)
                 if mirror == 'y':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin=ref_val)
                 if mirror == 'both':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin=ref_val)
 
             bounds = transformed_box_geo.bounds
             size = bounds[2] - bounds[0], bounds[3] - bounds[1]
@@ -935,7 +938,7 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=scale_reference, skew_reference=skew_reference
+                                          scale_reference=reference_point, skew_reference=reference_point
                                           )
 
             # Change the attributes of the exported SVG
@@ -1004,7 +1007,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.error("FilmTool.export_positive() --> PNG output --> %s" % str(e))
+                    self.app.log.error("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'
             else:
                 try:
@@ -1053,7 +1056,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    log.error("FilmTool.export_positive() --> PDF output --> %s" % str(e))
+                    self.app.log.error("FilmTool.export_positive() --> PDF output --> %s" % str(e))
                     return 'fail'
 
             if self.app.defaults["global_open_style"] is False:
@@ -1069,7 +1072,7 @@ class Film(AppTool):
                                            transparency_level=transparency_level,
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                     except Exception as e:
-                        log.error("export_positive() process -> %s" % str(e))
+                        self.app.log.error("export_positive() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
