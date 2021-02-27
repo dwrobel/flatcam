@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - some refactoring
 - in a FCColorEntry GUI element, setting a color in the Color dialog will trigger the editingFinished signal therefore propagating the changes
 - Milling Tool fixes: milling tool dia after edit fix and milling slots fix
+- update in Code Highlighter to highlight the X and Y chars
+- updated the Document and Script objects Beginner/Advanced selection labels to the same as the rest of the app objects
 
 26.02.2021
 

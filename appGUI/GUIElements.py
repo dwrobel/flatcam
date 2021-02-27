@@ -4347,6 +4347,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     number = QtGui.QTextCharFormat()
                     string = QtGui.QTextCharFormat()
                     singleQuotedString = QtGui.QTextCharFormat()
+                    x_chars = QtGui.QTextCharFormat()
+                    y_chars = QtGui.QTextCharFormat()
 
                     comment = QtGui.QTextCharFormat()
                     # comment
@@ -4482,6 +4484,24 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     pattern.setMinimal(True)
                     singleQuotedString.setForeground(brush)
                     rule = (pattern, singleQuotedString)
+                    self.highlightingRules.append(rule)
+
+                    # X coordinate
+                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("X")
+                    pattern.setMinimal(True)
+                    x_chars.setFontWeight(QtGui.QFont.Bold)
+                    x_chars.setForeground(brush)
+                    rule = (pattern, x_chars)
+                    self.highlightingRules.append(rule)
+
+                    # Y coordinate
+                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
+                    pattern = QtCore.QRegExp("Y")
+                    pattern.setMinimal(True)
+                    y_chars.setFontWeight(QtGui.QFont.Bold)
+                    y_chars.setForeground(brush)
+                    rule = (pattern, y_chars)
                     self.highlightingRules.append(rule)
                 else:
                     self.highlightingRules = highlight_rules

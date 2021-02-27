@@ -77,10 +77,8 @@ class ScriptObject(FlatCAMObj):
         self.to_form()
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _("Beginner"))
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _("Advanced"))
+        app_mode = self.app.defaults["global_app_level"]
+        self.change_level(app_mode)
 
         self.script_editor_tab = AppTextEditor(app=self.app, plain_text=True, parent=self.app.ui)
 
@@ -112,6 +110,12 @@ class ScriptObject(FlatCAMObj):
         self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
 
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+
         self.script_editor_tab.buttonOpen.clicked.disconnect()
         self.script_editor_tab.buttonOpen.clicked.connect(lambda: self.script_editor_tab.handleOpen(filt=flt))
         self.script_editor_tab.buttonSave.clicked.disconnect()
@@ -156,6 +160,39 @@ class ScriptObject(FlatCAMObj):
             self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
             self.script_editor_tab.setObjectName(self.options['name'])
             self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
+
+    def change_level(self, level):
+        """
+
+        :param level:   application level: either 'b' or 'a'
+        :type level:    str
+        :return:
+        """
+
+        if level == 'a':
+            self.ui.level.setChecked(True)
+        else:
+            self.ui.level.setChecked(False)
+        self.on_level_changed(self.ui.level.isChecked())
+
+    def on_level_changed(self, checked):
+        if not checked:
+            self.ui.level.setText('%s' % _('Beginner'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: green;
+                                                }
+                                                """)
+
+        else:
+            self.ui.level.setText('%s' % _('Advanced'))
+            self.ui.level.setStyleSheet("""
+                                                QToolButton
+                                                {
+                                                    color: red;
+                                                }
+                                                """)
 
     def parse_file(self, filename):
         """
