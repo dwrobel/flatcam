@@ -431,7 +431,7 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_milling_dia": self.ui.mill_dia_entry,
 
             # Geometry properties
-            "tools_mill_tooldia": self.ui.addtool_entry,
+            # "tools_mill_tooldia": self.ui.addtool_entry,
             "tools_mill_tool_type": self.ui.geo_tools_table.cellWidget(self.current_row, 2),
             "tools_mill_offset_type": self.ui.offset_type_combo,
             "tools_mill_offset": self.ui.offset_entry,
@@ -2266,8 +2266,8 @@ class ToolMilling(AppTool, Excellon):
         tooluid = int(self.ui.geo_tools_table.item(current_row, 3).text())
 
         # update Tool dia
-        self.target_obj.tools[tooluid]['tooldia'] = tool_dia
-        self.target_obj.tools[tooluid]['data']['tools_mill_tooldia'] = tool_dia
+        self.target_obj.tools[tooluid]['tooldia'] = deepcopy(tool_dia)
+        self.target_obj.tools[tooluid]['data']['tools_mill_tooldia'] = deepcopy(tool_dia)
 
         # update Cut Z if the tool has a V shape tool
         if self.ui.geo_tools_table.cellWidget(current_row, 2).get_value() == 'V':
@@ -2484,7 +2484,7 @@ class ToolMilling(AppTool, Excellon):
             return False, "Error: No tools."
 
         for tool in tools:
-            if tooldia > self.tools[tool]["C"]:
+            if tooldia > self.tools[tool]['data']['tools_mill_tooldia']:
                 self.app.inform.emit(
                     '[ERROR_NOTCL] %s %s: %s' % (
                         _("Milling tool for DRILLS is larger than hole size. Cancelled."),
@@ -2577,7 +2577,7 @@ class ToolMilling(AppTool, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.target_obj.options["name"] + "_mill"
+            outname = self.target_obj.options["name"] + "_slots"
 
         if tooldia is None:
             tooldia = float(self.target_obj.options["slot_tooldia"])
@@ -2602,7 +2602,7 @@ class ToolMilling(AppTool, Excellon):
         for tool in tools:
             # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
             adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
-            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
+            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]['data']['tools_mill_tooldia'])))
             if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Milling tool for SLOTS is larger than hole size. Cancelled."))
@@ -2838,6 +2838,12 @@ class ToolMilling(AppTool, Excellon):
             self.ui.geo_tools_table.clearSelection()
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
+
+        # for tooluid_key in list(self.sel_tools.keys()):
+        #     # Tooldia update
+        #     tooldia_val = self.app.dec_format(
+        #         float(self.sel_tools[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
+        #     print(tooldia_val)
 
     def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, toolchange=None,
                          plot=True, use_thread=True):
@@ -3085,7 +3091,7 @@ class ToolMilling(AppTool, Excellon):
                 # Tooldia update
                 tooldia_val = app_obj.dec_format(
                     float(tools_dict[tooluid_key]['data']['tools_mill_tooldia']), self.decimals)
-                dia_cnc_dict['data']['tools_mill_tooldia'] = tooldia_val
+                dia_cnc_dict['data']['tools_mill_tooldia'] = deepcopy(tooldia_val)
 
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]

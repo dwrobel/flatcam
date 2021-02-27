@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - added possibility of changing the Axis color and created a new parameter for that in Preferences
 - some refactoring
 - in a FCColorEntry GUI element, setting a color in the Color dialog will trigger the editingFinished signal therefore propagating the changes
+- Milling Tool fixes: milling tool dia after edit fix and milling slots fix
 
 26.02.2021
 
