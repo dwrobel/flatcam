@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - update in Code Highlighter to highlight the X and Y chars
 - updated the Document and Script objects Beginner/Advanced selection labels to the same as the rest of the app objects
 - strings update
+- make sure that Autoload Tools from DB functionality from Excellon Object UI is working only with tools from DB market for Drilling Tool
 
 26.02.2021
 

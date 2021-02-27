@@ -1145,6 +1145,11 @@ class ToolDrilling(AppTool, Excellon):
                     low_limit = float(db_tool_val['data']['tol_min'])
                     high_limit = float(db_tool_val['data']['tol_max'])
 
+                    # test if the targeted tool is Drilling Tool, if not, skip to next tool
+                    targeted_tool = db_tool_val['data']['tool_target']
+                    if targeted_tool != _("Drilling"):
+                        continue
+
                     # if we find a tool with the same diameter in the Tools DB just update it's data
                     if orig_tooldia == db_tooldia:
                         tool_found += 1
