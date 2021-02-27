@@ -415,52 +415,58 @@ class Panelize(AppTool):
                             old_disp_number = 0
 
                             for tool in panel_source_obj.tools:
-                                if panel_source_obj.tools[tool]['drills']:
-                                    drill_nr = 0
-                                    for drill in panel_source_obj.tools[tool]['drills']:
-                                        # graceful abort requested by the user
-                                        if self.app.abort_flag:
-                                            raise grace
+                                if 'drills' in panel_source_obj.tools[tool]:
+                                    if panel_source_obj.tools[tool]['drills']:
+                                        drill_nr = 0
+                                        for drill in panel_source_obj.tools[tool]['drills']:
+                                            # graceful abort requested by the user
+                                            if self.app.abort_flag:
+                                                raise grace
 
-                                        # offset / panelization
-                                        point_offseted = affinity.translate(drill, currentx, currenty)
-                                        obj_fin.tools[tool]['drills'].append(point_offseted)
+                                            # offset / panelization
+                                            point_offseted = affinity.translate(drill, currentx, currenty)
+                                            obj_fin.tools[tool]['drills'].append(point_offseted)
 
-                                        # update progress
-                                        drill_nr += 1
-                                        disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
-                                        if old_disp_number < disp_number <= 100:
-                                            self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
-                                                                                     (_("Copy"),
-                                                                                      int(element),
-                                                                                      disp_number))
-                                            old_disp_number = disp_number
+                                            # update progress
+                                            drill_nr += 1
+                                            disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
+                                            if old_disp_number < disp_number <= 100:
+                                                self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
+                                                                                         (_("Copy"),
+                                                                                          int(element),
+                                                                                          disp_number))
+                                                old_disp_number = disp_number
+                                else:
+                                    panel_source_obj.tools[tool]['drills'] = []
 
-                                if panel_source_obj.tools[tool]['slots']:
-                                    slot_nr = 0
-                                    for slot in panel_source_obj.tools[tool]['slots']:
-                                        # graceful abort requested by the user
-                                        if self.app.abort_flag:
-                                            raise grace
+                                if 'slots' in panel_source_obj.tools[tool]:
+                                    if panel_source_obj.tools[tool]['slots']:
+                                        slot_nr = 0
+                                        for slot in panel_source_obj.tools[tool]['slots']:
+                                            # graceful abort requested by the user
+                                            if self.app.abort_flag:
+                                                raise grace
 
-                                        # offset / panelization
-                                        start_offseted = affinity.translate(slot[0], currentx, currenty)
-                                        stop_offseted = affinity.translate(slot[1], currentx, currenty)
-                                        offseted_slot = (
-                                            start_offseted,
-                                            stop_offseted
-                                        )
-                                        obj_fin.tools[tool]['slots'].append(offseted_slot)
+                                            # offset / panelization
+                                            start_offseted = affinity.translate(slot[0], currentx, currenty)
+                                            stop_offseted = affinity.translate(slot[1], currentx, currenty)
+                                            offseted_slot = (
+                                                start_offseted,
+                                                stop_offseted
+                                            )
+                                            obj_fin.tools[tool]['slots'].append(offseted_slot)
 
-                                        # update progress
-                                        slot_nr += 1
-                                        disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
-                                        if old_disp_number < disp_number <= 100:
-                                            self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
-                                                                                     (_("Copy"),
-                                                                                      int(element),
-                                                                                      disp_number))
-                                            old_disp_number = disp_number
+                                            # update progress
+                                            slot_nr += 1
+                                            disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
+                                            if old_disp_number < disp_number <= 100:
+                                                self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
+                                                                                         (_("Copy"),
+                                                                                          int(element),
+                                                                                          disp_number))
+                                                old_disp_number = disp_number
+                                else:
+                                    panel_source_obj.tools[tool]['slots'] = []
 
                             currentx += lenghtx
                         currenty += lenghty

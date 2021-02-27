@@ -7,7 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
-27.01.2021
+28.02.2021
+
+- fixed Panelize Tool to work with objects made by merging other objects together
+
+27.02.2021
 
 - added possibility of changing the Axis color and created a new parameter for that in Preferences
 - some refactoring
