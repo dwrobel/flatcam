@@ -857,6 +857,7 @@ class FCColorEntry(QtWidgets.QFrame):
 
         new_value = str(selected_color.name()) + self._extract_alpha(value)
         self.set_value(new_value)
+        self.editingFinished.emit()
 
     def _extract_color(self, value: str) -> str:
         return value[:7]

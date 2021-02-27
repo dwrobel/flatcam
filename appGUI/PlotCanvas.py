@@ -127,11 +127,19 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.create_native()
         self.native.setParent(self.fcapp.ui)
 
-        # ## AXIS # ##
-        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
-                                   parent=self.view.scene)
+        axis_default_color = self.fcapp.defaults['global_axis_color']
+        self.axis_transparency = 0.8
 
-        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=False,
+        axis_color = self.color_hex2tuple(axis_default_color)
+        axis_color = axis_color[0], axis_color[1], axis_color[2], self.axis_transparency
+
+        # ## AXIS # ##
+        # self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
+        #                            parent=self.view.scene)
+
+        self.v_line = InfiniteLine(pos=0, color=axis_color, vertical=True,
+                                   parent=self.view.scene)
+        self.h_line = InfiniteLine(pos=0, color=axis_color, vertical=False,
                                    parent=self.view.scene)
 
         self.line_parent = None
@@ -220,6 +228,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # <QtCore.QObject>
         # self.container.addWidget(self.native)
 
+    @staticmethod
+    def color_hex2tuple(hex_color):
+        # strip the # from the beginning
+        color = hex_color[1:]
+
+        # convert color RGB components from range 0...255 to 0...1
+        r_color = int(color[:2], 16) / 255
+        g_color = int(color[2:4], 16) / 255
+        b_color = int(color[4:6], 16) / 255
+        return r_color, g_color, b_color
+
     def on_toggle_axis(self, signal=None, state=None, silent=None):
         if not state:
             state = not self.axis_enabled
@@ -246,6 +265,25 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.fcapp.ui.axis_status_label.setStyleSheet("")
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("Axis disabled."), False)
+
+    def apply_axis_color(self):
+        self.fcapp.log.debug('PlotCanvas.apply_axis_color() -> axis color applied')
+
+        axis_default_color = self.fcapp.defaults['global_axis_color']
+
+        axis_color = self.color_hex2tuple(axis_default_color)
+        axis_color = axis_color[0], axis_color[1], axis_color[2], self.axis_transparency
+
+        if axis_color is not None:
+            axis_color = np.array(axis_color, dtype=np.float32)
+            if axis_color.ndim != 1 or axis_color.shape[0] != 4:
+                self.fcapp.log.error('axis color must be a 4 element float rgba tuple,'
+                                     ' list or array')
+            self.v_line._color = axis_color
+            self.v_line._changed['color'] = True
+
+            self.h_line._color = axis_color
+            self.h_line._changed['color'] = True
 
     def on_toggle_hud(self, signal=None, state=None, silent=None):
         if state is None:

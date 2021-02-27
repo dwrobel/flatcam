@@ -97,6 +97,8 @@ class PreferencesUIManager:
             "global_workspaceT": self.ui.general_defaults_form.general_app_set_group.wk_cb,
             "global_workspace_orientation": self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio,
 
+            "global_axis_color": self.ui.general_defaults_form.general_app_set_group.axis_color_entry,
+
             "global_cursor_type": self.ui.general_defaults_form.general_app_set_group.cursor_radio,
             "global_cursor_size": self.ui.general_defaults_form.general_app_set_group.cursor_size_entry,
             "global_cursor_width": self.ui.general_defaults_form.general_app_set_group.cursor_width_entry,

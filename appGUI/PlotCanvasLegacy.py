@@ -231,8 +231,16 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True, color='gray')
-        self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-        self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+
+        axis_default_color = self.app.defaults['global_axis_color']
+        self.axis_transparency = 0.8
+
+        axis_color = self.color_hex2tuple(axis_default_color)
+        axis_color = axis_color[0], axis_color[1], axis_color[2]
+
+        # self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+        self.h_line = self.axes.axhline(color=axis_color, linewidth=2)
+        self.v_line = self.axes.axvline(color=axis_color, linewidth=2)
 
         self.axes.tick_params(axis='x', color=tick_color, labelcolor=tick_color)
         self.axes.tick_params(axis='y', color=tick_color, labelcolor=tick_color)
@@ -333,6 +341,30 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.native = self.canvas   # for API compatibility with 3D plotcanvas
         # self.container.attach(self.canvas, 0, 0, 600, 400)
         # self.container.addWidget(self.canvas)  # Qt
+
+
+    @staticmethod
+    def color_hex2tuple(hex_color):
+        # strip the # from the beginning
+        color = hex_color[1:]
+
+        # convert color RGB components from range 0...255 to 0...1
+        r_color = int(color[:2], 16) / 255
+        g_color = int(color[2:4], 16) / 255
+        b_color = int(color[4:6], 16) / 255
+        return r_color, g_color, b_color
+
+    def apply_axis_color(self):
+        self.app.log.debug('PlotCanvasLegacy.apply_axis_color() -> axis color applied')
+
+        axis_default_color = self.app.defaults['global_axis_color']
+
+        axis_color = self.color_hex2tuple(axis_default_color)
+        axis_color = axis_color[0], axis_color[1], axis_color[2]
+
+        self.h_line.set_color(axis_color)
+        self.v_line.set_color(axis_color)
+        self.canvas.draw()
 
     def on_toggle_axis(self, signal=None, state=None, silent=None):
         if not state:

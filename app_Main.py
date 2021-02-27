@@ -93,7 +93,7 @@ from appProcess import *
 from appWorkerStack import WorkerStack
 
 # FlatCAM Tools
-from appTools import *
+from appPlugins import *
 
 # FlatCAM Translation
 import gettext

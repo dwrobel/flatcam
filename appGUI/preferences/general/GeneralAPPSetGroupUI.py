@@ -51,8 +51,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.gridx_entry.set_precision(self.decimals)
         self.gridx_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.gridx_label, 1, 0)
-        grid0.addWidget(self.gridx_entry, 1, 1)
+        grid0.addWidget(self.gridx_label, 2, 0)
+        grid0.addWidget(self.gridx_entry, 2, 1)
 
         # Grid Y Entry
         self.gridy_label = FCLabel('%s:' % _('Y value'))
@@ -63,8 +63,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.gridy_entry.set_precision(self.decimals)
         self.gridy_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.gridy_label, 2, 0)
-        grid0.addWidget(self.gridy_entry, 2, 1)
+        grid0.addWidget(self.gridy_label, 4, 0)
+        grid0.addWidget(self.gridy_entry, 4, 1)
 
         # Snap Max Entry
         self.snap_max_label = FCLabel('%s:' % _('Snap Max'))
@@ -73,17 +73,17 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.snap_max_dist_entry.set_precision(self.decimals)
         self.snap_max_dist_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.snap_max_label, 3, 0)
-        grid0.addWidget(self.snap_max_dist_entry, 3, 1)
+        grid0.addWidget(self.snap_max_label, 6, 0)
+        grid0.addWidget(self.snap_max_dist_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Workspace
         self.workspace_label = FCLabel('<b>%s</b>' % _('Workspace Settings'))
-        grid0.addWidget(self.workspace_label, 5, 0, 1, 2)
+        grid0.addWidget(self.workspace_label, 10, 0, 1, 2)
 
         self.workspace_cb = FCCheckBox('%s' % _('Active'))
         self.workspace_cb.setToolTip(
@@ -91,7 +91,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
              "The purpose is to illustrate the limits for our work.")
         )
 
-        grid0.addWidget(self.workspace_cb, 6, 0, 1, 2)
+        grid0.addWidget(self.workspace_cb, 12, 0, 1, 2)
 
         self.workspace_type_lbl = FCLabel('%s:' % _('Size'))
         self.workspace_type_lbl.setToolTip(
@@ -100,8 +100,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         self.wk_cb = FCComboBox()
 
-        grid0.addWidget(self.workspace_type_lbl, 7, 0)
-        grid0.addWidget(self.wk_cb, 7, 1)
+        grid0.addWidget(self.workspace_type_lbl, 14, 0)
+        grid0.addWidget(self.wk_cb, 14, 1)
 
         self.pagesize = {}
         self.pagesize.update(
@@ -170,17 +170,17 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
                                               {'label': _('Landscape'), 'value': 'l'},
                                               ], stretch=False)
 
-        grid0.addWidget(self.wk_orientation_label, 8, 0)
-        grid0.addWidget(self.wk_orientation_radio, 8, 1)
+        grid0.addWidget(self.wk_orientation_label, 16, 0)
+        grid0.addWidget(self.wk_orientation_radio, 16, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        grid0.addWidget(separator_line, 18, 0, 1, 2)
 
         # Font Size
         self.font_size_label = FCLabel('<b>%s</b>' % _('Font Size'))
-        grid0.addWidget(self.font_size_label, 10, 0, 1, 2)
+        grid0.addWidget(self.font_size_label, 20, 0, 1, 2)
 
         # Notebook Font Size
         self.notebook_font_size_label = FCLabel('%s:' % _('Notebook'))
@@ -200,8 +200,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
-        grid0.addWidget(self.notebook_font_size_label, 11, 0)
-        grid0.addWidget(self.notebook_font_size_spinner, 11, 1)
+        grid0.addWidget(self.notebook_font_size_label, 22, 0)
+        grid0.addWidget(self.notebook_font_size_spinner, 22, 1)
 
         # Axis Font Size
         self.axis_font_size_label = FCLabel('%s:' % _('Axis'))
@@ -219,8 +219,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.axis_font_size_spinner.set_value(8)
 
-        grid0.addWidget(self.axis_font_size_label, 12, 0)
-        grid0.addWidget(self.axis_font_size_spinner, 12, 1)
+        grid0.addWidget(self.axis_font_size_label, 24, 0)
+        grid0.addWidget(self.axis_font_size_spinner, 24, 1)
 
         # TextBox Font Size
         self.textbox_font_size_label = FCLabel('%s:' % _('Textbox'))
@@ -239,8 +239,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.textbox_font_size_spinner.set_value(10)
 
-        grid0.addWidget(self.textbox_font_size_label, 13, 0)
-        grid0.addWidget(self.textbox_font_size_spinner, 13, 1)
+        grid0.addWidget(self.textbox_font_size_label, 26, 0)
+        grid0.addWidget(self.textbox_font_size_spinner, 26, 1)
 
         # HUD Font Size
         self.hud_font_size_label = FCLabel('%s:' % _('HUD'))
@@ -258,20 +258,35 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.hud_font_size_spinner.set_value(8)
 
-        grid0.addWidget(self.hud_font_size_label, 14, 0)
-        grid0.addWidget(self.hud_font_size_spinner, 14, 1)
+        grid0.addWidget(self.hud_font_size_label, 28, 0)
+        grid0.addWidget(self.hud_font_size_spinner, 28, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        grid0.addWidget(separator_line, 30, 0, 1, 2)
+
+        # Axis Color
+        self.axis_color_label = FCLabel('%s:' % _('Axis Color'))
+        self.axis_color_label.setToolTip(
+            _("Set the color of the screen axis.")
+        )
+        self.axis_color_entry = FCColorEntry()
+
+        grid0.addWidget(self.axis_color_label, 32, 0)
+        grid0.addWidget(self.axis_color_entry, 32, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 34, 0, 1, 2)
 
         # -----------------------------------------------------------
         # -------------- MOUSE SETTINGS -----------------------------
         # -----------------------------------------------------------
 
         self.mouse_lbl = FCLabel('<b>%s</b>' % _('Mouse Settings'))
-        grid0.addWidget(self.mouse_lbl, 21, 0, 1, 2)
+        grid0.addWidget(self.mouse_lbl, 36, 0, 1, 2)
 
         # Mouse Cursor Shape
         self.cursor_lbl = FCLabel('%s:' % _('Cursor Shape'))
@@ -286,8 +301,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             {"label": _("Big"), "value": "big"}
         ], orientation='horizontal', stretch=False)
 
-        grid0.addWidget(self.cursor_lbl, 22, 0)
-        grid0.addWidget(self.cursor_radio, 22, 1)
+        grid0.addWidget(self.cursor_lbl, 38, 0)
+        grid0.addWidget(self.cursor_radio, 38, 1)
 
         # Mouse Cursor Size
         self.cursor_size_lbl = FCLabel('%s:' % _('Cursor Size'))
@@ -299,8 +314,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.cursor_size_entry.set_range(10, 70)
         self.cursor_size_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_size_lbl, 23, 0)
-        grid0.addWidget(self.cursor_size_entry, 23, 1)
+        grid0.addWidget(self.cursor_size_lbl, 40, 0)
+        grid0.addWidget(self.cursor_size_entry, 40, 1)
 
         # Cursor Width
         self.cursor_width_lbl = FCLabel('%s:' % _('Cursor Width'))
@@ -312,15 +327,15 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.cursor_width_entry.set_range(1, 10)
         self.cursor_width_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_width_lbl, 24, 0)
-        grid0.addWidget(self.cursor_width_entry, 24, 1)
+        grid0.addWidget(self.cursor_width_lbl, 42, 0)
+        grid0.addWidget(self.cursor_width_entry, 42, 1)
 
         # Cursor Color Enable
         self.mouse_cursor_color_cb = FCCheckBox(label='%s' % _('Cursor Color'))
         self.mouse_cursor_color_cb.setToolTip(
             _("Check this box to color mouse cursor.")
         )
-        grid0.addWidget(self.mouse_cursor_color_cb, 25, 0, 1, 2)
+        grid0.addWidget(self.mouse_cursor_color_cb, 44, 0, 1, 2)
 
         # Cursor Color
         self.mouse_color_label = FCLabel('%s:' % _('Cursor Color'))
@@ -329,8 +344,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         self.mouse_cursor_entry = FCColorEntry()
 
-        grid0.addWidget(self.mouse_color_label, 26, 0)
-        grid0.addWidget(self.mouse_cursor_entry, 26, 1)
+        grid0.addWidget(self.mouse_color_label, 46, 0)
+        grid0.addWidget(self.mouse_cursor_entry, 46, 1)
 
         self.mois = OptionalInputSection(
             self.mouse_cursor_color_cb,
@@ -339,6 +354,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
                 self.mouse_cursor_entry
             ]
         )
+
         # Select mouse pan button
         self.panbuttonlabel = FCLabel('%s:' % _('Pan Button'))
         self.panbuttonlabel.setToolTip(
@@ -349,8 +365,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
                                           {'label': _('RMB'), 'value': '2'}])
 
-        grid0.addWidget(self.panbuttonlabel, 27, 0)
-        grid0.addWidget(self.pan_button_radio, 27, 1)
+        grid0.addWidget(self.panbuttonlabel, 48, 0)
+        grid0.addWidget(self.pan_button_radio, 48, 1)
 
         # Multiple Selection Modifier Key
         self.mselectlabel = FCLabel('%s:' % _('Multiple Selection'))
@@ -360,13 +376,13 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
                                        {'label': _('SHIFT'), 'value': 'Shift'}])
 
-        grid0.addWidget(self.mselectlabel, 28, 0)
-        grid0.addWidget(self.mselect_radio, 28, 1)
+        grid0.addWidget(self.mselectlabel, 50, 0)
+        grid0.addWidget(self.mselect_radio, 50, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 29, 0, 1, 2)
+        grid0.addWidget(separator_line, 52, 0, 1, 2)
 
         # Delete confirmation
         self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
@@ -375,14 +391,14 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "whenever the Delete object(s) event is triggered, either by\n"
               "menu shortcut or key shortcut.")
         )
-        grid0.addWidget(self.delete_conf_cb, 30, 0, 1, 2)
+        grid0.addWidget(self.delete_conf_cb, 54, 0, 1, 2)
 
         self.allow_edit_cb = FCCheckBox(_("Allow Edit"))
         self.allow_edit_cb.setToolTip(
             _("When checked, the user can edit the object names in the Project Tab\n"
               "by clicking on the object name. Active after restart.")
         )
-        grid0.addWidget(self.allow_edit_cb, 31, 0, 1, 2)
+        grid0.addWidget(self.allow_edit_cb, 56, 0, 1, 2)
 
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
@@ -393,7 +409,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "path for saving files or the path for opening files.")
         )
 
-        grid0.addWidget(self.open_style_cb, 32, 0, 1, 2)
+        grid0.addWidget(self.open_style_cb, 58, 0, 1, 2)
 
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_cb = FCCheckBox(label=_('Enable ToolTips'))
@@ -402,7 +418,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "when hovering with mouse over items throughout the App.")
         )
 
-        grid0.addWidget(self.toggle_tooltips_cb, 33, 0, 1, 2)
+        grid0.addWidget(self.toggle_tooltips_cb, 60, 0, 1, 2)
 
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
@@ -414,8 +430,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "but the menu will hold only so much.")
         )
 
-        grid0.addWidget(self.bm_limit_label, 35, 0)
-        grid0.addWidget(self.bm_limit_spinner, 35, 1)
+        grid0.addWidget(self.bm_limit_label, 62, 0)
+        grid0.addWidget(self.bm_limit_spinner, 62, 1)
 
         # Activity monitor icon
         self.activity_label = FCLabel('%s:' % _("Activity Icon"))
@@ -425,13 +441,15 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.activity_combo = FCComboBox()
         self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
 
-        grid0.addWidget(self.activity_label, 36, 0)
-        grid0.addWidget(self.activity_combo, 36, 1)
+        grid0.addWidget(self.activity_label, 64, 0)
+        grid0.addWidget(self.activity_combo, 64, 1)
 
         self.layout.addStretch()
 
         self.mouse_cursor_color_cb.stateChanged.connect(self.on_mouse_cursor_color_enable)
         self.mouse_cursor_entry.editingFinished.connect(self.on_mouse_cursor_entry)
+
+        self.axis_color_entry.editingFinished.connect(self.on_axis_color_entry)
 
     def on_mouse_cursor_color_enable(self, val):
         if val:
@@ -451,3 +469,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
     def on_mouse_cursor_entry(self):
         self.app.defaults['global_cursor_color'] = self.mouse_cursor_entry.get_value()
         self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+
+    def on_axis_color_entry(self):
+        self.app.defaults['global_axis_color'] = self.axis_color_entry.get_value()
+        self.app.plotcanvas.apply_axis_color()

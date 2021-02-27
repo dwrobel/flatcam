@@ -134,6 +134,7 @@ class FlatCAMDefaults:
         "global_workspaceT": "A4",
         "global_workspace_orientation": 'p',
         "global_axis": True,
+        "global_axis_color": '#B34D4D',
         "global_hud": True,
         "global_grid_lines": True,
         "global_grid_snap": True,
