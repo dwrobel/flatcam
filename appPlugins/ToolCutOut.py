@@ -2330,7 +2330,7 @@ class CutoutUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "BASIC is suitable for a beginner. Many parameters\n"
+                "In BEGINNER mode many parameters\n"
                 "are hidden from the user in this mode.\n"
                 "ADVANCED mode will make available all parameters.\n\n"
                 "To change the application LEVEL, go to:\n"

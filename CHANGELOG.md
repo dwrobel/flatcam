@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Milling Tool fixes: milling tool dia after edit fix and milling slots fix
 - update in Code Highlighter to highlight the X and Y chars
 - updated the Document and Script objects Beginner/Advanced selection labels to the same as the rest of the app objects
+- strings update
 
 26.02.2021
 
