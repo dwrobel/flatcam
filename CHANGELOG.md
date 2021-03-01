@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+01.03.2021
+
+- major rafactoring: replaced the name of the Gerber object data structure from 'apertures' to 'tools' to make the object data structure uniform across the app
+
 28.02.2021
 
 - fixed Panelize Tool to work with objects made by merging other objects together

@@ -651,7 +651,7 @@ class RulesCheck(AppTool):
                 if copper_name_1 != '' and self.ui.copper_t_cb.get_value():
                     elem_dict = {
                         'name': deepcopy(copper_name_1),
-                        'apertures': deepcopy(app_obj.collection.get_by_name(copper_name_1).apertures)
+                        'apertures': deepcopy(app_obj.collection.get_by_name(copper_name_1).tools)
                     }
                     copper_list.append(elem_dict)
 
@@ -659,7 +659,7 @@ class RulesCheck(AppTool):
                 if copper_name_2 != '' and self.ui.copper_b_cb.get_value():
                     elem_dict = {
                         'name': deepcopy(copper_name_2),
-                        'apertures': deepcopy(app_obj.collection.get_by_name(copper_name_2).apertures)
+                        'apertures': deepcopy(app_obj.collection.get_by_name(copper_name_2).tools)
                     }
                     copper_list.append(elem_dict)
 
@@ -684,7 +684,7 @@ class RulesCheck(AppTool):
 
                     if copper_t_obj != '':
                         copper_t_dict['name'] = deepcopy(copper_t_obj)
-                        copper_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_t_obj).apertures)
+                        copper_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_t_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(copper_t_dict,
@@ -695,7 +695,7 @@ class RulesCheck(AppTool):
                     copper_b_dict = {}
                     if copper_b_obj != '':
                         copper_b_dict['name'] = deepcopy(copper_b_obj)
-                        copper_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_b_obj).apertures)
+                        copper_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_b_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(copper_b_dict,
@@ -717,17 +717,17 @@ class RulesCheck(AppTool):
                 copper_top = self.ui.copper_t_object.currentText()
                 if copper_top != '' and self.ui.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
-                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_top).apertures)
+                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_top).tools)
 
                 copper_bottom = self.ui.copper_b_object.currentText()
                 if copper_bottom != '' and self.ui.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
-                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_bottom).apertures)
+                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_bottom).tools)
 
                 copper_outline = self.ui.outline_object.currentText()
                 if copper_outline != '' and self.ui.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
-                    outline_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_outline).apertures)
+                    outline_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_outline).tools)
 
                 try:
                     copper_outline_clearance = float(self.ui.clearance_copper2ol_entry.get_value())
@@ -779,7 +779,7 @@ class RulesCheck(AppTool):
                     silk_obj = self.ui.ss_t_object.currentText()
                     if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
-                        silk_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_obj).apertures)
+                        silk_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(silk_dict,
@@ -789,7 +789,7 @@ class RulesCheck(AppTool):
                     silk_obj = self.ui.ss_b_object.currentText()
                     if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
-                        silk_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_obj).apertures)
+                        silk_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(silk_dict,
@@ -817,25 +817,25 @@ class RulesCheck(AppTool):
                 silk_top = self.ui.ss_t_object.currentText()
                 if silk_top != '' and self.ui.ss_t_cb.get_value():
                     silk_t_dict['name'] = deepcopy(silk_top)
-                    silk_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_top).apertures)
+                    silk_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_top).tools)
                     top_ss = True
 
                 silk_bottom = self.ui.ss_b_object.currentText()
                 if silk_bottom != '' and self.ui.ss_b_cb.get_value():
                     silk_b_dict['name'] = deepcopy(silk_bottom)
-                    silk_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_bottom).apertures)
+                    silk_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_bottom).tools)
                     bottom_ss = True
 
                 sm_top = self.ui.sm_t_object.currentText()
                 if sm_top != '' and self.ui.sm_t_cb.get_value():
                     sm_t_dict['name'] = deepcopy(sm_top)
-                    sm_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(sm_top).apertures)
+                    sm_t_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(sm_top).tools)
                     top_sm = True
 
                 sm_bottom = self.ui.sm_b_object.currentText()
                 if sm_bottom != '' and self.ui.sm_b_cb.get_value():
                     sm_b_dict['name'] = deepcopy(sm_bottom)
-                    sm_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(sm_bottom).apertures)
+                    sm_b_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(sm_bottom).tools)
                     bottom_sm = True
 
                 try:
@@ -880,17 +880,17 @@ class RulesCheck(AppTool):
                 silk_top = self.ui.ss_t_object.currentText()
                 if silk_top != '' and self.ui.ss_t_cb.get_value():
                     top_dict['name'] = deepcopy(silk_top)
-                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_top).apertures)
+                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_top).tools)
 
                 silk_bottom = self.ui.ss_b_object.currentText()
                 if silk_bottom != '' and self.ui.ss_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(silk_bottom)
-                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_bottom).apertures)
+                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(silk_bottom).tools)
 
                 copper_outline = self.ui.outline_object.currentText()
                 if copper_outline != '' and self.ui.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
-                    outline_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_outline).apertures)
+                    outline_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_outline).tools)
 
                 try:
                     copper_outline_clearance = float(self.ui.clearance_copper2ol_entry.get_value())
@@ -943,7 +943,7 @@ class RulesCheck(AppTool):
                     solder_obj = self.ui.sm_t_object.currentText()
                     if solder_obj != '':
                         sm_dict['name'] = deepcopy(solder_obj)
-                        sm_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(solder_obj).apertures)
+                        sm_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(solder_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(sm_dict,
@@ -953,7 +953,7 @@ class RulesCheck(AppTool):
                     solder_obj = self.ui.sm_b_object.currentText()
                     if solder_obj != '':
                         sm_dict['name'] = deepcopy(solder_obj)
-                        sm_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(solder_obj).apertures)
+                        sm_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(solder_obj).tools)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(sm_dict,
@@ -976,12 +976,12 @@ class RulesCheck(AppTool):
                 copper_top = self.ui.copper_t_object.currentText()
                 if copper_top != '' and self.ui.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
-                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_top).apertures)
+                    top_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_top).tools)
 
                 copper_bottom = self.ui.copper_b_object.currentText()
                 if copper_bottom != '' and self.ui.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
-                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_bottom).apertures)
+                    bottom_dict['apertures'] = deepcopy(app_obj.collection.get_by_name(copper_bottom).tools)
 
                 excellon_1 = self.ui.e1_object.currentText()
                 if excellon_1 != '' and self.ui.e1_cb.get_value():

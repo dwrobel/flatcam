@@ -471,7 +471,7 @@ class AppObject(QtCore.QObject):
             new_obj.source_file = ''
             new_obj.multigeo = False
             new_obj.follow = False
-            new_obj.apertures = {}
+            new_obj.tools = {}
             new_obj.solid_geometry = []
             new_obj.follow_geometry = []
 

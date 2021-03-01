@@ -260,9 +260,9 @@ class ToolCopperThieving(AppTool):
 
         self.app.proc_container.update_view_text(' %s' % _("Append geometry"))
 
-        new_apertures = deepcopy(self.grb_object.apertures)
+        new_apertures = deepcopy(self.grb_object.tools)
         aperture_found = None
-        for ap_id, ap_val in self.grb_object.apertures.items():
+        for ap_id, ap_val in self.grb_object.tools.items():
             if ap_val['type'] == 'C' and ap_val['size'] == self.rb_thickness:
                 aperture_found = ap_id
                 break
@@ -309,7 +309,7 @@ class ToolCopperThieving(AppTool):
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(self.grb_object.follow)
-            grb_obj.apertures = new_apertures
+            grb_obj.tools = new_apertures
             grb_obj.solid_geometry = unary_union(geo_obj)
             grb_obj.follow_geometry = deepcopy(self.grb_object.follow_geometry) + [deepcopy(self.robber_line)]
 
@@ -871,7 +871,7 @@ class ToolCopperThieving(AppTool):
 
             # create a new dictionary to hold the source object apertures allowing us to tamper with without altering
             # the original source object's apertures
-            new_apertures = deepcopy(tool_obj.grb_object.apertures)
+            new_apertures = deepcopy(tool_obj.grb_object.tools)
             if '0' not in new_apertures:
                 new_apertures['0'] = {
                     'type': 'REG',
@@ -910,7 +910,7 @@ class ToolCopperThieving(AppTool):
                 grb_obj.multitool = False
                 grb_obj.multigeo = False
                 grb_obj.follow = deepcopy(self.grb_object.follow)
-                grb_obj.apertures = new_apertures
+                grb_obj.tools = new_apertures
                 grb_obj.solid_geometry = deepcopy(new_solid_geo)
                 grb_obj.follow_geometry = deepcopy(self.grb_object.follow_geometry)
 
@@ -974,16 +974,16 @@ class ToolCopperThieving(AppTool):
             if isinstance(geo_list, MultiPolygon):
                 geo_list = list(geo_list.geoms)
         else:
-            for apid in self.sm_object.apertures:
-                for k in self.sm_object.apertures[apid]:
+            for apid in self.sm_object.tools:
+                for k in self.sm_object.tools[apid]:
                     if k == 'geometry':
-                        for elem in self.sm_object.apertures[apid]['geometry']:
+                        for elem in self.sm_object.tools[apid]['geometry']:
                             if 'follow' in elem and isinstance(elem['follow'], Point):
                                 if 'solid' in elem:
                                     geo_list.append(elem['solid'])
 
         # create a copy of the source apertures so we can manipulate them without altering the source object
-        new_apertures = deepcopy(self.sm_object.apertures)
+        new_apertures = deepcopy(self.sm_object.tools)
 
         # if the clearance is not zero apply it to the original soldermask geometry too
         if ppm_clearance != 0:
@@ -1000,9 +1000,9 @@ class ToolCopperThieving(AppTool):
 
             # then add a buffered geometry
             for ap_id in new_apertures:
-                if 'geometry' in self.sm_object.apertures[ap_id]:
+                if 'geometry' in self.sm_object.tools[ap_id]:
                     new_geo_list = []
-                    for geo_el in self.sm_object.apertures[ap_id]['geometry']:
+                    for geo_el in self.sm_object.tools[ap_id]['geometry']:
                         new_el = {
                             'solid': geo_el['solid'].buffer(ppm_clearance) if 'solid' in geo_el else [],
                             'follow': geo_el['follow'] if 'follow' in geo_el else [],
@@ -1120,7 +1120,7 @@ class ToolCopperThieving(AppTool):
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.follow_geometry = deepcopy(new_follow_geo)
-            grb_obj.apertures = deepcopy(new_apertures)
+            grb_obj.tools = deepcopy(new_apertures)
             grb_obj.solid_geometry = deepcopy(new_solid_geometry)
 
             app_obj.proc_container.update_view_text(' %s' % _("Append source file"))

@@ -204,7 +204,7 @@ class ToolEtchCompensation(AppTool):
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
-        new_apertures = deepcopy(grb_obj.apertures)
+        new_apertures = deepcopy(grb_obj.tools)
 
         # update the apertures attributes (keys in the apertures dict)
         for ap in new_apertures:
@@ -248,7 +248,7 @@ class ToolEtchCompensation(AppTool):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=new_obj,

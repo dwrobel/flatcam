@@ -263,7 +263,7 @@ class GerberObject(FlatCAMObj, Gerber):
             self.apertures_row = 0
 
             sort = []
-            for k in list(self.apertures.keys()):
+            for k in list(self.tools.keys()):
                 sort.append(int(k))
             sorted_apertures = sorted(sort)
 
@@ -283,20 +283,20 @@ class GerberObject(FlatCAMObj, Gerber):
                 ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
                 # ------------------------ Aperture TYPE --------------------------------------------------------------
-                ap_type_item = QtWidgets.QTableWidgetItem(str(self.apertures[ap_code]['type']))
+                ap_type_item = QtWidgets.QTableWidgetItem(str(self.tools[ap_code]['type']))
                 ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-                if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
+                if str(self.tools[ap_code]['type']) == 'R' or str(self.tools[ap_code]['type']) == 'O':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
-                        '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'],
-                                        self.decimals, self.apertures[ap_code]['height']
+                        '%.*f, %.*f' % (self.decimals, self.tools[ap_code]['width'],
+                                        self.decimals, self.tools[ap_code]['height']
                                         )
                     )
                     ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
-                elif str(self.apertures[ap_code]['type']) == 'P':
+                elif str(self.tools[ap_code]['type']) == 'P':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
-                        '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'],
-                                        self.decimals, self.apertures[ap_code]['nVertices'])
+                        '%.*f, %.*f' % (self.decimals, self.tools[ap_code]['diam'],
+                                        self.decimals, self.tools[ap_code]['nVertices'])
                     )
                     ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
                 else:
@@ -305,9 +305,9 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 # ------------------------ Aperture SIZE --------------------------------------------------------------
                 try:
-                    if self.apertures[ap_code]['size'] is not None:
+                    if self.tools[ap_code]['size'] is not None:
                         ap_size_item = QtWidgets.QTableWidgetItem(
-                            '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'])))
+                            '%.*f' % (self.decimals, float(self.tools[ap_code]['size'])))
                     else:
                         ap_size_item = QtWidgets.QTableWidgetItem('')
                 except KeyError:
@@ -904,7 +904,7 @@ class GerberObject(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             # add the shapes storage for marking apertures
-            for ap_code in self.apertures:
+            for ap_code in self.tools:
                 self.mark_shapes_storage[ap_code] = []
 
             self.ui.apertures_table.setVisible(True)
@@ -1051,7 +1051,7 @@ class GerberObject(FlatCAMObj, Gerber):
         except Exception as e:
             self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
-    # experimental plot() when the solid_geometry is stored in the self.apertures
+    # experimental plot() when the solid_geometry is stored in the self.tools
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
 
@@ -1089,8 +1089,8 @@ class GerberObject(FlatCAMObj, Gerber):
         def job_thread(app_obj):
             with self.app.proc_container.new('%s ...' % _("Plotting")):
                 try:
-                    if aperture_to_plot_mark in self.apertures:
-                        for elem in app_obj.apertures[aperture_to_plot_mark]['geometry']:
+                    if aperture_to_plot_mark in self.tools:
+                        for elem in app_obj.tools[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
                                 if only_flashes and not isinstance(elem['follow'], Point):
                                     continue
@@ -1204,7 +1204,7 @@ class GerberObject(FlatCAMObj, Gerber):
             mark_cb.setChecked(mark_all)
 
         if mark_all:
-            for aperture in self.apertures:
+            for aperture in self.tools:
                 # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
                 self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
                                    marked_aperture=aperture, visible=True)
@@ -1269,9 +1269,9 @@ class GerberObject(FlatCAMObj, Gerber):
         # apertures processing
         try:
             length = whole + fract
-            if '0' in self.apertures:
-                if 'geometry' in self.apertures['0']:
-                    for geo_elem in self.apertures['0']['geometry']:
+            if '0' in self.tools:
+                if 'geometry' in self.tools['0']:
+                    for geo_elem in self.tools['0']['geometry']:
                         if 'solid' in geo_elem:
                             geo = geo_elem['solid']
                             if not geo.is_empty and not isinstance(geo, LineString) and \
@@ -1417,12 +1417,12 @@ class GerberObject(FlatCAMObj, Gerber):
         except Exception as e:
             self.app.log.error("FlatCAMObj.GerberObject.export_gerber() '0' aperture --> %s" % str(e))
 
-        for apid in self.apertures:
+        for apid in self.tools:
             if apid == '0':
                 continue
-            elif self.apertures[apid]['type'] == 'AM':
-                if 'geometry' in self.apertures[apid]:
-                    for geo_elem in self.apertures[apid]['geometry']:
+            elif self.tools[apid]['type'] == 'AM':
+                if 'geometry' in self.tools[apid]:
+                    for geo_elem in self.tools[apid]['geometry']:
                         if 'solid' in geo_elem:
                             geo = geo_elem['solid']
                             if not geo.is_empty and not isinstance(geo, LineString) and \
@@ -1569,8 +1569,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                 gerber_code += '%LPD*%\n'
             else:
                 gerber_code += 'D%s*\n' % str(apid)
-                if 'geometry' in self.apertures[apid]:
-                    for geo_elem in self.apertures[apid]['geometry']:
+                if 'geometry' in self.tools[apid]:
+                    for geo_elem in self.tools[apid]['geometry']:
                         try:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
@@ -1719,7 +1719,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         except Exception as e:
                             self.app.log.error("FlatCAMObj.GerberObject.export_gerber() 'clear' --> %s" % str(e))
 
-        if not self.apertures:
+        if not self.tools:
             self.app.log.debug("FlatCAMObj.GerberObject.export_gerber() --> Gerber Object is empty: no apertures.")
             return 'fail'
 
@@ -1740,8 +1740,8 @@ class GerberObject(FlatCAMObj, Gerber):
             grb_final.solid_geometry = []
             grb_final.follow_geometry = []
 
-        if not grb_final.apertures:
-            grb_final.apertures = {}
+        if not grb_final.tools:
+            grb_final.tools = {}
 
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
@@ -1768,19 +1768,19 @@ class GerberObject(FlatCAMObj, Gerber):
                     grb_final.solid_geometry.append(grb.solid_geometry)
                     grb_final.follow_geometry.append(grb.solid_geometry)
 
-                for ap in grb.apertures:
-                    if ap not in grb_final.apertures:
-                        grb_final.apertures[ap] = grb.apertures[ap]
+                for ap in grb.tools:
+                    if ap not in grb_final.tools:
+                        grb_final.tools[ap] = grb.tools[ap]
                     else:
-                        # create a list of integers out of the grb.apertures keys and find the max of that value
+                        # create a list of integers out of the grb.tools keys and find the max of that value
                         # then, the aperture duplicate is assigned an id value incremented with 1,
                         # and finally made string because the apertures dict keys are strings
-                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
-                        grb_final.apertures[max_ap] = {}
-                        grb_final.apertures[max_ap]['geometry'] = []
+                        max_ap = str(max([int(k) for k in grb_final.tools.keys()]) + 1)
+                        grb_final.tools[max_ap] = {}
+                        grb_final.tools[max_ap]['geometry'] = []
 
-                        for k, v in grb.apertures[ap].items():
-                            grb_final.apertures[max_ap][k] = deepcopy(v)
+                        for k, v in grb.tools[ap].items():
+                            grb_final.tools[max_ap][k] = deepcopy(v)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)

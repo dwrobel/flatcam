@@ -328,7 +328,7 @@ class ToolCorners(AppTool):
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
 
-        new_apertures = deepcopy(g_obj.apertures)
+        new_apertures = deepcopy(g_obj.tools)
 
         aperture_found = None
         for ap_id, ap_val in new_apertures.items():
@@ -390,7 +390,7 @@ class ToolCorners(AppTool):
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(g_obj.follow)
-            grb_obj.apertures = new_apertures
+            grb_obj.tools = new_apertures
             grb_obj.solid_geometry = unary_union(s_list)
             grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
 

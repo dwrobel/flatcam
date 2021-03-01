@@ -3011,9 +3011,9 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
             # only Gerber objects and only those that are active and not the edited object
             if obj.kind == 'gerber' and obj.options['plot'] is True and \
                     obj.options['name'] != self.draw_app.gerber_obj.options['name']:
-                for apid in obj.apertures:
-                    if 'geometry' in obj.apertures[apid]:
-                        for geo_el in obj.apertures[apid]['geometry']:
+                for apid in obj.tools:
+                    if 'geometry' in obj.tools[apid]:
+                        for geo_el in obj.tools[apid]['geometry']:
                             if 'solid' in geo_el:
                                 solid_geo = geo_el['solid']
                                 if Point(pos).within(solid_geo):
@@ -3026,7 +3026,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                                                                                            'global_sel_draw_color'
                                                                                        ] + 'AF',
                                                                             visible=True)
-                                        new_ap_dict = {k: v for k, v in obj.apertures[apid].items() if k != 'geometry'}
+                                        new_ap_dict = {k: v for k, v in obj.tools[apid].items() if k != 'geometry'}
                                         new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
                                         new_ap_dict['shape_id'] = shape_id
                                         self.sel_storage.append(new_ap_dict)
@@ -3071,9 +3071,9 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
             # only Gerber objects and only those that are active and not the edited object
             if obj.kind == 'gerber' and obj.options['plot'] is True and \
                     obj.options['name'] != self.draw_app.gerber_obj.options['name']:
-                for apid in obj.apertures:
-                    if 'geometry' in obj.apertures[apid]:
-                        for geo_el in obj.apertures[apid]['geometry']:
+                for apid in obj.tools:
+                    if 'geometry' in obj.tools[apid]:
+                        for geo_el in obj.tools[apid]['geometry']:
                             if 'solid' in geo_el:
                                 solid_geo = geo_el['solid']
                                 if selection_type is True:
@@ -3086,7 +3086,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                                                                                 face_color=face_color,
                                                                                 visible=True)
                                             new_ap_dict = {
-                                                k: v for k, v in obj.apertures[apid].items() if k != 'geometry'
+                                                k: v for k, v in obj.tools[apid].items() if k != 'geometry'
                                             }
                                             new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
                                             new_ap_dict['shape_id'] = shape_id
@@ -3107,7 +3107,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                                                                                 face_color=face_color,
                                                                                 visible=True)
                                             new_ap_dict = {
-                                                k: v for k, v in obj.apertures[apid].items() if k != 'geometry'
+                                                k: v for k, v in obj.tools[apid].items() if k != 'geometry'
                                             }
                                             new_ap_dict['geometry'] = [DrawToolShape(geo_el)]
                                             new_ap_dict['shape_id'] = shape_id
@@ -4494,7 +4494,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def edit_fcgerber(self, orig_grb_obj):
         """
-        Imports the geometry found in self.apertures from the given FlatCAM Gerber object
+        Imports the geometry found in self.tools from the given FlatCAM Gerber object
         into the editor.
 
         :param orig_grb_obj: ExcellonObject
@@ -4540,24 +4540,24 @@ class AppGerberEditor(QtCore.QObject):
         except Exception as e:
             self.app.log.error("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
 
-        # apply the conversion factor on the obj.apertures
-        conv_apertures = deepcopy(self.gerber_obj.apertures)
-        for apcode in self.gerber_obj.apertures:
-            for key in self.gerber_obj.apertures[apcode]:
+        # apply the conversion factor on the obj.tools
+        conv_apertures = deepcopy(self.gerber_obj.tools)
+        for apcode in self.gerber_obj.tools:
+            for key in self.gerber_obj.tools[apcode]:
                 if key == 'width':
-                    conv_apertures[apcode]['width'] = self.gerber_obj.apertures[apcode]['width'] * \
+                    conv_apertures[apcode]['width'] = self.gerber_obj.tools[apcode]['width'] * \
                                                       self.conversion_factor
                 elif key == 'height':
-                    conv_apertures[apcode]['height'] = self.gerber_obj.apertures[apcode]['height'] * \
+                    conv_apertures[apcode]['height'] = self.gerber_obj.tools[apcode]['height'] * \
                                                        self.conversion_factor
                 elif key == 'diam':
-                    conv_apertures[apcode]['diam'] = self.gerber_obj.apertures[apcode]['diam'] * self.conversion_factor
+                    conv_apertures[apcode]['diam'] = self.gerber_obj.tools[apcode]['diam'] * self.conversion_factor
                 elif key == 'size':
-                    conv_apertures[apcode]['size'] = self.gerber_obj.apertures[apcode]['size'] * self.conversion_factor
+                    conv_apertures[apcode]['size'] = self.gerber_obj.tools[apcode]['size'] * self.conversion_factor
                 else:
-                    conv_apertures[apcode][key] = self.gerber_obj.apertures[apcode][key]
+                    conv_apertures[apcode][key] = self.gerber_obj.tools[apcode][key]
 
-        self.gerber_obj.apertures = conv_apertures
+        self.gerber_obj.tools = conv_apertures
         self.gerber_obj.units = app_units
 
         # # and then add it to the storage elements (each storage elements is a member of a list
@@ -4568,7 +4568,7 @@ class AppGerberEditor(QtCore.QObject):
         #         self.storage_dict[aperture_id] = {}
         #
         #         # add the Gerber geometry to editor storage
-        #         for k, v in self.gerber_obj.apertures[aperture_id].items():
+        #         for k, v in self.gerber_obj.tools[aperture_id].items():
         #             try:
         #                 if k == 'geometry':
         #                     for geo_el in v:
@@ -4576,7 +4576,7 @@ class AppGerberEditor(QtCore.QObject):
         #                             self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
         #                     self.storage_dict[aperture_id][k] = storage_elem
         #                 else:
-        #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
+        #                     self.storage_dict[aperture_id][k] = self.gerber_obj.tools[aperture_id][k]
         #             except Exception as e:
         #                 self.app.log.error("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
         #
@@ -4590,7 +4590,7 @@ class AppGerberEditor(QtCore.QObject):
         #
         # # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
         # # as DrawToolShapes
-        # for ap_code in self.gerber_obj.apertures:
+        # for ap_code in self.gerber_obj.tools:
         #     self.grb_plot_promises.append(ap_code)
         #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_code]})
         #
@@ -4598,7 +4598,7 @@ class AppGerberEditor(QtCore.QObject):
         #
         # # do the delayed plot only if there is something to plot (the gerber is not empty)
         # try:
-        #     if bool(self.gerber_obj.apertures):
+        #     if bool(self.gerber_obj.tools):
         #         self.start_delayed_plot(check_period=1000)
         #     else:
         #         raise AttributeError
@@ -4630,10 +4630,10 @@ class AppGerberEditor(QtCore.QObject):
                     global_clear_geo = []
 
                     # create one big geometry made out of all 'negative' (clear) polygons
-                    for aper_id in app_obj.gerber_obj.apertures:
+                    for aper_id in app_obj.gerber_obj.tools:
                         # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-                        if 'geometry' in app_obj.gerber_obj.apertures[aper_id]:
-                            for elem in app_obj.gerber_obj.apertures[aper_id]['geometry']:
+                        if 'geometry' in app_obj.gerber_obj.tools[aper_id]:
+                            for elem in app_obj.gerber_obj.tools[aper_id]['geometry']:
                                 if 'clear' in elem:
                                     global_clear_geo.append(elem['clear'])
                     self.app.log.warning("Found %d clear polygons." % len(global_clear_geo))
@@ -4645,10 +4645,10 @@ class AppGerberEditor(QtCore.QObject):
 
                     # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
                     # clear geometry that fits inside the solid. otherwise we may loose the solid
-                    for ap_code in app_obj.gerber_obj.apertures:
+                    for ap_code in app_obj.gerber_obj.tools:
                         temp_solid_geometry = []
-                        if 'geometry' in app_obj.gerber_obj.apertures[ap_code]:
-                            # for elem in self.gerber_obj.apertures[apcode]['geometry']:
+                        if 'geometry' in app_obj.gerber_obj.tools[ap_code]:
+                            # for elem in self.gerber_obj.tools[apcode]['geometry']:
                             #     if 'solid' in elem:
                             #         solid_geo = elem['solid']
                             #         for clear_geo in global_clear_geo:
@@ -4675,7 +4675,7 @@ class AppGerberEditor(QtCore.QObject):
                             #             if 'follow' in elem:
                             #                 new_elem['follow'] = solid_geo
                             #             temp_elem.append(deepcopy(new_elem))
-                            for elem in app_obj.gerber_obj.apertures[ap_code]['geometry']:
+                            for elem in app_obj.gerber_obj.tools[ap_code]['geometry']:
                                 new_elem = {}
                                 if 'solid' in elem:
                                     solid_geo = elem['solid']
@@ -4698,14 +4698,14 @@ class AppGerberEditor(QtCore.QObject):
                                     new_elem['follow'] = elem['follow']
                                 temp_solid_geometry.append(deepcopy(new_elem))
 
-                            app_obj.gerber_obj.apertures[ap_code]['geometry'] = deepcopy(temp_solid_geometry)
+                            app_obj.gerber_obj.tools[ap_code]['geometry'] = deepcopy(temp_solid_geometry)
 
                     self.app.log.warning(
-                        "Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
+                        "Polygon difference done for %d apertures." % len(app_obj.gerber_obj.tools))
 
                     try:
                         # Loading the Geometry into Editor Storage
-                        for ap_code, ap_dict in app_obj.gerber_obj.apertures.items():
+                        for ap_code, ap_dict in app_obj.gerber_obj.tools.items():
                             app_obj.results.append(
                                 app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_code, ap_dict))
                             )
@@ -4835,11 +4835,11 @@ class AppGerberEditor(QtCore.QObject):
             follow_buffer = []
 
             for storage_apcode, storage_val in local_storage_dict.items():
-                grb_obj.apertures[storage_apcode] = {}
+                grb_obj.tools[storage_apcode] = {}
 
                 for k, val in storage_val.items():
                     if k == 'geometry':
-                        grb_obj.apertures[storage_apcode][k] = []
+                        grb_obj.tools[storage_apcode][k] = []
                         for geo_el in val:
                             geometric_data = geo_el.geo
                             new_geo_el = {}
@@ -4866,9 +4866,9 @@ class AppGerberEditor(QtCore.QObject):
                                 new_geo_el['clear'] = geometric_data['clear']
 
                             if new_geo_el:
-                                grb_obj.apertures[storage_apcode][k].append(deepcopy(new_geo_el))
+                                grb_obj.tools[storage_apcode][k].append(deepcopy(new_geo_el))
                     else:
-                        grb_obj.apertures[storage_apcode][k] = val
+                        grb_obj.tools[storage_apcode][k] = val
 
             grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
 

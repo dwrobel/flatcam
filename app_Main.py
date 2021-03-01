@@ -5618,7 +5618,7 @@ class App(QtCore.QObject):
                 pass
 
             try:
-                obj_init.apertures = deepcopy(obj.apertures)
+                obj_init.tools = deepcopy(obj.tools)
             except AttributeError:
                 pass
 
@@ -5677,7 +5677,7 @@ class App(QtCore.QObject):
                 pass
 
             try:
-                obj_init.apertures = deepcopy(obj.apertures)
+                obj_init.tools = deepcopy(obj.tools)
             except AttributeError:
                 pass
 
@@ -5689,9 +5689,9 @@ class App(QtCore.QObject):
 
         def initialize_gerber(obj_init, app_obj):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
-            obj_init.apertures = deepcopy(obj.apertures)
+            obj_init.tools = deepcopy(obj.tools)
             obj_init.aperture_macros = deepcopy(obj.aperture_macros)
-            if not obj_init.apertures:
+            if not obj_init.tools:
                 app_obj.debug("on_copy_object2() --> no gerber apertures")
                 return 'fail'
 
@@ -5863,9 +5863,9 @@ class App(QtCore.QObject):
                 apertures['0']['geometry'].append(deepcopy(new_elem))
 
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
-            obj_init.apertures = deepcopy(apertures)
+            obj_init.tools = deepcopy(apertures)
 
-            if not obj_init.apertures:
+            if not obj_init.tools:
                 app_obj.log("convert_any2gerber() failed")
                 return 'fail'
 
@@ -5899,9 +5899,9 @@ class App(QtCore.QObject):
             solid_geometry = solid_geometry.buffer(0.0000001)
 
             obj_init.solid_geometry = deepcopy(solid_geometry)
-            obj_init.apertures = deepcopy(apertures)
+            obj_init.tools = deepcopy(apertures)
 
-            if not obj_init.apertures:
+            if not obj_init.tools:
                 app_obj.log("convert_any2gerber() failed")
                 return 'fail'
 
@@ -5986,9 +5986,9 @@ class App(QtCore.QObject):
 
             obj_init.solid_geometry = []
 
-            for apid in obj.apertures:
-                if 'geometry' in obj.apertures[apid]:
-                    for geo_dict in obj.apertures[apid]['geometry']:
+            for apid in obj.tools:
+                if 'geometry' in obj.tools[apid]:
+                    for geo_dict in obj.tools[apid]['geometry']:
                         if 'follow' in geo_dict:
                             if isinstance(geo_dict['follow'], Point):
                                 geo = geo_dict['solid']
@@ -6034,7 +6034,7 @@ class App(QtCore.QObject):
 
                                 geo = geo_dict['solid']
                                 try:
-                                    new_dia = obj.apertures[apid]['size']
+                                    new_dia = obj.tools[apid]['size']
                                 except Exception:
                                     continue
 
@@ -10360,26 +10360,26 @@ class MenuFileHandlers(QtCore.QObject):
                 header += '%%FS%sAX%s%sY%s%s*%%\n' % (gzeros, gwhole, gfract, gwhole, gfract)
                 header += "%MO{units}*%\n".format(units=gunits)
 
-                for apid in obj.apertures:
-                    if obj.apertures[apid]['type'] == 'C':
+                for apid in obj.tools:
+                    if obj.tools[apid]['type'] == 'C':
                         header += "%ADD{apid}{type},{size}*%\n".format(
                             apid=str(apid),
                             type='C',
-                            size=(factor * obj.apertures[apid]['size'])
+                            size=(factor * obj.tools[apid]['size'])
                         )
-                    elif obj.apertures[apid]['type'] == 'R':
+                    elif obj.tools[apid]['type'] == 'R':
                         header += "%ADD{apid}{type},{width}X{height}*%\n".format(
                             apid=str(apid),
                             type='R',
-                            width=(factor * obj.apertures[apid]['width']),
-                            height=(factor * obj.apertures[apid]['height'])
+                            width=(factor * obj.tools[apid]['width']),
+                            height=(factor * obj.tools[apid]['height'])
                         )
-                    elif obj.apertures[apid]['type'] == 'O':
+                    elif obj.tools[apid]['type'] == 'O':
                         header += "%ADD{apid}{type},{width}X{height}*%\n".format(
                             apid=str(apid),
                             type='O',
-                            width=(factor * obj.apertures[apid]['width']),
-                            height=(factor * obj.apertures[apid]['height'])
+                            width=(factor * obj.tools[apid]['width']),
+                            height=(factor * obj.tools[apid]['height'])
                         )
 
                 header += '\n'

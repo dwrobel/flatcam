@@ -659,21 +659,21 @@ class FlatCAMObj(QtCore.QObject):
             self.treeWidget.addChild(options, [str(option), str(obj.options[option])], True)
 
         # Items that depend on the object type
-        if obj.kind.lower() == 'gerber' and obj.apertures:
+        if obj.kind.lower() == 'gerber' and obj.tools:
             temp_ap = {}
-            for ap in obj.apertures:
+            for ap in obj.tools:
                 temp_ap.clear()
-                temp_ap = deepcopy(obj.apertures[ap])
+                temp_ap = deepcopy(obj.tools[ap])
                 temp_ap.pop('geometry', None)
 
                 solid_nr = 0
                 follow_nr = 0
                 clear_nr = 0
 
-                if 'geometry' in obj.apertures[ap]:
-                    if obj.apertures[ap]['geometry']:
+                if 'geometry' in obj.tools[ap]:
+                    if obj.tools[ap]['geometry']:
                         font.setBold(True)
-                        for el in obj.apertures[ap]['geometry']:
+                        for el in obj.tools[ap]['geometry']:
                             if 'solid' in el:
                                 solid_nr += 1
                             if 'follow' in el:

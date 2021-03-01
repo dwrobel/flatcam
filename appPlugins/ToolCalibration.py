@@ -266,7 +266,7 @@ class ToolCalibration(AppTool):
                                     )
                                     self.check_points()
                     else:
-                        for apid, apid_val in self.target_obj.apertures.items():
+                        for apid, apid_val in self.target_obj.tools.items():
                             for geo_el in apid_val['geometry']:
                                 if 'solid' in geo_el:
                                     if click_pt.within(geo_el['solid']):
@@ -649,7 +649,7 @@ class ToolCalibration(AppTool):
                 pass
 
             try:
-                obj_init.apertures = deepcopy(obj.apertures)
+                obj_init.tools = deepcopy(obj.tools)
             except AttributeError:
                 pass
 
@@ -675,7 +675,7 @@ class ToolCalibration(AppTool):
                 pass
 
             try:
-                obj_init.apertures = deepcopy(obj.apertures)
+                obj_init.tools = deepcopy(obj.tools)
             except AttributeError:
                 pass
 

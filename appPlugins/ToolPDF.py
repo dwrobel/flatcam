@@ -304,12 +304,12 @@ class ToolPDF(AppTool):
 
         def obj_init(grb_obj, app_obj):
 
-            grb_obj.apertures = ap_dict
+            grb_obj.tools = ap_dict
 
             poly_buff = []
             follow_buf = []
-            for ap in grb_obj.apertures:
-                for k in grb_obj.apertures[ap]:
+            for ap in grb_obj.tools:
+                for k in grb_obj.tools[ap]:
                     if k == 'geometry':
                         for geo_el in ap_dict[ap][k]:
                             if 'solid' in geo_el:
@@ -318,18 +318,18 @@ class ToolPDF(AppTool):
                                 follow_buf.append(geo_el['follow'])
             poly_buff = unary_union(poly_buff)
 
-            if '0' in grb_obj.apertures:
+            if '0' in grb_obj.tools:
                 global_clear_geo = []
-                if 'geometry' in grb_obj.apertures['0']:
+                if 'geometry' in grb_obj.tools['0']:
                     for geo_el in ap_dict['0']['geometry']:
                         if 'clear' in geo_el:
                             global_clear_geo.append(geo_el['clear'])
 
                 if global_clear_geo:
                     solid = []
-                    for apid in grb_obj.apertures:
-                        if 'geometry' in grb_obj.apertures[apid]:
-                            for elem in grb_obj.apertures[apid]['geometry']:
+                    for apid in grb_obj.tools:
+                        if 'geometry' in grb_obj.tools[apid]:
+                            for elem in grb_obj.tools[apid]['geometry']:
                                 if 'solid' in elem:
                                     solid_geo = deepcopy(elem['solid'])
                                     for clear_geo in global_clear_geo:

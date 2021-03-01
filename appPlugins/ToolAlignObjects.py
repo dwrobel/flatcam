@@ -237,7 +237,7 @@ class AlignObjects(AppTool):
                                 )
                                 self.check_points()
                 elif self.target_obj.kind.lower() == 'gerber':
-                    for apid, apid_val in self.target_obj.apertures.items():
+                    for apid, apid_val in self.target_obj.tools.items():
                         for geo_el in apid_val['geometry']:
                             if 'solid' in geo_el:
                                 if click_pt.within(geo_el['solid']):

@@ -169,7 +169,7 @@ class ToolInvertGerber(AppTool):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,

@@ -1645,7 +1645,7 @@ class ToolPaint(AppTool, Gerber):
                 traces_el_dict = {}
 
                 # find the flashes and the lines that are in the selected polygon and store them separately
-                for apid, apval in obj.apertures.items():
+                for apid, apval in obj.tools.items():
                     for geo_el in apval['geometry']:
                         if apval["size"] == 0.0:
                             if apval["size"] in traces_el_dict:
@@ -1758,7 +1758,7 @@ class ToolPaint(AppTool, Gerber):
                 except TypeError:
                     cpoly.insert(lines_union)
                 # # determine the Gerber follow line
-                # for apid, apval in obj.apertures.items():
+                # for apid, apval in obj.tools.items():
                 #     for geo_el in apval['geometry']:
                 #         if 'solid' in geo_el:
                 #             if Point(inside_pt).within(geo_el['solid']):

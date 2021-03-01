@@ -736,7 +736,8 @@ class SolderPaste(AppTool):
                     self.flat_geometry.append(geometry)
             return self.flat_geometry
 
-        # TODO when/if the Gerber files will have solid_geometry in the self.apertures I will have to take care here
+        # TODO when/if the Gerber files will have solid_geometry in the self.tools I will have to take care here
+
         flatten(geometry=obj.solid_geometry, pathonly=True)
 
         def geo_init(geo_obj, app_obj):

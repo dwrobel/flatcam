@@ -337,13 +337,13 @@ class ToolFiducials(AppTool):
 
         radius = fid_size / 2.0
 
-        new_apertures = deepcopy(g_obj.apertures)
+        new_apertures = deepcopy(g_obj.tools)
 
         if fid_type == 'circular':
             geo_list = [Point(pt).buffer(radius, self.grb_steps_per_circle) for pt in points_list]
 
             aperture_found = None
-            for ap_id, ap_val in g_obj.apertures.items():
+            for ap_id, ap_val in g_obj.tools.items():
                 if ap_val['type'] == 'C' and ap_val['size'] == fid_size:
                     aperture_found = ap_id
                     break
@@ -353,7 +353,7 @@ class ToolFiducials(AppTool):
                     dict_el = {'follow': geo.centroid, 'solid': geo}
                     new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
-                ap_keys = list(g_obj.apertures.keys())
+                ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
@@ -393,7 +393,7 @@ class ToolFiducials(AppTool):
                 geo_list.append([line_geo_hor, line_geo_vert])
 
             aperture_found = None
-            for ap_id, ap_val in g_obj.apertures.items():
+            for ap_id, ap_val in g_obj.tools.items():
                 if ap_val['type'] == 'C' and ap_val['size'] == line_thickness:
                     aperture_found = ap_id
                     break
@@ -411,7 +411,7 @@ class ToolFiducials(AppTool):
                     dict_el = {'follow': geo_buff_v.centroid, 'solid': geo_buff_v}
                     new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
-                ap_keys = list(g_obj.apertures.keys())
+                ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
@@ -471,7 +471,7 @@ class ToolFiducials(AppTool):
 
             aperture_found = None
             new_ap_size = math.sqrt(fid_size**2 + fid_size**2)
-            for ap_id, ap_val in g_obj.apertures.items():
+            for ap_id, ap_val in g_obj.tools.items():
                 if ap_val['type'] == 'R' and \
                         round(ap_val['size'], ndigits=self.decimals) == round(new_ap_size, ndigits=self.decimals):
                     aperture_found = ap_id
@@ -485,7 +485,7 @@ class ToolFiducials(AppTool):
                     dict_el = {'follow': geo.centroid, 'solid': geo}
                     new_apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
             else:
-                ap_keys = list(g_obj.apertures.keys())
+                ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
@@ -527,7 +527,7 @@ class ToolFiducials(AppTool):
             grb_obj.multitool = False
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(g_obj.follow)
-            grb_obj.apertures = new_apertures
+            grb_obj.tools = new_apertures
             grb_obj.solid_geometry = unary_union(s_list)
             grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
 

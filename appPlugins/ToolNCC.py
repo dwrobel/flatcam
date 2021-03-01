@@ -1044,7 +1044,7 @@ class NonCopperClear(AppTool, Gerber):
         def job_thread(app_obj):
             with self.app.proc_container.new(_("Checking ...")):
 
-                ap_storage = fcobj.apertures
+                ap_storage = fcobj.tools
 
                 p = app_obj.pool.apply_async(self.find_optim_mp, args=(ap_storage, self.decimals))
                 res = p.get()
@@ -1118,9 +1118,9 @@ class NonCopperClear(AppTool, Gerber):
                     app_obj.proc_container.update_view_text(' %d%%' % 0)
                     total_geo = []
 
-                    for ap in list(fcobj.apertures.keys()):
-                        if 'geometry' in fcobj.apertures[ap]:
-                            for geo_el in fcobj.apertures[ap]['geometry']:
+                    for ap in list(fcobj.tools.keys()):
+                        if 'geometry' in fcobj.tools[ap]:
+                            for geo_el in fcobj.tools[ap]['geometry']:
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
                                     raise grace

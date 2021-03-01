@@ -71,7 +71,7 @@ class TclCommandAddAperture(TclCommandSignaled):
         if obj.kind != 'gerber':
             return 'Expected Gerber, got %s %s.' % (name, type(obj))
 
-        obj_apertures_keys = list(obj.apertures.keys())
+        obj_apertures_keys = list(obj.tools.keys())
         if 'apid' in args:
             new_apid = args['apid']
         else:
@@ -94,7 +94,7 @@ class TclCommandAddAperture(TclCommandSignaled):
             new_type = 'C'
         if new_type == 'C':
             new_size = args['size'] if 'size' in args else 0.6
-            obj.apertures[str(new_apid)] = {
+            obj.tools[str(new_apid)] = {
                 'type': new_type,
                 'size': new_size,
                 'geometry': []
@@ -104,7 +104,7 @@ class TclCommandAddAperture(TclCommandSignaled):
             new_height = args['height'] if 'height' in args else 0.0
             new_size = math.sqrt(new_width ** 2 + new_height ** 2) if new_width > 0 and new_height > 0 else 0
 
-            obj.apertures[str(new_apid)] = {
+            obj.tools[str(new_apid)] = {
                 'type': new_type,
                 'size': new_size,
                 'width': new_width,
@@ -114,4 +114,4 @@ class TclCommandAddAperture(TclCommandSignaled):
         else:
             return 'The supported aperture types are: C=circular, R=rectangular, O=oblong'
 
-        print(obj.apertures)
+        print(obj.tools)

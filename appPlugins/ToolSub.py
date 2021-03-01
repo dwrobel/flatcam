@@ -283,29 +283,29 @@ class ToolSub(AppTool):
         # crate the new_apertures
         # dict structure from TARGET apertures
         # --------------------------------
-        for apid in self.target_grb_obj.apertures:
+        for apid in self.target_grb_obj.tools:
             self.new_apertures[apid] = {}
-            for key in self.target_grb_obj.apertures[apid]:
+            for key in self.target_grb_obj.tools[apid]:
                 if key == 'geometry':
                     self.new_apertures[apid]['geometry'] = []
                 else:
-                    self.new_apertures[apid][key] = self.target_grb_obj.apertures[apid][key]
+                    self.new_apertures[apid][key] = self.target_grb_obj.tools[apid][key]
 
         def worker_job(app_obj):
             with app_obj.app.proc_container.new('%s...' % _("Working")):
                 # SUBTRACTOR geometry (always the same)
                 sub_geometry = {'solid': [], 'clear': []}
                 # iterate over SUBTRACTOR geometry and load it in the sub_geometry dict
-                for s_apid in app_obj.sub_grb_obj.apertures:
-                    for s_el in app_obj.sub_grb_obj.apertures[s_apid]['geometry']:
+                for s_apid in app_obj.sub_grb_obj.tools:
+                    for s_el in app_obj.sub_grb_obj.tools[s_apid]['geometry']:
                         if "solid" in s_el:
                             sub_geometry['solid'].append(s_el["solid"])
                         if "clear" in s_el:
                             sub_geometry['clear'].append(s_el["clear"])
 
-                for ap_id in app_obj.target_grb_obj.apertures:
+                for ap_id in app_obj.target_grb_obj.tools:
                     # TARGET geometry
-                    target_geo = [geo for geo in app_obj.target_grb_obj.apertures[ap_id]['geometry']]
+                    target_geo = [geo for geo in app_obj.target_grb_obj.tools[ap_id]['geometry']]
 
                     # send the job to the multiprocessing JOB
                     app_obj.results.append(
@@ -391,17 +391,17 @@ class ToolSub(AppTool):
 
         def obj_init(grb_obj, app_obj):
 
-            grb_obj.apertures = deepcopy(self.new_apertures)
+            grb_obj.tools = deepcopy(self.new_apertures)
 
-            if '0' not in grb_obj.apertures:
-                grb_obj.apertures['0'] = {}
-                grb_obj.apertures['0']['type'] = 'REG'
-                grb_obj.apertures['0']['size'] = 0.0
-                grb_obj.apertures['0']['geometry'] = []
+            if '0' not in grb_obj.tools:
+                grb_obj.tools['0'] = {}
+                grb_obj.tools['0']['type'] = 'REG'
+                grb_obj.tools['0']['size'] = 0.0
+                grb_obj.tools['0']['geometry'] = []
 
-            for apid in list(grb_obj.apertures.keys()):
+            for apid in list(grb_obj.tools.keys()):
                 # output is a tuple in the format (apid, surviving_geo, modified_geo)
-                # apid is the aperture id (key in the obj.apertures and string)
+                # apid is the aperture id (key in the obj.tools and string)
                 # unaffected_geo and affected_geo are lists
                 for t in output:
                     new_apid = t[0]
@@ -409,23 +409,23 @@ class ToolSub(AppTool):
                         surving_geo = t[1]
                         modified_geo = t[2]
                         if surving_geo:
-                            grb_obj.apertures[apid]['geometry'] += deepcopy(surving_geo)
+                            grb_obj.tools[apid]['geometry'] += deepcopy(surving_geo)
 
                         if modified_geo:
-                            grb_obj.apertures['0']['geometry'] += modified_geo
+                            grb_obj.tools['0']['geometry'] += modified_geo
 
                 # if the current aperture does not have geometry then get rid of it
-                if not grb_obj.apertures[apid]['geometry']:
-                    grb_obj.apertures.pop(apid, None)
+                if not grb_obj.tools[apid]['geometry']:
+                    grb_obj.tools.pop(apid, None)
 
             # delete the '0' aperture if it has no geometry
-            if not grb_obj.apertures['0']['geometry']:
-                grb_obj.apertures.pop('0', None)
+            if not grb_obj.tools['0']['geometry']:
+                grb_obj.tools.pop('0', None)
 
             poly_buff = []
             follow_buff = []
-            for ap in grb_obj.apertures:
-                for elem in grb_obj.apertures[ap]['geometry']:
+            for ap in grb_obj.tools:
+                for elem in grb_obj.tools[ap]['geometry']:
                     if 'solid' in elem:
                         solid_geo = elem['solid']
                         poly_buff.append(solid_geo)

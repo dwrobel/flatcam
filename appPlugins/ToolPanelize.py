@@ -374,7 +374,7 @@ class Panelize(AppTool):
         # ############################################################################################################
         if panel_source_obj.kind == 'gerber':
             copied_apertures = {}
-            for tt, tt_val in list(panel_source_obj.apertures.items()):
+            for tt, tt_val in list(panel_source_obj.tools.items()):
                 copied_apertures[tt] = deepcopy(tt_val)
 
         to_optimize = self.ui.optimization_cb.get_value()
@@ -510,9 +510,9 @@ class Panelize(AppTool):
                         else:
                             new_obj.solid_geometry = panel_source_obj.solid_geometry
                     elif panel_source_obj.kind == 'gerber':
-                        new_obj.apertures = copied_apertures
-                        for ap in new_obj.apertures:
-                            new_obj.apertures[ap]['geometry'] = []
+                        new_obj.tools = copied_apertures
+                        for ap in new_obj.tools:
+                            new_obj.tools[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
@@ -529,10 +529,10 @@ class Panelize(AppTool):
                             except TypeError:
                                 geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
-                        for ap in panel_source_obj.apertures:
-                            if 'geometry' in panel_source_obj.apertures[ap]:
+                        for ap in panel_source_obj.tools:
+                            if 'geometry' in panel_source_obj.tools[ap]:
                                 try:
-                                    geo_len += len(panel_source_obj.apertures[ap]['geometry'])
+                                    geo_len += len(panel_source_obj.tools[ap]['geometry'])
                                 except TypeError:
                                     geo_len += 1
 
@@ -628,21 +628,21 @@ class Panelize(AppTool):
                                 if self.app.abort_flag:
                                     raise grace
 
-                                for apid in panel_source_obj.apertures:
+                                for apid in panel_source_obj.tools:
                                     # graceful abort requested by the user
                                     if app_obj.abort_flag:
                                         raise grace
 
-                                    if 'geometry' in panel_source_obj.apertures[apid]:
+                                    if 'geometry' in panel_source_obj.tools[apid]:
                                         # calculate the number of polygons
                                         try:
-                                            geo_len = len(panel_source_obj.apertures[apid]['geometry'])
+                                            geo_len = len(panel_source_obj.tools[apid]['geometry'])
                                         except TypeError:
                                             geo_len = 1
 
                                         # panelization -> tools
                                         pol_nr = 0
-                                        for el in panel_source_obj.apertures[apid]['geometry']:
+                                        for el in panel_source_obj.tools[apid]['geometry']:
                                             if app_obj.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
@@ -657,7 +657,7 @@ class Panelize(AppTool):
                                             if 'follow' in el:
                                                 geo_aper = translate_recursion(el['follow'])
                                                 new_el['follow'] = geo_aper
-                                            new_obj.apertures[apid]['geometry'].append(deepcopy(new_el))
+                                            new_obj.tools[apid]['geometry'].append(deepcopy(new_el))
 
                                             # update progress
                                             pol_nr += 1
@@ -741,9 +741,9 @@ class Panelize(AppTool):
 
                         new_obj.tools = {}
                         new_tid = 0
-                        for apid in new_obj.apertures:
+                        for apid in new_obj.tools:
                             new_tid += 1
-                            new_sgeo = [g['solid'] for g in new_obj.apertures[apid]['geometry'] if 'solid' in g]
+                            new_sgeo = [g['solid'] for g in new_obj.tools[apid]['geometry'] if 'solid' in g]
                             new_sgeo = unary_union(new_sgeo)
                             new_obj.tools[new_tid] = {
                                 'tooldia': self.app.defaults["tools_mill_tooldia"],
@@ -764,7 +764,7 @@ class Panelize(AppTool):
                             'data': deepcopy(default_data),
                             'solid_geometry': deepcopy(new_obj.solid_geometry)
                         }
-                        del new_obj.apertures
+                        del new_obj.tools
 
                     app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
                     new_obj.source_file = self.app.f_handlers.export_dxf(obj_name=self.outname, filename=None,
@@ -803,9 +803,9 @@ class Panelize(AppTool):
                         else:
                             new_obj.solid_geometry = panel_source_obj.solid_geometry
                     elif panel_source_obj.kind == 'gerber':
-                        new_obj.apertures = copied_apertures
-                        for ap in new_obj.apertures:
-                            new_obj.apertures[ap]['geometry'] = []
+                        new_obj.tools = copied_apertures
+                        for ap in new_obj.tools:
+                            new_obj.tools[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
@@ -822,10 +822,10 @@ class Panelize(AppTool):
                             except TypeError:
                                 geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
-                        for ap in panel_source_obj.apertures:
-                            if 'geometry' in panel_source_obj.apertures[ap]:
+                        for ap in panel_source_obj.tools:
+                            if 'geometry' in panel_source_obj.tools[ap]:
                                 try:
-                                    geo_len += len(panel_source_obj.apertures[ap]['geometry'])
+                                    geo_len += len(panel_source_obj.tools[ap]['geometry'])
                                 except TypeError:
                                     geo_len += 1
 
@@ -907,21 +907,21 @@ class Panelize(AppTool):
                                 if self.app.abort_flag:
                                     raise grace
 
-                                for apid in panel_source_obj.apertures:
+                                for apid in panel_source_obj.tools:
                                     # graceful abort requested by the user
                                     if app_obj.abort_flag:
                                         raise grace
 
-                                    if 'geometry' in panel_source_obj.apertures[apid]:
+                                    if 'geometry' in panel_source_obj.tools[apid]:
                                         # calculate the number of polygons
                                         try:
-                                            geo_len = len(panel_source_obj.apertures[apid]['geometry'])
+                                            geo_len = len(panel_source_obj.tools[apid]['geometry'])
                                         except TypeError:
                                             geo_len = 1
 
                                         # panelization -> apertures
                                         pol_nr = 0
-                                        for el in panel_source_obj.apertures[apid]['geometry']:
+                                        for el in panel_source_obj.tools[apid]['geometry']:
                                             if app_obj.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
@@ -936,7 +936,7 @@ class Panelize(AppTool):
                                             if 'follow' in el:
                                                 geo_aper = translate_recursion(el['follow'])
                                                 new_el['follow'] = geo_aper
-                                            new_obj.apertures[apid]['geometry'].append(deepcopy(new_el))
+                                            new_obj.tools[apid]['geometry'].append(deepcopy(new_el))
 
                                             # update progress
                                             pol_nr += 1
@@ -994,7 +994,7 @@ class Panelize(AppTool):
                                             }
                                         new_solid_list.append(deepcopy(new_el))
 
-                            new_obj.apertures = {
+                            new_obj.tools = {
                                 '0': {
                                     'type': 'REG',
                                     'size': 0.0,
@@ -1006,7 +1006,7 @@ class Panelize(AppTool):
                             new_obj.solid_geometry = deepcopy(all_geo)
                             del new_obj.tools
                         else:
-                            new_obj.apertures = {
+                            new_obj.tools = {
                                 '0': {
                                     'type': 'REG',
                                     'size': 0.0,

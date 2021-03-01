@@ -107,7 +107,7 @@ class ToolExtract(AppTool):
             grb_obj.mark_shapes.enabled = True
 
             # create storage for shapes
-            for ap_code in grb_obj.apertures:
+            for ap_code in grb_obj.tools:
                 grb_obj.mark_shapes_storage[ap_code] = []
 
             self.old_name = grb_obj.options['name']
@@ -205,7 +205,7 @@ class ToolExtract(AppTool):
 
         try:
             obj = model_index.internalPointer().obj
-            sort = [int(k) for k in obj.apertures.keys()]
+            sort = [int(k) for k in obj.tools.keys()]
             sorted_apertures = sorted(sort)
         except Exception:
             # no object loaded
@@ -216,7 +216,7 @@ class ToolExtract(AppTool):
         n = 0
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
-            ap_type = obj.apertures[ap_code]['type']
+            ap_type = obj.tools[ap_code]['type']
 
             if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
                 n += 1
@@ -236,7 +236,7 @@ class ToolExtract(AppTool):
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
 
-            ap_type = obj.apertures[ap_code]['type']
+            ap_type = obj.tools[ap_code]['type']
             if ap_type == 'C':
                 if self.ui.circular_cb.get_value() is False:
                     continue
@@ -265,8 +265,8 @@ class ToolExtract(AppTool):
 
             # Aperture SIZE
             try:
-                if obj.apertures[ap_code]['size'] is not None:
-                    size_val = self.app.dec_format(float(obj.apertures[ap_code]['size']), self.decimals)
+                if obj.tools[ap_code]['size'] is not None:
+                    size_val = self.app.dec_format(float(obj.tools[ap_code]['size']), self.decimals)
                     ap_size_item = QtWidgets.QTableWidgetItem(str(size_val))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
@@ -393,7 +393,7 @@ class ToolExtract(AppTool):
                 }
             }
 
-            for apid, apid_value in fcobj.apertures.items():
+            for apid, apid_value in fcobj.tools.items():
                 if apid in sel_apid:
                     ap_type = apid_value['type']
 
@@ -426,7 +426,7 @@ class ToolExtract(AppTool):
                 return
         elif mode == 'ring':
             drills_found = set()
-            for apid, apid_value in fcobj.apertures.items():
+            for apid, apid_value in fcobj.tools.items():
                 if apid in sel_apid:
                     ap_type = apid_value['type']
 
@@ -513,7 +513,7 @@ class ToolExtract(AppTool):
                 return
         else:
             drills_found = set()
-            for apid, apid_value in fcobj.apertures.items():
+            for apid, apid_value in fcobj.tools.items():
                 if apid in sel_apid:
                     ap_type = apid_value['type']
 
@@ -644,7 +644,7 @@ class ToolExtract(AppTool):
 
         outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
 
-        new_apertures = deepcopy(obj.apertures)
+        new_apertures = deepcopy(obj.tools)
         new_solid_geometry = []
         new_follow_geometry = []
 
@@ -653,7 +653,7 @@ class ToolExtract(AppTool):
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
 
-        for apid, apid_value in obj.apertures.items():
+        for apid, apid_value in obj.tools.items():
             if apid in sel_apid:
                 ap_type = apid_value['type']
 
@@ -707,7 +707,7 @@ class ToolExtract(AppTool):
             new_obj.multitool = False
             new_obj.multigeo = False
             new_obj.follow = False
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
             new_obj.solid_geometry = deepcopy(new_solid_geometry)
             new_obj.follow_geometry = deepcopy(new_follow_geometry)
 
@@ -782,7 +782,7 @@ class ToolExtract(AppTool):
             new_obj.multitool = False
             new_obj.multigeo = False
             new_obj.follow = False
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
             new_obj.solid_geometry = [deepcopy(new_geo_solid)]
             new_obj.follow_geometry = [deepcopy(new_geo_follow)]
 

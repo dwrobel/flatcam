@@ -170,12 +170,12 @@ class ToolOptimal(AppTool):
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
                 total_geo = []
 
-                for ap in list(fcobj.apertures.keys()):
-                    if 'geometry' in fcobj.apertures[ap]:
+                for ap in list(fcobj.tools.keys()):
+                    if 'geometry' in fcobj.tools[ap]:
                         app_obj.inform.emit(
                             '%s: %s' % (_("Optimal Tool. Parsing geometry for aperture"), str(ap)))
 
-                        for geo_el in fcobj.apertures[ap]['geometry']:
+                        for geo_el in fcobj.tools[ap]['geometry']:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace

@@ -410,27 +410,27 @@ class Film(AppTool):
             punch_size = float(self.ui.punch_size_spinner.get_value())
 
             punching_geo = []
-            for apid in film_obj.apertures:
-                if film_obj.apertures[apid]['type'] == 'C':
-                    if punch_size >= float(film_obj.apertures[apid]['size']):
+            for apid in film_obj.tools:
+                if film_obj.tools[apid]['type'] == 'C':
+                    if punch_size >= float(film_obj.tools[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
-                        for elem in film_obj.apertures[apid]['geometry']:
+                        for elem in film_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
                 else:
-                    if punch_size >= float(film_obj.apertures[apid]['width']) or \
-                            punch_size >= float(film_obj.apertures[apid]['height']):
+                    if punch_size >= float(film_obj.tools[apid]['width']) or \
+                            punch_size >= float(film_obj.tools[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Failed. Punch hole size "
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
-                        for elem in film_obj.apertures[apid]['geometry']:
+                        for elem in film_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))

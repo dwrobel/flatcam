@@ -123,7 +123,7 @@ class Gerber(Geometry):
         self.units = self.app.defaults['gerber_def_units']
 
         # aperture storage
-        self.apertures = {}
+        self.tools = {}
 
         # Aperture Macros
         self.aperture_macros = {}
@@ -135,7 +135,7 @@ class Gerber(Geometry):
         self.follow_geometry = []
 
         # made True when the LPC command is encountered in Gerber parsing
-        # it allows adding data into the clear_geometry key of the self.apertures[aperture] dict
+        # it allows adding data into the clear_geometry key of the self.tools[aperture] dict
         self.is_lpc = False
 
         self.source_file = ''
@@ -265,35 +265,35 @@ class Gerber(Geometry):
             paramList = None
 
         if apertureType == "C":  # Circle, example: %ADD11C,0.1*%
-            self.apertures[apid] = {"type": "C",
+            self.tools[apid] = {"type": "C",
                                     "size": float(paramList[0])}
             return apid
 
         if apertureType == "R":  # Rectangle, example: %ADD15R,0.05X0.12*%
-            self.apertures[apid] = {"type": "R",
+            self.tools[apid] = {"type": "R",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
                                     "size": np.sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
 
         if apertureType == "O":  # Obround
-            self.apertures[apid] = {"type": "O",
+            self.tools[apid] = {"type": "O",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
                                     "size": np.sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
 
         if apertureType == "P":  # Polygon (regular)
-            self.apertures[apid] = {"type": "P",
+            self.tools[apid] = {"type": "P",
                                     "diam": float(paramList[0]),
                                     "nVertices": int(paramList[1]),
                                     "size": float(paramList[0])}  # Hack
             if len(paramList) >= 3:
-                self.apertures[apid]["rotation"] = float(paramList[2])
+                self.tools[apid]["rotation"] = float(paramList[2])
             return apid
 
         if apertureType in self.aperture_macros:
-            self.apertures[apid] = {"type": "AM",
+            self.tools[apid] = {"type": "AM",
                                     # "size": 0.0,
                                     "macro": self.aperture_macros[apertureType],
                                     "modifiers": paramList}
@@ -353,7 +353,7 @@ class Gerber(Geometry):
     # @profile
     def parse_lines(self, glines):
         """
-        Main Gerber parser. Reads Gerber and populates ``self.paths``, ``self.apertures``,
+        Main Gerber parser. Reads Gerber and populates ``self.paths``, ``self.tools``,
         ``self.flashes``, ``self.regions`` and ``self.units``.
 
         :param glines: Gerber code as list of strings, each element being
@@ -464,7 +464,7 @@ class Gerber(Geometry):
 
                         # finish the current path and add it to the storage
                         # --- Buffered ----
-                        width = self.apertures[last_path_aperture]["size"]
+                        width = self.tools[last_path_aperture]["size"]
 
                         geo_dict = {}
                         geo_f = LineString(path)
@@ -483,11 +483,11 @@ class Gerber(Geometry):
                             else:
                                 geo_dict['solid'] = geo_s
 
-                        if last_path_aperture not in self.apertures:
-                            self.apertures[last_path_aperture] = {}
-                        if 'geometry' not in self.apertures[last_path_aperture]:
-                            self.apertures[last_path_aperture]['geometry'] = []
-                        self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                        if last_path_aperture not in self.tools:
+                            self.tools[last_path_aperture] = {}
+                        if 'geometry' not in self.tools[last_path_aperture]:
+                            self.tools[last_path_aperture]['geometry'] = []
+                        self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         path = [path[-1]]
 
@@ -688,7 +688,7 @@ class Gerber(Geometry):
                             # self.app.log.debug("Bare op-code %d." % current_operation_code)
                             geo_dict = {}
                             flash = self.create_flash_geometry(
-                                Point(current_x, current_y), self.apertures[current_aperture],
+                                Point(current_x, current_y), self.tools[current_aperture],
                                 self.steps_per_circle)
 
                             geo_dict['follow'] = Point([current_x, current_y])
@@ -703,11 +703,11 @@ class Gerber(Geometry):
                                 else:
                                     geo_dict['solid'] = flash
 
-                                if current_aperture not in self.apertures:
-                                    self.apertures[current_aperture] = {}
-                                if 'geometry' not in self.apertures[current_aperture]:
-                                    self.apertures[current_aperture]['geometry'] = []
-                                self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
+                                if current_aperture not in self.tools:
+                                    self.tools[current_aperture] = {}
+                                if 'geometry' not in self.tools[current_aperture]:
+                                    self.tools[current_aperture]['geometry'] = []
+                                self.tools[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         except IndexError:
                             self.app.log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
@@ -728,10 +728,10 @@ class Gerber(Geometry):
                     # so it can be processed by FlatCAM.
                     # But first test to see if the aperture type is "aperture macro". In that case
                     # we should not test for "size" key as it does not exist in this case.
-                    if self.apertures[current_aperture]["type"] != "AM":
-                        if self.apertures[current_aperture]["size"] == 0:
-                            self.apertures[current_aperture]["size"] = 10 ** -self.decimals
-                    # self.app.log.debug(self.apertures[current_aperture])
+                    if self.tools[current_aperture]["type"] != "AM":
+                        if self.tools[current_aperture]["size"] == 0:
+                            self.tools[current_aperture]["size"] = 10 ** -self.decimals
+                    # self.app.log.debug(self.tools[current_aperture])
 
                     # Take care of the current path with the previous tool
                     try:
@@ -740,7 +740,7 @@ class Gerber(Geometry):
                         path_length = 1
 
                     if path_length > 1:
-                        if self.apertures[last_path_aperture]["type"] == 'R':
+                        if self.tools[last_path_aperture]["type"] == 'R':
                             # do nothing because 'R' type moving aperture is none at once
                             pass
                         else:
@@ -751,7 +751,7 @@ class Gerber(Geometry):
                                 geo_dict['follow'] = geo_f
 
                             # --- Buffered ----
-                            width = self.apertures[last_path_aperture]["size"]
+                            width = self.tools[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if self.app.defaults['gerber_simplification']:
                                 geo_s = geo_s.simplify(s_tol)
@@ -763,11 +763,11 @@ class Gerber(Geometry):
                                 else:
                                     geo_dict['solid'] = geo_s
 
-                            if last_path_aperture not in self.apertures:
-                                self.apertures[last_path_aperture] = {}
-                            if 'geometry' not in self.apertures[last_path_aperture]:
-                                self.apertures[last_path_aperture]['geometry'] = []
-                            self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                            if last_path_aperture not in self.tools:
+                                self.tools[last_path_aperture] = {}
+                            if 'geometry' not in self.tools[last_path_aperture]:
+                                self.tools[last_path_aperture]['geometry'] = []
+                            self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             path = [path[-1]]
                     continue
@@ -791,7 +791,7 @@ class Gerber(Geometry):
                             geo_dict['follow'] = geo_f
 
                         # --- Buffered ----
-                        width = self.apertures[last_path_aperture]["size"]
+                        width = self.tools[last_path_aperture]["size"]
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo_s.is_valid:
                             self.app.log.warning(
@@ -802,10 +802,10 @@ class Gerber(Geometry):
                             self.app.log.warning(
                                 "Failed to fix the invalid Geometry found at line: %s" % str(line_num))
                         else:
-                            if last_path_aperture not in self.apertures:
-                                self.apertures[last_path_aperture] = {}
-                            if 'geometry' not in self.apertures[last_path_aperture]:
-                                self.apertures[last_path_aperture]['geometry'] = []
+                            if last_path_aperture not in self.tools:
+                                self.tools[last_path_aperture] = {}
+                            if 'geometry' not in self.tools[last_path_aperture]:
+                                self.tools[last_path_aperture]['geometry'] = []
                             try:
                                 for pol in geo_s:
                                     if not pol.is_empty:
@@ -820,7 +820,7 @@ class Gerber(Geometry):
                                             geo_dict['solid'] = pol
 
                                     if not pol.is_empty:
-                                        self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                                        self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
                             except TypeError:
                                 if not geo_s.is_empty:
                                     # is it possible that simplification creates an Empty Geometry ?????
@@ -834,7 +834,7 @@ class Gerber(Geometry):
                                         geo_dict['solid'] = geo_s
 
                                 if not geo_s.is_empty:
-                                    self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                                    self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         path = [path[-1]]
 
@@ -847,11 +847,11 @@ class Gerber(Geometry):
                 if self.regionoff_re.search(gline):
                     making_region = False
 
-                    if '0' not in self.apertures:
-                        self.apertures['0'] = {}
-                        self.apertures['0']['type'] = 'REG'
-                        self.apertures['0']['size'] = 0.0
-                        self.apertures['0']['geometry'] = []
+                    if '0' not in self.tools:
+                        self.tools['0'] = {}
+                        self.tools['0']['type'] = 'REG'
+                        self.tools['0']['size'] = 0.0
+                        self.tools['0']['geometry'] = []
 
                     # if D02 happened before G37 we now have a path with 1 element only; we have to add the current
                     # geo to the poly_buffer otherwise we loose it
@@ -882,7 +882,7 @@ class Gerber(Geometry):
                                         geo_dict['solid'] = geo_s
 
                             if geo_s or geo_f:
-                                self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                                self.tools['0']['geometry'].append(deepcopy(geo_dict))
 
                             path = [[current_x, current_y]]  # Start new path
 
@@ -903,9 +903,9 @@ class Gerber(Geometry):
 
                     # --- Buffered ---
                     geo_dict = {}
-                    if current_aperture in self.apertures:
+                    if current_aperture in self.tools:
                         # the following line breaks loading of Circuit Studio Gerber files
-                        # buff_value = float(self.apertures[current_aperture]['size']) / 2.0
+                        # buff_value = float(self.tools[current_aperture]['size']) / 2.0
                         # region_geo = Polygon(path).buffer(buff_value, int(self.steps_per_circle))
                         region_geo = Polygon(path)  # Sprint Layout Gerbers with ground fill are crashed with above
                     else:
@@ -942,7 +942,7 @@ class Gerber(Geometry):
                                             geo_dict['solid'] = pol
 
                                         if not pol.is_empty:
-                                            self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                                            self.tools['0']['geometry'].append(deepcopy(geo_dict))
                                 except TypeError:
                                     # is it possible that simplification creates an Empty Geometry ?????
                                     if self.app.defaults['gerber_simplification']:
@@ -961,7 +961,7 @@ class Gerber(Geometry):
                                         geo_dict['solid'] = region_s
 
                                     if not region_s.is_empty:
-                                        self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                                        self.tools['0']['geometry'].append(deepcopy(geo_dict))
                         else:
                             # is it possible that simplification creates an Empty Geometry ?????
                             if self.app.defaults['gerber_simplification']:
@@ -980,7 +980,7 @@ class Gerber(Geometry):
                                 geo_dict['solid'] = region_s
 
                             if not region_s.is_empty:
-                                self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+                                self.tools['0']['geometry'].append(deepcopy(geo_dict))
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
@@ -1059,7 +1059,7 @@ class Gerber(Geometry):
                                     # this treats the case when we are storing geometry as solids
                                     flash = self.create_flash_geometry(
                                         Point([current_x, current_y]),
-                                        self.apertures[current_aperture],
+                                        self.tools[current_aperture],
                                         self.steps_per_circle
                                     )
                                     if not flash.is_empty:
@@ -1073,20 +1073,20 @@ class Gerber(Geometry):
                                         else:
                                             geo_dict['solid'] = flash
 
-                                    if current_aperture not in self.apertures:
-                                        self.apertures[current_aperture] = {}
-                                    if 'geometry' not in self.apertures[current_aperture]:
-                                        self.apertures[current_aperture]['geometry'] = []
-                                    self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
+                                    if current_aperture not in self.tools:
+                                        self.tools[current_aperture] = {}
+                                    if 'geometry' not in self.tools[current_aperture]:
+                                        self.tools[current_aperture]['geometry'] = []
+                                    self.tools[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
                                 # coordinates of the start and end point and also the width and height
                                 # of the 'R' aperture
                                 try:
-                                    if self.apertures[current_aperture]["type"] == 'R':
-                                        width = self.apertures[current_aperture]['width']
-                                        height = self.apertures[current_aperture]['height']
+                                    if self.tools[current_aperture]["type"] == 'R':
+                                        width = self.tools[current_aperture]['width']
+                                        height = self.tools[current_aperture]['height']
                                         minx = min(path[0][0], path[1][0]) - width / 2
                                         maxx = max(path[0][0], path[1][0]) + width / 2
                                         miny = min(path[0][1], path[1][1]) - height / 2
@@ -1109,21 +1109,21 @@ class Gerber(Geometry):
                                         else:
                                             geo_dict['solid'] = geo_s
 
-                                        if current_aperture not in self.apertures:
-                                            self.apertures[current_aperture] = {}
-                                        if 'geometry' not in self.apertures[current_aperture]:
-                                            self.apertures[current_aperture]['geometry'] = []
-                                        self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
+                                        if current_aperture not in self.tools:
+                                            self.tools[current_aperture] = {}
+                                        if 'geometry' not in self.tools[current_aperture]:
+                                            self.tools[current_aperture]['geometry'] = []
+                                        self.tools[current_aperture]['geometry'].append(deepcopy(geo_dict))
                                 except Exception:
                                     pass
                             last_path_aperture = current_aperture
                             # we do this for the case that a region is done without having defined any aperture
                             if last_path_aperture is None:
-                                if '0' not in self.apertures:
-                                    self.apertures['0'] = {}
-                                    self.apertures['0']['type'] = 'REG'
-                                    self.apertures['0']['size'] = 0.0
-                                    self.apertures['0']['geometry'] = []
+                                if '0' not in self.tools:
+                                    self.tools['0'] = {}
+                                    self.tools['0']['type'] = 'REG'
+                                    self.tools['0']['size'] = 0.0
+                                    self.tools['0']['geometry'] = []
                                 last_path_aperture = '0'
                         else:
                             self.app.inform.emit('[WARNING] %s: %s' %
@@ -1146,18 +1146,18 @@ class Gerber(Geometry):
                             if making_region:
                                 # we do this for the case that a region is done without having defined any aperture
                                 if last_path_aperture is None:
-                                    if '0' not in self.apertures:
-                                        self.apertures['0'] = {}
-                                        self.apertures['0']['type'] = 'REG'
-                                        self.apertures['0']['size'] = 0.0
-                                        self.apertures['0']['geometry'] = []
+                                    if '0' not in self.tools:
+                                        self.tools['0'] = {}
+                                        self.tools['0']['type'] = 'REG'
+                                        self.tools['0']['size'] = 0.0
+                                        self.tools['0']['geometry'] = []
                                     last_path_aperture = '0'
                                 geo_f = Polygon()
                             else:
                                 geo_f = LineString(path)
 
                             try:
-                                if self.apertures[last_path_aperture]["type"] != 'R':
+                                if self.tools[last_path_aperture]["type"] != 'R':
                                     if not geo_f.is_empty:
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
@@ -1171,11 +1171,11 @@ class Gerber(Geometry):
                             if making_region:
                                 # we do this for the case that a region is done without having defined any aperture
                                 if last_path_aperture is None:
-                                    if '0' not in self.apertures:
-                                        self.apertures['0'] = {}
-                                        self.apertures['0']['type'] = 'REG'
-                                        self.apertures['0']['size'] = 0.0
-                                        self.apertures['0']['geometry'] = []
+                                    if '0' not in self.tools:
+                                        self.tools['0'] = {}
+                                        self.tools['0']['type'] = 'REG'
+                                        self.tools['0']['size'] = 0.0
+                                        self.tools['0']['geometry'] = []
                                     last_path_aperture = '0'
 
                                 try:
@@ -1189,11 +1189,12 @@ class Gerber(Geometry):
                             else:
                                 if last_path_aperture is None:
                                     self.app.log.warning("No aperture defined for curent path. (%d)" % line_num)
-                                width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
+                                # TODO: this may (should) fail
+                                width = self.tools[last_path_aperture]["size"]
                                 geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
 
                             try:
-                                if self.apertures[last_path_aperture]["type"] != 'R':
+                                if self.tools[last_path_aperture]["type"] != 'R':
                                     if not geo_s.is_empty:
                                         if self.app.defaults['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
@@ -1216,11 +1217,11 @@ class Gerber(Geometry):
                                 else:
                                     geo_dict['solid'] = geo_s
 
-                            if last_path_aperture not in self.apertures:
-                                self.apertures[last_path_aperture] = {}
-                            if 'geometry' not in self.apertures[last_path_aperture]:
-                                self.apertures[last_path_aperture]['geometry'] = []
-                            self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                            if last_path_aperture not in self.tools:
+                                self.tools[last_path_aperture] = {}
+                            if 'geometry' not in self.tools[last_path_aperture]:
+                                self.tools[last_path_aperture]['geometry'] = []
+                            self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
@@ -1249,7 +1250,7 @@ class Gerber(Geometry):
                             geo_f = LineString(path)
                             if not geo_f.is_empty:
                                 try:
-                                    if self.apertures[last_path_aperture]["type"] != 'R':
+                                    if self.tools[last_path_aperture]["type"] != 'R':
                                         follow_buffer.append(geo_f)
                                         geo_dict['follow'] = geo_f
                                 except Exception as e:
@@ -1258,11 +1259,11 @@ class Gerber(Geometry):
                                     geo_dict['follow'] = geo_f
 
                             # this treats the case when we are storing geometry as solids
-                            width = self.apertures[last_path_aperture]["size"]
+                            width = self.tools[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo_s.is_empty:
                                 try:
-                                    if self.apertures[last_path_aperture]["type"] != 'R':
+                                    if self.tools[last_path_aperture]["type"] != 'R':
                                         if self.app.defaults['gerber_simplification']:
                                             geo_s = geo_s.simplify(s_tol)
 
@@ -1283,11 +1284,11 @@ class Gerber(Geometry):
                                     else:
                                         geo_dict['solid'] = geo_s
 
-                            if last_path_aperture not in self.apertures:
-                                self.apertures[last_path_aperture] = {}
-                            if 'geometry' not in self.apertures[last_path_aperture]:
-                                self.apertures[last_path_aperture]['geometry'] = []
-                            self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                            if last_path_aperture not in self.tools:
+                                self.tools[last_path_aperture] = {}
+                            if 'geometry' not in self.tools[last_path_aperture]:
+                                self.tools[last_path_aperture]['geometry'] = []
+                            self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         # Reset path starting point
                         path = [[linear_x, linear_y]]
@@ -1303,7 +1304,7 @@ class Gerber(Geometry):
                         # this treats the case when we are storing geometry as solids
                         flash = self.create_flash_geometry(
                             Point([linear_x, linear_y]),
-                            self.apertures[current_aperture],
+                            self.tools[current_aperture],
                             self.steps_per_circle
                         )
 
@@ -1318,11 +1319,11 @@ class Gerber(Geometry):
                             else:
                                 geo_dict['solid'] = flash
 
-                        if current_aperture not in self.apertures:
-                            self.apertures[current_aperture] = {}
-                        if 'geometry' not in self.apertures[current_aperture]:
-                            self.apertures[current_aperture]['geometry'] = []
-                        self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
+                        if current_aperture not in self.tools:
+                            self.tools[current_aperture] = {}
+                        if 'geometry' not in self.tools[current_aperture]:
+                            self.tools[current_aperture]['geometry'] = []
+                        self.tools[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                     # maybe those lines are not exactly needed but it is easier to read the program as those coordinates
                     # are used in case that circular interpolation is encountered within the Gerber file
@@ -1410,7 +1411,7 @@ class Gerber(Geometry):
                                 self.app.log.warning("No aperture defined for curent path. (%d)" % line_num)
 
                             # --- BUFFERED ---
-                            width = self.apertures[last_path_aperture]["size"]
+                            width = self.tools[last_path_aperture]["size"]
 
                             # this treats the case when we are storing geometry as paths
                             geo_f = LineString(path)
@@ -1431,11 +1432,11 @@ class Gerber(Geometry):
                                 else:
                                     geo_dict['solid'] = buffered
 
-                            if last_path_aperture not in self.apertures:
-                                self.apertures[last_path_aperture] = {}
-                            if 'geometry' not in self.apertures[last_path_aperture]:
-                                self.apertures[last_path_aperture]['geometry'] = []
-                            self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                            if last_path_aperture not in self.tools:
+                                self.tools[last_path_aperture] = {}
+                            if 'geometry' not in self.tools[last_path_aperture]:
+                                self.tools[last_path_aperture]['geometry'] = []
+                            self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                         current_x = circular_x
                         current_y = circular_y
@@ -1557,7 +1558,7 @@ class Gerber(Geometry):
                 # In case that G01 (moving) aperture is rectangular, there is no need to still create
                 # another geo since we already created a shapely box using the start and end coordinates found in
                 # path variable. We do it only for other apertures than 'R' type
-                if self.apertures[last_path_aperture]["type"] == 'R':
+                if self.tools[last_path_aperture]["type"] == 'R':
                     pass
                 else:
                     # EOF, create shapely LineString if something still in path
@@ -1571,7 +1572,7 @@ class Gerber(Geometry):
                         geo_dict['follow'] = geo_f
 
                     # this treats the case when we are storing geometry as solids
-                    width = self.apertures[last_path_aperture]["size"]
+                    width = self.tools[last_path_aperture]["size"]
                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo_s.is_empty:
                         if self.app.defaults['gerber_simplification']:
@@ -1584,11 +1585,11 @@ class Gerber(Geometry):
                         else:
                             geo_dict['solid'] = geo_s
 
-                    if last_path_aperture not in self.apertures:
-                        self.apertures[last_path_aperture] = {}
-                    if 'geometry' not in self.apertures[last_path_aperture]:
-                        self.apertures[last_path_aperture]['geometry'] = []
-                    self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
+                    if last_path_aperture not in self.tools:
+                        self.tools[last_path_aperture] = {}
+                    if 'geometry' not in self.tools[last_path_aperture]:
+                        self.tools[last_path_aperture]['geometry'] = []
+                    self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
@@ -1679,9 +1680,9 @@ class Gerber(Geometry):
 
             if self.app.defaults['gerber_clean_apertures']:
                 # clean the Gerber file of apertures with no geometry
-                for apid, apvalue in list(self.apertures.items()):
+                for apid, apvalue in list(self.tools.items()):
                     if 'geometry' not in apvalue:
-                        self.apertures.pop(apid)
+                        self.tools.pop(apid)
 
             # init this for the following operations
             self.conversion_done = False
@@ -1959,8 +1960,8 @@ class Gerber(Geometry):
         except TypeError:
             self.solid_geometry = [self.solid_geometry]
 
-        if '0' not in self.apertures:
-            self.apertures['0'] = {
+        if '0' not in self.tools:
+            self.tools['0'] = {
                 'type': 'REG',
                 'size': 0.0,
                 'geometry': []
@@ -1968,7 +1969,7 @@ class Gerber(Geometry):
 
         for pol in self.solid_geometry:
             new_el = {'solid': pol, 'follow': pol.exterior}
-            self.apertures['0']['geometry'].append(new_el)
+            self.tools['0']['geometry'].append(new_el)
 
     def import_dxf_as_gerber(self, filename, units='MM'):
         """
@@ -2007,9 +2008,9 @@ class Gerber(Geometry):
         else:
             return "fail"
 
-        # create the self.apertures data structure
-        if '0' not in self.apertures:
-            self.apertures['0'] = {
+        # create the self.tools data structure
+        if '0' not in self.tools:
+            self.tools['0'] = {
                 'type': 'REG',
                 'size': 0.0,
                 'geometry': []
@@ -2017,7 +2018,7 @@ class Gerber(Geometry):
 
         for pol in flat_geo:
             new_el = {'solid': pol, 'follow': pol}
-            self.apertures['0']['geometry'].append(deepcopy(new_el))
+            self.tools['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
         """
@@ -2102,10 +2103,10 @@ class Gerber(Geometry):
 
         # we need to scale the geometry stored in the Gerber apertures, too
         try:
-            for apid in self.apertures:
+            for apid in self.tools:
                 new_geometry = []
-                if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
+                if 'geometry' in self.tools[apid]:
+                    for geo_el in self.tools[apid]['geometry']:
                         new_geo_el = {}
                         if 'solid' in geo_el:
                             new_geo_el['solid'] = scale_geom(geo_el['solid'])
@@ -2115,21 +2116,21 @@ class Gerber(Geometry):
                             new_geo_el['clear'] = scale_geom(geo_el['clear'])
                         new_geometry.append(new_geo_el)
 
-                self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+                self.tools[apid]['geometry'] = deepcopy(new_geometry)
 
                 try:
-                    if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
-                        self.apertures[apid]['width'] *= xfactor
-                        self.apertures[apid]['height'] *= xfactor
-                    elif str(self.apertures[apid]['type']) == 'P':
-                        self.apertures[apid]['diam'] *= xfactor
-                        self.apertures[apid]['nVertices'] *= xfactor
+                    if str(self.tools[apid]['type']) == 'R' or str(self.tools[apid]['type']) == 'O':
+                        self.tools[apid]['width'] *= xfactor
+                        self.tools[apid]['height'] *= xfactor
+                    elif str(self.tools[apid]['type']) == 'P':
+                        self.tools[apid]['diam'] *= xfactor
+                        self.tools[apid]['nVertices'] *= xfactor
                 except KeyError:
                     pass
 
                 try:
-                    if self.apertures[apid]['size'] is not None:
-                        self.apertures[apid]['size'] = float(self.apertures[apid]['size'] * xfactor)
+                    if self.tools[apid]['size'] is not None:
+                        self.tools[apid]['size'] = float(self.tools[apid]['size'] * xfactor)
                 except KeyError:
                     pass
 
@@ -2214,9 +2215,9 @@ class Gerber(Geometry):
 
         # we need to offset the geometry stored in the Gerber apertures, too
         try:
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
+            for apid in self.tools:
+                if 'geometry' in self.tools[apid]:
+                    for geo_el in self.tools[apid]['geometry']:
                         if 'solid' in geo_el:
                             geo_el['solid'] = offset_geom(geo_el['solid'])
                         if 'follow' in geo_el:
@@ -2290,9 +2291,9 @@ class Gerber(Geometry):
 
         # we need to mirror the geometry stored in the Gerber apertures, too
         try:
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
+            for apid in self.tools:
+                if 'geometry' in self.tools[apid]:
+                    for geo_el in self.tools[apid]['geometry']:
                         if 'solid' in geo_el:
                             geo_el['solid'] = mirror_geom(geo_el['solid'])
                         if 'follow' in geo_el:
@@ -2364,9 +2365,9 @@ class Gerber(Geometry):
 
         # we need to skew the geometry stored in the Gerber apertures, too
         try:
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
+            for apid in self.tools:
+                if 'geometry' in self.tools[apid]:
+                    for geo_el in self.tools[apid]['geometry']:
                         if 'solid' in geo_el:
                             geo_el['solid'] = skew_geom(geo_el['solid'])
                         if 'follow' in geo_el:
@@ -2427,9 +2428,9 @@ class Gerber(Geometry):
 
         # we need to rotate the geometry stored in the Gerber apertures, too
         try:
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
+            for apid in self.tools:
+                if 'geometry' in self.tools[apid]:
+                    for geo_el in self.tools[apid]['geometry']:
                         if 'solid' in geo_el:
                             geo_el['solid'] = rotate_geom(geo_el['solid'])
                         if 'follow' in geo_el:
@@ -2494,10 +2495,10 @@ class Gerber(Geometry):
 
             # we need to buffer the geometry stored in the Gerber apertures, too
             try:
-                for apid in self.apertures:
+                for apid in self.tools:
                     new_geometry = []
-                    if 'geometry' in self.apertures[apid]:
-                        for geo_el in self.apertures[apid]['geometry']:
+                    if 'geometry' in self.tools[apid]:
+                        for geo_el in self.tools[apid]['geometry']:
                             new_geo_el = {}
                             if 'solid' in geo_el:
                                 new_geo_el['solid'] = buffer_geom(geo_el['solid'])
@@ -2507,21 +2508,21 @@ class Gerber(Geometry):
                                 new_geo_el['clear'] = buffer_geom(geo_el['clear'])
                             new_geometry.append(new_geo_el)
 
-                    self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+                    self.tools[apid]['geometry'] = deepcopy(new_geometry)
 
                     try:
-                        if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
-                            self.apertures[apid]['width'] += (distance * 2)
-                            self.apertures[apid]['height'] += (distance * 2)
-                        elif str(self.apertures[apid]['type']) == 'P':
-                            self.apertures[apid]['diam'] += (distance * 2)
-                            self.apertures[apid]['nVertices'] += (distance * 2)
+                        if str(self.tools[apid]['type']) == 'R' or str(self.tools[apid]['type']) == 'O':
+                            self.tools[apid]['width'] += (distance * 2)
+                            self.tools[apid]['height'] += (distance * 2)
+                        elif str(self.tools[apid]['type']) == 'P':
+                            self.tools[apid]['diam'] += (distance * 2)
+                            self.tools[apid]['nVertices'] += (distance * 2)
                     except KeyError:
                         pass
 
                     try:
-                        if self.apertures[apid]['size'] is not None:
-                            self.apertures[apid]['size'] = float(self.apertures[apid]['size'] + (distance * 2))
+                        if self.tools[apid]['size'] is not None:
+                            self.tools[apid]['size'] = float(self.tools[apid]['size'] + (distance * 2))
                     except KeyError:
                         pass
             except Exception as e:
@@ -2529,39 +2530,39 @@ class Gerber(Geometry):
                 return 'fail'
         else:
             try:
-                for apid in self.apertures:
+                for apid in self.tools:
                     try:
-                        if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
-                            self.apertures[apid]['width'] *= distance
-                            self.apertures[apid]['height'] *= distance
-                        elif str(self.apertures[apid]['type']) == 'P':
-                            self.apertures[apid]['diam'] *= distance
-                            self.apertures[apid]['nVertices'] *= distance
+                        if str(self.tools[apid]['type']) == 'R' or str(self.tools[apid]['type']) == 'O':
+                            self.tools[apid]['width'] *= distance
+                            self.tools[apid]['height'] *= distance
+                        elif str(self.tools[apid]['type']) == 'P':
+                            self.tools[apid]['diam'] *= distance
+                            self.tools[apid]['nVertices'] *= distance
                     except KeyError:
                         pass
 
                     try:
-                        if self.apertures[apid]['size'] is not None:
-                            self.apertures[apid]['size'] = float(self.apertures[apid]['size']) * distance
+                        if self.tools[apid]['size'] is not None:
+                            self.tools[apid]['size'] = float(self.tools[apid]['size']) * distance
                     except KeyError:
                         pass
 
                     new_geometry = []
-                    if 'geometry' in self.apertures[apid]:
-                        for geo_el in self.apertures[apid]['geometry']:
+                    if 'geometry' in self.tools[apid]:
+                        for geo_el in self.tools[apid]['geometry']:
                             new_geo_el = {}
                             if 'follow' in geo_el:
                                 new_geo_el['follow'] = geo_el['follow']
-                                size = float(self.apertures[apid]['size'])
+                                size = float(self.tools[apid]['size'])
                                 if isinstance(new_geo_el['follow'], Point):
-                                    if str(self.apertures[apid]['type']) == 'C':
+                                    if str(self.tools[apid]['type']) == 'C':
                                         new_geo_el['solid'] = geo_el['follow'].buffer(
                                             size / 1.9999,
                                             resolution=int(self.steps_per_circle)
                                         )
-                                    elif str(self.apertures[apid]['type']) == 'R':
-                                        width = self.apertures[apid]['width']
-                                        height = self.apertures[apid]['height']
+                                    elif str(self.tools[apid]['type']) == 'R':
+                                        width = self.tools[apid]['width']
+                                        height = self.tools[apid]['height']
                                         minx = new_geo_el['follow'].x - width / 2
                                         maxx = new_geo_el['follow'].x + width / 2
                                         miny = new_geo_el['follow'].y - height / 2
@@ -2581,16 +2582,16 @@ class Gerber(Geometry):
                                 new_geo_el['clear'] = geo_el['clear']
                             new_geometry.append(new_geo_el)
 
-                    self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+                    self.tools[apid]['geometry'] = deepcopy(new_geometry)
             except Exception as e:
                 self.app.log.error('ParseGerber.Gerber.buffer() Exception --> %s' % str(e))
                 return 'fail'
 
             # make the new solid_geometry
             new_solid_geo = []
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    new_solid_geo += [geo_el['solid'] for geo_el in self.apertures[apid]['geometry']]
+            for apid in self.tools:
+                if 'geometry' in self.tools[apid]:
+                    new_solid_geo += [geo_el['solid'] for geo_el in self.tools[apid]['geometry']]
 
             self.solid_geometry = MultiPolygon(new_solid_geo)
             self.solid_geometry = self.solid_geometry.buffer(0.000001)

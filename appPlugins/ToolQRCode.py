@@ -322,8 +322,8 @@ class QRCode(AppTool):
 
         sort_apid = []
         new_apid = '10'
-        if self.grb_object.apertures:
-            for k, v in list(self.grb_object.apertures.items()):
+        if self.grb_object.tools:
+            for k, v in list(self.grb_object.tools.items()):
                 sort_apid.append(int(k))
             sorted_apertures = sorted(sort_apid)
             max_apid = max(sorted_apertures)
@@ -333,8 +333,8 @@ class QRCode(AppTool):
                 new_apid = '10'
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
-        if new_apid not in self.grb_object.apertures:
-            self.grb_object.apertures[new_apid] = {
+        if new_apid not in self.grb_object.tools:
+            self.grb_object.tools[new_apid] = {
                 'type': 'R',
                 'geometry': []
             }
@@ -343,12 +343,12 @@ class QRCode(AppTool):
             # I've artificially added 1% to the height and width because otherwise after loading the
             # exported file, it will not be correctly reconstructed (it will be made from multiple shapes instead of
             # one shape which show that the buffering didn't worked well). It may be the MM to INCH conversion.
-            self.grb_object.apertures[new_apid]['height'] = deepcopy(box_size * 1.01)
-            self.grb_object.apertures[new_apid]['width'] = deepcopy(box_size * 1.01)
-            self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
+            self.grb_object.tools[new_apid]['height'] = deepcopy(box_size * 1.01)
+            self.grb_object.tools[new_apid]['width'] = deepcopy(box_size * 1.01)
+            self.grb_object.tools[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
-        if '0' not in self.grb_object.apertures:
-            self.grb_object.apertures['0'] = {
+        if '0' not in self.grb_object.tools:
+            self.grb_object.tools['0'] = {
                 'type': 'REG',
                 'size': 0.0,
                 'geometry': []
@@ -357,7 +357,7 @@ class QRCode(AppTool):
         # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
         # make sure that I place a cutout there
         zero_elem = {'clear': offset_mask_geo}
-        self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
+        self.grb_object.tools['0']['geometry'].append(deepcopy(zero_elem))
 
         try:
             a, b, c, d = self.grb_object.bounds()
@@ -374,10 +374,10 @@ class QRCode(AppTool):
                     'solid': translate(geo, xoff=pos[0], yoff=pos[1]),
                     'follow': translate(geo.centroid, xoff=pos[0], yoff=pos[1])
                 }
-                self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+                self.grb_object.tools[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
             geo_elem = {'solid': self.qrcode_geometry}
-            self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+            self.grb_object.tools[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:
         self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],

@@ -141,7 +141,7 @@ class ToolPunchGerber(AppTool, Gerber):
             grb_obj.mark_shapes.enabled = True
 
             # create storage for shapes
-            for ap_code in grb_obj.apertures:
+            for ap_code in grb_obj.tools:
                 grb_obj.mark_shapes_storage[ap_code] = []
 
             self.old_name = grb_obj.options['name']
@@ -244,7 +244,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         try:
             obj = model_index.internalPointer().obj
-            sort = [int(k) for k in obj.apertures.keys()]
+            sort = [int(k) for k in obj.tools.keys()]
             sorted_apertures = sorted(sort)
         except Exception:
             # no object loaded
@@ -255,7 +255,7 @@ class ToolPunchGerber(AppTool, Gerber):
         n = 0
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
-            ap_type = obj.apertures[ap_code]['type']
+            ap_type = obj.tools[ap_code]['type']
 
             if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
                 n += 1
@@ -275,7 +275,7 @@ class ToolPunchGerber(AppTool, Gerber):
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
 
-            ap_type = obj.apertures[ap_code]['type']
+            ap_type = obj.tools[ap_code]['type']
             if ap_type == 'C':
                 if self.ui.circular_cb.get_value() is False:
                     continue
@@ -304,8 +304,8 @@ class ToolPunchGerber(AppTool, Gerber):
 
             # Aperture SIZE
             try:
-                if obj.apertures[ap_code]['size'] is not None:
-                    size_val = self.app.dec_format(float(obj.apertures[ap_code]['size']), self.decimals)
+                if obj.tools[ap_code]['size'] is not None:
+                    size_val = self.app.dec_format(float(obj.tools[ap_code]['size']), self.decimals)
                     ap_size_item = QtWidgets.QTableWidgetItem(str(size_val))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
@@ -579,9 +579,9 @@ class ToolPunchGerber(AppTool, Gerber):
         # this is the target geometry
         grb_solid_geometry = []
         target_geometry = []
-        for apid in grb_obj.apertures:
-            if 'geometry' in grb_obj.apertures[apid]:
-                for el_geo in grb_obj.apertures[apid]['geometry']:
+        for apid in grb_obj.tools:
+            if 'geometry' in grb_obj.tools[apid]:
+                for el_geo in grb_obj.tools[apid]['geometry']:
                     if 'solid' in el_geo:
                         if apid in sel_apid:
                             target_geometry.append(el_geo['solid'])
@@ -605,7 +605,7 @@ class ToolPunchGerber(AppTool, Gerber):
         punched_solid_geometry = unary_union(punched_solid_geometry)
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
-        new_apertures = deepcopy(grb_obj.apertures)
+        new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -650,7 +650,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -685,17 +685,17 @@ class ToolPunchGerber(AppTool, Gerber):
             apid = sel_geo['apid']
             idx = sel_geo['idx']
             for exc_geo in exc_solid_geometry.geoms:
-                if exc_geo.within(self.grb_obj.apertures[apid]['geometry'][idx]['solid']) and \
-                        isinstance(self.grb_obj.apertures[apid]['geometry'][idx]['follow'], Point):
+                if exc_geo.within(self.grb_obj.tools[apid]['geometry'][idx]['solid']) and \
+                        isinstance(self.grb_obj.tools[apid]['geometry'][idx]['follow'], Point):
                     fin_exc_geo.append(exc_geo)
         exc_solid_geometry = MultiPolygon(fin_exc_geo)
 
         # this is the target geometry
         grb_solid_geometry = []
         target_geometry = []
-        for apid in self.grb_obj.apertures:
-            if 'geometry' in self.grb_obj.apertures[apid]:
-                for el_geo in self.grb_obj.apertures[apid]['geometry']:
+        for apid in self.grb_obj.tools:
+            if 'geometry' in self.grb_obj.tools[apid]:
+                for el_geo in self.grb_obj.tools[apid]['geometry']:
                     if 'solid' in el_geo:
                         if apid in sel_apid:
                             target_geometry.append(el_geo['solid'])
@@ -719,7 +719,7 @@ class ToolPunchGerber(AppTool, Gerber):
         punched_solid_geometry = unary_union(punched_solid_geometry)
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
-        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -729,7 +729,7 @@ class ToolPunchGerber(AppTool, Gerber):
         for pad_elem in self.manual_pads:
             apid = pad_elem['apid']
             idx = pad_elem['idx']
-            sel_geo = self.grb_obj.apertures[apid]['geometry'][idx]['solid']
+            sel_geo = self.grb_obj.tools[apid]['geometry'][idx]['solid']
             sel_pad_geo_list.append(sel_geo)
 
         # store here the clear geometry, the key is the drill size
@@ -771,7 +771,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -798,53 +798,53 @@ class ToolPunchGerber(AppTool, Gerber):
             sel_apid.append(it.text())
 
         punching_geo = []
-        for apid in grb_obj.apertures:
+        for apid in grb_obj.tools:
             if apid in sel_apid:
-                if grb_obj.apertures[apid]['type'] == 'C' and self.ui.circular_cb.get_value():
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                if grb_obj.tools[apid]['type'] == 'C' and self.ui.circular_cb.get_value():
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
-                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                if punch_size >= float(grb_obj.tools[apid]['size']):
                                     self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                                     return 'fail'
                                 punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                elif grb_obj.apertures[apid]['type'] == 'R':
+                elif grb_obj.tools[apid]['type'] == 'R':
 
-                    if round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
-                            round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
+                    if round(float(grb_obj.tools[apid]['width']), self.decimals) == \
+                            round(float(grb_obj.tools[apid]['height']), self.decimals) and \
                             self.ui.square_cb.get_value():
-                        for elem in grb_obj.apertures[apid]['geometry']:
+                        for elem in grb_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
-                                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
-                                            punch_size >= float(grb_obj.apertures[apid]['height']):
+                                    if punch_size >= float(grb_obj.tools[apid]['width']) or \
+                                            punch_size >= float(grb_obj.tools[apid]['height']):
                                         self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                                         return 'fail'
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                    elif round(float(grb_obj.apertures[apid]['width']), self.decimals) != \
-                            round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
+                    elif round(float(grb_obj.tools[apid]['width']), self.decimals) != \
+                            round(float(grb_obj.tools[apid]['height']), self.decimals) and \
                             self.ui.rectangular_cb.get_value():
-                        for elem in grb_obj.apertures[apid]['geometry']:
+                        for elem in grb_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
-                                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
-                                            punch_size >= float(grb_obj.apertures[apid]['height']):
+                                    if punch_size >= float(grb_obj.tools[apid]['width']) or \
+                                            punch_size >= float(grb_obj.tools[apid]['height']):
                                         self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                                         return 'fail'
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                elif grb_obj.apertures[apid]['type'] == 'O' and self.ui.oblong_cb.get_value():
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                elif grb_obj.tools[apid]['type'] == 'O' and self.ui.oblong_cb.get_value():
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
-                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                if punch_size >= float(grb_obj.tools[apid]['size']):
                                     self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                                     return 'fail'
                                 punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                elif grb_obj.apertures[apid]['type'] not in ['C', 'R', 'O'] and self.ui.other_cb.get_value():
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                elif grb_obj.tools[apid]['type'] not in ['C', 'R', 'O'] and self.ui.other_cb.get_value():
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
-                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                if punch_size >= float(grb_obj.tools[apid]['size']):
                                     self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                                     return 'fail'
                                 punching_geo.append(elem['follow'].buffer(punch_size / 2))
@@ -863,7 +863,7 @@ class ToolPunchGerber(AppTool, Gerber):
             return 'fail'
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
-        new_apertures = deepcopy(grb_obj.apertures)
+        new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -904,7 +904,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -932,16 +932,16 @@ class ToolPunchGerber(AppTool, Gerber):
 
         # this is the punching geometry
         punching_geo = []
-        for apid in self.grb_obj.apertures:
+        for apid in self.grb_obj.tools:
             for pad_elem in self.manual_pads:
                 pad_apid = pad_elem['apid']
                 pad_idx = pad_elem['idx']
                 if pad_apid == apid:
-                    if 'size' in self.grb_obj.apertures[apid]:
-                        if punch_size >= float(self.grb_obj.apertures[apid]['size']):
+                    if 'size' in self.grb_obj.tools[apid]:
+                        if punch_size >= float(self.grb_obj.tools[apid]['size']):
                             self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
                             return 'fail'
-                    pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                    pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                     punching_geo.append(pad_point.buffer(punch_size / 2))
 
         punching_geo = MultiPolygon(punching_geo)
@@ -958,7 +958,7 @@ class ToolPunchGerber(AppTool, Gerber):
             return 'fail'
 
         # update the gerber apertures to include the clear geometry so it can be exported successfully
-        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -999,7 +999,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -1026,7 +1026,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         punched_solid_geometry = temp_solid_geometry
 
-        new_apertures = deepcopy(grb_obj.apertures)
+        new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -1040,7 +1040,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
 
-        for apid, apid_value in grb_obj.apertures.items():
+        for apid, apid_value in grb_obj.tools.items():
             ap_type = apid_value['type']
             punching_geo = []
 
@@ -1059,7 +1059,7 @@ class ToolPunchGerber(AppTool, Gerber):
                     else:
                         dia = float(apid_value['width']) - (2 * oblong_r_val)
 
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1072,7 +1072,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         if self.ui.square_cb.get_value():
                             dia = float(apid_value['height']) - (2 * square_r_val)
 
-                            for elem in grb_obj.apertures[apid]['geometry']:
+                            for elem in grb_obj.tools[apid]['geometry']:
                                 if 'follow' in elem:
                                     if isinstance(elem['follow'], Point):
                                         punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1082,7 +1082,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         else:
                             dia = float(apid_value['width']) - (2 * rect_r_val)
 
-                        for elem in grb_obj.apertures[apid]['geometry']:
+                        for elem in grb_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1100,7 +1100,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             else:
                                 dia = dy - (2 * other_r_val)
 
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1148,7 +1148,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -1175,7 +1175,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         punched_solid_geometry = temp_solid_geometry
 
-        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -1189,7 +1189,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
 
-        for apid, apid_value in self.grb_obj.apertures.items():
+        for apid, apid_value in self.grb_obj.tools.items():
             ap_type = apid_value['type']
             punching_geo = []
 
@@ -1200,7 +1200,7 @@ class ToolPunchGerber(AppTool, Gerber):
                 if pad_apid == apid:
                     if ap_type == 'C':
                         dia = float(apid_value['size']) - (2 * circ_r_val)
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
                     elif ap_type == 'O' and self.ui.oblong_cb.get_value():
                         width = float(apid_value['width'])
@@ -1210,7 +1210,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             dia = float(apid_value['height']) - (2 * oblong_r_val)
                         else:
                             dia = float(apid_value['width']) - (2 * oblong_r_val)
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
                     elif ap_type == 'R':
                         width = float(apid_value['width'])
@@ -1220,14 +1220,14 @@ class ToolPunchGerber(AppTool, Gerber):
                         if round(width, self.decimals) == round(height, self.decimals):
                             if self.ui.square_cb.get_value():
                                 dia = float(apid_value['height']) - (2 * square_r_val)
-                                pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                                pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                                 punching_geo.append(pad_point.buffer(dia / 2))
                         elif self.ui.rectangular_cb.get_value():
                             if width > height:
                                 dia = float(apid_value['height']) - (2 * rect_r_val)
                             else:
                                 dia = float(apid_value['width']) - (2 * rect_r_val)
-                            pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                            pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                             punching_geo.append(pad_point.buffer(dia / 2))
                     elif self.ui.other_cb.get_value():
                         try:
@@ -1242,7 +1242,7 @@ class ToolPunchGerber(AppTool, Gerber):
                                     dia = dx - (2 * other_r_val)
                                 else:
                                     dia = dy - (2 * other_r_val)
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
 
             # if dia is None then none of the above applied so we skip the following
@@ -1288,7 +1288,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -1310,7 +1310,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         punched_solid_geometry = temp_solid_geometry
 
-        new_apertures = deepcopy(grb_obj.apertures)
+        new_apertures = deepcopy(grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -1324,7 +1324,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
 
-        for apid, apid_value in grb_obj.apertures.items():
+        for apid, apid_value in grb_obj.tools.items():
             ap_type = apid_value['type']
             punching_geo = []
 
@@ -1343,7 +1343,7 @@ class ToolPunchGerber(AppTool, Gerber):
                     else:
                         dia = float(apid_value['width']) * prop_factor
 
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1356,7 +1356,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         if self.ui.square_cb.get_value():
                             dia = float(apid_value['height']) * prop_factor
 
-                            for elem in grb_obj.apertures[apid]['geometry']:
+                            for elem in grb_obj.tools[apid]['geometry']:
                                 if 'follow' in elem:
                                     if isinstance(elem['follow'], Point):
                                         punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1366,7 +1366,7 @@ class ToolPunchGerber(AppTool, Gerber):
                         else:
                             dia = float(apid_value['width']) * prop_factor
 
-                        for elem in grb_obj.apertures[apid]['geometry']:
+                        for elem in grb_obj.tools[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1384,7 +1384,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             else:
                                 dia = dy * prop_factor
 
-                    for elem in grb_obj.apertures[apid]['geometry']:
+                    for elem in grb_obj.tools[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
                                 punching_geo.append(elem['follow'].buffer(dia / 2))
@@ -1432,7 +1432,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(grb_obj.fill_color)
             new_obj.outline_color = deepcopy(grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -1454,7 +1454,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         punched_solid_geometry = temp_solid_geometry
 
-        new_apertures = deepcopy(self.grb_obj.apertures)
+        new_apertures = deepcopy(self.grb_obj.tools)
         new_apertures_items = new_apertures.items()
 
         # find maximum aperture id
@@ -1468,7 +1468,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
 
-        for apid, apid_value in self.grb_obj.apertures.items():
+        for apid, apid_value in self.grb_obj.tools.items():
             ap_type = apid_value['type']
             punching_geo = []
 
@@ -1480,7 +1480,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
                     if ap_type == 'C' and self.ui.circular_cb.get_value():
                         dia = float(apid_value['size']) * prop_factor
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
                     elif ap_type == 'O' and self.ui.oblong_cb.get_value():
                         width = float(apid_value['width'])
@@ -1490,7 +1490,7 @@ class ToolPunchGerber(AppTool, Gerber):
                             dia = float(apid_value['height']) * prop_factor
                         else:
                             dia = float(apid_value['width']) * prop_factor
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
                     elif ap_type == 'R':
                         width = float(apid_value['width'])
@@ -1500,14 +1500,14 @@ class ToolPunchGerber(AppTool, Gerber):
                         if round(width, self.decimals) == round(height, self.decimals):
                             if self.ui.square_cb.get_value():
                                 dia = float(apid_value['height']) * prop_factor
-                                pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                                pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                                 punching_geo.append(pad_point.buffer(dia / 2))
                         elif self.ui.rectangular_cb.get_value():
                             if width > height:
                                 dia = float(apid_value['height']) * prop_factor
                             else:
                                 dia = float(apid_value['width']) * prop_factor
-                            pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                            pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                             punching_geo.append(pad_point.buffer(dia / 2))
                     elif self.ui.other_cb.get_value():
                         try:
@@ -1522,7 +1522,7 @@ class ToolPunchGerber(AppTool, Gerber):
                                     dia = dx * prop_factor
                                 else:
                                     dia = dy * prop_factor
-                        pad_point = self.grb_obj.apertures[apid]['geometry'][pad_idx]['follow']
+                        pad_point = self.grb_obj.tools[apid]['geometry'][pad_idx]['follow']
                         punching_geo.append(pad_point.buffer(dia / 2))
 
             # if dia is None then none of the above applied so we skip the following
@@ -1568,7 +1568,7 @@ class ToolPunchGerber(AppTool, Gerber):
             new_obj.fill_color = deepcopy(self.grb_obj.fill_color)
             new_obj.outline_color = deepcopy(self.grb_obj.outline_color)
 
-            new_obj.apertures = deepcopy(new_apertures)
+            new_obj.tools = deepcopy(new_apertures)
 
             new_obj.solid_geometry = deepcopy(punched_solid_geometry)
             new_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None,
@@ -1585,7 +1585,7 @@ class ToolPunchGerber(AppTool, Gerber):
         for it in self.ui.apertures_table.selectedItems():
             sel_apid.append(it.text())
 
-        for apid, apid_value in self.grb_obj.apertures.items():
+        for apid, apid_value in self.grb_obj.tools.items():
             if apid in sel_apid:
                 for idx, elem in enumerate(apid_value['geometry']):
                     if 'follow' in elem and isinstance(elem['follow'], Point):
@@ -1614,11 +1614,11 @@ class ToolPunchGerber(AppTool, Gerber):
         Each dictionary is in the format:
         {
             'apid': aperture in the target Gerber object apertures dict,
-            'idx': index of the selected geo dict in the self.grb_obj.apertures[apid]['geometry] list of geo_dicts
+            'idx': index of the selected geo dict in the self.grb_obj.tools[apid]['geometry] list of geo_dicts
         }
         
 
-        Each geo_dict in the obj.apertures[apid]['geometry'] list has possible keys:
+        Each geo_dict in the obj.tools[apid]['geometry'] list has possible keys:
         {
             'solid': Shapely Polygon,
             'follow': Shapely Point or LineString,
@@ -1683,7 +1683,7 @@ class ToolPunchGerber(AppTool, Gerber):
                 for el in pads:
                     apid = el['apid']
                     idx = el['idx']
-                    clicked_poly = self.grb_obj.apertures[apid]['geometry'][idx]['solid']
+                    clicked_poly = self.grb_obj.tools[apid]['geometry'][idx]['solid']
                     if clicked_poly not in self.poly_dict.values():
                         shape_id = self.app.tool_shapes.add(
                             tolerance=self.grb_obj.drawing_tolerance, layer=0, shape=clicked_poly,
@@ -1890,7 +1890,7 @@ class ToolPunchGerber(AppTool, Gerber):
             sel_apid.append(it.text())
 
         self.manual_pads = []
-        for apid, apid_value in self.grb_obj.apertures.items():
+        for apid, apid_value in self.grb_obj.tools.items():
             if apid in sel_apid:
                 for idx, elem in enumerate(apid_value['geometry']):
                     if 'follow' in elem and isinstance(elem['follow'], Point):
