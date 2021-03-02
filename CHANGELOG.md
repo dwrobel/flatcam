@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 2.03.2021
 
 - removed the spacing between icons in toolbars
+- fixed a problem in saving done at the app closure
 
 01.03.2021
 

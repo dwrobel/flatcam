@@ -8603,7 +8603,7 @@ class App(QtCore.QObject):
         """
 
         if self.block_autosave is False and self.should_we_save is True and self.save_in_progress is False:
-            self.on_file_saveproject()
+            self.f_handlers.on_file_saveproject()
 
     def save_project_auto_update(self):
         """
