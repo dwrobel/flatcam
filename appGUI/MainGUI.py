@@ -921,44 +921,54 @@ class MainGUI(QtWidgets.QMainWindow):
         # ## TOOLBAR INSTALLATION ###
         self.toolbarfile = QtWidgets.QToolBar(_('File Toolbar'))
         self.toolbarfile.setObjectName('File_TB')
+        self.toolbarfile.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.toolbarfile)
 
         self.toolbaredit = QtWidgets.QToolBar(_('Edit Toolbar'))
         self.toolbaredit.setObjectName('Edit_TB')
+        self.toolbaredit.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.toolbaredit)
 
         self.toolbarview = QtWidgets.QToolBar(_('View Toolbar'))
         self.toolbarview.setObjectName('View_TB')
+        self.toolbarview.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.toolbarview)
 
         self.toolbarshell = QtWidgets.QToolBar(_('Shell Toolbar'))
         self.toolbarshell.setObjectName('Shell_TB')
+        self.toolbarshell.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.toolbarshell)
 
         self.toolbarplugins = QtWidgets.QToolBar(_('Plugin Toolbar'))
         self.toolbarplugins.setObjectName('Plugins_TB')
+        self.toolbarplugins.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.toolbarplugins)
 
         self.exc_edit_toolbar = QtWidgets.QToolBar(_('Excellon Editor Toolbar'))
         self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+        self.exc_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.exc_edit_toolbar)
 
         self.addToolBarBreak()
 
         self.geo_edit_toolbar = QtWidgets.QToolBar(_('Geometry Editor Toolbar'))
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+        self.geo_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.geo_edit_toolbar)
 
         self.grb_edit_toolbar = QtWidgets.QToolBar(_('Gerber Editor Toolbar'))
         self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+        self.grb_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
         self.addToolBar(self.grb_edit_toolbar)
 
         # ### INFOBAR TOOLBARS ###################################################
         self.delta_coords_toolbar = QtWidgets.QToolBar(_('Delta Coordinates Toolbar'))
         self.delta_coords_toolbar.setObjectName('Delta_Coords_TB')
+        self.delta_coords_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
         self.coords_toolbar = QtWidgets.QToolBar(_('Coordinates Toolbar'))
         self.coords_toolbar.setObjectName('Coords_TB')
+        self.coords_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
         self.grid_toolbar = QtWidgets.QToolBar(_('Grid Toolbar'))
         self.grid_toolbar.setObjectName('Snap_TB')
@@ -968,6 +978,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QToolBar QToolButton { padding: -2; margin: -2; }
             """
         )
+        self.grid_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
         self.status_toolbar = QtWidgets.QToolBar(_('Status Toolbar'))
         self.status_toolbar.setStyleSheet(
@@ -976,6 +987,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QToolBar QToolButton { padding: -2; margin: -2; }
             """
         )
+        self.status_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
 
         # ########################################################################
         # ########################## File Toolbar# ###############################

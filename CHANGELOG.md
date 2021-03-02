@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.03.2021
+
+- removed the spacing between icons in toolbars
+
 01.03.2021
 
 - major rafactoring: replaced the name of the Gerber object data structure from 'apertures' to 'tools' to make the object data structure uniform across the app
