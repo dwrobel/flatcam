@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.03.2021
+
+- fixed errors on project load, in ParseGerber and Extract and Punch Gerber Plugins due of refactoring the 'apertures' attribute to 'tools'
+
 2.03.2021
 
 - removed the spacing between icons in toolbars

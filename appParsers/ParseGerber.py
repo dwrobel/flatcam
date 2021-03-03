@@ -229,7 +229,7 @@ class Gerber(Geometry):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
-        self.ser_attrs += ['apertures', 'int_digits', 'frac_digits', 'aperture_macros', 'solid_geometry', 'source_file']
+        self.ser_attrs += ['tools', 'int_digits', 'frac_digits', 'aperture_macros', 'solid_geometry', 'source_file']
 
     def aperture_parse(self, apertureId, apertureType, apParameters):
         """

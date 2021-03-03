@@ -254,7 +254,6 @@ class ToolPunchGerber(AppTool, Gerber):
         # calculate how many rows to add
         n = 0
         for ap_code in sorted_apertures:
-            ap_code = str(ap_code)
             ap_type = obj.tools[ap_code]['type']
 
             if ap_type == 'C' and self.ui.circular_cb.get_value() is True:
@@ -273,8 +272,6 @@ class ToolPunchGerber(AppTool, Gerber):
 
         row = 0
         for ap_code in sorted_apertures:
-            ap_code = str(ap_code)
-
             ap_type = obj.tools[ap_code]['type']
             if ap_type == 'C':
                 if self.ui.circular_cb.get_value() is False:
