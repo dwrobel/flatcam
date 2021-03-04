@@ -275,7 +275,7 @@ class ToolCopperThieving(AppTool):
             if ap_keys:
                 new_apid = str(int(max(ap_keys)) + 1)
             else:
-                new_apid = '10'
+                new_apid = 10
 
             new_apertures[new_apid] = {
                 'type': 'C',
@@ -872,29 +872,29 @@ class ToolCopperThieving(AppTool):
             # create a new dictionary to hold the source object apertures allowing us to tamper with without altering
             # the original source object's apertures
             new_apertures = deepcopy(tool_obj.grb_object.tools)
-            if '0' not in new_apertures:
-                new_apertures['0'] = {
+            if 0 not in new_apertures:
+                new_apertures[0] = {
                     'type': 'REG',
                     'size': 0.0,
                     'geometry': []
                 }
 
-            # add the thieving geometry in the '0' aperture of the new_apertures dict
+            # add the thieving geometry in the 0 aperture of the new_apertures dict
             try:
                 for poly in tool_obj.thief_solid_geometry:
                     # append to the new solid geometry
                     geo_list.append(poly)
 
-                    # append into the '0' aperture
+                    # append into the 0 aperture
                     geo_elem = {'solid': poly, 'follow': poly.exterior}
-                    new_apertures['0']['geometry'].append(deepcopy(geo_elem))
+                    new_apertures[0]['geometry'].append(deepcopy(geo_elem))
             except TypeError:
                 # append to the new solid geometry
                 geo_list.append(tool_obj.thief_solid_geometry)
 
-                # append into the '0' aperture
+                # append into the 0 aperture
                 geo_elem = {'solid': tool_obj.new_solid_geometry, 'follow': tool_obj.new_solid_geometry.exterior}
-                new_apertures['0']['geometry'].append(deepcopy(geo_elem))
+                new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
             # prepare also the solid_geometry for the new object having the thieving geometry
             new_solid_geo = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
@@ -1029,8 +1029,8 @@ class ToolCopperThieving(AppTool):
             for geo in thieving_solid_geo:
                 plated_area += geo.area
 
-            if '0' not in new_apertures:
-                new_apertures['0'] = {
+            if 0 not in new_apertures:
+                new_apertures[0] = {
                     'type': 'REG',
                     'size': 0.0,
                     'geometry': []
@@ -1043,23 +1043,23 @@ class ToolCopperThieving(AppTool):
                     # append to the new solid geometry
                     geo_list.append(poly_b)
 
-                    # append into the '0' aperture
+                    # append into the 0 aperture
                     geo_elem = {
                         'solid': poly_b,
                         'follow': poly_b.exterior
                     }
-                    new_apertures['0']['geometry'].append(deepcopy(geo_elem))
+                    new_apertures[0]['geometry'].append(deepcopy(geo_elem))
             except TypeError:
                 # append to the new solid geometry
                 assert isinstance(thieving_solid_geo, Polygon)
                 geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
-                # append into the '0' aperture
+                # append into the 0 aperture
                 geo_elem = {
                     'solid': thieving_solid_geo.buffer(ppm_clearance),
                     'follow': thieving_solid_geo.buffer(ppm_clearance).exterior
                 }
-                new_apertures['0']['geometry'].append(deepcopy(geo_elem))
+                new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
         # if we have robber bar geometry, add it
         if robber_solid_geo and geo_choice in ['b', 'r']:
@@ -1084,7 +1084,7 @@ class ToolCopperThieving(AppTool):
                 if ap_keys and max_apid != 0:
                     new_apid = str(max_apid + 1)
                 else:
-                    new_apid = '10'
+                    new_apid = 10
 
                 new_apertures[new_apid] = {
                     'type': 'C',

@@ -148,8 +148,8 @@ class ToolInvertGerber(AppTool):
 
         new_apertures = {}
 
-        if '0' not in new_apertures:
-            new_apertures['0'] = {
+        if 0 not in new_apertures:
+            new_apertures[0] = {
                 'type': 'C',
                 'size': 0.0,
                 'geometry': []
@@ -158,10 +158,10 @@ class ToolInvertGerber(AppTool):
         try:
             for poly in new_solid_geometry:
                 new_el = {'solid': poly, 'follow': poly.exterior}
-                new_apertures['0']['geometry'].append(new_el)
+                new_apertures[0]['geometry'].append(new_el)
         except TypeError:
             new_el = {'solid': new_solid_geometry, 'follow': new_solid_geometry.exterior}
-            new_apertures['0']['geometry'].append(new_el)
+            new_apertures[0]['geometry'].append(new_el)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)

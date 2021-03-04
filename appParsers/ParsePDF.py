@@ -141,9 +141,9 @@ class PdfParser:
 
         # store the apertures with clear geometry here
         # we are interested only in the circular geometry (drill holes) therefore we target only Bezier subpaths
-        # everything will be stored in the '0' aperture since we are dealing with clear polygons not strokes
+        # everything will be stored in the 0 aperture since we are dealing with clear polygons not strokes
         clear_apertures_dict = {
-            '0': {
+            0: {
                 'size': 0.0,
                 'type': 'C',
                 'geometry': []
@@ -683,17 +683,17 @@ class PdfParser:
                             try:
                                 for g in path_geo:
                                     new_el = {'clear': g}
-                                    clear_apertures_dict['0']['geometry'].append(new_el)
+                                    clear_apertures_dict[0]['geometry'].append(new_el)
                             except TypeError:
                                 new_el = {'clear': path_geo}
-                                clear_apertures_dict['0']['geometry'].append(new_el)
+                                clear_apertures_dict[0]['geometry'].append(new_el)
 
                     # now that we finished searching for drill holes (this is not very precise because holes in the
                     # polygon pours may appear as drill too, but .. hey you can't have it all ...) we add
                     # clear_geometry
-                    if '0' not in apertures_dict:
+                    if 0 not in apertures_dict:
                         # in case there is no stroke width yet therefore no aperture
-                        apertures_dict['0'] = {
+                        apertures_dict[0] = {
                             'size': applied_size,
                             'type': 'C',
                             'geometry': []
@@ -702,10 +702,10 @@ class PdfParser:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
                                 new_el = {'clear': poly}
-                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                                apertures_dict[0]['geometry'].append(deepcopy(new_el))
                         else:
                             new_el = {'clear': pdf_geo}
-                            apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            apertures_dict[0]['geometry'].append(deepcopy(new_el))
                     continue
                 else:
                     # else, store the Geometry as usual
@@ -713,9 +713,9 @@ class PdfParser:
                     # #################################################################################################
                     # ############################### store the found geometry ########################################
                     # #################################################################################################
-                    if '0' not in apertures_dict:
+                    if 0 not in apertures_dict:
                         # in case there is no stroke width yet therefore no aperture
-                        apertures_dict['0'] = {
+                        apertures_dict[0] = {
                             'size': applied_size,
                             'type': 'C',
                             'geometry': []
@@ -724,10 +724,10 @@ class PdfParser:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
                                 new_el = {'solid': poly, 'follow': poly.exterior}
-                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                                apertures_dict[0]['geometry'].append(deepcopy(new_el))
                         else:
                             new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
-                            apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            apertures_dict[0]['geometry'].append(deepcopy(new_el))
                     continue
 
             # Fill and Stroke the path
@@ -919,9 +919,9 @@ class PdfParser:
 
                 # in case that a color change to white (transparent) occurred
                 if flag_clear_geo is True:
-                    if '0' not in apertures_dict:
+                    if 0 not in apertures_dict:
                         # in case there is no stroke width yet therefore no aperture
-                        apertures_dict['0'] = {
+                        apertures_dict[0] = {
                             'size': round(applied_size, 5),
                             'type': 'C',
                             'geometry': []
@@ -930,15 +930,15 @@ class PdfParser:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
                                 new_el = {'clear': poly}
-                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                                apertures_dict[0]['geometry'].append(deepcopy(new_el))
                         else:
                             new_el = {'clear': pdf_geo}
-                            apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            apertures_dict[0]['geometry'].append(deepcopy(new_el))
 
                 else:
                     # in case there is no stroke width yet therefore no aperture
-                    if '0' not in apertures_dict:
-                        apertures_dict['0'] = {
+                    if 0 not in apertures_dict:
+                        apertures_dict[0] = {
                             'size': round(applied_size, 5),
                             'type': 'C',
                             'geometry': []
@@ -948,10 +948,10 @@ class PdfParser:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
                                 new_el = {'solid': poly, 'follow': poly.exterior}
-                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                                apertures_dict[0]['geometry'].append(deepcopy(new_el))
                         else:
                             new_el = {'solid': pdf_geo, 'follow': pdf_geo.exterior}
-                            apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            apertures_dict[0]['geometry'].append(deepcopy(new_el))
 
                 continue
 
@@ -959,7 +959,7 @@ class PdfParser:
         if apertures_dict:
             object_dict[layer_nr] = deepcopy(apertures_dict)
 
-        if clear_apertures_dict['0']['geometry']:
+        if clear_apertures_dict[0]['geometry']:
             object_dict[0] = deepcopy(clear_apertures_dict)
 
         # delete keys (layers) with empty values

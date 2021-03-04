@@ -122,7 +122,7 @@ class ToolOptimal(AppTool):
 
     def set_tool_ui(self):
         self.ui.result_entry.set_value(0.0)
-        self.ui.freq_entry.set_value('0')
+        self.ui.freq_entry.set_value(0)
 
         self.ui.precision_spinner.set_value(int(self.app.defaults["tools_opt_precision"]))
         self.ui.locations_textb.clear()
@@ -139,7 +139,7 @@ class ToolOptimal(AppTool):
         self.ui.locate_button.setVisible(False)
 
         self.ui.result_entry.set_value(0.0)
-        self.ui.freq_entry.set_value('0')
+        self.ui.freq_entry.set_value(0)
         self.reset_fields()
 
     def find_minimum_distance(self):

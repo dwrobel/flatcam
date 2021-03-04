@@ -752,8 +752,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             exc_y_formatted = exc_y_formatted.partition('.')
 
                             # left padd the 'whole' part with zeros
-                            x_whole = exc_x_formatted[0].rjust(whole, '0')
-                            y_whole = exc_y_formatted[0].rjust(whole, '0')
+                            x_whole = exc_x_formatted[0].rjust(whole, 0)
+                            y_whole = exc_y_formatted[0].rjust(whole, 0)
 
                             # restore the coordinate padded in the left with 0 and added the decimal part
                             # without the decinal dot
@@ -770,8 +770,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract).replace('.', '')
 
                             # pad with rear zeros
-                            exc_x_formatted.ljust(length, '0')
-                            exc_y_formatted.ljust(length, '0')
+                            exc_x_formatted.ljust(length, 0)
+                            exc_y_formatted.ljust(length, 0)
 
                             excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
                                                                          yform=exc_y_formatted)
@@ -825,10 +825,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             stop_slot_y_formatted = stop_slot_y_formatted.partition('.')
 
                             # left padd the 'whole' part with zeros
-                            start_x_whole = start_slot_x_formatted[0].rjust(whole, '0')
-                            start_y_whole = start_slot_y_formatted[0].rjust(whole, '0')
-                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, '0')
-                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, '0')
+                            start_x_whole = start_slot_x_formatted[0].rjust(whole, 0)
+                            start_y_whole = start_slot_y_formatted[0].rjust(whole, 0)
+                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, 0)
+                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, 0)
 
                             # restore the coordinate padded in the left with 0 and added the decimal part
                             # without the decinal dot
@@ -860,10 +860,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
 
                             # pad with rear zeros
-                            start_slot_x_formatted.ljust(length, '0')
-                            start_slot_y_formatted.ljust(length, '0')
-                            stop_slot_x_formatted.ljust(length, '0')
-                            stop_slot_y_formatted.ljust(length, '0')
+                            start_slot_x_formatted.ljust(length, 0)
+                            start_slot_y_formatted.ljust(length, 0)
+                            stop_slot_x_formatted.ljust(length, 0)
+                            stop_slot_y_formatted.ljust(length, 0)
 
                             if slot_type == 'routing':
                                 excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,

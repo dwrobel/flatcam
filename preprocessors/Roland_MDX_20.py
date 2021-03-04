@@ -49,7 +49,7 @@ class Roland_MDX_20(PreProc):
 
     def up_to_zero_code(self, p):
         gcode = self.feedrate_code(p) + '\n'
-        gcode += self.position_code(p).format(**p) + ',' + '0' + ';'
+        gcode += self.position_code(p).format(**p) + ',' + 0 + ';'
         return gcode
 
     def position_code(self, p):

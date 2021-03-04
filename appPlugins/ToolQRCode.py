@@ -321,7 +321,7 @@ class QRCode(AppTool):
         box_size = float(self.ui.bsize_entry.get_value()) / 10.0
 
         sort_apid = []
-        new_apid = '10'
+        new_apid = 10
         if self.grb_object.tools:
             for k, v in list(self.grb_object.tools.items()):
                 sort_apid.append(int(k))
@@ -330,7 +330,7 @@ class QRCode(AppTool):
             if max_apid >= 10:
                 new_apid = str(max_apid + 1)
             else:
-                new_apid = '10'
+                new_apid = 10
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.tools:
@@ -347,17 +347,17 @@ class QRCode(AppTool):
             self.grb_object.tools[new_apid]['width'] = deepcopy(box_size * 1.01)
             self.grb_object.tools[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
-        if '0' not in self.grb_object.tools:
-            self.grb_object.tools['0'] = {
+        if 0 not in self.grb_object.tools:
+            self.grb_object.tools[0] = {
                 'type': 'REG',
                 'size': 0.0,
                 'geometry': []
             }
 
-        # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
+        # in case that the QRCode geometry is dropped onto a copper region (found in the 0 aperture)
         # make sure that I place a cutout there
         zero_elem = {'clear': offset_mask_geo}
-        self.grb_object.tools['0']['geometry'].append(deepcopy(zero_elem))
+        self.grb_object.tools[0]['geometry'].append(deepcopy(zero_elem))
 
         try:
             a, b, c, d = self.grb_object.bounds()

@@ -237,7 +237,7 @@ class ToolPDF(AppTool):
         points = {}
 
         def obj_init(new_obj, app_obj):
-            clear_geo = [geo_el['clear'] for geo_el in ap_dict['0']['geometry']]
+            clear_geo = [geo_el['clear'] for geo_el in ap_dict[0]['geometry']]
 
             new_obj.tools = {}
 
@@ -318,10 +318,10 @@ class ToolPDF(AppTool):
                                 follow_buf.append(geo_el['follow'])
             poly_buff = unary_union(poly_buff)
 
-            if '0' in grb_obj.tools:
+            if 0 in grb_obj.tools:
                 global_clear_geo = []
-                if 'geometry' in grb_obj.tools['0']:
-                    for geo_el in ap_dict['0']['geometry']:
+                if 'geometry' in grb_obj.tools[0]:
+                    for geo_el in ap_dict[0]['geometry']:
                         if 'clear' in geo_el:
                             global_clear_geo.append(geo_el['clear'])
 

@@ -995,7 +995,7 @@ class Panelize(AppTool):
                                         new_solid_list.append(deepcopy(new_el))
 
                             new_obj.tools = {
-                                '0': {
+                                0: {
                                     'type': 'REG',
                                     'size': 0.0,
                                     'geometry': deepcopy(new_solid_list)
@@ -1007,7 +1007,7 @@ class Panelize(AppTool):
                             del new_obj.tools
                         else:
                             new_obj.tools = {
-                                '0': {
+                                0: {
                                     'type': 'REG',
                                     'size': 0.0,
                                     'geometry': deepcopy(new_obj.solid_geometry)

@@ -46,7 +46,7 @@ class TclCommandNew(TclCommand):
 
         reset_tcl = True
         if 'reset' in args:
-            if args['reset'] and (args['reset'] == '0' or args['reset'].lower() == 'false'):
+            if args['reset'] and (args['reset'] == 0 or args['reset'].lower() == 'false'):
                 reset_tcl = False
 
         self.app.f_handlers.on_file_new_project(cli=True, reset_tcl=reset_tcl)

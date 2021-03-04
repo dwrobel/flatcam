@@ -311,7 +311,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
             new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
             new_geo_el['follow'] = center
             return new_geo_el
-        elif ap_type == 'O':
+        elif ap_type == 'REG':
             geo = []
             new_geo_el = {}
 
@@ -666,7 +666,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
             new_geo_el['follow'] = Point([point_x, point_y])
             return new_geo_el
-        elif ap_type == 'O':
+        elif ap_type == 'REG':
             geo = []
             new_geo_el = {}
 
@@ -912,10 +912,10 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
 
                 if len(geo.interiors) == 0:
                     try:
-                        current_storage = self.draw_app.storage_dict['0']['geometry']
+                        current_storage = self.draw_app.storage_dict[0]['geometry']
                     except KeyError:
-                        self.draw_app.on_aperture_add(apcode='0')
-                        current_storage = self.draw_app.storage_dict['0']['geometry']
+                        self.draw_app.on_aperture_add(apcode=0)
+                        current_storage = self.draw_app.storage_dict[0]['geometry']
                 new_el = {'solid': geo, 'follow': geo.exterior}
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
         else:
@@ -924,10 +924,10 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
 
             if len(fused_geo.interiors) == 0 and len(exterior_geo) == 1:
                 try:
-                    current_storage = self.draw_app.storage_dict['0']['geometry']
+                    current_storage = self.draw_app.storage_dict[0]['geometry']
                 except KeyError:
-                    self.draw_app.on_aperture_add(apcode='0')
-                    current_storage = self.draw_app.storage_dict['0']['geometry']
+                    self.draw_app.on_aperture_add(apcode=0)
+                    current_storage = self.draw_app.storage_dict[0]['geometry']
 
             new_el = {'solid': fused_geo, 'follow': fused_geo.exterior}
             self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
@@ -1232,11 +1232,11 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         # self.geometry = LinearRing(self.points)
         if len(self.points) > 2:
 
-            # regions are added always in the '0' aperture
-            if '0' not in self.draw_app.storage_dict:
-                self.draw_app.on_aperture_add(apcode='0')
+            # regions are added always in the 0 aperture
+            if 0 not in self.draw_app.storage_dict:
+                self.draw_app.on_aperture_add(apcode=0)
             else:
-                self.draw_app.last_aperture_selected = '0'
+                self.draw_app.last_aperture_selected = 0
 
             new_geo_el = {
                 'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=2),
@@ -1653,15 +1653,15 @@ class DiscEditorGrb(ShapeToolEditorGrb):
 
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        if '0' in self.draw_app.storage_dict:
-            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+        if 0 in self.draw_app.storage_dict:
+            self.storage_obj = self.draw_app.storage_dict[0]['geometry']
         else:
-            self.draw_app.storage_dict['0'] = {
+            self.draw_app.storage_dict[0] = {
                 'type': 'C',
                 'size': 0.0,
                 'geometry': []
             }
-            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+            self.storage_obj = self.draw_app.storage_dict[0]['geometry']
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
@@ -1777,15 +1777,15 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
 
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        if '0' in self.draw_app.storage_dict:
-            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+        if 0 in self.draw_app.storage_dict:
+            self.storage_obj = self.draw_app.storage_dict[0]['geometry']
         else:
-            self.draw_app.storage_dict['0'] = {
+            self.draw_app.storage_dict[0] = {
                 'type': 'C',
                 'size': 0.0,
                 'geometry': []
             }
-            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+            self.storage_obj = self.draw_app.storage_dict[0]['geometry']
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
@@ -3150,7 +3150,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                         break
 
                 if added_flag is False:
-                    st_dict['0'] = {
+                    st_dict[0] = {
                         'type': 'REG',
                         'size': 0.0,
                         'geometry': ap_dict['geometry']
@@ -3165,7 +3165,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                             break
 
                 if added_flag is False:
-                    st_dict[str(new_apid)] = {
+                    st_dict[new_apid] = {
                         'type': ap_dict['type'],
                         'size': ap_dict['size'],
                         'geometry': ap_dict['geometry']
@@ -3182,7 +3182,7 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                             break
 
                 if added_flag is False:
-                    st_dict[str(new_apid)] = {
+                    st_dict[new_apid] = {
                         'type': ap_dict['type'],
                         'size': ap_dict['size'],
                         'width': ap_dict['width'],
@@ -3191,12 +3191,12 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
                     }
                     new_apid += 1
             else:
-                st_dict[str(new_apid)] = {}
+                st_dict[new_apid] = {}
                 for k in ap_dict:
                     if k in ['geometry', 'shape_id']:
                         continue
-                    st_dict[str(new_apid)][k] = ap_dict[k]
-                st_dict[str(new_apid)]['geometry'] = ap_dict['geometry']
+                    st_dict[new_apid][k] = ap_dict[k]
+                st_dict[new_apid]['geometry'] = ap_dict['geometry']
                 new_apid += 1
 
         self.draw_app.plot_object.emit(None)
@@ -3596,7 +3596,7 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
-            ap_code = str(ap_code)
+            ap_code = ap_code
 
             ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -3608,7 +3608,7 @@ class AppGerberEditor(QtCore.QObject):
             ap_type_item = QtWidgets.QTableWidgetItem(str(self.storage_dict[ap_code]['type']))
             ap_type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-            if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == 'O':
+            if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == '0':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
                     '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['width'],
                                     self.decimals, self.storage_dict[ap_code]['height']
@@ -3650,7 +3650,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.last_aperture_selected = ap_code
 
         # for ap_code in sorted_macros:
-        #     ap_code = str(ap_code)
+        #     ap_code = ap_code
         #
         #     ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
         #     ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -3720,7 +3720,7 @@ class AppGerberEditor(QtCore.QObject):
             ap_code = apcode
         else:
             try:
-                ap_code = str(self.ui.apcode_entry.get_value())
+                ap_code = int(self.ui.apcode_entry.get_value())
             except ValueError:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
@@ -3730,7 +3730,7 @@ class AppGerberEditor(QtCore.QObject):
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
 
-        if ap_code == '0':
+        if ap_code == 0:
             if ap_code not in self.tid2apcode:
                 self.storage_dict[ap_code] = {
                     'type': 'REG',
@@ -3745,7 +3745,7 @@ class AppGerberEditor(QtCore.QObject):
         else:
             if ap_code not in self.oldapcode_newapcode:
                 type_val = self.ui.aptype_cb.currentText()
-                if type_val == 'R' or type_val == 'O':
+                if type_val == 'R' or type_val == 'REG':
                     try:
                         dims = self.ui.apdim_entry.get_value()
                         size_val = np.sqrt((dims[0] ** 2) + (dims[1] ** 2))
@@ -3761,8 +3761,9 @@ class AppGerberEditor(QtCore.QObject):
                         self.ui.apsize_entry.set_value(size_val)
 
                     except Exception as e:
-                        self.app.log.error("AppGerberEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
-                                  "tuple format (x,y)\nError: %s" % str(e))
+                        self.app.log.error("AppGerberEditor.on_aperture_add() --> "
+                                           "the R or O aperture dims has to be in a "
+                                           "tuple format (x,y)\nError: %s" % str(e))
                         self.app.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Aperture dimensions value is missing or wrong format. "
                                                "Add it in format (width, height) and retry."))
@@ -3861,8 +3862,8 @@ class AppGerberEditor(QtCore.QObject):
         # if there is no aperture left, then add a default one :)
         if self.last_aperture_selected in deleted_apcode_list:
             if self.ui.apertures_table.rowCount() == 0:
-                self.on_aperture_add('10')
-                self.last_aperture_selected = '10'
+                self.on_aperture_add(10)
+                self.last_aperture_selected = 10
             else:
                 self.last_aperture_selected = self.ui.apertures_table.item(0, 1).text()
 
@@ -3882,7 +3883,7 @@ class AppGerberEditor(QtCore.QObject):
 
         # rows start with 0, tools start with 1 so we adjust the value by 1
         key_in_tid2apcode = row_of_item_changed + 1
-        ap_code_old = str(self.tid2apcode[key_in_tid2apcode])
+        ap_code_old = self.tid2apcode[key_in_tid2apcode]
 
         ap_code_new = self.ui.apertures_table.item(row_of_item_changed, 1).text()
 
@@ -4000,7 +4001,8 @@ class AppGerberEditor(QtCore.QObject):
         # It will happen only for the Aperture Type in ['R', 'O'] - I make sure of that in the self.build_ui()
         # and below
         elif col_of_item_changed == 4:
-            if str(self.storage_dict[ap_code_old]['type']) == 'R' or str(self.storage_dict[ap_code_old]['type']) == 'O':
+            if str(self.storage_dict[ap_code_old]['type']) == 'R' or \
+                    str(self.storage_dict[ap_code_old]['type']) == 'REG':
                 # use the biggest from them
                 buff_val_lines = max(val_edited)
                 new_width = val_edited[0]
@@ -4606,7 +4608,7 @@ class AppGerberEditor(QtCore.QObject):
         #     # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
         #     self.build_ui(first_run=True)
         #     # and add the first aperture to have something to play with
-        #     self.on_aperture_add('10')
+        #     self.on_aperture_add(10)
 
         # self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
 
@@ -4684,10 +4686,9 @@ class AppGerberEditor(QtCore.QObject):
                                             pass
                                         else:
                                             for clear_geo in global_clear_geo:
-                                                # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                                # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                                # the solid_geometry. We want for clear_geometry just to cut into
-                                                # solid_geometry not to delete it
+                                                # Make sure that the clear_geo is within the solid_geo otherwise
+                                                # we loose the solid_geometry. We want for clear_geometry just to
+                                                # cut into solid_geometry not to delete it
                                                 if clear_geo.within(solid_geo):
                                                     solid_geo = solid_geo.difference(clear_geo)
 

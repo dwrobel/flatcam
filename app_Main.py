@@ -3625,7 +3625,7 @@ class App(QtCore.QObject):
             # or do the conversion :(
             # )
             # and it is ordering them (actually I want that to make the defaults easy to search within) but making
-            # the '10' entry jsut after '1' therefore ordering as strings
+            # the '10' entry just after '1' therefore ordering as strings
 
             sorted_bookmarks = sorted(list(self.defaults["global_bookmarks"].items())[:bm_limit],
                                       key=lambda x: int(x[0]))
@@ -5863,7 +5863,7 @@ class App(QtCore.QObject):
 
         def initialize_from_geometry(obj_init, app_obj):
             apertures = {
-                '0': {
+                0: {
                     'size': 0.0,
                     'type': 'REG',
                     'geometry': []
@@ -5876,7 +5876,7 @@ class App(QtCore.QObject):
                     new_elem['follow'] = obj_orig.exterior
                 except AttributeError:
                     pass
-                apertures['0']['geometry'].append(deepcopy(new_elem))
+                apertures[0]['geometry'].append(deepcopy(new_elem))
 
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.tools = deepcopy(apertures)
@@ -5890,7 +5890,7 @@ class App(QtCore.QObject):
 
             apid = 10
             for tool in obj.tools:
-                apertures[str(apid)] = {
+                apertures[apid] = {
                     'size': float(obj.tools[tool]['tooldia']),
                     'type': 'C',
                     'geometry': []
@@ -5901,7 +5901,7 @@ class App(QtCore.QObject):
                         'solid': geo,
                         'follow': geo.exterior
                     }
-                    apertures[str(apid)]['geometry'].append(deepcopy(new_el))
+                    apertures[apid]['geometry'].append(deepcopy(new_el))
 
                 apid += 1
 

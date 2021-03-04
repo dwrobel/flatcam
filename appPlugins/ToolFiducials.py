@@ -357,7 +357,7 @@ class ToolFiducials(AppTool):
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
-                    new_apid = '10'
+                    new_apid = 10
 
                 new_apertures[new_apid] = {
                     'type': 'C',
@@ -415,7 +415,7 @@ class ToolFiducials(AppTool):
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
-                    new_apid = '10'
+                    new_apid = 10
 
                 new_apertures[new_apid] = {
                     'type': 'C',
@@ -489,7 +489,7 @@ class ToolFiducials(AppTool):
                 if ap_keys:
                     new_apid = str(int(max(ap_keys)) + 1)
                 else:
-                    new_apid = '10'
+                    new_apid = 10
 
                 new_apertures[new_apid] = {
                     'type': 'R',

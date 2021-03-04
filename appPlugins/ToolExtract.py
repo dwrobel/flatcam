@@ -763,7 +763,7 @@ class ToolExtract(AppTool):
             return
 
         new_apertures = {
-            '10': {
+            10: {
                 'type': 'C',
                 'size': thickness,
                 'geometry': [

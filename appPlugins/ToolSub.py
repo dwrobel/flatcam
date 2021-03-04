@@ -33,7 +33,7 @@ class ToolSub(AppTool):
     job_finished = QtCore.pyqtSignal(bool)
 
     # the string param is the outname and the list is a list of tuples each being formed from the new_aperture_geometry
-    # list and the second element is also a list with possible geometry that needs to be added to the '0' aperture
+    # list and the second element is also a list with possible geometry that needs to be added to the 0 aperture
     # meaning geometry that was deformed
     aperture_processing_finished = QtCore.pyqtSignal(str, list)
 
@@ -393,11 +393,11 @@ class ToolSub(AppTool):
 
             grb_obj.tools = deepcopy(self.new_apertures)
 
-            if '0' not in grb_obj.tools:
-                grb_obj.tools['0'] = {}
-                grb_obj.tools['0']['type'] = 'REG'
-                grb_obj.tools['0']['size'] = 0.0
-                grb_obj.tools['0']['geometry'] = []
+            if 0 not in grb_obj.tools:
+                grb_obj.tools[0] = {}
+                grb_obj.tools[0]['type'] = 'REG'
+                grb_obj.tools[0]['size'] = 0.0
+                grb_obj.tools[0]['geometry'] = []
 
             for apid in list(grb_obj.tools.keys()):
                 # output is a tuple in the format (apid, surviving_geo, modified_geo)
@@ -412,15 +412,15 @@ class ToolSub(AppTool):
                             grb_obj.tools[apid]['geometry'] += deepcopy(surving_geo)
 
                         if modified_geo:
-                            grb_obj.tools['0']['geometry'] += modified_geo
+                            grb_obj.tools[0]['geometry'] += modified_geo
 
                 # if the current aperture does not have geometry then get rid of it
                 if not grb_obj.tools[apid]['geometry']:
                     grb_obj.tools.pop(apid, None)
 
-            # delete the '0' aperture if it has no geometry
-            if not grb_obj.tools['0']['geometry']:
-                grb_obj.tools.pop('0', None)
+            # delete the 0 aperture if it has no geometry
+            if not grb_obj.tools[0]['geometry']:
+                grb_obj.tools.pop(0, None)
 
             poly_buff = []
             follow_buff = []
