@@ -292,7 +292,7 @@ class ToolPunchGerber(AppTool, Gerber):
                 continue
 
             # Aperture CODE
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             # Aperture TYPE
@@ -568,7 +568,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # this is the punching geometry
         exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
@@ -639,7 +639,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -673,7 +673,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # this is the punching geometry
         exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
@@ -760,7 +760,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -792,7 +792,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         punching_geo = []
         for apid in grb_obj.tools:
@@ -893,7 +893,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -925,7 +925,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # this is the punching geometry
         punching_geo = []
@@ -988,7 +988,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -1032,7 +1032,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
@@ -1137,7 +1137,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -1181,7 +1181,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
@@ -1277,7 +1277,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -1316,7 +1316,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
@@ -1421,7 +1421,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -1460,7 +1460,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         # store here the clear geometry, the key is the new aperture size
         holes_apertures = {}
@@ -1557,7 +1557,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # size and add there the clear geometry
         for hole_size, ap_val in holes_apertures.items():
             new_apid += 1
-            new_apertures[str(new_apid)] = deepcopy(ap_val)
+            new_apertures[new_apid] = deepcopy(ap_val)
 
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
@@ -1580,7 +1580,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         for apid, apid_value in self.grb_obj.tools.items():
             if apid in sel_apid:
@@ -1848,7 +1848,7 @@ class ToolPunchGerber(AppTool, Gerber):
             return
 
         try:
-            aperture = self.ui.apertures_table.item(cw_row, 0).text()
+            aperture = int(self.ui.apertures_table.item(cw_row, 0).text())
         except AttributeError:
             return
 
@@ -1884,7 +1884,7 @@ class ToolPunchGerber(AppTool, Gerber):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         self.manual_pads = []
         for apid, apid_value in self.grb_obj.tools.items():

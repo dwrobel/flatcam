@@ -1068,8 +1068,7 @@ class Film(AppTool):
             def job_thread_film():
                 with self.app.proc_container.new(_("Working...")):
                     try:
-                        make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                                           transparency_level=transparency_level,
+                        make_positive_film(color=color, transparency_level=transparency_level,
                                            scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                     except Exception as e:
                         self.app.log.error("export_positive() process -> %s" % str(e))
@@ -1077,8 +1076,7 @@ class Film(AppTool):
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
-            make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                               transparency_level=transparency_level,
+            make_positive_film(color=color, transparency_level=transparency_level,
                                scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
 
     def reset_fields(self):
