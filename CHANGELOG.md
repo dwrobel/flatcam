@@ -7,13 +7,16 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.03.2021
+
+- fixed Punch Gerber Tool to work in new conditions
+- fixed creating positive films in Film Tool, because of recent changes
+
 3.03.2021
 
 - fixed errors on project load, in ParseGerber and Extract and Punch Gerber Plugins due of refactoring the 'apertures' attribute to 'tools'
 - aperture keys in the gerber 'tools' dictionary are now stored as integers instead of strings as before; need to check the application especially the Gerber Editor
 - fixed issues in Gerber Editor (using the '0' instead of 'REG' type for apertures)
-- fixed Punch Gerber Tool to work in new conditions
-- fixed creating positive films in Film Tool, because of recent changes
 
 2.03.2021
 
