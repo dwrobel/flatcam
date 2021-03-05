@@ -55,7 +55,7 @@ class AppObject(QtCore.QObject):
         self.object_plotted.connect(self.on_object_plotted)
         self.plots_updated.connect(self.app.on_plots_updated)
 
-    def new_object(self, kind, name, initialize: object, plot=True, autoselected=True, callback=None,
+    def new_object(self, kind, name, initialize, plot=True, autoselected=True, callback=None,
                    callback_params=None):
         """
         Creates a new specialized FlatCAMObj and attaches it to the application,
@@ -74,7 +74,7 @@ class AppObject(QtCore.QObject):
         :param initialize:      Function to run after creation of the object but before it is attached to the
                                 application.
                                 The function is called with 2 parameters: the new object and the App instance.
-        :type initialize:       object
+        :type initialize:       function
         :param plot:            If to plot the resulting object
         :param autoselected:    if the resulting object is autoselected in the Project tab and therefore in the
                                 self.collection
@@ -214,9 +214,14 @@ class AppObject(QtCore.QObject):
         # ############################################################################################################
         obj.moveToThread(self.app.main_thread)
 
-        if callback_params is None:
-            callback_params = []
-        self.object_created.emit(obj, obj_plot, obj_autoselected, callback, callback_params)
+        if return_value == 'drill_gx2':
+            self.object_created.emit(obj, obj_plot, obj_autoselected, self.app.convert_any2excellon, [name])
+            self.app.log.warning("Gerber X2 drill file detected. Converted to Excellon object.")
+            self.app.inform.emit('[WARNING] %s' % _("Gerber X2 drill file detected. Converted to Excellon object."))
+        else:
+            if callback_params is None:
+                callback_params = []
+            self.object_created.emit(obj, obj_plot, obj_autoselected, callback, callback_params)
 
         return obj
 

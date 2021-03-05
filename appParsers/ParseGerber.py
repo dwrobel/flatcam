@@ -140,7 +140,13 @@ class Gerber(Geometry):
 
         self.source_file = ''
 
-        # ### Parser patterns ## ##
+        # #############################################################################################################
+        # ################################# Parser patterns ###########################################################
+        # #############################################################################################################
+
+        # Detect Gerber x2 format
+        self.gx2_re = re.compile(r'%TF\.FileFunction.*')
+
         # FS - Format Specification
         # The format of X and Y must be the same!
         # L-omit leading zeros, T-omit trailing zeros, D-no zero supression
@@ -355,7 +361,14 @@ class Gerber(Geometry):
                             break
 
             processed_lines = list(line_generator())
-            self.parse_lines(processed_lines)
+            ret_val = self.parse_lines(processed_lines)
+
+            if ret_val == 'fail':
+                return 'fail'
+            elif ret_val == 'drill':
+                return 'drill_gx2'
+            else:
+                return
 
     # @profile
     def parse_lines(self, glines):
@@ -366,9 +379,11 @@ class Gerber(Geometry):
         :param glines: Gerber code as list of strings, each element being
             one line of the source file.
         :type glines: list
-        :return: None
-        :rtype: None
+        :return: only errors/warnings
+        :rtype: str
         """
+
+        is_excellon_gx2 = False
 
         # Coordinates of the current path, each is [x, y]
         path = []
@@ -449,6 +464,22 @@ class Gerber(Geometry):
                 # ###############################################################
                 match = self.comm_re.search(gline)
                 if match:
+                    continue
+
+                # ######################################################################################################
+                # ######## Detect GERBER X2 format #####################################################################
+                # ######################################################################################################
+                match = self.gx2_re.search(gline)
+                if match:
+                    self.app.log.warning('Gerber X2 format detected !!!')
+                    self.app.inform.emit(
+                        '[WARNING] %s' % _('Gerber X2 format detected. Parsing may not be done correctly.'))
+                    if 'Drill' in gline:
+                        self.app.log.warning('Drill file in Gerber X2 format detected !!!')
+                        self.app.inform.emit(
+                            '[WARNING] %s' % _('Drill file Gerber X2 format detected. '
+                                               'Parsing may not be done correctly.'))
+                        is_excellon_gx2 = True
                     continue
 
                 # ###############################################################
@@ -1703,6 +1734,10 @@ class Gerber(Geometry):
 
             loc = '%s #%d %s: %s\n' % (_("Gerber Line"), line_num, _("Gerber Line Content"), gline) + repr(err)
             self.app.inform.emit('[ERROR] %s\n%s:' % (_("Gerber Parser ERROR"), loc))
+            return 'fail'
+
+        if is_excellon_gx2 is True:
+            return 'drill'
 
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):

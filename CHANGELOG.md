@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.03.2021
+
+- added detection of Gerber files in Gerber X2 format
+- added a new feature: if a Gerber file in format Gerber X2 having Drill information's is detected then after loading, it will be converted to an Excellon object
+
 4.03.2021
 
 - fixed Punch Gerber Tool to work in new conditions

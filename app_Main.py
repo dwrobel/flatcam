@@ -5941,10 +5941,11 @@ class App(QtCore.QObject):
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-    def convert_any2excellon(self):
+    def convert_any2excellon(self, conv_obj_name=None):
         """
         Will convert any object out of Gerber, Excellon, Geometry to an Excellon object.
 
+        :param conv_obj_name:    a FlatCAM object
         :return:
         """
 
@@ -6093,15 +6094,30 @@ class App(QtCore.QObject):
             obj_init.source_file = app_obj.f_handlers.export_excellon(obj_name=outname, local_use=obj_init,
                                                                       filename=None, use_thread=False)
 
-        if not self.collection.get_selected():
-            self.log.warning("App.convert_any2excellon--> No object selected")
-            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
-            return
+        if conv_obj_name is None:
+            if not self.collection.get_selected():
+                self.log.warning("App.convert_any2excellon--> No object selected")
+                self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected."))
+                return
 
-        for obj in self.collection.get_selected():
+            for obj in self.collection.get_selected():
 
-            obj_name = obj.options["name"]
-            outname = "%s_conv" % str(obj_name)
+                obj_name = obj.options["name"]
+                outname = "%s_conv" % str(obj_name)
+                try:
+                    if obj.kind == 'gerber':
+                        self.app_obj.new_object("excellon", outname, initialize_from_gerber)
+                    elif obj.kind == 'geometry':
+                        self.app_obj.new_object("excellon", outname, initialize_from_geometry)
+                    else:
+                        self.log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
+
+                except Exception as e:
+                    return "Operation failed: %s" % str(e)
+        else:
+            outname = conv_obj_name
+            obj = self.collection.get_by_name(outname)
+
             try:
                 if obj.kind == 'gerber':
                     self.app_obj.new_object("excellon", outname, initialize_from_gerber)
@@ -10663,7 +10679,7 @@ class MenuFileHandlers(QtCore.QObject):
 
             # Opening the file happens here
             try:
-                gerber_obj.parse_file(filename)
+                parse_ret_val = gerber_obj.parse_file(filename)
             except IOError:
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
                 return "fail"
@@ -10683,10 +10699,15 @@ class MenuFileHandlers(QtCore.QObject):
                                     _("Object is not Gerber file or empty. Aborting object creation."))
                 return "fail"
 
+            if parse_ret_val:
+                return parse_ret_val
+
         self.log.debug("open_gerber()")
         if not os.path.exists(filename):
             self.inform.emit('[ERROR_NOTCL] %s' % _("File no longer available."))
             return
+
+        ret_val = None
 
         with self.app.proc_container.new('%s...' % _("Opening")):
             # Object name
