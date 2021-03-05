@@ -31,17 +31,22 @@ from datetime import datetime
 import numpy as np
 
 from shapely.ops import unary_union
-from shapely.geometry import Point, MultiPoint, box
+from shapely.geometry import Point, MultiPoint, box, MultiPolygon
 import shapely.affinity as affinity
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 try:
-    from shapely.ops import voronoi_diagram
+    from voronoi import Voronoi
+    from voronoi import Polygon as voronoi_poly
     VORONOI_ENABLED = True
-    # from appCommon.Common import voronoi_diagram
 except Exception:
-    VORONOI_ENABLED = False
+    try:
+        from shapely.ops import voronoi_diagram
+        VORONOI_ENABLED = True
+        # from appCommon.Common import voronoi_diagram
+    except Exception:
+        VORONOI_ENABLED = False
 
 import logging
 import gettext
@@ -180,7 +185,7 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
-        self.ui.plot_probing_pts_cb.stateChanged.connect(self.show_probing_geo)
+        self.ui.plot_probing_pts_cb.toggled.connect(self.show_probing_geo)
         # GRBL
         self.ui.com_search_button.clicked.connect(self.on_grbl_search_ports)
         self.ui.add_bd_button.clicked.connect(self.on_grbl_add_baudrate)
@@ -228,7 +233,7 @@ class ToolLevelling(AppTool, CNCjob):
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
-        # try to select in the Gerber combobox the active object
+        # try to select in the CNCJob combobox the active object
         try:
             selected_obj = self.app.collection.get_active()
             if selected_obj.kind == 'cncjob':
@@ -479,7 +484,15 @@ class ToolLevelling(AppTool, CNCjob):
     def on_add_al_probepoints(self):
         # create the solid_geo
 
-        self.solid_geo = unary_union([geo['geom'] for geo in self.gcode_parsed if geo['kind'][0] == 'C'])
+        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+        if loaded_obj is None:
+            self.app.log.error("ToolLevelling.on_add_al_probepoints() -> No object loaded.")
+            return 'fail'
+
+        try:
+            self.solid_geo = unary_union([geo['geom'] for geo in loaded_obj.gcode_parsed if geo['kind'][0] == 'C'])
+        except TypeError:
+            return 'fail'
 
         # reset al table
         self.ui.al_probe_points_table.setRowCount(0)
@@ -529,7 +542,7 @@ class ToolLevelling(AppTool, CNCjob):
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
                 if VORONOI_ENABLED is True:
-                    self.generate_voronoi_geometry(pts=vor_pts_list)
+                    self.generate_voronoi_geometry_2(pts=vor_pts_list)
                     # generate Probing GCode
                     self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
                 else:
@@ -588,7 +601,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.plot_probing_geo(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
     def show_probing_geo(self, state, reset=False):
-
+        self.app.log.debug("ToolLevelling.show_probing_geo() -> %s" % ('cleared' if state is False else 'displayed'))
         if reset:
             self.probing_shapes.clear(update=True)
 
@@ -596,6 +609,7 @@ class ToolLevelling(AppTool, CNCjob):
         poly_geo = []
 
         al_method = self.ui.al_method_radio.get_value()
+
         # voronoi diagram
         if al_method == 'v':
             # create the geometry
@@ -664,12 +678,13 @@ class ToolLevelling(AppTool, CNCjob):
                 #     self.add_probing_shape(shape=sh, color=color, face_color=color, visible=True)
 
                 edge_color = "#000000FF"
+
                 try:
                     for sh in geometry:
                         if custom_color is None:
-                            self.add_probing_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
+                            k = self.add_probing_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
                         else:
-                            self.add_probing_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
+                            k = self.add_probing_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
                 except TypeError:
                     if custom_color is None:
                         self.add_probing_shape(
@@ -679,7 +694,8 @@ class ToolLevelling(AppTool, CNCjob):
                             shape=geometry, color=custom_color, face_color=custom_color, visible=True)
 
                 self.probing_shapes.redraw()
-            except (ObjectDeleted, AttributeError):
+            except (ObjectDeleted, AttributeError) as e:
+                self.app.log.error("ToolLevelling.plot_probing_geo() -> %s" % str(e))
                 self.probing_shapes.clear(update=True)
             except Exception as e:
                 self.app.log.error("CNCJobObject.plot_probing_geo() --> %s" % str(e))
@@ -687,10 +703,7 @@ class ToolLevelling(AppTool, CNCjob):
             self.probing_shapes.clear(update=True)
 
     def add_probing_shape(self, **kwargs):
-        if self.deleted:
-            raise ObjectDeleted()
-        else:
-            key = self.probing_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
+        key = self.probing_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
         return key
 
     def generate_voronoi_geometry(self, pts):
@@ -721,6 +734,53 @@ class ToolLevelling(AppTool, CNCjob):
         for pt_key in list(self.al_voronoi_geo_storage.keys()):
             for poly in new_voronoi:
                 if self.al_voronoi_geo_storage[pt_key]['point'].within(poly):
+                    self.al_voronoi_geo_storage[pt_key]['geo'] = poly
+
+    def generate_voronoi_geometry_2(self, pts):
+        env = self.solid_geo.envelope
+        fact = 1 if self.units == 'MM' else 0.039
+        env = env.buffer(fact)
+        env_poly = voronoi_poly(list(env.exterior.coords))
+
+        new_pts = [[pt.x, pt.y] for pt in pts]
+
+        # Initialize the algorithm
+        v = Voronoi(env_poly)
+
+        # calculate the Voronoi diagram
+        try:
+            v.create_diagram(new_pts)
+        except AttributeError as e:
+            self.app.log.error("CNCJobObject.generate_voronoi_geometry_2() --> %s" % str(e))
+            new_pts_2 = []
+            for pt_index in range(len(new_pts)):
+                new_pts_2.append([
+                    new_pts[pt_index][0] + random.random() * 1e-03,
+                    new_pts[pt_index][1] + random.random() * 1e-03
+                ])
+
+            try:
+                v.create_diagram(new_pts_2)
+            except Exception:
+                print("Didn't work.")
+                return
+
+        new_voronoi = []
+        for p in v.points:
+            p_coords = [(coord.x, coord.y) for coord in p.get_coordinates()]
+            new_pol = Polygon(p_coords)
+            new_voronoi.append(new_pol)
+
+        new_voronoi = MultiPolygon(new_voronoi)
+
+        # new_voronoi = []
+        # for p in voronoi_union:
+        #     new_voronoi.append(p.intersection(env))
+        #
+        for pt_key in list(self.al_voronoi_geo_storage.keys()):
+            for poly in new_voronoi:
+                if self.al_voronoi_geo_storage[pt_key]['point'].within(poly) or \
+                        self.al_voronoi_geo_storage[pt_key]['point'].intersects(poly):
                     self.al_voronoi_geo_storage[pt_key]['geo'] = poly
 
     def generate_bilinear_geometry(self, pts):
@@ -807,7 +867,7 @@ class ToolLevelling(AppTool, CNCjob):
                     pts_list = []
                     for k in self.al_voronoi_geo_storage:
                         pts_list.append(self.al_voronoi_geo_storage[k]['point'])
-                    self.generate_voronoi_geometry(pts=pts_list)
+                    self.generate_voronoi_geometry_2(pts=pts_list)
 
                     self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
                 else:

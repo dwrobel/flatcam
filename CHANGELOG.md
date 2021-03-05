@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - fixed Punch Gerber Tool to work in new conditions
 - fixed creating positive films in Film Tool, because of recent changes
+- working on the Levelling Tool - trying a new Voronoi module (https://github.com/Yatoom/voronoi) without success
+- fixed some display issues in the Levelling Tool
 
 3.03.2021
 
