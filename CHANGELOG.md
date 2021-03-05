@@ -11,6 +11,10 @@ CHANGELOG for FlatCAM beta
 
 - added detection of Gerber files in Gerber X2 format
 - added a new feature: if a Gerber file in format Gerber X2 having Drill information's is detected then after loading, it will be converted to an Excellon object
+- fixed the Extract Tool to work with apertures (tools) keys as integers
+- fixed the Copper Thieving Tool to work with apertures (tools) keys as integers
+- fixed the Corners Tool to work with apertures (tools) keys as integers
+- fixed the Fiducials Tool to work with apertures (tools) keys as integers
 
 4.03.2021
 

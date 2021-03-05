@@ -347,14 +347,15 @@ class ToolCorners(AppTool):
         else:
             ap_keys = list(new_apertures.keys())
             if ap_keys:
-                new_apid = str(int(max(ap_keys)) + 1)
+                new_apid = int(max(ap_keys)) + 1
             else:
                 new_apid = 10
 
-            new_apertures[new_apid] = {}
-            new_apertures[new_apid]['type'] = 'C'
-            new_apertures[new_apid]['size'] = line_thickness
-            new_apertures[new_apid]['geometry'] = []
+            new_apertures[new_apid] = {
+                'type': 'C',
+                'size': line_thickness,
+                'geometry': []
+            }
 
             for geo in geo_list:
                 geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=3)
@@ -471,6 +472,7 @@ class ToolCorners(AppTool):
             1: {
                 "tooldia": tooldia,
                 "drills": drill_list,
+                "slots": [],
                 "solid_geometry": []
             }
         }
@@ -565,6 +567,7 @@ class ToolCorners(AppTool):
             1: {
                 "tooldia": tooldia,
                 "drills": drill_list,
+                "slots": [],
                 'data': {},
                 "solid_geometry": []
             }

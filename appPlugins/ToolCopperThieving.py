@@ -273,7 +273,7 @@ class ToolCopperThieving(AppTool):
         else:
             ap_keys = list(new_apertures.keys())
             if ap_keys:
-                new_apid = str(int(max(ap_keys)) + 1)
+                new_apid = int(max(ap_keys)) + 1
             else:
                 new_apid = 10
 
@@ -1082,7 +1082,7 @@ class ToolCopperThieving(AppTool):
                 ap_keys = list(new_apertures.keys())
                 max_apid = int(max(ap_keys))
                 if ap_keys and max_apid != 0:
-                    new_apid = str(max_apid + 1)
+                    new_apid = max_apid + 1
                 else:
                     new_apid = 10
 
@@ -1102,7 +1102,6 @@ class ToolCopperThieving(AppTool):
 
         # and then set the total plated area value to the GUI element
         # the area is in mm2 when using Metric units, make it in cm2 for Metric units
-        print(plated_area)
         if self.units.lower() == 'mm':
             plated_area /= 100
         self.ui.plated_area_entry.set_value(plated_area)

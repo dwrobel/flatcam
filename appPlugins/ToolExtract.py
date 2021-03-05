@@ -253,7 +253,7 @@ class ToolExtract(AppTool):
                 continue
 
             # Aperture CODE
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
             ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             # Aperture TYPE
@@ -379,7 +379,7 @@ class ToolExtract(AppTool):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         if mode == 'fixed':
             tools = {
@@ -648,7 +648,7 @@ class ToolExtract(AppTool):
         # selected codes in the apertures UI table
         sel_apid = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(it.text())
+            sel_apid.append(int(it.text()))
 
         for apid, apid_value in obj.tools.items():
             if apid in sel_apid:
@@ -844,7 +844,7 @@ class ToolExtract(AppTool):
             return
 
         try:
-            aperture = self.ui.apertures_table.item(cw_row, 0).text()
+            aperture = int(self.ui.apertures_table.item(cw_row, 0).text())
         except AttributeError:
             return
 

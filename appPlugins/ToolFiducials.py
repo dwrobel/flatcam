@@ -355,7 +355,7 @@ class ToolFiducials(AppTool):
             else:
                 ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
-                    new_apid = str(int(max(ap_keys)) + 1)
+                    new_apid = int(max(ap_keys)) + 1
                 else:
                     new_apid = 10
 
@@ -413,7 +413,7 @@ class ToolFiducials(AppTool):
             else:
                 ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
-                    new_apid = str(int(max(ap_keys)) + 1)
+                    new_apid = int(max(ap_keys)) + 1
                 else:
                     new_apid = 10
 
@@ -487,7 +487,7 @@ class ToolFiducials(AppTool):
             else:
                 ap_keys = list(g_obj.tools.keys())
                 if ap_keys:
-                    new_apid = str(int(max(ap_keys)) + 1)
+                    new_apid = int(max(ap_keys)) + 1
                 else:
                     new_apid = 10
 

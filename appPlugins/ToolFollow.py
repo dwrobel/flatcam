@@ -316,8 +316,7 @@ class ToolFollow(AppTool, Gerber):
                     'solid_geometry': new_obj.solid_geometry
                 }
             }
-            for d in new_data:
-                print(d, new_data[d])
+
         ret = self.app.app_obj.new_object("geometry", outname, follow_init)
         if ret == 'fail':
             self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed to create Follow Geometry."))

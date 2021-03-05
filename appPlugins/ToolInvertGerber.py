@@ -150,7 +150,7 @@ class ToolInvertGerber(AppTool):
 
         if 0 not in new_apertures:
             new_apertures[0] = {
-                'type': 'C',
+                'type': 'REG',
                 'size': 0.0,
                 'geometry': []
             }
