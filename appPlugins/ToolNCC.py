@@ -1533,7 +1533,7 @@ class NonCopperClear(AppTool, Gerber):
             self.blockSignals(False)
             return
         except Exception as e:
-            log.error(str(e))
+            self.app.log.error(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
         self.blockSignals(False)
@@ -1897,7 +1897,7 @@ class NonCopperClear(AppTool, Gerber):
 
                     self.app.tool_shapes.clear(update=True)
                 except Exception as e:
-                    log.error("ToolNCC.on_key_press() _2 --> %s" % str(e))
+                    self.app.log.error("ToolNCC.on_key_press() _2 --> %s" % str(e))
 
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                       self.app.on_mouse_click_over_plot)
@@ -1937,7 +1937,7 @@ class NonCopperClear(AppTool, Gerber):
                     env_obj = unary_union(geo_n)
                     env_obj = env_obj.convex_hull
             except Exception as e:
-                log.error("NonCopperClear.calculate_bounding_box() 'itself'  --> %s" % str(e))
+                self.app.log.error("NonCopperClear.calculate_bounding_box() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return None
         elif ncc_select == 1:   # _("Area Selection")
@@ -1992,7 +1992,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 new_bounding_box = bbox.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
-                log.error("NonCopperClear.apply_margin_to_bounding_box() 'itself'  --> %s" % str(e))
+                self.app.log.error("NonCopperClear.apply_margin_to_bounding_box() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
         elif ncc_select == 1:   # _("Area Selection")
@@ -2232,7 +2232,7 @@ class NonCopperClear(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("NonCopperClear.clear_polygon_worker() Standard --> %s" % str(ee))
+                self.app.log.error("NonCopperClear.clear_polygon_worker() Standard --> %s" % str(ee))
         elif ncc_method == 1:   # seed
             try:
                 cp = self.clear_polygon2(pol, tooldia,
@@ -2243,7 +2243,7 @@ class NonCopperClear(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("NonCopperClear.clear_polygon_worker() Seed --> %s" % str(ee))
+                self.app.log.error("NonCopperClear.clear_polygon_worker() Seed --> %s" % str(ee))
         elif ncc_method == 2:   # Lines
             try:
                 cp = self.clear_polygon3(pol, tooldia,
@@ -2254,7 +2254,7 @@ class NonCopperClear(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("NonCopperClear.clear_polygon_worker() Lines --> %s" % str(ee))
+                self.app.log.error("NonCopperClear.clear_polygon_worker() Lines --> %s" % str(ee))
         elif ncc_method == 3:   # Combo
             try:
                 self.app.inform.emit(_("Clearing the polygon with the method: lines."))
@@ -2285,7 +2285,7 @@ class NonCopperClear(AppTool, Gerber):
             except grace:
                 return "fail"
             except Exception as ee:
-                log.error("NonCopperClear.clear_polygon_worker() Combo --> %s" % str(ee))
+                self.app.log.error("NonCopperClear.clear_polygon_worker() Combo --> %s" % str(ee))
 
         if cp and cp.objects:
             return list(cp.get_objects())
@@ -2398,7 +2398,7 @@ class NonCopperClear(AppTool, Gerber):
 
             # COPPER CLEARING with tools marked for CLEAR#
             for tool in sorted_clear_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
@@ -2443,7 +2443,7 @@ class NonCopperClear(AppTool, Gerber):
                 geo_len = len(area.geoms)
 
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+                self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
                     if len(area.geoms) > 0:
@@ -2479,7 +2479,8 @@ class NonCopperClear(AppTool, Gerber):
                                             else:
                                                 poly_failed += 1
                                         else:
-                                            log.warning("Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
+                                            self.app.log.warning(
+                                                "Expected geo is a Polygon. Instead got a %s" % str(type(pol)))
                                 except TypeError:
                                     if isinstance(p, Polygon):
                                         res = self.clear_polygon_worker(pol=p, tooldia=tool,
@@ -2493,7 +2494,8 @@ class NonCopperClear(AppTool, Gerber):
                                         else:
                                             poly_failed += 1
                                     else:
-                                        log.warning("Expected geo is a Polygon. Instead got a %s" % str(type(p)))
+                                        self.app.log.warning(
+                                            "Expected geo is a Polygon. Instead got a %s" % str(type(p)))
 
                                 if poly_failed > 0:
                                     app_obj.poly_not_cleared = True
@@ -2523,7 +2525,7 @@ class NonCopperClear(AppTool, Gerber):
                                     geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                                     break
                         else:
-                            log.debug("There are no geometries in the cleared polygon.")
+                            self.app.log.debug("There are no geometries in the cleared polygon.")
 
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_ncc_plotting"] == 'progressive':
@@ -2652,7 +2654,7 @@ class NonCopperClear(AppTool, Gerber):
             while sorted_clear_tools:
                 tool = sorted_clear_tools.pop(0)
 
-                log.debug("Starting geometry processing for tool: %s" % str(tool))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
@@ -2680,7 +2682,7 @@ class NonCopperClear(AppTool, Gerber):
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared: %s" % str(geo_len))
+                self.app.log.warning("Total number of polygons to be cleared: %s" % str(geo_len))
 
                 # def random_color():
                 #     r_color = np.random.rand(4)
@@ -2733,7 +2735,7 @@ class NonCopperClear(AppTool, Gerber):
                                 else:
                                     poly_failed += 1
                             else:
-                                log.warning("Expected geo is a Polygon. Instead got a %s" % str(type(p)))
+                                self.app.log.warning("Expected geo is a Polygon. Instead got a %s" % str(type(p)))
 
                             if poly_failed > 0:
                                 app_obj.poly_not_cleared = True
@@ -2768,7 +2770,7 @@ class NonCopperClear(AppTool, Gerber):
                 #     # area = area.difference(buffered_cleared)
                 #     area = area.difference(unary_union(cleared_geo))
                 # except Exception as e:
-                #     log.error("Creating new area failed due of: %s" % str(e))
+                #     self.app.log.error("Creating new area failed due of: %s" % str(e))
 
                 new_area = MultiPolygon([line.buffer(tool / 1.9999999) for line in cleared_geo])
                 new_area = new_area.buffer(0.0000001)
@@ -2967,7 +2969,7 @@ class NonCopperClear(AppTool, Gerber):
             else:
                 ncc_sel_obj = sel_obj
         except Exception as e:
-            log.error("NonCopperClear.clear_copper() --> %s" % str(e))
+            self.app.log.error("NonCopperClear.clear_copper() --> %s" % str(e))
             return 'fail'
 
         bounding_box = None
@@ -2986,7 +2988,7 @@ class NonCopperClear(AppTool, Gerber):
 
                 bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
-                log.error("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
+                self.app.log.error("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
 
@@ -2995,7 +2997,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 __ = iter(geo_n)
             except Exception as e:
-                log.error("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
+                self.app.log.error("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
                 geo_n = [geo_n]
 
             geo_buff_list = []
@@ -3013,7 +3015,7 @@ class NonCopperClear(AppTool, Gerber):
                 try:
                     __ = iter(geo_n)
                 except Exception as e:
-                    log.error("NonCopperClear.clear_copper() 'Reference Object' --> %s" % str(e))
+                    self.app.log.error("NonCopperClear.clear_copper() 'Reference Object' --> %s" % str(e))
                     geo_n = [geo_n]
 
                 geo_buff_list = []
@@ -3245,7 +3247,7 @@ class NonCopperClear(AppTool, Gerber):
             tool = 1
             # COPPER CLEARING #
             for tool in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
@@ -3278,7 +3280,7 @@ class NonCopperClear(AppTool, Gerber):
                 geo_len = len(area.geoms)
 
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+                self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
                     if len(area.geoms) > 0:
@@ -3347,7 +3349,7 @@ class NonCopperClear(AppTool, Gerber):
                                             poly_processed.append(False)
                                             log.warning("Polygon can not be cleared.")
                                     else:
-                                        log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
+                                        self.app.log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
 
                                 p_cleared = poly_processed.count(True)
                                 p_not_cleared = poly_processed.count(False)
@@ -3637,7 +3639,7 @@ class NonCopperClear(AppTool, Gerber):
                     raise grace
 
                 tool = sorted_tools.pop(0)
-                log.debug("Starting geometry processing for tool: %s" % str(tool))
+                self.app.log.debug("Starting geometry processing for tool: %s" % str(tool))
 
                 app_obj.inform.emit('[success] %s = %s%s %s' % (
                     _('NCC Tool clearing with tool diameter'), str(tool), units.lower(), _('started.'))
@@ -3676,7 +3678,7 @@ class NonCopperClear(AppTool, Gerber):
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+                self.app.log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
                     if len(area.geoms) > 0:
@@ -3712,7 +3714,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                      prog_plot=False)
                                         cleared_geo.append(list(cp.get_objects()))
                                     except Exception as ee:
-                                        log.error("Polygon can't be cleared. %s" % str(ee))
+                                        self.app.log.error("Polygon can't be cleared. %s" % str(ee))
                                         # this polygon should be added to a list and then try clear it with
                                         # a smaller tool
                                         rest_geo.append(p)
@@ -3744,7 +3746,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                              prog_plot=False)
                                                 cleared_geo.append(list(cp.get_objects()))
                                             except Exception as eee:
-                                                log.error("Polygon can't be cleared. %s" % str(eee))
+                                                self.app.log.error("Polygon can't be cleared. %s" % str(eee))
                                                 # this polygon should be added to a list and then try clear it with
                                                 # a smaller tool
                                                 rest_geo.append(poly_p)
@@ -3934,7 +3936,7 @@ class NonCopperClear(AppTool, Gerber):
         try:
             geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
         except Exception as e:
-            log.error('NonCopperClear.generate_envelope() --> %s' % str(e))
+            self.app.log.error('NonCopperClear.generate_envelope() --> %s' % str(e))
             return 'fail'
 
         if invert:
@@ -3957,7 +3959,7 @@ class NonCopperClear(AppTool, Gerber):
                         log.debug("NonCopperClear.generate_envelope() Error --> Unexpected Geometry %s" %
                                   type(geom))
             except Exception as e:
-                log.error("NonCopperClear.generate_envelope() Error --> %s" % str(e))
+                self.app.log.error("NonCopperClear.generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
 

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.03.2021
+
+- some minor updates to NCC Tool
+
 5.03.2021
 
 - added detection of Gerber files in Gerber X2 format
