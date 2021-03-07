@@ -903,7 +903,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.setCentralWidget(self.splitter)
 
         # self.notebook = QtWidgets.QTabWidget()
-        self.notebook = FCDetachableTab(protect=True, protect_by_name=[_("Project"), _("Properties")], parent=self)
+        self.notebook = FCDetachableTab2(protect=True, protect_by_name=[_("Project"), _("Properties")], parent=self)
         # self.notebook.setTabsClosable(False)
         self.notebook.useOldIndex(True)
 

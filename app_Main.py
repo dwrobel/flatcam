@@ -1544,6 +1544,9 @@ class App(QtCore.QObject):
         # signal emitted when a tab is closed in the Plot Area
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
+        # signal emitted when a tab is closed in the Plot Area
+        self.ui.notebook.tab_closed_signal.connect(self.on_notebook_closed)
+
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
         # ################################# FINISHED CONNECTING SIGNALS #############################################
@@ -6496,6 +6499,18 @@ class App(QtCore.QObject):
         self.ui.toggle_coords(checked=self.defaults["global_coordsbar_show"])
         self.ui.toggle_delta_coords(checked=self.defaults["global_delta_coordsbar_show"])
 
+    def on_notebook_closed(self, tab_obj_name):
+        closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
+        # print(closed_plugin_name)
+        if closed_plugin_name == _("Levelling"):
+            # clear the possible drawn probing shapes
+            self.levelling_tool.probing_shapes.clear(update=True)
+        elif closed_plugin_name in [_("Isolation"), _("NCC"), _("Paint"), _("Punch Gerber")]:
+            self.tool_shapes.clear(update=True)
+
+    def on_close_notebook_tab(self):
+        self.tool_shapes.clear(update=True)
+
     def on_flipy(self):
         """
         Executed when the menu entry in Options -> Flip on Y axis is clicked.
@@ -6867,9 +6882,6 @@ class App(QtCore.QObject):
                 self.inform.emit('[success] %s...' % _("Grid Value deleted"))
         else:
             self.inform.emit('[WARNING_NOTCL] %s...' % _("Delete Grid value cancelled"))
-
-    def on_close_notebook_tab(self):
-        self.tool_shapes.clear(update=True)
 
     def on_copy_name(self):
         self.defaults.report_usage("on_copy_name()")
