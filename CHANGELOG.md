@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.03.2021
+
+- Levelling Tool - mare sure that there are no duplicate seed points when creating Voronoi polygons
+- Levelling Tool - fix of missing variable declaration (forgot to take everything when I moved the functionality from the CNCJob class to its own class)
+
 6.03.2021
 
 - some minor updates to NCC Tool

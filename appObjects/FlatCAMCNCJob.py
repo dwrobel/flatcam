@@ -164,9 +164,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.source_file = ''
         self.units_found = self.app.defaults['units']
 
-        # store the current selection shape status to be restored after manual adding test points
-        self.old_selection_state = self.app.defaults['global_selection_shape']
-
         self.prepend_snippet = ''
         self.append_snippet = ''
         self.gc_header = self.gcode_header()

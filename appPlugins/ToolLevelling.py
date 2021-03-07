@@ -124,6 +124,9 @@ class ToolLevelling(AppTool, CNCjob):
 
         self.gcode_viewer_tab = None
 
+        # store the current selection shape status to be restored after manual adding test points
+        self.old_selection_state = self.app.defaults['global_selection_shape']
+
         # #############################################################################################################
         # #######################################  Signals  ###########################################################
         # #############################################################################################################
@@ -520,7 +523,9 @@ class ToolLevelling(AppTool, CNCjob):
                         self.app.dec_format(new_x, self.app.decimals),
                         self.app.dec_format(new_y, self.app.decimals)
                     )
-                    points.append(formatted_point)
+                    # do not add the point if is already added
+                    if formatted_point not in points:
+                        points.append(formatted_point)
                     new_x += dx
                 new_y += dy
 
@@ -812,6 +817,11 @@ class ToolLevelling(AppTool, CNCjob):
             # use the snapped position as reference
             snapped_pos = self.app.geo_editor.snap(pos[0], pos[1])
 
+            # do not add the point if is already added
+            old_points_coords = [(pt['point'].x, pt['point'].y) for pt in self.al_voronoi_geo_storage.values()]
+            if (snapped_pos[0], snapped_pos[1]) in old_points_coords:
+                return
+
             probe_pt = Point(snapped_pos)
 
             xxmin, yymin, xxmax, yymax = self.solid_geo.bounds
@@ -930,6 +940,8 @@ class ToolLevelling(AppTool, CNCjob):
                 self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                       self.app.on_mouse_click_release_over_plot)
+                # restore selection
+                self.app.defaults['global_selection_shape'] = self.old_selection_state
 
         # Grid toggle
         if key == QtCore.Qt.Key_G or key == 'G':
