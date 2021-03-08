@@ -2146,11 +2146,6 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.updateplot_button)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.custom_box.addWidget(separator_line)
-
         # CNC Code snippets
         self.snippets_cb = FCCheckBox(_("Use CNC Code Snippets"))
         self.snippets_cb.setToolTip(
@@ -2159,25 +2154,50 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.snippets_cb)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
+
+        # #############################################################################################################
+        # ######################   PLUGINS   ##########################################################################
+        # #############################################################################################################
+
+        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
+        self.custom_box.addWidget(self.tool_lbl)
+
+        # Levelling Tool - will process the generated GCode using a Height Map generating levelled GCode
+        self.autolevel_button = FCButton(_('Levelling'))
+        self.autolevel_button.setIcon(QtGui.QIcon(self.app.resource_location + '/level32.png'))
+        self.autolevel_button.setToolTip(
+            _("Generate CNC Code with auto-levelled paths.")
+        )
+        self.autolevel_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        self.custom_box.addWidget(self.autolevel_button)
+        # self.autolevel_button.setDisabled(True)
+        # self.autolevel_button.setToolTip("DISABLED. Work in progress!")
+
         # #############################################################################################################
         # ## Export G-Code ##
         # #############################################################################################################
-        self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Export CNC Code"))
-        self.export_gcode_label.setToolTip(
-            _("Export and save G-Code to\n"
-              "make this object to a file.")
-        )
-        self.custom_box.addWidget(self.export_gcode_label)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
 
         g_export_lay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(g_export_lay)
 
         # Save Button
-        self.export_gcode_button = FCButton(_('Save CNC Code'))
+        self.export_gcode_button = FCButton(_('Save'))
         self.export_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.export_gcode_button.setToolTip(
-            _("Opens dialog to save G-Code\n"
-              "file.")
+            _("Opens dialog to save CNC Code file.")
         )
         self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         g_export_lay.addWidget(self.export_gcode_button)

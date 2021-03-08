@@ -1076,81 +1076,81 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Tools Toolbar# ##############################
         # ########################################################################
         self.drill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling"))
         self.mill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling"))
         self.level_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling"))
         self.level_btn.setDisabled(True)
         self.level_btn.setToolTip("DISABLED. Work in progress!")
 
         self.toolbarplugins.addSeparator()
 
         self.isolation_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
+            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation"))
         self.follow_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
+            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow"))
         self.ncc_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC Tool"))
+            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC"))
         self.paint_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
 
         self.toolbarplugins.addSeparator()
 
         self.cutout_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout Tool"))
+            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout"))
         self.panelize_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
+            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel"))
         self.film_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film Tool"))
+            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film"))
         self.dblsided_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided"))
 
         self.toolbarplugins.addSeparator()
 
         self.align_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
         # self.sub_btn = self.toolbarplugins.addAction(
         #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
 
         self.toolbarplugins.addSeparator()
 
         self.extract_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
         self.corners_tool_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators Tool"))
+            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators"))
 
         self.toolbarplugins.addSeparator()
 
         # self.solder_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste"))
         # self.sub_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract"))
         # self.rules_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules"))
         # self.optimal_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal"))
         # self.transform_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
         # self.qrcode_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode"))
         # self.align_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
         # self.fiducials_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials"))
         # self.cal_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration"))
 
         # self.invert_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber"))
         # self.etch_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -2295,81 +2295,81 @@ class MainGUI(QtWidgets.QMainWindow):
         # ######################### Tools Toolbar #################################
         # #########################################################################
         self.drill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Drilling"))
         self.mill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'), _("Milling"))
         self.level_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/level32.png'), _("Levelling"))
         self.level_btn.setDisabled(True)
         self.level_btn.setToolTip("DISABLED. Work in progress!")
 
         self.toolbarplugins.addSeparator()
 
         self.isolation_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
+            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation"))
         self.follow_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow Tool"))
+            QtGui.QIcon(self.app.resource_location + '/follow32.png'), _("Follow"))
         self.ncc_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC Tool"))
+            QtGui.QIcon(self.app.resource_location + '/ncc32.png'), _("NCC"))
         self.paint_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
 
         self.toolbarplugins.addSeparator()
 
         self.cutout_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout Tool"))
+            QtGui.QIcon(self.app.resource_location + '/cut32.png'), _("Cutout"))
         self.panelize_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
+            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel"))
         self.film_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film Tool"))
+            QtGui.QIcon(self.app.resource_location + '/film32.png'), _("Film"))
         self.dblsided_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided Tool"))
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2-Sided"))
 
         self.toolbarplugins.addSeparator()
 
         self.align_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
         # self.sub_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract"))
 
         self.toolbarplugins.addSeparator()
 
         self.extract_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract Tool"))
+            QtGui.QIcon(self.app.resource_location + '/extract32.png'), _("Extract"))
         self.copperfill_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving"))
         self.corners_tool_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers"))
         self.punch_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber"))
         self.calculators_btn = self.toolbarplugins.addAction(
-            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators Tool"))
+            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators"))
 
         self.toolbarplugins.addSeparator()
 
         # self.solder_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste"))
         # self.sub_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract"))
         # self.rules_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules"))
         # self.optimal_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal"))
         # self.transform_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform"))
         # self.qrcode_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode"))
         # self.align_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects"))
         # self.fiducials_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials"))
         # self.cal_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration"))
 
         # self.invert_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber"))
         # self.etch_btn = self.toolbarplugins.addAction(
-        #     QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation Tool"))
+        #     QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation"))
 
         # ########################################################################
         # ################### Excellon Editor Toolbar ############################
