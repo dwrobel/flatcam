@@ -304,6 +304,9 @@ class FlatCAMDefaults:
         "geometry_segx": 0.0,
         "geometry_segy": 0.0,
 
+        # Geometry Export
+        "geometry_dxf_format": 'R2010',
+
         # Geometry Options
         "tools_mill_tooldia": "2.4",
         "tools_mill_offset_type": 0,    # _('Path')

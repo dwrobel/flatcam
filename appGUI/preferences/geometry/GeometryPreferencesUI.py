@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 
 from appGUI.preferences.geometry.GeometryEditorPrefGroupUI import GeometryEditorPrefGroupUI
 from appGUI.preferences.geometry.GeometryAdvOptPrefGroupUI import GeometryAdvOptPrefGroupUI
+from appGUI.preferences.geometry.GeometryExpPrefGroupUI import GeometryExpPrefGroupUI
 from appGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
 from appGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
 
@@ -24,6 +25,8 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
 
         self.geometry_gen_group = GeometryGenPrefGroupUI(decimals=self.decimals)
         self.geometry_gen_group.setMinimumWidth(220)
+        self.geometry_exp_group = GeometryExpPrefGroupUI(decimals=self.decimals)
+        self.geometry_exp_group.setMinimumWidth(220)
         self.geometry_opt_group = GeometryOptPrefGroupUI(decimals=self.decimals)
         self.geometry_opt_group.setMinimumWidth(300)
         self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI(decimals=self.decimals)
@@ -32,7 +35,13 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_editor_group.setMinimumWidth(250)
 
         self.layout.addWidget(self.geometry_gen_group)
-        self.layout.addWidget(self.geometry_opt_group)
+
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.geometry_opt_group)
+        self.vlay.addWidget(self.geometry_exp_group)
+
+        self.layout.addLayout(self.vlay)
+
         self.layout.addWidget(self.geometry_adv_opt_group)
         self.layout.addWidget(self.geometry_editor_group)
 

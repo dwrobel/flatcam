@@ -748,10 +748,6 @@ class Geometry(object):
 
         self.app.log.debug("camlib.Geometry.bounds()")
 
-        if self.solid_geometry is None:
-            self.app.log.debug("solid_geometry is None")
-            return 0, 0, 0, 0
-
         def bounds_rec(obj):
             if type(obj) is list:
                 gminx = np.Inf
@@ -805,8 +801,16 @@ class Geometry(object):
                 maxx_list.append(maxx)
                 maxy_list.append(maxy)
 
+            if not minx_list and not miny_list and not maxx_list and not maxy_list:
+                self.app.log.debug("solid_geometry is None")
+                return 0, 0, 0, 0
+
             return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
         else:
+            if self.solid_geometry is None:
+                self.app.log.debug("solid_geometry is None")
+                return 0, 0, 0, 0
+
             if flatten:
                 self.flatten(reset=True)
                 self.solid_geometry = self.flat_geometry

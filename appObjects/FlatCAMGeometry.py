@@ -1963,9 +1963,15 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def export_dxf(self):
         dwg = None
+        dxf_format = self.app.defaults['geometry_dxf_format']
+
         try:
-            dwg = ezdxf.new('R2010')
+            dwg = ezdxf.new(dxf_format)
             msp = dwg.modelspace()
+
+            # add units
+            dwg.units = ezdxf.InsertUnits(4) if self.app.defaults['units'].lower() == 'mm' else ezdxf.InsertUnits(1)
+            dwg.header['$MEASUREMENT'] = 1 if self.app.defaults['units'].lower() == 'mm' else 0
 
             def g2dxf(dxf_space, geo_obj):
                 if isinstance(geo_obj, MultiPolygon):

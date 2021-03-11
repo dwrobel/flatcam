@@ -245,6 +245,9 @@ class PreferencesUIManager:
             "geometry_segx":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
 
+            # Geometry Export
+            "geometry_dxf_format":      self.ui.geometry_defaults_form.geometry_exp_group.dxf_format_combo,
+
             # Geometry Options
             "tools_mill_tooldia":       self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             # "tools_mill_offset_type":   0,  # _('Path')

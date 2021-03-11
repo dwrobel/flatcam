@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.03.2021
+
+- fixed issue when exporting DXF and not settings the units
+- added the posibility to export the Geometry in different DXF formats (previously it was hard coded to the AutoCAD 2010): R12, R2000, R2004, R2007, R2010, R2013, R2018
+- fixed the camlib.Geometry.bounds() method such that it is calculated correctly for Geometry objects created in the Geometry Editor
+
 7.03.2021
 
 - Levelling Plugin - mare sure that there are no duplicate seed points when creating Voronoi polygons
