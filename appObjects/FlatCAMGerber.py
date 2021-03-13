@@ -1776,8 +1776,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     else:
                         # create a list of integers out of the grb.tools keys and find the max of that value
                         # then, the aperture duplicate is assigned an id value incremented with 1,
-                        # and finally made string because the apertures dict keys are strings
-                        max_ap = str(max([int(k) for k in grb_final.tools.keys()]) + 1)
+                        max_ap = max([int(k) for k in grb_final.tools.keys()]) + 1
                         grb_final.tools[max_ap] = {}
                         grb_final.tools[max_ap]['geometry'] = []
 

@@ -993,7 +993,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             return
 
         if obj:
-            obj.build_ui()
+            try:
+                obj.build_ui()
+            except RuntimeError:
+                pass
 
         self.app.proj_selection_changed.emit(current, previous)
 

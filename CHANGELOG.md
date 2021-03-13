@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.03.2021
+
+- fixed a bug in Gerber merge
+- bypassed a bug in FlatCAM Gerber UI - its not really fixed (it's a crash in build UI when disconnecting signals due of the wrapped C++ object already destroyed)
+
 11.03.2021
 
 - fixed issue when exporting DXF and not settings the units
