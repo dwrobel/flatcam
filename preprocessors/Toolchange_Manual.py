@@ -20,7 +20,7 @@ class Toolchange_Manual(PreProc):
         coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
         gcode = '(This preprocessor has a special sequence when doing a toolchange.)\n'
-        gcode += '(Compatible with MACH3,)\n\n'
+        gcode += '(Compatible with MACH3.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -58,7 +58,7 @@ class Toolchange_Manual(PreProc):
                 gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["tools_drill_cutz"]) + ')\n'
 
             gcode += '\n(Tools Offset: )\n'
-            for tool, val in p['exc_cnc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Offset Z: %s' % \
                          str(val['data']["tools_drill_offset"]) + ')\n'
 
