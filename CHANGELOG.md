@@ -12,7 +12,8 @@ CHANGELOG for FlatCAM beta
 - Geometry Editor can now modify the edited tool diameter
 - upgraded the Drilling Plugin and all the related parts in the CNCJob Object and in all preprocessors. Now, the parent 'tools' attribute is inherited and also the GCode is stored here
 - small fix in the Toolchange_Manual preprocessor
-- Drilling Plugin - added in the UI the toolchange X,Y parameter and make it to work as expected
+- Drilling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
+- Milling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
 
 13.03.2021
 

@@ -462,6 +462,7 @@ class ToolMilling(AppTool, Excellon):
 
             "tools_mill_toolchange": self.ui.toolchange_cb,
             "tools_mill_toolchangez": self.ui.toolchangez_entry,
+            "tools_mill_toolchangexy": self.ui.toolchangexy_entry,
 
             "tools_mill_endz": self.ui.endz_entry,
             "tools_mill_endxy": self.ui.endxy_entry,
@@ -712,7 +713,6 @@ class ToolMilling(AppTool, Excellon):
                         tool_data['tools_mill_multidepth'] = False
                         tool_data['tools_mill_extracut'] = False
                         tool_data['tools_mill_dwell'] = False
-                        tool_data['tools_mill_toolchangexy'] = ''
                         tool_data['tools_mill_area_exclusion'] = False
 
                 self.ui.offset_type_lbl.hide()
@@ -778,7 +778,6 @@ class ToolMilling(AppTool, Excellon):
                         tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
                         tool_data['tools_mill_extracut'] = app_defaults['tools_mill_extracut']
                         tool_data['tools_mill_dwell'] = app_defaults['tools_mill_dwell']
-                        tool_data['tools_mill_toolchangexy'] = app_defaults['tools_mill_toolchangexy']
                         tool_data['tools_mill_area_exclusion'] = app_defaults['tools_mill_area_exclusion']
 
                 self.ui.offset_type_lbl.show()
@@ -4299,10 +4298,27 @@ class MillingUI:
         self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
         self.toolchangez_entry.setSingleStep(0.1)
-        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
 
-        self.grid3.addWidget(self.toolchange_cb, 8, 0)
-        self.grid3.addWidget(self.toolchangez_entry, 8, 1)
+        self.grid3.addWidget(self.toolchange_cb, 5, 0)
+        self.grid3.addWidget(self.toolchangez_entry, 5, 1)
+
+        # Tool change X-Y
+        self.toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
+        self.toolchange_xy_label.setToolTip(
+            _("Toolchange X,Y position.")
+        )
+        self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+        self.toolchangexy_entry.setObjectName("e_toolchangexy")
+
+        self.grid3.addWidget(self.toolchange_xy_label, 8, 0)
+        self.grid3.addWidget(self.toolchangexy_entry, 8, 1)
+
+        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb,
+                                              [
+                                                  self.toolchangez_entry,
+                                                  self.toolchange_xy_label,
+                                                  self.toolchangexy_entry
+                                              ])
 
         # End move Z:
         self.endz_label = FCLabel('%s:' % _("End move Z"))
