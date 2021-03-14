@@ -263,9 +263,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             # ##########################################################################################
             # ################# Set parameters #########################################################
             # ##########################################################################################
-            job_obj.origin_kind = 'excellon'
-
-            job_obj.options['Tools_in_use'] = used_tools_info
             job_obj.options['type'] = 'Excellon'
 
             pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["tools_drill_ppname_e"]
@@ -306,7 +303,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 job_obj.dwell = self.app.defaults["tools_drill_dwell"]
                 job_obj.dwelltime = self.app.defaults["tools_drill_dwelltime"]
 
-            job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
 
@@ -340,10 +336,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 return 'fail'
             job_obj.gc_start = ret_val[1]
 
-            for t_item in job_obj.exc_cnc_tools:
-                job_obj.exc_cnc_tools[t_item]['data']['tools_drill_offset'] = \
-                    float(job_obj.exc_cnc_tools[t_item]['offset_z']) + float(drillz)
-                job_obj.exc_cnc_tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
+            # from Excellon attribute self.tools
+            for t_item in job_obj.tools:
+                job_obj.tools[t_item]['data']['tools_drill_offset'] = \
+                    float(job_obj.tools[t_item]['offset_z']) + float(drillz)
+                job_obj.tools[t_item]['data']['tools_drill_ppname_e'] = job_obj.options['ppname_e']
 
             job_obj.gcode_parse()
             job_obj.create_geometry()

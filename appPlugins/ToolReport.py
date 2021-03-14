@@ -251,8 +251,9 @@ class ObjectReport(AppTool):
 
                 if obj_prop.kind.lower() == 'cncjob':
                     try:
-                        for tool_k in obj_prop.exc_cnc_tools:
-                            x0, y0, x1, y1 = unary_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
+                        # for CNCJob objects created from Excellon
+                        for tool_k in obj_prop.tools:
+                            x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -484,10 +485,11 @@ class ObjectReport(AppTool):
                 for data_k, data_v in v.items():
                     self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
-            # for cncjob objects made from excellon
-            for tool_dia, value in obj.exc_cnc_tools.items():
+            # for CNCJob objects made from Excellon
+            for tool_id, value in obj.tools.items():
+                tool_dia = obj.tools[tool_id]['tooldia']
                 exc_tool = self.treeWidget.addParent(
-                    tools, str(value['tool']), expanded=False, color=p_color, font=font
+                    tools, str(tool_id), expanded=False, color=p_color, font=font
                 )
                 self.treeWidget.addChild(
                     exc_tool,

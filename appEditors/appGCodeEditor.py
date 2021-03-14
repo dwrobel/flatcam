@@ -135,12 +135,12 @@ class AppGCodeEditor(QtCore.QObject):
 
         # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
         self.ui.cnc_tools_table.hide()
-        if self.gcode_obj.cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'geometry':
             self.ui.cnc_tools_table.show()
             self.build_cnc_tools_table()
 
         self.ui.exc_cnc_tools_table.hide()
-        if self.gcode_obj.exc_cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'excellon':
             self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
 
@@ -242,7 +242,7 @@ class AppGCodeEditor(QtCore.QObject):
         tool_idx = 0
         row_no = 0
 
-        n = len(self.gcode_obj.exc_cnc_tools) + 3
+        n = len(self.gcode_obj.tools) + 3
         self.ui.exc_cnc_tools_table.setRowCount(n)
 
         # add the All Gcode selection
@@ -262,17 +262,17 @@ class AppGCodeEditor(QtCore.QObject):
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
 
-        for tooldia_key, dia_value in self.gcode_obj.exc_cnc_tools.items():
-
+        for toolid_key, t_value in self.gcode_obj.tools.items():
+            tooldia = self.gcode_obj.tools[toolid_key]['tooldia']
             tool_idx += 1
             row_no += 1
 
             t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
-            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
-            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia)))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_drills']))
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(t_value['nr_slots']))
             cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
-                self.decimals, float(dia_value['offset']) + float(dia_value['data']['tools_drill_cutz'])))
+                self.decimals, float(t_value['offset']) + float(t_value['data']['tools_drill_cutz'])))
 
             t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -285,7 +285,7 @@ class AppGCodeEditor(QtCore.QObject):
             self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
             self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
 
-            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_value['tool']))
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(toolid_key))
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
             self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
@@ -323,10 +323,11 @@ class AppGCodeEditor(QtCore.QObject):
         :rtype:
         """
         # rows selected
-        if self.gcode_obj.cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'geometry':
             self.ui.cnc_tools_table.clicked.connect(self.on_row_selection_change)
             self.ui.cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
-        if self.gcode_obj.exc_cnc_tools:
+
+        if self.gcode_obj.options['type'].lower() == 'excellon':
             self.ui.exc_cnc_tools_table.clicked.connect(self.on_row_selection_change)
             self.ui.exc_cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
@@ -347,7 +348,7 @@ class AppGCodeEditor(QtCore.QObject):
             except (TypeError, AttributeError):
                 pass
 
-        if self.gcode_obj.exc_cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'excellon':
             try:
                 self.ui.exc_cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
             except (TypeError, AttributeError):
@@ -366,9 +367,9 @@ class AppGCodeEditor(QtCore.QObject):
         flags = QtGui.QTextDocument.FindCaseSensitively
         self.edit_area.moveCursor(QtGui.QTextCursor.Start)
 
-        if self.gcode_obj.cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'geometry':
             t_table = self.ui.cnc_tools_table
-        elif self.gcode_obj.exc_cnc_tools:
+        elif self.gcode_obj.options['type'].lower() == 'excellon':
             t_table = self.ui.exc_cnc_tools_table
         else:
             return
@@ -432,13 +433,14 @@ class AppGCodeEditor(QtCore.QObject):
                 tool_no = int(t_table.item(row, 0).text())
 
                 text_to_be_found = None
-                if self.gcode_obj.cnc_tools:
+                if self.gcode_obj.options['type'].lower() == 'geometry':
                     text_to_be_found = self.gcode_obj.cnc_tools[tool_no]['gcode']
-                elif self.gcode_obj.exc_cnc_tools:
+                elif self.gcode_obj.options['type'].lower() == 'excellon':
                     tool_dia = self.app.dec_format(float(t_table.item(row, 1).text()), dec=self.decimals)
-                    for tool_d in self.gcode_obj.exc_cnc_tools:
+                    for tool_id in self.gcode_obj.tools:
+                        tool_d = self.gcode_obj.tools[tool_id]['tooldia']
                         if self.app.dec_format(tool_d, dec=self.decimals) == tool_dia:
-                            text_to_be_found = self.gcode_obj.exc_cnc_tools[tool_d]['gcode']
+                            text_to_be_found = self.gcode_obj.tools[tool_id]['gcode']
                     if text_to_be_found is None:
                         continue
                 else:
@@ -541,9 +543,9 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        if self.gcode_obj.cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'geometry':
             t_table = self.ui.cnc_tools_table
-        elif self.gcode_obj.exc_cnc_tools:
+        elif self.gcode_obj.options['type'].lower() == 'excellon':
             t_table = self.ui.exc_cnc_tools_table
         else:
             return

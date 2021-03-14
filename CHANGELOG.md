@@ -10,16 +10,17 @@ CHANGELOG for FlatCAM beta
 14.03.2021
 
 - Geometry Editor can now modify the edited tool diameter
+- upgraded the Drilling Plugin and all the related parts in the CNCJob Object and in all preprocessors. Now, the parent 'tools' attribute is inherited and also the GCode is stored here
 
 13.03.2021
 
 - fixed a bug in Gerber merge
-- bypassed a bug in FlatCAM Gerber UI - its not really fixed (it's a crash in build UI when disconnecting signals due of the wrapped C++ object already destroyed)
+- bypassed a bug in FlatCAM Gerber UI - it's not really fixed (it's a crash in build UI when disconnecting signals due of the wrapped C++ object already destroyed)
 
 11.03.2021
 
 - fixed issue when exporting DXF and not settings the units
-- added the posibility to export the Geometry in different DXF formats (previously it was hard coded to the AutoCAD 2010): R12, R2000, R2004, R2007, R2010, R2013, R2018
+- added the possibility to export the Geometry in different DXF formats (previously it was hard coded to the AutoCAD 2010): R12, R2000, R2004, R2007, R2010, R2013, R2018
 - fixed the camlib.Geometry.bounds() method such that it is calculated correctly for Geometry objects created in the Geometry Editor
 
 7.03.2021

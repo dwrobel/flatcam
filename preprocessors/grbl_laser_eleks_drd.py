@@ -22,7 +22,9 @@ class grbl_laser_eleks_drd(PreProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        gcode = ''
+        gcode = '(This preprocessor is made to work with Laser cutters.)\n'
+        gcode += '(It allows movement on the Z axis.)\n\n'
+
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
         ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])

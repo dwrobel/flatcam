@@ -547,8 +547,9 @@ class FlatCAMObj(QtCore.QObject):
 
                 if obj_prop.kind.lower() == 'cncjob':
                     try:
-                        for tool_k in obj_prop.exc_cnc_tools:
-                            x0, y0, x1, y1 = unary_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
+                        # created from Excellon object
+                        for tool_k in obj_prop.tools:
+                            x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -556,6 +557,7 @@ class FlatCAMObj(QtCore.QObject):
                     except Exception as ee:
                         log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
 
+                    # created from Geometry object
                     try:
                         for tool_k in obj_prop.cnc_tools:
                             x0, y0, x1, y1 = unary_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
@@ -771,10 +773,11 @@ class FlatCAMObj(QtCore.QObject):
                 for data_k, data_v in v.items():
                     self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
-            # for cncjob objects made from excellon
-            for tool_dia, value in obj.exc_cnc_tools.items():
+            # for CNCJob objects made from Excellon
+            for tool_id, value in obj.tools.items():
+                tool_dia = value['tooldia']
                 exc_tool = self.treeWidget.addParent(
-                    tools, str(value['tool']), expanded=False, color=p_color, font=font
+                    tools, str(tool_id), expanded=False, color=p_color, font=font
                 )
                 self.treeWidget.addChild(
                     exc_tool,

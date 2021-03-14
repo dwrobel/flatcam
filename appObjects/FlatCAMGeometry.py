@@ -2221,7 +2221,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, segx=None, segy=None,
                          plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
@@ -2232,7 +2232,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
         :param tools_in_use:    the tools that are used, needed by some preprocessors
-        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
@@ -2244,7 +2243,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         outname = "%s_%s" % (self.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
@@ -2286,7 +2284,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.multigeo = False
             job_obj.cnc_tools.clear()
 
-            job_obj.options['Tools_in_use'] = tools_in_use
             job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
@@ -2390,10 +2387,6 @@ class GeometryObject(FlatCAMObj, Geometry):
 
                 total_gcode += res
 
-                # tell gcode_parse from which point to start drawing the lines depending on what kind of
-                # object is the source of gcode
-                job_obj.toolchange_xy_type = "geometry"
-
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
@@ -2435,7 +2428,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.multigeo = True
             job_obj.cnc_tools.clear()
 
-            job_obj.options['Tools_in_use'] = tools_in_use
             job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
@@ -2559,10 +2551,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                     app_obj.inform.emit('[success] %s...' % _("Finished G-Code processing"))
                 except Exception as ee:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(ee)))
-
-                # tell gcode_parse from which point to start drawing the lines depending on what kind of
-                # object is the source of gcode
-                job_obj.toolchange_xy_type = "geometry"
 
                 job_obj.cnc_tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
@@ -2723,9 +2711,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                 job_obj.gc_start = start_gcode
 
             job_obj.source_file = start_gcode + res
-            # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
-            # source of gcode
-            job_obj.toolchange_xy_type = "geometry"
             job_obj.gcode_parse()
             app_obj.inform.emit('[success] %s...' % _("Finished G-Code processing"))
 

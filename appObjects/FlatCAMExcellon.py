@@ -956,12 +956,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            # get the plugin_table items in a list of row items
-            plugin_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["multidepth"] = app_obj.defaults["tools_mill_multidepth"]
@@ -1056,12 +1050,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # ## Add properties to the object
 
-            # get the plugin_table items in a list of row items
-            plugin_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["tools_mill_multidepth"] = app_obj.defaults["tools_mill_multidepth"]

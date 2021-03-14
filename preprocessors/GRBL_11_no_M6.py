@@ -20,7 +20,7 @@ class GRBL_11_no_M6(PreProc):
         coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
         gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware.)\n'
-        gcode += '(It is configured to be compatible with almost any version of GRBL firmware.)\n\n'
+        gcode += '(It is configured to be compatible with almost any version of GRBL firmware. No M6 command.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -40,36 +40,36 @@ class GRBL_11_no_M6(PreProc):
 
         elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
             gcode += '\n(TOOLS DIAMETER: )\n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + ')\n'
 
             gcode += '\n(FEEDRATE Z: )\n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % \
                          str(val['data']["tools_drill_feedrate_z"]) + ')\n'
 
             gcode += '\n(FEEDRATE RAPIDS: )\n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate Rapids: %s' % \
                          str(val['data']["tools_drill_feedrate_rapid"]) + ')\n'
 
             gcode += '\n(Z_CUT: )\n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["tools_drill_cutz"]) + ')\n'
 
             gcode += '\n(Tools Offset: )\n'
             for tool, val in p['exc_cnc_tools'].items():
-                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % \
+                gcode += '(Tool: %s -> ' % str(tool) + 'Offset Z: %s' % \
                          str(val['data']["tools_drill_offset"]) + ')\n'
 
             if p['multidepth'] is True:
                 gcode += '\n(DEPTH_PER_CUT: )\n'
-                for tool, val in p['exc_tools'].items():
+                for tool, val in p['tools'].items():
                     gcode += '(Tool: %s -> ' % str(tool) + 'DeptPerCut: %s' % \
                              str(val['data']["tools_drill_depthperpass"]) + ')\n'
 
             gcode += '\n(Z_MOVE: )\n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["tools_drill_travelz"]) + ')\n'
             gcode += '\n'
 
@@ -141,9 +141,7 @@ class GRBL_11_no_M6(PreProc):
         toolC_formatted = '%.*f' % (p.decimals, p.toolC)
 
         if str(p['options']['type']) == 'Excellon':
-            for i in p['options']['Tools_in_use']:
-                if i[0] == p.tool:
-                    no_drills = i[2]
+            no_drills = p['tools'][int(p['tool'])]['nr_drills']
 
             if toolchangexy is not None:
                 gcode = """

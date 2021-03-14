@@ -970,7 +970,6 @@ class SolderPaste(AppTool):
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                new_obj.toolchange_xy_type = "geometry"
                 new_obj.cnc_tools.update({
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
@@ -1028,9 +1027,6 @@ class SolderPaste(AppTool):
 
         gcode += '(Name: ' + str(name) + ')\n'
         gcode += '(Type: ' + "G-code from " + str(obj.options['type']) + " for Solder Paste dispenser" + ')\n'
-
-        # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-        #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
@@ -1101,9 +1097,6 @@ class SolderPaste(AppTool):
 
         gcode += '(Name: ' + str(name) + ')\n'
         gcode += '(Type: ' + "G-code from " + str(obj.options['type']) + " for Solder Paste dispenser" + ')\n'
-
-        # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-        #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'

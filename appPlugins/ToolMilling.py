@@ -2510,12 +2510,6 @@ class ToolMilling(AppTool, Excellon):
 
             # ## Add properties to the object
 
-            # get the plugin_table items in a list of row items
-            plugin_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
@@ -2614,12 +2608,7 @@ class ToolMilling(AppTool, Excellon):
             app_obj.inform.emit(_("Generating slot milling geometry..."))
 
             # ## Add properties to the object
-            # get the plugin_table items in a list of row items
-            plugin_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            plugin_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            geo_obj.options['Tools_in_use'] = plugin_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["tools_mill_tooldia"] = str(tooldia)
             geo_obj.options["tools_mill_multidepth"] = self.target_obj.options["tools_mill_multidepth"]
@@ -2913,8 +2902,6 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.multigeo = False
             new_cncjob_obj.cnc_tools.clear()
 
-            new_cncjob_obj.options['Tools_in_use'] = tools_in_use
-
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
@@ -3021,10 +3008,6 @@ class ToolMilling(AppTool, Excellon):
 
                 total_gcode += res
 
-                # tell gcode_parse from which point to start drawing the lines depending on what kind of
-                # object is the source of gcode
-                new_cncjob_obj.toolchange_xy_type = "geometry"
-
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
                 dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse()
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
@@ -3066,7 +3049,6 @@ class ToolMilling(AppTool, Excellon):
             new_cncjob_obj.multigeo = True
             new_cncjob_obj.cnc_tools.clear()
 
-            new_cncjob_obj.options['Tools_in_use'] = tools_in_use
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
 
@@ -3197,7 +3179,6 @@ class ToolMilling(AppTool, Excellon):
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                new_cncjob_obj.toolchange_xy_type = "geometry"
 
                 # Update the CNCJob tools dictionary
                 new_cncjob_obj.cnc_tools.update({

@@ -19,7 +19,7 @@ class Paste_1(AppPreProcTools):
         units = ' ' + str(p['units']).lower()
         coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
 
-        gcode = ''
+        gcode = '(This preprocessor is to be used only with the SolderPaste Plugin.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])

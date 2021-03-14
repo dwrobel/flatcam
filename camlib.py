@@ -2723,7 +2723,6 @@ class CNCjob(Geometry):
         self.toolchange = False
         self.z_toolchange = toolchangez
         self.xy_toolchange = toolchange_xy
-        self.toolchange_xy_type = None
 
         self.startz = None
         self.z_end = endz
@@ -3973,21 +3972,7 @@ class CNCjob(Geometry):
 
         # #############################################################################################################
         # #############################################################################################################
-        # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
-        # running this method from a Tcl Command
-        # #############################################################################################################
-        # #############################################################################################################
-        build_tools_in_use_list = False
-        if 'Tools_in_use' not in self.options:
-            self.options['Tools_in_use'] = []
-
-        # if the list is empty (either we just added the key or it was already there but empty) signal to build it
-        if not self.options['Tools_in_use']:
-            build_tools_in_use_list = True
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # fill the data into the self.exc_cnc_tools dictionary
+        # fill the data into the self.tools dictionary attribute of Excellon object
         # #############################################################################################################
         # #############################################################################################################
         for it in all_tools:
@@ -4024,20 +4009,13 @@ class CNCjob(Geometry):
                         default_data[k] = deepcopy(v)
 
                     # it[1] is the tool diameter
-                    self.exc_cnc_tools[it[1]] = {}
-                    self.exc_cnc_tools[it[1]]['tool'] = it[0]
-                    self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
-                    self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
-                    self.exc_cnc_tools[it[1]]['offset_z'] = z_off
-                    self.exc_cnc_tools[it[1]]['data'] = default_data
-                    self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
-
-                    # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
-                    # running this method from a Tcl Command
-                    if build_tools_in_use_list is True:
-                        self.options['Tools_in_use'].append(
-                            [it[0], it[1], drill_no, slot_no]
-                        )
+                    self.tools[to_ol] = {}
+                    self.tools[to_ol]['tooldia'] = it[1]
+                    self.tools[to_ol]['nr_drills'] = drill_no
+                    self.tools[to_ol]['nr_slots'] = slot_no
+                    self.tools[to_ol]['offset_z'] = z_off
+                    self.tools[to_ol]['data'] = default_data
+                    self.tools[to_ol]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
@@ -6414,7 +6392,7 @@ class CNCjob(Geometry):
 
         # Current path: temporary storage until tool is
         # lifted or lowered.
-        if self.toolchange_xy_type == "excellon":
+        if self.options['type'].lower() == "excellon":
             if self.app.defaults["tools_drill_toolchangexy"] == '' or \
                     self.app.defaults["tools_drill_toolchangexy"] is None:
                 pos_xy = (0, 0)
@@ -6483,7 +6461,7 @@ class CNCjob(Geometry):
                     path = [path[-1]]  # Start with the last point of last path.
 
                 # create the geometry for the holes created when drilling Excellon drills
-                if self.origin_kind == 'excellon':
+                if self.options['type'].lower() == 'excellon':
                     if current['Z'] < 0:
                         current_drill_point_coords = (
                             float('%.*f' % (self.decimals, current['X'])),
@@ -6570,7 +6548,7 @@ class CNCjob(Geometry):
 
     def excellon_tool_gcode_parse(self, dia, gcode, start_pt=(0, 0), force_parsing=None):
         """
-        G-Code parser (from self.exc_cnc_tools['tooldia']['gcode']). Generates dictionary with
+        G-Code parser (from self.tools['tool_id']['gcode']). For Excellon. Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
 
@@ -6581,7 +6559,7 @@ class CNCjob(Geometry):
         }
         where kind can be either ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
 
-        :param dia:             the dia is a tool diameter which is the key in self.exc_cnc_tools dict
+        :param dia:             the dia is a tool diameter which is the key in self.tools dict attribute of Excellon
         :type dia:              float
         :param gcode:           Gcode to parse
         :type gcode:            str
@@ -6834,7 +6812,7 @@ class CNCjob(Geometry):
                             obj.annotations_dict[tooldia]['text'].append(str(path_num))
 
                     # plot the geometry of Excellon objects
-                    if self.origin_kind == 'excellon':
+                    if self.options['type'].lower() == 'excellon':
                         try:
                             # if the geos are travel lines
                             if geo['kind'][0] == 'T':
@@ -7647,8 +7625,8 @@ class CNCjob(Geometry):
                         maxx = max(maxx, maxx_)
                         maxy = max(maxy, maxy_)
 
-            if self.exc_cnc_tools:
-                for k, v in self.exc_cnc_tools.items():
+            if self.options['type'].lower() == 'excellon':
+                for k, v in self.tools.items():
                     minx = np.Inf
                     miny = np.Inf
                     maxx = -np.Inf

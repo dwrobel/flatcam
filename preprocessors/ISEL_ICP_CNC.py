@@ -38,36 +38,36 @@ class ISEL_ICP_CNC(PreProc):
 
         elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
             gcode += '\n;TOOLS DIAMETER: \n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + '\n'
 
             gcode += '\n;FEEDRATE Z: \n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Feedrate: %s' % \
                          str(val['data']["tools_drill_feedrate_z"]) + '\n'
 
             gcode += '\n;FEEDRATE RAPIDS: \n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Feedrate Rapids: %s' % \
                          str(val['data']["tools_drill_feedrate_rapid"]) + '\n'
 
             gcode += '\n;Z_CUT: \n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["tools_drill_cutz"]) + '\n'
 
             gcode += '\n;Tools Offset: \n'
             for tool, val in p['exc_cnc_tools'].items():
-                gcode += ';Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % \
+                gcode += ';Tool: %s -> ' % str(tool) + 'Offset Z: %s' % \
                          str(val['data']["tools_drill_offset"]) + '\n'
 
             if p['multidepth'] is True:
                 gcode += '\n;DEPTH_PER_CUT: \n'
-                for tool, val in p['exc_tools'].items():
+                for tool, val in p['tools'].items():
                     gcode += ';Tool: %s -> ' % str(tool) + 'DeptPerCut: %s' % \
                              str(val['data']["tools_drill_depthperpass"]) + '\n'
 
             gcode += '\n;Z_MOVE: \n'
-            for tool, val in p['exc_tools'].items():
+            for tool, val in p['tools'].items():
                 gcode += ';Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["tools_drill_travelz"]) + '\n'
             gcode += '\n'
 
