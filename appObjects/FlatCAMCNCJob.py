@@ -297,6 +297,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.cnc_tools_table.setMaximumHeight(self.ui.cnc_tools_table.getHeight())
 
     def build_excellon_cnc_tools(self):
+        # for the case that self.tools is empty: old projects
+        if not self.tools:
+            return
 
         n = len(self.tools)
         self.ui.exc_cnc_tools_table.setRowCount(n)
@@ -925,16 +928,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # if this dict is not empty then the object is an Excellon object
         if self.options['type'].lower() == 'excellon':
-            first_key = next(iter(self.tools))
+            # for the case that self.tools is empty: old projects
             try:
-                include_header = self.app.preprocessors[
-                    self.tools[first_key]['data']['tools_drill_ppname_e']
-                ].include_header
-            except KeyError:
-                # for older loaded projects
-                include_header = self.app.preprocessors[
-                    self.tools[first_key]['data']['ppname_e']
-                ].include_header
+                first_key = next(iter(self.tools))
+                try:
+                    include_header = self.app.preprocessors[
+                        self.tools[first_key]['data']['tools_drill_ppname_e']
+                    ].include_header
+                except KeyError:
+                    # for older loaded projects
+                    include_header = self.app.preprocessors[
+                        self.tools[first_key]['data']['ppname_e']
+                    ].include_header
+            except TypeError:
+                # when self.tools is empty - old projects
+                include_header = self.app.preprocessors['default'].include_header
 
         gcode = ''
         if include_header is False:
@@ -965,18 +973,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
-                if self.options['type'].lower() == 'excellon':
-                    for tooluid_key in self.tools:
-                        for key, value in self.tools[tooluid_key].items():
-                            if key == 'gcode' and value:
-                                gcode += value
-                                break
-                else:
-                    for tooluid_key in self.cnc_tools:
-                        for key, value in self.cnc_tools[tooluid_key].items():
-                            if key == 'gcode' and value:
-                                gcode += value
-                                break
+                # for the case that self.tools is empty: old projects
+                try:
+                    if self.options['type'].lower() == 'excellon':
+                        for tooluid_key in self.tools:
+                            for key, value in self.tools[tooluid_key].items():
+                                if key == 'gcode' and value:
+                                    gcode += value
+                                    break
+                    else:
+                        for tooluid_key in self.cnc_tools:
+                            for key, value in self.cnc_tools[tooluid_key].items():
+                                if key == 'gcode' and value:
+                                    gcode += value
+                                    break
+                except TypeError:
+                    pass
             else:
                 gcode += self.gcode
 
@@ -984,18 +996,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # detect if using a HPGL preprocessor
             hpgl = False
-            if self.options['type'].lower() == 'geometry':
-                for key in self.cnc_tools:
-                    if 'tools_mill_ppname_g' in self.cnc_tools[key]['data']:
-                        if 'hpgl' in self.cnc_tools[key]['data']['tools_mill_ppname_g']:
-                            hpgl = True
-                            break
-            elif self.options['type'].lower() == 'excellon':
-                for key in self.tools:
-                    if 'ppname_e' in self.tools[key]['data']:
-                        if 'hpgl' in self.tools[key]['data']['ppname_e']:
-                            hpgl = True
-                            break
+            # for the case that self.tools is empty: old projects
+            try:
+                if self.options['type'].lower() == 'geometry':
+                    for key in self.cnc_tools:
+                        if 'tools_mill_ppname_g' in self.cnc_tools[key]['data']:
+                            if 'hpgl' in self.cnc_tools[key]['data']['tools_mill_ppname_g']:
+                                hpgl = True
+                                break
+                elif self.options['type'].lower() == 'excellon':
+                    for key in self.tools:
+                        if 'ppname_e' in self.tools[key]['data']:
+                            if 'hpgl' in self.tools[key]['data']['ppname_e']:
+                                hpgl = True
+                                break
+            except TypeError:
+                hpgl = False
 
             if hpgl:
                 processed_body_gcode = ''

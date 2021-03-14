@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - small fix in the Toolchange_Manual preprocessor
 - Drilling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
 - Milling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
+- allow the old projects to be loaded without crashing the app, although the load is incomplete
 
 13.03.2021
 
