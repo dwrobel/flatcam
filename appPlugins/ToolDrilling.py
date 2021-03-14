@@ -355,6 +355,7 @@ class ToolDrilling(AppTool, Excellon):
         self.general_form_fields.update({
             "tools_drill_toolchange": self.ui.toolchange_cb,
             "tools_drill_toolchangez": self.ui.toolchangez_entry,
+            "tools_drill_toolchangexy": self.ui.toolchangexy_entry,
             "tools_drill_startz": self.ui.estartz_entry,
 
             "tools_drill_endz": self.ui.endz_entry,
@@ -392,6 +393,8 @@ class ToolDrilling(AppTool, Excellon):
             # General Parameters
             "e_toolchange": "tools_drill_toolchange",
             "e_toolchangez": "tools_drill_toolchangez",
+            "e_toolchangexy": "tools_drill_toolchangexy",
+
             "e_startz": "tools_drill_startz",
 
             "e_endz": "tools_drill_endz",
@@ -555,7 +558,6 @@ class ToolDrilling(AppTool, Excellon):
                     tool_data['tools_drill_dwell'] = False
                     tool_data['tools_drill_drill_slots'] = False
 
-                    tool_data['tools_drill_toolchangexy'] = ''
                     tool_data['tools_drill_area_exclusion'] = False
 
             self.ui.search_load_db_btn.hide()
@@ -599,7 +601,6 @@ class ToolDrilling(AppTool, Excellon):
                     tool_data['tools_drill_dwell'] = options['tools_drill_dwell']
                     tool_data['tools_drill_drill_slots'] = options['tools_drill_drill_slots']
 
-                    tool_data['tools_drill_toolchangexy'] = options['tools_drill_toolchangexy']
                     tool_data['tools_drill_area_exclusion'] = options['tools_drill_area_exclusion']
 
             self.ui.search_load_db_btn.show()
@@ -1265,7 +1266,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # populate the form with the data from the tool associated with the row parameter for the last row selected
         try:
-            item = self.ui.tools_table.item(sel_rows[-1], 3)
+            item = self.ui.tools_table.item(list(sel_rows)[-1], 3)
             if type(item) is not None:
                 tooluid = int(item.text())
                 self.storage_to_form(self.excellon_tools[tooluid]['data'])
@@ -1358,7 +1359,6 @@ class ToolDrilling(AppTool, Excellon):
                     self.excellon_tools[tooluid_key][option_changed] = new_option_value
                 if option_changed in tooluid_val['data']:
                     self.excellon_tools[tooluid_key]['data'][option_changed] = new_option_value
-
         self.ui_connect()
 
     def get_selected_tools_table_items(self):
@@ -1962,7 +1962,6 @@ class ToolDrilling(AppTool, Excellon):
             # fill the data into the self.tools dictionary attribute of the CNCJob object
             # #########################################################################################################
             # #########################################################################################################
-
             job_obj.tools = {}
             for sel_id in sorted_tools:
                 for t_id in self.excellon_tools:
@@ -2038,7 +2037,10 @@ class ToolDrilling(AppTool, Excellon):
             job_obj.segy = self.app.defaults["geometry_segy"]
 
             # first drill point
-            job_obj.xy_toolchange = self.app.defaults["tools_drill_toolchangexy"]
+            # I can read the toolchange x,y point from any tool since it is the same for all, so I read it
+            # from the first tool
+            job_obj.xy_toolchange = job_obj.tools[1]['data']["tools_drill_toolchangexy"]
+
             x_tc, y_tc = [0, 0]
             try:
                 if job_obj.xy_toolchange != '':
@@ -2109,7 +2111,6 @@ class ToolDrilling(AppTool, Excellon):
                         nr_slots = 0
                         job_obj.tools[used_tooldia]['nr_drills'] = nr_drills
                         job_obj.tools[used_tooldia]['nr_slots'] = nr_slots
-
 
                     # calculate if the current tool is the first one or if it is the last one
                     # for the first tool we add some extra GCode (start Gcode, header etc)
@@ -2613,6 +2614,7 @@ class DrillingUI:
         )
         self.toolchange_cb.setObjectName("e_toolchange")
 
+        # Tool change Z
         self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.setToolTip(
             _("Z-axis position (height) for\n"
@@ -2626,7 +2628,24 @@ class DrillingUI:
 
         self.grid3.addWidget(self.toolchange_cb, 7, 0)
         self.grid3.addWidget(self.toolchangez_entry, 7, 1)
-        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
+
+        # Tool change X-Y
+        self.toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
+        self.toolchange_xy_label.setToolTip(
+            _("Toolchange X,Y position.")
+        )
+        self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+        self.toolchangexy_entry.setObjectName("e_toolchangexy")
+
+        self.grid3.addWidget(self.toolchange_xy_label, 8, 0)
+        self.grid3.addWidget(self.toolchangexy_entry, 8, 1)
+
+        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb,
+                                              [
+                                                  self.toolchangez_entry,
+                                                  self.toolchange_xy_label,
+                                                  self.toolchangexy_entry
+                                              ])
 
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))

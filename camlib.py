@@ -3240,6 +3240,7 @@ class CNCjob(Geometry):
         self.z_toolchange = tool_dict['tools_drill_toolchangez']
         # XY_toolchange parameter
         self.xy_toolchange = tool_dict["tools_drill_toolchangexy"]
+
         try:
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
@@ -3491,6 +3492,7 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.end_code, x=0, y=0)
 
         self.app.inform.emit('%s %s' % (_("Finished G-Code generation for tool:"), str(tool)))
+
         return t_gcode, (locx, locy), start_gcode
 
     # used in Geometry (and soon in Tool Milling)

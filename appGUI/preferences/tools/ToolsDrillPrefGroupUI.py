@@ -81,8 +81,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
 
-        grid0.addWidget(self.mpass_cb, 4, 0)
-        grid0.addWidget(self.maxdepth_entry, 4, 1, 1, 2)
+        grid0.addWidget(self.mpass_cb, 5, 0)
+        grid0.addWidget(self.maxdepth_entry, 5, 1, 1, 2)
 
         # Travel Z
         travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -95,8 +95,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(travelzlabel, 5, 0)
-        grid0.addWidget(self.travelz_entry, 5, 1, 1, 2)
+        grid0.addWidget(travelzlabel, 7, 0)
+        grid0.addWidget(self.travelz_entry, 7, 1, 1, 2)
 
         # Tool change:
         self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
@@ -104,7 +104,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
-        grid0.addWidget(self.toolchange_cb, 6, 0, 1, 3)
+        grid0.addWidget(self.toolchange_cb, 9, 0, 1, 3)
 
         # Tool Change Z
         toolchangezlabel = FCLabel('%s:' % _('Toolchange Z'))
@@ -117,8 +117,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(toolchangezlabel, 7, 0)
-        grid0.addWidget(self.toolchangez_entry, 7, 1, 1, 2)
+        grid0.addWidget(toolchangezlabel, 11, 0)
+        grid0.addWidget(self.toolchangez_entry, 11, 1, 1, 2)
 
         # End Move Z
         endz_label = FCLabel('%s:' % _('End move Z'))
@@ -130,8 +130,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.endz_entry.set_precision(self.decimals)
         self.endz_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(endz_label, 8, 0)
-        grid0.addWidget(self.endz_entry, 8, 1, 1, 2)
+        grid0.addWidget(endz_label, 15, 0)
+        grid0.addWidget(self.endz_entry, 15, 1, 1, 2)
 
         # End Move X,Y
         endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
@@ -142,8 +142,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(endmove_xy_label, 9, 0)
-        grid0.addWidget(self.endxy_entry, 9, 1, 1, 2)
+        grid0.addWidget(endmove_xy_label, 17, 0)
+        grid0.addWidget(self.endxy_entry, 17, 1, 1, 2)
 
         # Feedrate Z
         frlabel = FCLabel('%s:' % _('Feedrate Z'))
@@ -157,8 +157,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(frlabel, 10, 0)
-        grid0.addWidget(self.feedrate_z_entry, 10, 1, 1, 2)
+        grid0.addWidget(frlabel, 19, 0)
+        grid0.addWidget(self.feedrate_z_entry, 19, 1, 1, 2)
 
         # Spindle speed
         spdlabel = FCLabel('%s:' % _('Spindle Speed'))
@@ -171,8 +171,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.set_step(100)
 
-        grid0.addWidget(spdlabel, 11, 0)
-        grid0.addWidget(self.spindlespeed_entry, 11, 1, 1, 2)
+        grid0.addWidget(spdlabel, 21, 0)
+        grid0.addWidget(self.spindlespeed_entry, 21, 1, 1, 2)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s' % _('Enable Dwell'))
@@ -181,7 +181,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "speed before cutting.")
         )
 
-        grid0.addWidget(self.dwell_cb, 12, 0, 1, 3)
+        grid0.addWidget(self.dwell_cb, 23, 0, 1, 3)
 
         # Dwell Time
         dwelltime = FCLabel('%s:' % _('Duration'))
@@ -190,8 +190,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(dwelltime, 13, 0)
-        grid0.addWidget(self.dwelltime_entry, 13, 1, 1, 2)
+        grid0.addWidget(dwelltime, 25, 0)
+        grid0.addWidget(self.dwelltime_entry, 25, 1, 1, 2)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -206,24 +206,24 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
         self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
-        grid0.addWidget(pp_excellon_label, 14, 0)
-        grid0.addWidget(self.pp_excellon_name_cb, 14, 1, 1, 2)
+        grid0.addWidget(pp_excellon_label, 27, 0)
+        grid0.addWidget(self.pp_excellon_name_cb, 27, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 3)
+        grid0.addWidget(separator_line, 29, 0, 1, 3)
 
         # DRILL SLOTS LABEL
         self.dslots_label = FCLabel('<b>%s:</b>' % _('Drilling Slots'))
-        grid0.addWidget(self.dslots_label, 18, 0, 1, 3)
+        grid0.addWidget(self.dslots_label, 31, 0, 1, 3)
 
         # Drill slots
         self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
         self.drill_slots_cb.setToolTip(
             _("If the selected tool has slots then they will be drilled.")
         )
-        grid0.addWidget(self.drill_slots_cb, 20, 0, 1, 3)
+        grid0.addWidget(self.drill_slots_cb, 33, 0, 1, 3)
 
         # Drill Overlap
         self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
@@ -236,8 +236,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.drill_overlap_entry.set_range(0.0, 10000.0000)
         self.drill_overlap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.drill_overlap_label, 22, 0)
-        grid0.addWidget(self.drill_overlap_entry, 22, 1, 1, 2)
+        grid0.addWidget(self.drill_overlap_label, 35, 0)
+        grid0.addWidget(self.drill_overlap_entry, 35, 1, 1, 2)
 
         # Last drill in slot
         self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
@@ -245,18 +245,18 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
             _("If the slot length is not completely covered by drill holes,\n"
               "add a drill hole on the slot end point.")
         )
-        grid0.addWidget(self.last_drill_cb, 24, 0, 1, 3)
+        grid0.addWidget(self.last_drill_cb, 37, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 26, 0, 1, 3)
+        grid0.addWidget(separator_line, 39, 0, 1, 3)
 
         self.exc_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.exc_label.setToolTip(
             _("A list of advanced parameters.")
         )
-        grid0.addWidget(self.exc_label, 28, 0, 1, 3)
+        grid0.addWidget(self.exc_label, 41, 0, 1, 3)
 
         # Offset Z
         offsetlabel = FCLabel('%s:' % _('Offset Z'))
@@ -268,8 +268,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-999.9999, 999.9999)
 
-        grid0.addWidget(offsetlabel, 29, 0)
-        grid0.addWidget(self.offset_entry, 29, 1, 1, 2)
+        grid0.addWidget(offsetlabel, 43, 0)
+        grid0.addWidget(self.offset_entry, 43, 1, 1, 2)
 
         # ToolChange X,Y
         toolchange_xy_label = FCLabel('%s:' % _('Toolchange X,Y'))
@@ -278,8 +278,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(toolchange_xy_label, 31, 0)
-        grid0.addWidget(self.toolchangexy_entry, 31, 1, 1, 2)
+        grid0.addWidget(toolchange_xy_label, 45, 0)
+        grid0.addWidget(self.toolchangexy_entry, 45, 1, 1, 2)
 
         # Start Z
         startzlabel = FCLabel('%s:' % _('Start Z'))
@@ -289,8 +289,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
 
-        grid0.addWidget(startzlabel, 33, 0)
-        grid0.addWidget(self.estartz_entry, 33, 1, 1, 2)
+        grid0.addWidget(startzlabel, 47, 0)
+        grid0.addWidget(self.estartz_entry, 47, 1, 1, 2)
 
         # Feedrate Rapids
         fr_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -305,8 +305,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(fr_rapid_label, 35, 0)
-        grid0.addWidget(self.feedrate_rapid_entry, 35, 1, 1, 2)
+        grid0.addWidget(fr_rapid_label, 49, 0)
+        grid0.addWidget(self.feedrate_rapid_entry, 49, 1, 1, 2)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -318,8 +318,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
-        grid0.addWidget(self.pdepth_label, 37, 0)
-        grid0.addWidget(self.pdepth_entry, 37, 1, 1, 2)
+        grid0.addWidget(self.pdepth_label, 51, 0)
+        grid0.addWidget(self.pdepth_entry, 51, 1, 1, 2)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
@@ -330,8 +330,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.feedrate_probe_label, 38, 0)
-        grid0.addWidget(self.feedrate_probe_entry, 38, 1, 1, 2)
+        grid0.addWidget(self.feedrate_probe_label, 53, 0)
+        grid0.addWidget(self.feedrate_probe_entry, 53, 1, 1, 2)
 
         # Spindle direction
         spindle_dir_label = FCLabel('%s:' % _('Spindle direction'))
@@ -344,8 +344,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                           {'label': _('CCW'), 'value': 'CCW'}])
-        grid0.addWidget(spindle_dir_label, 40, 0)
-        grid0.addWidget(self.spindledir_radio, 40, 1, 1, 2)
+        grid0.addWidget(spindle_dir_label, 55, 0)
+        grid0.addWidget(self.spindledir_radio, 55, 1, 1, 2)
 
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
         self.fplunge_cb.setToolTip(
@@ -354,7 +354,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        grid0.addWidget(self.fplunge_cb, 42, 0, 1, 3)
+        grid0.addWidget(self.fplunge_cb, 57, 0, 1, 3)
 
         self.fretract_cb = FCCheckBox('%s' % _('Fast Retract'))
         self.fretract_cb.setToolTip(
@@ -366,12 +366,12 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "(travel height) is done as fast as possible (G0) in one move.")
         )
 
-        grid0.addWidget(self.fretract_cb, 45, 0, 1, 3)
+        grid0.addWidget(self.fretract_cb, 59, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 46, 0, 1, 3)
+        grid0.addWidget(separator_line, 61, 0, 1, 3)
 
         # -----------------------------
         # --- Area Exclusion ----------
@@ -380,7 +380,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.area_exc_label.setToolTip(
             _("Area exclusion parameters.")
         )
-        grid0.addWidget(self.area_exc_label, 47, 0, 1, 2)
+        grid0.addWidget(self.area_exc_label, 63, 0, 1, 3)
 
         # Exclusion Area CB
         self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
@@ -391,7 +391,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
                 "is forbidden."
             )
         )
-        grid0.addWidget(self.exclusion_cb, 49, 0, 1, 2)
+        grid0.addWidget(self.exclusion_cb, 65, 0, 1, 3)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -402,8 +402,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 51, 0)
-        grid0.addWidget(self.area_shape_radio, 51, 1)
+        grid0.addWidget(self.area_shape_label, 67, 0)
+        grid0.addWidget(self.area_shape_radio, 67, 1, 1, 2)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -414,8 +414,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
 
-        grid0.addWidget(self.strategy_label, 53, 0)
-        grid0.addWidget(self.strategy_radio, 53, 1)
+        grid0.addWidget(self.strategy_label, 69, 0)
+        grid0.addWidget(self.strategy_radio, 69, 1, 1, 2)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))
@@ -425,7 +425,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.over_z_entry.set_range(-10000.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
-        grid0.addWidget(self.over_z_label, 55, 0)
-        grid0.addWidget(self.over_z_entry, 55, 1)
+        grid0.addWidget(self.over_z_label, 71, 0)
+        grid0.addWidget(self.over_z_entry, 71, 1, 1, 2)
 
         self.layout.addStretch()
