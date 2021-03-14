@@ -79,6 +79,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         })
 
         '''
+            When self.tools is an attribute of a CNCJob object created from a Geometry object.
             This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
             diameter of the tools and the value is another dict that will hold the data under the following form:
                {tooldia:   {
@@ -97,11 +98,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             It is populated in the GeometryObject.mtool_gen_cncjob()
             BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
         '''
-        self.cnc_tools = {}
 
         '''
-           This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
-           diameter of the tools and the value is another dict that will hold the data under the following form:
+            When self.tools is an attribute of a CNCJob object created from a Geometry object.
+            This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
+            diameter of the tools and the value is another dict that will hold the data under the following form:
               {tooldia:   {
                           'tool': int,
                           'nr_drills': int,
@@ -201,10 +202,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def build_cnc_tools_table(self):
         tool_idx = 0
 
-        n = len(self.cnc_tools)
+        # for the case when self.tools is empty: it can happen for old projects who stored the data elsewhere
+        if not self.tools:
+            return
+
+        n = len(self.tools)
         self.ui.cnc_tools_table.setRowCount(n)
 
-        for dia_key, dia_value in self.cnc_tools.items():
+        for dia_key, dia_value in self.tools.items():
 
             tool_idx += 1
             row_no = tool_idx - 1
@@ -799,21 +804,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         start_comment = comment_start_symbol if comment_start_symbol is not None else '('
         stop_comment = comment_stop_symbol if comment_stop_symbol is not None else ')'
 
-        try:
-            for key in self.cnc_tools:
-                ppg = self.cnc_tools[key]['data']['ppname_g']
-                if 'marlin' in ppg.lower() or 'repetier' in ppg.lower():
-                    marlin = True
-                    break
-                if ppg == 'hpgl':
-                    hpgl = True
-                    break
-                if "toolchange_probe" in ppg.lower():
-                    probe_pp = True
-                    break
-        except KeyError:
-            # self.app.log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
-            pass
+        if self.options['type'] == 'geometry':
+            try:
+                for key in self.tools:
+                    ppg = self.tools[key]['data']['ppname_g']
+                    if 'marlin' in ppg.lower() or 'repetier' in ppg.lower():
+                        marlin = True
+                        break
+                    if ppg == 'hpgl':
+                        hpgl = True
+                        break
+                    if "toolchange_probe" in ppg.lower():
+                        probe_pp = True
+                        break
+            except KeyError:
+                # self.app.log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
+                pass
 
         try:
             if 'marlin' in self.options['ppname_e'].lower() or 'repetier' in self.options['ppname_e'].lower():
@@ -921,16 +927,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             pass
 
         # if this dict is not empty then the object is a Geometry object
-        if self.cnc_tools:
-            first_key = next(iter(self.cnc_tools))
-            include_header = self.app.preprocessors[self.cnc_tools[first_key]['data']['tools_mill_ppname_g']]
-            include_header = include_header.include_header
+        if self.options['type'].lower() == 'geometry':
+            # for the case that self.tools is empty: old projects
+            try:
+                first_key = list(self.tools.keys())[0]
+                include_header = self.app.preprocessors[self.tools[first_key]['data']['tools_mill_ppname_g']]
+                include_header = include_header.include_header
+            except TypeError:
+                include_header = self.app.preprocessors['default'].include_header
 
         # if this dict is not empty then the object is an Excellon object
         if self.options['type'].lower() == 'excellon':
             # for the case that self.tools is empty: old projects
             try:
-                first_key = next(iter(self.tools))
+                first_key = list(self.tools.keys())[0]
                 try:
                     include_header = self.app.preprocessors[
                         self.tools[first_key]['data']['tools_drill_ppname_e']
@@ -948,11 +958,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if include_header is False:
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
-                for tooluid_key in self.cnc_tools:
-                    for key, value in self.cnc_tools[tooluid_key].items():
-                        if key == 'gcode':
-                            gcode += value
-                            break
+                try:
+                    if self.options['type'].lower() == 'geometry':
+                        for tooluid_key in self.tools:
+                            for key, value in self.tools[tooluid_key].items():
+                                if key == 'gcode':
+                                    gcode += value
+                                    break
+                except TypeError:
+                    pass
             else:
                 gcode += self.gcode
 
@@ -982,8 +996,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                     gcode += value
                                     break
                     else:
-                        for tooluid_key in self.cnc_tools:
-                            for key, value in self.cnc_tools[tooluid_key].items():
+                        # it's made from a Geometry object
+                        for tooluid_key in self.tools:
+                            for key, value in self.tools[tooluid_key].items():
                                 if key == 'gcode' and value:
                                     gcode += value
                                     break
@@ -999,9 +1014,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # for the case that self.tools is empty: old projects
             try:
                 if self.options['type'].lower() == 'geometry':
-                    for key in self.cnc_tools:
-                        if 'tools_mill_ppname_g' in self.cnc_tools[key]['data']:
-                            if 'hpgl' in self.cnc_tools[key]['data']['tools_mill_ppname_g']:
+                    for key in self.tools:
+                        if 'tools_mill_ppname_g' in self.tools[key]['data']:
+                            if 'hpgl' in self.tools[key]['data']['tools_mill_ppname_g']:
                                 hpgl = True
                                 break
                 elif self.options['type'].lower() == 'excellon':
@@ -1199,9 +1214,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         if self.ui.exc_cnc_tools_table.cellWidget(r, 6).isChecked():
                             self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed, kind=kind)
         else:
-            for tooluid_key in self.cnc_tools:
-                tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
-                gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+            for tooluid_key in self.tools:
+                tooldia = float('%.*f' % (self.decimals, float(self.tools[tooluid_key]['tooldia'])))
+                gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
                 # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
                 for r in range(self.ui.cnc_tools_table.rowCount()):
@@ -1271,13 +1286,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
                 else:
                     # multiple tools usage
-                    if self.cnc_tools:
-                        for tooluid_key in self.cnc_tools:
+                    if self.tools:
+                        for tooluid_key in self.tools:
                             tooldia = self.app.dec_format(
-                                float(self.cnc_tools[tooluid_key]['data']['tools_mill_tooldia']),
+                                float(self.tools[tooluid_key]['data']['tools_mill_tooldia']),
                                 self.decimals
                             )
-                            gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+                            gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
             self.shapes.redraw()
@@ -1344,7 +1359,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         tool_dia_copy = {}
         data_copy = {}
 
-        for tooluid_key, tooluid_value in self.cnc_tools.items():
+        for tooluid_key, tooluid_value in self.tools.items():
             for dia_key, dia_value in tooluid_value.items():
                 if dia_key == 'tooldia':
                     dia_value *= factor
@@ -1393,5 +1408,5 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             })
             tool_dia_copy.clear()
 
-        self.cnc_tools.clear()
-        self.cnc_tools = deepcopy(temp_tools_dict)
+        self.tools.clear()
+        self.tools = deepcopy(temp_tools_dict)

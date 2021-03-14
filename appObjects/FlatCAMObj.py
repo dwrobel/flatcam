@@ -546,21 +546,10 @@ class FlatCAMObj(QtCore.QObject):
                 ymax = []
 
                 if obj_prop.kind.lower() == 'cncjob':
+                    # CNCJob created from Excellon or Geometry object
                     try:
-                        # created from Excellon object
                         for tool_k in obj_prop.tools:
                             x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
-                            xmin.append(x0)
-                            ymin.append(y0)
-                            xmax.append(x1)
-                            ymax.append(y1)
-                    except Exception as ee:
-                        log.error("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
-
-                    # created from Geometry object
-                    try:
-                        for tool_k in obj_prop.cnc_tools:
-                            x0, y0, x1, y1 = unary_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -748,104 +737,106 @@ class FlatCAMObj(QtCore.QObject):
                     else:
                         self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
         elif obj.kind.lower() == 'cncjob':
-            # for cncjob objects made from gerber or geometry
-            for tool, value in obj.cnc_tools.items():
-                geo_tool = self.treeWidget.addParent(
-                    tools, str(tool), expanded=False, color=p_color, font=font)
-                for k, v in value.items():
-                    if k == 'solid_geometry':
-                        printed_value = _('Present') if v else _('None')
-                        self.treeWidget.addChild(geo_tool, [_("Solid Geometry"), printed_value], True)
-                    elif k == 'gcode':
-                        printed_value = _('Present') if v != '' else _('None')
-                        self.treeWidget.addChild(geo_tool, [_("GCode Text"), printed_value], True)
-                    elif k == 'gcode_parsed':
-                        printed_value = _('Present') if v else _('None')
-                        self.treeWidget.addChild(geo_tool, [_("GCode Geometry"), printed_value], True)
-                    elif k == 'data':
-                        pass
-                    else:
-                        self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
+            # for CNCJob objects made from Gerber or Geometry
+            if obj.options['type'].lower() == 'geometry':
+                for tool, value in obj.tools.items():
+                    geo_tool = self.treeWidget.addParent(
+                        tools, str(tool), expanded=False, color=p_color, font=font)
+                    for k, v in value.items():
+                        if k == 'solid_geometry':
+                            printed_value = _('Present') if v else _('None')
+                            self.treeWidget.addChild(geo_tool, [_("Solid Geometry"), printed_value], True)
+                        elif k == 'gcode':
+                            printed_value = _('Present') if v != '' else _('None')
+                            self.treeWidget.addChild(geo_tool, [_("GCode Text"), printed_value], True)
+                        elif k == 'gcode_parsed':
+                            printed_value = _('Present') if v else _('None')
+                            self.treeWidget.addChild(geo_tool, [_("GCode Geometry"), printed_value], True)
+                        elif k == 'data':
+                            pass
+                        else:
+                            self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
 
-                v = value['data']
-                tool_data = self.treeWidget.addParent(
-                    geo_tool, _("Tool Data"), color=p_color, font=font)
-                for data_k, data_v in v.items():
-                    self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
+                    v = value['data']
+                    tool_data = self.treeWidget.addParent(
+                        geo_tool, _("Tool Data"), color=p_color, font=font)
+                    for data_k, data_v in v.items():
+                        self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             # for CNCJob objects made from Excellon
-            for tool_id, value in obj.tools.items():
-                tool_dia = value['tooldia']
-                exc_tool = self.treeWidget.addParent(
-                    tools, str(tool_id), expanded=False, color=p_color, font=font
-                )
-                self.treeWidget.addChild(
-                    exc_tool,
-                    [
-                        _('Diameter'),
-                        '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
-                    ],
-                    True
-                )
-                for k, v in value.items():
-                    if k == 'solid_geometry':
-                        printed_value = _('Present') if v else _('None')
-                        self.treeWidget.addChild(exc_tool, [_("Solid Geometry"), printed_value], True)
-                    elif k == 'nr_drills':
-                        self.treeWidget.addChild(exc_tool, [_("Drills number"), str(v)], True)
-                    elif k == 'nr_slots':
-                        self.treeWidget.addChild(exc_tool, [_("Slots number"), str(v)], True)
-                    elif k == 'gcode':
-                        printed_value = _('Present') if v != '' else _('None')
-                        self.treeWidget.addChild(exc_tool, [_("GCode Text"), printed_value], True)
-                    elif k == 'gcode_parsed':
-                        printed_value = _('Present') if v else _('None')
-                        self.treeWidget.addChild(exc_tool, [_("GCode Geometry"), printed_value], True)
-                    else:
-                        pass
+            if obj.options['type'].lower() == 'excellon':
+                for tool_id, value in obj.tools.items():
+                    tool_dia = value['tooldia']
+                    exc_tool = self.treeWidget.addParent(
+                        tools, str(tool_id), expanded=False, color=p_color, font=font
+                    )
+                    self.treeWidget.addChild(
+                        exc_tool,
+                        [
+                            _('Diameter'),
+                            '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
+                        ],
+                        True
+                    )
+                    for k, v in value.items():
+                        if k == 'solid_geometry':
+                            printed_value = _('Present') if v else _('None')
+                            self.treeWidget.addChild(exc_tool, [_("Solid Geometry"), printed_value], True)
+                        elif k == 'nr_drills':
+                            self.treeWidget.addChild(exc_tool, [_("Drills number"), str(v)], True)
+                        elif k == 'nr_slots':
+                            self.treeWidget.addChild(exc_tool, [_("Slots number"), str(v)], True)
+                        elif k == 'gcode':
+                            printed_value = _('Present') if v != '' else _('None')
+                            self.treeWidget.addChild(exc_tool, [_("GCode Text"), printed_value], True)
+                        elif k == 'gcode_parsed':
+                            printed_value = _('Present') if v else _('None')
+                            self.treeWidget.addChild(exc_tool, [_("GCode Geometry"), printed_value], True)
+                        else:
+                            pass
 
-                self.treeWidget.addChild(
-                    exc_tool,
-                    [
-                        _("Depth of Cut"),
-                        '%.*f %s' % (
-                            self.decimals,
-                            (obj.z_cut - abs(value['data']['tools_drill_offset'])),
-                            self.app.defaults['units'].lower()
-                        )
-                    ],
-                    True
-                )
-                self.treeWidget.addChild(
-                    exc_tool,
-                    [
-                        _("Clearance Height"),
-                        '%.*f %s' % (
-                            self.decimals,
-                            obj.z_move,
-                            self.app.defaults['units'].lower()
-                        )
-                    ],
-                    True
-                )
-                self.treeWidget.addChild(
-                    exc_tool,
-                    [
-                        _("Feedrate"),
-                        '%.*f %s/min' % (
-                            self.decimals,
-                            obj.feedrate,
-                            self.app.defaults['units'].lower()
-                        )
-                    ],
-                    True
-                )
+                    self.treeWidget.addChild(
+                        exc_tool,
+                        [
+                            _("Depth of Cut"),
+                            '%.*f %s' % (
+                                self.decimals,
+                                (obj.z_cut - abs(value['data']['tools_drill_offset'])),
+                                self.app.defaults['units'].lower()
+                            )
+                        ],
+                        True
+                    )
+                    self.treeWidget.addChild(
+                        exc_tool,
+                        [
+                            _("Clearance Height"),
+                            '%.*f %s' % (
+                                self.decimals,
+                                obj.z_move,
+                                self.app.defaults['units'].lower()
+                            )
+                        ],
+                        True
+                    )
+                    self.treeWidget.addChild(
+                        exc_tool,
+                        [
+                            _("Feedrate"),
+                            '%.*f %s/min' % (
+                                self.decimals,
+                                obj.feedrate,
+                                self.app.defaults['units'].lower()
+                            )
+                        ],
+                        True
+                    )
 
-                v = value['data']
-                tool_data = self.treeWidget.addParent(
-                    exc_tool, _("Tool Data"), color=p_color, font=font)
-                for data_k, data_v in v.items():
-                    self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
+                    v = value['data']
+                    tool_data = self.treeWidget.addParent(
+                        exc_tool, _("Tool Data"), color=p_color, font=font)
+                    for data_k, data_v in v.items():
+                        self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             r_time = obj.routing_time
             if r_time > 1:

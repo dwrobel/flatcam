@@ -930,7 +930,8 @@ class SolderPaste(AppTool):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             new_obj.multitool = True
             new_obj.multigeo = True
-            new_obj.cnc_tools.clear()
+            # new_obj object is a CNCJob object made from an Geometry object
+            new_obj.tools.clear()
             new_obj.special_group = 'solder_paste_tool'
 
             new_obj.options['xmin'] = xmin
@@ -970,7 +971,8 @@ class SolderPaste(AppTool):
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                new_obj.cnc_tools.update({
+                # new_obj is a CNCJob made from Geometry object
+                new_obj.tools.update({
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
                 tool_cnc_dict.clear()
@@ -1031,13 +1033,14 @@ class SolderPaste(AppTool):
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
 
-        for tool in obj.cnc_tools:
+        # obj is a CNCJob object made from an Geometry object
+        for tool in obj.tools:
             try:
                 # it's text
-                gcode += obj.cnc_tools[tool]['gcode']
+                gcode += obj.tools[tool]['gcode']
             except TypeError:
                 # it's StringIO
-                gcode += obj.cnc_tools[tool]['gcode'].getvalue()
+                gcode += obj.tools[tool]['gcode'].getvalue()
 
         # then append the text from GCode to the text editor
         # try:
@@ -1101,8 +1104,9 @@ class SolderPaste(AppTool):
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
 
-        for tool in obj.cnc_tools:
-            gcode += obj.cnc_tools[tool]['gcode']
+        # for CNCJob objects made from Gerber or Geometry objects
+        for tool in obj.tools:
+            gcode += obj.tools[tool]['gcode']
         lines = StringIO(gcode)
 
         # ## Write

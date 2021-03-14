@@ -2899,7 +2899,7 @@ class ToolMilling(AppTool, Excellon):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             new_cncjob_obj.multitool = True
             new_cncjob_obj.multigeo = False
-            new_cncjob_obj.cnc_tools.clear()
+            new_cncjob_obj.tools.clear()
 
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
@@ -3020,7 +3020,7 @@ class ToolMilling(AppTool, Excellon):
                 except Exception as er:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(er)))
 
-                new_cncjob_obj.cnc_tools.update({
+                new_cncjob_obj.tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
@@ -3046,7 +3046,7 @@ class ToolMilling(AppTool, Excellon):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             new_cncjob_obj.multitool = True
             new_cncjob_obj.multigeo = True
-            new_cncjob_obj.cnc_tools.clear()
+            new_cncjob_obj.tools.clear()
 
             new_cncjob_obj.segx = segx
             new_cncjob_obj.segy = segy
@@ -3180,7 +3180,7 @@ class ToolMilling(AppTool, Excellon):
                 # object is the source of gcode
 
                 # Update the CNCJob tools dictionary
-                new_cncjob_obj.cnc_tools.update({
+                new_cncjob_obj.tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()

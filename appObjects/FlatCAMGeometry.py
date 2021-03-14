@@ -2282,7 +2282,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
             job_obj.multigeo = False
-            job_obj.cnc_tools.clear()
+            job_obj.tools.clear()
 
             job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
@@ -2400,7 +2400,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except Exception as er:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(er)))
 
-                job_obj.cnc_tools.update({
+                job_obj.tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
@@ -2426,7 +2426,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
             job_obj.multigeo = True
-            job_obj.cnc_tools.clear()
+            job_obj.tools.clear()
 
             job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
             job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
@@ -2552,7 +2552,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except Exception as ee:
                     app_obj.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(ee)))
 
-                job_obj.cnc_tools.update({
+                job_obj.tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()

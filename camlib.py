@@ -7603,8 +7603,9 @@ class CNCjob(Geometry):
             miny = np.Inf
             maxx = -np.Inf
             maxy = -np.Inf
-            if self.cnc_tools:
-                for k, v in self.cnc_tools.items():
+            # for CNCJob objects made from Gerber or Geometry objects
+            if self.options['type'].lower() == 'geometry':
+                for k, v in self.tools.items():
                     minx = np.Inf
                     miny = np.Inf
                     maxx = -np.Inf
@@ -7807,7 +7808,8 @@ class CNCjob(Geometry):
 
             self.create_geometry()
         else:
-            for k, v in self.cnc_tools.items():
+            # for CNCJob objects made from Geometry objects
+            for k, v in self.tools.items():
                 # scale Gcode
                 v['gcode'] = scale_g(v['gcode'])
 
@@ -7915,7 +7917,8 @@ class CNCjob(Geometry):
 
             self.create_geometry()
         else:
-            for k, v in self.cnc_tools.items():
+            # for CNCJob objects made from Gerber or Geometry objects
+            for k, v in self.tools.items():
                 # offset Gcode
                 v['gcode'] = offset_g(v['gcode'])
 

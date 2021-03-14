@@ -150,7 +150,10 @@ class AppGCodeEditor(QtCore.QObject):
         tool_idx = 0
         row_no = 0
 
-        n = len(self.gcode_obj.cnc_tools) + 3
+        # for the case when the self.tools is empty: old projects do that
+        if not self.gcode_obj.tools:
+            return
+        n = len(self.gcode_obj.tools) + 3
         self.ui.cnc_tools_table.setRowCount(n)
 
         # add the All Gcode selection
@@ -170,7 +173,7 @@ class AppGCodeEditor(QtCore.QObject):
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, start_item)
 
-        for dia_key, dia_value in self.gcode_obj.cnc_tools.items():
+        for dia_key, dia_value in self.gcode_obj.tools.items():
 
             tool_idx += 1
             row_no += 1
@@ -338,7 +341,7 @@ class AppGCodeEditor(QtCore.QObject):
         :rtype:
         """
         # rows selected
-        if self.gcode_obj.cnc_tools:
+        if self.gcode_obj.options['type'].lower() == 'geometry':
             try:
                 self.ui.cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
             except (TypeError, AttributeError):
@@ -434,7 +437,7 @@ class AppGCodeEditor(QtCore.QObject):
 
                 text_to_be_found = None
                 if self.gcode_obj.options['type'].lower() == 'geometry':
-                    text_to_be_found = self.gcode_obj.cnc_tools[tool_no]['gcode']
+                    text_to_be_found = self.gcode_obj.tools[tool_no]['gcode']
                 elif self.gcode_obj.options['type'].lower() == 'excellon':
                     tool_dia = self.app.dec_format(float(t_table.item(row, 1).text()), dec=self.decimals)
                     for tool_id in self.gcode_obj.tools:

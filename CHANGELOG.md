@@ -15,6 +15,9 @@ CHANGELOG for FlatCAM beta
 - Drilling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
 - Milling Plugin - added in the UI the toolchange X,Y parameter and made it to work as expected
 - allow the old projects to be loaded without crashing the app, although the load is incomplete
+- updated the Milling Plugin and all the related parts in the CNCJob Object and in all preprocessors. Now, the parent 'tools' attribute is inherited and also the GCode is stored here
+- made sure that old projects load but without the CNCjob objects which would have crashed the app due different data structures
+- the FlatCAm Evo projects load now in succession, no longer on threads
 
 13.03.2021
 

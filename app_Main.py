@@ -11145,7 +11145,13 @@ class MenuFileHandlers(QtCore.QObject):
         self.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            self.log.debug(
+            if 'cnc_tools' in obj or 'exc_cnc_tools' in obj:
+                self.app.log.error(
+                    'MenuFileHandlers.open_project() --> %s %s. %s' %
+                    ("Failed to open the CNCJob file:", str(obj['options']['name']), "Maybe it is an old project."))
+                continue
+
+            self.app.log.debug(
                 "Recreating from opened project an %s object: %s" % (obj['kind'].capitalize(), obj['options']['name']))
 
             def obj_init(new_obj, app_inst):
@@ -11162,13 +11168,14 @@ class MenuFileHandlers(QtCore.QObject):
                                 new_obj.tools = {
                                     int(tool): tool_dict for tool, tool_dict in list(new_obj.tools.items())
                                 }
-                            except AttributeError:
+                            except Exception:
                                 pass
                         except Exception as erro:
                             app_inst.log.error('MenuFileHandlers.open_project() --> ' + str(erro))
                             return 'fail'
 
-                app_inst.worker_task.emit({'fcn': worker_task, 'params': []})
+                worker_task()
+                # app_inst.worker_task.emit({'fcn': worker_task, 'params': []})
 
             # for some reason, setting ui_title does not work when this method is called from Tcl Shell
             # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
@@ -11176,7 +11183,9 @@ class MenuFileHandlers(QtCore.QObject):
                 self.app.ui.set_ui_title(name="{} {}: {}".format(
                     _("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
 
-            self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+            ret = self.app.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+            if ret == 'fail':
+                continue
 
         self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
 
