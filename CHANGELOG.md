@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.03.2021
+
+- Geometry Editor can now modify the edited tool diameter
+
 13.03.2021
 
 - fixed a bug in Gerber merge

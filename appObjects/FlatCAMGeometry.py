@@ -60,6 +60,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.options.update({
             "plot": True,
             "multicolored": False,
+
             "cutz": -0.002,
             "vtipdia": 0.1,
             "vtipangle": 30,

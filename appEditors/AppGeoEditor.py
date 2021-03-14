@@ -3418,6 +3418,23 @@ class AppGeoEditor(QtCore.QObject):
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
+        self.grid_d = QtWidgets.QGridLayout()
+        self.grid_d.setColumnStretch(0, 0)
+        self.grid_d.setColumnStretch(1, 1)
+        self.tools_box.addLayout(self.grid_d)
+
+        # Tool diameter
+        tooldia_lbl = FCLabel('<b>%s</b>:' % _("Tool dia"))
+        tooldia_lbl.setToolTip(
+            _("Edited tool diameter.")
+        )
+        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry.set_precision(self.decimals)
+        self.tooldia_entry.setSingleStep(10 ** -self.decimals)
+        self.tooldia_entry.set_range(-10000.0000, 10000.0000)
+
+        self.grid_d.addWidget(tooldia_lbl, 0, 0)
+        self.grid_d.addWidget( self.tooldia_entry, 0, 1)
         # Tree Widget Title
         tw_label = FCLabel('<b>%s</b>:' % _("Geometry Table"))
         tw_label.setToolTip(
@@ -5284,13 +5301,15 @@ class AppGeoEditor(QtCore.QObject):
             else:
                 milling_type = 1  # CW motion = conventional milling (spindle is rotating CCW)
 
+        self.multigeo_tool = multigeo_tool
+
         def task_job(editor_obj):
             # Link shapes into editor.
             with editor_obj.app.proc_container.new(_("Working...")):
                 editor_obj.app.inform.emit(_("Loading the Geometry into the Editor..."))
 
-                if multigeo_tool:
-                    editor_obj.multigeo_tool = multigeo_tool
+                if self.multigeo_tool:
+                    editor_obj.multigeo_tool = self.multigeo_tool
                     geo_to_edit = editor_obj.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
                                                      orient_val=milling_type)
                 else:
@@ -5335,6 +5354,10 @@ class AppGeoEditor(QtCore.QObject):
                             str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
                         )
                     )
+                    self.tooldia_entry.set_value(
+                        float(fcgeometry.tools[self.multigeo_tool]['data']['tools_mill_tooldia']))
+                else:
+                    self.tooldia_entry.set_value(float(fcgeometry.options['tools_mill_tooldia']))
 
         self.app.worker_task.emit({'fcn': task_job, 'params': [self]})
 
@@ -5351,6 +5374,13 @@ class AppGeoEditor(QtCore.QObject):
             # Link shapes into editor.
             with editor_obj.app.proc_container.new(_("Working...")):
                 if editor_obj.multigeo_tool:
+                    edited_dia = float(fcgeometry.tools[self.multigeo_tool]['tooldia'])
+                    new_dia = self.tooldia_entry.get_value()
+
+                    if new_dia != edited_dia:
+                        fcgeometry.tools[self.multigeo_tool]['tooldia'] = new_dia
+                        fcgeometry.tools[self.multigeo_tool]['data']['tools_mill_tooldia'] = new_dia
+
                     fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
                     # for shape in self.shape_buffer:
                     for shape in editor_obj.storage.get_objects():
@@ -5362,6 +5392,12 @@ class AppGeoEditor(QtCore.QObject):
 
                         fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(new_geo)
                     editor_obj.multigeo_tool = None
+                else:
+                    edited_dia = float(fcgeometry.options['tools_mill_tooldia'])
+                    new_dia = self.tooldia_entry.get_value()
+
+                    if new_dia != edited_dia:
+                        fcgeometry.options['tools_mill_tooldia'] = new_dia
 
                 fcgeometry.solid_geometry = []
                 # for shape in self.shape_buffer:
