@@ -6365,7 +6365,7 @@ class CNCjob(Geometry):
                 match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
         return command
 
-    def gcode_parse(self, force_parsing=None):
+    def gcode_parse(self, force_parsing=None, tool_data=None):
         """
         G-Code parser (from self.gcode). Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
@@ -6380,6 +6380,8 @@ class CNCjob(Geometry):
 
         :param force_parsing:
         :type force_parsing:
+        :param tool_data:       when dealing with multi tool objects we need the tool data
+        :type tool_data:        dict
         :return:
         :rtype:                 dict
         """
@@ -6392,25 +6394,39 @@ class CNCjob(Geometry):
         # Last known instruction
         current = {'X': 0.0, 'Y': 0.0, 'Z': 0.0, 'G': 0}
 
+        if tool_data is None:
+            toolchange_xy_mill = self.app.defaults["tools_mill_toolchangexy"]
+            toolchange_xy_drill = self.app.defaults["tools_drill_toolchangexy"]
+        else:
+            if tool_data["tools_mill_toolchange"] is True:
+                toolchange_xy_mill = tool_data["tools_mill_toolchangexy"]
+            else:
+                toolchange_xy_mill = (0, 0)
+
+            if tool_data["tools_drill_toolchange"] is True:
+                toolchange_xy_drill = tool_data["tools_drill_toolchangexy"]
+            else:
+                toolchange_xy_drill = (0, 0)
+
         # Current path: temporary storage until tool is
         # lifted or lowered.
         if self.options['type'].lower() == "excellon":
-            if self.app.defaults["tools_drill_toolchangexy"] == '' or \
-                    self.app.defaults["tools_drill_toolchangexy"] is None:
+            if toolchange_xy_drill == '' or toolchange_xy_drill is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = self.app.defaults["tools_drill_toolchangexy"]
+                pos_xy = toolchange_xy_drill
+                # if it's a string
                 try:
                     pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
                 except Exception:
                     if len(pos_xy) != 2:
                         pos_xy = (0, 0)
         else:
-            if self.app.defaults["tools_mill_toolchangexy"] == '' or \
-                    self.app.defaults["tools_mill_toolchangexy"] is None:
+            if toolchange_xy_mill == '' or toolchange_xy_mill is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = self.app.defaults["tools_mill_toolchangexy"]
+                pos_xy = toolchange_xy_mill
+                # if it's a string
                 try:
                     pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
                 except Exception:

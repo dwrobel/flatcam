@@ -1226,7 +1226,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # update UI only if only one row is selected otherwise having multiple rows selected will deform information
         # for the rows other that the current one (first selected)
-        if len(sel_rows) == 1:
+        if len(sel_rows) <= 1:
             self.update_ui()
 
     def update_ui(self):

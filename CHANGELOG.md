@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.03.2021
+
+- the GCode generation takes now into consideration the Toolchange X-Y parameter as a starting point
+- Milling Plugin - work on it; upgraded the form-to-data_storage methods
+
 14.03.2021
 
 - Geometry Editor can now modify the edited tool diameter

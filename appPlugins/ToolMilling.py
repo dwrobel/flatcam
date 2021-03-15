@@ -127,6 +127,7 @@ class ToolMilling(AppTool, Excellon):
 
         # updated in the self.set_tool_ui()
         self.form_fields = {}
+        self.general_form_fields = {}
 
         self.old_tool_dia = None
         self.poly_drawn = False
@@ -459,7 +460,9 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_spindlespeed": self.ui.spindlespeed_entry,
             "tools_mill_dwell": self.ui.dwell_cb,
             "tools_mill_dwelltime": self.ui.dwelltime_entry,
+        })
 
+        self.general_form_fields.update({
             "tools_mill_toolchange": self.ui.toolchange_cb,
             "tools_mill_toolchangez": self.ui.toolchangez_entry,
             "tools_mill_toolchangexy": self.ui.toolchangexy_entry,
@@ -478,6 +481,55 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_area_overz": self.ui.over_z_entry,
         })
 
+        self.name2option.update({
+            "milling_type":     "tools_mill_milling_type",
+            "milling_dia":      "tools_mill_milling_dia",
+
+            "mill_offset_type": "tools_mill_offset_type",
+            "mill_offset":      "tools_mill_offset",
+            "mill_job_type":       "tools_mill_job_type",
+
+            "mill_polish_margin":   "tools_mill_polish_margin",
+            "mill_polish_overlap":          "tools_mill_polish_overlap",
+            "mill_polish_method":      "tools_mill_polish_method",
+
+            "mill_tipdia":         "tools_mill_vtipdia",
+            "mill_tipangle":    "tools_mill_vtipangle",
+
+            "mill_cutz":    "tools_mill_cutz",
+            "mill_multidepth":       "tools_mill_multidepth",
+            "mill_depthperpass":       "tools_mill_depthperpass",
+
+            "mill_travelz": "tools_mill_travelz",
+            "mill_feedratexy": "tools_mill_feedrate",
+            "mill_feedratez": "tools_mill_feedrate_z",
+            "mill_fr_rapid": "tools_mill_feedrate_rapid",
+
+            "mill_extracut": "tools_mill_extracut",
+            "mill_extracut_length": "tools_mill_extracut_length",
+
+            "mill_spindlespeed": "tools_mill_spindlespeed",
+            "mill_dwell": "tools_mill_dwell",
+            "mill_dwelltime": "tools_mill_dwelltime",
+
+            # General Parameters
+            "mill_toolchange": "tools_mill_toolchange",
+            "mill_toolchangez": "tools_mill_toolchangez",
+            "mill_toolchangexy": "tools_mill_toolchangexy",
+
+            "mill_endz": "tools_mill_endz",
+            "mill_endxy": "tools_mill_endxy",
+
+            "mill_depth_probe": "tools_mill_z_pdepth",
+            "mill_fr_probe": "tools_mill_feedrate_probe",
+            "mill_ppname_g": "tools_mill_ppname_g",
+
+            "mill_exclusion": "tools_mill_area_exclusion",
+            "mill_area_shape": "tools_mill_area_shape",
+            "mill_strategy": "tools_mill_area_strategy",
+            "mill_overz": "tools_mill_area_overz",
+        })
+
         # reset the Geometry preprocessor combo
         self.ui.pp_geo_name_cb.clear()
         # populate Geometry (milling) preprocessor combobox list
@@ -489,31 +541,6 @@ class ToolMilling(AppTool, Excellon):
 
         # Fill form fields
         self.to_form()
-
-        # # Show/Hide Advanced Options
-        # if app_mode == 'b':
-        #     self.ui.level.setText('%s' % _('Beginner'))
-        #     self.ui.level.setStyleSheet("""
-        #                                 QToolButton
-        #                                 {
-        #                                     color: green;
-        #                                 }
-        #                                 """)
-        #     self.ui.feedrate_rapid_label.hide()
-        #     self.ui.feedrate_rapid_entry.hide()
-        #     self.ui.pdepth_label.hide()
-        #     self.ui.pdepth_entry.hide()
-        #     self.ui.feedrate_probe_label.hide()
-        #     self.ui.feedrate_probe_entry.hide()
-        #
-        # else:
-        #     self.ui.level.setText('%s' % _('Advanced'))
-        #     self.ui.level.setStyleSheet("""
-        #                                 QToolButton
-        #                                 {
-        #                                     color: red;
-        #                                 }
-        #                                 """)
 
         self.ui.tools_frame.show()
 
@@ -1070,6 +1097,8 @@ class ToolMilling(AppTool, Excellon):
         sel_items = self.ui.geo_tools_table.selectedItems()
         for it in sel_items:
             sel_rows.add(it.row())
+            it.setSelected(True)
+
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -1397,6 +1426,22 @@ class ToolMilling(AppTool, Excellon):
                 current_widget.returnPressed.connect(self.form_to_storage)
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCComboBox2):
+                current_widget.currentIndexChanged.connect(self.form_to_storage)
+
+        # General Parameters
+        for opt in self.general_form_fields:
+            current_widget = self.general_form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.form_to_storage)
+            if isinstance(current_widget, RadioSet):
+                current_widget.activated_custom.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                current_widget.returnPressed.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCComboBox):
+                current_widget.currentIndexChanged.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCComboBox2):
+                current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
@@ -1462,6 +1507,40 @@ class ToolMilling(AppTool, Excellon):
                 except (TypeError, ValueError, RuntimeError):
                     pass
             elif isinstance(current_widget, FCComboBox):
+                try:
+                    current_widget.currentIndexChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+            elif isinstance(current_widget, FCComboBox2):
+                try:
+                    current_widget.currentIndexChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+
+        # General Parameters
+        for opt in self.general_form_fields:
+            current_widget = self.general_form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                try:
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+            elif isinstance(current_widget, FCComboBox):
+                try:
+                    current_widget.currentIndexChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError, RuntimeError):
+                    pass
+            elif isinstance(current_widget, FCComboBox2):
                 try:
                     current_widget.currentIndexChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError, RuntimeError):
@@ -1536,6 +1615,13 @@ class ToolMilling(AppTool, Excellon):
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
                 )
 
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.param_frame.setDisabled(False)
+            self.ui.generate_cnc_button.setDisabled(False)
+        else:
+            self.ui.param_frame.setDisabled(True)
+            self.ui.generate_cnc_button.setDisabled(True)
+
     def on_row_selection_change(self):
         if self.ui.target_radio.get_value() == 'exc':
             # #########################################################################################################
@@ -1551,7 +1637,7 @@ class ToolMilling(AppTool, Excellon):
 
             # update UI only if only one row is selected otherwise having multiple rows selected will deform information
             # for the rows other that the current one (first selected)
-            if len(sel_rows) == 1:
+            if len(sel_rows) <= 1:
                 self.update_ui()
         else:
             # #########################################################################################################
@@ -1567,7 +1653,7 @@ class ToolMilling(AppTool, Excellon):
 
             # update UI only if only one row is selected otherwise having multiple rows selected will deform information
             # for the rows other that the current one (first selected)
-            if len(sel_rows) == 1:
+            if len(sel_rows) <= 1:
                 self.update_ui()
 
             # synchronize selection in the Geometry Milling Tool Table with the selection in the Geometry UI Tool Table
@@ -1607,6 +1693,7 @@ class ToolMilling(AppTool, Excellon):
             return
         else:
             self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.param_frame.setDisabled(False)
 
         if len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form
@@ -1679,19 +1766,25 @@ class ToolMilling(AppTool, Excellon):
             t_table = self.ui.tools_table
         self.current_row = t_table.currentRow()
 
-        for k in self.form_fields:
+        for k in list(self.form_fields.keys()) + list(self.general_form_fields.keys()):
             for option in storage:
                 if option.startswith('tools_mill_'):
                     if k == option:
                         try:
-                            self.form_fields[k].set_value(storage[option])
+                            if k in self.form_fields:
+                                self.form_fields[k].set_value(storage[option])
+                            else:
+                                self.general_form_fields[k].set_value(storage[option])
                         except Exception:
                             # it may fail for form fields found in the tools tables if there are no rows
                             pass
                 elif option.startswith('geometry_'):
                     if k == option.replace('geometry_', ''):
                         try:
-                            self.form_fields[k].set_value(storage[option])
+                            if k in self.form_fields:
+                                self.form_fields[k].set_value(storage[option])
+                            else:
+                                self.general_form_fields[k].set_value(storage[option])
                         except Exception:
                             # it may fail for form fields found in the tools tables if there are no rows
                             pass
@@ -1727,7 +1820,10 @@ class ToolMilling(AppTool, Excellon):
                     else:
                         self.form_fields[storage_key].set_value(dict_storage[storage_key])
                 except Exception as e:
-                    self.app.log.error("ToolDrilling.storage_to_form() --> %s" % str(e))
+                    self.app.log.error(
+                        "ToolDrilling.storage_to_form() for key: %s with value: %s--> %s" %
+                        (str(storage_key), str(dict_storage[storage_key]), str(e))
+                    )
                     pass
 
     def form_to_storage(self):
@@ -1755,17 +1851,9 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui_disconnect()
 
-        # we get the current row in the (geo) tools table for the form fields found in the table
-        if self.ui.target_radio.get_value() == 'geo':
-            t_table = self.ui.geo_tools_table
-        else:
-            t_table = self.ui.tools_table
-        self.current_row = t_table.currentRow()
-
-        # those are the general parameters that are common to all tools
-        general_parameters = ["tools_mill_toolchange", "tools_mill_toolchangez", "tools_mill_endxy", "tools_mill_endz",
-                              "tools_mill_ppname_g", "tools_mill_area_exclusion",
-                              "tools_mill_area_shape", "tools_mill_area_strategy", "tools_mill_area_overz"]
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
 
         # update the tool specific parameters
         rows = sorted(set(index.row() for index in used_tools_table.selectedIndexes()))
@@ -1774,28 +1862,35 @@ class ToolMilling(AppTool, Excellon):
                 row = 0
             tooluid_item = int(used_tools_table.item(row, 3).text())
 
+            # update tool parameters
             for tooluid_key, tooluid_val in self.target_obj.tools.items():
                 if int(tooluid_key) == tooluid_item:
-                    for form_key, form_val in self.form_fields.items():
-                        if form_key in general_parameters:
-                            continue
+                    if option_changed in self.form_fields:
+                        new_option_value = self.form_fields[option_changed].get_value()
 
-                        try:
-                            # widgets in the tools table
-                            if form_key == 'tools_mill_tool_type':
-                                tt_wdg = self.ui.geo_tools_table.cellWidget(self.current_row, 2)
-                                self.target_obj.tools[tooluid_key]['data'][form_key] = tt_wdg.get_value()
-                            else:
-                                self.target_obj.tools[tooluid_key]['data'][form_key] = form_val.get_value()
-                        except Exception as e:
-                            self.app.log.error("ToolMilling.form_to_storage() --> %s" % str(e))
+                        # widgets in the tools table
+                        if option_changed == 'tools_mill_tool_type':
+                            try:
+                                tt_wdg = self.ui.geo_tools_table.cellWidget(row, 2)
+                                self.target_obj.tools[tooluid_key]['data'][option_changed] = tt_wdg.get_value()
+                            except Exception as e:
+                                self.app.log.error(
+                                    "ToolMilling.form_to_storage() for cell widget --> %s" % str(e))
+                        else:
+                            try:
+                                self.target_obj.tools[tooluid_key]['data'][option_changed] = new_option_value
+                            except Exception as e:
+                                self.app.log.error(
+                                    "ToolMilling.form_to_storage() for key: %s with value: %s --> %s" %
+                                    (str(option_changed), str(new_option_value), str(e))
+                                )
 
         # update the general parameters in all tools
-        for general_option in general_parameters:
-            new_opt_val = self.form_fields[general_option].get_value()
-            for tool in self.target_obj.tools:
+        for tooluid_key, tooluid_val in self.target_obj.tools.items():
+            if option_changed in self.general_form_fields:
+                new_opt_val = self.general_form_fields[option_changed].get_value()
                 try:
-                    self.target_obj.tools[tool]['data'][general_option] = new_opt_val
+                    self.target_obj.tools[tooluid_key]['data'][option_changed] = new_opt_val
                 except Exception as err:
                     self.app.log.error("ToolMilling.form_to_storage() general parameters --> %s" % str(err))
         self.ui_connect()
@@ -2812,7 +2907,7 @@ class ToolMilling(AppTool, Excellon):
                         })
 
             self.mtool_gen_cncjob()
-            self.ui.geo_tools_table.clearSelection()
+            # self.ui.geo_tools_table.clearSelection()
 
         elif self.ui.geo_tools_table.rowCount() == 1:
             tooluid = int(self.ui.geo_tools_table.item(0, 3).text())
@@ -2823,7 +2918,7 @@ class ToolMilling(AppTool, Excellon):
                         tooluid: deepcopy(tooluid_value)
                     })
             self.mtool_gen_cncjob()
-            self.ui.geo_tools_table.clearSelection()
+            # self.ui.geo_tools_table.clearSelection()
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
@@ -3008,7 +3103,7 @@ class ToolMilling(AppTool, Excellon):
                 total_gcode += res
 
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse(tool_data=tools_dict[tooluid_key]['data'])
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
@@ -3162,7 +3257,7 @@ class ToolMilling(AppTool, Excellon):
                     new_cncjob_obj.gc_start = start_gcode
 
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = new_cncjob_obj.gcode_parse(tool_data=tools_dict[tooluid_key]['data'])
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
@@ -4288,6 +4383,7 @@ class MillingUI:
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
+        self.toolchange_cb.setObjectName("mill_toolchange")
 
         self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_precision(self.decimals)
@@ -4296,6 +4392,7 @@ class MillingUI:
               "tool change.")
         )
         self.toolchangez_entry.set_range(-10000.0000, 10000.0000)
+        self.toolchangez_entry.setObjectName("mill_toolchangez")
 
         self.toolchangez_entry.setSingleStep(0.1)
 
@@ -4308,7 +4405,7 @@ class MillingUI:
             _("Toolchange X,Y position.")
         )
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
-        self.toolchangexy_entry.setObjectName("e_toolchangexy")
+        self.toolchangexy_entry.setObjectName("mill_toolchangexy")
 
         self.grid3.addWidget(self.toolchange_xy_label, 8, 0)
         self.grid3.addWidget(self.toolchangexy_entry, 8, 1)
@@ -4329,6 +4426,7 @@ class MillingUI:
         self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.endz_entry.set_precision(self.decimals)
         self.endz_entry.set_range(-10000.0000, 10000.0000)
+        self.endz_entry.setObjectName("mill_endz")
 
         self.endz_entry.setSingleStep(0.1)
 
@@ -4344,6 +4442,8 @@ class MillingUI:
         )
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
+        self.endxy_entry.setObjectName("mill_endxy")
+
         self.grid3.addWidget(self.endmove_xy_label, 12, 0)
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
@@ -4392,6 +4492,7 @@ class MillingUI:
         )
         self.pp_geo_name_cb = FCComboBox()
         self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.pp_geo_name_cb.setObjectName("mill_ppname_g")
 
         self.grid3.addWidget(pp_geo_label, 16, 0)
         self.grid3.addWidget(self.pp_geo_name_cb, 16, 1)
@@ -4409,6 +4510,8 @@ class MillingUI:
                 "is forbidden."
             )
         )
+        self.exclusion_cb.setObjectName("mill_exclusion")
+
         self.grid3.addWidget(self.exclusion_cb, 20, 0, 1, 2)
 
         self.exclusion_frame = QtWidgets.QFrame()
@@ -4451,6 +4554,7 @@ class MillingUI:
                                          "- Around -> will avoid the exclusion area by going around the area"))
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
+        self.strategy_radio.setObjectName("mill_strategy")
 
         grid_a1.addWidget(self.strategy_label, 1, 0)
         grid_a1.addWidget(self.strategy_radio, 1, 1)
@@ -4462,6 +4566,7 @@ class MillingUI:
         self.over_z_entry = FCDoubleSpinner()
         self.over_z_entry.set_range(-10000.0000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
+        self.over_z_entry.setObjectName("mill_overz")
 
         grid_a1.addWidget(self.over_z_label, 2, 0)
         grid_a1.addWidget(self.over_z_entry, 2, 1)
@@ -4476,6 +4581,7 @@ class MillingUI:
         self.area_shape_radio.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
+        self.area_shape_radio.setObjectName("mill_area_shape")
 
         grid_a1.addWidget(self.add_area_button, 4, 0)
         grid_a1.addWidget(self.area_shape_radio, 4, 1)

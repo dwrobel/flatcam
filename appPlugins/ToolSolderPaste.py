@@ -964,7 +964,7 @@ class SolderPaste(AppTool):
                 total_gcode += res
 
                 # ## PARSE GCODE # ##
-                tool_cnc_dict['gcode_parsed'] = new_obj.gcode_parse()
+                tool_cnc_dict['gcode_parsed'] = new_obj.gcode_parse(tool_data=tool_cnc_dict['data'])
 
                 # TODO this serve for bounding box creation only; should be optimized
                 tool_cnc_dict['solid_geometry'] = unary_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])

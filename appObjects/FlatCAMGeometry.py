@@ -2388,7 +2388,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 total_gcode += res
 
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse(tool_data=tools_dict[tooluid_key]['data'])
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
@@ -2538,7 +2538,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     job_obj.gc_start = start_gcode
 
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
-                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse(tool_data=tools_dict[tooluid_key]['data'])
                 app_obj.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
