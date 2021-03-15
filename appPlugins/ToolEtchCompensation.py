@@ -177,7 +177,11 @@ class ToolEtchCompensation(AppTool):
             return
 
         if ratio_type == 'factor':
-            etch_factor = 1 / self.ui.factor_entry.get_value()
+            factor_value = self.ui.factor_entry.get_value()
+            if factor_value is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Missing parameter value."))
+                return
+            etch_factor = 1 / factor_value
             offset = thickness / etch_factor
         elif ratio_type == 'etch_list':
             etchant = self.ui.etchants_combo.get_value()
@@ -187,12 +191,20 @@ class ToolEtchCompensation(AppTool):
                 etch_factor = 0.25
             offset = thickness / etch_factor
         else:
-            offset = self.ui.offset_entry.get_value() / 1000   # in microns
+            offset_value = self.ui.offset_entry.get_value()
+            if offset_value is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Missing parameter value."))
+                return
+            offset = offset_value / 1000   # in microns
+
+        if offset == 0:
+            # no need to do anything for zero value offset isn't it? compensating with zero is the same as the original
+            return
 
         try:
             __ = iter(grb_obj.solid_geometry)
         except TypeError:
-            grb_obj.solid_geometry = list(grb_obj.solid_geometry)
+            grb_obj.solid_geometry = [grb_obj.solid_geometry]
 
         new_solid_geometry = []
 

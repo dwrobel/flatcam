@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - the GCode generation takes now into consideration the Toolchange X-Y parameter as a starting point
 - Milling Plugin - work on it; upgraded the form-to-data_storage methods
+- fixed bug in Copper Thieving, Corners and Fiducial Plugins which crashed the app when using Disable Plot menu action on the Project Menu objects
+- Etch Compensation Plugin - fixed a number of issue; fixed issue #500
 
 14.03.2021
 

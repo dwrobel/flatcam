@@ -8,8 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
+from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel
-
 from shapely.geometry import MultiPolygon, LineString, Point
 from shapely.ops import unary_union
 
@@ -383,7 +383,7 @@ class ToolCorners(AppTool):
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'corners')
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = {}
+            grb_obj.options = LoudDict()
             for opt in g_obj.options:
                 if opt != 'name':
                     grb_obj.options[opt] = deepcopy(g_obj.options[opt])

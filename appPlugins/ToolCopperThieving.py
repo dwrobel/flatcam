@@ -10,6 +10,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from camlib import grace
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox
+from appCommon.Common import LoudDict
 
 import shapely.geometry.base as base
 from shapely.ops import unary_union
@@ -301,7 +302,7 @@ class ToolCopperThieving(AppTool):
         outname = '%s_%s' % (str(self.grb_object.options['name']), 'robber')
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = {}
+            grb_obj.options = LoudDict()
             for opt in self.grb_object.options:
                 if opt != 'name':
                     grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
@@ -902,7 +903,7 @@ class ToolCopperThieving(AppTool):
             outname = '%s_%s' % (str(self.grb_object.options['name']), 'thief')
 
             def initialize(grb_obj, app_obj):
-                grb_obj.options = {}
+                grb_obj.options = LoudDict()
                 for opt in self.grb_object.options:
                     if opt != 'name':
                         grb_obj.options[opt] = deepcopy(self.grb_object.options[opt])
@@ -1109,7 +1110,7 @@ class ToolCopperThieving(AppTool):
         new_solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
         def obj_init(grb_obj, app_obj):
-            grb_obj.options = {}
+            grb_obj.options = LoudDict()
             for opt in self.sm_object.options:
                 if opt != 'name':
                     grb_obj.options[opt] = deepcopy(self.sm_object.options[opt])

@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel
+from appCommon.Common import LoudDict
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
 from shapely.geometry import box as box
@@ -519,7 +520,7 @@ class ToolFiducials(AppTool):
         outname = '%s_%s' % (str(g_obj.options['name']), 'fid')
 
         def initialize(grb_obj, app_obj):
-            grb_obj.options = {}
+            grb_obj.options = LoudDict()
             for opt in g_obj.options:
                 if opt != 'name':
                     grb_obj.options[opt] = deepcopy(g_obj.options[opt])
