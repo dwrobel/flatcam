@@ -96,6 +96,12 @@ class ToolInvertGerber(AppTool):
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
         self.ui.join_radio.set_value(self.app.defaults["tools_invert_join_style"])
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.gerber_combo.set_value(obj_name)
+
     def on_grb_invert(self):
         margin = self.ui.margin_entry.get_value()
         if round(margin, self.decimals) == 0.0:

@@ -1418,25 +1418,25 @@ class ToolsDB2(QtWidgets.QWidget):
             "tooldia":          self.ui.dia_entry,
 
             # Milling
-            "tool_type":        self.ui.mill_shape_combo,
-            "cutz":             self.ui.mill_cutz_entry,
-            "multidepth":       self.ui.mill_multidepth_cb,
-            "depthperpass":     self.ui.mill_multidepth_entry,
-            "travelz":          self.ui.mill_travelz_entry,
-            "feedrate":         self.ui.mill_frxy_entry,
-            "feedrate_z":       self.ui.mill_frz_entry,
-            "spindlespeed":     self.ui.mill_spindle_entry,
-            "dwell":            self.ui.mill_dwell_cb,
-            "dwelltime":        self.ui.mill_dwelltime_entry,
+            "tools_mill_tool_type":        self.ui.mill_shape_combo,
+            "tools_mill_cutz":             self.ui.mill_cutz_entry,
+            "tools_mill_multidepth":       self.ui.mill_multidepth_cb,
+            "tools_mill_depthperpass":     self.ui.mill_multidepth_entry,
+            "tools_mill_travelz":          self.ui.mill_travelz_entry,
+            "tools_mill_feedrate":         self.ui.mill_frxy_entry,
+            "tools_mill_feedrate_z":       self.ui.mill_frz_entry,
+            "tools_mill_spindlespeed":     self.ui.mill_spindle_entry,
+            "tools_mill_dwell":            self.ui.mill_dwell_cb,
+            "tools_mill_dwelltime":        self.ui.mill_dwelltime_entry,
 
-            "type":             self.ui.mill_type_combo,
-            "offset":           self.ui.mill_tooloffset_combo,
-            "offset_value":     self.ui.mill_custom_offset_entry,
-            "vtipdia":          self.ui.mill_vdia_entry,
-            "vtipangle":        self.ui.mill_vangle_entry,
-            "feedrate_rapid":   self.ui.mill_frapids_entry,
-            "extracut":         self.ui.mill_ecut_cb,
-            "extracut_length":  self.ui.mill_ecut_length_entry,
+            "tools_mill_type":             self.ui.mill_type_combo,
+            "tools_mill_offset":           self.ui.mill_tooloffset_combo,
+            "tools_mill_offset_value":     self.ui.mill_custom_offset_entry,
+            "tools_mill_vtipdia":          self.ui.mill_vdia_entry,
+            "tools_mill_vtipangle":        self.ui.mill_vangle_entry,
+            "tools_mill_feedrate_rapid":   self.ui.mill_frapids_entry,
+            "tools_mill_extracut":         self.ui.mill_ecut_cb,
+            "tools_mill_extracut_length":  self.ui.mill_ecut_length_entry,
 
             # NCC
             "tools_ncc_operation":      self.ui.ncc_op_radio,
@@ -1797,9 +1797,11 @@ class ToolsDB2(QtWidgets.QWidget):
                     item.setData(2, QtCore.Qt.ToolTipRole, op_name)
                     item.setData(3, QtCore.Qt.ToolTipRole, str(dia))
                 except Exception as e:
-                    print('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
+                    self.app.log.error('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
+
                 self.ui.tree_widget.blockSignals(False)
             except Exception as e:
+                self.ui.tree_widget.blockSignals(False)
                 self.app.log.error("ToolDB.build_db_ui.add_plugin_table_line() --> %s" % str(e))
 
         header = self.ui.tree_widget.header()

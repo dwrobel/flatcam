@@ -199,6 +199,25 @@ class Film(AppTool):
         self.on_type_obj_index_changed(val='grb')
         self.on_type_box_index_changed(val='grb')
 
+        obj = self.app.collection.get_active()
+        if obj:
+            obj_name = obj.options['name']
+            if obj.kind == 'gerber':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.tf_type_obj_combo.set_value('grb')
+                self.on_object_type('grb')
+                self.ui.tf_type_box_combo.set_value('grb')
+                self.on_combo_box_type('grb')
+            elif obj.kind == 'geometry':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.tf_type_obj_combo.set_value('geo')
+                self.on_object_type('geo')
+                self.ui.tf_type_box_combo.set_value('geo')
+                self.on_combo_box_type('geo')
+
+            self.ui.tf_type_obj_combo.set_value(obj_name)
+            self.ui.tf_type_box_combo.set_value(obj_name)
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
@@ -1122,12 +1141,9 @@ class FilmUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "In BEGINNER mode many parameters\n"
-                "are hidden from the user in this mode.\n"
-                "ADVANCED mode will make available all parameters.\n\n"
-                "To change the application LEVEL, go to:\n"
-                "Edit -> Preferences -> General and check:\n"
-                "'APP. LEVEL' radio button."
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
             )
         )
         # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)

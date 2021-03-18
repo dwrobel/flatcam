@@ -121,6 +121,22 @@ class Panelize(AppTool):
 
         self.ui.reference_radio.set_value('bbox')
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj:
+            obj_name = obj.options['name']
+            if obj.kind == 'gerber':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.type_obj_combo.set_value(_("Gerber"))
+            elif obj.kind == 'excellon':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.type_obj_combo.set_value(_("Excellon"))
+            elif obj.kind == 'geometry':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.type_obj_combo.set_value(_("Geometry"))
+
+            self.ui.object_combo.set_value(obj_name)
+
         sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
             self.app.defaults["tools_panelize_spacing_columns"] else 0.0
         self.ui.spacing_columns.set_value(float(sp_c))
@@ -1089,12 +1105,9 @@ class PanelizeUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "In BEGINNER mode many parameters\n"
-                "are hidden from the user in this mode.\n"
-                "ADVANCED mode will make available all parameters.\n\n"
-                "To change the application LEVEL, go to:\n"
-                "Edit -> Preferences -> General and check:\n"
-                "'APP. LEVEL' radio button."
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
             )
         )
         self.level.setCheckable(True)

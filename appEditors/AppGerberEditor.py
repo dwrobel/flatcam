@@ -6008,12 +6008,9 @@ class AppGerberEditorUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "In BEGINNER mode many parameters\n"
-                "are hidden from the user in this mode.\n"
-                "ADVANCED mode will make available all parameters.\n\n"
-                "To change the application LEVEL, go to:\n"
-                "Edit -> Preferences -> General and check:\n"
-                "'APP. LEVEL' radio button."
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
             )
         )
         # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)

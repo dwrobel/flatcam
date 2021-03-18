@@ -157,11 +157,30 @@ class DblSidedTool(AppTool):
 
         self.ui.align_ref_label_val.set_value('%.*f' % (self.decimals, 0.0))
 
-        # run once to make sure that the obj_type attribute is updated in the FCComboBox
-        self.ui.object_type_radio.set_value('grb')
-        self.on_object_type('grb')
-        self.ui.box_type_radio.set_value('grb')
-        self.on_combo_box_type('grb')
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj:
+            obj_name = obj.options['name']
+            if obj.kind == 'gerber':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.object_type_radio.set_value('grb')
+                self.on_object_type('grb')
+                self.ui.box_type_radio.set_value('grb')
+                self.on_combo_box_type('grb')
+            elif obj.kind == 'excellon':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.object_type_radio.set_value('exc')
+                self.on_object_type('exc')
+                self.ui.box_type_radio.set_value('exc')
+                self.on_combo_box_type('exc')
+            elif obj.kind == 'geometry':
+                # run once to make sure that the obj_type attribute is updated in the FCComboBox
+                self.ui.object_type_radio.set_value('geo')
+                self.on_object_type('geo')
+                self.ui.box_type_radio.set_value('geo')
+                self.on_combo_box_type('geo')
+
+            self.ui.object_combo.set_value(obj_name)
 
         if self.local_connected is True:
             self.disconnect_events()
@@ -642,12 +661,9 @@ class DsidedUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "In BEGINNER mode many parameters\n"
-                "are hidden from the user in this mode.\n"
-                "ADVANCED mode will make available all parameters.\n\n"
-                "To change the application LEVEL, go to:\n"
-                "Edit -> Preferences -> General and check:\n"
-                "'APP. LEVEL' radio button."
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
             )
         )
         # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)

@@ -189,6 +189,12 @@ class ToolSub(AppTool):
         self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
         self.ui.delete_sources_cb.setChecked(self.app.defaults["tools_sub_delete_sources"])
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.target_gerber_combo.set_value(obj_name)
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
@@ -278,6 +284,10 @@ class ToolSub(AppTool):
             log.error("ToolSub.on_subtract_gerber_click() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
+
+        if self.target_grb_obj_name == self.sub_grb_obj_name:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Not possible to subtract from the same object."))
+            return
 
         # --------------------------------
         # crate the new_apertures
@@ -771,12 +781,9 @@ class SubUI:
         self.level = QtWidgets.QToolButton()
         self.level.setToolTip(
             _(
-                "In BEGINNER mode many parameters\n"
-                "are hidden from the user in this mode.\n"
-                "ADVANCED mode will make available all parameters.\n\n"
-                "To change the application LEVEL, go to:\n"
-                "Edit -> Preferences -> General and check:\n"
-                "'APP. LEVEL' radio button."
+                "Beginner Mode - many parameters are hidden.\n"
+                "Advanced Mode - full control.\n"
+                "Permanent change is done in 'Preferences' menu."
             )
         )
         self.level.setCheckable(True)

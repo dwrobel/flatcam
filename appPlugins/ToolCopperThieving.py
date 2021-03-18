@@ -177,6 +177,12 @@ class ToolCopperThieving(AppTool):
         self.robber_line = None
         self.thief_solid_geometry = []
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.grb_object_combo.set_value(obj_name)
+
     def on_ref_combo_type_change(self):
         obj_type = self.ui.ref_combo_type.currentIndex()
         self.ui.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))

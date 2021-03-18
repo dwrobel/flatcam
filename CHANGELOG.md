@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.03.2021
+
+- changed some strings; updated the translation strings with the new strings (they need to be translated)
+- modified all the plugins (formerly named Tools) to auto select in the plugin the selected object from Project Menu
+- small changes in Tools Database
+
 15.03.2021
 
 - the GCode generation takes now into consideration the Toolchange X-Y parameter as a starting point

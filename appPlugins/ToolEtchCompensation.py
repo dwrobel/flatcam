@@ -101,6 +101,12 @@ class ToolEtchCompensation(AppTool):
         self.ui.thick_entry.set_value(18.0)
         self.ui.ratio_radio.set_value('factor')
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.gerber_combo.set_value(obj_name)
+
     def on_ratio_change(self, val):
         """
         Called on activated_custom signal of the RadioSet GUI element self.radio_ratio

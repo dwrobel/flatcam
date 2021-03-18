@@ -191,6 +191,12 @@ class ToolExtract(AppTool):
         self.ui.margin_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_margin"]))
         self.ui.thick_cut_entry.set_value(float(self.app.defaults["tools_extract_cut_thickness"]))
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.gerber_object_combo.set_value(obj_name)
+
     def build_tool_ui(self):
         self.ui_disconnect()
 

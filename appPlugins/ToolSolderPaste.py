@@ -221,6 +221,12 @@ class SolderPaste(AppTool):
 
         self.reset_fields()
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.geo_obj_combo.set_value(obj_name)
+
     def build_ui(self):
         """
         Will rebuild the UI populating it (tools table)

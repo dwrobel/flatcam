@@ -142,6 +142,12 @@ class ToolOptimal(AppTool):
         self.ui.freq_entry.set_value(0)
         self.reset_fields()
 
+        # SELECT THE CURRENT OBJECT
+        obj = self.app.collection.get_active()
+        if obj and obj.kind == 'gerber':
+            obj_name = obj.options['name']
+            self.ui.gerber_object_combo.set_value(obj_name)
+
     def find_minimum_distance(self):
         self.units = self.app.defaults['units'].upper()
         self.decimals = int(self.ui.precision_spinner.get_value())
