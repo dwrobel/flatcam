@@ -175,7 +175,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Always append to it because it carries contents
         # from predecessors.
         self.ser_attrs += [
-            'options', 'kind', 'cnc_tools', 'exc_cnc_tools', 'multitool', 'append_snippet',
+            'options', 'kind', 'tools', 'multitool', 'append_snippet',
             'prepend_snippet', 'gc_header'
         ]
 

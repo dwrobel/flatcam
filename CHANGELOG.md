@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.03.2021
+
+- removed another parameter in the serialized parameters for CNCJob object (no longer used) which made the project saving to fail (when CNCjob objects are in the project)
+
 19.03.2021
 
 - fixed mouse bytes generation if Cutout Plugin to add an extra drill hole at the end
