@@ -1038,7 +1038,7 @@ class CutOut(AppTool):
                     holes = []
                     for line in mouse_bites_geo:
                         calc_len = 0
-                        while calc_len < line.length:
+                        while calc_len <= line.length:
                             holes.append(line.interpolate(calc_len))
                             calc_len += mb_dia + mb_spacing
 
@@ -1419,7 +1419,7 @@ class CutOut(AppTool):
                     holes = []
                     for line in mouse_bites_geo:
                         calc_len = 0
-                        while calc_len < line.length:
+                        while calc_len <= line.length:
                             holes.append(line.interpolate(calc_len))
                             calc_len += mb_dia + mb_spacing
 
@@ -1915,7 +1915,7 @@ class CutOut(AppTool):
                         mb_spacing = self.ui.mb_spacing_entry.get_value()
                         for line in self.mb_manual_cuts:
                             calc_len = 0
-                            while calc_len < line.length:
+                            while calc_len <= line.length:
                                 holes.append(line.interpolate(calc_len))
                                 calc_len += mb_dia + mb_spacing
                         self.mb_manual_cuts[:] = []

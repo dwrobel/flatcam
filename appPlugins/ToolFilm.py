@@ -193,27 +193,24 @@ class Film(AppTool):
 
         self.ui.png_dpi_spinner.set_value(self.app.defaults["tools_film_png_dpi"])
 
-        self.ui.tf_type_obj_combo.set_value('grb')
-        self.ui.tf_type_box_combo.set_value('grb')
-        # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
-        self.on_type_obj_index_changed(val='grb')
-        self.on_type_box_index_changed(val='grb')
-
         obj = self.app.collection.get_active()
         if obj:
             obj_name = obj.options['name']
             if obj.kind == 'gerber':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
                 self.ui.tf_type_obj_combo.set_value('grb')
-                self.on_object_type('grb')
                 self.ui.tf_type_box_combo.set_value('grb')
-                self.on_combo_box_type('grb')
+                # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+                self.on_type_obj_index_changed(val='grb')
+                self.on_type_box_index_changed(val='grb')
+
             elif obj.kind == 'geometry':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
                 self.ui.tf_type_obj_combo.set_value('geo')
-                self.on_object_type('geo')
                 self.ui.tf_type_box_combo.set_value('geo')
-                self.on_combo_box_type('geo')
+                # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+                self.on_type_obj_index_changed(val='geo')
+                self.on_type_box_index_changed(val='geo')
 
             self.ui.tf_type_obj_combo.set_value(obj_name)
             self.ui.tf_type_box_combo.set_value(obj_name)

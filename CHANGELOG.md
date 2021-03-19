@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.03.2021
+
+- fixed mouse bytes generation if Cutout Plugin to add an extra drill hole at the end
+- fixed an issue in Film Plugin made by copy/paste done recently to make sure that objects selected in Project Menu are populated in the Plugin UI on Film Plugin launch
+- removed a parameter in the serialized parameters for CNCJob object (no longer used)
+
 18.03.2021
 
 - changed some strings; updated the translation strings with the new strings (they need to be translated)
