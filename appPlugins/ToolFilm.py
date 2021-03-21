@@ -212,8 +212,8 @@ class Film(AppTool):
                 self.on_type_obj_index_changed(val='geo')
                 self.on_type_box_index_changed(val='geo')
 
-            self.ui.tf_type_obj_combo.set_value(obj_name)
-            self.ui.tf_type_box_combo.set_value(obj_name)
+            self.ui.tf_object_combo.set_value(obj_name)
+            self.ui.tf_box_combo.set_value(obj_name)
 
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]

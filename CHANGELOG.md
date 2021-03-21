@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.03.2021
+
+- fixed a small issue in Film Plugin (the object selection the plugin UI is not updated with the selected object in Project Tab)
+
 20.03.2021
 
 - removed another parameter in the serialized parameters for CNCJob object (no longer used) which made the project saving to fail (when CNCjob objects are in the project)
