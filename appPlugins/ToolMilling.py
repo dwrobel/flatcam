@@ -1311,6 +1311,12 @@ class ToolMilling(AppTool, Excellon):
             self.app.collection.set_active(self.obj_name)
         self.build_ui()
 
+        # new object that is now selected
+        obj = self.app.collection.get_by_name(self.obj_name)
+        if obj is not None:
+            last_key = list(obj.tools.keys())[-1]
+            self.to_form(storage=obj.tools[last_key]['data'])
+
     def on_object_changed(self):
         if not self.app.ui.notebook.tabText(2) != _("Milling Tool"):
             return
@@ -1341,6 +1347,10 @@ class ToolMilling(AppTool, Excellon):
                 self.app.collection.set_all_inactive()
                 self.app.collection.set_active(self.obj_name)
             self.build_ui()
+
+        if self.target_obj is not None:
+            last_key = list(self.target_obj.tools.keys())[-1]
+            self.to_form(storage=self.target_obj.tools[last_key]['data'])
 
     def on_object_selection_changed(self, current, previous):
         try:

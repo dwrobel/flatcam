@@ -958,7 +958,21 @@ class ToolDrilling(AppTool, Excellon):
         else:
             self.ui.generate_cnc_button.setDisabled(False)
 
+    def on_object_selection_changed(self, current, previous):
+        try:
+            sel_obj = current.indexes()[0].internalPointer().obj
+            name = sel_obj.options['name']
+            kind = sel_obj.kind
+            if kind in ['geometry', 'excellon']:
+                self.ui.object_combo.set_value(name)
+        except IndexError:
+            pass
+
     def ui_connect(self):
+
+        # When object selection on canvas change
+        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
         # Area Exception - exclusion shape added signal
         # first disconnect it from any other object
@@ -1010,6 +1024,13 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
 
     def ui_disconnect(self):
+        # When object selection on canvas change
+        # self.app.collection.view.selectionModel().selectionChanged.disconnect()
+        try:
+            self.app.proj_selection_changed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         # rows selected
         try:
             self.ui.tools_table.clicked.disconnect(self.on_row_selection_change)

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.03.2021
+
+- Milling Plugin - will update the UI form on object change with the data from its last tool
+- Drilling Plugin - will update the UI form on object selection on canvas
+
 21.03.2021
 
 - fixed a small issue in Film Plugin (the object selection the plugin UI is not updated with the selected object in Project Tab)
