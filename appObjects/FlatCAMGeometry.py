@@ -168,7 +168,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ser_attrs += ['options', 'kind', 'multigeo', 'fill_color', 'outline_color', 'alpha_level']
 
     def build_ui(self):
-        self.ui_disconnect()
+        try:
+            self.ui_disconnect()
+        except RuntimeError:
+            return
+
         FlatCAMObj.build_ui(self)
 
         # Area Exception - exclusion shape added signal

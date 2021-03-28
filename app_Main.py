@@ -2044,10 +2044,10 @@ class App(QtCore.QObject):
     def connect_filemenu_signals(self):
         # ### Menu
         self.ui.menufilenewproject.triggered.connect(self.f_handlers.on_file_new_click)
-        self.ui.menufilenewgeo.triggered.connect(self.app_obj.new_geometry_object)
-        self.ui.menufilenewgrb.triggered.connect(self.app_obj.new_gerber_object)
-        self.ui.menufilenewexc.triggered.connect(self.app_obj.new_excellon_object)
-        self.ui.menufilenewdoc.triggered.connect(self.app_obj.new_document_object)
+        self.ui.menufilenewgeo.triggered.connect(lambda: self.app_obj.new_geometry_object())
+        self.ui.menufilenewgrb.triggered.connect(lambda: self.app_obj.new_gerber_object())
+        self.ui.menufilenewexc.triggered.connect(lambda: self.app_obj.new_excellon_object())
+        self.ui.menufilenewdoc.triggered.connect(lambda: self.app_obj.new_document_object())
 
         self.ui.menufileopengerber.triggered.connect(self.f_handlers.on_fileopengerber)
         self.ui.menufileopenexcellon.triggered.connect(self.f_handlers.on_fileopenexcellon)
@@ -2187,10 +2187,10 @@ class App(QtCore.QObject):
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
 
-        self.ui.popmenu_new_geo.triggered.connect(self.app_obj.new_geometry_object)
-        self.ui.popmenu_new_grb.triggered.connect(self.app_obj.new_gerber_object)
-        self.ui.popmenu_new_exc.triggered.connect(self.app_obj.new_excellon_object)
-        self.ui.popmenu_new_prj.triggered.connect(self.f_handlers.on_file_new_project)
+        self.ui.popmenu_new_geo.triggered.connect(lambda: self.app_obj.new_geometry_object())
+        self.ui.popmenu_new_grb.triggered.connect(lambda: self.app_obj.new_gerber_object())
+        self.ui.popmenu_new_exc.triggered.connect(lambda: self.app_obj.new_excellon_object())
+        self.ui.popmenu_new_prj.triggered.connect(lambda: self.f_handlers.on_file_new_project())
 
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
