@@ -38,11 +38,11 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.geometry_opt_group)
+        self.vlay.addWidget(self.geometry_adv_opt_group)
         self.vlay.addWidget(self.geometry_exp_group)
 
         self.layout.addLayout(self.vlay)
 
-        self.layout.addWidget(self.geometry_adv_opt_group)
         self.layout.addWidget(self.geometry_editor_group)
 
         self.layout.addStretch()

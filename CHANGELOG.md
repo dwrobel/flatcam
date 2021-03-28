@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - fixed an error in the Subtract Plugin when working on Geometry objects
 - fixed ParseFont such that the output of the Text Plugin in the Geometry Editor can now be painted using the Paint Plugin
 - fixed errors when using the new ... canvas context menu entries which crated a hard crash
+- minor layout change in Preferences -> Geometry
 
 22.03.2021
 
