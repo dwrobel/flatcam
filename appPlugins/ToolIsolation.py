@@ -135,7 +135,6 @@ class ToolIsolation(AppTool, Gerber):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolIsolation()")
-        log.debug("ToolIsolation().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it

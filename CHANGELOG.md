@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 28.03.2021
 
 - upgraded all the plugins such that at each launch the Plugin UI is reinitialized reducing the chances to get errors like "wrapped up C++ object deleted" with the side effect that the performance might be slightly reduced
+- minor logging changes
 
 22.03.2021
 

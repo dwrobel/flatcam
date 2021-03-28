@@ -743,7 +743,6 @@ class CutOut(AppTool):
         self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def on_freeform_cutout(self):
-        log.debug("Cutout.on_freeform_cutout() was launched ...")
 
         name = self.ui.obj_combo.currentText()
 
@@ -1131,7 +1130,6 @@ class CutOut(AppTool):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_rectangular_cutout(self):
-        log.debug("Cutout.on_rectangular_cutout() was launched ...")
 
         name = self.ui.obj_combo.currentText()
 
@@ -1509,7 +1507,6 @@ class CutOut(AppTool):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_drill_cut_click(self):
-        log.debug("Cutout.on_drill_cut_click() was launched ...")
 
         margin = self.ui.drill_margin_entry.get_value()
         pitch = self.ui.drill_pitch_entry.get_value()

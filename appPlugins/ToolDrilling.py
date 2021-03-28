@@ -137,7 +137,6 @@ class ToolDrilling(AppTool, Excellon):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolDrilling()")
-        log.debug("ToolDrilling().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it

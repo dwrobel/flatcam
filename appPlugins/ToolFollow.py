@@ -75,7 +75,6 @@ class ToolFollow(AppTool, Gerber):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFollow()")
-        log.debug("ToolFOllow().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it

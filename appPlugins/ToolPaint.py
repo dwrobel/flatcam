@@ -157,7 +157,6 @@ class ToolPaint(AppTool, Gerber):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPaint()")
-        log.debug("ToolPaint().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it

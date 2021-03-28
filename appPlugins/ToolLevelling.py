@@ -133,7 +133,6 @@ class ToolLevelling(AppTool, CNCjob):
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFollow()")
-        log.debug("ToolLevelling().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it
