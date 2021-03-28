@@ -45,19 +45,7 @@ class Panelize(AppTool):
         # #############################################################################
         self.ui = PanelizeUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.reference_radio.activated_custom.connect(self.on_reference_radio_changed)
-        self.ui.panelize_object_button.clicked.connect(self.on_panelize)
-        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.ui.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
 
         # list to hold the temporary objects
         self.objs = []
@@ -116,7 +104,23 @@ class Panelize(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+Z', **kwargs)
 
+    def connect_signals_at_init(self):
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.reference_radio.activated_custom.connect(self.on_reference_radio_changed)
+        self.ui.panelize_object_button.clicked.connect(self.on_panelize)
+        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.ui.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = PanelizeUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         self.ui.reference_radio.set_value('bbox')

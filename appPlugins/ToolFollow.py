@@ -48,6 +48,7 @@ class ToolFollow(AppTool, Gerber):
         # #############################################################################
         self.ui = FollowUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # disconnect flags
         self.area_sel_disconnect_flag = False
@@ -68,13 +69,6 @@ class ToolFollow(AppTool, Gerber):
         # set this as True when in middle of drawing a "Polygon" area selection shape
         # it is made False by first click to signify that the shape is complete
         self.poly_drawn = False
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.selectmethod_radio.activated_custom.connect(self.ui.on_selection)
-        self.ui.generate_geometry_button.clicked.connect(self.on_generate_geometry_click)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -125,8 +119,19 @@ class ToolFollow(AppTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("Follow"))
 
+    def connect_signals_at_init(self):
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.selectmethod_radio.activated_custom.connect(self.ui.on_selection)
+        self.ui.generate_geometry_button.clicked.connect(self.on_generate_geometry_click)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        self.clear_ui(self.layout)
+        self.ui = FollowUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.selectmethod_radio.set_value('all')     # _("All")
         self.ui.area_shape_radio.set_value('square')
 

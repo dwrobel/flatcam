@@ -42,32 +42,7 @@ class RulesCheck(AppTool):
         # #############################################################################
         self.ui = RulesUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        # #######################################################
-        # ################ SIGNALS ##############################
-        # #######################################################
-        self.ui.copper_t_cb.stateChanged.connect(lambda st: self.ui.copper_t_object.setDisabled(not st))
-        self.ui.copper_b_cb.stateChanged.connect(lambda st: self.ui.copper_b_object.setDisabled(not st))
-
-        self.ui.sm_t_cb.stateChanged.connect(lambda st: self.ui.sm_t_object.setDisabled(not st))
-        self.ui.sm_b_cb.stateChanged.connect(lambda st: self.ui.sm_b_object.setDisabled(not st))
-
-        self.ui.ss_t_cb.stateChanged.connect(lambda st: self.ui.ss_t_object.setDisabled(not st))
-        self.ui.ss_b_cb.stateChanged.connect(lambda st: self.ui.ss_b_object.setDisabled(not st))
-
-        self.ui.out_cb.stateChanged.connect(lambda st: self.ui.outline_object.setDisabled(not st))
-
-        self.ui.e1_cb.stateChanged.connect(lambda st: self.ui.e1_object.setDisabled(not st))
-        self.ui.e2_cb.stateChanged.connect(lambda st: self.ui.e2_object.setDisabled(not st))
-
-        self.ui.all_obj_cb.stateChanged.connect(self.ui.on_all_objects_cb_changed)
-        self.ui.all_cb.stateChanged.connect(self.ui.on_all_cb_changed)
-        self.ui.run_button.clicked.connect(self.execute)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-        
-        # Custom Signals
-        self.tool_finished.connect(self.on_tool_finished)
+        self.connect_signals_at_init()
 
         # list to hold the temporary objects
         self.objs = []
@@ -135,7 +110,35 @@ class RulesCheck(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+R', **kwargs)
 
+    def connect_signals_at_init(self):
+        self.ui.copper_t_cb.stateChanged.connect(lambda st: self.ui.copper_t_object.setDisabled(not st))
+        self.ui.copper_b_cb.stateChanged.connect(lambda st: self.ui.copper_b_object.setDisabled(not st))
+
+        self.ui.sm_t_cb.stateChanged.connect(lambda st: self.ui.sm_t_object.setDisabled(not st))
+        self.ui.sm_b_cb.stateChanged.connect(lambda st: self.ui.sm_b_object.setDisabled(not st))
+
+        self.ui.ss_t_cb.stateChanged.connect(lambda st: self.ui.ss_t_object.setDisabled(not st))
+        self.ui.ss_b_cb.stateChanged.connect(lambda st: self.ui.ss_b_object.setDisabled(not st))
+
+        self.ui.out_cb.stateChanged.connect(lambda st: self.ui.outline_object.setDisabled(not st))
+
+        self.ui.e1_cb.stateChanged.connect(lambda st: self.ui.e1_object.setDisabled(not st))
+        self.ui.e2_cb.stateChanged.connect(lambda st: self.ui.e2_object.setDisabled(not st))
+
+        self.ui.all_obj_cb.stateChanged.connect(self.ui.on_all_objects_cb_changed)
+        self.ui.all_cb.stateChanged.connect(self.ui.on_all_cb_changed)
+        self.ui.run_button.clicked.connect(self.execute)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        # Custom Signals
+        self.tool_finished.connect(self.on_tool_finished)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = RulesUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # all object combobox default as disabled
         self.ui.copper_t_object.setDisabled(True)

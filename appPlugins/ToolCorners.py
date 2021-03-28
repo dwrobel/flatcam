@@ -46,6 +46,7 @@ class ToolCorners(AppTool):
         # #############################################################################
         self.ui = CornersUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -57,15 +58,6 @@ class ToolCorners(AppTool):
         self.fid_dia = None
 
         self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.add_marker_button.clicked.connect(self.add_markers)
-        self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
-        self.ui.drill_button.clicked.connect(self.on_create_drill_object)
-        self.ui.check_button.clicked.connect(self.on_create_check_object)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -116,8 +108,25 @@ class ToolCorners(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+B', **kwargs)
 
+    def connect_signals_at_init(self):
+
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.add_marker_button.clicked.connect(self.add_markers)
+        self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
+        self.ui.drill_button.clicked.connect(self.on_create_drill_object)
+        self.ui.check_button.clicked.connect(self.on_create_check_object)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
+
+        self.clear_ui(self.layout)
+        self.ui = CornersUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.thick_entry.set_value(self.app.defaults["tools_corners_thickness"])
         self.ui.l_entry.set_value(float(self.app.defaults["tools_corners_length"]))
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_corners_margin"]))

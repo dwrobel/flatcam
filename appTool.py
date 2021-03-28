@@ -101,9 +101,25 @@ class AppTool(QtWidgets.QWidget):
 
         self.show()
 
-    def clear_ui(self):
-        for i in reversed(range(self.layout.count())):
-            self.layout.itemAt(i).widget().setParent(None)
+    def clear_ui(self, layout):
+        # for item in reversed(range(layout.count())):
+        #     lay_item = layout.itemAt(item)
+        #
+        #     # in case that the widget is None
+        #     try:
+        #         widget = lay_item.widget()
+        #         widget.setParent(None)
+        #     except AttributeError:
+        #         pass
+
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                else:
+                    self.clear_ui(item.layout())
 
     def draw_tool_selection_shape(self, old_coords, coords, **kwargs):
         """

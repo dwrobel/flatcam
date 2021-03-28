@@ -2502,7 +2502,7 @@ class Gerber(Geometry):
         self.geo_len = 0
         try:
             self.geo_len = len(self.solid_geometry)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, RuntimeError):
             self.geo_len = 1
 
         self.old_disp_number = 0

@@ -307,56 +307,6 @@ class FlatCAMDefaults:
         # Geometry Export
         "geometry_dxf_format": 'R2010',
 
-        # Geometry Options
-        "tools_mill_tooldia": "2.4",
-        "tools_mill_offset_type": 0,    # _('Path')
-        "tools_mill_offset": 0.0,
-        "tools_mill_job_type": 0,   # 'Rough'
-
-        "tools_mill_cutz": -2.4,
-        "tools_mill_vtipdia": 0.1,
-        "tools_mill_vtipangle": 30,
-        "tools_mill_multidepth": False,
-        "tools_mill_depthperpass": 0.8,
-        "tools_mill_travelz": 2,
-
-        "tools_mill_toolchange": False,
-        "tools_mill_toolchangez": 15.0,
-        "tools_mill_endz": 15.0,
-        "tools_mill_endxy": None,
-
-        "tools_mill_feedrate": 120,
-        "tools_mill_feedrate_z": 60,
-        "tools_mill_spindlespeed": 0,
-        "tools_mill_dwell": False,
-        "tools_mill_dwelltime": 1,
-        "tools_mill_ppname_g": 'default',
-
-        # Geometry Advanced Options
-        "tools_mill_toolchangexy": "0.0, 0.0",
-        "tools_mill_startz": None,
-        "tools_mill_feedrate_rapid": 1500,
-        "tools_mill_extracut": False,
-        "tools_mill_extracut_length": 0.1,
-        "tools_mill_z_pdepth": -0.02,
-        "tools_mill_f_plunge": False,
-        "tools_mill_spindledir": 'CW',
-        "tools_mill_feedrate_probe": 75,
-
-        "tools_mill_area_exclusion": False,
-        "tools_mill_area_shape": "polygon",
-        "tools_mill_area_strategy": "over",
-        "tools_mill_area_overz": 1.0,
-        # Polish
-        "tools_mill_polish": False,
-        "tools_mill_polish_margin": 0.0,
-        "tools_mill_polish_overlap": 5,
-        "tools_mill_polish_method": 0,
-
-        "tools_mill_milling_type": 'both',
-        "tools_mill_optimization_type": 'R',
-        "tools_mill_search_time": 3,
-
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
         "geometry_editor_milling_type": "cl",
@@ -397,7 +347,7 @@ class FlatCAMDefaults:
         "cncjob_prepend": "",
         "cncjob_append": "",
 
-        # Isolation Routing Tool
+        # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
         "tools_iso_order": 'rev',
         "tools_iso_tool_type": 'C1',
@@ -421,7 +371,7 @@ class FlatCAMDefaults:
         "tools_iso_area_shape":     "square",
         "tools_iso_plotting":       'normal',
 
-        # Drilling Tool
+        # Drilling Plugin
         "tools_drill_tool_order": 'no',
         "tools_drill_cutz": -1.7,
         "tools_drill_multidepth": False,
@@ -458,10 +408,61 @@ class FlatCAMDefaults:
         "tools_drill_area_strategy": "over",
         "tools_drill_area_overz": 1.0,
 
-        # Milling Tool
+        # Milling Plugin
         "tools_mill_tool_type": 'C1',
 
-        # Autolevelling Tool
+        # Milling Plugin Options
+        "tools_mill_tooldia": "2.4",
+        "tools_mill_offset_type": 0,  # _('Path')
+        "tools_mill_offset": 0.0,
+        "tools_mill_job_type": 0,  # 'Rough'
+
+        "tools_mill_cutz": -2.4,
+        "tools_mill_vtipdia": 0.1,
+        "tools_mill_vtipangle": 30,
+        "tools_mill_multidepth": False,
+        "tools_mill_depthperpass": 0.8,
+        "tools_mill_travelz": 2,
+
+        "tools_mill_toolchange": False,
+        "tools_mill_toolchangez": 15.0,
+        "tools_mill_endz": 15.0,
+        "tools_mill_endxy": None,
+
+        "tools_mill_feedrate": 120,
+        "tools_mill_feedrate_z": 60,
+        "tools_mill_spindlespeed": 0,
+        "tools_mill_dwell": False,
+        "tools_mill_dwelltime": 1,
+        "tools_mill_ppname_g": 'default',
+
+        # Milling Plugin Advanced Options
+        "tools_mill_toolchangexy": "0.0, 0.0",
+        "tools_mill_startz": None,
+        "tools_mill_feedrate_rapid": 1500,
+        "tools_mill_extracut": False,
+        "tools_mill_extracut_length": 0.1,
+        "tools_mill_z_pdepth": -0.02,
+        "tools_mill_f_plunge": False,
+        "tools_mill_spindledir": 'CW',
+        "tools_mill_feedrate_probe": 75,
+
+        "tools_mill_area_exclusion": False,
+        "tools_mill_area_shape": "polygon",
+        "tools_mill_area_strategy": "over",
+        "tools_mill_area_overz": 1.0,
+
+        # Polish
+        "tools_mill_polish": False,
+        "tools_mill_polish_margin": 0.0,
+        "tools_mill_polish_overlap": 5,
+        "tools_mill_polish_method": 0,
+
+        "tools_mill_milling_type": 'both',
+        "tools_mill_optimization_type": 'R',
+        "tools_mill_search_time": 3,
+
+        # Autolevelling Plugin
         "tools_al_status": False,
         "tools_al_mode": 'grid',
         "tools_al_method": 'v',
@@ -475,7 +476,7 @@ class FlatCAMDefaults:
         "tools_al_grbl_jog_fr": 1500,
         "tools_al_grbl_travelz": 15.0,
 
-        # NCC Tool
+        # NCC Plugin
         "tools_ncc_tools": "0.5",
         "tools_ncc_order": 'rev',
         "tools_ncc_operation": 'clear',

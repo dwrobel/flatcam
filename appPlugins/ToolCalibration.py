@@ -47,6 +47,7 @@ class ToolCalibration(AppTool):
         # #############################################################################
         self.ui = CalibrationUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.mr = None
         self.units = ''
@@ -67,24 +68,6 @@ class ToolCalibration(AppTool):
 
         # calibrated object
         self.cal_object = None
-
-        # ## Signals
-        self.ui.cal_source_radio.activated_custom.connect(self.on_cal_source_radio)
-        self.ui.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
-        self.ui.adj_object_type_combo.currentIndexChanged.connect(self.on_adj_obj_type_combo)
-
-        self.ui.start_button.clicked.connect(self.on_start_collect_points)
-
-        self.ui.gcode_button.clicked.connect(self.generate_verification_gcode)
-        self.ui.adj_gcode_button.clicked.connect(self.generate_verification_gcode)
-
-        self.ui.generate_factors_button.clicked.connect(self.calculate_factors)
-
-        self.ui.scale_button.clicked.connect(self.on_scale_button)
-        self.ui.skew_button.clicked.connect(self.on_skew_button)
-
-        self.ui.cal_button.clicked.connect(self.on_cal_button_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCalibration()")
@@ -135,8 +118,32 @@ class ToolCalibration(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+E', **kwargs)
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.cal_source_radio.activated_custom.connect(self.on_cal_source_radio)
+        self.ui.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
+        self.ui.adj_object_type_combo.currentIndexChanged.connect(self.on_adj_obj_type_combo)
+
+        self.ui.start_button.clicked.connect(self.on_start_collect_points)
+
+        self.ui.gcode_button.clicked.connect(self.generate_verification_gcode)
+        self.ui.adj_gcode_button.clicked.connect(self.generate_verification_gcode)
+
+        self.ui.generate_factors_button.clicked.connect(self.calculate_factors)
+
+        self.ui.scale_button.clicked.connect(self.on_scale_button)
+        self.ui.skew_button.clicked.connect(self.on_skew_button)
+
+        self.ui.cal_button.clicked.connect(self.on_cal_button_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        self.clear_ui(self.layout)
+        self.ui = CalibrationUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         if self.local_connected is True:
             self.disconnect_cal_events()

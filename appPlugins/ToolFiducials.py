@@ -46,6 +46,7 @@ class ToolFiducials(AppTool):
         # #############################################################################
         self.ui = FidoUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -79,18 +80,6 @@ class ToolFiducials(AppTool):
         self.click_points = []
 
         self.handlers_connected = False
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.add_cfid_button.clicked.connect(self.add_fiducials)
-        self.ui.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
-
-        self.ui.fid_type_radio.activated_custom.connect(self.on_fiducial_type)
-        self.ui.pos_radio.activated_custom.connect(self.on_second_point)
-        self.ui.mode_radio.activated_custom.connect(self.on_method_change)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolFiducials()")
@@ -141,8 +130,26 @@ class ToolFiducials(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
 
+    def connect_signals_at_init(self):
+        # #############################################################################
+        # ############################ SIGNALS ########################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.add_cfid_button.clicked.connect(self.add_fiducials)
+        self.ui.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
+
+        self.ui.fid_type_radio.activated_custom.connect(self.on_fiducial_type)
+        self.ui.pos_radio.activated_custom.connect(self.on_second_point)
+        self.ui.mode_radio.activated_custom.connect(self.on_method_change)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
+
+        self.clear_ui(self.layout)
+        self.ui = FidoUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.ui.fid_size_entry.set_value(self.app.defaults["tools_fiducials_dia"])
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))

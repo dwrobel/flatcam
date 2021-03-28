@@ -35,14 +35,6 @@ class ToolCalculator(AppTool):
 
         self.units = ''
 
-        # ## Signals
-        self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
-        self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-
-        self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
-
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCalculators()")
 
@@ -89,11 +81,23 @@ class ToolCalculator(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("Calculators"))
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
+        self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].lower()
+
+        self.clear_ui(self.layout)
+        self.ui = CalcUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # ## Initialize form
         self.ui.mm_entry.set_value('%.*f' % (self.decimals, 0))

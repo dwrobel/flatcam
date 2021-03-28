@@ -45,6 +45,7 @@ class ToolOptimal(AppTool):
         # #############################################################################
         self.ui = OptimalUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # this is the line selected in the textbox with the locations of the minimum
         self.selected_text = ''
@@ -55,22 +56,6 @@ class ToolOptimal(AppTool):
         # dict to hold the distances between every two elements in Gerber as keys and the actual locations where that
         # distances happen as values
         self.min_dict = {}
-
-        # ############################################################################
-        # ############################ Signals #######################################
-        # ############################################################################
-        self.update_text.connect(self.on_update_text)
-        self.update_sec_distances.connect(self.on_update_sec_distances_txt)
-
-        self.ui.calculate_button.clicked.connect(self.find_minimum_distance)
-        self.ui.locate_button.clicked.connect(self.on_locate_position)
-        self.ui.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
-
-        self.ui.locate_sec_button.clicked.connect(self.on_locate_sec_position)
-        self.ui.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
-        self.ui.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
@@ -120,7 +105,26 @@ class ToolOptimal(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("Find Optimal"))
 
+    def connect_signals_at_init(self):
+        self.update_text.connect(self.on_update_text)
+        self.update_sec_distances.connect(self.on_update_sec_distances_txt)
+
+        self.ui.calculate_button.clicked.connect(self.find_minimum_distance)
+        self.ui.locate_button.clicked.connect(self.on_locate_position)
+        self.ui.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
+
+        self.ui.locate_sec_button.clicked.connect(self.on_locate_sec_position)
+        self.ui.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
+        self.ui.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = OptimalUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.result_entry.set_value(0.0)
         self.ui.freq_entry.set_value(0)
 

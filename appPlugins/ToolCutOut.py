@@ -48,6 +48,7 @@ class CutOut(AppTool):
         # #############################################################################
         self.ui = CutoutUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.cutting_gapsize = 0.0
         self.cutting_dia = 0.0
@@ -95,9 +96,6 @@ class CutOut(AppTool):
 
         # here store the tool data for the Cutout Tool
         self.cut_tool_dict = {}
-
-        # Signals
-        self.connect_signals_at_init()
 
     def on_type_obj_changed(self, val):
         obj_type = {'grb': 0, 'geo': 2}[val]
@@ -198,6 +196,12 @@ class CutOut(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
+
+        self.clear_ui(self.layout)
+        self.ui = CutoutUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         # use the current selected object and make it visible in the object combobox

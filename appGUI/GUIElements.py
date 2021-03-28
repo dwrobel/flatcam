@@ -3306,7 +3306,31 @@ class FCDetachableTab2(FCDetachableTab):
         except TypeError:
             pass
 
+        self.__auto_remove_closed_tab = True
+
         self.tabBar.onCloseTabSignal.connect(self.on_closetab_middle_button)
+
+    @property
+    def auto_remove_closed_tab(self):
+        """
+        A property that allow the user to handle the tab removal on he's own
+
+        :return:
+        :rtype:
+        """
+        return self.__auto_remove_closed_tab
+
+    @auto_remove_closed_tab.setter
+    def auto_remove_closed_tab(self, val):
+        """
+        A property that allow the user to handle the tab removal on he's own
+
+        :param val: If to auto remove the tab
+        :type val:  bool
+        :return:
+        :rtype:
+        """
+        self.__auto_remove_closed_tab = val
 
     def on_closetab_middle_button(self, current_index):
         """
@@ -3330,7 +3354,8 @@ class FCDetachableTab2(FCDetachableTab):
         tab_name = self.widget(currentIndex).objectName()
         self.tab_closed_signal.emit(tab_name, currentIndex)
 
-        self.removeTab(currentIndex)
+        if self.__auto_remove_closed_tab:
+            self.removeTab(currentIndex)
 
 
 class VerticalScrollArea(QtWidgets.QScrollArea):

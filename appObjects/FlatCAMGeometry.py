@@ -1567,7 +1567,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         try:
             self.ser_attrs.remove('tools')
             self.ser_attrs.append('tools')
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, RuntimeError):
             pass
 
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))

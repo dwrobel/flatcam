@@ -39,21 +39,13 @@ class PcbWizard(AppTool):
         # #############################################################################
         self.ui = WizardUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.excellon_loaded = False
         self.inf_loaded = False
         self.process_finished = False
 
         self.modified_excellon_file = ''
-
-        # ## Signals
-        self.ui.excellon_brn.clicked.connect(self.on_load_excellon_click)
-        self.ui.inf_btn.clicked.connect(self.on_load_inf_click)
-        self.ui.import_button.clicked.connect(lambda: self.on_import_excellon(
-            excellon_fileobj=self.modified_excellon_file))
-
-        self.file_loaded.connect(self.on_file_loaded)
-        self.ui.units_radio.activated_custom.connect(self.ui.on_units_change)
 
         self.units = 'INCH'
         self.zeros = 'LZ'
@@ -113,11 +105,26 @@ class PcbWizard(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, **kwargs)
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.excellon_brn.clicked.connect(self.on_load_excellon_click)
+        self.ui.inf_btn.clicked.connect(self.on_load_inf_click)
+        self.ui.import_button.clicked.connect(lambda: self.on_import_excellon(
+            excellon_fileobj=self.modified_excellon_file))
+
+        self.file_loaded.connect(self.on_file_loaded)
+        self.ui.units_radio.activated_custom.connect(self.ui.on_units_change)
+
     def set_tool_ui(self):
         self.units = 'INCH'
         self.zeros = 'LZ'
         self.integral = 2
         self.fractional = 4
+
+        self.clear_ui(self.layout)
+        self.ui = WizardUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.outname = 'file'
 

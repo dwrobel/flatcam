@@ -309,7 +309,7 @@ class ToolDrilling(AppTool, Excellon):
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
-        self.clear_ui()
+        self.clear_ui(self.layout)
         self.init_ui()
 
         self.disconnect_main_signals()

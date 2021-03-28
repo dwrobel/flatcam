@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.03.2021
+
+- upgraded all the plugins such that at each launch the Plugin UI is reinitialized reducing the chances to get errors like "wrapped up C++ object deleted" with the side effect that the performance might be slightly reduced
+
 22.03.2021
 
 - Milling Plugin - will update the UI form on object change with the data from its last tool

@@ -35,14 +35,9 @@ class DblSidedTool(AppTool):
         # #############################################################################
         self.ui = DsidedUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.mr = None
-
-        # ############################################################################################################
-        # ######################################### Signals ##########################################################
-        # ############################################################################################################
-        self.connect_signals_at_init()
-        # ############################################################################################################
 
         self.drill_values = ""
 
@@ -139,6 +134,11 @@ class DblSidedTool(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = DsidedUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         self.ui.point_entry.set_value("")

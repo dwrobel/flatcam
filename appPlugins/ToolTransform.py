@@ -32,30 +32,7 @@ class ToolTransform(AppTool):
         # #############################################################################
         self.ui = TransformUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-        
-        # ## Signals
-        self.ui.ref_combo.currentIndexChanged.connect(self.ui.on_reference_changed)
-        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.ui.point_button.clicked.connect(self.on_add_coords)
-
-        self.ui.rotate_button.clicked.connect(self.on_rotate)
-
-        self.ui.skewx_button.clicked.connect(self.on_skewx)
-        self.ui.skewy_button.clicked.connect(self.on_skewy)
-
-        self.ui.scalex_button.clicked.connect(self.on_scalex)
-        self.ui.scaley_button.clicked.connect(self.on_scaley)
-
-        self.ui.offx_button.clicked.connect(self.on_offx)
-        self.ui.offy_button.clicked.connect(self.on_offy)
-
-        self.ui.flipx_button.clicked.connect(self.on_flipx)
-        self.ui.flipy_button.clicked.connect(self.on_flipy)
-
-        self.ui.buffer_button.clicked.connect(self.on_buffer_by_distance)
-        self.ui.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolTransform()")
@@ -105,7 +82,36 @@ class ToolTransform(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.ref_combo.currentIndexChanged.connect(self.ui.on_reference_changed)
+        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.ui.point_button.clicked.connect(self.on_add_coords)
+
+        self.ui.rotate_button.clicked.connect(self.on_rotate)
+
+        self.ui.skewx_button.clicked.connect(self.on_skewx)
+        self.ui.skewy_button.clicked.connect(self.on_skewy)
+
+        self.ui.scalex_button.clicked.connect(self.on_scalex)
+        self.ui.scaley_button.clicked.connect(self.on_scaley)
+
+        self.ui.offx_button.clicked.connect(self.on_offx)
+        self.ui.offy_button.clicked.connect(self.on_offy)
+
+        self.ui.flipx_button.clicked.connect(self.on_flipx)
+        self.ui.flipy_button.clicked.connect(self.on_flipy)
+
+        self.ui.buffer_button.clicked.connect(self.on_buffer_by_distance)
+        self.ui.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
+
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = TransformUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # ## Initialize form
         self.ui.ref_combo.set_value(self.app.defaults["tools_transform_reference"])

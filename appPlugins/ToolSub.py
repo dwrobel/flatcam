@@ -48,6 +48,7 @@ class ToolSub(AppTool):
         # #############################################################################
         self.ui = SubUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # QTimer for periodic check
         self.check_thread = QtCore.QTimer()
@@ -85,20 +86,6 @@ class ToolSub(AppTool):
         # multiprocessing
         self.pool = self.app.pool
         self.results = []
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.intersect_btn.clicked.connect(self.on_subtract_gerber_click)
-        self.ui.intersect_geo_btn.clicked.connect(self.on_subtract_geo_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        # Custom Signals
-        self.job_finished.connect(self.on_job_finished)
-        self.aperture_processing_finished.connect(self.new_gerber_object)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
@@ -179,11 +166,28 @@ class ToolSub(AppTool):
         except Exception:
             pass
 
+    def connect_signals_at_init(self):
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.intersect_btn.clicked.connect(self.on_subtract_gerber_click)
+        self.ui.intersect_geo_btn.clicked.connect(self.on_subtract_geo_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
+        # Custom Signals
+        self.job_finished.connect(self.on_job_finished)
+        self.aperture_processing_finished.connect(self.new_gerber_object)
+
     def set_tool_ui(self):
         self.new_apertures.clear()
         self.new_tools.clear()
         self.new_solid_geometry = []
         self.target_options.clear()
+
+        self.clear_ui(self.layout)
+        self.ui = SubUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.ui.tools_frame.show()
         self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])

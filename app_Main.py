@@ -1442,7 +1442,7 @@ class App(QtCore.QObject):
         # Notebook tab clicking
         self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
 
-        self.ui.notebook.callback_on_close = self.on_close_notebook_tab
+        # self.ui.notebook.callback_on_close = self.on_close_notebook_tab
 
         # ###########################################################################################################
         # #################################### GUI PREFERENCES SIGNALS ##############################################
@@ -2869,7 +2869,7 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.protectTab(0)
 
         # restore the notebook tab close method to the app
-        self.ui.notebook.callback_on_close = self.on_close_notebook_tab
+        # self.ui.notebook.callback_on_close = self.on_close_notebook_tab
 
         # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
         self.ui.project_frame.setDisabled(False)
@@ -6500,16 +6500,39 @@ class App(QtCore.QObject):
         self.ui.toggle_delta_coords(checked=self.defaults["global_delta_coordsbar_show"])
 
     def on_notebook_closed(self, tab_obj_name):
-        closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
-        # print(closed_plugin_name)
-        if closed_plugin_name == _("Levelling"):
-            # clear the possible drawn probing shapes
-            self.levelling_tool.probing_shapes.clear(update=True)
-        elif closed_plugin_name in [_("Isolation"), _("NCC"), _("Paint"), _("Punch Gerber")]:
-            self.tool_shapes.clear(update=True)
 
-    def on_close_notebook_tab(self):
-        self.tool_shapes.clear(update=True)
+        # closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
+        # # print(closed_plugin_name)
+        # if closed_plugin_name == _("Levelling"):
+        #     # clear the possible drawn probing shapes
+        #     self.levelling_tool.probing_shapes.clear(update=True)
+        # elif closed_plugin_name in [_("Isolation"), _("NCC"), _("Paint"), _("Punch Gerber")]:
+        #     self.tool_shapes.clear(update=True)
+
+        try:
+            # clear the possible drawn probing shapes for Levelling Tool
+            self.levelling_tool.probing_shapes.clear(update=True)
+        except AttributeError:
+            pass
+
+        try:
+            # clean possible tool shapes for Isolation, NCC, Paint, Punch Gerber Plugins
+            self.tool_shapes.clear(update=True)
+        except AttributeError:
+            pass
+
+        # clean the Tools Tab
+        found_idx = None
+        for idx in range(self.ui.notebook.count()):
+            if self.ui.notebook.widget(idx).objectName() == "plugin_tab":
+                found_idx = idx
+                break
+        if found_idx:
+            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
+            self.ui.notebook.removeTab(2)
+
+    # def on_close_notebook_tab(self):
+        # self.tool_shapes.clear(update=True)
 
     def on_flipy(self):
         """

@@ -906,6 +906,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.notebook = FCDetachableTab2(protect=True, protect_by_name=[_("Project"), _("Properties")], parent=self)
         # self.notebook.setTabsClosable(False)
         self.notebook.useOldIndex(True)
+        self.notebook.auto_remove_closed_tab = False
 
         self.splitter.addWidget(self.notebook)
 

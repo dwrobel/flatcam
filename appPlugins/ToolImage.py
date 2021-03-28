@@ -34,10 +34,7 @@ class ToolImage(AppTool):
         # #############################################################################
         self.ui = ImageUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        # ## Signals
-        self.ui.import_button.clicked.connect(self.on_file_importimage)
-        self.ui.image_type.activated_custom.connect(self.ui.on_image_type)
+        self.connect_signals_at_init()
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolImage()")
@@ -87,7 +84,17 @@ class ToolImage(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, **kwargs)
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.import_button.clicked.connect(self.on_file_importimage)
+        self.ui.image_type.activated_custom.connect(self.ui.on_image_type)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = ImageUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         # ## Initialize form
         self.ui.dpi_entry.set_value(96)
         self.ui.image_type.set_value('black')

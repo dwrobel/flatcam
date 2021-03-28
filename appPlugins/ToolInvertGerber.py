@@ -39,9 +39,7 @@ class ToolInvertGerber(AppTool):
         # #############################################################################
         self.ui = InvertUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        self.ui.invert_btn.clicked.connect(self.on_grb_invert)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='ALT+G', **kwargs)
@@ -92,7 +90,16 @@ class ToolInvertGerber(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("Invert Gerber"))
 
+    def connect_signals_at_init(self):
+        self.ui.invert_btn.clicked.connect(self.on_grb_invert)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = InvertUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
         self.ui.join_radio.set_value(self.app.defaults["tools_invert_join_style"])
 

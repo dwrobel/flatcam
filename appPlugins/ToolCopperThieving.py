@@ -51,6 +51,7 @@ class ToolCopperThieving(AppTool):
         # #############################################################################
         self.ui = ThievingUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -85,18 +86,6 @@ class ToolCopperThieving(AppTool):
         self.robber_line = None
 
         self.rb_thickness = None
-
-        # SIGNALS
-        self.ui.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
-        self.ui.reference_radio.group_toggle_fn = self.on_toggle_reference
-        self.ui.fill_type_radio.activated_custom.connect(self.on_thieving_type)
-
-        self.ui.fill_button.clicked.connect(self.on_add_copper_thieving_click)
-        self.ui.rb_button.clicked.connect(self.on_add_robber_bar_click)
-        self.ui.ppm_button.clicked.connect(self.on_add_ppm_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-
-        self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCopperThieving()")
@@ -147,9 +136,27 @@ class ToolCopperThieving(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+J', **kwargs)
 
+    def connect_signals_at_init(self):
+        # SIGNALS
+        self.ui.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
+        self.ui.reference_radio.group_toggle_fn = self.on_toggle_reference
+        self.ui.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+
+        self.ui.fill_button.clicked.connect(self.on_add_copper_thieving_click)
+        self.ui.rb_button.clicked.connect(self.on_add_robber_bar_click)
+        self.ui.ppm_button.clicked.connect(self.on_add_ppm_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.work_finished.connect(self.on_new_pattern_plating_object)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
         self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
+
+        self.clear_ui(self.layout)
+        self.ui = ThievingUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.ui.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))

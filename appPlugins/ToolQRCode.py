@@ -54,6 +54,7 @@ class QRCode(AppTool):
         # #############################################################################
         self.ui = QRcodeUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.grb_object = None
         self.box_poly = None
@@ -70,23 +71,6 @@ class QRCode(AppTool):
         self.qrcode_utility_geometry = MultiPolygon()
 
         self.old_back_color = ''
-
-        # #############################################################################
-        # ############################ SIGNALS ########################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-        self.ui.qrcode_button.clicked.connect(self.execute)
-        self.ui.export_cb.stateChanged.connect(self.on_export_frame)
-        self.ui.export_png_button.clicked.connect(self.export_png_file)
-        self.ui.export_svg_button.clicked.connect(self.export_svg_file)
-
-        self.ui.fill_color_entry.editingFinished.connect(self.on_qrcode_fill_color_entry)
-        self.ui.fill_color_button.clicked.connect(self.on_qrcode_fill_color_button)
-        self.ui.back_color_entry.editingFinished.connect(self.on_qrcode_back_color_entry)
-        self.ui.back_color_button.clicked.connect(self.on_qrcode_back_color_button)
-
-        self.ui.transparent_cb.stateChanged.connect(self.on_transparent_back_color)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("QRCode()")
@@ -137,8 +121,29 @@ class QRCode(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
 
+    def connect_signals_at_init(self):
+        self.ui.level.toggled.connect(self.on_level_changed)
+        self.ui.qrcode_button.clicked.connect(self.execute)
+        self.ui.export_cb.stateChanged.connect(self.on_export_frame)
+        self.ui.export_png_button.clicked.connect(self.export_png_file)
+        self.ui.export_svg_button.clicked.connect(self.export_svg_file)
+
+        self.ui.fill_color_entry.editingFinished.connect(self.on_qrcode_fill_color_entry)
+        self.ui.fill_color_button.clicked.connect(self.on_qrcode_fill_color_button)
+        self.ui.back_color_entry.editingFinished.connect(self.on_qrcode_back_color_entry)
+        self.ui.back_color_button.clicked.connect(self.on_qrcode_back_color_button)
+
+        self.ui.transparent_cb.stateChanged.connect(self.on_transparent_back_color)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
+
+        self.clear_ui(self.layout)
+        self.ui = QRcodeUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.border_size_entry.set_value(4)
 
         self.ui.version_entry.set_value(int(self.app.defaults["tools_qrcode_version"]))

@@ -42,49 +42,7 @@ class ToolExtract(AppTool):
         # #############################################################################
         self.ui = ExtractUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        # ## Signals
-        self.ui.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
-
-        self.ui.circular_cb.stateChanged.connect(
-            lambda state:
-            self.ui.circular_ring_entry.setDisabled(False) if state else self.ui.circular_ring_entry.setDisabled(True)
-        )
-
-        self.ui.oblong_cb.stateChanged.connect(
-            lambda state:
-            self.ui.oblong_ring_entry.setDisabled(False) if state else self.ui.oblong_ring_entry.setDisabled(True)
-        )
-
-        self.ui.square_cb.stateChanged.connect(
-            lambda state:
-            self.ui.square_ring_entry.setDisabled(False) if state else self.ui.square_ring_entry.setDisabled(True)
-        )
-
-        self.ui.rectangular_cb.stateChanged.connect(
-            lambda state:
-            self.ui.rectangular_ring_entry.setDisabled(False) if state else
-            self.ui.rectangular_ring_entry.setDisabled(True)
-        )
-
-        self.ui.other_cb.stateChanged.connect(
-            lambda state:
-            self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
-        )
-
-        self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
-        self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
-        self.ui.e_cut_button.clicked.connect(self.on_extract_cutout_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-
-        self.ui.circular_cb.stateChanged.connect(self.build_tool_ui)
-        self.ui.oblong_cb.stateChanged.connect(self.build_tool_ui)
-        self.ui.square_cb.stateChanged.connect(self.build_tool_ui)
-        self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
-        self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
-
-        self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
-        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
+        self.connect_signals_at_init()
 
     def on_object_combo_changed(self):
         # get the Gerber file who is the source of the punched Gerber
@@ -161,7 +119,56 @@ class ToolExtract(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("Extract"))
 
+    def connect_signals_at_init(self):
+        # ## Signals
+        self.ui.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
+
+        self.ui.circular_cb.stateChanged.connect(
+            lambda state:
+            self.ui.circular_ring_entry.setDisabled(False) if state else self.ui.circular_ring_entry.setDisabled(True)
+        )
+
+        self.ui.oblong_cb.stateChanged.connect(
+            lambda state:
+            self.ui.oblong_ring_entry.setDisabled(False) if state else self.ui.oblong_ring_entry.setDisabled(True)
+        )
+
+        self.ui.square_cb.stateChanged.connect(
+            lambda state:
+            self.ui.square_ring_entry.setDisabled(False) if state else self.ui.square_ring_entry.setDisabled(True)
+        )
+
+        self.ui.rectangular_cb.stateChanged.connect(
+            lambda state:
+            self.ui.rectangular_ring_entry.setDisabled(False) if state else
+            self.ui.rectangular_ring_entry.setDisabled(True)
+        )
+
+        self.ui.other_cb.stateChanged.connect(
+            lambda state:
+            self.ui.other_ring_entry.setDisabled(False) if state else self.ui.other_ring_entry.setDisabled(True)
+        )
+
+        self.ui.e_drills_button.clicked.connect(self.on_extract_drills_click)
+        self.ui.e_sm_button.clicked.connect(self.on_extract_soldermask_click)
+        self.ui.e_cut_button.clicked.connect(self.on_extract_cutout_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.ui.circular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.oblong_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.square_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.rectangular_cb.stateChanged.connect(self.build_tool_ui)
+        self.ui.other_cb.stateChanged.connect(self.build_tool_ui)
+
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.on_object_combo_changed)
+        self.ui.gerber_object_combo.currentIndexChanged.connect(self.build_tool_ui)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = ExtractUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         self.ui_disconnect()

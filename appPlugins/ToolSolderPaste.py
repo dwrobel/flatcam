@@ -48,6 +48,7 @@ class SolderPaste(AppTool):
         # #############################################################################
         self.ui = SolderUI(layout=self.layout, app=self.app, solder_class=self)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         self.tooltable_tools = {}
         self.tooluid = 0
@@ -66,27 +67,6 @@ class SolderPaste(AppTool):
 
         # stpre here the flattened geometry
         self.flat_geometry = []
-
-        # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
-                                                          _("Delete Object"))
-
-        # ## Signals
-        self.combo_context_del_action.triggered.connect(self.on_delete_object)
-        
-        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
-        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
-        self.ui.soldergeo_btn.clicked.connect(self.on_create_geo_click)
-        self.ui.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)
-        self.ui.solder_gcode_view_btn.clicked.connect(self.on_view_gcode)
-        self.ui.solder_gcode_save_btn.clicked.connect(self.on_save_gcode)
-
-        self.ui.geo_obj_combo.currentIndexChanged.connect(self.on_geo_select)
-        self.ui.cnc_obj_combo.currentIndexChanged.connect(self.on_cncjob_select)
-
-        self.app.object_status_changed.connect(self.update_comboboxes)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolSolderPaste()")
@@ -137,23 +117,43 @@ class SolderPaste(AppTool):
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
-    def on_add_tool_by_key(self):
-        tool_add_popup = FCInputSpinner(title='%s...' % _("New Tool"),
-                                        text='%s:' % _('Enter a Tool Diameter'),
-                                        min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+    def clear_context_menu(self):
+        self.ui.tools_table.removeContextMenu()
 
-        val, ok = tool_add_popup.get_value()
-        if ok:
-            if float(val) == 0:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter with non-zero value, in Float format."))
-                return
-            self.on_tool_add(dia=float(val))
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+    def init_context_menu(self):
+        self.ui.tools_table.setupContextMenu()
+        self.ui.tools_table.addContextMenu(
+            _("Add"), lambda: self.on_tool_add(dia=None, muted=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+        self.ui.tools_table.addContextMenu(
+            _("Delete"), lambda:
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
+
+    def connect_signals_at_init(self):
+        self.ui.combo_context_del_action.triggered.connect(self.on_delete_object)
+
+        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        self.ui.soldergeo_btn.clicked.connect(self.on_create_geo_click)
+        self.ui.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)
+        self.ui.solder_gcode_view_btn.clicked.connect(self.on_view_gcode)
+        self.ui.solder_gcode_save_btn.clicked.connect(self.on_save_gcode)
+
+        self.ui.geo_obj_combo.currentIndexChanged.connect(self.on_geo_select)
+        self.ui.cnc_obj_combo.currentIndexChanged.connect(self.on_cncjob_select)
+
+        self.app.object_status_changed.connect(self.update_comboboxes)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = SolderUI(layout=self.layout, app=self.app, solder_class=self)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.form_fields.update({
             "tools_solderpaste_new":            self.ui.addtool_entry,
             "tools_solderpaste_z_start":        self.ui.z_start_entry,
@@ -174,15 +174,8 @@ class SolderPaste(AppTool):
         self.set_form_from_defaults()
         self.read_form_to_options()
 
-        self.ui.tools_table.setupContextMenu()
-        self.ui.tools_table.addContextMenu(
-            _("Add"), lambda: self.on_tool_add(dia=None, muted=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.ui.tools_table.addContextMenu(
-            _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
-        )
+        self.clear_context_menu()
+        self.init_context_menu()
 
         # either originally it was a string or not, xy_end will be made string
         dias_option = self.app.defaults["tools_solderpaste_tools"]
@@ -332,6 +325,22 @@ class SolderPaste(AppTool):
             self.app.log.error("ToolSolderPaste ---> update_ui() " + str(e))
 
         self.ui_connect()
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputSpinner(title='%s...' % _("New Tool"),
+                                        text='%s:' % _('Enter a Tool Diameter'),
+                                        min=0.0000, max=100.0000, decimals=self.decimals, step=0.1)
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def on_row_selection_change(self):
         sel_model = self.ui.tools_table.selectionModel()
@@ -642,7 +651,7 @@ class SolderPaste(AppTool):
         self.obj_to_be_deleted_name = combo.model().itemData(idx)[0]
 
         menu = QtWidgets.QMenu()
-        menu.addAction(self.combo_context_del_action)
+        menu.addAction(self.ui.combo_context_del_action)
         menu.exec(view.mapToGlobal(pos))
 
     def on_delete_object(self):
@@ -1593,6 +1602,10 @@ class SolderUI:
                                }
                                """)
         self.layout.addWidget(self.reset_button)
+
+        # action to be added in the combobox context menu
+        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
+                                                          _("Delete Object"))
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

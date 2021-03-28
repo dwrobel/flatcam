@@ -53,6 +53,7 @@ class ToolPaint(AppTool, Gerber):
         # #############################################################################
         self.ui = PaintUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -126,23 +127,10 @@ class ToolPaint(AppTool, Gerber):
         # it is made False by first click to signify that the shape is complete
         self.poly_drawn = False
 
-        self.connect_signals_at_init()
-
         # #############################################################################
         # ###################### Setup CONTEXT MENU ###################################
         # #############################################################################
-        self.ui.tools_table.setupContextMenu()
-        self.ui.tools_table.addContextMenu(
-            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
-        )
+        self.init_context_menu()
 
     def on_type_obj_changed(self, val):
         obj_type = 0 if val == 'gerber' else 2
@@ -163,34 +151,6 @@ class ToolPaint(AppTool, Gerber):
         self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.reference_combo.setCurrentIndex(0)
         self.ui.reference_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
-
-    def connect_signals_at_init(self):
-        # #############################################################################
-        # ################################# Signals ###################################
-        # #############################################################################
-        self.ui.level.toggled.connect(self.on_level_changed)
-
-        self.ui.new_tooldia_entry.returnPressed.connect(self.on_tool_add)
-        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
-
-        self.ui.generate_paint_button.clicked.connect(self.on_paint_button_click)
-        self.ui.selectmethod_combo.currentIndexChanged.connect(self.ui.on_selection)
-
-        self.ui.reference_type_combo.currentIndexChanged.connect(self.on_reference_combo_changed)
-        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
-
-        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-
-        # adding tools
-        self.ui.search_and_add_btn.clicked.connect(lambda: self.on_tool_add())
-        self.ui.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
-
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-
-        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
-        self.app.cleanup.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
@@ -246,217 +206,68 @@ class ToolPaint(AppTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("Paint"))
 
-    def on_toggle_all_rows(self):
-        """
-        will toggle the selection of all rows in Tools table
+    def clear_context_menu(self):
+        self.ui.tools_table.removeContextMenu()
 
-        :return:
-        """
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
+    def init_context_menu(self):
+        self.ui.tools_table.setupContextMenu()
+        self.ui.tools_table.addContextMenu(
+            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Delete"), lambda:
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
+    def connect_signals_at_init(self):
+        # #############################################################################
+        # ################################# Signals ###################################
+        # #############################################################################
+        self.ui.level.toggled.connect(self.on_level_changed)
 
-        if len(sel_rows) == self.ui.tools_table.rowCount():
-            self.ui.tools_table.clearSelection()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
-        else:
-            self.ui.tools_table.selectAll()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
+        self.ui.new_tooldia_entry.returnPressed.connect(self.on_tool_add)
+        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
-    def on_row_selection_change(self):
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
+        self.ui.generate_paint_button.clicked.connect(self.on_paint_button_click)
+        self.ui.selectmethod_combo.currentIndexChanged.connect(self.ui.on_selection)
 
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
+        self.ui.reference_type_combo.currentIndexChanged.connect(self.on_reference_combo_changed)
+        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
 
-        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
-        # for the rows other that the current one (first selected)
-        if len(sel_rows) == 1:
-            self.update_ui()
+        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
 
-    def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
+        # adding tools
+        self.ui.search_and_add_btn.clicked.connect(lambda: self.on_tool_add())
+        self.ui.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
 
-            if kind in ['gerber', 'geometry']:
-                self.ui.type_obj_radio.set_value(kind)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
-            self.ui.obj_combo.set_value(name)
-        except Exception:
-            pass
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
-    def update_ui(self):
-        self.blockSignals(True)
-
-        sel_rows = set()
-        table_items = self.ui.tools_table.selectedItems()
-        if table_items:
-            for it in table_items:
-                sel_rows.add(it.row())
-            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-
-        if not sel_rows or len(sel_rows) == 0:
-            self.ui.generate_paint_button.setDisabled(True)
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
-            self.blockSignals(False)
-            return
-        else:
-            self.ui.generate_paint_button.setDisabled(False)
-
-        for current_row in sel_rows:
-            # populate the form with the data from the tool associated with the row parameter
-            try:
-                item = self.ui.tools_table.item(current_row, 3)
-                if item is None:
-                    return 'fail'
-                tooluid = int(item.text())
-            except Exception as e:
-                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-                return
-
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            if len(sel_rows) == 1:
-                cr = self.ui.tools_table.item(current_row, 0).text()
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s %s</font></b>" % (_('Parameters for'), _("Tool"), cr)
-                )
-
-                try:
-                    # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.paint_tools.items()):
-                        if int(tooluid_key) == tooluid:
-                            self.storage_to_form(tooluid_value['data'])
-                except Exception as e:
-                    log.error("ToolPaint ---> update_ui() " + str(e))
-            else:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-                )
-
-        self.blockSignals(False)
-
-    def storage_to_form(self, dict_storage):
-        for k in self.form_fields:
-            try:
-                self.form_fields[k].set_value(dict_storage[k])
-            except Exception as err:
-                log.error("ToolPaint.storage.form() --> %s" % str(err))
-
-    def form_to_storage(self):
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            return
-
-        self.blockSignals(True)
-
-        widget_changed = self.sender()
-        wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
-
-        # row = self.ui.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-        for row in rows:
-            if row < 0:
-                row = 0
-            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
-
-            for tooluid_key, tooluid_val in self.paint_tools.items():
-                if int(tooluid_key) == tooluid_item:
-                    new_option_value = self.form_fields[option_changed].get_value()
-                    if option_changed in tooluid_val:
-                        tooluid_val[option_changed] = new_option_value
-                    if option_changed in tooluid_val['data']:
-                        tooluid_val['data'][option_changed] = new_option_value
-
-        self.blockSignals(False)
-
-    def on_apply_param_to_all_clicked(self):
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
-            return
-
-        self.blockSignals(True)
-
-        row = self.ui.tools_table.currentRow()
-        if row < 0:
-            row = 0
-
-        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
-        temp_tool_data = {}
-
-        for tooluid_key, tooluid_val in self.paint_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
-                # the current row in the tool table
-                temp_tool_data = tooluid_val['data']
-                break
-
-        for tooluid_key, tooluid_val in self.paint_tools.items():
-            tooluid_val['data'] = deepcopy(temp_tool_data)
-
-        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
-
-        self.blockSignals(False)
-
-    def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDoubleSpinner(title='%s...' % _("New Tool"),
-                                              text='%s:' % _('Enter a Tool Diameter'),
-                                              min=0.0000, max=99.9999, decimals=self.decimals,
-                                              parent=self.app.ui)
-        tool_add_popup.set_icon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
-
-        val, ok = tool_add_popup.get_value()
-        if ok:
-            if float(val) == 0:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter with non-zero value, in Float format."))
-                return
-            self.on_tool_add(custom_dia=float(val))
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
-
-    def on_tooltable_cellwidget_change(self):
-        cw = self.sender()
-
-        assert isinstance(cw, QtWidgets.QComboBox), \
-            "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
-
-        cw_index = self.ui.tools_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
-        cw_col = cw_index.column()
-
-        current_uid = int(self.ui.tools_table.item(cw_row, 3).text())
-
-        # if the sender is in the column with index 2 then we update the tool_type key
-        if cw_col == 2:
-            tt = cw.currentText()
-            typ = 'Iso' if tt == 'V' else 'Rough'
-
-            self.paint_tools[current_uid].update({
-                'type': typ,
-                'tool_type': tt,
-            })
-
-    def on_order_changed(self, order):
-        if order != 'no':
-            self.build_ui()
+        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
+        self.app.cleanup.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = PaintUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
+        self.form_fields = {
+            "tools_paint_overlap":   self.ui.paintoverlap_entry,
+            "tools_paint_offset":    self.ui.offset_entry,
+            "tools_paint_method":    self.ui.paintmethod_combo,
+            "tools_paint_connect":    self.ui.pathconnect_cb,
+            "tools_paint_contour":   self.ui.paintcontour_cb,
+        }
+
+        self.clear_context_menu()
+        self.init_context_menu()
+
         self.ui.tools_frame.show()
         self.reset_fields()
 
@@ -686,6 +497,216 @@ class ToolPaint(AppTool, Gerber):
 
             # Context Menu section
             self.ui.tools_table.setupContextMenu()
+
+    def on_toggle_all_rows(self):
+        """
+        will toggle the selection of all rows in Tools table
+
+        :return:
+        """
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+        else:
+            self.ui.tools_table.selectAll()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
+    def on_row_selection_change(self):
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+        # for the rows other that the current one (first selected)
+        if len(sel_rows) == 1:
+            self.update_ui()
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                self.ui.type_obj_radio.set_value(kind)
+
+            self.ui.obj_combo.set_value(name)
+        except Exception:
+            pass
+
+    def update_ui(self):
+        self.blockSignals(True)
+
+        sel_rows = set()
+        table_items = self.ui.tools_table.selectedItems()
+        if table_items:
+            for it in table_items:
+                sel_rows.add(it.row())
+            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.generate_paint_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.blockSignals(False)
+            return
+        else:
+            self.ui.generate_paint_button.setDisabled(False)
+
+        for current_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.tools_table.item(current_row, 3)
+                if item is None:
+                    return 'fail'
+                tooluid = int(item.text())
+            except Exception as e:
+                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                return
+
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                cr = self.ui.tools_table.item(current_row, 0).text()
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %s</font></b>" % (_('Parameters for'), _("Tool"), cr)
+                )
+
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.paint_tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            self.storage_to_form(tooluid_value['data'])
+                except Exception as e:
+                    log.error("ToolPaint ---> update_ui() " + str(e))
+            else:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
+
+        self.blockSignals(False)
+
+    def storage_to_form(self, dict_storage):
+        for k in self.form_fields:
+            try:
+                self.form_fields[k].set_value(dict_storage[k])
+            except Exception as err:
+                log.error("ToolPaint.storage.form() --> %s" % str(err))
+
+    def form_to_storage(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        # row = self.ui.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+
+            for tooluid_key, tooluid_val in self.paint_tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.blockSignals(True)
+
+        row = self.ui.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+        temp_tool_data = {}
+
+        for tooluid_key, tooluid_val in self.paint_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
+
+        for tooluid_key, tooluid_val in self.paint_tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
+
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
+
+        self.blockSignals(False)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDoubleSpinner(title='%s...' % _("New Tool"),
+                                              text='%s:' % _('Enter a Tool Diameter'),
+                                              min=0.0000, max=99.9999, decimals=self.decimals,
+                                              parent=self.app.ui)
+        tool_add_popup.set_icon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(custom_dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+
+    def on_tooltable_cellwidget_change(self):
+        cw = self.sender()
+
+        assert isinstance(cw, QtWidgets.QComboBox), \
+            "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
+
+        cw_index = self.ui.tools_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        cw_col = cw_index.column()
+
+        current_uid = int(self.ui.tools_table.item(cw_row, 3).text())
+
+        # if the sender is in the column with index 2 then we update the tool_type key
+        if cw_col == 2:
+            tt = cw.currentText()
+            typ = 'Iso' if tt == 'V' else 'Rough'
+
+            self.paint_tools[current_uid].update({
+                'type': typ,
+                'tool_type': tt,
+            })
+
+    def on_order_changed(self, order):
+        if order != 'no':
+            self.build_ui()
 
     def rebuild_ui(self):
         # read the table tools uid

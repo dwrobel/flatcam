@@ -7079,7 +7079,7 @@ class TransformEditorTool(AppTool):
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
-        self.app.ui.notebook.callback_on_close = self.on_tab_close
+        # self.app.ui.notebook.callback_on_close = self.on_tab_close
 
         if toggle:
             try:

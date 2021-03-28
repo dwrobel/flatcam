@@ -52,26 +52,9 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         self.ui = IsoUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
-        # #############################################################################
-        # ###################### Setup CONTEXT MENU ###################################
-        # #############################################################################
-        self.ui.tools_table.setupContextMenu()
-        self.ui.tools_table.addContextMenu(
-            _("Search and Add"),
-            self.on_add_tool_by_key,
-            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Pick from DB"),
-            self.on_tool_add_from_db_clicked,
-            icon=QtGui.QIcon(self.app.resource_location + "/search_db32.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Delete"),
-            lambda: self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
-        )
+        self.init_context_menu()
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -147,8 +130,6 @@ class ToolIsolation(AppTool, Gerber):
             "i_iso_type":       "tools_iso_isotype"
         }
 
-        self.connect_signals_at_init()
-
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
@@ -207,6 +188,30 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("Isolation"))
 
+    def clear_contex_menu(self):
+        self.ui.tools_table.removeContextMenu()
+
+    def init_context_menu(self):
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.ui.tools_table.setupContextMenu()
+        self.ui.tools_table.addContextMenu(
+            _("Search and Add"),
+            self.on_add_tool_by_key,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Pick from DB"),
+            self.on_tool_add_from_db_clicked,
+            icon=QtGui.QIcon(self.app.resource_location + "/search_db32.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Delete"),
+            lambda: self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
+        )
+
     def connect_signals_at_init(self):
         # #############################################################################
         # ############################ SIGNALS ########################################
@@ -249,6 +254,22 @@ class ToolIsolation(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        self.clear_ui(self.layout)
+        self.ui = IsoUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
+        self.clear_contex_menu()
+        self.init_context_menu()
+
+        self.form_fields = {
+            "tools_iso_passes":         self.ui.passes_entry,
+            "tools_iso_overlap":        self.ui.iso_overlap_entry,
+            "tools_iso_milling_type":   self.ui.milling_type_radio,
+            "tools_iso_combine":        self.ui.combine_passes_cb,
+            "tools_iso_isotype":        self.ui.iso_type_radio
+        }
 
         # reset the value to prepare for another isolation
         self.safe_tooldia = None

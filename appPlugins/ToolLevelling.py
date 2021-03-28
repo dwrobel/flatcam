@@ -75,6 +75,7 @@ class ToolLevelling(AppTool, CNCjob):
         # #############################################################################
         self.ui = LevelUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # updated in the self.set_tool_ui()
         self.form_fields = {}
@@ -126,11 +127,6 @@ class ToolLevelling(AppTool, CNCjob):
 
         # store the current selection shape status to be restored after manual adding test points
         self.old_selection_state = self.app.defaults['global_selection_shape']
-
-        # #############################################################################################################
-        # #######################################  Signals  ###########################################################
-        # #############################################################################################################
-        self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -235,6 +231,11 @@ class ToolLevelling(AppTool, CNCjob):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        self.clear_ui(self.layout)
+        self.ui = LevelUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
         # try to select in the CNCJob combobox the active object
         try:

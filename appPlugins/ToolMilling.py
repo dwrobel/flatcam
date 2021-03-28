@@ -408,7 +408,7 @@ class ToolMilling(AppTool, Excellon):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
-        self.clear_ui()
+        self.clear_ui(self.layout)
         self.init_ui()
 
         self.unset_context_menu()

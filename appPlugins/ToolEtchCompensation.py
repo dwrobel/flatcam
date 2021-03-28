@@ -40,13 +40,7 @@ class ToolEtchCompensation(AppTool):
         # #############################################################################
         self.ui = EtchUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        self.ui.compensate_btn.clicked.connect(self.on_compensate)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
-        self.ui.ratio_radio.activated_custom.connect(self.on_ratio_change)
-
-        self.ui.oz_entry.textChanged.connect(self.on_oz_conversion)
-        self.ui.mils_entry.textChanged.connect(self.on_mils_conversion)
+        self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -97,7 +91,20 @@ class ToolEtchCompensation(AppTool):
 
         self.app.ui.notebook.setTabText(2, _("Etch Compensation"))
 
+    def connect_signals_at_init(self):
+        self.ui.compensate_btn.clicked.connect(self.on_compensate)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.ratio_radio.activated_custom.connect(self.on_ratio_change)
+
+        self.ui.oz_entry.textChanged.connect(self.on_oz_conversion)
+        self.ui.mils_entry.textChanged.connect(self.on_mils_conversion)
+
     def set_tool_ui(self):
+        self.clear_ui(self.layout)
+        self.ui = EtchUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.ui.thick_entry.set_value(18.0)
         self.ui.ratio_radio.set_value('factor')
 

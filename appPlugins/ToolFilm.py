@@ -161,6 +161,12 @@ class Film(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
+
+        self.clear_ui(self.layout)
+        self.ui = FilmUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
@@ -214,6 +220,13 @@ class Film(AppTool):
 
             self.ui.tf_object_combo.set_value(obj_name)
             self.ui.tf_box_combo.set_value(obj_name)
+        else:
+            # run once to make sure that the obj_type attribute is updated in the FCComboBox
+            self.ui.tf_type_obj_combo.set_value('grb')
+            self.ui.tf_type_box_combo.set_value('grb')
+            # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+            self.on_type_obj_index_changed(val='grb')
+            self.on_type_box_index_changed(val='grb')
 
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
@@ -1472,15 +1485,15 @@ class FilmUI:
         self.punch_size_label.hide()
         self.punch_size_spinner.hide()
 
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
+        self.grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(self.grid1)
+        self.grid1.setColumnStretch(0, 0)
+        self.grid1.setColumnStretch(1, 1)
 
         separator_line3 = QtWidgets.QFrame()
         separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid1.addWidget(separator_line3, 0, 0, 1, 2)
+        self.grid1.addWidget(separator_line3, 0, 0, 1, 2)
 
         # File type
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
@@ -1495,8 +1508,8 @@ class FilmUI:
               "- 'PNG' -> raster image\n"
               "- 'PDF' -> portable document format")
         )
-        grid1.addWidget(self.file_type_label, 1, 0)
-        grid1.addWidget(self.file_type_radio, 1, 1)
+        self.grid1.addWidget(self.file_type_label, 1, 0)
+        self.grid1.addWidget(self.file_type_radio, 1, 1)
 
         # Page orientation
         self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
@@ -1512,8 +1525,8 @@ class FilmUI:
         # ################################  New Grid ##################################################################
         # #############################################################################################################
 
-        grid1.addWidget(self.orientation_label, 2, 0)
-        grid1.addWidget(self.orientation_radio, 2, 1)
+        self.grid1.addWidget(self.orientation_label, 2, 0)
+        self.grid1.addWidget(self.orientation_radio, 2, 1)
 
         # Page Size
         self.pagesize_label = FCLabel('%s:' % _("Page Size"))
@@ -1575,8 +1588,8 @@ class FilmUI:
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)
 
-        grid1.addWidget(self.pagesize_label, 3, 0)
-        grid1.addWidget(self.pagesize_combo, 3, 1)
+        self.grid1.addWidget(self.pagesize_label, 3, 0)
+        self.grid1.addWidget(self.pagesize_combo, 3, 1)
 
         self.on_film_type(val='hide')
 
@@ -1588,8 +1601,8 @@ class FilmUI:
         self.png_dpi_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.png_dpi_spinner.set_range(0, 100000)
 
-        grid1.addWidget(self.png_dpi_label, 4, 0)
-        grid1.addWidget(self.png_dpi_spinner, 4, 1)
+        self.grid1.addWidget(self.png_dpi_label, 4, 0)
+        self.grid1.addWidget(self.png_dpi_spinner, 4, 1)
 
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
@@ -1609,7 +1622,7 @@ class FilmUI:
                                    font-weight: bold;
                                }
                                """)
-        grid1.addWidget(self.film_object_button, 6, 0, 1, 2)
+        self.grid1.addWidget(self.film_object_button, 6, 0, 1, 2)
 
         self.layout.addStretch()
 

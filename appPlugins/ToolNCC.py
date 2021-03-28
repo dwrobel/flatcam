@@ -54,22 +54,9 @@ class NonCopperClear(AppTool, Gerber):
         # #############################################################################
         self.ui = NccUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
 
-        # #############################################################################
-        # ###################### Setup CONTEXT MENU ###################################
-        # #############################################################################
-        self.ui.tools_table.setupContextMenu()
-        self.ui.tools_table.addContextMenu(
-            _("Add"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Add from DB"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.ui.tools_table.addContextMenu(
-            _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
-        )
+        self.init_context_menu()
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -156,8 +143,6 @@ class NonCopperClear(AppTool, Gerber):
 
         self.old_tool_dia = None
 
-        self.connect_signals_at_init()
-
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+N', **kwargs)
 
@@ -219,6 +204,27 @@ class NonCopperClear(AppTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("NCC"))
 
+    def clear_context_menu(self):
+        self.ui.tools_table.removeContextMenu()
+
+    def init_context_menu(self):
+
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.ui.tools_table.setupContextMenu()
+        self.ui.tools_table.addContextMenu(
+            _("Add"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Add from DB"), self.on_tool_add_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.ui.tools_table.addContextMenu(
+            _("Delete"), lambda:
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
+
     def connect_signals_at_init(self):
         # #############################################################################
         # ############################ SIGNALS ########################################
@@ -254,239 +260,30 @@ class NonCopperClear(AppTool, Gerber):
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self, val):
-        obj_type = 0 if val == 'gerber' else 2
-        self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.ui.object_combo.setCurrentIndex(0)
-        self.ui.object_combo.obj_type = {
-            "gerber": "Gerber", "geometry": "Geometry"
-        }[self.ui.type_obj_radio.get_value()]
-
-    def on_operation_change(self, val):
-        self.ui.parameters_ui(val=val)
-
-        current_row = self.ui.tools_table.currentRow()
-        try:
-            current_uid = int(self.ui.tools_table.item(current_row, 3).text())
-            self.ncc_tools[current_uid]['data']['tools_ncc_operation'] = val
-            # TODO got a crash here, a KeyError exception; need to see it again and find out the why
-        except AttributeError:
-            return
-
-    def on_object_selection_changed(self, current, previous):
-        try:
-            name = current.indexes()[0].internalPointer().obj.options['name']
-            kind = current.indexes()[0].internalPointer().obj.kind
-
-            if kind in ['gerber', 'geometry']:
-                self.ui.type_obj_radio.set_value(kind)
-
-            self.ui.object_combo.set_value(name)
-        except Exception:
-            pass
-
-    def on_toggle_all_rows(self):
-        """
-        will toggle the selection of all rows in Tools table
-
-        :return:
-        """
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
-
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
-
-        if len(sel_rows) == self.ui.tools_table.rowCount():
-            self.ui.tools_table.clearSelection()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
-        else:
-            self.ui.tools_table.selectAll()
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
-
-    def on_row_selection_change(self):
-        sel_model = self.ui.tools_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
-
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
-
-        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
-        # for the rows other that the current one (first selected)
-        if len(sel_rows) == 1:
-            self.update_ui()
-
-    def update_ui(self):
-        self.blockSignals(True)
-
-        sel_rows = set()
-        table_items = self.ui.tools_table.selectedItems()
-        if table_items:
-            for it in table_items:
-                sel_rows.add(it.row())
-            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-
-        if not sel_rows or len(sel_rows) == 0:
-            self.ui.generate_ncc_button.setDisabled(True)
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
-            self.blockSignals(False)
-            return
-        else:
-            self.ui.generate_ncc_button.setDisabled(False)
-
-        for current_row in sel_rows:
-            # populate the form with the data from the tool associated with the row parameter
-            try:
-                item = self.ui.tools_table.item(current_row, 3)
-                if item is not None:
-                    tooluid = int(item.text())
-                else:
-                    return
-            except Exception as e:
-                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-                return
-
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            if len(sel_rows) == 1:
-                cr = current_row + 1
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
-                )
-                try:
-                    # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.ncc_tools.items()):
-                        if int(tooluid_key) == tooluid:
-                            for key, value in tooluid_value.items():
-                                if key == 'data':
-                                    self.storage_to_form(tooluid_value['data'])
-                except Exception as e:
-                    log.error("NonCopperClear ---> update_ui() " + str(e))
-            else:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-                )
-
-        self.blockSignals(False)
-
-    def storage_to_form(self, dict_storage):
-        for form_key in self.form_fields:
-            for storage_key in dict_storage:
-                if form_key == storage_key:
-                    try:
-                        self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception as e:
-                        log.error("NonCopperClear.storage_to_form() --> %s" % str(e))
-                        pass
-
-    def form_to_storage(self):
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            return
-
-        self.blockSignals(True)
-
-        widget_changed = self.sender()
-        wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
-
-        # row = self.ui.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-        for row in rows:
-            if row < 0:
-                row = 0
-            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
-
-            for tooluid_key, tooluid_val in self.ncc_tools.items():
-                if int(tooluid_key) == tooluid_item:
-                    new_option_value = self.form_fields[option_changed].get_value()
-                    if option_changed in tooluid_val:
-                        tooluid_val[option_changed] = new_option_value
-                    if option_changed in tooluid_val['data']:
-                        tooluid_val['data'][option_changed] = new_option_value
-
-        self.blockSignals(False)
-
-    def on_apply_param_to_all_clicked(self):
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
-            return
-
-        self.blockSignals(True)
-
-        row = self.ui.tools_table.currentRow()
-        if row < 0:
-            row = 0
-
-        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
-        temp_tool_data = {}
-
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
-                # the current row in the tool table
-                temp_tool_data = tooluid_val['data']
-                break
-
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
-            tooluid_val['data'] = deepcopy(temp_tool_data)
-
-        # store all the data associated with the row parameter to the self.tools storage
-        # tooldia_item = float(self.ui.tools_table.item(row, 1).text())
-        # type_item = self.ui.tools_table.cellWidget(row, 2).currentText()
-        # operation_type_item = self.ui.tools_table.cellWidget(row, 4).currentText()
-        #
-        # nccoffset_item = self.ncc_choice_offset_cb.get_value()
-        # nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
-
-        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        # temp_tools = {}
-        # temp_dia = {}
-        # temp_data = {}
-        #
-        # for tooluid_key, tooluid_value in self.ncc_tools.items():
-        #     for key, value in tooluid_value.items():
-        #         if key == 'data':
-        #             # update the 'data' section
-        #             for data_key in tooluid_value[key].keys():
-        #                 for form_key, form_value in self.form_fields.items():
-        #                     if form_key == data_key:
-        #                         temp_data[data_key] = form_value.get_value()
-        #                 # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-        #                 # updated from self.app.defaults
-        #                 if data_key not in self.form_fields:
-        #                     temp_data[data_key] = value[data_key]
-        #             temp_dia[key] = deepcopy(temp_data)
-        #             temp_data.clear()
-        #
-        #         elif key == 'solid_geometry':
-        #             temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
-        #         else:
-        #             temp_dia[key] = deepcopy(value)
-        #
-        #         temp_tools[tooluid_key] = deepcopy(temp_dia)
-        #
-        # self.ncc_tools.clear()
-        # self.ncc_tools = deepcopy(temp_tools)
-        # temp_tools.clear()
-
-        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
-
-        self.blockSignals(False)
-
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_ncc_newdia"]
+
+        self.clear_ui(self.layout)
+        self.ui = NccUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
+        self.clear_context_menu()
+        self.init_context_menu()
+
+        self.form_fields = {
+            "tools_ncc_operation":      self.ui.op_radio,
+            "tools_ncc_overlap":        self.ui.ncc_overlap_entry,
+            "tools_ncc_margin":         self.ui.ncc_margin_entry,
+            "tools_ncc_method":         self.ui.ncc_method_combo,
+            "tools_ncc_connect":        self.ui.ncc_connect_cb,
+            "tools_ncc_contour":        self.ui.ncc_contour_cb,
+            "tools_ncc_offset_choice":  self.ui.ncc_choice_offset_cb,
+            "tools_ncc_offset_value":   self.ui.ncc_offset_spinner,
+            "tools_ncc_milling_type":   self.ui.milling_type_radio,
+            "tools_ncc_check_valid":    self.ui.valid_cb
+        }
 
         # reset the value to prepare for another isolation
         self.safe_tooldia = None
@@ -749,6 +546,236 @@ class NonCopperClear(AppTool, Gerber):
 
             # Context Menu section
             self.ui.tools_table.setupContextMenu()
+
+    def on_type_obj_index_changed(self, val):
+        obj_type = 0 if val == 'gerber' else 2
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setCurrentIndex(0)
+        self.ui.object_combo.obj_type = {
+            "gerber": "Gerber", "geometry": "Geometry"
+        }[self.ui.type_obj_radio.get_value()]
+
+    def on_operation_change(self, val):
+        self.ui.parameters_ui(val=val)
+
+        current_row = self.ui.tools_table.currentRow()
+        try:
+            current_uid = int(self.ui.tools_table.item(current_row, 3).text())
+            self.ncc_tools[current_uid]['data']['tools_ncc_operation'] = val
+            # TODO got a crash here, a KeyError exception; need to see it again and find out the why
+        except AttributeError:
+            return
+
+    def on_object_selection_changed(self, current, previous):
+        try:
+            name = current.indexes()[0].internalPointer().obj.options['name']
+            kind = current.indexes()[0].internalPointer().obj.kind
+
+            if kind in ['gerber', 'geometry']:
+                self.ui.type_obj_radio.set_value(kind)
+
+            self.ui.object_combo.set_value(name)
+        except Exception:
+            pass
+
+    def on_toggle_all_rows(self):
+        """
+        will toggle the selection of all rows in Tools table
+
+        :return:
+        """
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+        else:
+            self.ui.tools_table.selectAll()
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
+    def on_row_selection_change(self):
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        # update UI only if only one row is selected otherwise having multiple rows selected will deform information
+        # for the rows other that the current one (first selected)
+        if len(sel_rows) == 1:
+            self.update_ui()
+
+    def update_ui(self):
+        self.blockSignals(True)
+
+        sel_rows = set()
+        table_items = self.ui.tools_table.selectedItems()
+        if table_items:
+            for it in table_items:
+                sel_rows.add(it.row())
+            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.generate_ncc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.blockSignals(False)
+            return
+        else:
+            self.ui.generate_ncc_button.setDisabled(False)
+
+        for current_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.tools_table.item(current_row, 3)
+                if item is not None:
+                    tooluid = int(item.text())
+                else:
+                    return
+            except Exception as e:
+                log.error("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                return
+
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                cr = current_row + 1
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
+                )
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.ncc_tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            for key, value in tooluid_value.items():
+                                if key == 'data':
+                                    self.storage_to_form(tooluid_value['data'])
+                except Exception as e:
+                    log.error("NonCopperClear ---> update_ui() " + str(e))
+            else:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
+
+        self.blockSignals(False)
+
+    def storage_to_form(self, dict_storage):
+        for form_key in self.form_fields:
+            for storage_key in dict_storage:
+                if form_key == storage_key:
+                    try:
+                        self.form_fields[form_key].set_value(dict_storage[form_key])
+                    except Exception as e:
+                        log.error("NonCopperClear.storage_to_form() --> %s" % str(e))
+                        pass
+
+    def form_to_storage(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        # row = self.ui.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+
+            for tooluid_key, tooluid_val in self.ncc_tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.blockSignals(True)
+
+        row = self.ui.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+        temp_tool_data = {}
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
+
+        # store all the data associated with the row parameter to the self.tools storage
+        # tooldia_item = float(self.ui.tools_table.item(row, 1).text())
+        # type_item = self.ui.tools_table.cellWidget(row, 2).currentText()
+        # operation_type_item = self.ui.tools_table.cellWidget(row, 4).currentText()
+        #
+        # nccoffset_item = self.ncc_choice_offset_cb.get_value()
+        # nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
+
+        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
+        # temp_tools = {}
+        # temp_dia = {}
+        # temp_data = {}
+        #
+        # for tooluid_key, tooluid_value in self.ncc_tools.items():
+        #     for key, value in tooluid_value.items():
+        #         if key == 'data':
+        #             # update the 'data' section
+        #             for data_key in tooluid_value[key].keys():
+        #                 for form_key, form_value in self.form_fields.items():
+        #                     if form_key == data_key:
+        #                         temp_data[data_key] = form_value.get_value()
+        #                 # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+        #                 # updated from self.app.defaults
+        #                 if data_key not in self.form_fields:
+        #                     temp_data[data_key] = value[data_key]
+        #             temp_dia[key] = deepcopy(temp_data)
+        #             temp_data.clear()
+        #
+        #         elif key == 'solid_geometry':
+        #             temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+        #         else:
+        #             temp_dia[key] = deepcopy(value)
+        #
+        #         temp_tools[tooluid_key] = deepcopy(temp_dia)
+        #
+        # self.ncc_tools.clear()
+        # self.ncc_tools = deepcopy(temp_tools)
+        # temp_tools.clear()
+
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
+
+        self.blockSignals(False)
 
     def rebuild_ui(self):
         # read the table tools uid

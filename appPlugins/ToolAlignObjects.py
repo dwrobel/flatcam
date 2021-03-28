@@ -44,12 +44,7 @@ class AlignObjects(AppTool):
         # #############################################################################
         self.ui = AlignUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-
-        # Signals
-        self.ui.align_object_button.clicked.connect(self.on_align)
-        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
-        self.ui.type_aligner_obj_radio.activated_custom.connect(self.on_type_aligner_changed)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.connect_signals_at_init()
 
         self.mr = None
 
@@ -75,6 +70,13 @@ class AlignObjects(AppTool):
         self.aligner_old_line_color = None
         self.aligned_old_fill_color = None
         self.aligned_old_line_color = None
+
+    def connect_signals_at_init(self):
+        # Signals
+        self.ui.align_object_button.clicked.connect(self.on_align)
+        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.ui.type_aligner_obj_radio.activated_custom.connect(self.on_type_aligner_changed)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolAlignObjects()")
@@ -125,6 +127,12 @@ class AlignObjects(AppTool):
         AppTool.install(self, icon, separator, shortcut='Alt+A', **kwargs)
 
     def set_tool_ui(self):
+
+        self.clear_ui(self.layout)
+        self.ui = AlignUI(layout=self.layout, app=self.app)
+        self.pluginName = self.ui.pluginName
+        self.connect_signals_at_init()
+
         self.reset_fields()
 
         self.clicked_points = []
