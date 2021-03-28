@@ -14,7 +14,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
 
         super(ToolsSubPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Substractor Tool Options")))
+        self.setTitle(str(_("Substractor Plugin")))
         self.decimals = decimals
 
         # ## Subtractor Tool Parameters

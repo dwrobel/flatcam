@@ -18,7 +18,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         super(ToolsDrillPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Drilling Tool Options")))
+        self.setTitle(str(_("Drilling Plugin")))
         self.decimals = decimals
 
         # ## Clear non-copper regions

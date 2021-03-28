@@ -18,7 +18,7 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-class Tools2PreferencesUI(QtWidgets.QWidget):
+class Plugins2PreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)

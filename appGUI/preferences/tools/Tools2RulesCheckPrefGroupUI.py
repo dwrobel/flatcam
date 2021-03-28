@@ -17,7 +17,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
         super(Tools2RulesCheckPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Check Rules Tool Options")))
+        self.setTitle(str(_("Check Rules Plugin")))
         self.decimals = decimals
 
         self.crlabel = FCLabel("<b>%s:</b>" % _("Parameters"))

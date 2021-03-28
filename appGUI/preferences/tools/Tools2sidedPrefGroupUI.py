@@ -14,10 +14,10 @@ if '_' not in builtins.__dict__:
 
 class Tools2sidedPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        # OptionsGroupUI.__init__(self, "2sided Tool Options", parent=parent)
+        # OptionsGroupUI.__init__(self, "2sided Plugin", parent=parent)
         super(Tools2sidedPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("2-Sided Tool Options")))
+        self.setTitle(str(_("2-Sided Plugin")))
         self.decimals = decimals
 
         # ## Board cuttout

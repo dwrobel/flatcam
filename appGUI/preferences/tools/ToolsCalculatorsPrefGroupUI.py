@@ -14,10 +14,10 @@ if '_' not in builtins.__dict__:
 
 class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        # OptionsGroupUI.__init__(self, "Calculators Tool Options", parent=parent)
+        # OptionsGroupUI.__init__(self, "Calculators Plugin", parent=parent)
         super(ToolsCalculatorsPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Calculators Tool Options")))
+        self.setTitle(str(_("Calculators Plugin")))
         self.decimals = decimals
 
         # ## V-shape Calculator Tool

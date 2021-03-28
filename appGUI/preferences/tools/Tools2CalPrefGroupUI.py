@@ -17,7 +17,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
 
         super(Tools2CalPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Calibration Tool Options")))
+        self.setTitle(str(_("Calibration Plugin")))
         self.decimals = decimals
 
         # ## Grid Layout

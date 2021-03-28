@@ -435,14 +435,14 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         :return: None
         """
         if self.excellon_units_radio.get_value().upper() == 'METRIC':
-            self.app.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+            self.app.ui.excellon_pref_form.excellon_exp_group.format_whole_entry.set_value(
                 self.excellon_format_upper_mm_entry.get_value())
-            self.app.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+            self.app.ui.excellon_pref_form.excellon_exp_group.format_dec_entry.set_value(
                 self.excellon_format_lower_mm_entry.get_value())
         else:
-            self.app.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+            self.app.ui.excellon_pref_form.excellon_exp_group.format_whole_entry.set_value(
                 self.excellon_format_upper_in_entry.get_value())
-            self.app.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+            self.app.ui.excellon_pref_form.excellon_exp_group.format_dec_entry.set_value(
                 self.excellon_format_lower_in_entry.get_value())
 
     def on_excellon_zeros_changed(self, val):
@@ -450,12 +450,12 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         Slot activated when the user changes the Excellon zeros values in Preferences -> Excellon -> Excellon General
         :return: None
         """
-        self.app.ui.excellon_defaults_form.excellon_exp_group.zeros_radio.set_value(val + 'Z')
+        self.app.ui.excellon_pref_form.excellon_exp_group.zeros_radio.set_value(val + 'Z')
 
     def on_excellon_units_changed(self, val):
         """
         Slot activated when the user changes the Excellon unit values in Preferences -> Excellon -> Excellon General
         :return: None
         """
-        self.app.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio.set_value(val)
+        self.app.ui.excellon_pref_form.excellon_exp_group.excellon_units_radio.set_value(val)
         self.on_excellon_format_changed()

@@ -14,10 +14,10 @@ if '_' not in builtins.__dict__:
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        # OptionsGroupUI.__init__(self, "NCC Tool Options", parent=parent)
+        # OptionsGroupUI.__init__(self, "NCC Plugin", parent=parent)
         super(ToolsNCCPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("NCC Tool Options")))
+        self.setTitle(str(_("NCC Plugin")))
         self.decimals = decimals
 
         # ## Clear non-copper regions

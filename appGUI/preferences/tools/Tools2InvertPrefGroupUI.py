@@ -17,7 +17,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
 
         super(Tools2InvertPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Invert Gerber Tool Options")))
+        self.setTitle(str(_("Invert Gerber Plugin")))
         self.decimals = decimals
 
         # ## Subtractor Tool Parameters

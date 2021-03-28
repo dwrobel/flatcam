@@ -17,7 +17,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         super(ToolsTransformPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Transform Tool Options")))
+        self.setTitle(str(_("Transform Plugin")))
         self.decimals = decimals
 
         # ## Transformations

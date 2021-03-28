@@ -17,7 +17,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
 
         super(Tools2OptimalPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Optimal Tool Options")))
+        self.setTitle(str(_("Optimal Plugin")))
         self.decimals = decimals
 
         # ## Parameters

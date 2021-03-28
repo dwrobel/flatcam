@@ -17,7 +17,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
 
         super(Tools2QRCodePrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("QRCode Tool Options")))
+        self.setTitle(str(_("QRCode Plugin")))
         self.decimals = decimals
 
         # ## Parameters

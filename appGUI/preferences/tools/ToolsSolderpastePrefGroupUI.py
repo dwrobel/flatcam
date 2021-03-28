@@ -17,7 +17,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
 
         super(ToolsSolderpastePrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("SolderPaste Tool Options")))
+        self.setTitle(str(_("SolderPaste Plugin")))
         self.decimals = decimals
 
         # ## Solder Paste Dispensing

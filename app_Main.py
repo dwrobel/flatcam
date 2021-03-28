@@ -987,27 +987,29 @@ class App(QtCore.QObject):
         for name in list(self.preprocessors.keys()):
             # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
             if name.partition('_')[0] == 'Paste':
-                self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
+                self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.addItem(name)
                 continue
 
-            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
+            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.addItem(name)
             # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
 
-            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
+            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
 
         # add ToolTips for the Preprocessor ComboBoxes in Preferences
-        for it in range(self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.count()):
-            self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
-        for it in range(self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.count()):
-            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.setItemData(
-                it, self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.itemText(it),
+        for it in range(self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.count()):
+            self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.setItemData(
+                it, self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+
+        for it in range(self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.count()):
+            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.setItemData(
+                it, self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.itemText(it),
                 QtCore.Qt.ToolTipRole)
-        for it in range(self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.count()):
-            self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.setItemData(
-                it, self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
+
+        for it in range(self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.count()):
+            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.setItemData(
+                it, self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
                 QtCore.Qt.ToolTipRole)
 
         # ###########################################################################################################
@@ -1023,7 +1025,7 @@ class App(QtCore.QObject):
         self.defaults.set_change_callback(self.on_defaults_dict_change)
 
         # set the value used in the Windows Title
-        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+        self.engine = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
 
         # ###########################################################################################################
         # ########################################## LOAD LANGUAGES  ################################################
@@ -1031,7 +1033,7 @@ class App(QtCore.QObject):
 
         self.languages = fcTranslate.load_languages()
         for name in sorted(self.languages.values()):
-            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
+            self.ui.general_pref_form.general_app_group.language_cb.addItem(name)
 
         # ###########################################################################################################
         # ####################################### APPLY APP LANGUAGE ################################################
@@ -1044,7 +1046,7 @@ class App(QtCore.QObject):
             self.log.debug("Could not find the Language files. The App strings are missing.")
         else:
             # make the current language the current selection on the language combobox
-            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
+            self.ui.general_pref_form.general_app_group.language_cb.setCurrentText(ret_val)
             self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
@@ -1267,7 +1269,7 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
+                self.ui.general_pref_form.general_app_group.version_check_cb.get_value() is True:
             self.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
@@ -1319,11 +1321,11 @@ class App(QtCore.QObject):
             # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
             # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
             if self.defaults['excellon_optimization_type'] in ['M', 'B']:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
+                self.ui.excellon_pref_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
             # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
             # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
             if self.defaults['geometry_optimization_type'] in ['M', 'B']:
-                self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio.set_value('R')
+                self.ui.geo_pref_form.geometry_gen_group.opt_algorithm_radio.set_value('R')
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################
@@ -1351,8 +1353,8 @@ class App(QtCore.QObject):
             self.on_layout(lay=initial_lay, connect_signals=False)
 
             # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+            idx = self.ui.general_pref_form.general_gui_group.layout_combo.findText(initial_lay)
+            self.ui.general_pref_form.general_gui_group.layout_combo.setCurrentIndex(idx)
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False
@@ -1448,27 +1450,27 @@ class App(QtCore.QObject):
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.ui.general_pref_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
         # ##################################### Workspace Setting Signals ###########################################
-        self.ui.general_defaults_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
+        self.ui.general_pref_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
             self.on_workspace_modified)
-        self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio.activated_custom.connect(
+        self.ui.general_pref_form.general_app_set_group.wk_orientation_radio.activated_custom.connect(
             self.on_workspace_modified
         )
 
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_pref_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
-        self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
+        self.ui.general_pref_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
 
         # portability changed signal
-        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+        self.ui.general_pref_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
 
         # Object list
         self.object_status_changed.connect(self.collection.on_collection_updated)
@@ -1480,52 +1482,52 @@ class App(QtCore.QObject):
         # ####################################### FILE ASSOCIATIONS SIGNALS #########################################
         # ###########################################################################################################
 
-        self.ui.util_defaults_form.fa_excellon_group.restore_btn.clicked.connect(
+        self.ui.util_pref_form.fa_excellon_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='excellon'))
-        self.ui.util_defaults_form.fa_gcode_group.restore_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gcode_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='gcode'))
-        self.ui.util_defaults_form.fa_gerber_group.restore_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gerber_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='gerber'))
 
-        self.ui.util_defaults_form.fa_excellon_group.del_all_btn.clicked.connect(
+        self.ui.util_pref_form.fa_excellon_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='excellon'))
-        self.ui.util_defaults_form.fa_gcode_group.del_all_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gcode_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='gcode'))
-        self.ui.util_defaults_form.fa_gerber_group.del_all_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gerber_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='gerber'))
 
-        self.ui.util_defaults_form.fa_excellon_group.add_btn.clicked.connect(
+        self.ui.util_pref_form.fa_excellon_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='excellon'))
-        self.ui.util_defaults_form.fa_gcode_group.add_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gcode_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='gcode'))
-        self.ui.util_defaults_form.fa_gerber_group.add_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gerber_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='gerber'))
 
-        self.ui.util_defaults_form.fa_excellon_group.del_btn.clicked.connect(
+        self.ui.util_pref_form.fa_excellon_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='excellon'))
-        self.ui.util_defaults_form.fa_gcode_group.del_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gcode_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='gcode'))
-        self.ui.util_defaults_form.fa_gerber_group.del_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gerber_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='gerber'))
 
         # connect the 'Apply' buttons from the Preferences/File Associations
-        self.ui.util_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
+        self.ui.util_pref_form.fa_excellon_group.exc_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='excellon'))
-        self.ui.util_defaults_form.fa_gcode_group.gco_list_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gcode_group.gco_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gcode'))
-        self.ui.util_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
+        self.ui.util_pref_form.fa_gerber_group.grb_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gerber'))
 
         # ###########################################################################################################
         # ########################################### KEYWORDS SIGNALS ##############################################
         # ###########################################################################################################
-        self.ui.util_defaults_form.kw_group.restore_btn.clicked.connect(
+        self.ui.util_pref_form.kw_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='keyword'))
-        self.ui.util_defaults_form.kw_group.del_all_btn.clicked.connect(
+        self.ui.util_pref_form.kw_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='keyword'))
-        self.ui.util_defaults_form.kw_group.add_btn.clicked.connect(
+        self.ui.util_pref_form.kw_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='keyword'))
-        self.ui.util_defaults_form.kw_group.del_btn.clicked.connect(
+        self.ui.util_pref_form.kw_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='keyword'))
 
         # ###########################################################################################################
@@ -1745,7 +1747,7 @@ class App(QtCore.QObject):
                 self.log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
                 self.preferencesUiManager.save_defaults()
             else:
-                exc_list = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
+                exc_list = self.ui.util_pref_form.fa_excellon_group.exc_list_text.get_value().split(',')
                 proc_arg = argument.lower()
                 for ext in exc_list:
                     proc_ext = ext.replace(' ', '')
@@ -1759,7 +1761,7 @@ class App(QtCore.QObject):
                             self.f_handlers.on_fileopenexcellon(name=file_name, signal=None)
                             return
 
-                gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
+                gco_list = self.ui.util_pref_form.fa_gcode_group.gco_list_text.get_value().split(',')
                 for ext in gco_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
@@ -1772,7 +1774,7 @@ class App(QtCore.QObject):
                             self.f_handlers.on_fileopengcode(name=file_name, signal=None)
                             return
 
-                grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
+                grb_list = self.ui.util_pref_form.fa_gerber_group.grb_list_text.get_value().split(',')
                 for ext in grb_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
@@ -2319,7 +2321,7 @@ class App(QtCore.QObject):
         if lay:
             current_layout = lay
         else:
-            current_layout = self.ui.general_defaults_form.general_gui_group.layout_combo.get_value()
+            current_layout = self.ui.general_pref_form.general_gui_group.layout_combo.get_value()
 
         lay_settings = QSettings("Open Source", "FlatCAM")
         lay_settings.setValue('layout', current_layout)
@@ -3810,23 +3812,23 @@ class App(QtCore.QObject):
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(
                 'language',
-                self.ui.general_defaults_form.general_app_group.language_cb.get_value()
+                self.ui.general_pref_form.general_app_group.language_cb.get_value()
             )
             stgs.setValue(
                 'notebook_font_size',
-                self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
+                self.ui.general_pref_form.general_app_set_group.notebook_font_size_spinner.get_value()
             )
             stgs.setValue(
                 'axis_font_size',
-                self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
+                self.ui.general_pref_form.general_app_set_group.axis_font_size_spinner.get_value()
             )
             stgs.setValue(
                 'textbox_font_size',
-                self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
+                self.ui.general_pref_form.general_app_set_group.textbox_font_size_spinner.get_value()
             )
             stgs.setValue(
                 'hud_font_size',
-                self.ui.general_defaults_form.general_app_set_group.hud_font_size_spinner.get_value()
+                self.ui.general_pref_form.general_app_set_group.hud_font_size_spinner.get_value()
             )
 
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
@@ -4004,7 +4006,7 @@ class App(QtCore.QObject):
 
         if obj_type is None or obj_type == 'excellon':
             exc_list = \
-                self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+                self.ui.util_pref_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             exc_list = [x for x in exc_list if x != '']
 
             # register all keys in the Preferences window
@@ -4025,7 +4027,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s' % _("Selected Excellon file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gcode':
-            gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            gco_list = self.ui.util_pref_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             gco_list = [x for x in gco_list if x != '']
 
             # register all keys in the Preferences window
@@ -4042,7 +4044,7 @@ class App(QtCore.QObject):
                              _("Selected GCode file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gerber':
-            grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            grb_list = self.ui.util_pref_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             grb_list = [x for x in grb_list if x != '']
 
             # register all keys in the Preferences window
@@ -4066,53 +4068,53 @@ class App(QtCore.QObject):
         """
 
         if ext_type == 'excellon':
-            new_ext = self.ui.util_defaults_form.fa_excellon_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_excellon_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
         if ext_type == 'gcode':
-            new_ext = self.ui.util_defaults_form.fa_gcode_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_gcode_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
         if ext_type == 'gerber':
-            new_ext = self.ui.util_defaults_form.fa_gerber_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_gerber_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
         if ext_type == 'keyword':
-            new_kw = self.ui.util_defaults_form.kw_group.kw_entry.get_value()
+            new_kw = self.ui.util_pref_form.kw_group.kw_entry.get_value()
             if new_kw == '':
                 return
 
-            old_val = self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             if new_kw in old_val:
                 return
             old_val.append(new_kw)
             old_val.sort()
-            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.kw_group.kw_list_text.set_value(', '.join(old_val))
 
             # update the self.myKeywords so the model is updated
             self.autocomplete_kw_list = \
-                self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+                self.ui.util_pref_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
             self.shell.command_line().set_model_data(self.myKeywords)
 
@@ -4124,53 +4126,53 @@ class App(QtCore.QObject):
         :return:
         """
         if ext_type == 'excellon':
-            new_ext = self.ui.util_defaults_form.fa_excellon_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_excellon_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
         if ext_type == 'gcode':
-            new_ext = self.ui.util_defaults_form.fa_gcode_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_gcode_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
         if ext_type == 'gerber':
-            new_ext = self.ui.util_defaults_form.fa_gerber_group.ext_entry.get_value()
+            new_ext = self.ui.util_pref_form.fa_gerber_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
         if ext_type == 'keyword':
-            new_kw = self.ui.util_defaults_form.kw_group.kw_entry.get_value()
+            new_kw = self.ui.util_pref_form.kw_group.kw_entry.get_value()
             if new_kw == '':
                 return
 
-            old_val = self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_pref_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             if new_kw not in old_val:
                 return
             old_val.remove(new_kw)
             old_val.sort()
-            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(old_val))
+            self.ui.util_pref_form.kw_group.kw_list_text.set_value(', '.join(old_val))
 
             # update the self.myKeywords so the model is updated
             self.autocomplete_kw_list = \
-                self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+                self.ui.util_pref_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
             self.shell.command_line().set_model_data(self.myKeywords)
 
@@ -4191,13 +4193,13 @@ class App(QtCore.QObject):
                 new_exc_list.remove('txt')
             except ValueError:
                 pass
-            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(new_exc_list))
+            self.ui.util_pref_form.fa_excellon_group.exc_list_text.set_value(', '.join(new_exc_list))
         if ext_type == 'gcode':
-            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(self.gcode_list))
+            self.ui.util_pref_form.fa_gcode_group.gco_list_text.set_value(', '.join(self.gcode_list))
         if ext_type == 'gerber':
-            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(self.grb_list))
+            self.ui.util_pref_form.fa_gerber_group.grb_list_text.set_value(', '.join(self.grb_list))
         if ext_type == 'keyword':
-            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(self.default_keywords))
+            self.ui.util_pref_form.kw_group.kw_list_text.set_value(', '.join(self.default_keywords))
 
             # update the self.myKeywords so the model is updated
             self.autocomplete_kw_list = self.default_keywords
@@ -4213,13 +4215,13 @@ class App(QtCore.QObject):
         """
 
         if ext_type == 'excellon':
-            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value('')
+            self.ui.util_pref_form.fa_excellon_group.exc_list_text.set_value('')
         if ext_type == 'gcode':
-            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value('')
+            self.ui.util_pref_form.fa_gcode_group.gco_list_text.set_value('')
         if ext_type == 'gerber':
-            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value('')
+            self.ui.util_pref_form.fa_gerber_group.grb_list_text.set_value('')
         if ext_type == 'keyword':
-            self.ui.util_defaults_form.kw_group.kw_list_text.set_value('')
+            self.ui.util_pref_form.kw_group.kw_list_text.set_value('')
 
             # update the self.myKeywords so the model is updated
             self.myKeywords = self.tcl_commands_list + self.tcl_keywords
@@ -4439,18 +4441,18 @@ class App(QtCore.QObject):
 
     def on_toggle_units_click(self):
         try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+            self.ui.general_pref_form.general_app_group.units_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
         if self.defaults["units"] == 'MM':
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+            self.ui.general_pref_form.general_app_group.units_radio.set_value("IN")
         else:
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+            self.ui.general_pref_form.general_app_group.units_radio.set_value("MM")
 
         self.on_toggle_units(no_pref=True)
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.ui.general_pref_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
     def scale_defaults(self, sfactor, dimensions):
@@ -4523,7 +4525,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        new_units = self.ui.general_pref_form.general_app_group.units_radio.get_value().upper()
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
@@ -4708,9 +4710,9 @@ class App(QtCore.QObject):
             # Undo toggling
             self.toggle_units_ignore = True
             if self.defaults['units'].upper() == 'MM':
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('IN')
+                self.ui.general_pref_form.general_app_group.units_radio.set_value('IN')
             else:
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
+                self.ui.general_pref_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
 
             # store the grid values so they are not changed in the next step
@@ -4741,7 +4743,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
+        if self.ui.general_pref_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
             self.inform[str, bool].emit(_("Workspace enabled."), False)
         else:
@@ -4751,14 +4753,14 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value() else True
+        state = False if self.ui.general_pref_form.general_app_set_group.workspace_cb.get_value() else True
         try:
-            self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
+            self.ui.general_pref_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
 
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_pref_form.general_app_set_group.workspace_cb.set_value(state)
+        self.ui.general_pref_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_cursor_type(self, val):
@@ -4770,12 +4772,12 @@ class App(QtCore.QObject):
         self.app_cursor.enabled = False
 
         if val == 'small':
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(False)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
+            self.ui.general_pref_form.general_app_set_group.cursor_size_entry.setDisabled(False)
+            self.ui.general_pref_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(True)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
+            self.ui.general_pref_form.general_app_set_group.cursor_size_entry.setDisabled(True)
+            self.ui.general_pref_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
@@ -8161,7 +8163,7 @@ class App(QtCore.QObject):
 
         self.log.debug("version_check()")
 
-        if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
+        if self.ui.general_pref_form.general_app_group.send_stats_cb.get_value() is True:
             full_url = "%s?s=%s&v=%s&os=%s&%s" % (
                 App.version_url,
                 str(self.defaults['global_serial']),
@@ -8506,9 +8508,9 @@ class App(QtCore.QObject):
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
                 alpha_level = str(hex(
-                    self.ui.excellon_defaults_form.excellon_gen_group.excellon_alpha_entry.get_value())[2:])
+                    self.ui.excellon_pref_form.excellon_gen_group.excellon_alpha_entry.get_value())[2:])
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.gerber_alpha_entry.get_value())[2:])
+                alpha_level = str(hex(self.ui.gerber_pref_form.gerber_gen_group.gerber_alpha_entry.get_value())[2:])
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:

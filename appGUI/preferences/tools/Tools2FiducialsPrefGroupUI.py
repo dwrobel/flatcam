@@ -17,7 +17,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
 
         super(Tools2FiducialsPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Fiducials Tool Options")))
+        self.setTitle(str(_("Fiducials Plugin")))
         self.decimals = decimals
 
         # ## Grid Layout

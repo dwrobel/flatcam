@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - upgraded all the plugins such that at each launch the Plugin UI is reinitialized reducing the chances to get errors like "wrapped up C++ object deleted" with the side effect that the performance might be slightly reduced
 - minor logging changes
+- created a new category in Preferences where only the Engraving Related preferences are located
+- added a new set of options in the Preferences for the Milling Plugin by taking them out of the Geometry section
 
 22.03.2021
 

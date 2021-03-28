@@ -6770,7 +6770,7 @@ class CNCjob(Geometry):
         :return:                    None
         :rtype:
         """
-        # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        # units = self.app.ui.general_pref_form.general_app_group.units_radio.get_value().upper()
 
         if color is None:
             color = {

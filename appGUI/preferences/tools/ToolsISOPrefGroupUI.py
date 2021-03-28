@@ -17,7 +17,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         super(ToolsISOPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Isolation Tool Options")))
+        self.setTitle(str(_("Isolation Plugin")))
         self.decimals = decimals
 
         # ## Clear non-copper regions

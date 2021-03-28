@@ -14,10 +14,10 @@ if '_' not in builtins.__dict__:
 
 class ToolsFilmPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsFilmPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Film Tool Options")))
+        self.setTitle(str(_("Film Plugin")))
         self.decimals = decimals
 
         # ## Parameters

@@ -26,8 +26,10 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
 
-from appGUI.preferences.tools.Tools2PreferencesUI import Tools2PreferencesUI
-from appGUI.preferences.tools.ToolsPreferencesUI import ToolsPreferencesUI
+from appGUI.preferences.tools.PluginsPreferencesUI import PluginsPreferencesUI
+from appGUI.preferences.tools.Plugins2PreferencesUI import Plugins2PreferencesUI
+from appGUI.preferences.tools.PluginsEngravingPreferencesUI import PluginsEngravingPreferencesUI
+
 from appGUI.preferences.utilities.UtilPreferencesUI import UtilPreferencesUI
 from appObjects.ObjectCollection import KeySensitiveListView
 
@@ -1539,8 +1541,17 @@ class MainGUI(QtWidgets.QMainWindow):
         self.cncjob_scroll_area = QtWidgets.QScrollArea()
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
+        self.plugins_eng_tab = QtWidgets.QWidget()
+        self.pref_tab_area.addTab(self.plugins_eng_tab, '%s' % _("Engraving").upper())
+        self.plugins_eng_tab_lay = QtWidgets.QVBoxLayout()
+        self.plugins_eng_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.plugins_eng_tab.setLayout(self.plugins_eng_tab_lay)
+
+        self.plugins_engraving_scroll_area = QtWidgets.QScrollArea()
+        self.plugins_eng_tab_lay.addWidget(self.plugins_engraving_scroll_area)
+
         self.tools_tab = QtWidgets.QWidget()
-        self.pref_tab_area.addTab(self.tools_tab, '%s' % _("Plugins").upper())
+        self.pref_tab_area.addTab(self.tools_tab, '%s' % _("Processing").upper())
         self.tools_tab_lay = QtWidgets.QVBoxLayout()
         self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools_tab.setLayout(self.tools_tab_lay)
@@ -1549,7 +1560,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
         self.tools2_tab = QtWidgets.QWidget()
-        self.pref_tab_area.addTab(self.tools2_tab, '%s %s' % (_("Plugins").upper(), str(2)))
+        self.pref_tab_area.addTab(self.tools2_tab, '%s' % _("Extra Plugins").upper())
         self.tools2_tab_lay = QtWidgets.QVBoxLayout()
         self.tools2_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools2_tab.setLayout(self.tools2_tab_lay)
@@ -1855,14 +1866,16 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-        self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
-        self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
-        self.excellon_defaults_form = ExcellonPreferencesUI(decimals=self.decimals)
-        self.geometry_defaults_form = GeometryPreferencesUI(decimals=self.decimals)
-        self.cncjob_defaults_form = CNCJobPreferencesUI(decimals=self.decimals)
-        self.tools_defaults_form = ToolsPreferencesUI(decimals=self.decimals)
-        self.tools2_defaults_form = Tools2PreferencesUI(decimals=self.decimals)
-        self.util_defaults_form = UtilPreferencesUI(decimals=self.decimals)
+        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals)
+        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals)
+        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals)
+        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals)
+        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals)
+        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals)
+        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals)
+        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals)
+
+        self.util_pref_form = UtilPreferencesUI(decimals=self.decimals)
 
         QtCore.QCoreApplication.instance().installEventFilter(self)
 
@@ -2989,9 +3002,9 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Change Units
                 if key == QtCore.Qt.Key_Q:
                     # if self.app.defaults["units"] == 'MM':
-                    #     self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+                    #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("IN")
                     # else:
-                    #     self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+                    #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("MM")
                     # self.app.on_toggle_units(no_pref=True)
                     self.app.on_toggle_units_click()
 
@@ -3765,7 +3778,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key_T or key == 'T':
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
-                        self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
+                        self.units = self.general_pref_form.general_app_group.units_radio.get_value().upper()
                         tool_add_popup = FCInputDoubleSpinner(title='%s ...' % _("New Tool"),
                                                               text='%s:' % _('Enter a Tool Diameter'),
                                                               min=0.0000, max=99.9999, decimals=self.decimals)

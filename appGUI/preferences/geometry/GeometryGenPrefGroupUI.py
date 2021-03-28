@@ -60,22 +60,6 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_label, 1, 0)
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
-        # Tools
-        self.tools_label = FCLabel("<b>%s:</b>" % _("Tools"))
-        grid0.addWidget(self.tools_label, 2, 0, 1, 2)
-
-        # Tooldia
-        tdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
-        tdlabel.setToolTip(
-            _("Diameters of the tools, separated by comma.\n"
-              "The value of the diameter has to use the dot decimals separator.\n"
-              "Valid values: 0.3, 1.0")
-        )
-        self.cnctooldia_entry = FCEntry()
-
-        grid0.addWidget(tdlabel, 3, 0)
-        grid0.addWidget(self.cnctooldia_entry, 3, 1)
-
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)

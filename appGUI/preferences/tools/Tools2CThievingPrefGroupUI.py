@@ -17,7 +17,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
 
         super(Tools2CThievingPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("Copper Thieving Tool Options")))
+        self.setTitle(str(_("Copper Thieving Plugin")))
         self.decimals = decimals
 
         # ## Grid Layout
