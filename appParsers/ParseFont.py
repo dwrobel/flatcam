@@ -15,9 +15,8 @@ import os
 import sys
 import glob
 
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
 from shapely.affinity import translate, scale
-from shapely.geometry import MultiPolygon
 
 import freetype as ft
 from fontTools import ttLib
@@ -351,4 +350,15 @@ class ParseFont:
             else:
                 scaled_path.append(scale(item, 0.00031570066, 0.00031570066, origin=(coordx, coordy)))
 
-        return MultiPolygon(scaled_path)
+        # determine if some polygons are completely inside the other
+        interiors = []
+        for idx, poly in enumerate(scaled_path):
+            try:
+                if scaled_path[idx + 1].within(poly):
+                    interiors.append(scaled_path[idx + 1])
+            except IndexError:
+                break
+
+        ret_geo = MultiPolygon([x for x in scaled_path if x not in interiors]).difference(MultiPolygon(interiors))
+
+        return ret_geo
