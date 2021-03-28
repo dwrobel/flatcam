@@ -530,7 +530,7 @@ class ToolSub(AppTool):
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
             self.new_tools[tool] = {}
-            for key, v in self.target_geo_obj.tools[tool]:
+            for key, v in self.target_geo_obj.tools[tool].items():
                 self.new_tools[tool][key] = [] if key == 'solid_geometry' else deepcopy(v)
 
         # add the promises
