@@ -1986,36 +1986,6 @@ class ToolMilling(AppTool, Excellon):
 
         return [str(x.text()) for x in self.ui.tools_table.selectedItems()]
 
-    def get_selected_tools_table_items(self):
-        """
-        Returns a list of lists, each list in the list is made out of row elements
-
-        :return:    List of table_tools items.
-        :rtype:     list
-        """
-        table_tools_items = []
-        for x in self.ui.geo_tools_table.selectedItems():
-            # from the columnCount we subtract a value of 1 which represent the last column (plot column)
-            # which does not have text
-            txt = ''
-            elem = []
-
-            for column in range(0, self.ui.geo_tools_table.columnCount() - 1):
-                try:
-                    txt = self.ui.geo_tools_table.item(x.row(), column).text()
-                except AttributeError:
-                    try:
-                        txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
-                    except AttributeError:
-                        pass
-                elem.append(txt)
-            table_tools_items.append(deepcopy(elem))
-            # table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
-            #                           for column in range(0, self.ui.tools_table.columnCount() - 1)])
-        for item in table_tools_items:
-            item[0] = str(item[0])
-        return table_tools_items
-
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
@@ -2757,101 +2727,6 @@ class ToolMilling(AppTool, Excellon):
 
         return True, ""
 
-    def on_polish(self):
-
-        def job_thread(obj):
-            with obj.app.proc_container.new('%s...' % _("Working")):
-                tooldia = obj.ui.polish_dia_entry.get_value()
-                depth = obj.ui.polish_pressure_entry.get_value()
-                travelz = obj.ui.polish_travelz_entry.get_value()
-                margin = obj.ui.polish_margin_entry.get_value()
-                overlap = obj.ui.polish_over_entry.get_value() / 100
-                paint_method = obj.ui.polish_method_combo.get_value()
-
-                # calculate the max uid form the keys of the self.tools
-                max_uid = max(list(obj.tools.keys()))
-                new_uid = max_uid + 1
-
-                # add a new key in the dict
-                new_data = deepcopy(obj.default_data)
-                new_data["travelz"] = travelz
-                new_data["cutz"] = depth
-                new_dict = {
-                    new_uid: {
-                        'tooldia': obj.app.dec_format(float(tooldia), obj.decimals),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Polish'),
-                        'tool_type': 'C1',
-                        'data': new_data,
-                        'solid_geometry': []
-                    }
-                }
-                obj.tools.update(new_dict)
-                obj.sel_tools.update(new_dict)
-
-                # make a box polygon out of the bounds of the current object
-                # apply the margin
-                xmin, ymin, xmax, ymax = obj.bounds()
-                bbox = box(xmin-margin, ymin-margin, xmax+margin, ymax+margin)
-
-                # paint the box
-                try:
-                    # provide the app with a way to process the GUI events when in a blocking loop
-                    QtWidgets.QApplication.processEvents()
-                    if self.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise grace
-
-                    # Type(cpoly) == FlatCAMRTreeStorage | None
-                    cpoly = None
-                    if paint_method == 0:       # Standard
-                        cpoly = self.clear_polygon(bbox,
-                                                   tooldia=tooldia,
-                                                   steps_per_circle=obj.circle_steps,
-                                                   overlap=overlap,
-                                                   contour=True,
-                                                   connect=True,
-                                                   prog_plot=False)
-                    elif paint_method == 1:     # Seed
-                        cpoly = self.clear_polygon2(bbox,
-                                                    tooldia=tooldia,
-                                                    steps_per_circle=obj.circle_steps,
-                                                    overlap=overlap,
-                                                    contour=True,
-                                                    connect=True,
-                                                    prog_plot=False)
-                    elif paint_method == 2:     # Lines
-                        cpoly = self.clear_polygon3(bbox,
-                                                    tooldia=tooldia,
-                                                    steps_per_circle=obj.circle_steps,
-                                                    overlap=overlap,
-                                                    contour=True,
-                                                    connect=True,
-                                                    prog_plot=False)
-
-                    if not cpoly or not cpoly.objects:
-                        obj.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
-                        return
-
-                    paint_geo = [g for g in cpoly.get_objects() if g and not g.is_empty]
-                except grace:
-                    return "fail"
-                except Exception as e:
-                    self.app.log.error("Could not Paint the polygons. %s" % str(e))
-                    mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different method of Paint"), str(e))
-                    self.app.inform.emit(mssg)
-                    return
-
-                obj.sel_tools[new_uid]['solid_geometry'] = paint_geo
-
-                # and now create the CNCJob
-                obj.launch_job.emit()
-
-        # Send to worker
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
-
     def on_generate_cncjob_click(self):
         self.app.delete_selection_shape()
 
@@ -2961,7 +2836,6 @@ class ToolMilling(AppTool, Excellon):
         outname = "%s_%s" % (self.target_obj.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()
         segx = segx if segx is not None else float(self.target_obj.options['segx'])
         segy = segy if segy is not None else float(self.target_obj.options['segy'])
 
@@ -3181,6 +3055,71 @@ class ToolMilling(AppTool, Excellon):
                 if "optimization_type" not in tools_dict[tooluid_key]['data']:
                     def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
+
+                job_type = tools_dict[tooluid_key]['data']['tools_mill_job_type']
+                if job_type == 3:   # Polishing
+                    self.app.log.debug("Painting the polished area ...")
+
+                    margin = tools_dict[tooluid_key]['data']['tools_mill_polish_margin']
+                    overlap = tools_dict[tooluid_key]['data']['tools_mill_polish_overlap'] / 100
+                    paint_method = tools_dict[tooluid_key]['data']['tools_mill_polish_method']
+
+                    # create the Paint geometry for this tool
+                    bbox = box(xmin-margin, ymin-margin, xmax+margin, ymax+margin)
+                    print(bbox.wkt)
+                    print(margin, overlap, paint_method)
+
+                    # paint the box
+                    try:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        QtWidgets.QApplication.processEvents()
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        # Type(cpoly) == FlatCAMRTreeStorage | None
+                        cpoly = None
+                        if paint_method == 0:  # Standard
+                            cpoly = self.clear_polygon(bbox,
+                                                       tooldia=tooldia_val,
+                                                       steps_per_circle=self.circle_steps,
+                                                       overlap=overlap,
+                                                       contour=True,
+                                                       connect=True,
+                                                       prog_plot=False)
+                        elif paint_method == 1:  # Seed
+                            cpoly = self.clear_polygon2(bbox,
+                                                        tooldia=tooldia_val,
+                                                        steps_per_circle=self.circle_steps,
+                                                        overlap=overlap,
+                                                        contour=True,
+                                                        connect=True,
+                                                        prog_plot=False)
+                        elif paint_method == 2:  # Lines
+                            cpoly = self.clear_polygon3(bbox,
+                                                        tooldia=tooldia_val,
+                                                        steps_per_circle=self.circle_steps,
+                                                        overlap=overlap,
+                                                        contour=True,
+                                                        connect=True,
+                                                        prog_plot=False)
+
+                        if not cpoly or not cpoly.objects:
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
+                            return
+
+                        paint_geo = [g for g in cpoly.get_objects() if g and not g.is_empty]
+                    except grace:
+                        return "fail"
+                    except Exception as e:
+                        self.app.log.error("Could not Paint the polygons. %s" % str(e))
+                        mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
+                                                     "Or a different method of Paint"), str(e))
+                        self.app.inform.emit(mssg)
+                        return
+
+                    tools_dict[tooluid_key]['solid_geometry'] = paint_geo
+                    self.app.log.debug("Finished painting the polished area ...")
 
                 # #####################################################################################################
                 # ############################ COMMON Parameters ######################################################
