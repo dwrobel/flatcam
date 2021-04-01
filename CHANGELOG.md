@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.04.2021
+
+- fixed bug in the Drilling Tool when there are tools without drill points
+
 29.03.2021
 
 - Milling Plugin - finished the polish functionality

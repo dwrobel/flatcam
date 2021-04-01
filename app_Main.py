@@ -6533,6 +6533,17 @@ class App(QtCore.QObject):
             self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
             self.ui.notebook.removeTab(2)
 
+        # HACK: the content was removed but let's create it again
+        self.ui.plugin_tab = QtWidgets.QWidget()
+        self.ui.plugin_tab.setObjectName("plugin_tab")
+        self.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.ui.plugin_tab)
+        self.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.notebook.addTab(self.plugin_tab, _("Tool"))
+
+        self.ui.plugin_scroll_area = VerticalScrollArea()
+        # self.plugin_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.ui.plugin_tab_layout.addWidget(self.ui.plugin_scroll_area)
+
     # def on_close_notebook_tab(self):
         # self.tool_shapes.clear(update=True)
 

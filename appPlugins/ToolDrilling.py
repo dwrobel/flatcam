@@ -1828,6 +1828,7 @@ class ToolDrilling(AppTool, Excellon):
                             points[tool_key].append(drill_pt)
                         except KeyError:
                             points[tool_key] = [drill_pt]
+
         log.debug("Found %d TOOLS with drills." % len(points))
 
         # #############################################################################################################
@@ -2081,7 +2082,8 @@ class ToolDrilling(AppTool, Excellon):
             if toolchange is False:
                 tool_points = []
                 for tool in sel_tools:
-                    tool_points += points[tool]
+                    if tool in points:
+                        tool_points += points[tool]
 
                 # use the first tool in the selection as the tool that we are going to use
                 used_tool = sel_tools[0]
@@ -2117,7 +2119,9 @@ class ToolDrilling(AppTool, Excellon):
             # ####################### TOOLCHANGE ACTIVE ######################################################
             else:
                 for tool_id in sel_tools:
-                    tool_points = points[tool_id]
+                    tool_points = []
+                    if tool_id in points:
+                        tool_points = points[tool_id]
                     used_tooldia = self.excellon_tools[tool_id]['tooldia']
 
                     # those are used by the preprocessors to display data on the toolchange line
@@ -2127,7 +2131,7 @@ class ToolDrilling(AppTool, Excellon):
                     # if slots are converted to drill for this tool, update the number of drills and make slots nr zero
                     convert_slots = self.excellon_tools[tool_id]['data']['tools_drill_drill_slots']
                     if convert_slots is True:
-                        nr_drills = len(points[tool_id])
+                        nr_drills = len(tool_points)
                         nr_slots = 0
                         job_obj.tools[used_tooldia]['nr_drills'] = nr_drills
                         job_obj.tools[used_tooldia]['nr_slots'] = nr_slots
@@ -2137,6 +2141,10 @@ class ToolDrilling(AppTool, Excellon):
                     # for the last tool we add other GCode (the end code, what is happening at the end of the job)
                     is_last_tool = True if tool_id == sel_tools[-1] else False
                     is_first_tool = True if tool_id == sel_tools[0] else False
+
+                    if not tool_points:
+                        self.app.log.debug("%s" % "Tool has no drill points. Skipping.")
+                        continue
 
                     # Generate Gcode for the current tool
                     tool_gcode, last_pt, start_gcode = job_obj.excellon_tool_gcode_gen(tool_id, tool_points,
