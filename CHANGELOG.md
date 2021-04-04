@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.04.2021
+
+- now every version of FlatCAM beta creates it's own set of Preferences files
+
 4.04.2021
 
 - fixed drill file import from FreePCB

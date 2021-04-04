@@ -525,6 +525,7 @@ class App(QtCore.QObject):
 
         # create tools_db.FlatDB file if there is none
         db_path = self.tools_database_path()
+
         try:
             f = open(db_path)
             f.close()
@@ -588,7 +589,8 @@ class App(QtCore.QObject):
         # ############################################################################################################
         self.defaults = FlatCAMDefaults(beta=self.beta, version=self.version)
 
-        current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
+        # current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
+        current_defaults_path = self.defaults_path()
         if user_defaults:
             self.defaults.load(filename=current_defaults_path, inform=self.inform)
 
@@ -1798,13 +1800,13 @@ class App(QtCore.QObject):
         #         sys.exit(2)
 
     def tools_database_path(self):
-        return os.path.join(self.data_path, 'tools_db.FlatDB')
+        return os.path.join(self.data_path, 'tools_db_%s.FlatDB' % str(self.version))
 
     def defaults_path(self):
-        return os.path.join(self.data_path, 'current_defaults.FlatConfig')
+        return os.path.join(self.data_path, 'current_defaults_%s.FlatConfig' % str(self.version))
 
     def factory_defaults_path(self):
-        return os.path.join(self.data_path, 'factory_defaults.FlatConfig')
+        return os.path.join(self.data_path, 'factory_defaults_%s.FlatConfig' % str(self.version))
 
     def recent_files_path(self):
         return os.path.join(self.data_path, 'recent.json')
@@ -9600,8 +9602,9 @@ class MenuFileHandlers(QtCore.QObject):
         # Clear project filename
         self.app.project_filename = None
 
+        default_file = self.app.defaults_path()
         # Load the application defaults
-        self.defaults.load(filename=os.path.join(self.app.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
+        self.defaults.load(filename=default_file, inform=self.inform)
 
         # Re-fresh project options
         self.app.on_options_app2project()

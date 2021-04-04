@@ -1004,7 +1004,9 @@ class PreferencesUIManager:
 
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
+            self.defaults.load(filename=os.path.join(self.data_path,
+                                                     'current_defaults_%s.FlatConfig' % self.defaults.version),
+                               inform=self.inform)
 
         settgs = QSettings("Open Source", "FlatCAM")
 
@@ -1102,7 +1104,8 @@ class PreferencesUIManager:
             self.save_toolbar_view()
 
         # Save the options to disk
-        filename = os.path.join(data_path, "current_defaults.FlatConfig")
+        filename = os.path.join(data_path, "current_defaults_%s.FlatConfig" % self.defaults.version)
+
         try:
             self.defaults.write(filename=filename)
         except Exception as e:
