@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.04.2021
+
+- fixed drill file import from FreePCB
+
 1.04.2021
 
 - fixed bug in the Drilling Tool when there are tools without drill points

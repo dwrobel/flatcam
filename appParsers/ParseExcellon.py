@@ -327,17 +327,20 @@ class Excellon(Geometry):
                                 self.tools[name_tool] = {}
                             if line_units == 'MILS':
                                 spec = {
-                                    'tooldia':  (float(match.group(2)) / 1000)
+                                    'tooldia':  (float(match.group(2)) / 1000),
+                                    'solid_geometry': []
                                 }
                                 self.tools[name_tool]['tooldia'] = (float(match.group(2)) / 1000)
                                 self.app.log.debug("Tool definition: %d %s" % (name_tool, spec))
                             else:
                                 spec = {
-                                    'tooldia': float(match.group(2))
+                                    'tooldia': float(match.group(2)),
+                                    'solid_geometry': []
                                 }
                                 self.tools[name_tool]['tooldia'] = float(match.group(2))
                                 self.app.log.debug("Tool definition: %d %s" % (name_tool, spec))
-                            spec['solid_geometry'] = []
+
+                            self.tools[name_tool]['solid_geometry'] = []
                             continue
                     # search for Altium Excellon Format / Sprint Layout who is included as a comment
                     match = self.altium_format.search(eline)
@@ -881,6 +884,7 @@ class Excellon(Geometry):
                         self.app.log.warning("UNITS found inline - Value before conversion: %s" % self.units)
                         self.convert_units(self.units)
                         self.app.log.warning("UNITS found inline - Value after conversion: %s" % self.units)
+
                         if self.units == 'MM':
                             self.app.log.warning("Excellon format preset is: %s:%s" %
                                         (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
