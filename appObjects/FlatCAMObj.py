@@ -148,6 +148,11 @@ class FlatCAMObj(QtCore.QObject):
 
             if attr == 'options':
                 self.options.update(d[attr])
+            elif attr == 'tools':
+	        #FIXME: JSON stringifies all keys however tools datastructure is indexed by integer not by string
+                if(d[attr] != None):
+                    d[attr] = {int(k):v for k,v in d[attr].items()}
+                setattr(self, attr, d[attr])
             else:
                 try:
                     setattr(self, attr, d[attr])
@@ -780,7 +785,7 @@ class FlatCAMObj(QtCore.QObject):
                     exc_tool,
                     [
                         _('Diameter'),
-                        '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
+                        '%.*f %s' % (self.decimals, float(tool_dia), self.app.defaults['units'].lower())
                     ],
                     True
                 )
