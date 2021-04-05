@@ -965,7 +965,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             tools = self.get_selected_tools_list()
 
         if outname is None:
-            outname = self.options["name"] + "_mill"
+            outname = self.options["name"] + "_slot"
 
         if tooldia is None:
             tooldia = float(self.options["slot_tooldia"])
@@ -1039,7 +1039,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         if use_thread:
             def geo_thread(a_obj):
-                a_obj.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
+                a_obj.app_obj.new_object("geometry", outname, geo_init, plot=plot)
 
             # Create a promise with the new name
             self.app.collection.promise(outname)
@@ -1047,7 +1047,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
+            self.app.app_obj.new_object("geometry", outname, geo_init, plot=plot)
 
         return True, ""
 
