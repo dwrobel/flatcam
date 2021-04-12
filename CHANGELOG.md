@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.04.2021
+
+- small string change
+
 5.04.2021
 
 - now every version of FlatCAM beta creates it's own set of Preferences files

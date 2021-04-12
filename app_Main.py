@@ -4941,7 +4941,8 @@ class App(QtCore.QObject):
                                 obj_active.probing_shapes.clear(update=True)
                             except AttributeError as e:
                                 self.log.debug(
-                                    "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
+                                    "App.on_delete() --> CNCJob object: %s. %s" % (str(obj_active.options['name']),
+                                                                                   str(e))
                                 )
 
                     for ob in self.collection.get_selected():
