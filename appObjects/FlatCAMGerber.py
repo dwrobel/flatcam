@@ -271,7 +271,7 @@ class GerberObject(FlatCAMObj, Gerber):
             self.ui.apertures_table.setRowCount(n)
 
             for ap_code in sorted_apertures:
-                ap_code = str(ap_code)
+                # ap_code = str(ap_code)
 
                 # ------------------------ Aperture ID ----------------------------------------------------------------
                 ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
@@ -279,7 +279,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
                 # ------------------------ Aperture CODE --------------------------------------------------------------
-                ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+                ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
                 ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
                 # ------------------------ Aperture TYPE --------------------------------------------------------------
@@ -1120,7 +1120,8 @@ class GerberObject(FlatCAMObj, Gerber):
     def clear_plot_apertures(self, aperture='all'):
         """
 
-        :param aperture: string; aperture for which to clear the mark shapes
+        :param aperture: aperture for which to clear the mark shapes
+        :type aperture: str, int
         :return:
         """
 
@@ -1161,7 +1162,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.marked_rows[:] = []
 
         try:
-            aperture = self.ui.apertures_table.item(cw_row, 1).text()
+            aperture = int(self.ui.apertures_table.item(cw_row, 1).text())
         except AttributeError:
             self.ui_connect()
             return

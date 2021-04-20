@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.04.2021
+
+- fixed a recent but in Gerber Object that crashed the application when the aperture marking was used
+
 12.04.2021
 
 - small string change
