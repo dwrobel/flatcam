@@ -183,6 +183,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui_disconnect()
 
         FlatCAMObj.build_ui(self)
+        self.app.log.debug("CNCJobObject.build_ui()")
+
         self.units = self.app.defaults['units'].upper()
 
         # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
@@ -204,10 +206,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # for the case when self.tools is empty: it can happen for old projects who stored the data elsewhere
         if not self.tools:
-            return
-
-        n = len(self.tools)
-        self.ui.cnc_tools_table.setRowCount(n)
+            self.ui.cnc_tools_table.setRowCount(1)
+        else:
+            n = len(self.tools)
+            self.ui.cnc_tools_table.setRowCount(n)
 
         for dia_key, dia_value in self.tools.items():
 
@@ -562,9 +564,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
-            self.ui.cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+            try:
+                self.ui.cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+            except AttributeError:
+                pass
         for row in range(self.ui.exc_cnc_tools_table.rowCount()):
-            self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+            try:
+                self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+            except AttributeError:
+                pass
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
     def ui_disconnect(self):
@@ -609,14 +617,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         and plots the object.
         """
         self.read_form()
-        self.on_plot_kind_change()
+        self.on_plot_kind_change(dia=self.ui.tooldia_entry.get_value())
 
-    def on_plot_kind_change(self):
+    def on_plot_kind_change(self, dia=None):
         kind = self.ui.cncplot_method_combo.get_value()
 
         def worker_task():
             with self.app.proc_container.new('%s ...' % _("Plotting")):
-                self.plot(kind=kind)
+                self.plot(kind=kind, dia=dia)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
@@ -933,7 +941,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 first_key = list(self.tools.keys())[0]
                 include_header = self.app.preprocessors[self.tools[first_key]['data']['tools_mill_ppname_g']]
                 include_header = include_header.include_header
-            except TypeError:
+            except (TypeError, IndexError):
                 include_header = self.app.preprocessors['default'].include_header
 
         # if this dict is not empty then the object is an Excellon object
@@ -1241,13 +1249,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
 
-    def plot(self, visible=None, kind='all'):
+    def plot(self, visible=None, kind='all', dia=None):
         """
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
 
         :param visible: Boolean to decide if the object will be plotted as visible or disabled on canvas
         :param kind:    String. Can be "all" or "travel" or "cut". For CNCJob plotting
+        :param dia:     The diameter used to render the tool paths
         :return:        None
         """
         if not FlatCAMObj.plot(self):
@@ -1258,18 +1267,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Geometry shapes plotting
         try:
             if self.multitool is False:  # single tool usage
-                if self.options['type'].lower() == "excellon":
-                    try:
-                        dia_plot = float(self.options["tooldia"])
-                    except ValueError:
-                        # we may have a tuple with only one element and a comma
-                        dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
-                else:
-                    try:
-                        dia_plot = float(self.options["tools_mill_tooldia"])
-                    except ValueError:
-                        # we may have a tuple with only one element and a comma
-                        dia_plot = [float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''][0]
+                dia_plot = dia
+                if dia_plot is None:
+                    if self.options['type'].lower() == "excellon":
+                        try:
+                            dia_plot = float(self.options["tooldia"])
+                        except ValueError:
+                            # we may have a tuple with only one element and a comma
+                            dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                    else:
+                        try:
+                            dia_plot = float(self.options["tools_mill_tooldia"])
+                        except ValueError:
+                            # we may have a tuple with only one element and a comma
+                            dia_plot = [float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''][0]
+
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # I do this so the travel lines thickness will reflect the tool diameter
@@ -1278,22 +1290,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 if self.options['type'].lower() == "excellon":
                     if self.tools:
                         for toolid_key in self.tools:
-                            tooldia = self.app.dec_format(float(self.tools[toolid_key]['tooldia']), self.decimals)
+                            dia_plot = self.app.dec_format(float(self.tools[toolid_key]['tooldia']), self.decimals)
                             gcode_parsed = self.tools[toolid_key]['gcode_parsed']
                             if not gcode_parsed:
                                 continue
                             # gcode_parsed = self.gcode_parsed
-                            self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
                 else:
                     # multiple tools usage
                     if self.tools:
                         for tooluid_key in self.tools:
-                            tooldia = self.app.dec_format(
+                            dia_plot = self.app.dec_format(
                                 float(self.tools[tooluid_key]['data']['tools_mill_tooldia']),
                                 self.decimals
                             )
                             gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
-                            self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):

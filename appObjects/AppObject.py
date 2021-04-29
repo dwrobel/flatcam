@@ -147,7 +147,7 @@ class AppObject(QtCore.QObject):
                     obj.options[option] = self.app.options[option]
 
         # the milling options should be inherited by all manufacturing objects
-        if kind in ['excellon', 'gerber', 'geometry']:
+        if kind in ['excellon', 'gerber', 'geometry', 'cncjob']:
             for option in self.app.options:
                 if option.find('tools_mill_') == 0:
                     obj.options[option] = self.app.options[option]

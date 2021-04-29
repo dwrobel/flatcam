@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.04.2021
+
+- in CNCJob object, for CNCJob objects created when importing a foreign Gcode file, fixed the updating of the tool diameter
+- in CNCJob object, when there are no tools in the Tools Table (it happens when importing foreign GCode files) the Tool Table is now displayed in a correct way
+
 20.04.2021
 
 - fixed a recent but in Gerber Object that crashed the application when the aperture marking was used
