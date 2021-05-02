@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.05.2021
+
+- changed the save_project() method such that when the project is saved as compressed now the compression is first done in memory and only after that the app will attempt to write it to a file on disk
+
 29.04.2021
 
 - in CNCJob object, for CNCJob objects created when importing a foreign Gcode file, fixed the updating of the tool diameter
@@ -22,7 +26,7 @@ CHANGELOG for FlatCAM beta
 
 5.04.2021
 
-- now every version of FlatCAM beta creates it's own set of Preferences files
+- now every version of FlatCAM beta creates its own set of Preferences files
 
 4.04.2021
 
@@ -30,7 +34,7 @@ CHANGELOG for FlatCAM beta
 
 1.04.2021
 
-- fixed bug in the Drilling Tool when there are tools without drill points
+- fixed a bug in the Drilling Tool when there are tools without drill points
 
 29.03.2021
 

@@ -11277,11 +11277,30 @@ class MenuFileHandlers(QtCore.QObject):
             }
 
             if self.defaults["global_save_compressed"] is True:
-                with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:
-                    g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
-                    # # Write
-                    f.write(g)
-                self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
+                try:
+                    project_as_json = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
+                    # with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:
+                    #     # # Write
+                    #     f.write(project_as_json)
+
+                    compressor_obj = lzma.LZMACompressor(preset=int(self.defaults['global_compression_level']))
+                    out1 = compressor_obj.compress(project_as_json)
+                    out2 = compressor_obj.flush()
+                    project_zipped = b"".join([out1, out2])
+                except Exception:
+                    self.log.error("Failed to save file: %s", filename)
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
+
+                if project_zipped != b'':
+                    with open(filename, "wb") as f_to_write:
+                        f_to_write.write(project_zipped)
+
+                    self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
+                else:
+                    self.log.error("Failed to save file: %s", filename)
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return
             else:
                 # Open file
                 try:
@@ -11307,12 +11326,18 @@ class MenuFileHandlers(QtCore.QObject):
 
                 try:
                     saved_d = json.load(saved_f, object_hook=dict2obj)
+                    if not saved_d:
+                        self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
+                        f.close()
+                        return
                 except Exception:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
                                          (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
                     f.close()
                     return
+
                 saved_f.close()
 
                 if silent is False:
