@@ -2647,20 +2647,20 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
     """
     Parse a single number of Gerber coordinates.
 
-    :param strnumber: String containing a number in decimal digits
-    from a coordinate data block, possibly with a leading sign.
-    :type strnumber: str
-    :param int_digits: Number of digits used for the integer
-    part of the number
-    :type frac_digits: int
-    :param frac_digits: Number of digits used for the fractional
-    part of the number
-    :type frac_digits: int
-    :param zeros: If 'L', leading zeros are removed and trailing zeros are kept. Same situation for 'D' when
-    no zero suppression is done. If 'T', is in reverse.
-    :type zeros: str
-    :return: The number in floating point.
-    :rtype: float
+    :param strnumber:       String containing a number in decimal digits
+                            from a coordinate data block, possibly with a leading sign.
+    :type strnumber:        str
+    :param int_digits:      Number of digits used for the integer
+                            part of the number
+    :type frac_digits:      int
+    :param frac_digits:     Number of digits used for the fractional
+                            part of the number
+    :type frac_digits:      int
+    :param zeros:           If 'L', leading zeros are removed and trailing zeros are kept. Same situation for 'D' when
+                            no zero suppression is done. If 'T', is in reverse.
+    :type zeros:            str
+    :return:                The number in floating point.
+    :rtype:                 float
     """
 
     ret_val = None
@@ -2670,6 +2670,19 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
 
     if zeros == 'T':
         int_val = int(strnumber)
-        ret_val = (int_val * (10 ** ((int_digits + frac_digits) - len(strnumber)))) * (10 ** (-frac_digits))
+        if int_val >= 0:
+            ret_val = (int_val * (10 ** ((int_digits + frac_digits) - len(strnumber)))) * (10 ** (-frac_digits))
+        else:
+            # negative number therefore we have a '-' char in front of the strnumber
+            ret_val = (int_val * (10 ** ((int_digits + frac_digits + 1) - len(strnumber)))) * (10 ** (-frac_digits))
+
+        # if strnumber[0] == '-':
+        #     int_val = strnumber[:(int_digits+1)]
+        #     frac_val = strnumber[(int_digits+1):]
+        # else:
+        #     int_val = strnumber[:int_digits]
+        #     frac_val = strnumber[(int_digits):]
+        # ret_val = '%s.%s' % (int_val, frac_val)
+        # ret_val = float(ret_val)
 
     return ret_val

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.05.2021
+
+ - fixed the Gerber parser to work for the case of having coordinates with negative values and the trailing zeros are removed and leading zeros are kept 
+
 3.05.2021
 
 - changed the save_project() method such that when the project is saved as compressed now the compression is first done in memory and only after that the app will attempt to write it to a file on disk
