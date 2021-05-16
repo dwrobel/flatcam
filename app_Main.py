@@ -10623,7 +10623,10 @@ class MenuFileHandlers(QtCore.QObject):
         units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
-            geo_obj.import_svg(filename, obj_type, units=units)
+            res = geo_obj.import_svg(filename, obj_type, units=units)
+            if res == 'fail':
+                return 'fail'
+
             geo_obj.multigeo = True
 
             with open(filename) as f:

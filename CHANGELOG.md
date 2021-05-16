@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.05.2021
+
+- fixed SVG import to show an error for SVG files that have SVG units not mm or cm or inch
+- for SVG files with cm units the scaling factor is multiplied by 10
+- the app will signal failure when encountering the 'g' SVG element which is not supported and cancel the SVG import
+
 7.05.2021
 
  - fixed the Gerber parser to work for the case of having coordinates with negative values and the trailing zeros are removed and leading zeros are kept 

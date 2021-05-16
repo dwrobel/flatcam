@@ -426,7 +426,10 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=
         for child in node:
             subgeo = getsvggeo(child, object_type, root=root, units=units, res=res, factor=factor, app=app)
             if subgeo is not None:
+                if subgeo == 'fail':
+                    return
                 geo += subgeo
+
     # Parse
     elif kind == 'path':
         log.debug("***PATH***")
@@ -474,8 +477,12 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0, app=
         if ref is not None:
             geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor, app=app)
 
-    elif kind in ['defs', 'namedview', 'format', 'type', 'title']:
+    elif kind in ['defs', 'namedview', 'format', 'type', 'title', 'desc']:
         log.warning('SVG Element not supported: %s. Skipping to next.' % kind)
+
+    elif kind in ['g']:
+        log.warning("SVG Element %s not supported and causing failure. Cancelling." % kind)
+        return "fail"
 
     else:
         log.warning("Unknown kind: " + kind)

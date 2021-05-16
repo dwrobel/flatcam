@@ -1164,13 +1164,24 @@ class Geometry(object):
         # Change origin to bottom left
         # h = float(svg_root.get('height'))
         # w = float(svg_root.get('width'))
-        h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
+        svg_parsed_dims = svgparselength(svg_root.get('height'))
+        h = svg_parsed_dims[0]  # TODO: No units support yet
+        svg_units = svg_parsed_dims[1]
+        if svg_units in ['em', 'ex', 'pt', 'px']:
+            self.app.log.error("camlib.Geometry.import_svg(). SVG units not supported: %s" % svg_units)
+            self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed."))
+            return
 
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
 
+        if svg_units == 'cm':
+            factor *= 10
+
         geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor, app=self.app)
+        if geos is None:
+            return 'fail'
 
         self.app.log.debug("camlib.Geometry.import_svg(). Finished parsing the SVG geometry.")
 
