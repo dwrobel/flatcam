@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.06.2021
+
+- fixed some issues with error reporting for the Tcl commands
+- fixed drillcncjob Tcl command crashing the app when the used name is wrong and therefore no Excellon objects are located
+
 16.05.2021
 
 - fixed SVG import to show an error for SVG files that have SVG units not mm or cm or inch

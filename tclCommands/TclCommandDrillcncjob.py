@@ -123,14 +123,14 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         if obj is None:
             if muted is False:
                 self.raise_tcl_error("Object not found: %s" % name)
-            else:
-                return "fail"
+
+            return "Object not found: %s" % name
 
         if obj.kind != 'excellon':
             if muted is False:
                 self.raise_tcl_error('Expected ExcellonObject, got %s %s.' % (name, type(obj)))
-            else:
-                return "fail"
+
+            return 'Expected ExcellonObject, got %s %s.' % (name, type(obj))
 
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
@@ -169,7 +169,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                             self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
                                                  "TclCommand are not actual tool diameters in the Excellon object.")
                         else:
-                            return "fail"
+                            return "One or more tool diameters of the drills to be drilled passed to the "\
+                                   "TclCommand are not actual tool diameters in the Excellon object."
 
                     # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
                     # expecting as tools parameter
@@ -189,8 +190,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
                 if muted is False:
                     self.raise_tcl_error("Bad tools: %s" % str(e))
-                else:
-                    return "fail"
+
+                return "Bad tools: %s" % str(e)
 
             used_tools_info = []
             used_tools_info.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
@@ -242,6 +243,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if len(eval(xy_toolchange)) != 2:
                 self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
                                      "in format (x, y) - no spaces allowed. But always two comma separated values.")
+                return "The entered value for 'toolchangexy' needs to have the format x,y or "\
+                       "in format (x, y) - no spaces allowed. But always two comma separated values."
 
             endz = args["endz"] if "endz" in args and args["endz"] is not None else \
                 self.app.defaults["tools_drill_endz"]
@@ -257,6 +260,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if len(eval(xy_end)) != 2:
                 self.raise_tcl_error("The entered value for 'xy_end' needs to have the format x,y or "
                                      "in format (x, y) - no spaces allowed. But always two comma separated values.")
+                return "The entered value for 'xy_end' needs to have the format x,y or "\
+                       "in format (x, y) - no spaces allowed. But always two comma separated values."
 
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 

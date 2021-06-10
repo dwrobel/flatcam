@@ -294,6 +294,9 @@ class TermWidget(QWidget):
 
 
 class FCShell(TermWidget):
+
+    tcl_error_signal = QtCore.pyqtSignal(object, object)
+
     def __init__(self, app, version, *args):
         """
         Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
@@ -338,6 +341,9 @@ class FCShell(TermWidget):
         # signal for displaying messages in the shell
         self.app.inform_shell[str].connect(self.app.info_shell)
         self.app.inform_shell[str, bool].connect(self.app.info_shell)
+
+        # used to signal that an error happened in the TCL
+        self.tcl_error_signal.connect(self.display_tcl_error)
 
         self._browser.find_text = self.find_text
         self._edit.on_escape_key = self.on_escape_key
@@ -551,7 +557,8 @@ class FCShell(TermWidget):
         :return: raise exception
         """
 
-        self.display_tcl_error(text)
+        # self.display_tcl_error(text)
+        self.tcl_error_signal.emit(text, None)
         # raise self.TclErrorException(text)
 
     class TclErrorException(Exception):
