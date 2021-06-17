@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.06.2021
+
+- fixed the setting color functionality on right click on the objects in the Project Tab such that the set color (or opacity) it is stored in a persistent setting correctly and the colors for Gerber objects are restored in order
+- trying to fix a Runtime exception that may happen when the Plugin Tab is deleted completely
+
 10.06.2021
 
 - fixed some issues with error reporting for the Tcl commands

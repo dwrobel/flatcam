@@ -19,7 +19,8 @@ from PyQt5.QtCore import Qt
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
-    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit
+    FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit, \
+    VerticalScrollArea
 from appParsers.ParseFont import *
 
 from vispy.geometry import Rect
@@ -149,7 +150,18 @@ class BufferSelectionTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            try:
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            except RuntimeError:
+                self.app.ui.plugin_tab = QtWidgets.QWidget()
+                self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
@@ -389,7 +401,17 @@ class TextInputTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            try:
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            except RuntimeError:
+                self.app.ui.plugin_tab = QtWidgets.QWidget()
+                self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
@@ -605,7 +627,17 @@ class PaintOptionsTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            try:
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            except RuntimeError:
+                self.app.ui.plugin_tab = QtWidgets.QWidget()
+                self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
@@ -1100,7 +1132,17 @@ class TransformEditorTool(AppTool):
                 break
         # show the Tab
         if not found_idx:
-            self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            try:
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+            except RuntimeError:
+                self.app.ui.plugin_tab = QtWidgets.QWidget()
+                self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
             # focus on Tool Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 

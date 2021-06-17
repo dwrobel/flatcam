@@ -8529,7 +8529,8 @@ class App(QtCore.QObject):
                 alpha_level = 'FF'
             else:
                 self.log.debug(
-                    "App.on_set_color_action_triggered() --> Default alpfa for this object type not supported yet")
+                    "App.on_set_color_action_triggered() --> Default transparency level "
+                    "for this object type not supported yet")
                 continue
             sel_obj.alpha_level = alpha_level
 
@@ -8551,6 +8552,7 @@ class App(QtCore.QObject):
         if act_name == _('Black'):
             new_color = '#000000' + alpha_level
 
+        # selection of a custom color will open a QColor dialog
         if act_name == _('Custom'):
             new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
             c_dialog = QtWidgets.QColorDialog()
@@ -8561,6 +8563,7 @@ class App(QtCore.QObject):
 
             new_color = str(plot_fill_color.name()) + alpha_level
 
+        # when it is desired the return to the default color set in Preferences
         if act_name == _("Default"):
             for sel_obj in sel_obj_list:
                 if sel_obj.kind == 'excellon':
@@ -8583,8 +8586,11 @@ class App(QtCore.QObject):
                 sel_obj.shapes.redraw(
                     update_colors=(new_color, new_line_color)
                 )
+
+            self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
             return
 
+        # set of a custom transparency level
         if act_name == _("Opacity"):
             # alpha_level, ok_button = QtWidgets.QInputDialog.getInt(self.ui, _("Set alpha level ..."),
             #                                                        '%s:' % _("Value"),
@@ -8595,13 +8601,26 @@ class App(QtCore.QObject):
             alpha_level, ok_button = alpha_dialog.get_results()
 
             if ok_button:
-                alpha_str = str(hex(alpha_level)[2:]) if alpha_level != 0 else '00'
-                for sel_obj in sel_obj_list:
-                    sel_obj.fill_color = sel_obj.fill_color[:-2] + alpha_str
+                group = self.collection.group_items["gerber"]
+                group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
 
+                alpha_str = str(hex(alpha_level)[2:]) if alpha_level != 0 else '00'
+
+                for sel_obj in sel_obj_list:
+                    new_color = sel_obj.fill_color[:-2] + alpha_str
+                    new_line_color = sel_obj.outline_color
+
+                    sel_obj.fill_color = new_color
                     sel_obj.shapes.redraw(
                         update_colors=(sel_obj.fill_color, sel_obj.outline_color)
                     )
+
+                    new_c = (new_line_color, new_color)
+                    if sel_obj.kind == 'gerber':
+                        item = sel_obj.item
+                        item_index = self.collection.index(item.row(), 0, group_index)
+                        idx = item_index.row()
+                        self.defaults["gerber_color_list"][idx] = new_c
 
             return
 
@@ -8617,12 +8636,30 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
 
+        self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
+
+    def set_gerber_color_in_preferences_dict(self, list_of_gerber_obj, fill_color, outline_color):
+        """
+        This method will save the set colors into a list that will be used next time when Gerber objects are loaded.
+        First loaded Gerber will have the first color in the list, second loaded Gerber object will have set the second
+        color in the list and so on.
+
+        :param list_of_gerber_obj:  a list of Gerber objects that are currently loaded and selected
+        :type list_of_gerber_obj:   list
+        :param fill_color:          the fill color that will be set for the selected objects
+        :type fill_color:           str
+        :param outline_color:       the outline color that will be set for the selected objects
+        :type outline_color:        str
+        :return:                    None
+        :rtype:                     None
+        """
+
         # make sure to set the color in the Gerber colors storage self.defaults["gerber_color_list"]
         group = self.collection.group_items["gerber"]
         group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
 
-        new_c = (new_line_color, new_color)
-        for sel_obj in sel_obj_list:
+        new_c = (outline_color, fill_color)
+        for sel_obj in list_of_gerber_obj:
             if sel_obj.kind == 'gerber':
                 item = sel_obj.item
                 item_index = self.collection.index(item.row(), 0, group_index)

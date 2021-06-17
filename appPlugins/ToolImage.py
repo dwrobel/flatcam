@@ -8,7 +8,7 @@
 from PyQt5 import QtGui, QtWidgets
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel
+from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel, VerticalScrollArea
 
 import os
 
@@ -52,7 +52,17 @@ class ToolImage(AppTool):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                try:
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                except RuntimeError:
+                    self.app.ui.plugin_tab = QtWidgets.QWidget()
+                    self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                    self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                    self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                    self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                    self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 

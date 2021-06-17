@@ -14,7 +14,7 @@ from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, FCFileSaveDialog, FCCheckBox, FCTable, \
     FCDoubleSpinner, FCSpinner, FCDetachableTab, FCZeroAxes, FCJog, FCSliderWithDoubleSpinner, RotatedToolButton, \
-    FCEntry
+    FCEntry, VerticalScrollArea
 from appEditors.AppTextEditor import AppTextEditor
 
 from camlib import CNCjob
@@ -147,7 +147,17 @@ class ToolLevelling(AppTool, CNCjob):
                     break
             # show the Tab
             if not found_idx:
-                self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                try:
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
+                except RuntimeError:
+                    self.app.ui.plugin_tab = QtWidgets.QWidget()
+                    self.app.ui.plugin_tab.setObjectName("plugin_tab")
+                    self.app.ui.plugin_tab_layout = QtWidgets.QVBoxLayout(self.app.ui.plugin_tab)
+                    self.app.ui.plugin_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+                    self.app.ui.plugin_scroll_area = VerticalScrollArea()
+                    self.app.ui.plugin_tab_layout.addWidget(self.app.ui.plugin_scroll_area)
+                    self.app.ui.notebook.addTab(self.app.ui.plugin_tab, _("Plugin"))
                 # focus on Tool Tab
                 self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
