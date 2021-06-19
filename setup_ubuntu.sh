@@ -47,6 +47,7 @@ sudo -H python3 -m pip install --upgrade \
 	svglib \
 	pyserial \
 	testresources \
-	pikepdf
+	pikepdf \
+	foronoi
 
 sudo -H easy_install -U distribute

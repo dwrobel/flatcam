@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - fixed Film Plugin (Tool) negative generation to have the black background in sync with the actual geometry when transformations are applied
 - fixed Film Plugin (Tool) to have mirroring done only with reference 'center' regardless of what is selected in the UI
 - in Film Plugin now multiple adjustments can be applied at the same time and correctly
+- updated the files to use the new name for the voronoi package: foronoi
+- using Python 3.9.4
 
 17.06.2021
 

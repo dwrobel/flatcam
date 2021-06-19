@@ -37,8 +37,8 @@ import shapely.affinity as affinity
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 try:
-    from voronoi import Voronoi
-    from voronoi import Polygon as voronoi_poly
+    from foronoi import Voronoi
+    from foronoi import Polygon as voronoi_poly
     VORONOI_ENABLED = True
 except Exception:
     try:
