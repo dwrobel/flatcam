@@ -671,6 +671,7 @@ class Film(AppTool):
             elif reference_point == 'bottomright':
                 ref_val = (xmax, ymin)
 
+            # Transform the box object geometry
             transformed_box_geo = box_geo
 
             if scale_factor_x and not scale_factor_y:
@@ -690,11 +691,11 @@ class Film(AppTool):
 
             if mirror:
                 if mirror == 'x':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin='center')
                 if mirror == 'y':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin='center')
                 if mirror == 'both':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin='center')
 
             bounds = transformed_box_geo.bounds
             size = bounds[2] - bounds[0], bounds[3] - bounds[1]
@@ -703,7 +704,8 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=reference_point, skew_reference=reference_point
+                                          scale_reference=reference_point, skew_reference=reference_point,
+                                          mirror_reference='center'
                                           )
 
             uom = obj.units.lower()
@@ -967,11 +969,11 @@ class Film(AppTool):
 
             if mirror:
                 if mirror == 'x':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0, origin='center')
                 if mirror == 'y':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0, origin='center')
                 if mirror == 'both':
-                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin=ref_val)
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0, origin='center')
 
             bounds = transformed_box_geo.bounds
             size = bounds[2] - bounds[0], bounds[3] - bounds[1]
@@ -980,7 +982,8 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=reference_point, skew_reference=reference_point
+                                          scale_reference=reference_point, skew_reference=reference_point,
+                                          mirror_reference='center'
                                           )
 
             # Change the attributes of the exported SVG

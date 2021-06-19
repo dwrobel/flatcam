@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.06.2021
+
+- fixed Film Plugin (Tool) negative generation to have the black background in sync with the actual geometry when transformations are applied
+- fixed Film Plugin (Tool) to have mirroring done only with reference 'center' regardless of what is selected in the UI
+- in Film Plugin now multiple adjustments can be applied at the same time and correctly
+
 17.06.2021
 
 - fixed the setting color functionality on right click on the objects in the Project Tab such that the set color (or opacity) it is stored in a persistent setting correctly and the colors for Gerber objects are restored in order

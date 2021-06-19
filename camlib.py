@@ -2355,26 +2355,26 @@ class Geometry(object):
         geom = geom_svg
 
         if scale_factor_x and not scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_ref)
+            geom = affinity.scale(geom, scale_factor_x, 1.0, origin=scale_ref)
         elif not scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_ref)
+            geom = affinity.scale(geom, 1.0, scale_factor_y, origin=scale_ref)
         elif scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_ref)
+            geom = affinity.scale(geom, scale_factor_x, scale_factor_y, origin=scale_ref)
 
         if skew_factor_x and not skew_factor_y:
-            geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
+            geom = affinity.skew(geom, skew_factor_x, 0.0, origin=skew_ref)
         elif not skew_factor_x and skew_factor_y:
-            geom = affinity.skew(geom_svg, 0.0, skew_factor_y, origin=skew_ref)
+            geom = affinity.skew(geom, 0.0, skew_factor_y, origin=skew_ref)
         elif skew_factor_x and skew_factor_y:
-            geom = affinity.skew(geom_svg, skew_factor_x, skew_factor_y, origin=skew_ref)
+            geom = affinity.skew(geom, skew_factor_x, skew_factor_y, origin=skew_ref)
 
         if mirror:
             if mirror == 'x':
-                geom = affinity.scale(geom_svg, 1.0, -1.0, origin=mirror_ref)
+                geom = affinity.scale(geom, 1.0, -1.0, origin=mirror_ref)
             if mirror == 'y':
-                geom = affinity.scale(geom_svg, -1.0, 1.0, origin=mirror_ref)
+                geom = affinity.scale(geom, -1.0, 1.0, origin=mirror_ref)
             if mirror == 'both':
-                geom = affinity.scale(geom_svg, -1.0, -1.0, origin=mirror_ref)
+                geom = affinity.scale(geom, -1.0, -1.0, origin=mirror_ref)
 
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
         # If 0 or less which is invalid then default to 0.01
