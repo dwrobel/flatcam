@@ -1529,7 +1529,7 @@ class Gerber(Geometry):
                         ]
 
                         valid = False
-                        self.app.self.app.log.debug("I: %f  J: %f" % (i, j))
+                        self.app.log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
                             radius = np.sqrt(i ** 2 + j ** 2)
 

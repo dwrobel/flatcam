@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - optimized the data storage in the on_about() method
 - randomized the order in the programmers list at each launch of the on_about() method
+- fixed typo in Gerber parser
 
 19.06.2021
 
