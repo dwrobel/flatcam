@@ -3256,6 +3256,164 @@ class App(QtCore.QObject):
                 pal = QtGui.QPalette()
                 pal.setColor(QtGui.QPalette.Background, Qt.white)
 
+                programmers = [
+                    {
+                        'name': "Denis Hayrullin",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Kamil Sopko",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "David Robertson",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Matthieu Berthomé",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Mike Evans",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Victor Benso",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Jørn Sandvik Nilsson",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Lei Zheng",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Leandro Heck",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Marco A Quezada",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Cedric Dussud",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Chris Hemingway",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Damian Wrobel",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Daniel Sallin",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Bruno Vunderl",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Gonzalo Lopez",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Jakob Staudt",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Mike Smith",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Barnaby Walters",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Steve Martina",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Thomas Duffin",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Andrey Kultyapov",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Alex Lazar",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Chris Breneman",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Eric Varsanyi",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "Lubos Medovarsky",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "@Idechix",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "@SM",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "@grbf",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "@Symonty",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "@mgix",
+                        'description': '',
+                        'email': ''
+                    },
+                ]
+
                 self.prog_grid_lay = QtWidgets.QGridLayout()
                 self.prog_grid_lay.setHorizontalSpacing(20)
                 self.prog_grid_lay.setColumnStretch(0, 0)
@@ -3271,64 +3429,33 @@ class App(QtCore.QObject):
 
                 self.programmmers_tab_layout.addWidget(prog_scroll)
 
+                # Headers
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
+                # FlatCAM Author
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Author")), 1, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 4, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 2)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "David Robertson"), 6, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 7, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Evans"), 8, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Victor Benso"), 9, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
+                # FlatCAM EVO Author
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 2, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 2, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 2, 2)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 3, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jørn Sandvik Nilsson"), 12, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lei Zheng"), 13, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Leandro Heck"), 14, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marco A Quezada"), 15, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 16, 0)
+                # randomize the order of the programmers at each launch
+                random.shuffle(programmers)
+                line = 4
+                for prog in programmers:
+                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['name']), line, 0)
+                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['description']), line, 1)
+                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['email']), line, 2)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Cedric Dussud"), 20, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Hemingway"), 22, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Damian Wrobel"), 24, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Daniel Sallin"), 28, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 32, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Bruno Vunderl"), 40, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Gonzalo Lopez"), 42, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jakob Staudt"), 45, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Smith"), 49, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 52, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Barnaby Walters"), 55, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Steve Martina"), 57, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Thomas Duffin"), 59, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 61, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 63, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Alex Lazar"), 64, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 65, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 67, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 69, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 74, 0)
-
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 100, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 101, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@grbf"), 102, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Symonty"), 103, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@mgix"), 104, 0)
+                    line += 1
+                    if (line % 4) == 0:
+                        self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), line, 0)
+                        line += 1
 
                 self.translator_grid_lay = QtWidgets.QGridLayout()
                 self.translator_grid_lay.setColumnStretch(0, 0)
@@ -3340,6 +3467,57 @@ class App(QtCore.QObject):
                 # trans_widget.setLayout(self.translator_grid_lay)
                 # self.translators_tab_layout.addWidget(trans_widget)
                 # self.translators_tab_layout.addStretch()
+
+                translators = [
+                    {
+                        'language': 'BR - Portuguese',
+                        'name': "Carlos Stein",
+                        'corrections': '',
+                        'email': '<carlos.stein@gmail.com>'
+                    },
+                    {
+                        'language': 'French',
+                        'name': "Michel Maciejewski",
+                        'corrections': 'Olivier Cornet',
+                        'email': '<micmac589@gmail.com>'
+                    },
+                    {
+                        'language': 'Italian',
+                        'name': "Massimiliano Golfetto",
+                        'corrections': '',
+                        'email': '<golfetto.pcb@gmail.com>'
+                    },
+                    {
+                        'language': 'German',
+                        'name': "Marius Stanciu (Google-Tr)",
+                        'corrections': 'Jens Karstedt, Detlef Eckardt',
+                        'email': ''
+                    },
+                    {
+                        'language': 'Romanian',
+                        'name': "Marius Stanciu",
+                        'corrections': '',
+                        'email': '<marius_adrian@yahoo.com>'
+                    },
+                    {
+                        'language': 'Russian',
+                        'name': "Andrey Kultyapov",
+                        'corrections': '',
+                        'email': '<camellan@yandex.ru>'
+                    },
+                    {
+                        'language': 'Spanish',
+                        'name': "Marius Stanciu (Google-Tr)",
+                        'corrections': '',
+                        'email': ''
+                    },
+                    {
+                        'language': 'Turkish',
+                        'name': "Mehmet Kaya",
+                        'corrections': '',
+                        'email': '<malatyakaya480@gmail.com>'
+                    },
+                ]
 
                 trans_widget = QtWidgets.QWidget()
                 trans_widget.setLayout(self.translator_grid_lay)
@@ -3355,46 +3533,14 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Corrections")), 0, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
 
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "BR - Portuguese"), 1, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"), 1, 3)
+                line = 1
+                for i in translators:
+                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['language']), line, 0)
+                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['name']), line, 1)
+                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['corrections']), line, 2)
+                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['email']), line, 3)
 
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Michel Maciejewski"), 2, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Olivier Cornet"), 2, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<micmac589@gmail.com>"), 2, 3)
-
-                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
-                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
-                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
-                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Massimiliano Golfetto"), 4, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<golfetto.pcb@gmail.com>"), 4, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 5, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 5, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, Detlef Eckardt"), 5, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 6, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 6, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 6, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 7, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 7, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 7, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 8, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 8, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 8, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 8, 3)
-
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Turkish"), 9, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mehmet Kaya"), 9, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<malatyakaya480@gmail.com>"), 9, 3)
+                    line += 1
 
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()

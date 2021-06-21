@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.06.2021
+
+- optimized the data storage in the on_about() method
+- randomized the order in the programmers list at each launch of the on_about() method
+
 19.06.2021
 
 - fixed Film Plugin (Tool) negative generation to have the black background in sync with the actual geometry when transformations are applied
