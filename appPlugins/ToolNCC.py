@@ -1295,13 +1295,11 @@ class NonCopperClear(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
             offset = db_tool_val['offset']
             offset_val = db_tool_val['offset_value']
-            typ = db_tool_val['type']
             tool_type = db_tool_val['tool_type']
 
             db_tooldia = db_tool_val['tooldia']
@@ -1362,7 +1360,6 @@ class NonCopperClear(AppTool, Gerber):
                 'tooldia':          new_tdia,
                 'offset':           deepcopy(offset),
                 'offset_value':     deepcopy(offset_val),
-                'type':             deepcopy(typ),
                 'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
@@ -4070,7 +4067,6 @@ class NonCopperClear(AppTool, Gerber):
                 'tooldia':          truncated_tooldia,
                 'offset':           deepcopy(tool['offset']),
                 'offset_value':     deepcopy(tool['offset_value']),
-                'type':             deepcopy(tool['type']),
                 'tool_type':        deepcopy(tool['tool_type']),
                 'data':             deepcopy(tool['data']),
                 'solid_geometry':   []
@@ -4214,7 +4210,7 @@ class NccUI:
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Shape'), ''])
         self.tools_table.setColumnHidden(3, True)
         self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -4232,17 +4228,11 @@ class NccUI:
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
-            _("The Tool Type (TT) can be:\n"
-              "- Circular with 1 ... 4 teeth -> it is informative only. Being circular,\n"
-              "the cut width in material is exactly the tool diameter.\n"
-              "- Ball -> informative only and make reference to the Ball type endmill.\n"
-              "- V-Shape -> it will disable Z-Cut parameter in the resulting geometry UI form\n"
-              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and\n"
-              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
-              "as the cut width into material will be equal with the value in the Tool Diameter\n"
-              "column of this table.\n"
-              "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
-              "in the resulting geometry as Isolation."))
+            _("Tool Shape. \n"
+              "Can be:\n"
+              "C1 ... C4 = circular tool with x flutes\n"
+              "B = ball tip milling tool\n"
+              "V = v-shape milling tool"))
 
         # self.tools_table.horizontalHeaderItem(4).setToolTip(
         #     _("The 'Operation' can be:\n"

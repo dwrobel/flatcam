@@ -187,7 +187,7 @@ class AppGCodeEditor(QtCore.QObject):
             offset_txt = list(str(dia_value['offset']))
             offset_txt[0] = offset_txt[0].upper()
             offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
-            type_item = QtWidgets.QTableWidgetItem(str(dia_value['type']))
+            type_item = QtWidgets.QTableWidgetItem(str(dia_value['data']['job']))
             tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['tool_type']))
 
             t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)

@@ -514,13 +514,11 @@ class CutOut(AppTool):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = 'Rough'
         tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
             offset = db_tool_val['offset']
             offset_val = db_tool_val['offset_value']
-            typ = db_tool_val['type']
             tool_type = db_tool_val['tool_type']
 
             db_tooldia = db_tool_val['tooldia']
@@ -579,7 +577,6 @@ class CutOut(AppTool):
             'tooldia': new_tdia,
             'offset': deepcopy(offset),
             'offset_value': deepcopy(offset_val),
-            'type': deepcopy(typ),
             'tool_type': deepcopy(tool_type),
             'data': deepcopy(new_tools_dict),
             'solid_geometry': []
@@ -722,7 +719,6 @@ class CutOut(AppTool):
                 'tooldia': truncated_tooldia,
                 'offset': tool['offset'],
                 'offset_value': tool['offset_value'],
-                'type': tool['type'],
                 'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': []

@@ -890,46 +890,46 @@ class ToolPaint(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = 'Rough'
         tool_type = 'V'
+
         # look in database tools
-        for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['data']['tools_mill_offset_type']
-            offset_val = db_tool_val['data']['tools_mill_offset']
-            typ = db_tool_val['type']
-            tool_type = db_tool_val['tool_type']
+        if tools_db_dict:
+            for db_tool, db_tool_val in tools_db_dict.items():
+                offset = db_tool_val['data']['tools_mill_offset_type']
+                offset_val = db_tool_val['data']['tools_mill_offset']
+                tool_type = db_tool_val['tool_type']
 
-            db_tooldia = db_tool_val['tooldia']
-            low_limit = float(db_tool_val['data']['tol_min'])
-            high_limit = float(db_tool_val['data']['tol_max'])
+                db_tooldia = db_tool_val['tooldia']
+                low_limit = float(db_tool_val['data']['tol_min'])
+                high_limit = float(db_tool_val['data']['tol_max'])
 
-            # we need only tool marked for Paint Tool
-            if db_tool_val['data']['tool_target'] != _('Paint'):
-                continue
+                # we need only tool marked for Paint Tool
+                if db_tool_val['data']['tool_target'] != _('Paint'):
+                    continue
 
-            # if we find a tool with the same diameter in the Tools DB just update it's data
-            if truncated_tooldia == db_tooldia:
-                tool_found += 1
-                for d in db_tool_val['data']:
-                    if d.find('tools_paint_') == 0:
-                        new_tools_dict[d] = db_tool_val['data'][d]
-                    elif d.find('tools_') == 0:
-                        # don't need data for other App Tools; this tests after 'tools_paint_'
-                        continue
-                    else:
-                        new_tools_dict[d] = db_tool_val['data'][d]
-            # search for a tool that has a tolerance that the tool fits in
-            elif high_limit >= truncated_tooldia >= low_limit:
-                tool_found += 1
-                updated_tooldia = db_tooldia
-                for d in db_tool_val['data']:
-                    if d.find('tools_paint_') == 0:
-                        new_tools_dict[d] = db_tool_val['data'][d]
-                    elif d.find('tools_') == 0:
-                        # don't need data for other App Tools; this tests after 'tools_paint_'
-                        continue
-                    else:
-                        new_tools_dict[d] = db_tool_val['data'][d]
+                # if we find a tool with the same diameter in the Tools DB just update it's data
+                if truncated_tooldia == db_tooldia:
+                    tool_found += 1
+                    for d in db_tool_val['data']:
+                        if d.find('tools_paint_') == 0:
+                            new_tools_dict[d] = db_tool_val['data'][d]
+                        elif d.find('tools_') == 0:
+                            # don't need data for other App Tools; this tests after 'tools_paint_'
+                            continue
+                        else:
+                            new_tools_dict[d] = db_tool_val['data'][d]
+                # search for a tool that has a tolerance that the tool fits in
+                elif high_limit >= truncated_tooldia >= low_limit:
+                    tool_found += 1
+                    updated_tooldia = db_tooldia
+                    for d in db_tool_val['data']:
+                        if d.find('tools_paint_') == 0:
+                            new_tools_dict[d] = db_tool_val['data'][d]
+                        elif d.find('tools_') == 0:
+                            # don't need data for other App Tools; this tests after 'tools_paint_'
+                            continue
+                        else:
+                            new_tools_dict[d] = db_tool_val['data'][d]
 
         # test we found a suitable tool in Tools Database or if multiple ones
         if tool_found == 0:
@@ -958,7 +958,6 @@ class ToolPaint(AppTool, Gerber):
                 'tooldia':          new_tdia,
                 'offset':           deepcopy(offset),
                 'offset_value':     deepcopy(offset_val),
-                'type':             deepcopy(typ),
                 'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
@@ -2862,7 +2861,6 @@ class ToolPaint(AppTool, Gerber):
                 'tooldia': float('%.*f' % (self.decimals, tooldia)),
                 'offset': tool['offset'],
                 'offset_value': tool['offset_value'],
-                'type': tool['type'],
                 'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': []
@@ -3012,7 +3010,7 @@ class PaintUI:
         grid0.addWidget(self.tools_table, 7, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Shape'), ''])
         self.tools_table.setColumnHidden(3, True)
         # self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -3030,17 +3028,11 @@ class PaintUI:
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
-            _("The Tool Type (TT) can be:\n"
-              "- Circular -> it is informative only. Being circular,\n"
-              "the cut width in material is exactly the tool diameter.\n"
-              "- Ball -> informative only and make reference to the Ball type endmill.\n"
-              "- V-Shape -> it will disable Z-Cut parameter in the resulting geometry UI form\n"
-              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and\n"
-              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
-              "as the cut width into material will be equal with the value in the Tool Diameter\n"
-              "column of this table.\n"
-              "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
-              "in the resulting geometry as Isolation."))
+            _("Tool Shape. \n"
+              "Can be:\n"
+              "C1 ... C4 = circular tool with x flutes\n"
+              "B = ball tip milling tool\n"
+              "V = v-shape milling tool"))
 
         self.order_label = FCLabel('<b>%s:</b>' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"

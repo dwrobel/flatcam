@@ -443,10 +443,10 @@ class ToolMilling(AppTool, Excellon):
 
             # Geometry properties
             # "tools_mill_tooldia": self.ui.addtool_entry,
-            "tools_mill_tool_type": self.ui.geo_tools_table.cellWidget(self.current_row, 2),
             "tools_mill_offset_type": self.ui.offset_type_combo,
             "tools_mill_offset": self.ui.offset_entry,
 
+            "tools_mill_tool_type": self.ui.tool_shape_combo,
             "tools_mill_job_type": self.ui.job_type_combo,
             "tools_mill_polish_margin": self.ui.polish_margin_entry,
             "tools_mill_polish_overlap": self.ui.polish_over_entry,
@@ -497,6 +497,8 @@ class ToolMilling(AppTool, Excellon):
 
             "mill_offset_type": "tools_mill_offset_type",
             "mill_offset":      "tools_mill_offset",
+
+            "mill_tool_type":   "tools_mill_tool_type",
             "mill_job_type":       "tools_mill_job_type",
 
             "mill_polish_margin":   "tools_mill_polish_margin",
@@ -819,8 +821,9 @@ class ToolMilling(AppTool, Excellon):
 
                 self.ui.offset_type_lbl.show()
                 self.ui.offset_type_combo.show()
-                self.ui.offset_label.show()
-                self.ui.offset_entry.show()
+                if self.ui.offset_type_combo.get_value() == 3:  # _("Custom")
+                    self.ui.offset_label.show()
+                    self.ui.offset_entry.show()
                 self.ui.offset_type_lbl.show()
                 self.ui.offset_separator_line.show()
                 self.ui.offset_type_lbl.show()
@@ -1024,16 +1027,16 @@ class ToolMilling(AppTool, Excellon):
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- TOOL TYPE ------------------------------------- #
-            tool_type_item = FCComboBox(policy=False)
-            for item in ["C1", "C2", "C3", "C4", "B", "V"]:
-                tool_type_item.addItem(item)
-            idx = tool_type_item.findText(tooluid_value['data']['tools_mill_tool_type'])
-            # protection against having this translated or loading a project with translated values
-            if idx == -1:
-                tool_type_item.setCurrentIndex(0)
-            else:
-                tool_type_item.setCurrentIndex(idx)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 2, tool_type_item)
+            # tool_type_item = FCComboBox(policy=False)
+            # for item in ["C1", "C2", "C3", "C4", "B", "V"]:
+            #     tool_type_item.addItem(item)
+            # idx = tool_type_item.findText(tooluid_value['data']['tools_mill_tool_type'])
+            # # protection against having this translated or loading a project with translated values
+            # if idx == -1:
+            #     tool_type_item.setCurrentIndex(0)
+            # else:
+            #     tool_type_item.setCurrentIndex(idx)
+            # self.ui.geo_tools_table.setCellWidget(row_idx, 2, tool_type_item)
 
             # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
@@ -1077,15 +1080,15 @@ class ToolMilling(AppTool, Excellon):
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(2, 40)
+        # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
+        # horizontal_header.resizeSection(2, 40)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(4, 17)
         # horizontal_header.setStretchLastSection(True)
         self.ui.geo_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.ui.geo_tools_table.setColumnWidth(0, 20)
-        self.ui.geo_tools_table.setColumnWidth(2, 40)
+        # self.ui.geo_tools_table.setColumnWidth(2, 40)
         self.ui.geo_tools_table.setColumnWidth(4, 17)
 
         # self.ui.geo_tools_table.setSortingEnabled(True)
@@ -1422,8 +1425,6 @@ class ToolMilling(AppTool, Excellon):
 
         # connect Tool Table Widgets
         for row in range(self.ui.geo_tools_table.rowCount()):
-            self.ui.geo_tools_table.cellWidget(row, 2).currentIndexChanged.connect(
-                self.on_tooltable_cellwidget_change)
             self.ui.geo_tools_table.cellWidget(row, 4).clicked.connect(self.on_plot_cb_click_table)
 
         # # Geo Tool Table - rows selected
@@ -1434,6 +1435,8 @@ class ToolMilling(AppTool, Excellon):
         # Excellon Tool Table - rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+
+        self.ui.tool_shape_combo.currentIndexChanged.connect(self.on_tt_change)
 
         # Tool Parameters
         for opt in self.form_fields:
@@ -1499,11 +1502,6 @@ class ToolMilling(AppTool, Excellon):
         # Geometry Tool table widgets
         for row in range(self.ui.geo_tools_table.rowCount()):
             try:
-                self.ui.geo_tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-            try:
                 self.ui.geo_tools_table.cellWidget(row, 4).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
@@ -1536,6 +1534,11 @@ class ToolMilling(AppTool, Excellon):
                     current_widget.currentIndexChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError, RuntimeError):
                     pass
+
+        try:
+            self.ui.tool_shape_combo.currentIndexChanged.disconnect(self.on_tt_change)
+        except (TypeError, ValueError, RuntimeError):
+            pass
 
         # General Parameters
         for opt in self.general_form_fields:
@@ -1873,6 +1876,12 @@ class ToolMilling(AppTool, Excellon):
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
+
+        # if the widget objectName is '' then it is a widget that we are not interested into
+        if wdg_objname == '':
+            self.ui_connect()
+            return
+
         option_changed = self.name2option[wdg_objname]
 
         # update the tool specific parameters
@@ -1888,22 +1897,13 @@ class ToolMilling(AppTool, Excellon):
                     if option_changed in self.form_fields:
                         new_option_value = self.form_fields[option_changed].get_value()
 
-                        # widgets in the tools table
-                        if option_changed == 'tools_mill_tool_type':
-                            try:
-                                tt_wdg = self.ui.geo_tools_table.cellWidget(row, 2)
-                                self.target_obj.tools[tooluid_key]['data'][option_changed] = tt_wdg.get_value()
-                            except Exception as e:
-                                self.app.log.error(
-                                    "ToolMilling.form_to_storage() for cell widget --> %s" % str(e))
-                        else:
-                            try:
-                                self.target_obj.tools[tooluid_key]['data'][option_changed] = new_option_value
-                            except Exception as e:
-                                self.app.log.error(
-                                    "ToolMilling.form_to_storage() for key: %s with value: %s --> %s" %
-                                    (str(option_changed), str(new_option_value), str(e))
-                                )
+                        try:
+                            self.target_obj.tools[tooluid_key]['data'][option_changed] = new_option_value
+                        except Exception as e:
+                            self.app.log.error(
+                                "ToolMilling.form_to_storage() for key: %s with value: %s --> %s" %
+                                (str(option_changed), str(new_option_value), str(e))
+                            )
 
         # update the general parameters in all tools
         for tooluid_key, tooluid_val in self.target_obj.tools.items():
@@ -1915,18 +1915,13 @@ class ToolMilling(AppTool, Excellon):
                     self.app.log.error("ToolMilling.form_to_storage() general parameters --> %s" % str(err))
         self.ui_connect()
 
-    def on_tooltable_cellwidget_change(self):
+    def on_tt_change(self):
         cw = self.sender()
-        cw_index = self.ui.geo_tools_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
-        cw_col = cw_index.column()
-        # current_uid = int(self.ui.geo_tools_table.item(cw_row, 3).text())
 
-        if cw_col == 2:
-            tool_type = self.ui.geo_tools_table.cellWidget(cw_row, 2).currentText()
-            self.ui_update_v_shape(tool_type)
+        tool_type = cw.currentText()
+        self.ui_update_v_shape(tool_type)
 
-            self.form_to_storage()
+        self.form_to_storage()
 
     def ui_update_v_shape(self, tool_type_txt):
         if tool_type_txt == 'V':
@@ -1934,10 +1929,8 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tipdia_entry.show()
             self.ui.tipanglelabel.show()
             self.ui.tipangle_entry.show()
-            self.ui.cutz_entry.setDisabled(True)
             self.ui.cutzlabel.setToolTip(
-                _("Disabled because the tool is V-shape.\n"
-                  "For V-shape tools the depth of cut is\n"
+                _("For V-shape tools the depth of cut is\n"
                   "calculated from other parameters like:\n"
                   "- 'V-tip Angle' -> angle at the tip of the tool\n"
                   "- 'V-tip Dia' -> diameter at the tip of the tool \n"
@@ -1950,7 +1943,6 @@ class ToolMilling(AppTool, Excellon):
             self.ui.tipdia_entry.hide()
             self.ui.tipanglelabel.hide()
             self.ui.tipangle_entry.hide()
-            self.ui.cutz_entry.setDisabled(False)
             self.ui.cutzlabel.setToolTip(
                 _("Cutting depth (negative)\n"
                   "below the copper surface.")
@@ -2087,13 +2079,11 @@ class ToolMilling(AppTool, Excellon):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = 'Rough'
         tool_type = 'C1'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
             offset = db_tool_val['offset']
             offset_val = db_tool_val['offset_value']
-            typ = db_tool_val['type']
             tool_type = db_tool_val['tool_type']
 
             db_tooldia = db_tool_val['tooldia']
@@ -2150,7 +2140,6 @@ class ToolMilling(AppTool, Excellon):
                 'tooldia':          new_tdia,
                 'offset':           deepcopy(offset),
                 'offset_value':     deepcopy(offset_val),
-                'type':             deepcopy(typ),
                 'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   self.target_obj.solid_geometry
@@ -2200,7 +2189,6 @@ class ToolMilling(AppTool, Excellon):
             last_data = self.target_obj.tools[max_uid]['data']
             last_offset = self.target_obj.tools[max_uid]['offset']
             last_offset_value = self.target_obj.tools[max_uid]['offset_value']
-            last_type = self.target_obj.tools[max_uid]['type']
             last_tool_type = self.target_obj.tools[max_uid]['tool_type']
 
             last_solid_geometry = self.target_obj.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
@@ -2215,7 +2203,6 @@ class ToolMilling(AppTool, Excellon):
                     'tooldia':          tooldia,
                     'offset':           last_offset,
                     'offset_value':     last_offset_value,
-                    'type':             last_type,
                     'tool_type':        last_tool_type,
                     'data':             deepcopy(last_data),
                     'solid_geometry':   deepcopy(last_solid_geometry)
@@ -2306,7 +2293,6 @@ class ToolMilling(AppTool, Excellon):
                 'tooldia': tooldia,
                 'offset': tool['offset'],
                 'offset_value': float(tool['offset_value']),
-                'type': tool['type'],
                 'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': self.target_obj.solid_geometry
@@ -3761,7 +3747,8 @@ class MillingUI:
 
         self.geo_tools_table.setColumnCount(5)
         self.geo_tools_table.setColumnWidth(0, 20)
-        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('TT'), '', 'P'])
+        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), '', '', 'P'])
+        self.geo_tools_table.setColumnHidden(2, True)
         self.geo_tools_table.setColumnHidden(3, True)
 
         self.geo_tools_table.horizontalHeaderItem(0).setToolTip(
@@ -3773,17 +3760,7 @@ class MillingUI:
         self.geo_tools_table.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
-        self.geo_tools_table.horizontalHeaderItem(2).setToolTip(
-            _(
-                "The Tool Type (TT) can be:\n"
-                "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the cut width in material\n"
-                "is exactly the tool diameter.\n"
-                "- Ball -> informative only and make reference to the Ball type endmill.\n"
-                "- V-Shape -> it will disable Z-Cut parameter in the UI form and enable two additional UI form\n"
-                "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
-                "as the cut width into material will be equal with the value in the Tool "
-                "Diameter column of this table."
-            ))
+
         self.geo_tools_table.horizontalHeaderItem(4).setToolTip(
             _(
                 "Plot column. It is visible only for MultiGeo geometries, meaning geometries that holds the geometry\n"
@@ -3992,7 +3969,31 @@ class MillingUI:
         self.offset_separator_line = QtWidgets.QFrame()
         self.offset_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid1.addWidget(self.offset_separator_line, 8, 0, 1, 2)
+        self.grid1.addWidget(self.offset_separator_line, 7, 0, 1, 2)
+
+        # Tool Type
+        self.tool_shape_label = FCLabel('%s:' % _('Shape'))
+        self.tool_shape_label.setToolTip(
+            _("Tool Shape. \n"
+              "Can be:\n"
+              "C1 ... C4 = circular tool with x flutes\n"
+              "B = ball tip milling tool\n"
+              "V = v-shape milling tool")
+        )
+
+        self.tool_shape_combo = FCComboBox(policy=False)
+        self.tool_shape_combo.setObjectName('mill_tool_type')
+        self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+
+        idx = self.tool_shape_combo.findText(self.app.defaults['tools_mill_tool_type'])
+        # protection against having this translated or loading a project with translated values
+        if idx == -1:
+            self.tool_shape_combo.setCurrentIndex(0)
+        else:
+            self.tool_shape_combo.setCurrentIndex(idx)
+
+        self.grid1.addWidget(self.tool_shape_label, 8, 0)
+        self.grid1.addWidget(self.tool_shape_combo, 8, 1)
 
         # Job Type
         self.job_type_lbl = FCLabel('%s:' % _('Job'))
@@ -4000,9 +4001,10 @@ class MillingUI:
             _(
                 "- Isolation -> informative - lower Feedrate as it uses a milling bit with a fine tip.\n"
                 "- Roughing  -> informative - lower Feedrate and multiDepth cut.\n"
-                "- Finishing -> infrmative - higher Feedrate, without multiDepth.\n"
+                "- Finishing -> informative - higher Feedrate, without multiDepth.\n"
                 "- Polish -> adds a painting sequence over the whole area of the object"
-            ))
+            )
+        )
 
         self.job_type_combo = FCComboBox2()
         self.job_type_combo.addItems(

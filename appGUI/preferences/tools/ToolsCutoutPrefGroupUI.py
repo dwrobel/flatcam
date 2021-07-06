@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel, OptionalInputSection
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -83,6 +83,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.mpass_cb, 2, 0)
         grid0.addWidget(self.maxdepth_entry, 2, 1)
+
+        self.ois_md = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
         # Object kind
         kindlabel = FCLabel('%s:' % _('Kind'))

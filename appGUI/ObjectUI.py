@@ -996,7 +996,7 @@ class GeometryObjectUI(ObjectUI):
 
         self.geo_tools_table.setColumnCount(7)
         self.geo_tools_table.setColumnWidth(0, 20)
-        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '', 'P'])
+        self.geo_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('Shape'), '', 'P'])
         self.geo_tools_table.setColumnHidden(5, True)
         # stylesheet = "::section{Background-color:rgb(239,239,245)}"
         # self.geo_tools_table.horizontalHeader().setStyleSheet(stylesheet)
@@ -1027,17 +1027,11 @@ class GeometryObjectUI(ObjectUI):
                 "For Isolation we need a lower Feedrate as it use a milling bit with a fine tip."
             ))
         self.geo_tools_table.horizontalHeaderItem(4).setToolTip(
-            _(
-                "The Tool Type (TT) can be:\n"
-                "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the cut width in material\n"
-                "is exactly the tool diameter.\n"
-                "- Ball -> informative only and make reference to the Ball type endmill.\n"
-                "- V-Shape -> it will disable Z-Cut parameter in the UI form and enable two additional UI form\n"
-                "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
-                "as the cut width into material will be equal with the value in the Tool "
-                "Diameter column of this table.\n"
-                "Choosing the V-Shape Tool Type automatically will select the Operation Type as Isolation."
-            ))
+            _("Tool Shape. \n"
+              "Can be:\n"
+              "C1 ... C4 = circular tool with x flutes\n"
+              "B = ball tip milling tool\n"
+              "V = v-shape milling tool"))
         self.geo_tools_table.horizontalHeaderItem(6).setToolTip(
             _(
                 "Plot column. It is visible only for MultiGeo geometries, meaning geometries that holds the geometry\n"

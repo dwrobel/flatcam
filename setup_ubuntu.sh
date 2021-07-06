@@ -48,6 +48,7 @@ sudo -H python3 -m pip install --upgrade \
 	pyserial \
 	testresources \
 	pikepdf \
-	foronoi
+	foronoi \
+	networkx
 
 sudo -H easy_install -U distribute

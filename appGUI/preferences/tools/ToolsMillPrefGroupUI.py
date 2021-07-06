@@ -43,6 +43,37 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(tdlabel, 0, 0)
         grid0.addWidget(self.cnctooldia_entry, 0, 1)
 
+        # Tip Dia
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _(
+                "The tip diameter for V-Shape Tool"
+            )
+        )
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.00001, 10000.0000)
+        self.tipdia_entry.setSingleStep(0.1)
+
+        grid0.addWidget(self.tipdialabel, 2, 0)
+        grid0.addWidget(self.tipdia_entry, 2, 1)
+
+        # Tip Angle
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _(
+                "The tip angle for V-Shape Tool.\n"
+                "In degree."
+            )
+        )
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(1.0, 180.0)
+        self.tipangle_entry.setSingleStep(1)
+
+        grid0.addWidget(self.tipanglelabel, 4, 0)
+        grid0.addWidget(self.tipangle_entry, 4, 1)
+
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
@@ -56,8 +87,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setWrapping(True)
 
-        grid0.addWidget(cutzlabel, 1, 0)
-        grid0.addWidget(self.cutz_entry, 1, 1)
+        grid0.addWidget(cutzlabel, 6, 0)
+        grid0.addWidget(self.cutz_entry, 6, 1)
 
         # Multidepth CheckBox
         self.multidepth_cb = FCCheckBox(label=_('Multi-Depth'))
@@ -69,26 +100,19 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                 "reached."
             )
         )
-        grid0.addWidget(self.multidepth_cb, 2, 0)
+        grid0.addWidget(self.multidepth_cb, 8, 0)
 
         # Depth/pass
-        dplabel = FCLabel('%s:' % _('Depth/Pass'))
-        dplabel.setToolTip(
-            _("The depth to cut on each pass,\n"
-              "when multidepth is enabled.\n"
-              "It has positive value although\n"
-              "it is a fraction from the depth\n"
-              "which has negative value.")
-        )
-
         self.depthperpass_entry = FCDoubleSpinner()
+        self.depthperpass_entry.setToolTip(
+            _("Depth of each pass (positive).")
+        )
         self.depthperpass_entry.set_range(0, 99999)
         self.depthperpass_entry.set_precision(self.decimals)
         self.depthperpass_entry.setSingleStep(0.1)
         self.depthperpass_entry.setWrapping(True)
 
-        grid0.addWidget(dplabel, 4, 0)
-        grid0.addWidget(self.depthperpass_entry, 4, 1)
+        grid0.addWidget(self.depthperpass_entry, 8, 1)
 
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
 
@@ -105,8 +129,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setWrapping(True)
 
-        grid0.addWidget(travelzlabel, 6, 0)
-        grid0.addWidget(self.travelz_entry, 6, 1)
+        grid0.addWidget(travelzlabel, 10, 0)
+        grid0.addWidget(self.travelz_entry, 10, 1)
 
         # Tool change:
         self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
@@ -116,7 +140,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                 "in the Machine Code (Pause for tool change)."
             )
         )
-        grid0.addWidget(self.toolchange_cb, 8, 0, 1, 2)
+        grid0.addWidget(self.toolchange_cb, 12, 0, 1, 2)
 
         # Toolchange Z
         toolchangezlabel = FCLabel('%s:' % _('Toolchange Z'))
@@ -133,8 +157,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry.setSingleStep(0.1)
         self.toolchangez_entry.setWrapping(True)
 
-        grid0.addWidget(toolchangezlabel, 10, 0)
-        grid0.addWidget(self.toolchangez_entry, 10, 1)
+        grid0.addWidget(toolchangezlabel, 14, 0)
+        grid0.addWidget(self.toolchangez_entry, 14, 1)
 
         # End move Z
         endz_label = FCLabel('%s:' % _('End move Z'))
@@ -149,8 +173,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.endz_entry.setSingleStep(0.1)
         self.endz_entry.setWrapping(True)
 
-        grid0.addWidget(endz_label, 12, 0)
-        grid0.addWidget(self.endz_entry, 12, 1)
+        grid0.addWidget(endz_label, 16, 0)
+        grid0.addWidget(self.endz_entry, 16, 1)
 
         # End Move X,Y
         endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
@@ -161,8 +185,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(endmove_xy_label, 14, 0)
-        grid0.addWidget(self.endxy_entry, 14, 1)
+        grid0.addWidget(endmove_xy_label, 18, 0)
+        grid0.addWidget(self.endxy_entry, 18, 1)
 
         # Feedrate X-Y
         frlabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -176,8 +200,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
 
-        grid0.addWidget(frlabel, 16, 0)
-        grid0.addWidget(self.cncfeedrate_entry, 16, 1)
+        grid0.addWidget(frlabel, 20, 0)
+        grid0.addWidget(self.cncfeedrate_entry, 20, 1)
 
         # Feedrate Z (Plunge)
         frz_label = FCLabel('%s:' % _('Feedrate Z'))
@@ -192,8 +216,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setWrapping(True)
 
-        grid0.addWidget(frz_label, 18, 0)
-        grid0.addWidget(self.feedrate_z_entry, 18, 1)
+        grid0.addWidget(frz_label, 22, 0)
+        grid0.addWidget(self.feedrate_z_entry, 22, 1)
 
         # Spindle Speed
         spdlabel = FCLabel('%s:' % _('Spindle speed'))
@@ -208,8 +232,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.set_step(100)
 
-        grid0.addWidget(spdlabel, 20, 0)
-        grid0.addWidget(self.cncspindlespeed_entry, 20, 1)
+        grid0.addWidget(spdlabel, 24, 0)
+        grid0.addWidget(self.cncspindlespeed_entry, 24, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox(label='%s' % _('Enable Dwell'))
@@ -217,19 +241,18 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        dwelltime = FCLabel('%s:' % _('Duration'))
-        dwelltime.setToolTip(
+
+        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
-        self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_range(0, 99999)
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.setSingleStep(0.1)
         self.dwelltime_entry.setWrapping(True)
 
-        grid0.addWidget(self.dwell_cb, 22, 0)
-        grid0.addWidget(dwelltime, 24, 0)
-        grid0.addWidget(self.dwelltime_entry, 24, 1)
+        grid0.addWidget(self.dwell_cb, 26, 0)
+        grid0.addWidget(self.dwelltime_entry, 26, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -243,13 +266,13 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
         self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
-        grid0.addWidget(pp_label, 26, 0)
-        grid0.addWidget(self.pp_geometry_name_cb, 26, 1)
+        grid0.addWidget(pp_label, 28, 0)
+        grid0.addWidget(self.pp_geometry_name_cb, 28, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 28, 0, 1, 2)
+        grid0.addWidget(separator_line, 30, 0, 1, 2)
 
         # Toolchange X,Y
         toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
@@ -258,8 +281,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(toolchange_xy_label, 30, 0)
-        grid0.addWidget(self.toolchangexy_entry, 30, 1)
+        grid0.addWidget(toolchange_xy_label, 32, 0)
+        grid0.addWidget(self.toolchangexy_entry, 32, 1)
 
         # Start move Z
         startzlabel = FCLabel('%s:' % _('Start Z'))
@@ -269,8 +292,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.gstartz_entry = NumericalEvalEntry(border_color='#0069A9')
 
-        grid0.addWidget(startzlabel, 32, 0)
-        grid0.addWidget(self.gstartz_entry, 32, 1)
+        grid0.addWidget(startzlabel, 34, 0)
+        grid0.addWidget(self.gstartz_entry, 34, 1)
 
         # Feedrate rapids
         fr_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -287,8 +310,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setWrapping(True)
 
-        grid0.addWidget(fr_rapid_label, 34, 0)
-        grid0.addWidget(self.feedrate_rapid_entry, 34, 1)
+        grid0.addWidget(fr_rapid_label, 36, 0)
+        grid0.addWidget(self.feedrate_rapid_entry, 36, 1)
 
         # End move extra cut
         self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))
@@ -310,8 +333,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
-        grid0.addWidget(self.extracut_cb, 36, 0)
-        grid0.addWidget(self.e_cut_entry, 36, 1)
+        grid0.addWidget(self.extracut_cb, 38, 0)
+        grid0.addWidget(self.e_cut_entry, 38, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -325,8 +348,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setWrapping(True)
 
-        grid0.addWidget(self.pdepth_label, 38, 0)
-        grid0.addWidget(self.pdepth_entry, 38, 1)
+        grid0.addWidget(self.pdepth_label, 40, 0)
+        grid0.addWidget(self.pdepth_entry, 40, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
@@ -339,8 +362,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setWrapping(True)
 
-        grid0.addWidget(self.feedrate_probe_label, 40, 0)
-        grid0.addWidget(self.feedrate_probe_entry, 40, 1)
+        grid0.addWidget(self.feedrate_probe_label, 42, 0)
+        grid0.addWidget(self.feedrate_probe_entry, 42, 1)
 
         # Spindle direction
         spindle_dir_label = FCLabel('%s:' % _('Spindle direction'))
@@ -353,8 +376,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
 
         self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                           {'label': _('CCW'), 'value': 'CCW'}])
-        grid0.addWidget(spindle_dir_label, 42, 0)
-        grid0.addWidget(self.spindledir_radio, 42, 1)
+        grid0.addWidget(spindle_dir_label, 44, 0)
+        grid0.addWidget(self.spindledir_radio, 44, 1)
 
         # Fast Move from Z Toolchange
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
@@ -364,12 +387,12 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        grid0.addWidget(self.fplunge_cb, 44, 0, 1, 2)
+        grid0.addWidget(self.fplunge_cb, 46, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 50, 0, 1, 2)
+        grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # -----------------------------
         # --- Area Exclusion ----------
@@ -434,51 +457,13 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         # -----------------------------
         # --- Area POLISH ----------
         # -----------------------------
-        # Add Polish
-        self.polish_cb = FCCheckBox(label=_('Add Polish'))
-        self.polish_cb.setToolTip(_(
-            "Will add a Paint section at the end of the GCode.\n"
-            "A metallic brush will clean the material after milling."))
-        grid0.addWidget(self.polish_cb, 64, 0, 1, 2)
 
-        # Polish Tool Diameter
-        self.polish_dia_lbl = FCLabel('%s:' % _('Tool Dia'))
-        self.polish_dia_lbl.setToolTip(
-            _("Diameter for the polishing tool.")
+        self.pol_label = FCLabel('<b>%s:</b>' % _('Add Polish'))
+        self.pol_label.setToolTip(
+            _("Will add a Paint section at the end of the GCode.\n"
+              "A metallic brush will clean the material after milling.")
         )
-        self.polish_dia_entry = FCDoubleSpinner()
-        self.polish_dia_entry.set_precision(self.decimals)
-        self.polish_dia_entry.set_range(-10000.000, 10000.0000)
-
-        grid0.addWidget(self.polish_dia_lbl, 66, 0)
-        grid0.addWidget(self.polish_dia_entry, 66, 1)
-
-        # Polish Travel Z
-        self.polish_travelz_lbl = FCLabel('%s:' % _('Travel Z'))
-        self.polish_travelz_lbl.setToolTip(
-            _("Height of the tool when\n"
-              "moving without cutting.")
-        )
-        self.polish_travelz_entry = FCDoubleSpinner()
-        self.polish_travelz_entry.set_precision(self.decimals)
-        self.polish_travelz_entry.set_range(0.00000, 10000.00000)
-        self.polish_travelz_entry.setSingleStep(0.1)
-
-        grid0.addWidget(self.polish_travelz_lbl, 68, 0)
-        grid0.addWidget(self.polish_travelz_entry, 68, 1)
-
-        # Polish Pressure
-        self.polish_pressure_lbl = FCLabel('%s:' % _('Pressure'))
-        self.polish_pressure_lbl.setToolTip(
-            _("Negative value. The higher the absolute value\n"
-              "the stronger the pressure of the brush on the material.")
-        )
-        self.polish_pressure_entry = FCDoubleSpinner()
-        self.polish_pressure_entry.set_precision(self.decimals)
-        self.polish_pressure_entry.set_range(-10000.0000, 10000.0000)
-
-        grid0.addWidget(self.polish_pressure_lbl, 70, 0)
-        grid0.addWidget(self.polish_pressure_entry, 70, 1)
+        grid0.addWidget(self.pol_label, 70, 0, 1, 2)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))

@@ -26,8 +26,8 @@ class ToolsDB2UI:
         self.decimals = self.app.decimals
 
         self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = ['Iso', 'Rough', 'Finish']
-        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+        self.job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
+        self.tool_job_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         self.g_lay = grid_layout
 
@@ -290,10 +290,11 @@ class ToolsDB2UI:
               "Can be:\n"
               "C1 ... C4 = circular tool with x flutes\n"
               "B = ball tip milling tool\n"
-              "V = v-shape milling tool"))
+              "V = v-shape milling tool")
+        )
 
         self.mill_shape_combo = FCComboBox()
-        self.mill_shape_combo.addItems(self.tool_type_item_options)
+        self.mill_shape_combo.addItems(self.tool_job_options)
         self.mill_shape_combo.setObjectName('gdb_shape')
 
         self.grid0.addWidget(self.shape_label, 2, 0)
@@ -333,20 +334,22 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Tool Type
-        self.type_label = FCLabel('%s:' % _("Tool Type"))
-        self.type_label.setToolTip(
-            _("Tool Type.\n"
-              "Can be:\n"
-              "Iso = isolation cut\n"
-              "Rough = rough cut, low feedrate, multiple passes\n"
-              "Finish = finishing cut, high feedrate"))
+        self.job_type_lbl = FCLabel('%s:' % _("Job"))
+        self.job_type_lbl.setToolTip(
+            _(
+                "- Isolation -> informative - lower Feedrate as it uses a milling bit with a fine tip.\n"
+                "- Roughing  -> informative - lower Feedrate and multiDepth cut.\n"
+                "- Finishing -> informative - higher Feedrate, without multiDepth.\n"
+                "- Polish -> adds a painting sequence over the whole area of the object"
+            )
+        )
 
-        self.mill_type_combo = FCComboBox()
-        self.mill_type_combo.addItems(self.type_item_options)
-        self.mill_type_combo.setObjectName('gdb_type')
+        self.job_type_combo = FCComboBox()
+        self.job_type_combo.addItems(self.job_item_options)
+        self.job_type_combo.setObjectName('gdb_job')
 
-        self.grid0.addWidget(self.type_label, 10, 0)
-        self.grid0.addWidget(self.mill_type_combo, 10, 1)
+        self.grid0.addWidget(self.job_type_lbl, 10, 0)
+        self.grid0.addWidget(self.job_type_combo, 10, 1)
 
         # Tool Offset
         self.tooloffset_label = FCLabel('%s:' % _('Tool Offset'))
@@ -1429,7 +1432,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_mill_dwell":            self.ui.mill_dwell_cb,
             "tools_mill_dwelltime":        self.ui.mill_dwelltime_entry,
 
-            "tools_mill_type":             self.ui.mill_type_combo,
+            "tools_mill_type":             self.ui.job_type_combo,
             "tools_mill_offset":           self.ui.mill_tooloffset_combo,
             "tools_mill_offset_value":     self.ui.mill_custom_offset_entry,
             "tools_mill_vtipdia":          self.ui.mill_vdia_entry,
@@ -1512,7 +1515,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_dwell":            "dwell",
             "gdb_dwelltime":        "dwelltime",
 
-            "gdb_type":             "type",
+            "gdb_job":             "job",
             "gdb_tool_offset":      "offset",
             "gdb_custom_offset":    "offset_value",
             "gdb_vdia":             "vtipdia",
@@ -2038,7 +2041,6 @@ class ToolsDB2(QtWidgets.QWidget):
 
         dict_elem['offset'] = 'Path'
         dict_elem['offset_value'] = 0.0
-        dict_elem['type'] = 'Rough'
         dict_elem['tool_type'] = 'C1'
         dict_elem['data'] = default_data
 
@@ -2513,8 +2515,8 @@ class ToolsDB2(QtWidgets.QWidget):
             self.db_tool_dict[tool_id]['offset'] = val
         elif wdg_name == "gdb_custom_offset":
             self.db_tool_dict[tool_id]['offset_value'] = val
-        elif wdg_name == "gdb_type":
-            self.db_tool_dict[tool_id]['type'] = val
+        elif wdg_name == "gdb_job":
+            self.db_tool_dict[tool_id]['data']['job'] = val
         elif wdg_name == "gdb_shape":
             self.db_tool_dict[tool_id]['tool_type'] = val
         else:

@@ -115,7 +115,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                             'tooldia': 1,
                             'offset': 'Path',
                             'offset_value': 0.0
-                            'type': 'Rough',
                             'tool_type': 'C1',
                             'data': self.default_tool_data
                             'solid_geometry': []
@@ -129,7 +128,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.sel_tools = {}
 
         self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = ['Iso', 'Rough', 'Finish']
+        self.job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         # flag to store if the V-Shape tool is selected in self.ui.geo_tools_table
@@ -219,11 +218,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                 offset_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
-            # -------------------- TYPE     ------------------------------------- #
+            # -------------------- JOB     ------------------------------------- #
             type_item = FCComboBox(policy=False)
-            for item in self.type_item_options:
-                type_item.addItem(item)
-            idx = type_item.findText(tooluid_value['type'])
+            type_item.addItems(self.job_item_options)
+            pos = tooluid_value['data']['tools_mill_job_type']
+            idx = type_item.findText(self.job_item_options[pos])
             # protection against having this translated or loading a project with translated values
             if idx == -1:
                 type_item.setCurrentIndex(0)
@@ -542,7 +541,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                         'tooldia': self.app.dec_format(float(toold), self.decimals),
                         'offset': 'Path',
                         'offset_value': 0.0,
-                        'type': 'Rough',
                         'tool_type': self.tool_type,
                         'data': new_data,
                         'solid_geometry': self.solid_geometry
@@ -1245,13 +1243,11 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         offset = 'Path'
         offset_val = 0.0
-        typ = 'Rough'
         tool_type = 'C1'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
             offset = db_tool_val['offset']
             offset_val = db_tool_val['offset_value']
-            typ = db_tool_val['type']
             tool_type = db_tool_val['tool_type']
 
             db_tooldia = db_tool_val['tooldia']
@@ -1306,7 +1302,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                 'tooldia': new_tdia,
                 'offset': deepcopy(offset),
                 'offset_value': deepcopy(offset_val),
-                'type': deepcopy(typ),
                 'tool_type': deepcopy(tool_type),
                 'data': deepcopy(new_tools_dict),
                 'solid_geometry': self.solid_geometry
@@ -1348,7 +1343,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             last_data = self.tools[max_uid]['data']
             last_offset = self.tools[max_uid]['offset']
             last_offset_value = self.tools[max_uid]['offset_value']
-            last_type = self.tools[max_uid]['type']
             last_tool_type = self.tools[max_uid]['tool_type']
 
             last_solid_geometry = self.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
@@ -1363,7 +1357,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                     'tooldia': tooldia,
                     'offset': last_offset,
                     'offset_value': last_offset_value,
-                    'type': last_type,
                     'tool_type': last_tool_type,
                     'data': deepcopy(last_data),
                     'solid_geometry': deepcopy(last_solid_geometry)
@@ -1375,7 +1368,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                     'tooldia': tooldia,
                     'offset': 'Path',
                     'offset_value': 0.0,
-                    'type': 'Rough',
                     'tool_type': 'C1',
                     'data': deepcopy(self.default_data),
                     'solid_geometry': self.solid_geometry
@@ -1455,7 +1447,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                 'tooldia': tooldia,
                 'offset': tool['offset'],
                 'offset_value': float(tool['offset_value']),
-                'type': tool['type'],
                 'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': self.solid_geometry
@@ -1763,17 +1754,17 @@ class GeometryObject(FlatCAMObj, Geometry):
                 elif cw_col == 3:
                     # force toolpath type as 'Iso' if the tool type is V-Shape
                     if self.ui.geo_tools_table.cellWidget(cw_row, 4).currentText() == 'V':
-                        tooluid_value['type'] = 'Iso'
-                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText('Iso')
+                        tooluid_value['data']['tools_mill_job_type'] = _('Isolation')
+                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText(_('Isolation'))
                         self.ui.geo_tools_table.cellWidget(cw_row, 3).setCurrentIndex(idx)
                     else:
-                        tooluid_value['type'] = cb_txt
+                        tooluid_value['data']['tools_mill_job_type'] = cb_txt
                 elif cw_col == 4:
-                    tooluid_value['tool_type'] = cb_txt
+                    tooluid_value['data']['tool_type'] = cb_txt
 
                     # if the tool_type selected is V-Shape then autoselect the toolpath type as Iso
                     if cb_txt == 'V':
-                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText('Iso')
+                        idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText(_('Isolation'))
                         self.ui.geo_tools_table.cellWidget(cw_row, 3).setCurrentIndex(idx)
                     else:
                         self.ui.cutz_entry.set_value(self.old_cutz)
@@ -1813,7 +1804,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # store all the data associated with the row parameter to the self.tools storage
         tooldia_item = float(self.ui.geo_tools_table.item(row, 1).text())
         offset_item = self.ui.geo_tools_table.cellWidget(row, 2).currentText()
-        type_item = self.ui.geo_tools_table.cellWidget(row, 3).currentText()
+        job_item = self.ui.geo_tools_table.cellWidget(row, 3).currentText()
         tool_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
 
         offset_value_item = float(self.ui.tool_offset_entry.get_value())
@@ -1830,8 +1821,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # update the 'offset', 'type' and 'tool_type' sections
                 if key == 'offset':
                     temp_dia[key] = offset_item
-                if key == 'type':
-                    temp_dia[key] = type_item
                 if key == 'tool_type':
                     temp_dia[key] = tool_type_item
                 if key == 'offset_value':
@@ -1854,6 +1843,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
 
                 temp_tools[tooluid_key] = deepcopy(temp_dia)
+            temp_dia['data']['tools_mill_job_type'] = job_item
 
         self.tools.clear()
         self.tools = deepcopy(temp_tools)
@@ -1897,7 +1887,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # store all the data associated with the row parameter to the self.tools storage
         tooldia_item = float(self.ui.geo_tools_table.item(row, 1).text())
         offset_item = self.ui.geo_tools_table.cellWidget(row, 2).currentText()
-        type_item = self.ui.geo_tools_table.cellWidget(row, 3).currentText()
+        job_item = self.ui.geo_tools_table.cellWidget(row, 3).currentText()
         tool_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
         tooluid_item = int(self.ui.geo_tools_table.item(row, 5).text())
 
@@ -1916,8 +1906,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                     # update the 'offset', 'type' and 'tool_type' sections
                     if key == 'offset':
                         temp_dia[key] = offset_item
-                    if key == 'type':
-                        temp_dia[key] = type_item
                     if key == 'tool_type':
                         temp_dia[key] = tool_type_item
                     if key == 'offset_value':
@@ -1940,6 +1928,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
 
                     temp_tools[tooluid_key] = deepcopy(temp_dia)
+                temp_dia['data']['tools_mill_job_type'] = job_item
             else:
                 temp_tools[tooluid_key] = deepcopy(tooluid_value)
 
@@ -3068,8 +3057,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                             custom_offset *= factor
                             self.ui.tool_offset_entry.set_value(custom_offset)
 
-                    if dia_key == 'type':
-                        tool_dia_copy[dia_key] = dia_value
                     if dia_key == 'tool_type':
                         tool_dia_copy[dia_key] = dia_value
                     if dia_key == 'data':
@@ -3493,9 +3480,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             for k, v in new_tools.items():
                 same_dia[v['tooldia']].append(k)
 
-            # find tools that have the same type and group them by type
+            # find tools that have the same type (job) and group them by type
             for k, v in new_tools.items():
-                same_type[v['type']].append(k)
+                same_type[v['data']['tools_mill_job_type']].append(k)
 
             # find tools that have the same tool_type and group them by tool_type
             for k, v in new_tools.items():

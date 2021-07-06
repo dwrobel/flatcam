@@ -7,6 +7,23 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.07.2021
+
+- some changes in data tools structure ('tool_type' to ['data']['tools_mill_job_type])
+- some strings changes
+
+4.07.2021
+
+- optimized the Milling Plugin preferences
+- added more preferences for v-shape tools in the Milling Plugin Preferences
+- deactivated the automatic disable of the Cut Z parameter when selecting a v-shape tool in Milling Plugin
+- in Milling Plugin added some protections against receiving signals from widgets without objectName set
+- in Milling Plugin made sure that the Custom offset field is displayed only when it is needed (selected from Offset Type combobox)
+- added some requirements asked by vispy v0.7.0
+- if the generated Gcode is empty then the app will know and will not create a CNCJob object
+- modified the Tool Table in Milling Plugin: now the tool type parameter is part of the Tool parameters and no longer in the Tool Table
+- working on a Kosy CNC machine preprocessor file
+
 21.06.2021
 
 - optimized the data storage in the on_about() method

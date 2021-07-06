@@ -84,6 +84,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mpass_cb, 5, 0)
         grid0.addWidget(self.maxdepth_entry, 5, 1, 1, 2)
 
+        self.ois_md = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
+
         # Travel Z
         travelzlabel = FCLabel('%s:' % _('Travel Z'))
         travelzlabel.setToolTip(
@@ -181,17 +183,15 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "speed before cutting.")
         )
 
-        grid0.addWidget(self.dwell_cb, 23, 0, 1, 3)
+        grid0.addWidget(self.dwell_cb, 23, 0)
 
         # Dwell Time
-        dwelltime = FCLabel('%s:' % _('Duration'))
-        dwelltime.setToolTip(_("Number of time units for spindle to dwell."))
         self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.setToolTip(_("Number of time units for spindle to dwell."))
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(dwelltime, 25, 0)
-        grid0.addWidget(self.dwelltime_entry, 25, 1, 1, 2)
+        grid0.addWidget(self.dwelltime_entry, 23, 1, 1, 2)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 

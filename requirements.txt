@@ -32,3 +32,4 @@ pyqt5>=5.12.1
 vispy
 rasterio
 foronoi>=1.0.3
+networkx

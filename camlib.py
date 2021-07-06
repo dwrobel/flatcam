@@ -5992,6 +5992,9 @@ class CNCjob(Geometry):
             '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
         )
 
+        if self.gcode == '':
+            return 'fail', start_gcode
+
         return self.gcode, start_gcode
 
     def generate_gcode_from_solderpaste_geo(self, **kwargs):

@@ -314,8 +314,8 @@ class PreferencesUIManager:
             # "tools_mill_offset_type":   0,  # _('Path')
             # "tools_mill_offset":        0.0,
             # "tools_mill_job_type":      0,  # 'Rough'
-            # "tools_mill_vtipdia": 0.1,
-            # "tools_mill_vtipangle": 30,
+            "tools_mill_vtipdia": self.ui.plugin_pref_form.tools_mill_group.tipdia_entry,
+            "tools_mill_vtipangle": self.ui.plugin_pref_form.tools_mill_group.tipangle_entry,
 
             "tools_mill_cutz": self.ui.plugin_pref_form.tools_mill_group.cutz_entry,
             "tools_mill_travelz": self.ui.plugin_pref_form.tools_mill_group.travelz_entry,
@@ -348,10 +348,6 @@ class PreferencesUIManager:
             "tools_mill_area_strategy": self.ui.plugin_pref_form.tools_mill_group.strategy_radio,
             "tools_mill_area_overz": self.ui.plugin_pref_form.tools_mill_group.over_z_entry,
             # Polish
-            "tools_mill_polish": self.ui.plugin_pref_form.tools_mill_group.polish_cb,
-            "geometry_polish_dia": self.ui.plugin_pref_form.tools_mill_group.polish_dia_entry,
-            "geometry_polish_pressure": self.ui.plugin_pref_form.tools_mill_group.polish_pressure_entry,
-            "geometry_polish_travelz": self.ui.plugin_pref_form.tools_mill_group.polish_travelz_entry,
             "tools_mill_polish_margin": self.ui.plugin_pref_form.tools_mill_group.polish_margin_entry,
             "tools_mill_polish_overlap": self.ui.plugin_pref_form.tools_mill_group.polish_over_entry,
             "tools_mill_polish_method": self.ui.plugin_pref_form.tools_mill_group.polish_method_combo,
