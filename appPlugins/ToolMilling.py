@@ -444,7 +444,7 @@ class ToolMilling(AppTool, Excellon):
             # Geometry properties
             # "tools_mill_tooldia": self.ui.addtool_entry,
             "tools_mill_offset_type": self.ui.offset_type_combo,
-            "tools_mill_offset": self.ui.offset_entry,
+            "tools_mill_offset_value": self.ui.offset_entry,
 
             "tools_mill_tool_type": self.ui.tool_shape_combo,
             "tools_mill_job_type": self.ui.job_type_combo,
@@ -496,7 +496,7 @@ class ToolMilling(AppTool, Excellon):
             "milling_dia":      "tools_mill_milling_dia",
 
             "mill_offset_type": "tools_mill_offset_type",
-            "mill_offset":      "tools_mill_offset",
+            "mill_offset":      "tools_mill_offset_value",
 
             "mill_tool_type":   "tools_mill_tool_type",
             "mill_job_type":       "tools_mill_job_type",
@@ -586,7 +586,7 @@ class ToolMilling(AppTool, Excellon):
         #     "tools_mill_tooldia": 0.1,
         #
         #     "tools_mill_offset_type": 0,    # _("Path")
-        #     "tools_mill_offset": 0.0,
+        #     "tools_mill_offset_value": 0.0,
         #
         #     "tools_mill_milling_type": "drills",
         #     "tools_mill_milling_dia": 0.04,
@@ -746,7 +746,7 @@ class ToolMilling(AppTool, Excellon):
                         tool_data = self.target_obj.tools[tool]['data']
 
                         tool_data['tools_mill_offset_type'] = 'Path'
-                        tool_data['tools_mill_offset'] = 0.0
+                        tool_data['tools_mill_offset_value'] = 0.0
                         tool_data['tools_mill_job_type'] = 'Rough'
 
                         tool_data['tools_mill_multidepth'] = False
@@ -811,7 +811,7 @@ class ToolMilling(AppTool, Excellon):
                         tool_data = self.target_obj.tools[tool]['data']
 
                         tool_data['tools_mill_offset_type'] = app_defaults['tools_mill_offset_type']
-                        tool_data['tools_mill_offset'] = app_defaults['tools_mill_offset']
+                        tool_data['tools_mill_offset_value'] = app_defaults['tools_mill_offset_value']
                         tool_data['tools_mill_job_type'] = app_defaults['tools_mill_job_type']
 
                         tool_data['tools_mill_multidepth'] = app_defaults['tools_mill_multidepth']
@@ -2895,11 +2895,11 @@ class ToolMilling(AppTool, Excellon):
                     def_optimization_type = self.target_obj.options["tools_mill_optimization_type"]
                     tools_dict[tooluid_key]['data']["tools_mill_optimization_type"] = def_optimization_type
 
-                if dia_cnc_dict['data']['tools_mill_offset'] == 1:  # 'in'
+                if dia_cnc_dict['data']['tools_mill_offset_type'] == 1:  # 'in'
                     tool_offset = -dia_cnc_dict['tools_mill_tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset'] == 2: # 'out'
+                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 2: # 'out'
                     tool_offset = dia_cnc_dict['tools_mill_tooldia'] / 2
-                elif dia_cnc_dict['data']['tools_mill_offset'] == 3: # 'custom'
+                elif dia_cnc_dict['data']['tools_mill_offset_type'] == 3: # 'custom'
                     try:
                         offset_value = float(self.ui.offset_entry.get_value())
                     except ValueError:

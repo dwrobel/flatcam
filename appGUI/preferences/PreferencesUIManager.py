@@ -312,7 +312,7 @@ class PreferencesUIManager:
             # Milling Plugin Options
             "tools_mill_tooldia": self.ui.plugin_pref_form.tools_mill_group.cnctooldia_entry,
             # "tools_mill_offset_type":   0,  # _('Path')
-            # "tools_mill_offset":        0.0,
+            # "tools_mill_offset_value":        0.0,
             # "tools_mill_job_type":      0,  # 'Rough'
             "tools_mill_vtipdia": self.ui.plugin_pref_form.tools_mill_group.tipdia_entry,
             "tools_mill_vtipangle": self.ui.plugin_pref_form.tools_mill_group.tipangle_entry,

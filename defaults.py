@@ -414,8 +414,9 @@ class FlatCAMDefaults:
         # Milling Plugin Options
         "tools_mill_tooldia": "2.4",
         "tools_mill_offset_type": 0,  # _('Path')
-        "tools_mill_offset": 0.0,
+        "tools_mill_offset_value": 0.0,
         "tools_mill_job_type": 0,  # 'Roughing'
+        "tools_mill_shape": 'C1',
 
         "tools_mill_cutz": -2.4,
         "tools_mill_vtipdia": 0.1,

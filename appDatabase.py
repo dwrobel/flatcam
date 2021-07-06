@@ -361,12 +361,12 @@ class ToolsDB2UI:
               "Out = offset outside by half of tool diameter\n"
               "Custom = custom offset using the Custom Offset value"))
 
-        self.mill_tooloffset_combo = FCComboBox()
-        self.mill_tooloffset_combo.addItems(self.offset_item_options)
-        self.mill_tooloffset_combo.setObjectName('gdb_tool_offset')
+        self.mill_tooloffset_type_combo = FCComboBox()
+        self.mill_tooloffset_type_combo.addItems(self.offset_item_options)
+        self.mill_tooloffset_type_combo.setObjectName('gdb_tool_offset_type')
 
         self.grid0.addWidget(self.tooloffset_label, 12, 0)
-        self.grid0.addWidget(self.mill_tooloffset_combo, 12, 1)
+        self.grid0.addWidget(self.mill_tooloffset_type_combo, 12, 1)
 
         # Custom Offset
         self.custom_offset_label = FCLabel('%s:' % _("Custom Offset"))
@@ -1386,8 +1386,6 @@ class ToolsDB2(QtWidgets.QWidget):
                 'tooldia': self.app.defaults["tools_mill_tooldia"]
                 'offset': 'Path'
                 'offset_value': 0.0
-                'type':  'Rough',
-                'tool_type': 'C1'
                 'data': dict()
             }
         }
@@ -1421,7 +1419,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "tooldia":          self.ui.dia_entry,
 
             # Milling
-            "tools_mill_tool_type":        self.ui.mill_shape_combo,
+            "tools_mill_shape":            self.ui.mill_shape_combo,
             "tools_mill_cutz":             self.ui.mill_cutz_entry,
             "tools_mill_multidepth":       self.ui.mill_multidepth_cb,
             "tools_mill_depthperpass":     self.ui.mill_multidepth_entry,
@@ -1432,8 +1430,8 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_mill_dwell":            self.ui.mill_dwell_cb,
             "tools_mill_dwelltime":        self.ui.mill_dwelltime_entry,
 
-            "tools_mill_type":             self.ui.job_type_combo,
-            "tools_mill_offset":           self.ui.mill_tooloffset_combo,
+            "tools_mill_job_type":         self.ui.job_type_combo,
+            "tools_mill_offset_type":      self.ui.mill_tooloffset_type_combo,
             "tools_mill_offset_value":     self.ui.mill_custom_offset_entry,
             "tools_mill_vtipdia":          self.ui.mill_vdia_entry,
             "tools_mill_vtipangle":        self.ui.mill_vangle_entry,
@@ -1504,25 +1502,25 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_dia":              "tooldia",
 
             # Milling
-            "gdb_shape":            "tool_type",
-            "gdb_cutz":             "cutz",
-            "gdb_multidepth":       "multidepth",
-            "gdb_multidepth_entry": "depthperpass",
-            "gdb_travelz":           "travelz",
-            "gdb_frxy":             "feedrate",
-            "gdb_frz":              "feedrate_z",
-            "gdb_spindle":          "spindlespeed",
-            "gdb_dwell":            "dwell",
-            "gdb_dwelltime":        "dwelltime",
+            "gdb_shape":            "tools_mill_shape",
+            "gdb_cutz":             "tools_mill_cutz",
+            "gdb_multidepth":       "tools_mill_multidepth",
+            "gdb_multidepth_entry": "tools_mill_depthperpass",
+            "gdb_travelz":          "tools_mill_travelz",
+            "gdb_frxy":             "tools_mill_feedrate",
+            "gdb_frz":              "tools_mill_feedrate_z",
+            "gdb_spindle":          "tools_mill_spindlespeed",
+            "gdb_dwell":            "tools_mill_dwell",
+            "gdb_dwelltime":        "tools_mill_dwelltime",
 
-            "gdb_job":             "job",
-            "gdb_tool_offset":      "offset",
-            "gdb_custom_offset":    "offset_value",
-            "gdb_vdia":             "vtipdia",
-            "gdb_vangle":           "vtipangle",
-            "gdb_frapids":          "feedrate_rapid",
-            "gdb_ecut":             "extracut",
-            "gdb_ecut_length":      "extracut_length",
+            "gdb_job":              "tools_mill_job_type",
+            "gdb_tool_offset_type": "tools_mill_offset_type",
+            "gdb_custom_offset":    "tools_mill_offset_value",
+            "gdb_vdia":             "tools_mill_vtipdia",
+            "gdb_vangle":           "tools_mill_vtipangle",
+            "gdb_frapids":          "tools_mill_feedrate_rapid",
+            "gdb_ecut":             "tools_mill_extracut",
+            "gdb_ecut_length":      "tools_mill_extracut_length",
 
             # NCC
             "gdb_n_operation":      "tools_ncc_operation",
@@ -1925,6 +1923,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "tol_max": 0.0,
 
             # Milling
+            "tools_mill_shape":            self.app.defaults["tools_mill_shape"],
+            "tools_mill_job_type":         self.app.defaults["tools_mill_job_type"],
+            "tools_mill_offset_type":      self.app.defaults["tools_mill_offset_type"],
+            "tools_mill_offset_value":     float(self.app.defaults["tools_mill_offset_value"]),
+
             "tools_mill_cutz":             float(self.app.defaults["tools_mill_cutz"]),
             "tools_mill_multidepth":       self.app.defaults["tools_mill_multidepth"],
             "tools_mill_depthperpass":     float(self.app.defaults["tools_mill_depthperpass"]),
@@ -2039,9 +2042,6 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app.log.error("ToolDB.on_tool_add() --> %s" % str(e))
                 return
 
-        dict_elem['offset'] = 'Path'
-        dict_elem['offset_value'] = 0.0
-        dict_elem['tool_type'] = 'C1'
         dict_elem['data'] = default_data
 
         new_toolid = len(self.db_tool_dict) + 1
@@ -2511,10 +2511,6 @@ class ToolsDB2(QtWidgets.QWidget):
             self.db_tool_dict[tool_id]['name'] = val
         elif wdg_name == "gdb_dia":
             self.db_tool_dict[tool_id]['tooldia'] = val
-        elif wdg_name == "gdb_tool_offset":
-            self.db_tool_dict[tool_id]['offset'] = val
-        elif wdg_name == "gdb_custom_offset":
-            self.db_tool_dict[tool_id]['offset_value'] = val
         elif wdg_name == "gdb_job":
             self.db_tool_dict[tool_id]['data']['job'] = val
         elif wdg_name == "gdb_shape":
@@ -2527,6 +2523,11 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.db_tool_dict[tool_id]['data']['tol_min'] = val
             elif wdg_name == "gdb_tol_max":
                 self.db_tool_dict[tool_id]['data']['tol_max'] = val
+
+            elif wdg_name == "gdb_tool_offset_type":
+                self.db_tool_dict[tool_id]['data']['tools_mill_offset_type'] = val
+            elif wdg_name == "gdb_custom_offset":
+                self.db_tool_dict[tool_id]['tools_mill_offset_value'] = val
 
             elif wdg_name == "gdb_cutz":
                 self.db_tool_dict[tool_id]['data']['cutz'] = val

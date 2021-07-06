@@ -890,14 +890,12 @@ class ToolPaint(AppTool, Gerber):
 
         offset = 'Path'
         offset_val = 0.0
-        tool_type = 'V'
 
         # look in database tools
         if tools_db_dict:
             for db_tool, db_tool_val in tools_db_dict.items():
                 offset = db_tool_val['data']['tools_mill_offset_type']
-                offset_val = db_tool_val['data']['tools_mill_offset']
-                tool_type = db_tool_val['tool_type']
+                offset_val = db_tool_val['data']['tools_mill_offset_value']
 
                 db_tooldia = db_tool_val['tooldia']
                 low_limit = float(db_tool_val['data']['tol_min'])
@@ -958,7 +956,6 @@ class ToolPaint(AppTool, Gerber):
                 'tooldia':          new_tdia,
                 'offset':           deepcopy(offset),
                 'offset_value':     deepcopy(offset_val),
-                'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
             }

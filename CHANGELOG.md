@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - some changes in data tools structure ('tool_type' to ['data']['tools_mill_job_type])
 - some strings changes
+- working on data structures (offset, offset_value, job_type, shape) and on the Tools Database
 
 4.07.2021
 
