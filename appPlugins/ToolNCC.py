@@ -851,7 +851,7 @@ class NonCopperClear(AppTool, Gerber):
                     # ------------------------ Tool Shape -------------------------------------------------------------
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
-                    idx = tool_type_item.findText(tooluid_value['tool_type'])
+                    idx = int(tooluid_value['data']['tools_mill_shape'])
                     tool_type_item.setCurrentIndex(idx)
                     self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
@@ -1293,15 +1293,8 @@ class NonCopperClear(AppTool, Gerber):
 
         tool_found = 0
 
-        offset = 'Path'
-        offset_val = 0.0
-        tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['offset']
-            offset_val = db_tool_val['offset_value']
-            tool_type = db_tool_val['tool_type']
-
             db_tooldia = db_tool_val['tooldia']
             low_limit = float(db_tool_val['data']['tol_min'])
             high_limit = float(db_tool_val['data']['tol_max'])
@@ -1358,9 +1351,6 @@ class NonCopperClear(AppTool, Gerber):
         self.ncc_tools.update({
             tooluid: {
                 'tooldia':          new_tdia,
-                'offset':           deepcopy(offset),
-                'offset_value':     deepcopy(offset_val),
-                'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
             }
@@ -1419,10 +1409,6 @@ class NonCopperClear(AppTool, Gerber):
         self.ncc_tools.update({
             int(self.tooluid): {
                 'tooldia':          truncated_tooldia,
-                'offset':           'Path',
-                'offset_value':     0.0,
-                'type':             'Iso' if self.app.defaults["tools_ncc_tool_type"] == 'V' else 'Rough',
-                'tool_type':        deepcopy(self.app.defaults["tools_ncc_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
             }
@@ -4065,9 +4051,6 @@ class NonCopperClear(AppTool, Gerber):
         self.ncc_tools.update({
             tooluid: {
                 'tooldia':          truncated_tooldia,
-                'offset':           deepcopy(tool['offset']),
-                'offset_value':     deepcopy(tool['offset_value']),
-                'tool_type':        deepcopy(tool['tool_type']),
                 'data':             deepcopy(tool['data']),
                 'solid_geometry':   []
             }

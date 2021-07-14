@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.07.2021
+
+- preferences UI is now started on preferences open
+- more work/fixes in working on data structures (offset, offset_value, job_type, shape)
+
 7.07.2021
 
 - some changes in data tools structure ('tool_type' to ['data']['tools_mill_job_type])

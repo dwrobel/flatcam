@@ -1075,7 +1075,7 @@ class App(QtCore.QObject):
         for def_key, def_val in self.defaults.items():
             self.options[def_key] = deepcopy(def_val)
 
-        self.preferencesUiManager.show_preferences_gui()
+        # self.preferencesUiManager.show_preferences_gui()
 
         # ###########################################################################################################
         # #################################### SETUP OBJECT COLLECTION ##############################################
@@ -6328,6 +6328,9 @@ class App(QtCore.QObject):
                 if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
                     self.ui.plot_tab_area.removeTab(idx)
                     break
+
+            self.log.debug("Preferences GUI was closed.")
+            self.preferencesUiManager.clear_preferences_gui()
             self.ui.pref_status_label.setStyleSheet("")
         else:
             self.on_preferences()
@@ -6338,6 +6341,8 @@ class App(QtCore.QObject):
 
         :return:
         """
+
+        self.preferencesUiManager.show_preferences_gui()
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))

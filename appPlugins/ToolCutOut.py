@@ -512,15 +512,8 @@ class CutOut(AppTool):
 
         tool_found = 0
 
-        offset = 'Path'
-        offset_val = 0.0
-        tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['offset']
-            offset_val = db_tool_val['offset_value']
-            tool_type = db_tool_val['tool_type']
-
             db_tooldia = db_tool_val['tooldia']
             low_limit = float(db_tool_val['data']['tol_min'])
             high_limit = float(db_tool_val['data']['tol_max'])
@@ -575,9 +568,6 @@ class CutOut(AppTool):
         new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
         self.cut_tool_dict.update({
             'tooldia': new_tdia,
-            'offset': deepcopy(offset),
-            'offset_value': deepcopy(offset_val),
-            'tool_type': deepcopy(tool_type),
             'data': deepcopy(new_tools_dict),
             'solid_geometry': []
         })
@@ -654,10 +644,6 @@ class CutOut(AppTool):
 
         self.cut_tool_dict.update({
             'tooldia': dia,
-            'offset': 'Path',
-            'offset_value': 0.0,
-            'type': 'Rough',
-            'tool_type': 'C1',
             'data': deepcopy(self.default_data),
             'solid_geometry': []
         })
@@ -717,9 +703,6 @@ class CutOut(AppTool):
         self.cutout_tools.update({
             1: {
                 'tooldia': truncated_tooldia,
-                'offset': tool['offset'],
-                'offset_value': tool['offset_value'],
-                'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': []
             }

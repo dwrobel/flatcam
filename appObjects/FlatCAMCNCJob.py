@@ -230,7 +230,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             offset_txt[0] = offset_txt[0].upper()
             offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
             type_item = QtWidgets.QTableWidgetItem(str(dia_value['data']['job']))
-            tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['tool_type']))
+            tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['data']['tools_mill_shape']))
 
             t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)

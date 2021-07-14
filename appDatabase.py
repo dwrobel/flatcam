@@ -2514,7 +2514,7 @@ class ToolsDB2(QtWidgets.QWidget):
         elif wdg_name == "gdb_job":
             self.db_tool_dict[tool_id]['data']['job'] = val
         elif wdg_name == "gdb_shape":
-            self.db_tool_dict[tool_id]['tool_type'] = val
+            self.db_tool_dict[tool_id]['data']['tools_mill_shape'] = val
         else:
             # Milling Tool
             if wdg_name == "gdb_tool_target":
@@ -3101,7 +3101,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         tshape_item = FCComboBox()
 #         for item in self.tool_type_item_options:
 #             tshape_item.addItem(item)
-#         tshape_item.set_value(tooldict['tool_type'])
+#         tshape_item.set_value(tooldict['data']['tools_mill_shape'])
 #         widget.setCellWidget(row, 6, tshape_item)
 #
 #         cutz_item = FCDoubleSpinner()
@@ -3281,7 +3281,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         dict_elem['offset'] = 'Path'
 #         dict_elem['offset_value'] = 0.0
 #         dict_elem['type'] = 'Rough'
-#         dict_elem['tool_type'] = 'C1'
+#         dict_elem['data']['tools_mill_shape'] = 'C1'
 #         dict_elem['data'] = default_data
 #
 #         new_toolid = len(self.db_tool_dict) + 1
@@ -3531,7 +3531,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #                 elif column_header_text == _('Tool Type'):
 #                     dict_elem['type'] = self.table_widget.cellWidget(row, col).get_value()
 #                 elif column_header_text == _('Tool Shape'):
-#                     dict_elem['tool_type'] = self.table_widget.cellWidget(row, col).get_value()
+#                     dict_elem['data']['tools_mill_shape'] = self.table_widget.cellWidget(row, col).get_value()
 #                 else:
 #                     if column_header_text == _('Cut Z'):
 #                         default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()

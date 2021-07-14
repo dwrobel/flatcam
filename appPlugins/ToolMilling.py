@@ -2077,15 +2077,8 @@ class ToolMilling(AppTool, Excellon):
 
         tool_found = 0
 
-        offset = 'Path'
-        offset_val = 0.0
-        tool_type = 'C1'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['offset']
-            offset_val = db_tool_val['offset_value']
-            tool_type = db_tool_val['tool_type']
-
             db_tooldia = db_tool_val['tooldia']
             low_limit = float(db_tool_val['data']['tol_min'])
             high_limit = float(db_tool_val['data']['tol_max'])
@@ -2138,9 +2131,6 @@ class ToolMilling(AppTool, Excellon):
         self.target_obj.tools.update({
             tooluid: {
                 'tooldia':          new_tdia,
-                'offset':           deepcopy(offset),
-                'offset_value':     deepcopy(offset_val),
-                'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   self.target_obj.solid_geometry
             }
@@ -2187,10 +2177,6 @@ class ToolMilling(AppTool, Excellon):
         # otherwise we add a tool with data copied from last tool
         if self.target_obj.tools:
             last_data = self.target_obj.tools[max_uid]['data']
-            last_offset = self.target_obj.tools[max_uid]['offset']
-            last_offset_value = self.target_obj.tools[max_uid]['offset_value']
-            last_tool_type = self.target_obj.tools[max_uid]['tool_type']
-
             last_solid_geometry = self.target_obj.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
 
             # if previous geometry was empty (it may happen for the first tool added)
@@ -2201,9 +2187,6 @@ class ToolMilling(AppTool, Excellon):
             self.target_obj.tools.update({
                 self.tooluid: {
                     'tooldia':          tooldia,
-                    'offset':           last_offset,
-                    'offset_value':     last_offset_value,
-                    'tool_type':        last_tool_type,
                     'data':             deepcopy(last_data),
                     'solid_geometry':   deepcopy(last_solid_geometry)
                 }
@@ -2212,10 +2195,6 @@ class ToolMilling(AppTool, Excellon):
             self.target_obj.tools.update({
                 self.tooluid: {
                     'tooldia':          tooldia,
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             'Rough',
-                    'tool_type':        'C1',
                     'data':             deepcopy(self.default_data),
                     'solid_geometry':   self.solid_geometry
                 }
@@ -2291,9 +2270,6 @@ class ToolMilling(AppTool, Excellon):
         self.target_obj.tools.update({
             self.tooluid: {
                 'tooldia': tooldia,
-                'offset': tool['offset'],
-                'offset_value': float(tool['offset_value']),
-                'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': self.target_obj.solid_geometry
             }
@@ -3985,7 +3961,7 @@ class MillingUI:
         self.tool_shape_combo.setObjectName('mill_tool_type')
         self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
 
-        idx = self.tool_shape_combo.findText(self.app.defaults['tools_mill_tool_type'])
+        idx = int(self.app.defaults['tools_mill_shape'])
         # protection against having this translated or loading a project with translated values
         if idx == -1:
             self.tool_shape_combo.setCurrentIndex(0)

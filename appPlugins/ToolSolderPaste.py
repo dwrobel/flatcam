@@ -790,10 +790,10 @@ class SolderPaste(AppTool):
                 geo_obj.tools[tooluid]['tooldia'] = tool
                 geo_obj.tools[tooluid]['data'] = deepcopy(self.tooltable_tools[tooluid]['data'])
                 geo_obj.tools[tooluid]['solid_geometry'] = []
-                geo_obj.tools[tooluid]['offset'] = 'Path'
-                geo_obj.tools[tooluid]['offset_value'] = 0.0
+                geo_obj.tools[tooluid]['data']['tools_mill_offset_type']= 'Path'
+                geo_obj.tools[tooluid]['data']['tools_mill_offset_value'] = 0.0
                 geo_obj.tools[tooluid]['type'] = 'SolderPaste'
-                geo_obj.tools[tooluid]['tool_type'] = 'DN'
+                geo_obj.tools[tooluid]['data']['tools_mill_shape'] = 'DN'
 
                 # self.flat_geometry is a list of LinearRings produced by flatten() from the exteriors of the Polygons
                 # We get possible issues if we try to directly use the Polygons, due of possible the interiors,

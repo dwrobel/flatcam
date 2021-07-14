@@ -776,7 +776,7 @@ class ToolPaint(AppTool, Gerber):
                     for item in self.tool_type_item_options:
                         tool_type_item.addItem(item)
                         # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
-                    idx = tool_type_item.findText(tooluid_value['tool_type'])
+                    idx = int(tooluid_value['data']['tools_mill_shape'])
                     tool_type_item.setCurrentIndex(idx)
 
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
@@ -2856,9 +2856,6 @@ class ToolPaint(AppTool, Gerber):
         self.paint_tools.update({
             tooluid: {
                 'tooldia': float('%.*f' % (self.decimals, tooldia)),
-                'offset': tool['offset'],
-                'offset_value': tool['offset_value'],
-                'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': []
             }

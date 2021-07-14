@@ -207,40 +207,44 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- OFFSET   ------------------------------------- #
-            offset_item = FCComboBox(policy=False)
-            for item in self.offset_item_options:
-                offset_item.addItem(item)
-            idx = offset_item.findText(tooluid_value['offset'])
+            offset_item = FCComboBox2(policy=False)
+            offset_item.addItems(self.offset_item_options)
+            # val = tooluid_value['data']['tools_mill_offset_type']
+            # idx = offset_item.findText(val)
+            idx = int(tooluid_value['data']['tools_mill_offset_type'])
             # protection against having this translated or loading a project with translated values
-            if idx == -1:
+            # if idx == -1:
+            if idx not in [0, 1, 2, 3]:
                 offset_item.setCurrentIndex(0)
             else:
                 offset_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
             # -------------------- JOB     ------------------------------------- #
-            type_item = FCComboBox(policy=False)
+            type_item = FCComboBox2(policy=False)
             type_item.addItems(self.job_item_options)
-            pos = tooluid_value['data']['tools_mill_job_type']
-            idx = type_item.findText(self.job_item_options[pos])
+            # pos = tooluid_value['data']['tools_mill_job_type']
+            # idx = type_item.findText(self.job_item_options[pos])
+            idx = int(tooluid_value['data']['tools_mill_job_type'])
             # protection against having this translated or loading a project with translated values
-            if idx == -1:
+            # if idx == -1:
+            if idx not in [0, 1, 2, 3]:
                 type_item.setCurrentIndex(0)
             else:
                 type_item.setCurrentIndex(idx)
             self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
 
-            # -------------------- TOOL TYPE ------------------------------------- #
-            tool_type_item = FCComboBox(policy=False)
-            for item in self.tool_type_item_options:
-                tool_type_item.addItem(item)
-            idx = tool_type_item.findText(tooluid_value['tool_type'])
+            # -------------------- TOOL SHAPE ------------------------------------- #
+            tool_shape_item = FCComboBox2(policy=False)
+            tool_shape_item.addItems(self.tool_type_item_options)
+            idx = int(tooluid_value['data']['tools_mill_shape'])
             # protection against having this translated or loading a project with translated values
-            if idx == -1:
-                tool_type_item.setCurrentIndex(0)
+            # if idx == -1:
+            if idx not in range(6):
+                tool_shape_item.setCurrentIndex(0)
             else:
-                tool_type_item.setCurrentIndex(idx)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
+                tool_shape_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_shape_item)
 
             # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
@@ -1243,13 +1247,9 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         offset = 'Path'
         offset_val = 0.0
-        tool_type = 'C1'
+
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
-            offset = db_tool_val['offset']
-            offset_val = db_tool_val['offset_value']
-            tool_type = db_tool_val['tool_type']
-
             db_tooldia = db_tool_val['tooldia']
             low_limit = float(db_tool_val['data']['tol_min'])
             high_limit = float(db_tool_val['data']['tol_max'])
@@ -1300,9 +1300,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.tools.update({
             tooluid: {
                 'tooldia': new_tdia,
-                'offset': deepcopy(offset),
-                'offset_value': deepcopy(offset_val),
-                'tool_type': deepcopy(tool_type),
                 'data': deepcopy(new_tools_dict),
                 'solid_geometry': self.solid_geometry
             }
@@ -1341,9 +1338,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         # otherwise we add a tool with data copied from last tool
         if self.tools:
             last_data = self.tools[max_uid]['data']
-            last_offset = self.tools[max_uid]['offset']
-            last_offset_value = self.tools[max_uid]['offset_value']
-            last_tool_type = self.tools[max_uid]['tool_type']
+            # last_offset = self.tools[max_uid]['offset']
+            # last_offset_value = self.tools[max_uid]['offset_value']
+            # last_tool_type = self.tools[max_uid]['data']['tools_mill_shape']
 
             last_solid_geometry = self.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
 
@@ -1355,9 +1352,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
-                    'offset': last_offset,
-                    'offset_value': last_offset_value,
-                    'tool_type': last_tool_type,
                     'data': deepcopy(last_data),
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
@@ -1366,9 +1360,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'tool_type': 'C1',
                     'data': deepcopy(self.default_data),
                     'solid_geometry': self.solid_geometry
                 }
@@ -1445,9 +1436,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.tools.update({
             self.tooluid: {
                 'tooldia': tooldia,
-                'offset': tool['offset'],
-                'offset_value': float(tool['offset_value']),
-                'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': self.solid_geometry
             }
@@ -1742,7 +1730,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             if int(tooluid_key) == current_uid:
                 cb_txt = cw.currentText()
                 if cw_col == 2:
-                    tooluid_value['offset'] = cb_txt
+                    tooluid_value['data']['tools_mill_offset_type'] = cb_txt
                     if cb_txt == 'Custom':
                         self.ui.tool_offset_entry.show()
                         self.ui.tool_offset_lbl.show()
@@ -1750,7 +1738,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                         self.ui.tool_offset_entry.hide()
                         self.ui.tool_offset_lbl.hide()
                         # reset the offset_value in storage self.tools
-                        tooluid_value['offset_value'] = 0.0
+                        tooluid_value['data']['tools_mill_offset_value'] = 0.0
                 elif cw_col == 3:
                     # force toolpath type as 'Iso' if the tool type is V-Shape
                     if self.ui.geo_tools_table.cellWidget(cw_row, 4).currentText() == 'V':
@@ -1760,7 +1748,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     else:
                         tooluid_value['data']['tools_mill_job_type'] = cb_txt
                 elif cw_col == 4:
-                    tooluid_value['data']['tool_type'] = cb_txt
+                    tooluid_value['data']['data']['tools_mill_shape'] = cb_txt
 
                     # if the tool_type selected is V-Shape then autoselect the toolpath type as Iso
                     if cb_txt == 'V':
@@ -2293,11 +2281,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                     'tooldia': tooldia_val
                 })
 
-                if dia_cnc_dict['offset'] == 'in':
+                if dia_cnc_dict['data']['tools_mill_offset_type'] == 'in':
                     tool_offset = -dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['offset'].lower() == 'out':
+                elif dia_cnc_dict['data']['tools_mill_offset_type'].lower() == 'out':
                     tool_offset = dia_cnc_dict['tooldia'] / 2
-                elif dia_cnc_dict['offset'].lower() == 'custom':
+                elif dia_cnc_dict['data']['tools_mill_offset_type'].lower() == 'custom':
                     try:
                         offset_value = float(self.ui.tool_offset_entry.get_value())
                     except ValueError:
@@ -2318,9 +2306,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 else:
                     tool_offset = 0.0
 
-                dia_cnc_dict.update({
-                    'offset_value': tool_offset
-                })
+                dia_cnc_dict['data']['tools_mill_offset_type'] = tool_offset
 
                 z_cut = tools_dict[tooluid_key]['data']["tools_mill_cutz"]
                 z_move = tools_dict[tooluid_key]['data']["tools_mill_travelz"]
@@ -2457,11 +2443,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                 #         current_uid = int(k)
                 #         break
 
-                if dia_cnc_dict['offset'].lower() == 'in':
+                if dia_cnc_dict['data']['tools_mill_offset_type'].lower() == 'in':
                     tool_offset = -tooldia_val / 2
-                elif dia_cnc_dict['offset'].lower() == 'out':
+                elif dia_cnc_dict['data']['tools_mill_offset_type'].lower() == 'out':
                     tool_offset = tooldia_val / 2
-                elif dia_cnc_dict['offset'].lower() == 'custom':
+                elif dia_cnc_dict['data']['tools_mill_offset_type'].lower() == 'custom':
                     offset_value = float(self.ui.tool_offset_entry.get_value())
                     if offset_value:
                         tool_offset = float(offset_value)
@@ -2474,9 +2460,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 else:
                     tool_offset = 0.0
 
-                dia_cnc_dict.update({
-                    'offset_value': tool_offset
-                })
+                dia_cnc_dict['data']['tools_mill_offset_type'] = tool_offset
 
                 # z_cut = tools_dict[tooluid_key]['data']["cutz"]
                 # z_move = tools_dict[tooluid_key]['data']["travelz"]

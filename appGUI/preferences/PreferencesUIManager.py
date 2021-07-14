@@ -841,7 +841,74 @@ class PreferencesUIManager:
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
 
-        log.debug("Finished Preferences GUI form initialization.")
+        # log.debug("Finished Preferences GUI form initialization.")
+
+    def clear_preferences_gui(self):
+        # Disconnect Button handlers
+        try:
+            self.ui.pref_save_button.clicked.disconnect()
+        except Exception:
+            pass
+
+        try:
+            self.ui.pref_apply_button.clicked.disconnect()
+        except Exception:
+            pass
+
+        try:
+            self.ui.pref_close_button.clicked.disconnect()
+        except Exception:
+            pass
+
+        try:
+            self.ui.pref_defaults_button.clicked.disconnect()
+        except Exception:
+            pass
+
+        try:
+            self.ui.general_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.gerber_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.excellon_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.geometry_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.cncjob_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.plugins_engraving_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.tools_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.tools2_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
+
+        try:
+            self.ui.fa_scroll_area.takeWidget()
+        except Exception:
+            log.debug("Nothing to remove")
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors
@@ -1173,11 +1240,14 @@ class PreferencesUIManager:
             self.preferences_changed_flag = True
 
     def on_close_preferences_tab(self, parent):
+        self.ui.app.log.debug("Preferences GUI was closed.")
         if self.ignore_tab_close_event:
             return
 
         # restore stylesheet to default for the statusBar icon
         self.ui.pref_status_label.setStyleSheet("")
+
+        self.clear_preferences_gui()
 
         # disconnect
         for idx in range(self.ui.pref_tab_area.count()):
