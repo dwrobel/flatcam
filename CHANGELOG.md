@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.07.2021
+
+- updated the Turkish language with the translated strings by Mehmet Kaya
+- modified the setup_ubuntu.sh file removing a deprecated package
+
 14.07.2021
 
 - preferences UI is now started on preferences open

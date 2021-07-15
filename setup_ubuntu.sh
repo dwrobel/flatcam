@@ -50,5 +50,3 @@ sudo -H python3 -m pip install --upgrade \
 	pikepdf \
 	foronoi \
 	networkx
-
-sudo -H easy_install -U distribute
