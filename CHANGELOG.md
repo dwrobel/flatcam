@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated the Turkish language with the translated strings by Mehmet Kaya
 - modified the setup_ubuntu.sh file removing a deprecated package
+- added a Linux man page, courtesy of Romain Porte
 
 14.07.2021
 
