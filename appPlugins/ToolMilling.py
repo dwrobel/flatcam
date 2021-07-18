@@ -591,7 +591,7 @@ class ToolMilling(AppTool, Excellon):
         #     "tools_mill_milling_type": "drills",
         #     "tools_mill_milling_dia": 0.04,
         #
-        #     "tools_mill_job_type": 0,   # 'Rough'
+        #     "tools_mill_job_type": 0,   # 'Roughing'
         #     "tools_mill_polish_margin": 0.0,
         #     "tools_mill_polish_overlap": 10,
         #     "tools_mill_polish_method": _("Standard"),
@@ -747,7 +747,7 @@ class ToolMilling(AppTool, Excellon):
 
                         tool_data['tools_mill_offset_type'] = 'Path'
                         tool_data['tools_mill_offset_value'] = 0.0
-                        tool_data['tools_mill_job_type'] = 'Rough'
+                        tool_data['tools_mill_job_type'] = 0    #_('Roughing')
 
                         tool_data['tools_mill_multidepth'] = False
                         tool_data['tools_mill_extracut'] = False

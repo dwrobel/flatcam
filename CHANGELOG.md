@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.07.2021
+
+- modified the Geometry UI tools table. Replaced the comboboxes with labels.
+- Fixed the SolderPaste Plugin regarding the special designation 'SP' job type and 'DN' tool shape
+- some fixes in the GCode Editor regarding the new changes in the data structure
+
 15.07.2021
 
 - updated the Turkish language with the translated strings by Mehmet Kaya

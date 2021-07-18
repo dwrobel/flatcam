@@ -182,6 +182,10 @@ class SolderPaste(AppTool):
             "tools_solderpaste_pp":             self.ui.pp_combo
         })
         self.set_form_from_defaults()
+
+        for option in self.app.options:
+            if option.find('tools_') == 0:
+                self.options[option] = deepcopy(self.app.options[option] )
         self.read_form_to_options()
 
         self.clear_context_menu()
@@ -228,7 +232,7 @@ class SolderPaste(AppTool):
         obj = self.app.collection.get_active()
         if obj and obj.kind == 'gerber':
             obj_name = obj.options['name']
-            self.ui.geo_obj_combo.set_value(obj_name)
+            self.ui.obj_combo.set_value(obj_name)
 
     def build_ui(self):
         """
@@ -531,7 +535,8 @@ class SolderPaste(AppTool):
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
-        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
+        # if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
+        if self.app.dec_format(tool_dia, self.decimals) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
@@ -790,10 +795,12 @@ class SolderPaste(AppTool):
                 geo_obj.tools[tooluid]['tooldia'] = tool
                 geo_obj.tools[tooluid]['data'] = deepcopy(self.tooltable_tools[tooluid]['data'])
                 geo_obj.tools[tooluid]['solid_geometry'] = []
-                geo_obj.tools[tooluid]['data']['tools_mill_offset_type']= 'Path'
-                geo_obj.tools[tooluid]['data']['tools_mill_offset_value'] = 0.0
                 geo_obj.tools[tooluid]['type'] = 'SolderPaste'
-                geo_obj.tools[tooluid]['data']['tools_mill_shape'] = 'DN'
+
+                geo_obj.tools[tooluid]['data']['tools_mill_offset_type']= 0  # 'Path'
+                geo_obj.tools[tooluid]['data']['tools_mill_offset_value'] = 0.0
+                geo_obj.tools[tooluid]['data']['tools_mill_job_type'] = 'SP'  #'
+                geo_obj.tools[tooluid]['data']['tools_mill_shape'] = 'DN'  # 'DN'
 
                 # self.flat_geometry is a list of LinearRings produced by flatten() from the exteriors of the Polygons
                 # We get possible issues if we try to directly use the Polygons, due of possible the interiors,

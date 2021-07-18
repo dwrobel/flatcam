@@ -184,22 +184,36 @@ class AppGCodeEditor(QtCore.QObject):
 
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
 
-            offset_txt = list(str(dia_value['offset']))
+            offset_txt = list(str(dia_value['data']['tools_mill_offset_value']))
             offset_txt[0] = offset_txt[0].upper()
             offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
-            type_item = QtWidgets.QTableWidgetItem(str(dia_value['data']['job']))
-            tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['data']['tools_mill_shape']))
+
+            # -------------------- JOB     ------------------------------------- #
+            job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
+            try:
+                job_item_txt = job_item_options[dia_value['data']['tools_mill_job_type']]
+            except TypeError:
+                job_item_txt = dia_value['data']['tools_mill_job_type']
+            job_item = QtWidgets.QTableWidgetItem(job_item_txt)
+
+            # -------------------- TOOL SHAPE ------------------------------------- #
+            tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+            try:
+                tool_shape_item_txt = tool_type_item_options[dia_value['data']['tools_mill_shape']]
+            except TypeError:
+                tool_shape_item_txt = dia_value['data']['tools_mill_shape']
+            tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
             t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             offset_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            tool_type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            job_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            tool_shape_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             self.ui.cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
             self.ui.cnc_tools_table.setItem(row_no, 2, offset_item)  # Offset
-            self.ui.cnc_tools_table.setItem(row_no, 3, type_item)  # Toolpath Type
-            self.ui.cnc_tools_table.setItem(row_no, 4, tool_type_item)  # Tool Type
+            self.ui.cnc_tools_table.setItem(row_no, 3, job_item)  # Toolpath Type
+            self.ui.cnc_tools_table.setItem(row_no, 4, tool_shape_item)  # Tool Type
 
             tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
@@ -787,7 +801,7 @@ class AppGCodeEditorUI:
 
         self.cnc_tools_table.setColumnCount(6)
         self.cnc_tools_table.setColumnWidth(0, 20)
-        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('GCode'), _('Offset'), _('Type'), _('TT'), ''])
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('GCode'), _('Offset'), _('Job'), _('Shape'), ''])
         self.cnc_tools_table.setColumnHidden(5, True)
 
         # CNC Tools Table when made out of Excellon

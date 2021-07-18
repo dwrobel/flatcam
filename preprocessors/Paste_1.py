@@ -17,8 +17,11 @@ class Paste_1(AppPreProcTools):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
-
+        if isinstance(p['xy_toolchange'], str):
+            temp_val = p['xy_toolchange'].replace('[', '').replace(']', '')
+            coords_xy = [float(eval(a)) for a in temp_val.split(",") if a != '']
+        else:
+            coords_xy = p['xy_toolchange']
         gcode = '(This preprocessor is to be used only with the SolderPaste Plugin.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
@@ -70,7 +73,12 @@ class Paste_1(AppPreProcTools):
 
     def toolchange_code(self, p):
         z_toolchange = float(p['z_toolchange'])
-        toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
+
+        if isinstance(p['xy_toolchange'], str):
+            temp_val = p['xy_toolchange'].replace('[', '').replace(']', '')
+            toolchangexy = [float(eval(a)) for a in temp_val.split(",") if a != '']
+        else:
+            toolchangexy = p['xy_toolchange']
 
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]

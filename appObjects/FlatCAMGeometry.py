@@ -194,7 +194,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
-            tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            tool_id.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
@@ -207,44 +207,31 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- OFFSET   ------------------------------------- #
-            offset_item = FCComboBox2(policy=False)
-            offset_item.addItems(self.offset_item_options)
-            # val = tooluid_value['data']['tools_mill_offset_type']
-            # idx = offset_item.findText(val)
-            idx = int(tooluid_value['data']['tools_mill_offset_type'])
-            # protection against having this translated or loading a project with translated values
-            # if idx == -1:
-            if idx not in [0, 1, 2, 3]:
-                offset_item.setCurrentIndex(0)
-            else:
-                offset_item.setCurrentIndex(idx)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
+            try:
+                offset_item_txt = self.offset_item_options[tooluid_value['data']['tools_mill_offset_type']]
+            except TypeError:
+                offset_item_txt = tooluid_value['data']['tools_mill_offset_type']
+            offset_item = QtWidgets.QTableWidgetItem(offset_item_txt)
+            offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 2, offset_item)  # Offset Type
 
             # -------------------- JOB     ------------------------------------- #
-            type_item = FCComboBox2(policy=False)
-            type_item.addItems(self.job_item_options)
-            # pos = tooluid_value['data']['tools_mill_job_type']
-            # idx = type_item.findText(self.job_item_options[pos])
-            idx = int(tooluid_value['data']['tools_mill_job_type'])
-            # protection against having this translated or loading a project with translated values
-            # if idx == -1:
-            if idx not in [0, 1, 2, 3]:
-                type_item.setCurrentIndex(0)
-            else:
-                type_item.setCurrentIndex(idx)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
+            try:
+                job_item_txt = self.job_item_options[tooluid_value['data']['tools_mill_job_type']]
+            except TypeError:
+                job_item_txt = tooluid_value['data']['tools_mill_job_type']
+            job_item = QtWidgets.QTableWidgetItem(job_item_txt)
+            job_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 3, job_item)  # Job Type
 
             # -------------------- TOOL SHAPE ------------------------------------- #
-            tool_shape_item = FCComboBox2(policy=False)
-            tool_shape_item.addItems(self.tool_type_item_options)
-            idx = int(tooluid_value['data']['tools_mill_shape'])
-            # protection against having this translated or loading a project with translated values
-            # if idx == -1:
-            if idx not in range(6):
-                tool_shape_item.setCurrentIndex(0)
-            else:
-                tool_shape_item.setCurrentIndex(idx)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_shape_item)
+            try:
+                tool_shape_item_txt = self.tool_type_item_options[tooluid_value['data']['tools_mill_shape']]
+            except TypeError:
+                tool_shape_item_txt = tooluid_value['data']['tools_mill_shape']
+            tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
+            tool_shape_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 4, tool_shape_item)  # Tool Shape
 
             # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
@@ -261,24 +248,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                 plot_item.setChecked(True)
             self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
 
-            # set an initial value for the OFFSET ENTRY
-            # try:
-            #     self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
-            # except Exception as e:
-            #     log.error("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
-
             row_idx += 1
 
-        # make the diameter column editable
-        # for row in range(row_idx):
-        #     self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
-        #                                                   QtCore.Qt.ItemIsEditable |
-        #                                                   QtCore.Qt.ItemIsEnabled)
-
-        # sort the tool diameter column
-        # self.ui.geo_tools_table.sortItems(1)
-        # all the tools are selected by default
-        # self.ui.geo_tools_table.selectColumn(0)
+        for row in range(row_idx):
+            self.ui.geo_tools_table.item(row, 0).setFlags(
+                self.ui.geo_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
 
         self.ui.geo_tools_table.resizeColumnsToContents()
         self.ui.geo_tools_table.resizeRowsToContents()
@@ -294,13 +268,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(4, 40)
         horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(4, 17)
+        horizontal_header.resizeSection(6, 17)
         # horizontal_header.setStretchLastSection(True)
         self.ui.geo_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
@@ -312,12 +285,6 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.setMinimumHeight(self.ui.geo_tools_table.getHeight())
         self.ui.geo_tools_table.setMaximumHeight(self.ui.geo_tools_table.getHeight())
-
-        # update UI for all rows - useful after units conversion but only if there is at least one row
-        # row_cnt = self.ui.geo_tools_table.rowCount()
-        # if row_cnt > 0:
-        #     for r in range(row_cnt):
-        #         self.update_ui(r)
 
         # select only the first tool / row
         selected_row = 0
@@ -543,9 +510,6 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.tools.update({
                     self.tooluid: {
                         'tooldia': self.app.dec_format(float(toold), self.decimals),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'tool_type': self.tool_type,
                         'data': new_data,
                         'solid_geometry': self.solid_geometry
                     }
@@ -591,40 +555,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         #     _("Delete"), lambda: self.on_tool_delete(clicked_signal=None, all_tools=None),
         #     icon=QtGui.QIcon(self.app.resource_location + "/trash16.png"))
 
-        # #############################################################################################################
-        # ############################## EXCLUSION TABLE context menu #################################################
-        # #############################################################################################################
-        # self.ui.exclusion_table.setupContextMenu()
-        # self.ui.exclusion_table.addContextMenu(
-        #     _("Delete"), self.on_delete_sel_areas, icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
-        # )
-
-        # Show/Hide Advanced Options
-        # if self.app.defaults["global_app_level"] == 'b':
-        #     self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-        #
-        #     self.ui.geo_tools_table.setColumnHidden(2, True)
-        #     self.ui.geo_tools_table.setColumnHidden(3, True)
-        #     # self.ui.geo_tools_table.setColumnHidden(4, True)
-        #     self.ui.addtool_entry_lbl.hide()
-        #     self.ui.addtool_entry.hide()
-        #     self.ui.search_and_add_btn.hide()
-        #     self.ui.deltool_btn.hide()
-        #     # self.ui.endz_label.hide()
-        #     # self.ui.endz_entry.hide()
-        #     self.ui.fr_rapidlabel.hide()
-        #     self.ui.feedrate_rapid_entry.hide()
-        #     self.ui.extracut_cb.hide()
-        #     self.ui.e_cut_entry.hide()
-        #     self.ui.pdepth_label.hide()
-        #     self.ui.pdepth_entry.hide()
-        #     self.ui.feedrate_probe_label.hide()
-        #     self.ui.feedrate_probe_entry.hide()
-        # else:
-        #     self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-
-        self.ui.geo_tools_table.setColumnHidden(2, True)
-        self.ui.geo_tools_table.setColumnHidden(3, True)
+        # self.ui.geo_tools_table.setColumnHidden(2, True)
+        # self.ui.geo_tools_table.setColumnHidden(3, True)
 
         # #############################################################################################################
         # ##################################### Setting Values#########################################################
