@@ -2,9 +2,13 @@
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
-# Date: 3/10/2019                                          #
+# Date: 7/18/2021                                          #
 # MIT Licence                                              #
 # ##########################################################
+
+# inspired from:
+# http://www.max-computer.de/x5e/adaption-of-post-processor.html
+# https://github.com/FreeCAD/FreeCAD/pull/2876/files
 
 from appPreProcessor import *
 
