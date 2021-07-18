@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - Fixed the SolderPaste Plugin regarding the special designation 'SP' job type and 'DN' tool shape
 - some fixes in the GCode Editor regarding the new changes in the data structure
 - some updates to the language strings
+- finished preprocessor file for Kosy CNC machine (NCCAD9)
+- fixed the gcode header export to work with the new data structure
 
 15.07.2021
 

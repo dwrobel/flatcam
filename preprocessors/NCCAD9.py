@@ -20,7 +20,7 @@ class NCCAD9(PreProc):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
         end_coords_xy = p['xy_end']
-        gcode = ';This preprocessor outputs GCode suitable for the Max Computer GmbH nccad9 Computer Numeric Control.'
+        gcode = ';This preprocessor outputs GCode suitable for the Max Computer GmbH nccad9 Computer Numeric Control.\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -89,7 +89,7 @@ class NCCAD9(PreProc):
                                                     p.decimals, end_coords_xy[1]) + units + '\n'
         else:
             gcode += ';X,Y End: ' + "None" + units + '\n'
-        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
+
         gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -122,6 +122,7 @@ class NCCAD9(PreProc):
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
         toolchangexy = p.xy_toolchange
+
         f_plunge = p.f_plunge
 
         if toolchangexy is not None:
@@ -141,16 +142,14 @@ class NCCAD9(PreProc):
         if str(p['options']['type']) == 'Excellon':
             no_drills = p['tools'][int(p['tool'])]['nr_drills']
 
-            if toolchangexy is not None:
+            if toolchangexy is not None and x_toolchange !=0.0 and y_toolchange != 0.0:
                 gcode = """
-M5
-G0 Z{z_toolchange}
-G0 X{x_toolchange} Y{y_toolchange}                
-T{tool}
-M6
-;MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
-M0
-G0 Z{z_toolchange}
+M10 O6.0 ; Stop spindle
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}                
+M01 Insert tool {tool}
+; Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
+G76 ; Move to reference point to ensure correct coordinates after tool change
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
            y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
@@ -159,13 +158,12 @@ G0 Z{z_toolchange}
            toolC=toolC_formatted)
             else:
                 gcode = """
-M5
-G0 Z{z_toolchange}
-T{tool}
-M6
-;MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
-M0
-G0 Z{z_toolchange}
+M10 O6.0 ; Stop spindle
+G00 Z{z_toolchange}
+G77 ; Move to release position
+M01 Insert tool {tool}
+;Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
+G76 ; Move to reference point to ensure correct coordinates after tool change
 """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(p.tool),
            t_drills=no_drills,
@@ -176,16 +174,14 @@ G0 Z{z_toolchange}
             return gcode
 
         else:
-            if toolchangexy is not None:
+            if toolchangexy is not None and x_toolchange !=0.0 and y_toolchange != 0.0:
                 gcode = """
-M5
-G0 Z{z_toolchange}
-G0 X{x_toolchange} Y{y_toolchange}
-T{tool}
-M6    
-;MSG, Change to Tool Dia = {toolC}
-M0
-G0 Z{z_toolchange}
+M10 O6.0 ; Stop spindle
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}
+M01 Insert tool {tool}  
+;Change to Tool Dia = {toolC}
+G76 ; Move to reference point to ensure correct coordinates after tool change
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
            y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
@@ -193,13 +189,12 @@ G0 Z{z_toolchange}
            toolC=toolC_formatted)
             else:
                 gcode = """
-M5
-G0 Z{z_toolchange}
-T{tool}
-M6    
-;MSG, Change to Tool Dia = {toolC}
-M0
-G0 Z{z_toolchange}
+M10 O6.0 ; Stop spindle
+G00 Z{z_toolchange}
+G77 ; Move to release position
+M01 Insert tool {tool}  
+;Change to Tool Dia = {toolC}
+G76 ; Move to reference point to ensure correct coordinates after tool change
 """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(p.tool),
            toolC=toolC_formatted)
@@ -222,13 +217,18 @@ G0 Z{z_toolchange}
         return ('G01 ' + self.position_code(p)).format(**p) + " " + self.inline_feedrate_code(p)
 
     def end_code(self, p):
+        gcode = ''
         coords_xy = p['xy_end']
-        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(p) + "\n")
 
         if coords_xy and coords_xy != '':
+            gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(
+                p) + "\n")
             gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
 
-        gcode += 'M10 O2.0 ;turn off high speed spindle at relay 2'
+        gcode += '''
+G77 ; Move to release position
+M10 O6.0 ; Stop spindle
+'''
         return gcode
 
     def feedrate_code(self, p):
