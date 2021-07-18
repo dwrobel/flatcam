@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-07-15 20:30+0300\n"
-"PO-Revision-Date: 2021-07-15 20:31+0300\n"
+"POT-Creation-Date: 2021-07-18 12:03+0300\n"
+"PO-Revision-Date: 2021-07-18 12:03+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -133,12 +133,12 @@ msgid "Cancelled."
 msgstr "İptal edildi."
 
 #: Bookmark.py:312 appDatabase.py:2159 appEditors/AppTextEditor.py:316
-#: appObjects/FlatCAMCNCJob.py:713 appObjects/FlatCAMCNCJob.py:1120
+#: appObjects/FlatCAMCNCJob.py:726 appObjects/FlatCAMCNCJob.py:1133
 #: appPlugins/ToolFilm.py:772 appPlugins/ToolFilm.py:787
 #: appPlugins/ToolFilm.py:836 appPlugins/ToolFilm.py:1038
 #: appPlugins/ToolFilm.py:1048 appPlugins/ToolFilm.py:1097
 #: appPlugins/ToolLevelling.py:1499 appPlugins/ToolLevelling.py:1691
-#: appPlugins/ToolSolderPaste.py:1149 app_Main.py:3008 app_Main.py:10343
+#: appPlugins/ToolSolderPaste.py:1156 app_Main.py:3008 app_Main.py:10343
 #: app_Main.py:10551 app_Main.py:10686 app_Main.py:10752 app_Main.py:11590
 msgid ""
 "Permission denied, saving not possible.\n"
@@ -234,27 +234,31 @@ msgstr "Tüm dışlama alanları silindi."
 msgid "Selected exclusion zones deleted."
 msgstr "Seçilen dışlama alanları silindi."
 
-#: appDatabase.py:29 appObjects/FlatCAMGeometry.py:131
+#: appDatabase.py:29 appEditors/appGCodeEditor.py:192
+#: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:131
 #: appPlugins/ToolMilling.py:3987
 msgid "Roughing"
 msgstr "Kaba"
 
-#: appDatabase.py:29 appObjects/FlatCAMGeometry.py:131
+#: appDatabase.py:29 appEditors/appGCodeEditor.py:192
+#: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:131
 #: appPlugins/ToolMilling.py:3987
 msgid "Finishing"
 msgstr "Bitiş"
 
 #: appDatabase.py:29 appDatabase.py:271 appDatabase.py:596 appDatabase.py:1783
-#: appDatabase.py:2248 appDatabase.py:2431 appGUI/MainGUI.py:1093
-#: appGUI/MainGUI.py:2323 appGUI/MainGUI.py:4656
-#: appObjects/FlatCAMGeometry.py:131 appObjects/FlatCAMGeometry.py:1745
-#: appObjects/FlatCAMGeometry.py:1746 appObjects/FlatCAMGeometry.py:1755
-#: appPlugins/ToolIsolation.py:198 appPlugins/ToolIsolation.py:3154
-#: appPlugins/ToolMilling.py:3987 appPlugins/ToolNCC.py:4367
+#: appDatabase.py:2248 appDatabase.py:2431 appEditors/appGCodeEditor.py:192
+#: appGUI/MainGUI.py:1093 appGUI/MainGUI.py:2323 appGUI/MainGUI.py:4656
+#: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:131
+#: appObjects/FlatCAMGeometry.py:1677 appObjects/FlatCAMGeometry.py:1678
+#: appObjects/FlatCAMGeometry.py:1687 appPlugins/ToolIsolation.py:198
+#: appPlugins/ToolIsolation.py:3154 appPlugins/ToolMilling.py:3987
+#: appPlugins/ToolNCC.py:4367
 msgid "Isolation"
 msgstr "Yalıtım"
 
-#: appDatabase.py:29 appObjects/FlatCAMGeometry.py:131
+#: appDatabase.py:29 appEditors/appGCodeEditor.py:192
+#: appObjects/FlatCAMCNCJob.py:233 appObjects/FlatCAMGeometry.py:131
 #: appPlugins/ToolMilling.py:3987
 msgid "Polishing"
 msgstr "Parlatma"
@@ -265,7 +269,7 @@ msgstr "ID"
 
 #: appDatabase.py:38 appDatabase.py:203 appEditors/AppGeoEditor.py:3486
 #: appGUI/ObjectUI.py:209 appGUI/ObjectUI.py:571 appGUI/ObjectUI.py:894
-#: appGUI/ObjectUI.py:1980 appGUI/ObjectUI.py:2241 appGUI/ObjectUI.py:2308
+#: appGUI/ObjectUI.py:1241 appGUI/ObjectUI.py:1502 appGUI/ObjectUI.py:1569
 #: appPlugins/ToolCalibration.py:959 appPlugins/ToolFiducials.py:821
 #: app_Main.py:8260
 msgid "Name"
@@ -284,7 +288,7 @@ msgstr "Hedef"
 #: appPlugins/ToolMilling.py:3681 appPlugins/ToolNCC.py:4196
 #: appPlugins/ToolPaint.py:3007 appPlugins/ToolPcbWizard.py:445
 #: appPlugins/ToolReport.py:443 appPlugins/ToolReport.py:509
-#: appPlugins/ToolSolderPaste.py:1223 tclCommands/TclCommandDrillcncjob.py:197
+#: appPlugins/ToolSolderPaste.py:1230 tclCommands/TclCommandDrillcncjob.py:197
 msgid "Diameter"
 msgstr "Kalınlık"
 
@@ -372,7 +376,7 @@ msgstr "Genel"
 
 #: appDatabase.py:271 appDatabase.py:1781 appDatabase.py:2235
 #: appDatabase.py:2429 appGUI/MainGUI.py:1084 appGUI/MainGUI.py:2314
-#: appGUI/MainGUI.py:4660 appGUI/ObjectUI.py:737 appGUI/ObjectUI.py:1786
+#: appGUI/MainGUI.py:4660 appGUI/ObjectUI.py:737 appGUI/ObjectUI.py:1047
 #: appPlugins/ToolMilling.py:60 appPlugins/ToolMilling.py:202
 msgid "Milling"
 msgstr "Frezeleme"
@@ -386,7 +390,7 @@ msgstr "Delme"
 
 #: appDatabase.py:271 appDatabase.py:1784 appDatabase.py:2256
 #: appDatabase.py:2432 appEditors/AppGeoEditor.py:604 appGUI/MainGUI.py:1099
-#: appGUI/MainGUI.py:1707 appGUI/MainGUI.py:2329 appGUI/ObjectUI.py:1800
+#: appGUI/MainGUI.py:1707 appGUI/MainGUI.py:2329 appGUI/ObjectUI.py:1061
 #: appPlugins/ToolPaint.py:216 appPlugins/ToolPaint.py:905
 #: appPlugins/ToolPaint.py:2904
 msgid "Paint"
@@ -394,7 +398,7 @@ msgstr "Çizim"
 
 #: appDatabase.py:271 appDatabase.py:1785 appDatabase.py:2264
 #: appDatabase.py:2433 appGUI/MainGUI.py:1097 appGUI/MainGUI.py:2327
-#: appGUI/ObjectUI.py:362 appGUI/ObjectUI.py:1810 appPlugins/ToolNCC.py:214
+#: appGUI/ObjectUI.py:362 appGUI/ObjectUI.py:1071 appPlugins/ToolNCC.py:214
 #: appPlugins/ToolNCC.py:1303 appPlugins/ToolNCC.py:4097
 msgid "NCC"
 msgstr "Bakır Temizleme"
@@ -406,7 +410,8 @@ msgstr "Bakır Temizleme"
 msgid "Cutout"
 msgstr "PCB Kesme"
 
-#: appDatabase.py:287 appGUI/ObjectUI.py:999
+#: appDatabase.py:287 appEditors/appGCodeEditor.py:804 appGUI/ObjectUI.py:999
+#: appGUI/ObjectUI.py:1374
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:397
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:280
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:418
@@ -419,7 +424,7 @@ msgstr "PCB Kesme"
 msgid "Shape"
 msgstr "Şekil"
 
-#: appDatabase.py:289 appGUI/ObjectUI.py:1030 appPlugins/ToolIsolation.py:3253
+#: appDatabase.py:289 appGUI/ObjectUI.py:1023 appPlugins/ToolIsolation.py:3253
 #: appPlugins/ToolMilling.py:3953 appPlugins/ToolNCC.py:4214
 #: appPlugins/ToolPaint.py:3025
 msgid ""
@@ -459,7 +464,8 @@ msgstr ""
 "V-Uç Açısı.\n"
 "V şekilli uçlar için uç açısı."
 
-#: appDatabase.py:337 appPlugins/ToolMilling.py:3975
+#: appDatabase.py:337 appEditors/appGCodeEditor.py:804 appGUI/ObjectUI.py:999
+#: appGUI/ObjectUI.py:1374 appPlugins/ToolMilling.py:3975
 msgid "Job"
 msgstr "İş"
 
@@ -509,8 +515,8 @@ msgstr ""
 "Kullanıcı hizalaması.\n"
 "Geçerli yoldan uzaklık olarak kullanılacak değer."
 
-#: appDatabase.py:391 appDatabase.py:898 appEditors/appGCodeEditor.py:801
-#: appGUI/ObjectUI.py:2123
+#: appDatabase.py:391 appDatabase.py:898 appEditors/appGCodeEditor.py:815
+#: appGUI/ObjectUI.py:1384
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:42
 #: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:71
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:50
@@ -567,7 +573,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:120
 #: appPlugins/ToolCalibration.py:799 appPlugins/ToolDrilling.py:1559
 #: appPlugins/ToolDrilling.py:2453 appPlugins/ToolMilling.py:3298
-#: appPlugins/ToolMilling.py:4134 appPlugins/ToolSolderPaste.py:1343
+#: appPlugins/ToolMilling.py:4134 appPlugins/ToolSolderPaste.py:1350
 msgid "Travel Z"
 msgstr "Z Kalkış Yüksekliği"
 
@@ -618,7 +624,7 @@ msgstr ""
 
 #: appDatabase.py:485 appGUI/preferences/tools/ToolsMillPrefGroupUI.py:192
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:141
-#: appPlugins/ToolMilling.py:4152 appPlugins/ToolSolderPaste.py:1385
+#: appPlugins/ToolMilling.py:4152 appPlugins/ToolSolderPaste.py:1392
 msgid "Feedrate X-Y"
 msgstr "X-Y İlerleme Hızı"
 
@@ -635,7 +641,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:207
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:154
 #: appPlugins/ToolDrilling.py:2470 appPlugins/ToolMilling.py:4170
-#: appPlugins/ToolSolderPaste.py:1398
+#: appPlugins/ToolSolderPaste.py:1405
 msgid "Feedrate Z"
 msgstr "Z İlerleme Hızı"
 
@@ -943,8 +949,8 @@ msgstr ""
 "için şeklin çevresini kesin."
 
 #: appDatabase.py:696 appDatabase.py:753 appEditors/AppGeoEditor.py:715
-#: appEditors/AppGerberEditor.py:6659 appEditors/appGCodeEditor.py:790
-#: appGUI/ObjectUI.py:133 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2113
+#: appEditors/AppGerberEditor.py:6659 appEditors/appGCodeEditor.py:804
+#: appGUI/ObjectUI.py:133 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:1374
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:248
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:176
 #: appPlugins/ToolEtchCompensation.py:468 appPlugins/ToolNCC.py:4475
@@ -1420,8 +1426,8 @@ msgid "Cancel"
 msgstr "İptal"
 
 #: appDatabase.py:1349 appDatabase.py:1360 appEditors/AppExcEditor.py:4559
-#: appEditors/AppExcEditor.py:4570 appEditors/appGCodeEditor.py:886
-#: appEditors/appGCodeEditor.py:897 appGUI/ObjectUI.py:153
+#: appEditors/AppExcEditor.py:4570 appEditors/appGCodeEditor.py:900
+#: appEditors/appGCodeEditor.py:911 appGUI/ObjectUI.py:153
 #: appGUI/ObjectUI.py:164 appPlugins/ToolAlignObjects.py:553
 #: appPlugins/ToolAlignObjects.py:564 appPlugins/ToolCalculators.py:748
 #: appPlugins/ToolCalculators.py:759 appPlugins/ToolCalibration.py:1425
@@ -1450,16 +1456,16 @@ msgstr "İptal"
 #: appPlugins/ToolPcbWizard.py:547 appPlugins/ToolPunchGerber.py:2378
 #: appPlugins/ToolPunchGerber.py:2389 appPlugins/ToolQRCode.py:1044
 #: appPlugins/ToolQRCode.py:1055 appPlugins/ToolRulesCheck.py:1715
-#: appPlugins/ToolRulesCheck.py:1726 appPlugins/ToolSolderPaste.py:1625
-#: appPlugins/ToolSolderPaste.py:1636 appPlugins/ToolSub.py:968
+#: appPlugins/ToolRulesCheck.py:1726 appPlugins/ToolSolderPaste.py:1632
+#: appPlugins/ToolSolderPaste.py:1643 appPlugins/ToolSub.py:968
 #: appPlugins/ToolSub.py:979 appPlugins/ToolTransform.py:1027
 #: appPlugins/ToolTransform.py:1038 appTool.py:300 appTool.py:311
 msgid "Edited value is out of range"
 msgstr "Düzenlenen değer aralık dışında"
 
 #: appDatabase.py:1355 appDatabase.py:1362 appEditors/AppExcEditor.py:4565
-#: appEditors/AppExcEditor.py:4572 appEditors/appGCodeEditor.py:892
-#: appEditors/appGCodeEditor.py:899 appGUI/ObjectUI.py:159
+#: appEditors/AppExcEditor.py:4572 appEditors/appGCodeEditor.py:906
+#: appEditors/appGCodeEditor.py:913 appGUI/ObjectUI.py:159
 #: appGUI/ObjectUI.py:166 appPlugins/ToolAlignObjects.py:559
 #: appPlugins/ToolAlignObjects.py:566 appPlugins/ToolCalculators.py:754
 #: appPlugins/ToolCalculators.py:761 appPlugins/ToolCalibration.py:1431
@@ -1488,8 +1494,8 @@ msgstr "Düzenlenen değer aralık dışında"
 #: appPlugins/ToolPcbWizard.py:549 appPlugins/ToolPunchGerber.py:2384
 #: appPlugins/ToolPunchGerber.py:2391 appPlugins/ToolQRCode.py:1050
 #: appPlugins/ToolQRCode.py:1057 appPlugins/ToolRulesCheck.py:1721
-#: appPlugins/ToolRulesCheck.py:1728 appPlugins/ToolSolderPaste.py:1631
-#: appPlugins/ToolSolderPaste.py:1638 appPlugins/ToolSub.py:974
+#: appPlugins/ToolRulesCheck.py:1728 appPlugins/ToolSolderPaste.py:1638
+#: appPlugins/ToolSolderPaste.py:1645 appPlugins/ToolSub.py:974
 #: appPlugins/ToolSub.py:981 appPlugins/ToolTransform.py:1033
 #: appPlugins/ToolTransform.py:1040 appTool.py:306 appTool.py:313
 msgid "Edited value is within limits."
@@ -1520,7 +1526,7 @@ msgid "Save changes"
 msgstr "Değişiklikleri Kaydet"
 
 #: appDatabase.py:1739 appDatabase.py:2226 appDatabase.py:2682
-#: appDatabase.py:2694 appGUI/MainGUI.py:495 appObjects/FlatCAMGeometry.py:1398
+#: appDatabase.py:2694 appGUI/MainGUI.py:495 appObjects/FlatCAMGeometry.py:1330
 #: appPlugins/ToolCutOut.py:664 appPlugins/ToolCutOut.py:686
 #: appPlugins/ToolCutOut.py:723 appPlugins/ToolIsolation.py:2797
 #: appPlugins/ToolIsolation.py:2807 appPlugins/ToolIsolation.py:2887
@@ -1532,7 +1538,7 @@ msgstr "Değişiklikleri Kaydet"
 msgid "Tools Database"
 msgstr "Araçlar Veri Tabanı"
 
-#: appDatabase.py:1758 appDatabase.py:2212 appObjects/FlatCAMGeometry.py:1241
+#: appDatabase.py:1758 appDatabase.py:2212 appObjects/FlatCAMGeometry.py:1173
 #: appPlugins/ToolCutOut.py:508 appPlugins/ToolDrilling.py:1153
 #: appPlugins/ToolIsolation.py:1313 appPlugins/ToolMilling.py:2073
 #: appPlugins/ToolNCC.py:1288 appPlugins/ToolPaint.py:884
@@ -1641,8 +1647,8 @@ msgstr "Bir delik eklemek için önce bir araç seçin"
 #: appEditors/AppGerberEditor.py:5840 appEditors/AppGerberEditor.py:5902
 #: appEditors/AppGerberEditor.py:5949 appEditors/AppGerberEditor.py:7366
 #: appGUI/MainGUI.py:3136 appGUI/MainGUI.py:3148
-#: appObjects/FlatCAMGeometry.py:812 appObjects/FlatCAMGeometry.py:2892
-#: appObjects/FlatCAMGeometry.py:2965 appObjects/FlatCAMGerber.py:434
+#: appObjects/FlatCAMGeometry.py:744 appObjects/FlatCAMGeometry.py:2824
+#: appObjects/FlatCAMGeometry.py:2897 appObjects/FlatCAMGerber.py:434
 #: appParsers/ParseGerber.py:2183 appParsers/ParseGerber.py:2274
 #: appParsers/ParseGerber.py:2349 appParsers/ParseGerber.py:2423
 #: appParsers/ParseGerber.py:2485 appPlugins/ToolAlignObjects.py:289
@@ -1690,7 +1696,7 @@ msgstr "Seçilen aralık açısı için çok fazla öge var."
 
 #: appEditors/AppExcEditor.py:583 appEditors/AppExcEditor.py:1224
 #: appEditors/AppGerberEditor.py:801 appEditors/AppGerberEditor.py:5836
-#: appObjects/FlatCAMCNCJob.py:790 appPlugins/ToolCopperThieving.py:349
+#: appObjects/FlatCAMCNCJob.py:803 appPlugins/ToolCopperThieving.py:349
 #: appPlugins/ToolCopperThieving.py:950 appPlugins/ToolCopperThieving.py:1162
 #: appPlugins/ToolCorners.py:249 appPlugins/ToolCorners.py:521
 #: appPlugins/ToolCorners.py:624 appPlugins/ToolCutOut.py:951
@@ -1779,10 +1785,10 @@ msgid "Total Slots"
 msgstr "Toplam Yuva"
 
 #: appEditors/AppExcEditor.py:2251 appEditors/AppGeoEditor.py:4098
-#: appEditors/AppGerberEditor.py:4196 appEditors/appGCodeEditor.py:587
+#: appEditors/AppGerberEditor.py:4196 appEditors/appGCodeEditor.py:601
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:100
-#: appObjects/FlatCAMCNCJob.py:545 appObjects/FlatCAMDocument.py:191
-#: appObjects/FlatCAMExcellon.py:216 appObjects/FlatCAMGeometry.py:725
+#: appObjects/FlatCAMCNCJob.py:558 appObjects/FlatCAMDocument.py:191
+#: appObjects/FlatCAMExcellon.py:216 appObjects/FlatCAMGeometry.py:657
 #: appObjects/FlatCAMGerber.py:224 appObjects/FlatCAMScript.py:180
 #: appPlugins/ToolCorners.py:173 appPlugins/ToolCutOut.py:339
 #: appPlugins/ToolDblSided.py:219 appPlugins/ToolDrilling.py:553
@@ -1796,10 +1802,10 @@ msgid "Beginner"
 msgstr "Acemi Modu"
 
 #: appEditors/AppExcEditor.py:2262 appEditors/AppGeoEditor.py:4111
-#: appEditors/AppGerberEditor.py:4209 appEditors/appGCodeEditor.py:600
+#: appEditors/AppGerberEditor.py:4209 appEditors/appGCodeEditor.py:614
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:101
-#: appObjects/FlatCAMCNCJob.py:555 appObjects/FlatCAMDocument.py:200
-#: appObjects/FlatCAMExcellon.py:230 appObjects/FlatCAMGeometry.py:734
+#: appObjects/FlatCAMCNCJob.py:568 appObjects/FlatCAMDocument.py:200
+#: appObjects/FlatCAMExcellon.py:230 appObjects/FlatCAMGeometry.py:666
 #: appObjects/FlatCAMGerber.py:238 appObjects/FlatCAMScript.py:189
 #: appPlugins/ToolCorners.py:191 appPlugins/ToolCutOut.py:382
 #: appPlugins/ToolDblSided.py:245 appPlugins/ToolDrilling.py:595
@@ -1812,16 +1818,16 @@ msgstr "Acemi Modu"
 msgid "Advanced"
 msgstr "Gelişmiş"
 
-#: appEditors/AppExcEditor.py:2285 appObjects/FlatCAMGeometry.py:881
-#: appObjects/FlatCAMGeometry.py:1539 appObjects/FlatCAMGeometry.py:2296
-#: appObjects/FlatCAMGeometry.py:3035 appObjects/FlatCAMGeometry.py:3196
+#: appEditors/AppExcEditor.py:2285 appObjects/FlatCAMGeometry.py:813
+#: appObjects/FlatCAMGeometry.py:1471 appObjects/FlatCAMGeometry.py:2228
+#: appObjects/FlatCAMGeometry.py:2967 appObjects/FlatCAMGeometry.py:3128
 #: appPlugins/ToolDrilling.py:1745 appPlugins/ToolIsolation.py:1472
 #: appPlugins/ToolIsolation.py:1890 appPlugins/ToolMilling.py:2305
 #: appPlugins/ToolMilling.py:2886 appPlugins/ToolMilling.py:3541
 #: appPlugins/ToolNCC.py:1477 appPlugins/ToolNCC.py:1615
 #: appPlugins/ToolPaint.py:1054 appPlugins/ToolPaint.py:1192
-#: appPlugins/ToolPaint.py:1906 appPlugins/ToolSolderPaste.py:503
-#: appPlugins/ToolSolderPaste.py:575
+#: appPlugins/ToolPaint.py:1906 appPlugins/ToolSolderPaste.py:507
+#: appPlugins/ToolSolderPaste.py:580
 msgid "Wrong value format entered, use a number."
 msgstr "Yanlış değer biçimi girildi, bir sayı kullanın."
 
@@ -1850,16 +1856,16 @@ msgid "There are no Tools definitions in the file. Aborting Excellon creation."
 msgstr "Dosyada hiçbir delik tanımı yok. Excellon oluşturma iptal ediliyor."
 
 #: appEditors/AppExcEditor.py:3126 appEditors/AppGerberEditor.py:4905
-#: appObjects/AppObject.py:170 appObjects/FlatCAMGeometry.py:2238
+#: appObjects/AppObject.py:170 appObjects/FlatCAMGeometry.py:2170
 #: appParsers/ParseExcellon.py:976 appPlugins/ToolMilling.py:2823
-#: appPlugins/ToolPcbWizard.py:354 appPlugins/ToolSolderPaste.py:943
+#: appPlugins/ToolPcbWizard.py:354 appPlugins/ToolSolderPaste.py:950
 #: app_Main.py:6521 app_Main.py:8410 app_Main.py:10935 app_Main.py:11007
 #: app_Main.py:11142 app_Main.py:11207
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Dahili bir hata oluştu. Komut satırına bakın.\n"
 
-#: appEditors/AppExcEditor.py:3131 appObjects/FlatCAMGeometry.py:2543
-#: appObjects/FlatCAMGeometry.py:2548 appObjects/FlatCAMGeometry.py:2697
+#: appEditors/AppExcEditor.py:3131 appObjects/FlatCAMGeometry.py:2475
+#: appObjects/FlatCAMGeometry.py:2480 appObjects/FlatCAMGeometry.py:2629
 #: appPlugins/ToolMilling.py:3210 appPlugins/ToolMilling.py:3214
 #: appPlugins/ToolSub.py:475 appPlugins/ToolSub.py:669
 msgid "Generating"
@@ -1884,7 +1890,7 @@ msgid "Excellon Editor"
 msgstr "Excellon Düzenleyici"
 
 #: appEditors/AppExcEditor.py:3993 appEditors/AppGeoEditor.py:3451
-#: appEditors/AppGerberEditor.py:6012 appEditors/appGCodeEditor.py:760
+#: appEditors/AppGerberEditor.py:6012 appEditors/appGCodeEditor.py:774
 #: appGUI/ObjectUI.py:72 appPlugins/ToolCorners.py:691
 #: appPlugins/ToolCutOut.py:2323 appPlugins/ToolDblSided.py:675
 #: appPlugins/ToolDrilling.py:2285 appPlugins/ToolFiducials.py:797
@@ -1904,14 +1910,14 @@ msgstr ""
 "Uygulama seviyesi seçimi Düzenle/Ayarlar menüsünden yapılır."
 
 #: appEditors/AppExcEditor.py:4007 appEditors/AppGerberEditor.py:6024
-#: appEditors/appGCodeEditor.py:772
+#: appEditors/appGCodeEditor.py:786
 msgid "Name:"
 msgstr "İsim:"
 
 #: appEditors/AppExcEditor.py:4014 appGUI/ObjectUI.py:621
 #: appGUI/ObjectUI.py:967 appPlugins/ToolIsolation.py:3223
 #: appPlugins/ToolMilling.py:3659 appPlugins/ToolNCC.py:4184
-#: appPlugins/ToolPaint.py:2994 appPlugins/ToolSolderPaste.py:1212
+#: appPlugins/ToolPaint.py:2994 appPlugins/ToolSolderPaste.py:1219
 msgid "Tools Table"
 msgstr "Araçlar Tablosu"
 
@@ -2025,8 +2031,7 @@ msgstr "Bir delik dizisi ekleyin (doğrusal veya dairesel dizi)"
 #: appEditors/AppExcEditor.py:4185 appEditors/AppExcEditor.py:4405
 #: appEditors/AppGeoEditor.py:3486 appEditors/AppGerberEditor.py:4513
 #: appEditors/AppGerberEditor.py:6050 appEditors/AppGerberEditor.py:6125
-#: appEditors/AppGerberEditor.py:6518 appEditors/appGCodeEditor.py:790
-#: appGUI/ObjectUI.py:306 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2113
+#: appEditors/AppGerberEditor.py:6518 appGUI/ObjectUI.py:306
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:35
 #: appPlugins/ToolCorners.py:773 appPlugins/ToolCutOut.py:2366
 #: appPlugins/ToolDblSided.py:697 appPlugins/ToolExtract.py:1008
@@ -2297,13 +2302,13 @@ msgstr "Dizide kaç tane yuva olması gerektiğini belirtin."
 
 #: appEditors/AppExcEditor.py:4527 appEditors/AppGeoEditor.py:3646
 #: appEditors/AppGerberEditor.py:6635 appEditors/appGCodeEditor.py:74
-#: appEditors/appGCodeEditor.py:75 appEditors/appGCodeEditor.py:869
+#: appEditors/appGCodeEditor.py:75 appEditors/appGCodeEditor.py:883
 #: appGUI/MainGUI.py:348 appGUI/MainGUI.py:1784 app_Main.py:2646
 msgid "Exit Editor"
 msgstr "Düzenleyiciden Çık"
 
 #: appEditors/AppExcEditor.py:4530 appEditors/AppGeoEditor.py:3649
-#: appEditors/AppGerberEditor.py:6638 appEditors/appGCodeEditor.py:872
+#: appEditors/AppGerberEditor.py:6638 appEditors/appGCodeEditor.py:886
 #: appGUI/MainGUI.py:1024 appGUI/MainGUI.py:2256
 msgid "Exit from Editor."
 msgstr "Düzenleyiciden çıkın."
@@ -2464,7 +2469,7 @@ msgid "Text Tool"
 msgstr "Metin Aracı"
 
 #: appEditors/AppGeoEditor.py:480 appObjects/FlatCAMExcellon.py:940
-#: appObjects/FlatCAMGeometry.py:1133 appPlugins/ToolDrilling.py:920
+#: appObjects/FlatCAMGeometry.py:1065 appPlugins/ToolDrilling.py:920
 #: appPlugins/ToolDrilling.py:1290 appPlugins/ToolDrilling.py:2384
 #: appPlugins/ToolIsolation.py:828 appPlugins/ToolIsolation.py:3375
 #: appPlugins/ToolMilling.py:1725 appPlugins/ToolMilling.py:2537
@@ -3287,7 +3292,7 @@ msgstr "Seçimi Yakınlaştır"
 #: appPlugins/ToolEtchCompensation.py:410 appPlugins/ToolFiducials.py:903
 #: appPlugins/ToolFollow.py:743 appPlugins/ToolInvertGerber.py:267
 #: appPlugins/ToolLevelling.py:1842 appPlugins/ToolQRCode.py:811
-#: appPlugins/ToolSolderPaste.py:1290
+#: appPlugins/ToolSolderPaste.py:1297
 msgid "Parameters"
 msgstr "Seçenekler"
 
@@ -3351,23 +3356,23 @@ msgid "The number of vertex points in the selected geometry element."
 msgstr "Seçili şekil nesnesindeki köşe noktalarının sayısı."
 
 #: appEditors/AppGeoEditor.py:3608 appEditors/AppGerberEditor.py:6268
-#: appGUI/ObjectUI.py:1857
+#: appGUI/ObjectUI.py:1118
 msgid "Simplification"
 msgstr "Sadeleştirme"
 
 #: appEditors/AppGeoEditor.py:3610 appEditors/AppGerberEditor.py:6270
-#: appGUI/ObjectUI.py:1859
+#: appGUI/ObjectUI.py:1120
 msgid "Simplify a geometry by reducing its vertex points number."
 msgstr "Köşe noktası sayısını azaltarak bir şekli sadeleştirin."
 
 #: appEditors/AppGeoEditor.py:3615 appEditors/AppGerberEditor.py:6275
-#: appGUI/ObjectUI.py:1889
+#: appGUI/ObjectUI.py:1150
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:86
 msgid "Tolerance"
 msgstr "Hata Payı"
 
 #: appEditors/AppGeoEditor.py:3617 appEditors/AppGerberEditor.py:6277
-#: appGUI/ObjectUI.py:1891
+#: appGUI/ObjectUI.py:1152
 msgid ""
 "All points in the simplified object will be\n"
 "within the tolerance distance of the original geometry."
@@ -3377,14 +3382,14 @@ msgstr ""
 
 #: appEditors/AppGeoEditor.py:3629 appEditors/AppGeoEditor.py:4134
 #: appEditors/AppGerberEditor.py:4067 appEditors/AppGerberEditor.py:6290
-#: appGUI/ObjectUI.py:1903
+#: appGUI/ObjectUI.py:1164
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:77
-#: appObjects/FlatCAMGeometry.py:790
+#: appObjects/FlatCAMGeometry.py:722
 msgid "Simplify"
 msgstr "Sadeleştir"
 
 #: appEditors/AppGeoEditor.py:3632 appEditors/AppGerberEditor.py:6293
-#: appGUI/ObjectUI.py:1906
+#: appGUI/ObjectUI.py:1167
 msgid "Simplify a geometry element by reducing its vertex points number."
 msgstr "Köşe noktası sayısını azaltarak bir şekil nesnesini sadeleştirin."
 
@@ -3425,13 +3430,13 @@ msgid "Last selected shape ID"
 msgstr "Son seçilen şekil ID"
 
 #: appEditors/AppGeoEditor.py:4165 appEditors/AppGerberEditor.py:2642
-#: appEditors/AppGerberEditor.py:4913 appObjects/FlatCAMGeometry.py:2711
+#: appEditors/AppGerberEditor.py:4913 appObjects/FlatCAMGeometry.py:2643
 #: appPlugins/ToolCutOut.py:1585 appPlugins/ToolDistance.py:199
 #: appPlugins/ToolExtract.py:629 appPlugins/ToolExtract.py:740
 #: appPlugins/ToolExtract.py:815 appPlugins/ToolOptimal.py:183
 #: appPlugins/ToolPanelize.py:1079 appPlugins/ToolQRCode.py:253
-#: appPlugins/ToolReport.py:224 appPlugins/ToolSolderPaste.py:718
-#: appPlugins/ToolSolderPaste.py:1010 appPlugins/ToolSub.py:319
+#: appPlugins/ToolReport.py:224 appPlugins/ToolSolderPaste.py:723
+#: appPlugins/ToolSolderPaste.py:1017 appPlugins/ToolSub.py:319
 #: app_Main.py:8632 tclCommands/TclCommandOpenSVG.py:85
 #: tclCommands/TclCommandPanelize.py:299
 msgid "Working"
@@ -3524,7 +3529,7 @@ msgstr ""
 msgid "Invalid value for"
 msgstr "İçin geçersiz değer"
 
-#: appEditors/AppGeoEditor.py:5995 appObjects/FlatCAMGeometry.py:2790
+#: appEditors/AppGeoEditor.py:5995 appObjects/FlatCAMGeometry.py:2722
 #: appPlugins/ToolMilling.py:3089 appPlugins/ToolPaint.py:2020
 #: appPlugins/ToolPaint.py:2230
 msgid ""
@@ -3703,7 +3708,7 @@ msgstr "Kod"
 msgid "Dim"
 msgstr "Genişlik"
 
-#: appEditors/AppGerberEditor.py:4627 appObjects/FlatCAMCNCJob.py:730
+#: appEditors/AppGerberEditor.py:4627 appObjects/FlatCAMCNCJob.py:743
 #: appObjects/FlatCAMScript.py:134 appPlugins/ToolLevelling.py:1505
 #: app_Main.py:7877
 msgid "Loading"
@@ -3738,7 +3743,7 @@ msgstr "Koordinatlar panoya kopyalandı."
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:316
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:332
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:296
-#: appObjects/AppObject.py:345 appObjects/FlatCAMCNCJob.py:626
+#: appObjects/AppObject.py:345 appObjects/FlatCAMCNCJob.py:639
 #: appObjects/FlatCAMGerber.py:1090 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
 #: appObjects/FlatCAMObj.py:393 appPlugins/ToolCopperThieving.py:1173
@@ -4096,7 +4101,7 @@ msgid "String to replace the one in the Find box throughout the text."
 msgstr "Metin boyunca Bul kutusundaki ile değiştirilecek dize."
 
 #: appEditors/AppTextEditor.py:108 appEditors/appGCodeEditor.py:160
-#: appGUI/GUIElements.py:4823 appGUI/ObjectUI.py:1968
+#: appGUI/GUIElements.py:4823 appGUI/ObjectUI.py:1229
 #: appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:55
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:272
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:271
@@ -4142,25 +4147,25 @@ msgstr "Çalıştır"
 msgid "Will run the TCL commands found in the text file, one by one."
 msgstr "Metin dosyasında bulunan TCL komutları birbiri ardına çalıştırılır."
 
-#: appEditors/AppTextEditor.py:220 appEditors/appGCodeEditor.py:685
+#: appEditors/AppTextEditor.py:220 appEditors/appGCodeEditor.py:699
 msgid "Open file"
 msgstr "Dosyayı Aç"
 
 #: appEditors/AppTextEditor.py:251 appEditors/AppTextEditor.py:257
-#: appObjects/FlatCAMCNCJob.py:654 appObjects/FlatCAMCNCJob.py:660
+#: appObjects/FlatCAMCNCJob.py:667 appObjects/FlatCAMCNCJob.py:673
 #: appPlugins/ToolLevelling.py:1471 appPlugins/ToolLevelling.py:1477
 #: appPlugins/ToolLevelling.py:1663 appPlugins/ToolLevelling.py:1669
-#: appPlugins/ToolSolderPaste.py:1116 app_Main.py:7789 app_Main.py:7795
+#: appPlugins/ToolSolderPaste.py:1123 app_Main.py:7789 app_Main.py:7795
 msgid "Export Code ..."
 msgstr "Kodu Dışa Aktar ..."
 
-#: appEditors/AppTextEditor.py:312 appObjects/FlatCAMCNCJob.py:709
-#: appObjects/FlatCAMCNCJob.py:1116 appPlugins/ToolLevelling.py:1495
-#: appPlugins/ToolLevelling.py:1687 appPlugins/ToolSolderPaste.py:1145
+#: appEditors/AppTextEditor.py:312 appObjects/FlatCAMCNCJob.py:722
+#: appObjects/FlatCAMCNCJob.py:1129 appPlugins/ToolLevelling.py:1495
+#: appPlugins/ToolLevelling.py:1687 appPlugins/ToolSolderPaste.py:1152
 msgid "No such file or directory"
 msgstr "Böyle bir dosya ya da dizin yok"
 
-#: appEditors/AppTextEditor.py:324 appObjects/FlatCAMCNCJob.py:1130
+#: appEditors/AppTextEditor.py:324 appObjects/FlatCAMCNCJob.py:1143
 msgid "Saved to"
 msgstr "Şuraya kaydedildi"
 
@@ -4182,45 +4187,41 @@ msgstr "Üstbilgi"
 msgid "Start"
 msgstr "Başlatma"
 
-#: appEditors/appGCodeEditor.py:252
+#: appEditors/appGCodeEditor.py:266
 msgid "All GCode"
 msgstr "G Kodunun Tamamı"
 
-#: appEditors/appGCodeEditor.py:258
+#: appEditors/appGCodeEditor.py:272
 msgid "Header GCode"
 msgstr "G Kodu Üstbilgisi"
 
-#: appEditors/appGCodeEditor.py:264
+#: appEditors/appGCodeEditor.py:278
 msgid "Start GCode"
 msgstr "G Kodu Başlatma"
 
-#: appEditors/appGCodeEditor.py:660 appObjects/FlatCAMCNCJob.py:779
+#: appEditors/appGCodeEditor.py:674 appObjects/FlatCAMCNCJob.py:792
 #: appPlugins/ToolCalibration.py:482
 msgid "Loaded Machine Code into Code Editor"
 msgstr "Kod Düzenleyici'ye CNC kodu yüklendi"
 
-#: appEditors/appGCodeEditor.py:752 appGUI/ObjectUI.py:1988
-#: appPlugins/ToolSolderPaste.py:1031
+#: appEditors/appGCodeEditor.py:766 appGUI/ObjectUI.py:1249
+#: appPlugins/ToolSolderPaste.py:1038
 msgid "GCode Editor"
 msgstr "G Kodu Düzenleyicisi"
 
-#: appEditors/appGCodeEditor.py:790 appEditors/appGCodeEditor.py:801
+#: appEditors/appGCodeEditor.py:804 appEditors/appGCodeEditor.py:815
 msgid "GCode"
 msgstr "G Kodu"
 
-#: appEditors/appGCodeEditor.py:790 appGUI/ObjectUI.py:2113
-msgid "TT"
-msgstr "TT"
-
-#: appEditors/appGCodeEditor.py:801 appGUI/ObjectUI.py:668
-#: appGUI/ObjectUI.py:2123 appObjects/FlatCAMObj.py:499
+#: appEditors/appGCodeEditor.py:815 appGUI/ObjectUI.py:668
+#: appGUI/ObjectUI.py:1384 appObjects/FlatCAMObj.py:499
 #: appPlugins/ToolDrilling.py:2333 appPlugins/ToolMilling.py:3681
 #: appPlugins/ToolMilling.py:3874 appPlugins/ToolReport.py:194
 msgid "Drills"
 msgstr "Delikler"
 
-#: appEditors/appGCodeEditor.py:801 appGUI/ObjectUI.py:668
-#: appGUI/ObjectUI.py:2123
+#: appEditors/appGCodeEditor.py:815 appGUI/ObjectUI.py:668
+#: appGUI/ObjectUI.py:1384
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:151
 #: appObjects/FlatCAMObj.py:501 appPlugins/ToolDrilling.py:2333
 #: appPlugins/ToolMilling.py:3681 appPlugins/ToolMilling.py:3875
@@ -4228,18 +4229,18 @@ msgstr "Delikler"
 msgid "Slots"
 msgstr "Yuvalar"
 
-#: appEditors/appGCodeEditor.py:823 appEditors/appGCodeEditor.py:845
+#: appEditors/appGCodeEditor.py:837 appEditors/appGCodeEditor.py:859
 msgid "CNC Code Snippet"
 msgstr "CNC Kod Eklentisi"
 
-#: appEditors/appGCodeEditor.py:825 appEditors/appGCodeEditor.py:847
+#: appEditors/appGCodeEditor.py:839 appEditors/appGCodeEditor.py:861
 msgid "Code snippet defined in Preferences."
 msgstr ""
 "Ayarlar'da tanımlanan kod eklentisi.\n"
 "Düzenle/Ayarlar/NCC-İŞ/CNC İş Düzenleyicisi başlığı altında bulunan\n"
 "CNC Kod eklentileri (başa ekleme ve sona ekleme) içerecektir."
 
-#: appEditors/appGCodeEditor.py:831 appEditors/appGCodeEditor.py:853
+#: appEditors/appGCodeEditor.py:845 appEditors/appGCodeEditor.py:867
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to insert at the cursor location."
@@ -4247,11 +4248,11 @@ msgstr ""
 "İmleç konumuna eklemek istediğiniz herhangi\n"
 "bir G Kod komutunu buraya yazın."
 
-#: appEditors/appGCodeEditor.py:837 appEditors/appGCodeEditor.py:859
+#: appEditors/appGCodeEditor.py:851 appEditors/appGCodeEditor.py:873
 msgid "Insert Code"
 msgstr "Kodu Ekle"
 
-#: appEditors/appGCodeEditor.py:840 appEditors/appGCodeEditor.py:862
+#: appEditors/appGCodeEditor.py:854 appEditors/appGCodeEditor.py:876
 msgid "Insert the code above at the cursor location."
 msgstr "Yukarıdaki Kodu imleç konumuna ekleyin."
 
@@ -4287,7 +4288,7 @@ msgstr "Ctrl+Y"
 #: appGUI/GUIElements.py:317 appGUI/GUIElements.py:1015
 #: appGUI/GUIElements.py:1414 appGUI/GUIElements.py:1627
 #: appGUI/GUIElements.py:1915 appGUI/GUIElements.py:3977 appGUI/MainGUI.py:1721
-#: appGUI/ObjectUI.py:1970 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:57
+#: appGUI/ObjectUI.py:1231 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:57
 msgid "Cut"
 msgstr "Kes"
 
@@ -4558,7 +4559,7 @@ msgstr "Yeni"
 
 #: appGUI/MainGUI.py:100 appGUI/MainGUI.py:1664
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:71
-#: appObjects/FlatCAMGeometry.py:2166 appObjects/ObjectCollection.py:235
+#: appObjects/FlatCAMGeometry.py:2098 appObjects/ObjectCollection.py:235
 #: appPlugins/ToolCalibration.py:206 appPlugins/ToolCalibration.py:1356
 #: appPlugins/ToolCalibration.py:1373 appPlugins/ToolCopperThieving.py:208
 #: appPlugins/ToolCopperThieving.py:1399 appPlugins/ToolCopperThieving.py:1413
@@ -4571,7 +4572,7 @@ msgstr "Yeni"
 #: appPlugins/ToolNCC.py:4158 appPlugins/ToolNCC.py:4620
 #: appPlugins/ToolPaint.py:3304 appPlugins/ToolPanelize.py:150
 #: appPlugins/ToolPanelize.py:248 appPlugins/ToolPanelize.py:1149
-#: appPlugins/ToolPanelize.py:1191 appPlugins/ToolSolderPaste.py:1526
+#: appPlugins/ToolPanelize.py:1191 appPlugins/ToolSolderPaste.py:1533
 #: appPlugins/ToolTransform.py:160 appPlugins/ToolTransform.py:650
 msgid "Geometry"
 msgstr "Şekil"
@@ -4673,7 +4674,7 @@ msgid "Recent files"
 msgstr "Son Dosyalar"
 
 #: appGUI/MainGUI.py:162 appGUI/MainGUI.py:891 appGUI/MainGUI.py:1631
-#: appGUI/ObjectUI.py:2188 appObjects/ObjectCollection.py:381
+#: appGUI/ObjectUI.py:1449 appObjects/ObjectCollection.py:381
 msgid "Save"
 msgstr "Kaydet"
 
@@ -5181,7 +5182,7 @@ msgid "Deselect All"
 msgstr "Tüm Seçimleri Kaldır"
 
 #: appGUI/MainGUI.py:591 appGUI/ObjectUI.py:343 appGUI/ObjectUI.py:719
-#: appGUI/ObjectUI.py:1779 appGUI/ObjectUI.py:2157
+#: appGUI/ObjectUI.py:1040 appGUI/ObjectUI.py:1418
 msgid "Plugins"
 msgstr "Eklentiler"
 
@@ -5282,8 +5283,8 @@ msgid "Add Path"
 msgstr "Yol Ekle"
 
 #: appGUI/MainGUI.py:667 appGUI/MainGUI.py:769 appGUI/MainGUI.py:4608
-#: appGUI/MainGUI.py:4876 appGUI/MainGUI.py:5131 appGUI/ObjectUI.py:2113
-#: appGUI/ObjectUI.py:2124
+#: appGUI/MainGUI.py:4876 appGUI/MainGUI.py:5131 appGUI/ObjectUI.py:1374
+#: appGUI/ObjectUI.py:1385
 msgid "P"
 msgstr "P"
 
@@ -5588,7 +5589,7 @@ msgstr "Yeniden Çiz"
 msgid "Clear Plot"
 msgstr "Şekli Temizle"
 
-#: appGUI/MainGUI.py:1086 appGUI/MainGUI.py:2316 appGUI/ObjectUI.py:2161
+#: appGUI/MainGUI.py:1086 appGUI/MainGUI.py:2316 appGUI/ObjectUI.py:1422
 #: appPlugins/ToolLevelling.py:187 appPlugins/ToolLevelling.py:1722
 msgid "Levelling"
 msgstr "Dengeleme"
@@ -5796,7 +5797,7 @@ msgstr "Çalışma Alanı"
 #: appPlugins/ToolFollow.py:714 appPlugins/ToolInvertGerber.py:254
 #: appPlugins/ToolIsolation.py:3199 appPlugins/ToolOptimal.py:461
 #: appPlugins/ToolPunchGerber.py:2006 appPlugins/ToolQRCode.py:775
-#: appPlugins/ToolRulesCheck.py:1203 appPlugins/ToolSolderPaste.py:1194
+#: appPlugins/ToolRulesCheck.py:1203 appPlugins/ToolSolderPaste.py:1201
 #: appPlugins/ToolSub.py:836
 msgid "GERBER"
 msgstr "GERBER"
@@ -6020,20 +6021,20 @@ msgstr ""
 
 #: appGUI/MainGUI.py:3782 appPlugins/ToolIsolation.py:918
 #: appPlugins/ToolNCC.py:1438 appPlugins/ToolPaint.py:678
-#: appPlugins/ToolSolderPaste.py:340 appPlugins/ToolSolderPaste.py:1245
+#: appPlugins/ToolSolderPaste.py:344 appPlugins/ToolSolderPaste.py:1252
 #: app_Main.py:4947
 msgid "New Tool"
 msgstr "Yeni Uç"
 
 #: appGUI/MainGUI.py:3783 appPlugins/ToolIsolation.py:919
 #: appPlugins/ToolNCC.py:1439 appPlugins/ToolPaint.py:679
-#: appPlugins/ToolSolderPaste.py:341 app_Main.py:4948
+#: appPlugins/ToolSolderPaste.py:345 app_Main.py:4948
 msgid "Enter a Tool Diameter"
 msgstr "Uç Kalınlığını Girin"
 
 #: appGUI/MainGUI.py:3795 appPlugins/ToolIsolation.py:940
 #: appPlugins/ToolNCC.py:1460 appPlugins/ToolPaint.py:692
-#: appPlugins/ToolSolderPaste.py:353 app_Main.py:4961
+#: appPlugins/ToolSolderPaste.py:357 app_Main.py:4961
 msgid "Adding Tool cancelled"
 msgstr "Uç ekleme işlemi iptal edildi"
 
@@ -6411,7 +6412,7 @@ msgstr "Çevrimiçi Dersler Aç"
 msgid "Refresh Plots"
 msgstr "Şekilleri Yenile"
 
-#: appGUI/MainGUI.py:4690 appPlugins/ToolSolderPaste.py:1618
+#: appGUI/MainGUI.py:4690 appPlugins/ToolSolderPaste.py:1625
 msgid "Delete Object"
 msgstr "Nesneyi Sil"
 
@@ -6660,7 +6661,7 @@ msgid "Gerber Object"
 msgstr "Gerber Nesnesi"
 
 #: appGUI/ObjectUI.py:187 appGUI/ObjectUI.py:550 appGUI/ObjectUI.py:877
-#: appGUI/ObjectUI.py:1957 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:24
+#: appGUI/ObjectUI.py:1218 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:24
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:26
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:26
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:24
@@ -6698,7 +6699,7 @@ msgid "Plot"
 msgstr "Göster"
 
 #: appGUI/ObjectUI.py:217 appGUI/ObjectUI.py:637 appGUI/ObjectUI.py:988
-#: appGUI/ObjectUI.py:2102 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:35
+#: appGUI/ObjectUI.py:1363 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:35
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:35
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:33
 #: appPlugins/ToolMilling.py:3667
@@ -6717,17 +6718,17 @@ msgstr ""
 "Bu, yolun ortasından kesileceği (çizileceği) anlamına gelir."
 
 #: appGUI/ObjectUI.py:234 appGUI/ObjectUI.py:584 appGUI/ObjectUI.py:905
-#: appGUI/ObjectUI.py:1992
+#: appGUI/ObjectUI.py:1253
 msgid "Start the Object Editor"
 msgstr "Nesne Düzenleyiciyi Başlat"
 
 #: appGUI/ObjectUI.py:245 appGUI/ObjectUI.py:595 appGUI/ObjectUI.py:916
-#: appGUI/ObjectUI.py:2003
+#: appGUI/ObjectUI.py:1264
 msgid "INFO"
 msgstr "BİLGİ"
 
 #: appGUI/ObjectUI.py:247 appGUI/ObjectUI.py:597 appGUI/ObjectUI.py:918
-#: appGUI/ObjectUI.py:2005
+#: appGUI/ObjectUI.py:1266
 msgid "Show the Object Attributes."
 msgstr "Nesne Özelliklerini Göster."
 
@@ -6785,7 +6786,7 @@ msgid ""
 "toolpaths to cut around polygons."
 msgstr "Çokgenleri keserek yollar oluşturma işlemi."
 
-#: appGUI/ObjectUI.py:365 appGUI/ObjectUI.py:1813 appPlugins/ToolNCC.py:4669
+#: appGUI/ObjectUI.py:365 appGUI/ObjectUI.py:1074 appPlugins/ToolNCC.py:4669
 msgid ""
 "Create the Geometry Object\n"
 "for non-copper routing."
@@ -6797,12 +6798,12 @@ msgid ""
 "the board cutout."
 msgstr "PCB'yi kesmek için kesim şekilleri oluşturun."
 
-#: appGUI/ObjectUI.py:408 appGUI/ObjectUI.py:756 appGUI/ObjectUI.py:1830
+#: appGUI/ObjectUI.py:408 appGUI/ObjectUI.py:756 appGUI/ObjectUI.py:1091
 #: appPlugins/ToolEtchCompensation.py:358
 msgid "Utilities"
 msgstr "Araçlar"
 
-#: appGUI/ObjectUI.py:410 appGUI/ObjectUI.py:758 appGUI/ObjectUI.py:1832
+#: appGUI/ObjectUI.py:410 appGUI/ObjectUI.py:758 appGUI/ObjectUI.py:1093
 msgid "Show the Utilities."
 msgstr "Araçları göster."
 
@@ -6847,7 +6848,7 @@ msgstr "Ortaya çıkan şeklin köşeleri yuvarlatılmış olacaktır."
 #: appGUI/ObjectUI.py:468 appGUI/ObjectUI.py:508 appPlugins/ToolCutOut.py:2642
 #: appPlugins/ToolCutOut.py:2657 appPlugins/ToolFollow.py:780
 #: appPlugins/ToolIsolation.py:3650 appPlugins/ToolNCC.py:4666
-#: appPlugins/ToolPaint.py:3337 appPlugins/ToolSolderPaste.py:1505
+#: appPlugins/ToolPaint.py:3337 appPlugins/ToolSolderPaste.py:1512
 msgid "Generate Geometry"
 msgstr "Şekil Oluştur"
 
@@ -7053,21 +7054,26 @@ msgstr ""
 "ve Z Derinliği, V-Ucu Kalınlığı ve V-Ucu Açısı, yeniden gösterilen\n"
 "kullanıcı arayüz form girişlerinden otomatik olarak hesaplanır."
 
-#: appGUI/ObjectUI.py:986 appGUI/ObjectUI.py:2100
+#: appGUI/ObjectUI.py:986 appGUI/ObjectUI.py:1361
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:34
 #: appPlugins/ToolMilling.py:3666
 msgid "Plot Object"
 msgstr "Çizimi Göster"
 
-#: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2113 appGUI/ObjectUI.py:2123
+#: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:1374 appGUI/ObjectUI.py:1384
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:144
 #: appPlugins/ToolCopperThieving.py:1477 appPlugins/ToolMilling.py:3726
 msgid "Dia"
 msgstr "Boyut"
 
-#: appGUI/ObjectUI.py:1006 appPlugins/ToolMilling.py:3732
+#: appGUI/ObjectUI.py:1006
+#, fuzzy
+#| msgid ""
+#| "This is the Tool Number.\n"
+#| "When ToolChange is checked, on toolchange event this value\n"
+#| "will be showed as a T1, T2 ... Tn"
 msgid ""
-"This is the Tool Number.\n"
+"Tool Number.\n"
 "When ToolChange is checked, on toolchange event this value\n"
 "will be showed as a T1, T2 ... Tn"
 msgstr ""
@@ -7076,97 +7082,57 @@ msgstr ""
 "bu değer T1, T2 ... Tn olarak gösterilecek"
 
 #: appGUI/ObjectUI.py:1015
-msgid ""
-"The value for the Offset can be:\n"
-"- Path -> There is no offset, the tool cut will be done through the geometry "
-"line.\n"
-"- In(side) -> The tool cut will follow the geometry inside. It will create a "
-"'pocket'.\n"
-"- Out(side) -> The tool cut will follow the geometry line on the outside."
+msgid "Offset Type. The kind of cut offset to be used."
 msgstr ""
-"Hiza değeri şunlar olabilir:\n"
-"- Yol -> Hiza yoktur, ucun kesimi geometrik bir çizgi üzerinden yapılır.\n"
-"- İç Taraf -> Kesme ucu içerdeki şekli takip eder. Bu bir \"cep\" "
-"yaratacaktır.\n"
-"- Dış Taraf -> Kesme ucu dışarıdaki geometrik çizgiyi takip edecektir."
 
-#: appGUI/ObjectUI.py:1022
+#: appGUI/ObjectUI.py:1019
 msgid ""
-"The (Operation) Type has only informative value. Usually the UI form "
-"values \n"
-"are choose based on the operation type and this will serve as a reminder.\n"
-"Can be 'Roughing', 'Finishing' or 'Isolation'.\n"
-"For Roughing we may choose a lower Feedrate and multiDepth cut.\n"
-"For Finishing we may choose a higher Feedrate, without multiDepth.\n"
-"For Isolation we need a lower Feedrate as it use a milling bit with a fine "
-"tip."
+"Job Type. Usually the UI form values \n"
+"are choose based on the operation type and this will serve as a reminder."
 msgstr ""
-"Tür (işlem) yalnızca bilgilendirici değere sahiptir. Genellikle UI Form "
-"Değerleri\n"
-"işlem türüne bağlı olarak seçilir ve bu bir hatırlatma işlevi görür.\n"
-"“Kaba”, “sonlandırma” veya “yalıtım” olabilir.\n"
-"Kaba talaş işleme için daha düşük bir dönme hızı ve çok katmanlı kesme "
-"seçebiliriz.\n"
-"Son işlem için, çok derinlik olmadan daha yüksek bir dönme hızı "
-"seçebiliriz.\n"
-"Yalıtım için, ince uçlu bir freze ucu kullandığından daha düşük bir dönme "
-"hızına\n"
-"ihtiyacımız vardır."
 
-#: appGUI/ObjectUI.py:1037 appPlugins/ToolMilling.py:3742
+#: appGUI/ObjectUI.py:1029
 msgid ""
-"Plot column. It is visible only for MultiGeo geometries, meaning geometries "
-"that holds the geometry\n"
-"data into the tools. For those geometries, deleting the tool will delete the "
-"geometry data also,\n"
-"so be WARNED. From the checkboxes on each row it can be enabled/disabled the "
-"plot on canvas\n"
-"for the corresponding tool."
+"Plot column. It is visible only for MultiGeo Geometry objects.\n"
+"Enable plot for the selected tool geometry."
 msgstr ""
-"Sütunu Çiz. Yalnızca MultiGeo (Çok Şekilli) şekiller tarafından görülebilir, "
-"bu da araçlardaki verilerin \n"
-"şeklini içeren bir şekil anlamına gelir. Bu şekiller için, aracın silinmesi "
-"şekil verilerini de silecektir, \n"
-"bu yüzden dikkatli olun. Her satırdaki onay kutularından, ilgili araç için "
-"çalışma alanı üzerindeki \n"
-"çizimi etkinleştirebilir/devre dışı bırakabilirsiniz."
 
-#: appGUI/ObjectUI.py:1781
+#: appGUI/ObjectUI.py:1042
 msgid "Launch Paint Tool in Tools Tab."
 msgstr "Araçlar sekmesindeki \"Çizim\" aracını başlatır."
 
-#: appGUI/ObjectUI.py:1789
+#: appGUI/ObjectUI.py:1050
 msgid "Generate a CNCJob by milling a Geometry."
 msgstr "Bir Şekli frezeleyerek bir CNC İşi oluşturun."
 
-#: appGUI/ObjectUI.py:1803 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:28
+#: appGUI/ObjectUI.py:1064 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:28
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon."
 msgstr "Bir çokgenin tüm alanlarını kaplayacak yollar oluşturur."
 
-#: appGUI/ObjectUI.py:1864
+#: appGUI/ObjectUI.py:1125
 msgid "Points"
 msgstr "Noktalar"
 
-#: appGUI/ObjectUI.py:1866
+#: appGUI/ObjectUI.py:1127
 msgid "Total of vertex points in the geometry."
 msgstr "Şekildeki toplam köşe noktaları."
 
-#: appGUI/ObjectUI.py:1874 appPlugins/ToolCalculators.py:536
+#: appGUI/ObjectUI.py:1135 appPlugins/ToolCalculators.py:536
 #: appPlugins/ToolCalculators.py:719
 msgid "Calculate"
 msgstr "Hesapla"
 
-#: appGUI/ObjectUI.py:1877
+#: appGUI/ObjectUI.py:1138
 msgid "Calculate the number of vertex points in the geometry."
 msgstr "Şekildeki köşe noktalarının sayısını hesaplayın."
 
-#: appGUI/ObjectUI.py:1944
+#: appGUI/ObjectUI.py:1205
 msgid "CNC Job Object"
 msgstr "CNC İş Nesnesi"
 
-#: appGUI/ObjectUI.py:1960 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:48
+#: appGUI/ObjectUI.py:1221 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:48
 msgid ""
 "This selects the kind of geometries on the canvas to plot.\n"
 "Those can be either of type 'Travel' which means the moves\n"
@@ -7177,15 +7143,15 @@ msgstr ""
 "'Hareket' tipinde olabilirler, yani nesnenin üzerindeki çizimler.\n"
 "'Kesim' tipinde olabilirler, yani nesneyi kesen çizimler."
 
-#: appGUI/ObjectUI.py:1969 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:56
+#: appGUI/ObjectUI.py:1230 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:56
 msgid "Travel"
 msgstr "Hareket"
 
-#: appGUI/ObjectUI.py:2029 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:65
+#: appGUI/ObjectUI.py:1290 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:65
 msgid "Display Annotation"
 msgstr "Hareket Sıra Numarasını Göster"
 
-#: appGUI/ObjectUI.py:2031 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:67
+#: appGUI/ObjectUI.py:1292 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:67
 msgid ""
 "This selects if to display text annotation on the plot.\n"
 "When checked it will display numbers in order for each end\n"
@@ -7196,12 +7162,12 @@ msgstr ""
 "Onay kutusu işaretlenirse, hareket hattı sırasını gösteren \n"
 "numaralar gösterilir."
 
-#: appGUI/ObjectUI.py:2043 appObjects/FlatCAMObj.py:858
+#: appGUI/ObjectUI.py:1304 appObjects/FlatCAMObj.py:858
 #: appPlugins/ToolReport.py:591
 msgid "Travelled distance"
 msgstr "Katedilen Mesafe"
 
-#: appGUI/ObjectUI.py:2045
+#: appGUI/ObjectUI.py:1306
 msgid ""
 "This is the total travelled distance on X-Y plane.\n"
 "In current units."
@@ -7209,11 +7175,11 @@ msgstr ""
 "Bu, X-Y düzleminde katedilen toplam mesafedir.\n"
 "Mevcut birimlerde."
 
-#: appGUI/ObjectUI.py:2056
+#: appGUI/ObjectUI.py:1317
 msgid "Estimated time"
 msgstr "Tahmini Süre"
 
-#: appGUI/ObjectUI.py:2058
+#: appGUI/ObjectUI.py:1319
 msgid ""
 "This is the estimated time to do the routing/drilling,\n"
 "without the time spent in ToolChange events."
@@ -7221,11 +7187,11 @@ msgstr ""
 "Bu, uç değiştirme işlemleri için harcanan zaman olmadan\n"
 "yönlendirme/delme işlemlerinin tahmini süresidir."
 
-#: appGUI/ObjectUI.py:2082
+#: appGUI/ObjectUI.py:1343
 msgid "CNC Tools Table"
 msgstr "CNC Uç Tablosu"
 
-#: appGUI/ObjectUI.py:2085
+#: appGUI/ObjectUI.py:1346
 msgid ""
 "Tools in this CNCJob object used for cutting.\n"
 "The tool diameter is used for plotting on canvas.\n"
@@ -7247,19 +7213,19 @@ msgstr ""
 "'Uç tipi' (TT) 1 ila 4 dişli (C1..C4), bilyalı (B) veya V Şekilli (V) \n"
 "dairesel olabilir."
 
-#: appGUI/ObjectUI.py:2134
+#: appGUI/ObjectUI.py:1395
 msgid "Update Plot"
 msgstr "Çizimi Güncelle"
 
-#: appGUI/ObjectUI.py:2136
+#: appGUI/ObjectUI.py:1397
 msgid "Update the plot."
 msgstr "Çizimi güncelleyin."
 
-#: appGUI/ObjectUI.py:2141
+#: appGUI/ObjectUI.py:1402
 msgid "Use CNC Code Snippets"
 msgstr "CNC Kod Eklentileri Kullan"
 
-#: appGUI/ObjectUI.py:2143
+#: appGUI/ObjectUI.py:1404
 msgid ""
 "When selected, it will include CNC Code snippets (append and prepend)\n"
 "defined in the Preferences."
@@ -7268,98 +7234,98 @@ msgstr ""
 "bulunan\n"
 "CNC Kod eklentileri (başa ekleme ve sona ekleme) içerecektir."
 
-#: appGUI/ObjectUI.py:2164 appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:26
+#: appGUI/ObjectUI.py:1425 appGUI/preferences/tools/ToolsLevelPrefGroupUI.py:26
 #: appPlugins/ToolLevelling.py:1749
 msgid "Generate CNC Code with auto-levelled paths."
 msgstr "Otomatik dengeleme yolları CNC Kodu oluşturun."
 
-#: appGUI/ObjectUI.py:2191
+#: appGUI/ObjectUI.py:1452
 msgid "Opens dialog to save CNC Code file."
 msgstr ""
 "CNC Kodu dosyasını kaydetmek\n"
 "için iletişim kutusunu açar."
 
-#: appGUI/ObjectUI.py:2197 appPlugins/ToolSolderPaste.py:1593
+#: appGUI/ObjectUI.py:1458 appPlugins/ToolSolderPaste.py:1600
 msgid "Review CNC Code."
 msgstr "CNC koduna göz atın."
 
-#: appGUI/ObjectUI.py:2231
+#: appGUI/ObjectUI.py:1492
 msgid "Script Object"
 msgstr "Komut Dosyası Nesnesi"
 
-#: appGUI/ObjectUI.py:2251 appGUI/ObjectUI.py:2325
+#: appGUI/ObjectUI.py:1512 appGUI/ObjectUI.py:1586
 msgid "Auto Completer"
 msgstr "Otomatik Tamamlayıcı"
 
-#: appGUI/ObjectUI.py:2253
+#: appGUI/ObjectUI.py:1514
 msgid "This selects if the auto completer is enabled in the Script Editor."
 msgstr ""
 "Bu seçenek, Kod Düzenleyi'de otomatik \n"
 "tamamlamanın etkin olup olmadığını seçer."
 
-#: appGUI/ObjectUI.py:2298
+#: appGUI/ObjectUI.py:1559
 msgid "Document Object"
 msgstr "Belge Nesnesi"
 
-#: appGUI/ObjectUI.py:2327
+#: appGUI/ObjectUI.py:1588
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
 "Bu seçenek, Belge Düzenleyici'de otomatik\n"
 "tamamlamanın etkin olup olmadığını seçer."
 
-#: appGUI/ObjectUI.py:2348
+#: appGUI/ObjectUI.py:1609
 msgid "Font Type"
 msgstr "Yazı Tipi"
 
-#: appGUI/ObjectUI.py:2366
+#: appGUI/ObjectUI.py:1627
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:182
 msgid "Font Size"
 msgstr "Yazı Boyutu"
 
-#: appGUI/ObjectUI.py:2402
+#: appGUI/ObjectUI.py:1663
 msgid "Alignment"
 msgstr "Hizala"
 
-#: appGUI/ObjectUI.py:2407
+#: appGUI/ObjectUI.py:1668
 msgid "Align Left"
 msgstr "Sola Hizala"
 
-#: appGUI/ObjectUI.py:2412 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:167
+#: appGUI/ObjectUI.py:1673 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:167
 #: appPlugins/ToolFilm.py:1246 app_Main.py:5376 app_Main.py:5647
 msgid "Center"
 msgstr "Ortala"
 
-#: appGUI/ObjectUI.py:2417
+#: appGUI/ObjectUI.py:1678
 msgid "Align Right"
 msgstr "Sağa Hizala"
 
-#: appGUI/ObjectUI.py:2422
+#: appGUI/ObjectUI.py:1683
 msgid "Justify"
 msgstr "Yasla"
 
-#: appGUI/ObjectUI.py:2432
+#: appGUI/ObjectUI.py:1693
 msgid "Font Color"
 msgstr "Yazı Rengi"
 
-#: appGUI/ObjectUI.py:2434
+#: appGUI/ObjectUI.py:1695
 msgid "Set the font color for the selected text"
 msgstr "Seçilen metnin yazı tipi rengini ayarlar"
 
-#: appGUI/ObjectUI.py:2451
+#: appGUI/ObjectUI.py:1712
 msgid "Selection Color"
 msgstr "Vurgu Rengi"
 
-#: appGUI/ObjectUI.py:2453
+#: appGUI/ObjectUI.py:1714
 msgid "Set the selection color when doing text selection."
 msgstr ""
 "Metin seçimi yaparken seçili metinleri\n"
 "belirlemek için vurgu rengini belirleyin."
 
-#: appGUI/ObjectUI.py:2470
+#: appGUI/ObjectUI.py:1731
 msgid "Tab Size"
 msgstr "Sekme Boyutu"
 
-#: appGUI/ObjectUI.py:2472
+#: appGUI/ObjectUI.py:1733
 msgid "Set the tab size. In pixels. Default value is 80 pixels."
 msgstr ""
 "Sekme boyutunu ayarlayın. Piksel cinsinden.\n"
@@ -9237,7 +9203,7 @@ msgstr ""
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:44
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:53
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:80
-#: appObjects/FlatCAMGeometry.py:1685 appPlugins/ToolCutOut.py:2459
+#: appObjects/FlatCAMGeometry.py:1617 appPlugins/ToolCutOut.py:2459
 #: appPlugins/ToolMilling.py:1947
 msgid ""
 "Cutting depth (negative)\n"
@@ -9912,7 +9878,7 @@ msgstr "Doğrulama probunu (algılayıcı) takmak için (Z) yüksekliği."
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:278
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:127
 #: appPlugins/ToolCalibration.py:850 appPlugins/ToolDrilling.py:2668
-#: appPlugins/ToolMilling.py:4337 appPlugins/ToolSolderPaste.py:1366
+#: appPlugins/ToolMilling.py:4337 appPlugins/ToolSolderPaste.py:1373
 msgid "Toolchange X-Y"
 msgstr "Uç Değiştirme X-Y"
 
@@ -11217,7 +11183,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:260
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:230
 #: appPlugins/ToolDrilling.py:2765 appPlugins/ToolMilling.py:4422
-#: appPlugins/ToolSolderPaste.py:1484
+#: appPlugins/ToolSolderPaste.py:1491
 msgid "Preprocessor"
 msgstr "Önişlemci"
 
@@ -12343,37 +12309,37 @@ msgid "New Nozzle Dia"
 msgstr "Yeni Ağızlık Çapı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:49
-#: appPlugins/ToolSolderPaste.py:1247
+#: appPlugins/ToolSolderPaste.py:1254
 msgid "Diameter for the new tool to add in the Tool Table"
 msgstr "Araçlar Tablosuna eklenecek yeni nozul (ağızlık) çapı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:65
-#: appPlugins/ToolSolderPaste.py:1299
+#: appPlugins/ToolSolderPaste.py:1306
 msgid "Z Dispense Start"
 msgstr "Z Dağıtım Başlangıcı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:67
-#: appPlugins/ToolSolderPaste.py:1301
+#: appPlugins/ToolSolderPaste.py:1308
 msgid "The height (Z) when solder paste dispensing starts."
 msgstr "Lehim pastası dağıtımı başladığında yükseklik (Z)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:78
-#: appPlugins/ToolSolderPaste.py:1312
+#: appPlugins/ToolSolderPaste.py:1319
 msgid "Z Dispense"
 msgstr "Z Dağıtımı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:80
-#: appPlugins/ToolSolderPaste.py:1314
+#: appPlugins/ToolSolderPaste.py:1321
 msgid "The height (Z) when doing solder paste dispensing."
 msgstr "Lehim pastası dağıtımı yaparken yükseklik (Z)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:91
-#: appPlugins/ToolSolderPaste.py:1325
+#: appPlugins/ToolSolderPaste.py:1332
 msgid "Z Dispense Stop"
 msgstr "Z Dağıtım Durdurma"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:93
-#: appPlugins/ToolSolderPaste.py:1327
+#: appPlugins/ToolSolderPaste.py:1334
 msgid "The height (Z) when solder paste dispensing stops."
 msgstr "Lehim pastası dağıtımı durduğunda yükseklik (Z)."
 
@@ -12382,7 +12348,7 @@ msgid "Z Travel"
 msgstr "Z Kalkış"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:106
-#: appPlugins/ToolSolderPaste.py:1345
+#: appPlugins/ToolSolderPaste.py:1352
 msgid ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
@@ -12395,12 +12361,12 @@ msgid "Z Toolchange"
 msgstr "Z Ucu Değiştir"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:120
-#: appPlugins/ToolSolderPaste.py:1359
+#: appPlugins/ToolSolderPaste.py:1366
 msgid "The height (Z) for tool (nozzle) change."
 msgstr "Nozulun (ağızlık) değiştirilmesi için yükseklik (Z)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:129
-#: appPlugins/ToolSolderPaste.py:1368
+#: appPlugins/ToolSolderPaste.py:1375
 msgid ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
@@ -12409,12 +12375,12 @@ msgstr ""
 "Biçim (x, y) şeklindedir; burada x ve y, gerçek sayılardır."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:143
-#: appPlugins/ToolSolderPaste.py:1387
+#: appPlugins/ToolSolderPaste.py:1394
 msgid "Feedrate (speed) while moving on the X-Y plane."
 msgstr "X-Y düzlemi boyunca hareket ederken ilerleme hızı."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:156
-#: appPlugins/ToolSolderPaste.py:1400
+#: appPlugins/ToolSolderPaste.py:1407
 msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
@@ -12423,12 +12389,12 @@ msgstr ""
 "(Z düzleminde)."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:168
-#: appPlugins/ToolSolderPaste.py:1412
+#: appPlugins/ToolSolderPaste.py:1419
 msgid "Feedrate Z Dispense"
 msgstr "Z Dağıtım İlerleme Hızı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:170
-#: appPlugins/ToolSolderPaste.py:1414
+#: appPlugins/ToolSolderPaste.py:1421
 msgid ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
@@ -12437,34 +12403,34 @@ msgstr ""
 "giderken ilerleme hızı."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:181
-#: appPlugins/ToolSolderPaste.py:1430
+#: appPlugins/ToolSolderPaste.py:1437
 msgid "Spindle Speed FWD"
 msgstr "İLERİ Dağıtıcı Hızı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:183
-#: appPlugins/ToolSolderPaste.py:1432
+#: appPlugins/ToolSolderPaste.py:1439
 msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
 msgstr "Lehim pastasını dağıtıcı, nozuldan (ağızlık) iterken dağıtıcı hızı."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:195
-#: appPlugins/ToolSolderPaste.py:1444
+#: appPlugins/ToolSolderPaste.py:1451
 msgid "Dwell FWD"
 msgstr "İLERİ Bekleme Süresi"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:197
-#: appPlugins/ToolSolderPaste.py:1446
+#: appPlugins/ToolSolderPaste.py:1453
 msgid "Pause after solder dispensing."
 msgstr "Lehim pastası verildikten sonra duraklatın."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:207
-#: appPlugins/ToolSolderPaste.py:1456
+#: appPlugins/ToolSolderPaste.py:1463
 msgid "Spindle Speed REV"
 msgstr "GERİ Çekme Hızı"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:209
-#: appPlugins/ToolSolderPaste.py:1458
+#: appPlugins/ToolSolderPaste.py:1465
 msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
@@ -12473,12 +12439,12 @@ msgstr ""
 "geri çekerken dağıtıcı hızı."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:221
-#: appPlugins/ToolSolderPaste.py:1470
+#: appPlugins/ToolSolderPaste.py:1477
 msgid "Dwell REV"
 msgstr "GERİ Bekleme Süresi"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:223
-#: appPlugins/ToolSolderPaste.py:1472
+#: appPlugins/ToolSolderPaste.py:1479
 msgid ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
@@ -12487,7 +12453,7 @@ msgstr ""
 "geri çekildikten sonra duraklayın."
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:232
-#: appPlugins/ToolSolderPaste.py:1486
+#: appPlugins/ToolSolderPaste.py:1493
 msgid "Files that control the GCode generation."
 msgstr "G-Kodu oluşumunu kontrol eden dosyalar."
 
@@ -12784,32 +12750,32 @@ msgstr ""
 "FlatCAM Tcl komutlarının (Tcl komut satırnda görüntülenen) bir listesini "
 "almak için> help <yazın ve ardından Run Code yazın."
 
-#: appObjects/FlatCAMCNCJob.py:671 appPlugins/ToolLevelling.py:1481
-#: appPlugins/ToolLevelling.py:1673 appPlugins/ToolSolderPaste.py:1120
+#: appObjects/FlatCAMCNCJob.py:684 appPlugins/ToolLevelling.py:1481
+#: appPlugins/ToolLevelling.py:1673 appPlugins/ToolSolderPaste.py:1127
 msgid "Export cancelled ..."
 msgstr "Dışarı aktarma iptal edildi ..."
 
-#: appObjects/FlatCAMCNCJob.py:721
+#: appObjects/FlatCAMCNCJob.py:734
 msgid "File saved to"
 msgstr "Dosya şuraya kaydedildi"
 
-#: appObjects/FlatCAMCNCJob.py:745
+#: appObjects/FlatCAMCNCJob.py:758
 msgid "Code Review"
 msgstr "CNC Kodu İnceleme Sayfası"
 
-#: appObjects/FlatCAMCNCJob.py:790
+#: appObjects/FlatCAMCNCJob.py:803
 msgid "CNC Machine Code could not be updated"
 msgstr "CNC Makine Kodu güncellenemedi"
 
-#: appObjects/FlatCAMCNCJob.py:794
+#: appObjects/FlatCAMCNCJob.py:807
 msgid "CNC Machine Code was updated"
 msgstr "CNC Makine Kodu güncellendi"
 
-#: appObjects/FlatCAMCNCJob.py:930
+#: appObjects/FlatCAMCNCJob.py:943
 msgid "This CNCJob object can't be processed because it is a"
 msgstr "Bu CNC iş nesnesi işlenemez çünkü bir"
 
-#: appObjects/FlatCAMCNCJob.py:932
+#: appObjects/FlatCAMCNCJob.py:945
 msgid "CNCJob object"
 msgstr "CNC İş nesnesi"
 
@@ -12831,13 +12797,13 @@ msgstr "Matkap ucu delik boyutundan daha büyüktür. İptal edildi."
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr "YUVA için matkap ucu delik boyutundan daha büyüktür. İptal edildi."
 
-#: appObjects/FlatCAMGeometry.py:782
+#: appObjects/FlatCAMGeometry.py:714
 msgid "Vertex points calculated."
 msgstr "Köşe noktaları hesaplandı."
 
-#: appObjects/FlatCAMGeometry.py:1070 appObjects/FlatCAMGeometry.py:1075
-#: appObjects/FlatCAMGeometry.py:1106 appObjects/FlatCAMGeometry.py:1133
-#: appObjects/FlatCAMGeometry.py:1137 appPlugins/ToolDrilling.py:914
+#: appObjects/FlatCAMGeometry.py:1002 appObjects/FlatCAMGeometry.py:1007
+#: appObjects/FlatCAMGeometry.py:1038 appObjects/FlatCAMGeometry.py:1065
+#: appObjects/FlatCAMGeometry.py:1069 appPlugins/ToolDrilling.py:914
 #: appPlugins/ToolDrilling.py:920 appPlugins/ToolDrilling.py:965
 #: appPlugins/ToolDrilling.py:1238 appPlugins/ToolDrilling.py:1245
 #: appPlugins/ToolDrilling.py:1277 appPlugins/ToolDrilling.py:1290
@@ -12861,7 +12827,7 @@ msgstr "Köşe noktaları hesaplandı."
 msgid "Parameters for"
 msgstr "İşlem İçin Seçenekler"
 
-#: appObjects/FlatCAMGeometry.py:1070 appObjects/FlatCAMGeometry.py:1106
+#: appObjects/FlatCAMGeometry.py:1002 appObjects/FlatCAMGeometry.py:1038
 #: appPlugins/ToolDrilling.py:965 appPlugins/ToolDrilling.py:1238
 #: appPlugins/ToolDrilling.py:1277 appPlugins/ToolIsolation.py:770
 #: appPlugins/ToolIsolation.py:805 appPlugins/ToolMilling.py:1611
@@ -12871,7 +12837,7 @@ msgstr "İşlem İçin Seçenekler"
 msgid "No Tool Selected"
 msgstr "Hiçbir Araç Seçilmedi"
 
-#: appObjects/FlatCAMGeometry.py:1075 appObjects/FlatCAMGeometry.py:1137
+#: appObjects/FlatCAMGeometry.py:1007 appObjects/FlatCAMGeometry.py:1069
 #: appPlugins/ToolDrilling.py:914 appPlugins/ToolDrilling.py:1245
 #: appPlugins/ToolDrilling.py:1294 appPlugins/ToolIsolation.py:641
 #: appPlugins/ToolIsolation.py:775 appPlugins/ToolIsolation.py:841
@@ -12884,30 +12850,30 @@ msgstr "Hiçbir Araç Seçilmedi"
 msgid "Multiple Tools"
 msgstr "Birden çok araç seçili"
 
-#: appObjects/FlatCAMGeometry.py:1218 appPlugins/ToolCutOut.py:484
+#: appObjects/FlatCAMGeometry.py:1150 appPlugins/ToolCutOut.py:484
 #: appPlugins/ToolIsolation.py:935 appPlugins/ToolIsolation.py:1282
 #: appPlugins/ToolIsolation.py:1407 appPlugins/ToolMilling.py:2050
 #: appPlugins/ToolMilling.py:2163 appPlugins/ToolNCC.py:1258
 #: appPlugins/ToolNCC.py:1383 appPlugins/ToolNCC.py:1455
 #: appPlugins/ToolPaint.py:688 appPlugins/ToolPaint.py:855
-#: appPlugins/ToolPaint.py:988 appPlugins/ToolSolderPaste.py:349
-#: appPlugins/ToolSolderPaste.py:512 app_Main.py:4957
+#: appPlugins/ToolPaint.py:988 appPlugins/ToolSolderPaste.py:353
+#: appPlugins/ToolSolderPaste.py:516 app_Main.py:4957
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr "Lütfen ondalıklı formatta sıfır olmayan bir uç kalınlığı girin."
 
-#: appObjects/FlatCAMGeometry.py:1230 appPlugins/ToolCutOut.py:497
+#: appObjects/FlatCAMGeometry.py:1162 appPlugins/ToolCutOut.py:497
 #: appPlugins/ToolDrilling.py:1145 appPlugins/ToolIsolation.py:1301
 #: appPlugins/ToolMilling.py:2062
 msgid "Could not load Tools DB file."
 msgstr "Araçlar Veri Tabanı dosyası yüklenemedi."
 
-#: appObjects/FlatCAMGeometry.py:1287 appPlugins/ToolCutOut.py:551
+#: appObjects/FlatCAMGeometry.py:1219 appPlugins/ToolCutOut.py:551
 #: appPlugins/ToolIsolation.py:1357 appPlugins/ToolMilling.py:2116
 #: appPlugins/ToolNCC.py:1332 appPlugins/ToolPaint.py:934
 msgid "Tool not in Tools Database. Adding a default tool."
 msgstr "Uç, Araçlar Veri Tabanında yoktur. Varsayılan bir uç ekleniyor."
 
-#: appObjects/FlatCAMGeometry.py:1294 appPlugins/ToolCutOut.py:558
+#: appObjects/FlatCAMGeometry.py:1226 appPlugins/ToolCutOut.py:558
 #: appPlugins/ToolDrilling.py:1210 appPlugins/ToolIsolation.py:1365
 #: appPlugins/ToolMilling.py:2124 appPlugins/ToolNCC.py:1339
 #: appPlugins/ToolPaint.py:942
@@ -12918,39 +12884,39 @@ msgstr ""
 "İptal edildi.\n"
 "Araçlar Veri Tabanında aynı kalınlıkta birden çok uç bulundu."
 
-#: appObjects/FlatCAMGeometry.py:1323 appPlugins/ToolIsolation.py:1398
+#: appObjects/FlatCAMGeometry.py:1255 appPlugins/ToolIsolation.py:1398
 #: appPlugins/ToolMilling.py:2155 appPlugins/ToolNCC.py:1370
 #: appPlugins/ToolPaint.py:975
 msgid "New tool added to Tool Table from Tools Database."
 msgstr "Araçlar Veri Tabanından Araçlar Tablosuna yeni uç eklendi."
 
-#: appObjects/FlatCAMGeometry.py:1381 appPlugins/ToolMilling.py:2213
+#: appObjects/FlatCAMGeometry.py:1313 appPlugins/ToolMilling.py:2213
 msgid "Tool added in Tool Table."
 msgstr "Uç, Araçlar Tablosuna eklendi."
 
-#: appObjects/FlatCAMGeometry.py:1488 appObjects/FlatCAMGeometry.py:1497
+#: appObjects/FlatCAMGeometry.py:1420 appObjects/FlatCAMGeometry.py:1429
 #: appPlugins/ToolMilling.py:2357 appPlugins/ToolMilling.py:2366
 msgid "Failed. Select a tool to copy."
 msgstr "Hata. Kopyalamak için bir uç seçin."
 
-#: appObjects/FlatCAMGeometry.py:1526 appPlugins/ToolMilling.py:2390
+#: appObjects/FlatCAMGeometry.py:1458 appPlugins/ToolMilling.py:2390
 msgid "Tool was copied in Tool Table."
 msgstr "Uç, Araçlar Tablosuna kopyalandı."
 
-#: appObjects/FlatCAMGeometry.py:1556 appPlugins/ToolMilling.py:2328
+#: appObjects/FlatCAMGeometry.py:1488 appPlugins/ToolMilling.py:2328
 msgid "Tool was edited in Tool Table."
 msgstr "Uç, Araçlar Tablosunda düzenlendi."
 
-#: appObjects/FlatCAMGeometry.py:1589 appObjects/FlatCAMGeometry.py:1598
+#: appObjects/FlatCAMGeometry.py:1521 appObjects/FlatCAMGeometry.py:1530
 #: appPlugins/ToolMilling.py:2422 appPlugins/ToolMilling.py:2431
 msgid "Failed. Select a tool to delete."
 msgstr "Hata. Silmek için bir uç seçin."
 
-#: appObjects/FlatCAMGeometry.py:1622 appPlugins/ToolMilling.py:2452
+#: appObjects/FlatCAMGeometry.py:1554 appPlugins/ToolMilling.py:2452
 msgid "Tool was deleted in Tool Table."
 msgstr "Uç, Araçlar Tablosundan silindi."
 
-#: appObjects/FlatCAMGeometry.py:1659 appObjects/FlatCAMGeometry.py:1668
+#: appObjects/FlatCAMGeometry.py:1591 appObjects/FlatCAMGeometry.py:1600
 msgid ""
 "Disabled because the tool is V-shape.\n"
 "For V-shape tools the depth of cut is\n"
@@ -12969,15 +12935,15 @@ msgstr ""
 "- Uç Kalınlığı -> Araçlar Tablosunda 'Kalınlık' sütununda bulunur.\n"
 "NOT: Sıfır değeri uç kalınlığı: 'V-Ucu Kalınlığı' anlamına gelir."
 
-#: appObjects/FlatCAMGeometry.py:2166 appPlugins/ToolMilling.py:2746
+#: appObjects/FlatCAMGeometry.py:2098 appPlugins/ToolMilling.py:2746
 msgid "This Geometry can't be processed because it is"
 msgstr "Bu şekil işlendiği için işlenemiyor"
 
-#: appObjects/FlatCAMGeometry.py:2203 appPlugins/ToolMilling.py:2780
+#: appObjects/FlatCAMGeometry.py:2135 appPlugins/ToolMilling.py:2780
 msgid "Failed. No tool selected in the tool table ..."
 msgstr "Hata. Araçlar Tablosunda seçili uç yok ..."
 
-#: appObjects/FlatCAMGeometry.py:2302 appObjects/FlatCAMGeometry.py:2456
+#: appObjects/FlatCAMGeometry.py:2234 appObjects/FlatCAMGeometry.py:2388
 #: appPlugins/ToolMilling.py:2892 appPlugins/ToolMilling.py:3136
 msgid ""
 "Tool Offset is selected in Tool Table but no value is provided.\n"
@@ -12986,53 +12952,53 @@ msgstr ""
 "Araçlar Tablosunda uç hizası seçilmiş ancak değer belirtilmemiştir. Bir uç "
 "hizası ekleyin veya hiza tipini değiştirin."
 
-#: appObjects/FlatCAMGeometry.py:2369 appObjects/FlatCAMGeometry.py:2517
+#: appObjects/FlatCAMGeometry.py:2301 appObjects/FlatCAMGeometry.py:2449
 #: appPlugins/ToolMilling.py:2961 appPlugins/ToolMilling.py:3180
 msgid "G-Code parsing in progress..."
 msgstr "G Kodunu okuma işlemi devam ediyor ..."
 
-#: appObjects/FlatCAMGeometry.py:2371 appObjects/FlatCAMGeometry.py:2519
+#: appObjects/FlatCAMGeometry.py:2303 appObjects/FlatCAMGeometry.py:2451
 #: appPlugins/ToolMilling.py:2963 appPlugins/ToolMilling.py:3182
 msgid "G-Code parsing finished..."
 msgstr "G Kodunu okuma işlemi tamamlandı ..."
 
-#: appObjects/FlatCAMGeometry.py:2378 appObjects/FlatCAMGeometry.py:2528
-#: appObjects/FlatCAMGeometry.py:2692 appPlugins/ToolMilling.py:2970
+#: appObjects/FlatCAMGeometry.py:2310 appObjects/FlatCAMGeometry.py:2460
+#: appObjects/FlatCAMGeometry.py:2624 appPlugins/ToolMilling.py:2970
 #: appPlugins/ToolMilling.py:3191
 msgid "Finished G-Code processing"
 msgstr "G Kodunu işleme tamamlandı"
 
-#: appObjects/FlatCAMGeometry.py:2380 appObjects/FlatCAMGeometry.py:2530
+#: appObjects/FlatCAMGeometry.py:2312 appObjects/FlatCAMGeometry.py:2462
 #: appPlugins/ToolMilling.py:2972 appPlugins/ToolMilling.py:3193
 msgid "G-Code processing failed with error"
 msgstr "G Kodunun işlenmesi hata nedeniyle başarısız oldu"
 
-#: appObjects/FlatCAMGeometry.py:2423 appPlugins/ToolMilling.py:3015
-#: appPlugins/ToolSolderPaste.py:858 appPlugins/ToolSolderPaste.py:916
+#: appObjects/FlatCAMGeometry.py:2355 appPlugins/ToolMilling.py:3015
+#: appPlugins/ToolSolderPaste.py:865 appPlugins/ToolSolderPaste.py:923
 msgid "Cancelled. Empty file, it has no geometry"
 msgstr "İptal edildi. Dosya boş, şekil yok"
 
-#: appObjects/FlatCAMGeometry.py:2546 appObjects/FlatCAMGeometry.py:2551
-#: appObjects/FlatCAMGeometry.py:2699 appPlugins/ToolMilling.py:3220
+#: appObjects/FlatCAMGeometry.py:2478 appObjects/FlatCAMGeometry.py:2483
+#: appObjects/FlatCAMGeometry.py:2631 appPlugins/ToolMilling.py:3220
 #: appPlugins/ToolMilling.py:3235
 msgid "CNCjob created"
 msgstr "CNC İşi oluşturuldu"
 
-#: appObjects/FlatCAMGeometry.py:2732
+#: appObjects/FlatCAMGeometry.py:2664
 msgid "Polish"
 msgstr "Parlatma Ekle"
 
-#: appObjects/FlatCAMGeometry.py:2782 appPlugins/ToolMilling.py:3081
+#: appObjects/FlatCAMGeometry.py:2714 appPlugins/ToolMilling.py:3081
 #: appPlugins/ToolPaint.py:1855
 msgid "Geometry could not be painted completely"
 msgstr "Şekil tamamen çizilemedi"
 
-#: appObjects/FlatCAMGeometry.py:2820 appObjects/FlatCAMGeometry.py:2829
+#: appObjects/FlatCAMGeometry.py:2752 appObjects/FlatCAMGeometry.py:2761
 #: appParsers/ParseGerber.py:2093 appParsers/ParseGerber.py:2103
 msgid "Scale factor has to be a number: integer or float."
 msgstr "Ölçek faktörü bir sayı olmalıdır: Tamsayı veya ondalıklı sayı."
 
-#: appObjects/FlatCAMGeometry.py:2909 appParsers/ParseGerber.py:2219
+#: appObjects/FlatCAMGeometry.py:2841 appParsers/ParseGerber.py:2219
 msgid ""
 "An (x,y) pair of values are needed. Probable you entered only one value in "
 "the Offset field."
@@ -13040,7 +13006,7 @@ msgstr ""
 "(x, y) biçiminde bir çift değer gereklidir. Hizalama alanına yalnızca bir "
 "değer girmiş olabilirsiniz."
 
-#: appObjects/FlatCAMGeometry.py:2994
+#: appObjects/FlatCAMGeometry.py:2926
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y)\n"
@@ -13050,17 +13016,17 @@ msgstr ""
 "X, Y alanının (x, y) biçiminde iki değer olması gerekir, ancak şimdi "
 "yalnızca bir değer var."
 
-#: appObjects/FlatCAMGeometry.py:3095 appPlugins/ToolDrilling.py:1644
+#: appObjects/FlatCAMGeometry.py:3027 appPlugins/ToolDrilling.py:1644
 #: appPlugins/ToolMilling.py:3440
 msgid "Delete failed. There are no exclusion areas to delete."
 msgstr "Silme işlemi başarısız oldu. Silinecek hariç tutma alanı yok."
 
-#: appObjects/FlatCAMGeometry.py:3112 appPlugins/ToolDrilling.py:1661
+#: appObjects/FlatCAMGeometry.py:3044 appPlugins/ToolDrilling.py:1661
 #: appPlugins/ToolMilling.py:3457
 msgid "Delete failed. Nothing is selected."
 msgstr "Silme işlemi başarısız oldu. Silinecek hiçbir şey seçilmedi."
 
-#: appObjects/FlatCAMGeometry.py:3209 appObjects/FlatCAMGeometry.py:3224
+#: appObjects/FlatCAMGeometry.py:3141 appObjects/FlatCAMGeometry.py:3156
 #: appPlugins/ToolDrilling.py:1758 appPlugins/ToolDrilling.py:1773
 #: appPlugins/ToolMilling.py:3554 appPlugins/ToolMilling.py:3569
 msgid "Value edited in Exclusion Table."
@@ -13480,7 +13446,7 @@ msgstr ""
 #: appPlugins/ToolOptimal.py:637 appPlugins/ToolPaint.py:3353
 #: appPlugins/ToolPanelize.py:1373 appPlugins/ToolPunchGerber.py:2349
 #: appPlugins/ToolQRCode.py:1026 appPlugins/ToolRulesCheck.py:1678
-#: appPlugins/ToolSolderPaste.py:1603 appPlugins/ToolSub.py:950
+#: appPlugins/ToolSolderPaste.py:1610 appPlugins/ToolSub.py:950
 #: appPlugins/ToolTransform.py:983
 msgid "Reset Tool"
 msgstr "Verileri Sıfırla"
@@ -13497,7 +13463,7 @@ msgstr "Verileri Sıfırla"
 #: appPlugins/ToolOptimal.py:640 appPlugins/ToolPaint.py:3356
 #: appPlugins/ToolPanelize.py:1376 appPlugins/ToolPunchGerber.py:2352
 #: appPlugins/ToolQRCode.py:1029 appPlugins/ToolRulesCheck.py:1681
-#: appPlugins/ToolSolderPaste.py:1606 appPlugins/ToolSub.py:953
+#: appPlugins/ToolSolderPaste.py:1613 appPlugins/ToolSub.py:953
 #: appPlugins/ToolTransform.py:986
 msgid "Will reset the tool parameters."
 msgstr "Yapılan değişiklikleri varsayılan ayarlara döndürür."
@@ -15096,7 +15062,7 @@ msgid "Parameters that are common for all tools."
 msgstr "Tüm araçlar için ortak olan seçenekler."
 
 #: appPlugins/ToolDrilling.py:2645 appPlugins/ToolMilling.py:4315
-#: appPlugins/ToolSolderPaste.py:1357
+#: appPlugins/ToolSolderPaste.py:1364
 msgid "Tool change Z"
 msgstr "Z Uç Değiştir"
 
@@ -15161,7 +15127,7 @@ msgid "Delete all exclusion areas that are selected in the table."
 msgstr "Tabloda seçilen dışlama alanlarını siler."
 
 #: appPlugins/ToolDrilling.py:2896 appPlugins/ToolMilling.py:4554
-#: appPlugins/ToolSolderPaste.py:1541
+#: appPlugins/ToolSolderPaste.py:1548
 msgid "Generate CNCJob object"
 msgstr "CNC İş Nesnesi Oluştur"
 
@@ -15826,13 +15792,13 @@ msgid "Tool from Tool Table was edited."
 msgstr "Araçlar Tablosundaki uç düzenlendi."
 
 #: appPlugins/ToolIsolation.py:1495 appPlugins/ToolNCC.py:1500
-#: appPlugins/ToolPaint.py:1076 appPlugins/ToolSolderPaste.py:596
+#: appPlugins/ToolPaint.py:1076 appPlugins/ToolSolderPaste.py:601
 msgid "Cancelled. New diameter value is already in the Tool Table."
 msgstr ""
 "Düzenleme iptal edildi. Yeni kalınlık değeri Araçlar Tablosunda zaten var."
 
 #: appPlugins/ToolIsolation.py:1546 appPlugins/ToolNCC.py:1551
-#: appPlugins/ToolPaint.py:1126 appPlugins/ToolSolderPaste.py:641
+#: appPlugins/ToolPaint.py:1126 appPlugins/ToolSolderPaste.py:646
 msgid "Delete failed. Select a tool to delete."
 msgstr "Silme işlemi başarısız oldu. Silmek için bir uç seçin."
 
@@ -15957,7 +15923,7 @@ msgstr ""
 
 #: appPlugins/ToolIsolation.py:3361 appPlugins/ToolMilling.py:3814
 #: appPlugins/ToolNCC.py:4333 appPlugins/ToolPaint.py:3118
-#: appPlugins/ToolSolderPaste.py:1264
+#: appPlugins/ToolSolderPaste.py:1271
 msgid ""
 "Delete a selection of tools in the Tool Table\n"
 "by first selecting a row in the Tool Table."
@@ -16378,6 +16344,34 @@ msgstr "Frezeleme işlemi için kullanılacak nesne."
 msgid "Tools in the object used for milling."
 msgstr "Frezeleme için kullanılan nesnedeki delikler/yuvalar."
 
+#: appPlugins/ToolMilling.py:3732
+msgid ""
+"This is the Tool Number.\n"
+"When ToolChange is checked, on toolchange event this value\n"
+"will be showed as a T1, T2 ... Tn"
+msgstr ""
+"Bu uç numarasıdır.\n"
+"Uç değiştirme onay kutusu seçilirse, uç değişikliği durumunda\n"
+"bu değer T1, T2 ... Tn olarak gösterilecek"
+
+#: appPlugins/ToolMilling.py:3742
+msgid ""
+"Plot column. It is visible only for MultiGeo geometries, meaning geometries "
+"that holds the geometry\n"
+"data into the tools. For those geometries, deleting the tool will delete the "
+"geometry data also,\n"
+"so be WARNED. From the checkboxes on each row it can be enabled/disabled the "
+"plot on canvas\n"
+"for the corresponding tool."
+msgstr ""
+"Sütunu Çiz. Yalnızca MultiGeo (Çok Şekilli) şekiller tarafından görülebilir, "
+"bu da araçlardaki verilerin \n"
+"şeklini içeren bir şekil anlamına gelir. Bu şekiller için, aracın silinmesi "
+"şekil verilerini de silecektir, \n"
+"bu yüzden dikkatli olun. Her satırdaki onay kutularından, ilgili araç için "
+"çalışma alanı üzerindeki \n"
+"çizimi etkinleştirebilir/devre dışı bırakabilirsiniz."
+
 #: appPlugins/ToolMilling.py:3867
 msgid ""
 "Milling type:\n"
@@ -16473,7 +16467,7 @@ msgstr "Seçilen uçlardan en az biri tam bir yalıtım yapabilir."
 #: appPlugins/ToolNCC.py:1404 appPlugins/ToolNCC.py:4047
 #: appPlugins/ToolPaint.py:863 appPlugins/ToolPaint.py:949
 #: appPlugins/ToolPaint.py:1009 appPlugins/ToolPaint.py:2852
-#: appPlugins/ToolSolderPaste.py:536
+#: appPlugins/ToolSolderPaste.py:541
 msgid "Cancelled. Tool already in Tool Table."
 msgstr "Uç ekleme işlemi iptal edildi. Uç zaten Araçlar Tablosunda var."
 
@@ -17633,88 +17627,88 @@ msgstr "...işleniyor..."
 msgid "FlatCAM Evo Shell"
 msgstr "FlatCAM Evo Komut Satırı"
 
-#: appPlugins/ToolSolderPaste.py:125 appPlugins/ToolSolderPaste.py:1166
+#: appPlugins/ToolSolderPaste.py:125 appPlugins/ToolSolderPaste.py:1173
 msgid "SP Dispenser"
 msgstr "Lehim Pastası Dağıtıcı"
 
-#: appPlugins/ToolSolderPaste.py:507
+#: appPlugins/ToolSolderPaste.py:511
 msgid "Please enter a tool diameter to add, in Float format."
 msgstr "Lütfen eklemek için bir uç kalınlığını ondalıklı biçiminde girin."
 
-#: appPlugins/ToolSolderPaste.py:541
+#: appPlugins/ToolSolderPaste.py:546
 msgid "New Nozzle tool added to Tool Table."
 msgstr ""
 "Nozul (ağızlık) ekleme işlemi iptal edildi. Araç zaten Araçlar Tablosunda "
 "var."
 
-#: appPlugins/ToolSolderPaste.py:583
+#: appPlugins/ToolSolderPaste.py:588
 msgid "Nozzle tool from Tool Table was edited."
 msgstr "Nozul (ağızlık) Araçlar Tablosunda düzenlendi."
 
-#: appPlugins/ToolSolderPaste.py:646
+#: appPlugins/ToolSolderPaste.py:651
 msgid "Tools deleted from Tool Table."
 msgstr "Uç(lar), Araçlar Tablosundan silindi."
 
-#: appPlugins/ToolSolderPaste.py:700
+#: appPlugins/ToolSolderPaste.py:705
 msgid "No SolderPaste mask Gerber object loaded."
 msgstr "Yüklü Gerber lehim pastası maskesi nesnesi yok."
 
-#: appPlugins/ToolSolderPaste.py:731
+#: appPlugins/ToolSolderPaste.py:736
 msgid "No Nozzle tools in the tool table."
 msgstr "Araçlar Tablosunda nozul (ağızlık) yok."
 
-#: appPlugins/ToolSolderPaste.py:862
+#: appPlugins/ToolSolderPaste.py:869
 msgid "Solder Paste geometry generated successfully"
 msgstr "Lehim pastası şekli başarıyla oluşturuldu"
 
-#: appPlugins/ToolSolderPaste.py:869
+#: appPlugins/ToolSolderPaste.py:876
 msgid "Some or all pads have no solder due of inadequate nozzle diameters..."
 msgstr ""
 "Nozulların (ağızlık) bir kısmı veya tamamı yetersiz nozul (ağızlık) "
 "genişliği nedeniyle lehim pastası dağıtımı yapamaz..."
 
-#: appPlugins/ToolSolderPaste.py:883
+#: appPlugins/ToolSolderPaste.py:890
 msgid "Generating Solder Paste dispensing geometry..."
 msgstr "Lehim Pastası dağıtım şekli oluşturuluyor ..."
 
-#: appPlugins/ToolSolderPaste.py:902
+#: appPlugins/ToolSolderPaste.py:909
 msgid "There is no Geometry object available."
 msgstr "Şekil nesnesi kullanılamıyor."
 
-#: appPlugins/ToolSolderPaste.py:907
+#: appPlugins/ToolSolderPaste.py:914
 msgid "This Geometry can't be processed. NOT a solder_paste_tool geometry."
 msgstr "Bu şekil işlenemez. Solder_paste_tool şekli DEĞİL."
 
-#: appPlugins/ToolSolderPaste.py:1012
+#: appPlugins/ToolSolderPaste.py:1019
 msgid "ToolSolderPaste CNCjob created"
 msgstr "Lehim pastası CNC İşi oluşturuldu"
 
-#: appPlugins/ToolSolderPaste.py:1043 appPlugins/ToolSolderPaste.py:1048
-#: appPlugins/ToolSolderPaste.py:1100
+#: appPlugins/ToolSolderPaste.py:1050 appPlugins/ToolSolderPaste.py:1055
+#: appPlugins/ToolSolderPaste.py:1107
 msgid ""
 "This CNCJob object can't be processed. NOT a solder_paste_tool CNCJob object."
 msgstr "Bu CNC İşi işlenemiyor. Solder_paste_tool CNC İş nesnesi DEĞİL."
 
-#: appPlugins/ToolSolderPaste.py:1110
+#: appPlugins/ToolSolderPaste.py:1117
 msgid "Export GCode ..."
 msgstr "G Kodu Dışa Aktar ..."
 
-#: appPlugins/ToolSolderPaste.py:1156
+#: appPlugins/ToolSolderPaste.py:1163
 msgid "Solder paste dispenser GCode file saved to"
 msgstr "Lehim pastası dağıtıcı G Kod dosyası kaydedildi"
 
-#: appPlugins/ToolSolderPaste.py:1183
+#: appPlugins/ToolSolderPaste.py:1190
 msgid ""
 "A plugin to help dispense solder paste on the PCB pads using a CNC machine."
 msgstr ""
 "Bir CNC makinesi kullanarak PCB pedlerine lehim\n"
 "pastasının dağıtılmasına yardımcı olan bir eklenti."
 
-#: appPlugins/ToolSolderPaste.py:1195
+#: appPlugins/ToolSolderPaste.py:1202
 msgid "Gerber Solderpaste object."
 msgstr "Gerber lehim pastası nesnesi."
 
-#: appPlugins/ToolSolderPaste.py:1214
+#: appPlugins/ToolSolderPaste.py:1221
 msgid ""
 "Tools pool from which the algorithm\n"
 "will pick the ones used for dispensing solder paste."
@@ -17722,7 +17716,7 @@ msgstr ""
 "Algorimanın lehim pastasını dağıtmak \n"
 "için kullanacağı nozul (ağızlık) listesi."
 
-#: appPlugins/ToolSolderPaste.py:1229
+#: appPlugins/ToolSolderPaste.py:1236
 msgid ""
 "This is the Tool Number.\n"
 "The solder dispensing will start with the tool with the biggest \n"
@@ -17736,7 +17730,7 @@ msgstr ""
 "Daha küçük nozul yoksa, ancak hâlâ lehim pastasıyla kaplanmayan\n"
 "pedler varsa, ugulama bir uyarı penceresiyle mesaj verecektir."
 
-#: appPlugins/ToolSolderPaste.py:1236
+#: appPlugins/ToolSolderPaste.py:1243
 msgid ""
 "Tool Diameter. Its value\n"
 "is the width of the solder paste dispensed."
@@ -17744,7 +17738,7 @@ msgstr ""
 "Nozul (ağızlık) genişliği. Bu değer\n"
 "sıkılan lehim pastasının genişliğidir."
 
-#: appPlugins/ToolSolderPaste.py:1257
+#: appPlugins/ToolSolderPaste.py:1264
 msgid ""
 "Add a new nozzle tool to the Tool Table\n"
 "with the diameter specified above."
@@ -17752,11 +17746,11 @@ msgstr ""
 "Araçlar Tablosuna yukarıda belirtilen \n"
 "çapta bir nozul (ağızlık) ekleyin."
 
-#: appPlugins/ToolSolderPaste.py:1509
+#: appPlugins/ToolSolderPaste.py:1516
 msgid "Generate solder paste dispensing geometry."
 msgstr "Lehim pastası dağıtım şekli oluşturun."
 
-#: appPlugins/ToolSolderPaste.py:1528
+#: appPlugins/ToolSolderPaste.py:1535
 msgid ""
 "Geometry Solder Paste object.\n"
 "The name of the object has to end in:\n"
@@ -17766,17 +17760,17 @@ msgstr ""
 "Nesnenin adı koruma olarak:\n"
 "'_solderpaste' ile bitmelidir."
 
-#: appPlugins/ToolSolderPaste.py:1544
+#: appPlugins/ToolSolderPaste.py:1551
 msgid ""
 "Generate GCode for Solder Paste dispensing\n"
 "on PCB pads."
 msgstr "PCB pedlerine lehim pastası dağıtımı için GCode oluşturur."
 
-#: appPlugins/ToolSolderPaste.py:1562
+#: appPlugins/ToolSolderPaste.py:1569
 msgid "CNCJob"
 msgstr "CNC İşi"
 
-#: appPlugins/ToolSolderPaste.py:1564
+#: appPlugins/ToolSolderPaste.py:1571
 msgid ""
 "CNCJob Solder paste object.\n"
 "In order to enable the GCode save section,\n"
@@ -17788,11 +17782,11 @@ msgstr ""
 "etkinleştirmek için, nesnenin adı \n"
 "koruma olarak '_solderpaste' ile bitmelidir."
 
-#: appPlugins/ToolSolderPaste.py:1579
+#: appPlugins/ToolSolderPaste.py:1586
 msgid "Save GCode"
 msgstr "G Kod'u Kaydet"
 
-#: appPlugins/ToolSolderPaste.py:1582
+#: appPlugins/ToolSolderPaste.py:1589
 msgid ""
 "Save the generated GCode for Solder Paste dispensing\n"
 "on PCB pads, to a file."
@@ -19406,6 +19400,46 @@ msgstr "Orijin, yüklenen tüm nesneleri hizalayarak ayarlanıyor "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyin."
+
+#~ msgid "TT"
+#~ msgstr "TT"
+
+#~ msgid ""
+#~ "The value for the Offset can be:\n"
+#~ "- Path -> There is no offset, the tool cut will be done through the "
+#~ "geometry line.\n"
+#~ "- In(side) -> The tool cut will follow the geometry inside. It will "
+#~ "create a 'pocket'.\n"
+#~ "- Out(side) -> The tool cut will follow the geometry line on the outside."
+#~ msgstr ""
+#~ "Hiza değeri şunlar olabilir:\n"
+#~ "- Yol -> Hiza yoktur, ucun kesimi geometrik bir çizgi üzerinden yapılır.\n"
+#~ "- İç Taraf -> Kesme ucu içerdeki şekli takip eder. Bu bir \"cep\" "
+#~ "yaratacaktır.\n"
+#~ "- Dış Taraf -> Kesme ucu dışarıdaki geometrik çizgiyi takip edecektir."
+
+#~ msgid ""
+#~ "The (Operation) Type has only informative value. Usually the UI form "
+#~ "values \n"
+#~ "are choose based on the operation type and this will serve as a "
+#~ "reminder.\n"
+#~ "Can be 'Roughing', 'Finishing' or 'Isolation'.\n"
+#~ "For Roughing we may choose a lower Feedrate and multiDepth cut.\n"
+#~ "For Finishing we may choose a higher Feedrate, without multiDepth.\n"
+#~ "For Isolation we need a lower Feedrate as it use a milling bit with a "
+#~ "fine tip."
+#~ msgstr ""
+#~ "Tür (işlem) yalnızca bilgilendirici değere sahiptir. Genellikle UI Form "
+#~ "Değerleri\n"
+#~ "işlem türüne bağlı olarak seçilir ve bu bir hatırlatma işlevi görür.\n"
+#~ "“Kaba”, “sonlandırma” veya “yalıtım” olabilir.\n"
+#~ "Kaba talaş işleme için daha düşük bir dönme hızı ve çok katmanlı kesme "
+#~ "seçebiliriz.\n"
+#~ "Son işlem için, çok derinlik olmadan daha yüksek bir dönme hızı "
+#~ "seçebiliriz.\n"
+#~ "Yalıtım için, ince uçlu bir freze ucu kullandığından daha düşük bir dönme "
+#~ "hızına\n"
+#~ "ihtiyacımız vardır."
 
 #~ msgid ""
 #~ "Tool Type.\n"
