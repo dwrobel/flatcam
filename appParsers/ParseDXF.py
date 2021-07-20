@@ -7,7 +7,8 @@
 
 from shapely.geometry import LineString, Point
 from shapely.affinity import rotate
-from ezdxf.math import Vector as ezdxf_vector
+# from ezdxf.math import Vector as ezdxf_vector
+from ezdxf.math import Vec3 as ezdxf_vector
 
 from appParsers.ParseFont import *
 from appParsers.ParseDXF_Spline import *

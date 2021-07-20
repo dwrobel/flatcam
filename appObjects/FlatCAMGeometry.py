@@ -226,9 +226,9 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # -------------------- TOOL SHAPE ------------------------------------- #
             try:
-                tool_shape_item_txt = self.tool_type_item_options[tooluid_value['data']['tools_mill_shape']]
+                tool_shape_item_txt = self.tool_type_item_options[tooluid_value['data']['tools_mill_tool_shape']]
             except TypeError:
-                tool_shape_item_txt = tooluid_value['data']['tools_mill_shape']
+                tool_shape_item_txt = tooluid_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
             tool_shape_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 4, tool_shape_item)  # Tool Shape
@@ -1272,7 +1272,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             last_data = self.tools[max_uid]['data']
             # last_offset = self.tools[max_uid]['offset']
             # last_offset_value = self.tools[max_uid]['offset_value']
-            # last_tool_type = self.tools[max_uid]['data']['tools_mill_shape']
+            # last_tool_type = self.tools[max_uid]['data']['tools_mill_tool_shape']
 
             last_solid_geometry = self.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
 
@@ -1680,7 +1680,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     else:
                         tooluid_value['data']['tools_mill_job_type'] = cb_txt
                 elif cw_col == 4:
-                    tooluid_value['data']['data']['tools_mill_shape'] = cb_txt
+                    tooluid_value['data']['data']['tools_mill_tool_shape'] = cb_txt
 
                     # if the tool_type selected is V-Shape then autoselect the toolpath type as Iso
                     if cb_txt == 'V':

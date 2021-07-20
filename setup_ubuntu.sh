@@ -46,7 +46,6 @@ sudo -H python3 -m pip install --upgrade \
 	reportlab \
 	svglib \
 	pyserial \
-	testresources \
 	pikepdf \
 	foronoi \
 	networkx

@@ -199,9 +199,9 @@ class AppGCodeEditor(QtCore.QObject):
             # -------------------- TOOL SHAPE ------------------------------------- #
             tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
             try:
-                tool_shape_item_txt = tool_type_item_options[dia_value['data']['tools_mill_shape']]
+                tool_shape_item_txt = tool_type_item_options[dia_value['data']['tools_mill_tool_shape']]
             except TypeError:
-                tool_shape_item_txt = dia_value['data']['tools_mill_shape']
+                tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
             t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)

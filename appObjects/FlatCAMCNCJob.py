@@ -240,9 +240,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             job_item = QtWidgets.QTableWidgetItem(job_item_txt)
 
             try:
-                tool_shape_item_txt = tool_shape_options[dia_value['data']['tools_mill_shape']]
+                tool_shape_item_txt = tool_shape_options[dia_value['data']['tools_mill_tool_shape']]
             except TypeError:
-                tool_shape_item_txt = dia_value['data']['tools_mill_shape']
+                tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
             t_id.setFlags(QtCore.Qt.ItemIsEnabled)

@@ -776,7 +776,7 @@ class ToolPaint(AppTool, Gerber):
                     for item in self.tool_type_item_options:
                         tool_type_item.addItem(item)
                         # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
-                    idx = int(tooluid_value['data']['tools_mill_shape'])
+                    idx = int(tooluid_value['data']['tools_mill_tool_shape'])
                     tool_type_item.setCurrentIndex(idx)
 
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))

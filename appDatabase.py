@@ -25,7 +25,7 @@ class ToolsDB2UI:
         self.app = app
         self.decimals = self.app.decimals
 
-        self.offset_item_options = ["Path", "In", "Out", "Custom"]
+        self.offset_item_options = [_("Path"), _("In"), _("Out"), _("Custom")]
         self.job_item_options = [_('Roughing'), _('Finishing'), _('Isolation'), _('Polishing')]
         self.tool_job_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
@@ -1419,7 +1419,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "tooldia":          self.ui.dia_entry,
 
             # Milling
-            "tools_mill_shape":            self.ui.mill_shape_combo,
+            "tools_mill_tool_shape":       self.ui.mill_shape_combo,
             "tools_mill_cutz":             self.ui.mill_cutz_entry,
             "tools_mill_multidepth":       self.ui.mill_multidepth_cb,
             "tools_mill_depthperpass":     self.ui.mill_multidepth_entry,
@@ -1502,7 +1502,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_dia":              "tooldia",
 
             # Milling
-            "gdb_shape":            "tools_mill_shape",
+            "gdb_shape":            "tools_mill_tool_shape",
             "gdb_cutz":             "tools_mill_cutz",
             "gdb_multidepth":       "tools_mill_multidepth",
             "gdb_multidepth_entry": "tools_mill_depthperpass",
@@ -1923,7 +1923,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "tol_max": 0.0,
 
             # Milling
-            "tools_mill_shape":            self.app.defaults["tools_mill_shape"],
+            "tools_mill_tool_shape":            self.app.defaults["tools_mill_tool_shape"],
             "tools_mill_job_type":         self.app.defaults["tools_mill_job_type"],
             "tools_mill_offset_type":      self.app.defaults["tools_mill_offset_type"],
             "tools_mill_offset_value":     float(self.app.defaults["tools_mill_offset_value"]),
@@ -2514,7 +2514,7 @@ class ToolsDB2(QtWidgets.QWidget):
         elif wdg_name == "gdb_job":
             self.db_tool_dict[tool_id]['data']['job'] = val
         elif wdg_name == "gdb_shape":
-            self.db_tool_dict[tool_id]['data']['tools_mill_shape'] = val
+            self.db_tool_dict[tool_id]['data']['tools_mill_tool_shape'] = val
         else:
             # Milling Tool
             if wdg_name == "gdb_tool_target":
@@ -3101,7 +3101,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         tshape_item = FCComboBox()
 #         for item in self.tool_type_item_options:
 #             tshape_item.addItem(item)
-#         tshape_item.set_value(tooldict['data']['tools_mill_shape'])
+#         tshape_item.set_value(tooldict['data']['tools_mill_tool_shape'])
 #         widget.setCellWidget(row, 6, tshape_item)
 #
 #         cutz_item = FCDoubleSpinner()
@@ -3281,7 +3281,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         dict_elem['offset'] = 'Path'
 #         dict_elem['offset_value'] = 0.0
 #         dict_elem['type'] = 'Rough'
-#         dict_elem['data']['tools_mill_shape'] = 'C1'
+#         dict_elem['data']['tools_mill_tool_shape'] = 'C1'
 #         dict_elem['data'] = default_data
 #
 #         new_toolid = len(self.db_tool_dict) + 1
@@ -3531,7 +3531,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #                 elif column_header_text == _('Tool Type'):
 #                     dict_elem['type'] = self.table_widget.cellWidget(row, col).get_value()
 #                 elif column_header_text == _('Tool Shape'):
-#                     dict_elem['data']['tools_mill_shape'] = self.table_widget.cellWidget(row, col).get_value()
+#                     dict_elem['data']['tools_mill_tool_shape'] = self.table_widget.cellWidget(row, col).get_value()
 #                 else:
 #                     if column_header_text == _('Cut Z'):
 #                         default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()

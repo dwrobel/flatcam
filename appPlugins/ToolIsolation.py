@@ -289,8 +289,8 @@ class ToolIsolation(AppTool, Gerber):
             if selected_obj.kind == 'gerber':
                 current_name = selected_obj.options['name']
                 self.ui.object_combo.set_value(current_name)
-        except Exception:
-            pass
+        except Exception as ee:
+            self.app.log.debug("ToolIsolation.set_tool_ui() Select Gerber object -> %s" % str(ee))
 
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
@@ -592,7 +592,7 @@ class ToolIsolation(AppTool, Gerber):
             # Tool Type
             tool_type_item = FCComboBox()
             tool_type_item.addItems(self.tool_type_item_options)
-            idx = int(tooluid_value['data']['tools_mill_shape'])
+            idx = int(tooluid_value['data']['tools_mill_tool_shape'])
             tool_type_item.setCurrentIndex(idx)
             self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
@@ -1702,6 +1702,8 @@ class ToolIsolation(AppTool, Gerber):
                     self.iso_tools[tool_iso][key]["tools_iso_isoexcept"] = self.ui.except_cb.get_value()
                     self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.ui.select_combo.get_value()
                     self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.ui.area_shape_radio.get_value()
+                    self.iso_tools[tool_iso][key]["tools_mill_job_type"] = 2    # _("Isolation")
+                    self.iso_tools[tool_iso][key]["tools_mill_tool_shape"] = 5  # "V"
 
         if combine:
             if self.ui.rest_cb.get_value():
@@ -1737,7 +1739,7 @@ class ToolIsolation(AppTool, Gerber):
 
                 tool_dia = tools_storage[tool]['tooldia']
                 for i in range(passes):
-                    tool_type = tools_storage[tool]['data']['tools_mill_shape']
+                    tool_type = tools_storage[tool]['data']['tools_mill_tool_shape']
 
                     iso_offset = tool_dia * ((2 * i + 1) / 2.0000001) - (i * overlap * tool_dia)
                     if negative_dia:
@@ -1911,7 +1913,7 @@ class ToolIsolation(AppTool, Gerber):
                 if float('%.*f' % (self.decimals, tools_storage[tool]['tooldia'])) == sorted_tool:
 
                     tool_dia = tools_storage[tool]['tooldia']
-                    tool_type = tools_storage[tool]['data']['tools_mill_shape']
+                    tool_type = tools_storage[tool]['data']['tools_mill_tool_shape']
                     tool_data = tools_storage[tool]['data']
 
                     passes = tool_data['tools_iso_passes']
@@ -2086,7 +2088,7 @@ class ToolIsolation(AppTool, Gerber):
             tool_dia = tools_storage[tool]['tooldia']
             tool_has_offset = tools_storage[tool]['data']['tools_mill_offset_type']
             tool_offset_value = tools_storage[tool]['data']['tools_mill_offset_value']
-            tool_type = tools_storage[tool]['data']['tools_mill_shape']
+            tool_type = tools_storage[tool]['data']['tools_mill_tool_shape']
             tool_data = tools_storage[tool]['data']
 
             work_geo = geometry

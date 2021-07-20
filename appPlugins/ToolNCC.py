@@ -851,7 +851,7 @@ class NonCopperClear(AppTool, Gerber):
                     # ------------------------ Tool Shape -------------------------------------------------------------
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
-                    idx = int(tooluid_value['data']['tools_mill_shape'])
+                    idx = int(tooluid_value['data']['tools_mill_tool_shape'])
                     tool_type_item.setCurrentIndex(idx)
                     self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
