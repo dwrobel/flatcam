@@ -656,6 +656,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
             _filter_ = "RML1 Files .rol (*.rol);;All Files (*.*)"
+        elif 'nccad' in self.pp_excellon_name.lower() or 'nccad' in self.pp_geometry_name.lower():
+            _filter_ = "KOSY Files .knc (*.knc);;All Files (*.*)"
         elif 'hpgl' in self.pp_geometry_name:
             _filter_ = "HPGL Files .plt (*.plt);;All Files (*.*)"
         else:

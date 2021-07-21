@@ -7,13 +7,18 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.07.2021
+
+- when using the NCCAD9 preprocessor (for Kosy machines) at GCode save the .knc extension will be automatically preselected
+- added a preprocessor for Roland MDX-540
+
 20.07.2021
 
 - in ParseDXF file fixed import of module due of changes in the latest version of ezdxf module
 - changes in Milling Plugin in the selection in the Tools Table
 - some updates of milling data structure
 - changes in handling the tool shape due of moving the parameter from the tool table in the tool parameters section
-
+a
 18.07.2021
 
 - modified the Geometry UI tools table. Replaced the comboboxes with labels.

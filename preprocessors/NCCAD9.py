@@ -104,7 +104,7 @@ class NCCAD9(PreProc):
         gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
         gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
 
-        gcode += ';Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
+        gcode += ';Spindle Speed: %s RPM\n' % str(p['spindlespeed'])
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G76 ;Reference-travel to the endswitches'

@@ -7780,7 +7780,7 @@ class App(QtCore.QObject):
             if len_objects == cnt:
                 # all selected objects are of type CNCJOB therefore we issue a multiple save
                 _filter_ = self.defaults['cncjob_save_filters'] + \
-                           ";;RML1 Files .rol (*.rol);;HPGL Files .plt (*.plt)"
+                           ";;RML1 Files .rol (*.rol);;HPGL Files .plt (*.plt);;KNC Files .knc (*.knc)"
 
                 dir_file_to_save = self.get_last_save_folder() + '/multi_save'
 
@@ -9116,7 +9116,7 @@ class MenuFileHandlers(QtCore.QObject):
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
         _filter_ = "G-Code Files (*.txt *.nc *.ncc *.tap *.gcode *.cnc *.ecs *.fnc *.dnc *.ncg *.gc *.fan *.fgc" \
-                   " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.sbp *.mpf);;" \
+                   " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.knc *.mpr *.ply *.out *.eia *.sbp *.mpf);;" \
                    "All Files (*.*)"
 
         if name is None:
