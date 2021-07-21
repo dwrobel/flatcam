@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - when using the NCCAD9 preprocessor (for Kosy machines) at GCode save the .knc extension will be automatically preselected
 - added a preprocessor for Roland MDX-540
+- fixed the preprocessor for Roland MDX-20 X,Y moves
 
 20.07.2021
 

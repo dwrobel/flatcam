@@ -59,7 +59,9 @@ class Roland_MDX_20(PreProc):
         else:
             x = p.x
             y = p.y
-        return ('Z' + self.coordinate_format + ',' + self.coordinate_format) % (float(x * 40.0), float(y * 40.0))
+
+        # RML-1 unit is 0.01mm for X-Y moves (maybe on Z also?) so we multiply by 100
+        return ('Z' + self.coordinate_format + ',' + self.coordinate_format) % (float(x * 100.0), float(y * 100.0))
 
     def rapid_code(self, p):
         if p.units.upper() == 'IN':
