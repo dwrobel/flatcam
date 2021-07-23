@@ -74,9 +74,9 @@ class Roland_MDX_20(PreProc):
 
     def linear_code(self, p):
         if p.units.upper() == 'IN':
-            z = p.z / 25.4
+            z = p.z_cut / 25.4
         else:
-            z = p.z
+            z = p.z_cut
         gcode = self.feedrate_code(p) + '\n'
         gcode += self.position_code(p).format(**p) + ',' + str(float(z * 40.0)) + ';'
         return gcode
@@ -121,10 +121,18 @@ class Roland_MDX_20(PreProc):
         return 'V' + str(self.feedrate_format % fr_sec) + ';'
 
     def spindle_code(self, p):
-        return '!MC1'
+        speed = int(p.spindlespeed)
+        if speed > 8388607:
+            speed = 8388607
+        if speed < 0:
+            speed = 0
+
+        gcode = '!MC1;\n'
+        gcode += '!RC%d;' % speed
+        return gcode
 
     def dwell_code(self, p):
-        return''
+        return ''
 
     def spindle_stop_code(self, p):
-        return '!MC0'
+        return '!MC0;'

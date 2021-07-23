@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.07.2021
+
+- fixed errors in the Roland preprocessors
+- fixed CNCJob plot scaling when using Roland preprocessors
+- in Roland preprocessors added the use of spindlespeed
+- made sure that the preprocessors that don't use the gcode_header still use the start gcode
+
+
 21.07.2021
 
 - when using the NCCAD9 preprocessor (for Kosy machines) at GCode save the .knc extension will be automatically preselected

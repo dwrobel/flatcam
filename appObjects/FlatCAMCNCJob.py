@@ -1014,21 +1014,18 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             else:
                 gcode += self.gcode
 
-            g = preamble + '\n' + gcode + '\n' + postamble
+            # g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + postamble
+            g = ''
+            end_gcode = self.gcode_footer() if self.app.defaults['cncjob_footer'] is True else ''
+            if preamble != '' and postamble != '':
+                g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+            if preamble == '':
+                g = self.gc_start + '\n' + gcode + '\n' + postamble + '\n' + end_gcode
+            if postamble == '':
+                g = self.gc_start + '\n' + preamble + '\n' + gcode + '\n' + end_gcode
+            if preamble == '' and postamble == '':
+                g = self.gc_start + '\n' + gcode + '\n' + end_gcode
         else:
-            # search for the GCode beginning which is usually a G20 or G21
-            # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
-            # g_idx = gcode.rfind('G20')
-            #
-            # # if it did not find 'G20' then search for 'G21'
-            # if g_idx == -1:
-            #     g_idx = gcode.rfind('G21')
-            #
-            # # if it did not find 'G20' and it did not find 'G21' then there is an error and return
-            # if g_idx == -1:
-            #     self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
-            #     return
-
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
                 # for the case that self.tools is empty: old projects

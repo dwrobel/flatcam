@@ -6324,8 +6324,8 @@ class CNCjob(Geometry):
             match_z = re.search(r"^Z(\s*-?\d+\.\d+?),(\s*\s*-?\d+\.\d+?),(\s*\s*-?\d+\.\d+?)*;$", gline)
             if match_z:
                 command['G'] = 0
-                command['X'] = float(match_z.group(1).replace(" ", "")) * 0.025
-                command['Y'] = float(match_z.group(2).replace(" ", "")) * 0.025
+                command['X'] = float(match_z.group(1).replace(" ", "")) * 0.01
+                command['Y'] = float(match_z.group(2).replace(" ", "")) * 0.01
                 command['Z'] = float(match_z.group(3).replace(" ", "")) * 0.025
 
         elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
