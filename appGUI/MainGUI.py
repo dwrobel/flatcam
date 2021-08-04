@@ -2201,10 +2201,10 @@ class MainGUI(QtWidgets.QMainWindow):
             msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
             msgbox.setWindowTitle(_("Clear GUI Settings"))
             msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
             msgbox.setDefaultButton(bt_no)
             msgbox.exec()
@@ -3080,10 +3080,10 @@ class MainGUI(QtWidgets.QMainWindow):
                         messagebox.setText(msg)
                         messagebox.setWindowTitle(_("Warning"))
                         messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
-                        messagebox.setIcon(QtWidgets.QMessageBox.Question)
+                        messagebox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
                         messagebox.exec()
                     return
             # SHIFT
@@ -3240,10 +3240,10 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
-                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+                            messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
-                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
                             messagebox.exec()
 
                     # Paint
@@ -3287,10 +3287,10 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
-                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+                            messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
-                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
                             messagebox.exec()
 
                     # Add Text Tool
@@ -3309,10 +3309,10 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
-                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+                            messagebox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
-                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Ok)
                             messagebox.exec()
 
                     # Flip on X axis
@@ -4041,7 +4041,10 @@ class MainGUI(QtWidgets.QMainWindow):
             if not self.isMaximized():
                 self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
 
-            self.final_save.emit()
+            try:
+                self.final_save.emit()
+            except SystemError:
+                sys.exit(0)
         event.ignore()
 
     def on_fullscreen(self, disable=False):
@@ -4059,24 +4062,27 @@ class MainGUI(QtWidgets.QMainWindow):
             self.y_pos = a.y()
             self.width = a.width()
             self.height = a.height()
-            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight)
+            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
 
             # set new geometry to full desktop rect
             # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
             # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
             # everything else will not work without this hack. This happen in Windows.
             # https://bugreports.qt.io/browse/QTBUG-41309
-            desktop = self.app.qapp.desktop()
-            screen = desktop.screenNumber(QtGui.QCursor.pos())
+            # desktop = self.app.qapp.desktop()
+            # screen = desktop.screenNumber(QtGui.QCursor.pos())
 
-            rec = desktop.screenGeometry(screen)
-            x = rec.x() - 1
-            y = rec.y() - 1
-            h = rec.height() + 2
-            w = rec.width() + 2
+            # rec = desktop.screenGeometry(screen)
 
-            self.setGeometry(x, y, w, h)
-            self.show()
+            # x = rec.x() - 1
+            # y = rec.y() - 1
+            # h = rec.height() + 2
+            # w = rec.width() + 2
+            #
+            # self.setGeometry(x, y, w, h)
+            # self.show()
+
+            self.app.ui.showFullScreen()
 
             # hide all Toolbars
             for tb in self.findChildren(QtWidgets.QToolBar):
@@ -4092,7 +4098,9 @@ class MainGUI(QtWidgets.QMainWindow):
         elif self.toggle_fscreen is True or disable is True:
             self.setWindowFlags(flags & ~Qt.WindowType.FramelessWindowHint)
             # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
-            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
+            # self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
+            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+13, self.width, self.height)
+
             self.showNormal()
             self.restore_toolbar_view()
             self.toggle_fscreen = False

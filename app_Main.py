@@ -2652,12 +2652,12 @@ class App(QtCore.QObject):
             msgbox.setText(_("Do you want to save the edited object?"))
             msgbox.setWindowTitle(_("Exit Editor"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
             if edited_obj.kind in ["geometry", "gerber", "excellon"] or force_cancel is not None:
-                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
             else:
                 bt_cancel = None
 
@@ -3854,9 +3854,9 @@ class App(QtCore.QObject):
 
         msgbox.setWindowTitle(_("Alternative website"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-        bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
+        bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.ButtonRole.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec()
@@ -3881,11 +3881,11 @@ class App(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()
@@ -4017,15 +4017,16 @@ class App(QtCore.QObject):
         self.clear_pool()
 
         # quit app by signalling for self.kill_app() method
-        self.close_app_signal.emit()
+        # self.close_app_signal.emit()
+        sys.exit(0)
 
     @staticmethod
     def kill_app():
         QtCore.QCoreApplication.instance().quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        # sys.exit(0)
-        raise SystemExit
+        sys.exit(0)
+        # raise SystemExit
 
     def on_portable_checked(self, state):
         """
@@ -4807,13 +4808,13 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
         msgbox.setText(_("Changing the units of the project\n"
                          "will scale all objects.\n\n"
                          "Do you want to continue?"))
-        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-        msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+        msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
         msgbox.setDefaultButton(bt_ok)
         msgbox.exec()
@@ -4974,9 +4975,9 @@ class App(QtCore.QObject):
                                      "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
-                    msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+                    msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
-                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
                     msgbox.exec()
@@ -5060,13 +5061,13 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
                 # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
-                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-                msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+                msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
                 msgbox.setDefaultButton(bt_ok)
                 msgbox.exec()
@@ -6632,8 +6633,8 @@ class App(QtCore.QObject):
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
                 msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
-                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+                msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 msgbox.exec()
@@ -9274,10 +9275,10 @@ class MenuFileHandlers(QtCore.QObject):
                 and not isinstance(obj, ExcellonObject)):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
             msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
             return
@@ -9622,10 +9623,10 @@ class MenuFileHandlers(QtCore.QObject):
         if obj.kind != 'geometry':
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
             msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
             return
@@ -9730,11 +9731,11 @@ class MenuFileHandlers(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()

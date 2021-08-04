@@ -71,7 +71,8 @@ class VisPyCanvas(scene.SceneCanvas):
             orientation='bottom', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1,
             anchors=['center', 'bottom']
         )
-        self.xaxis.height_max = 30
+        self.xaxis.height_min = 5
+        self.xaxis.height_max = 35
         self.grid_widget.add_widget(self.xaxis, row=2, col=1)
 
         right_padding = self.grid_widget.add_widget(row=0, col=2, row_span=2)

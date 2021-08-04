@@ -1035,10 +1035,10 @@ class PreferencesUIManager:
             msgbox.setText(_("Are you sure you want to continue?"))
             msgbox.setWindowTitle(_("Application will restart"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()
@@ -1284,10 +1284,10 @@ class PreferencesUIManager:
                              "Do you want to save?"))
             msgbox.setWindowTitle(_("Save Preferences"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()

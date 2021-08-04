@@ -3425,7 +3425,7 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.aperture_delete_btn.triggered.connect(self.on_delete_btn)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
 
-        self.ui.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
+        self.ui.aptype_cb.currentIndexChanged.connect(self.on_aptype_changed)
 
         self.ui.addaperture_btn.clicked.connect(self.on_aperture_add)
         self.ui.apsize_entry.returnPressed.connect(self.on_aperture_add)
@@ -4222,9 +4222,10 @@ class AppGerberEditor(QtCore.QObject):
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
 
-    def on_aptype_changed(self, current_text):
+    def on_aptype_changed(self, current_index):
         # 'O' is letter O not zero.
-        if current_text == 'R' or current_text == 'O':
+        print(current_index)
+        if current_index == 1 or current_index == 2:    # 1 == 'R' and 2 == 'O'
             self.ui.apdim_lbl.setDisabled(False)
             self.ui.apdim_entry.setDisabled(False)
             self.ui.apsize_entry.setDisabled(True)

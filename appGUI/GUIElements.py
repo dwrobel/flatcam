@@ -3178,11 +3178,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :param event:   a mouse press event
             :return:
             """
-            if event.button() == QtCore.Qt.MouseButton.RightButton and self.prev_index == self.tabAt(event.pos()):
+            if event.button() == QtCore.Qt.MouseButton.RightButton and \
+                    self.prev_index == self.tabAt(event.position().toPoint()):
                 self.right_click.emit(self.prev_index)
 
             if event.button() == QtCore.Qt.MouseButton.MiddleButton:
-                self.onCloseTabSignal.emit(int(self.tabAt(event.pos())))
+                self.onCloseTabSignal.emit(int(self.tabAt(event.position().toPoint())))
 
             self.prev_index = -1
 
@@ -4701,13 +4702,13 @@ class FCJog(QtWidgets.QFrame):
         super(FCJog, self).__init__(*args, **kwargs)
 
         self.app = app
-        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.setLineWidth(1)
 
         # JOG axes
         grbl_jog_grid = QtWidgets.QGridLayout()
         grbl_jog_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinimumSize)
         grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
 
         self.setLayout(grbl_jog_grid)
@@ -4780,7 +4781,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         super(FCZeroAxes, self).__init__(*args, **kwargs)
         self.app = app
 
-        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setFrameShape(QtWidgets.QFrame.Shape.Box)
         self.setLineWidth(1)
 
         # Zero the axes
@@ -5152,9 +5153,9 @@ def message_dialog(title, message, kind="info", parent=None):
     :param parent:      parent
     :return:            None
     """
-    icon = {"info": QtWidgets.QMessageBox.Information,
-            "warning": QtWidgets.QMessageBox.Warning,
-            "error": QtWidgets.QMessageBox.Critical}[str(kind)]
+    icon = {"info": QtWidgets.QMessageBox.Icon.Information,
+            "warning": QtWidgets.QMessageBox.Icon.Warning,
+            "error": QtWidgets.QMessageBox.Icon.Critical}[str(kind)]
     dlg = QtWidgets.QMessageBox(icon, title, message, parent=parent)
     dlg.setText(message)
     dlg.exec()

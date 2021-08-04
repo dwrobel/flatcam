@@ -4,7 +4,7 @@ import traceback
 from datetime import datetime
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtCore import QSettings, Qt, QTimer
 from app_Main import App
 from appGUI import VisPyPatches
 
@@ -95,10 +95,11 @@ if __name__ == '__main__':
             with open(log_file_path, 'w') as f:
                 f.write(msg)
 
-        if minor_v >= 8:
-            os._exit(0)
-        else:
-            sys.exit(0)
+        # if minor_v >= 8:
+        #     os._exit(0)
+        # else:
+        #     sys.exit(0)
+        sys.exit(0)
 
     debug_trace()
     VisPyPatches.apply_patches()
@@ -158,6 +159,10 @@ if __name__ == '__main__':
         app.setStyle(style)
 
     fc = App(qapp=app)
+
+    timer = QTimer()
+    timer.timeout.connect(lambda: None)
+    timer.start(100)
 
     sys.exit(app.exec())
     # app.exec_()
