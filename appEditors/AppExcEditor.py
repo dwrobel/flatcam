@@ -2191,15 +2191,15 @@ class AppExcEditor(QtCore.QObject):
         self.ui.tools_table_exc.resizeRowsToContents()
 
         vertical_header = self.ui.tools_table_exc.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table_exc.horizontalHeader()
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
         # self.ui.tools_table_exc.setSortingEnabled(True)
@@ -3598,7 +3598,7 @@ class AppExcEditor(QtCore.QObject):
         # first deselect all rows (tools) in the Tools Table
         self.ui.tools_table_exc.clearSelection()
         # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for storage in self.storage_dict:
             for shape_s in self.selected:
                 if shape_s in self.storage_dict[storage].get_objects():
@@ -3616,7 +3616,7 @@ class AppExcEditor(QtCore.QObject):
                                 self.ui.tools_table_exc.selectRow(row_to_sel)
                             self.last_tool_selected = int(key_tool_nr)
 
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
         self.replot()
@@ -4025,7 +4025,7 @@ class AppExcEditorUI:
         self.tools_table_exc.setColumnCount(4)
         self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.tools_table_exc.setSortingEnabled(False)
-        self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.ui_vertical_lay.addWidget(self.tools_table_exc)
 

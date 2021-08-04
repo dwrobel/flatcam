@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from shapely.geometry import Polygon, LineString
 

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.08.2021
+
+- continuing to fix the PyQt6 port
+- added an Exception when App.on_canvas_setup() fails
+
 4.08.2021
 
 - toggling the plot is now deleting the selection shape, if any

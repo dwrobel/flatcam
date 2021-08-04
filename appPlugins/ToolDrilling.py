@@ -810,19 +810,19 @@ class ToolDrilling(AppTool, Excellon):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
-        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
 
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         self.ui.tools_table.setSortingEnabled(False)
 
@@ -882,20 +882,20 @@ class ToolDrilling(AppTool, Excellon):
 
         area_vheader = self.ui.exclusion_table.verticalHeader()
         area_vheader.hide()
-        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         area_hheader = self.ui.exclusion_table.horizontalHeader()
         area_hheader.setMinimumSectionSize(10)
         area_hheader.setDefaultSectionSize(70)
 
-        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         area_hheader.resizeSection(0, 20)
-        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         # area_hheader.setStretchLastSection(True)
-        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.exclusion_table.setColumnWidth(0, 20)
 
@@ -2800,7 +2800,7 @@ class DrillingUI:
 
         self.exclusion_table = FCTable()
         self.exclusion_box.addWidget(self.exclusion_table)
-        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.exclusion_table.setColumnCount(4)
         self.exclusion_table.setColumnWidth(0, 20)
@@ -2815,7 +2815,7 @@ class DrillingUI:
             _("If the strategy is to go over the area then this is the height at which the tool will go to avoid the "
               "exclusion area."))
 
-        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         grid_a1 = QtWidgets.QGridLayout()
         grid_a1.setColumnStretch(0, 0)

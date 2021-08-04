@@ -2450,13 +2450,13 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             except Exception as e:
                 log.error("AppGerberEditor.EraserEditorGrb.click_release() --> %s" % str(e))
 
-            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
             for aper in sel_aperture:
                 for row in range(self.draw_app.ui.apertures_table.rowCount()):
                     if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
             self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
@@ -2708,14 +2708,14 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                     self.sel_aperture.add(storage)
 
         # actual row selection is done here
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for aper in self.sel_aperture:
             for row in range(self.draw_app.ui.apertures_table.rowCount()):
                 if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                     if row not in set(idx.row() for idx in self.draw_app.ui.apertures_table.selectedIndexes()):
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # reconnect signal when clicking in the table
         self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
@@ -3675,21 +3675,21 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.resizeRowsToContents()
 
         vertical_header = self.ui.apertures_table.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.apertures_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 27)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
-        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
         self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
@@ -5290,14 +5290,14 @@ class AppGerberEditor(QtCore.QObject):
         except Exception as e:
             self.app.log.error("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
 
-        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for aper in sel_aperture:
             for row_to_sel in range(self.ui.apertures_table.rowCount()):
                 if str(aper) == self.ui.apertures_table.item(row_to_sel, 1).text():
                     if row_to_sel not in set(index.row() for index in self.ui.apertures_table.selectedIndexes()):
                         self.ui.apertures_table.selectRow(row_to_sel)
                     self.last_aperture_selected = aper
-        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # #############################################################################################################
         # ######################### calculate vertex numbers for all selected shapes ##################################
@@ -6049,7 +6049,7 @@ class AppGerberEditorUI:
         self.apertures_table.setColumnCount(5)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
         self.apertures_table.setSortingEnabled(False)
-        self.apertures_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.apertures_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.apertures_table.horizontalHeaderItem(0).setToolTip(
             _("Index"))

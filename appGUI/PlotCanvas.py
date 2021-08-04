@@ -127,10 +127,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # <VisPyCanvas>
         self.create_native()
-        gui_widget = self.fcapp.ui
-
-        assert isinstance(gui_widget, QtWidgets.QWidget)
-        self.native.setParent(gui_widget)
+        self.native.setParent(self.fcapp.ui)
 
         axis_default_color = self.fcapp.defaults['global_axis_color']
         self.axis_transparency = 0.8

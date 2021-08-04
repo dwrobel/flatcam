@@ -3487,7 +3487,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tw.setIndentation(0)
         self.tw.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.tw.header().setStretchLastSection(True)
-        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.tools_box.addWidget(self.tw)
 
         self.geo_font = QtGui.QFont()

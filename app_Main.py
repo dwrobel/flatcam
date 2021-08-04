@@ -1128,12 +1128,17 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()  # debug
 
-        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
-
         # setup the PlotCanvas
         self.plotcanvas = self.on_plotcanvas_setup()
         if self.plotcanvas == 'fail':
-            return
+            self.splash.finish(self.ui)
+            self.log.debug("Failed to start the Canvas.")
+
+            # terminate workers
+            # self.workers.__del__()
+            self.clear_pool()
+
+            raise BaseException("Failed to start the Canvas")
 
         # add he PlotCanvas setup to the UI
         self.on_plotcanvas_add(self.plotcanvas, self.ui.right_layout)
@@ -7565,7 +7570,7 @@ class App(QtCore.QObject):
                 else:
                     self.call_source = 'app'
         except Exception as e:
-            self.log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
+            self.log.error("Something went bad in App.select_objects(). %s" % str(e))
 
     def selected_message(self, curr_sel_obj):
         """
@@ -8400,10 +8405,16 @@ class App(QtCore.QObject):
             plot_container = self.ui.right_layout
 
         modifier = QtWidgets.QApplication.queryKeyboardModifiers()
+        if modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            self.defaults["global_graphic_engine"] = "2D"
+
+        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
+
         if self.is_legacy is True or modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             self.is_legacy = True
-            self.defaults["global_graphic_engine"] = "2D"
             plotcanvas = PlotCanvasLegacy(self)
+            if plotcanvas.status != 'ok':
+                return 'fail'
         else:
             try:
                 plotcanvas = PlotCanvas(self)

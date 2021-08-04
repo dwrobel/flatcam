@@ -812,7 +812,7 @@ class FidoUI:
         self.layout.addWidget(self.points_label)
 
         self.points_table = FCTable()
-        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.points_table.setColumnCount(3)
         self.points_table.setHorizontalHeaderLabels(
@@ -863,22 +863,22 @@ class FidoUI:
 
         vertical_header = self.points_table.verticalHeader()
         vertical_header.hide()
-        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.points_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
 
-        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         # for x in range(4):
         #     self.points_table.resizeColumnToContents(x)
         self.points_table.resizeColumnsToContents()
         self.points_table.resizeRowsToContents()
 
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 2)

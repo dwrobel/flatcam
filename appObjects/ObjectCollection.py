@@ -122,7 +122,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
                 self.filename = str(url.toLocalFile())
 
                 # file drop from outside application
-                if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+                if drop_indicator == QtWidgets.QAbstractItemView.DropIndicatorPosition.OnItem:
                     if self.filename == "":
                         self.app.inform.emit(_("Cancelled."))
                     else:
@@ -877,7 +877,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             group_index = self.index(group.row(), 0, QtCore.QModelIndex())
             item_index = self.index(item.row(), 0, group_index)
 
-            self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.Select)
+            self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.SelectionFlag.Select)
         except Exception as e:
             self.app.log.error("[ERROR] Cause: %s" % str(e))
             raise
@@ -919,7 +919,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         group_index = self.index(group.row(), 0, QtCore.QModelIndex())
         item_index = self.index(item.row(), 0, group_index)
 
-        self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.Deselect)
+        self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.SelectionFlag.Deselect)
 
     def set_all_inactive(self):
         """

@@ -172,7 +172,7 @@ class FCTree(QtWidgets.QTreeWidget):
 
         self.setColumnCount(columns)
         self.setHeaderHidden(header_hidden)
-        self.tree_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tree_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Expanding)
 
         palette = QtGui.QPalette()
@@ -185,9 +185,9 @@ class FCTree(QtWidgets.QTreeWidget):
         self.setPalette(palette)
 
         if extended_sel:
-            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.protected_column = protected_column
         self.itemDoubleClicked.connect(self.on_double_click)
@@ -204,9 +204,9 @@ class FCTree(QtWidgets.QTreeWidget):
             item.setFlags(tmp_flags ^ QtCore.Qt.ItemFlag.ItemIsEditable)
 
     def on_header_double_click(self, column):
-        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         width = self.tree_header.sectionSize(column)
-        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+        self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeMode.Interactive)
         self.tree_header.resizeSection(column, width)
 
     def is_editable(self, tested_col):
@@ -276,9 +276,9 @@ class FCTree(QtWidgets.QTreeWidget):
     def on_resize(self):
         header = self.header()
         for column in range(header.count()):
-            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
             width = header.sectionSize(column)
-            header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeMode.Interactive)
             header.resizeSection(column, width)
 
 
@@ -3503,9 +3503,9 @@ class FCTable(QtWidgets.QTableWidget):
             self.setDragDropOverwriteMode(False)
             self.setDropIndicatorShown(True)
 
-            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-            self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-            self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+            self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
+            self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+            self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
 
         self.rows_not_for_drag_and_drop = []
         if protected_rows:

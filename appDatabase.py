@@ -38,7 +38,7 @@ class ToolsDB2UI:
         self.tree_widget.setHeaderLabels([_("ID"), _("Name"), _("Target"), _("Diameter")])
         self.tree_widget.setIndentation(0)
         self.tree_widget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # set alternating colors
         # self.tree_widget.setAlternatingRowColors(True)
@@ -1806,9 +1806,9 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app.log.error("ToolDB.build_db_ui.add_plugin_table_line() --> %s" % str(e))
 
         header = self.ui.tree_widget.header()
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         if self.current_toolid is None or self.current_toolid < 1:
             if self.db_tool_dict:
@@ -2441,9 +2441,9 @@ class ToolsDB2(QtWidgets.QWidget):
         item.setData(2, QtCore.Qt.ItemDataRole.DisplayRole, op_name)
 
         header = self.ui.tree_widget.header()
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
     def update_tree_tooldia(self):
         val = self.ui.dia_entry.get_value()
@@ -2757,7 +2757,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         layout.addLayout(table_hlay)
 #
 #         self.table_widget = FCTable(drag_drop=True)
-#         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+#         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 #         table_hlay.addWidget(self.table_widget)
 #
 #         # set the number of columns and the headers tool tips
@@ -3049,13 +3049,13 @@ class ToolsDB2(QtWidgets.QWidget):
 #             for x in range(27):
 #                 self.table_widget.resizeColumnToContents(x)
 #
-#             horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-#             # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.Fixed)
+#             horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
+#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+#             # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.ResizeMode.Fixed)
 #
 #             horizontal_header.resizeSection(0, 20)
-#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-#             # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+#             # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 #
 #         self.ui_connect()
 #

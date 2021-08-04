@@ -25,11 +25,16 @@ import gettext
 import appTranslation as fcTranslate
 import builtins
 
-# Prevent conflict with Qt5 and above.
-from matplotlib import use as mpl_use
-mpl_use("Qt5Agg")
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+MATPLOTLIB_AVAILABLE = True
+try:
+    # Prevent conflict with Qt5 and above.
+    from matplotlib import use as mpl_use
+    mpl_use("Qt5Agg")
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import AnchoredText
 # from matplotlib.widgets import Cursor
@@ -142,6 +147,11 @@ class PlotCanvasLegacy(QtCore.QObject):
         """
 
         super(PlotCanvasLegacy, self).__init__()
+
+        self.status = 'ok'
+        if MATPLOTLIB_AVAILABLE is False:
+            self.status = 'fail'
+            return
 
         self.app = app
 

@@ -46,7 +46,7 @@ class BookmarkManager(QtWidgets.QWidget):
         layout.addLayout(table_hlay)
 
         self.table_widget = FCTable(drag_drop=True, protected_rows=[0, 1])
-        self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
         self.table_widget.setColumnCount(3)
@@ -170,10 +170,10 @@ class BookmarkManager(QtWidgets.QWidget):
             horizontal_header = self.table_widget.horizontalHeader()
             horizontal_header.setMinimumSectionSize(10)
             horizontal_header.setDefaultSectionSize(70)
-            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
             horizontal_header.resizeSection(0, 20)
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.mark_table_rows_for_actions()
 

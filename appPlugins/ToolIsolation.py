@@ -614,13 +614,13 @@ class ToolIsolation(AppTool, Gerber):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         # self.ui.tools_table.setSortingEnabled(True)
         # sort by tool diameter
@@ -3237,7 +3237,7 @@ class IsoUI:
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Shape'), ''])
         self.tools_table.setColumnHidden(3, True)
         self.tools_table.setSortingEnabled(False)
-        # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
             _("This is the Tool Number.\n"

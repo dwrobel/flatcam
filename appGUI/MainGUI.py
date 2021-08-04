@@ -2159,7 +2159,7 @@ class MainGUI(QtWidgets.QMainWindow):
         :return:
         """
         if self.app.defaults["global_toggle_tooltips"] is False:
-            if event.type() == QtCore.QEvent.ToolTip:
+            if event.type() == QtCore.QEvent.Type.ToolTip:
                 return True
             else:
                 return False
@@ -2575,7 +2575,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         if self.app.call_source == 'app':
             # CTRL + ALT
-            if modifiers == QtCore.Qt.KeyboardModifierControlModifier | QtCore.Qt.KeyboardModifier.AltModifier:
+            if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.AltModifier:
                 if key == QtCore.Qt.Key.Key_X:
                     self.app.abort_all_tasks()
                     return

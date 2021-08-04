@@ -660,8 +660,8 @@ class ExcellonObjectUI(ObjectUI):
         self.drills_frame.setLayout(self.tools_box)
 
         self.tools_table = FCTable()
-        self.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
@@ -992,7 +992,7 @@ class GeometryObjectUI(ObjectUI):
 
         self.geo_tools_table = FCTable(drag_drop=True)
         grid0.addWidget(self.geo_tools_table, 1, 0, 1, 2)
-        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.geo_tools_table.setColumnCount(7)
         self.geo_tools_table.setColumnWidth(0, 20)
