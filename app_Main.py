@@ -6960,7 +6960,7 @@ class App(QtCore.QObject):
 
         self.on_zoom_fit()
         self.collection.update_view()
-        # self.inform.emit(_("Plots updated ..."))
+        # self.inform.emit(_("Done."))
 
     def on_toolbar_replot(self):
         """
@@ -8629,12 +8629,16 @@ class App(QtCore.QObject):
             return
 
         self.log.debug("Toggling plots ...")
-        self.inform.emit('%s...' % _("Working"))
+        # self.inform.emit('%s...' % _("Working"))
         for obj in objects:
             if obj.options['plot'] is False:
                 obj.options['plot'] = True
             else:
                 obj.options['plot'] = False
+        try:
+            self.delete_selection_shape()
+        except Exception:
+            pass
         self.app_obj.plots_updated.emit()
 
     def clear_plots(self):

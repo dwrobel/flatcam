@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.08.2021
+
+- toggling the plot is now deleting the selection shape, if any
+
 23.07.2021
 
 - fixed errors in the Roland preprocessors
