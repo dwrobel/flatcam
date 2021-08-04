@@ -3149,7 +3149,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             """
 
             event.accept()
-            self.onDetachTabSignal.emit(self.tabAt(event.pos()), self.mouseCursor.pos())
+            self.onDetachTabSignal.emit(self.tabAt(event.position().toPoint()), self.mouseCursor.pos())
 
         def mousePressEvent(self, event):
             """
@@ -3160,9 +3160,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :return:
             """
             if event.button() == QtCore.Qt.MouseButton.LeftButton:
-                self.dragStartPos = event.pos()
+                self.dragStartPos = event.position().toPoint()
             elif event.button() == QtCore.Qt.MouseButton.RightButton:
-                self.prev_index = self.tabAt(event.pos())
+                self.prev_index = self.tabAt(event.position().toPoint())
 
             self.dragDropedPos.setX(0)
             self.dragDropedPos.setY(0)
@@ -3200,7 +3200,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             """
             # Determine if the current movement is detected as a drag
             if not self.dragStartPos.isNull() and \
-                    ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
+                    ((event.position().toPoint() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
@@ -3208,7 +3208,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
-                    QtCore.QEvent.Type.MouseMove, event.pos(), QtCore.Qt.MouseButton.NoButton,
+                    QtCore.QEvent.Type.MouseMove, event.position().toPoint(), QtCore.Qt.MouseButton.NoButton,
                     QtCore.Qt.MouseButton.NoButton, QtCore.Qt.KeyboardModifier.NoModifier
                 )
                 QtWidgets.QTabBar.mouseMoveEvent(self, finishMoveEvent)
@@ -3278,7 +3278,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :param event:    a drop event
             :return:
             """
-            self.dragDropedPos = event.pos()
+            self.dragDropedPos = event.position().toPoint()
             QtWidgets.QTabBar.dropEvent(self, event)
 
         def detachedTabDrop(self, name, dropPos):
@@ -3542,7 +3542,7 @@ class FCTable(QtWidgets.QTableWidget):
 
     # if user is clicking an blank area inside the QTableWidget it will deselect currently selected rows
     def mousePressEvent(self, event):
-        clicked_item = self.itemAt(event.pos())
+        clicked_item = self.itemAt(event.position().toPoint())
         if not clicked_item:
             self.clearSelection()
             self.clearFocus()
@@ -3775,11 +3775,11 @@ class FCTable(QtWidgets.QTableWidget):
         super().dropEvent(event)
 
     def drop_on(self, event):
-        index = self.indexAt(event.pos())
+        index = self.indexAt(event.position().toPoint())
         if not index.isValid():
             return self.rowCount()
 
-        return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+        return index.row() + 1 if self.is_below(event.position().toPoint(), index) else index.row()
 
     def is_below(self, pos, index):
         rect = self.visualRect(index)

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - continuing to fix the PyQt6 port
 - added an Exception when App.on_canvas_setup() fails
 - fixed fullscreen functionality for PyQt6 and a few other fixes regarding the port to PyQt6
+- more fixes for porting to PyQt6
 
 4.08.2021
 

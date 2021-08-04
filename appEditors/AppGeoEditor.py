@@ -365,7 +365,7 @@ class TextInputTool(AppTool):
         self.grid_text.addWidget(FCLabel('%s:' % _("Text")), 4, 0, 1, 2)
 
         self.text_input_entry = FCTextAreaRich()
-        self.text_input_entry.setTabStopWidth(12)
+        self.text_input_entry.setTabStopDistance(12)
         self.text_input_entry.setMinimumHeight(200)
         # self.text_input_entry.setMaximumHeight(150)
         self.text_input_entry.setCurrentFont(f_current)

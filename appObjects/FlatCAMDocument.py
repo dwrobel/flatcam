@@ -224,7 +224,7 @@ class DocumentObject(FlatCAMObj):
             self.ui.tab_size_spinner.set_value(val)
 
         tab_balue = int(self.ui.tab_size_spinner.get_value())
-        self.document_editor_tab.code_editor.setTabStopWidth(tab_balue)
+        self.document_editor_tab.code_editor.setTabStopDistance(tab_balue)
         self.app.defaults['document_tab_size'] = tab_balue
 
         self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
