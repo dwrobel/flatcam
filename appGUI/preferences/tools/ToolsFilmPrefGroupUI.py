@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -198,8 +198,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_mirror_axis, 13, 1)
 
         separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line3, 14, 0, 1, 2)
 
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},

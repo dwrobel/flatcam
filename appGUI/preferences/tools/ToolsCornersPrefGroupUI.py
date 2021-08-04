@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI

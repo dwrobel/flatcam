@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -112,7 +112,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.area_label = FCLabel('%s:' % _("Area"))
         self.area_label.setToolTip(_('This is the board area.'))
         self.area_entry = FCDoubleSpinner()
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.set_range(0.0, 10000.0000)
         

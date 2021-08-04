@@ -1,4 +1,4 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt6 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog
 
 import sys
@@ -149,7 +149,7 @@ class BookmarkManager(QtWidgets.QWidget):
             weblink = bookmark[1]
 
             id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.table_widget.setItem(row, 0, id_item)  # Tool name/id
 
             title_item = QtWidgets.QTableWidgetItem(title)
@@ -157,7 +157,7 @@ class BookmarkManager(QtWidgets.QWidget):
 
             weblink_txt = QtWidgets.QTextBrowser()
             weblink_txt.setOpenExternalLinks(True)
-            weblink_txt.setFrameStyle(QtWidgets.QFrame.NoFrame)
+            weblink_txt.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
             weblink_txt.document().setDefaultStyleSheet("a{ text-decoration: none; }")
 
             weblink_txt.setHtml('<a href=%s>%s</a>' % (weblink, weblink))
@@ -222,7 +222,7 @@ class BookmarkManager(QtWidgets.QWidget):
         # add the link to the menu but only if it is within the set limit
         bm_limit = int(self.app.defaults["global_bookmarks_limit"])
         if len(self.bm_dict) < bm_limit:
-            act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
+            act = QtGui.QAction(parent=self.app.ui.menuhelp_bookmarks)
             act.setText(title)
             act.setIcon(QtGui.QIcon(self.app.resource_location + '/link16.png'))
             act.triggered.connect(lambda: webbrowser.open(link))

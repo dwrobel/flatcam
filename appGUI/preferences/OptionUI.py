@@ -1,7 +1,7 @@
 from typing import Union, Sequence, List
 
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtWidgets, QtGui
+from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
     FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea, FCLabel
@@ -294,8 +294,8 @@ class SeparatorOptionUI(OptionUI):
     @staticmethod
     def build_separator_widget():
         separator = QtWidgets.QFrame()
-        separator.setFrameShape(QtWidgets.QFrame.HLine)
-        separator.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         return separator
 
     def add_to_grid(self, grid: QtWidgets.QGridLayout, row: int) -> int:

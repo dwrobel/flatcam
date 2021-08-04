@@ -314,29 +314,29 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # Tool ID
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)  # Tool name/id
 
             # Diameter
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, dia_val))
-            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
 
             # Drill count
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
 
             # Slot Count
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
-            slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            slot_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
 
             # Empty Plot Item
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(QtCore.Qt.NoItemFlags)
+            empty_plot_item.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
             self.ui.tools_table.setItem(self.tool_row, 4, empty_plot_item)
 
             if 'multicolor' in self.tools[tool_no] and self.tools[tool_no]['multicolor'] is not None:
@@ -354,7 +354,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # Plot Item
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
             self.ui.tools_table.setCellWidget(self.tool_row, 5, plot_item)
@@ -363,20 +363,20 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # add a last row with the Total number of drills
         empty_1 = QtWidgets.QTableWidgetItem('')
-        empty_1.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_1_1 = QtWidgets.QTableWidgetItem('')
-        empty_1_1.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1_1.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_1_2 = QtWidgets.QTableWidgetItem('')
-        empty_1_2.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1_2.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_1_3 = QtWidgets.QTableWidgetItem('')
-        empty_1_3.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1_3.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_1_4 = QtWidgets.QTableWidgetItem('')
-        empty_1_4.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1_4.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
-        label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
-        tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
@@ -397,20 +397,20 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
-        empty_2.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_2_1 = QtWidgets.QTableWidgetItem('')
-        empty_2_1.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2_1.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_2_2 = QtWidgets.QTableWidgetItem('')
-        empty_2_2.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2_2.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_2_3 = QtWidgets.QTableWidgetItem('')
-        empty_2_3.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2_3.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         empty_2_4 = QtWidgets.QTableWidgetItem('')
-        empty_2_4.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2_4.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
-        label_tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
-        tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
@@ -674,7 +674,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
 
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()

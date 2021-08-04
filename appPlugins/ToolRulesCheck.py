@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox, FCLabel, FCButton, \

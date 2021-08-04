@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -126,8 +126,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.newdia_entry, 5, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         self.paint_order_label = FCLabel('%s:' % _('Tool order'))
@@ -146,8 +146,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.paint_order_radio, 7, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Overlap
@@ -228,8 +228,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.contour_cb, 12, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 13, 0, 1, 2)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
@@ -286,8 +286,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.area_shape_radio, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # ## Plotting type

@@ -5,12 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 import logging
 from appGUI.VisPyCanvas import VisPyCanvas, Color
 from appGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line, Rectangle, Text
+
+from PyQt6 import QtWidgets
 
 import gettext
 import appTranslation as fcTranslate
@@ -125,7 +127,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # <VisPyCanvas>
         self.create_native()
-        self.native.setParent(self.fcapp.ui)
+        gui_widget = self.fcapp.ui
+
+        assert isinstance(gui_widget, QtWidgets.QWidget)
+        self.native.setParent(gui_widget)
 
         axis_default_color = self.fcapp.defaults['global_axis_color']
         self.axis_transparency = 0.8

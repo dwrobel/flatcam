@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt6 import QtGui, QtCore, QtWidgets
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
@@ -260,13 +260,13 @@ class SolderPaste(AppTool):
 
                     # Tool name/id
                     id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_item)
 
                     # Diameter
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
-                    dia.setFlags(QtCore.Qt.ItemIsEnabled)
+                    dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                     self.ui.tools_table.setItem(row_no, 1, dia)
 
                     # Tool unique ID
@@ -276,7 +276,7 @@ class SolderPaste(AppTool):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -1211,8 +1211,8 @@ class SolderUI:
         obj_form_layout.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
@@ -1278,8 +1278,8 @@ class SolderUI:
         grid0.addWidget(self.deltool_btn, 0, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 4)
 
         self.gcode_frame = QtWidgets.QFrame()
@@ -1337,8 +1337,8 @@ class SolderUI:
         self.param_grid.addWidget(self.z_stop_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 7, 0, 1, 2)
 
         # Z travel
@@ -1379,8 +1379,8 @@ class SolderUI:
         self.param_grid.addWidget(self.xy_toolchange_entry, 12, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 13, 0, 1, 2)
 
         # Feedrate X-Y
@@ -1425,8 +1425,8 @@ class SolderUI:
         self.param_grid.addWidget(self.frz_dispense_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 19, 0, 1, 2)
 
         # Spindle Speed Forward
@@ -1483,8 +1483,8 @@ class SolderUI:
         self.param_grid.addWidget(self.dwellrev_entry, 26, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 27, 0, 1, 2)
 
         # Preprocessors
@@ -1498,8 +1498,8 @@ class SolderUI:
         self.param_grid.addWidget(self.pp_combo, 28, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 30, 0, 1, 2)
 
         # Buttons Grid
@@ -1540,8 +1540,8 @@ class SolderUI:
         self.button_grid.addWidget(self.geo_obj_combo, 2, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.button_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # ## Buttons
@@ -1577,8 +1577,8 @@ class SolderUI:
         self.button_grid.addWidget(self.cnc_obj_combo, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.button_grid.addWidget(separator_line, 10, 0, 1, 2)
 
         # Save and Review GCode
@@ -1621,7 +1621,7 @@ class SolderUI:
         self.layout.addWidget(self.reset_button)
 
         # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
+        self.combo_context_del_action = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
                                                           _("Delete Object"))
 
         # #################################### FINSIHED GUI ###########################

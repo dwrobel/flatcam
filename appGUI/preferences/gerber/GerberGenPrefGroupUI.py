@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -88,7 +88,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
         # Gerber Zeros
         self.gerber_zeros_label = FCLabel('%s:' % _('Zeros'))
-        self.gerber_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.gerber_zeros_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.gerber_zeros_label.setToolTip(
             _("This sets the type of Gerber zeros.\n"
               "If LZ then Leading Zeros are removed and\n"
@@ -111,8 +111,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gerber_zeros_radio, 5, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 6, 0, 1, 3)
 
         # Apertures Cleaning
@@ -150,8 +150,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.clear_colors_button, 11, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 13, 0, 1, 3)
 
         # Gerber Object Color

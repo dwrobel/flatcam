@@ -12,8 +12,8 @@ sudo apt-get install -y \
 	python3-dev \
 	python3-gdal \
 	python3-pip \
-	python3-pyqt5 \
-	python3-pyqt5.qtopengl \
+	python3-pyqt6 \
+	python3-pyqt6.qtopengl \
 	python3-simplejson \
 	python3-tk
 
@@ -42,7 +42,7 @@ sudo -H python3 -m pip install --upgrade \
 	ezdxf \
 	matplotlib \
 	qrcode \
-	pyqt5 \
+	pyqt6 \
 	reportlab \
 	svglib \
 	pyserial \

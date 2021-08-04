@@ -6,7 +6,7 @@
 # ##########################################################
 
 from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton
-from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
+from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
@@ -35,8 +35,8 @@ class AppTextEditor(QtWidgets.QWidget):
         self.callback = lambda x: None
 
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.MinimumExpanding
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding
         )
 
         # UI Layout
@@ -202,9 +202,9 @@ class AppTextEditor(QtWidgets.QWidget):
         else:
             self.code_editor.setHtml(text)
         if move_to_start:
-            self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
         elif move_to_end:
-            self.code_editor.moveCursor(QtGui.QTextCursor.End)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         self.code_editor.textChanged.connect(self.handleTextChanged)
 
     def handleOpen(self, filt=None):
@@ -333,7 +333,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
-            self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
             self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
@@ -353,7 +353,7 @@ class AppTextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

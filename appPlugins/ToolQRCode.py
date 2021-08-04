@@ -5,8 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog, \
@@ -781,8 +781,8 @@ class QRcodeUI:
         i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # Text box
@@ -798,8 +798,8 @@ class QRcodeUI:
         i_grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # ## Grid Layout
@@ -910,8 +910,8 @@ class QRcodeUI:
         grid_lay.addWidget(self.bb_radio, 12, 1)
 
         self.separator_line_2 = QtWidgets.QFrame()
-        self.separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(self.separator_line_2, 14, 0, 1, 2)
 
         # Export QRCode
@@ -947,8 +947,8 @@ class QRcodeUI:
         fill_lay_child = QtWidgets.QHBoxLayout()
         fill_lay_child.setContentsMargins(0, 0, 0, 0)
         fill_lay_child.addWidget(self.fill_color_entry)
-        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignRight)
-        fill_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignmentFlag.AlignRight)
+        fill_lay_child.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         fill_color_widget = QtWidgets.QWidget()
         fill_color_widget.setLayout(fill_lay_child)
@@ -971,8 +971,8 @@ class QRcodeUI:
         back_lay_child = QtWidgets.QHBoxLayout()
         back_lay_child.setContentsMargins(0, 0, 0, 0)
         back_lay_child.addWidget(self.back_color_entry)
-        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignRight)
-        back_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignmentFlag.AlignRight)
+        back_lay_child.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         back_color_widget = QtWidgets.QWidget()
         back_color_widget.setLayout(back_lay_child)

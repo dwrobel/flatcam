@@ -3,8 +3,8 @@ import os
 import traceback
 from datetime import datetime
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings, Qt
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import QSettings, Qt
 from app_Main import App
 from appGUI import VisPyPatches
 
@@ -25,7 +25,7 @@ def debug_trace():
     Set a tracepoint in the Python debugger that works with Qt
     :return: None
     """
-    from PyQt5.QtCore import pyqtRemoveInputHook
+    from PyQt6.QtCore import pyqtRemoveInputHook
     # from pdb import set_trace
     pyqtRemoveInputHook()
     # set_trace()
@@ -123,10 +123,10 @@ if __name__ == '__main__':
     # else:
     #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
-    if hdpi_support == 2:
-        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    else:
-        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+    # if hdpi_support == 2:
+    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    # else:
+    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
 
     def excepthook(exc_type, exc_value, exc_tb):
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     sys.excepthook = excepthook
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    # app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # apply style
     settings = QSettings("Open Source", "FlatCAM")
@@ -159,5 +159,5 @@ if __name__ == '__main__':
 
     fc = App(qapp=app)
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
     # app.exec_()

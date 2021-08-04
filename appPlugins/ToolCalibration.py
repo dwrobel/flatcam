@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry, VerticalScrollArea
@@ -870,8 +870,8 @@ class CalibrationUI:
         )
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 6, 0, 1, 3)
 
         # Second point choice
@@ -889,8 +889,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.second_point_radio, 7, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 8, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 3)
@@ -966,7 +966,7 @@ class CalibrationUI:
 
         # BOTTOM LEFT
         id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_1.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_1)  # Tool name/id
 
@@ -993,7 +993,7 @@ class CalibrationUI:
 
         # BOTTOM RIGHT
         id_item_2 = QtWidgets.QTableWidgetItem('%d' % 2)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_2.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_2)  # Tool name/id
 
@@ -1018,7 +1018,7 @@ class CalibrationUI:
 
         # TOP LEFT
         id_item_3 = QtWidgets.QTableWidgetItem('%d' % 3)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_3.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_3)  # Tool name/id
 
@@ -1042,7 +1042,7 @@ class CalibrationUI:
 
         # TOP RIGHT
         id_item_4 = QtWidgets.QTableWidgetItem('%d' % 4)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_4.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_4)  # Tool name/id
 
@@ -1105,8 +1105,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.start_button, 17, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 18, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 19, 0)
@@ -1144,8 +1144,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.gcode_button, 21, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 22, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 23, 0, 1, 3)
@@ -1175,8 +1175,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.generate_factors_button, 25, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 26, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 27, 0, 1, 3)
@@ -1338,8 +1338,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.adj_gcode_button, 42, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 43, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 44, 0, 1, 3)
@@ -1396,8 +1396,8 @@ class CalibrationUI:
         grid_lay.addWidget(self.cal_button, 50, 0, 1, 3)
 
         separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line2, 51, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 52, 0, 1, 3)

@@ -448,7 +448,7 @@ class App(QtCore.QObject):
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
             self.listen_th = QtCore.QThread()
-            self.listen_th.start(priority=QtCore.QThread.LowestPriority)
+            self.listen_th.start(priority=QtCore.QThread.Priority.LowestPriority)
 
             self.new_launch = ArgsThread()
             self.new_launch.open_signal[list].connect(self.on_startup_args)
@@ -885,18 +885,19 @@ class App(QtCore.QObject):
 
         if show_splash and self.cmd_line_headless != 1:
             splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
-            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
             # self.splash.setMask(splash_pix.mask())
 
             # move splashscreen to the current monitor
-            desktop = QtWidgets.QApplication.desktop()
-            screen = desktop.screenNumber(QtGui.QCursor.pos())
-            current_screen_center = desktop.availableGeometry(screen).center()
+            # desktop = QtWidgets.QApplication.desktop()
+            # screen = desktop.screenNumber(QtGui.QCursor.pos())
+            screen = QtWidgets.QWidget.screen(self.splash)
+            current_screen_center = screen.availableGeometry().center()
             self.splash.move(current_screen_center - self.splash.rect().center())
 
             self.splash.show()
             self.splash.showMessage(_("The application is initializing ..."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         else:
             self.splash = None
@@ -1002,17 +1003,17 @@ class App(QtCore.QObject):
         # add ToolTips for the Preprocessor ComboBoxes in Preferences
         for it in range(self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.count()):
             self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+                it, self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
 
         for it in range(self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.count()):
             self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.setItemData(
                 it, self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+                QtCore.Qt.ItemDataRole.ToolTipRole)
 
         for it in range(self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.count()):
             self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.setItemData(
                 it, self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+                QtCore.Qt.ItemDataRole.ToolTipRole)
 
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
@@ -1123,7 +1124,7 @@ class App(QtCore.QObject):
         if show_splash:
             self.splash.showMessage(_("The application is initializing ...\n"
                                       "Canvas initialization started."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()  # debug
 
@@ -1163,7 +1164,7 @@ class App(QtCore.QObject):
             self.splash.showMessage('%s: %ssec' % (_("The application is initializing ...\n"
                                                      "Canvas initialization started.\n"
                                                      "Canvas initialization finished in"), '%.2f' % self.used_time),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
@@ -1276,7 +1277,7 @@ class App(QtCore.QObject):
 
             # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check, 'params': []})
-            # self.thr2.start(QtCore.QThread.LowPriority)
+            # self.thr2.start(QtCore.QThread.Priority.LowPriority)
 
         # ###########################################################################################################
         # ##################################### Register files with FlatCAM;  #######################################
@@ -1400,7 +1401,7 @@ class App(QtCore.QObject):
         # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
         # signal to be called when the app is quiting
-        self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
+        self.app_quit.connect(self.quit_application, type=Qt.ConnectionType.QueuedConnection)
         self.message.connect(lambda: message_dialog(parent=self.ui))
         # self.progress.connect(self.set_progress_bar)
 
@@ -1870,7 +1871,8 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menu_plugins,
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'),
+                                  pos=self.ui.menu_plugins,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
 
@@ -3254,7 +3256,7 @@ class App(QtCore.QObject):
                 self.splash_tab_layout.addWidget(title, stretch=1)
 
                 pal = QtGui.QPalette()
-                pal.setColor(QtGui.QPalette.Background, Qt.white)
+                pal.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.white)
 
                 programmers = [
                     {
@@ -3424,7 +3426,7 @@ class App(QtCore.QObject):
                 prog_scroll = QtWidgets.QScrollArea()
                 prog_scroll.setWidget(prog_widget)
                 prog_scroll.setWidgetResizable(True)
-                prog_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                prog_scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 prog_scroll.setPalette(pal)
 
                 self.programmmers_tab_layout.addWidget(prog_scroll)
@@ -3524,7 +3526,7 @@ class App(QtCore.QObject):
                 trans_scroll = QtWidgets.QScrollArea()
                 trans_scroll.setWidget(trans_widget)
                 trans_scroll.setWidgetResizable(True)
-                trans_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                trans_scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 trans_scroll.setPalette(pal)
                 self.translators_tab_layout.addWidget(trans_scroll)
 
@@ -3652,7 +3654,7 @@ class App(QtCore.QObject):
 
                 # palette
                 pal = QtGui.QPalette()
-                pal.setColor(QtGui.QPalette.Background, Qt.white)
+                pal.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.white)
 
                 # layouts
                 main_layout = QtWidgets.QVBoxLayout()
@@ -3687,7 +3689,7 @@ class App(QtCore.QObject):
                 intro_scroll_area = QtWidgets.QScrollArea()
                 intro_scroll_area.setWidget(intro_wdg)
                 intro_scroll_area.setWidgetResizable(True)
-                intro_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                intro_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 intro_scroll_area.setPalette(pal)
 
                 self.grid_lay.addWidget(logo, 0, 0)
@@ -3707,10 +3709,11 @@ class App(QtCore.QObject):
                 links_scroll_area = QtWidgets.QScrollArea()
                 links_scroll_area.setWidget(links_wdg)
                 links_scroll_area.setWidgetResizable(True)
-                links_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                links_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 links_scroll_area.setPalette(pal)
 
-                self.links_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.links_lay.addWidget(
+                    QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.links_tab_layout.addWidget(links_scroll_area)
 
                 # HOW TO section
@@ -3726,10 +3729,11 @@ class App(QtCore.QObject):
                 howto_scroll_area = QtWidgets.QScrollArea()
                 howto_scroll_area.setWidget(howto_wdg)
                 howto_scroll_area.setWidgetResizable(True)
-                howto_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                howto_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 howto_scroll_area.setPalette(pal)
 
-                self.howto_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.howto_lay.addWidget(
+                    QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.howto_tab_layout.addWidget(howto_scroll_area)
 
                 # BUTTONS section
@@ -3786,7 +3790,7 @@ class App(QtCore.QObject):
                 title = bookmark[0]
                 weblink = bookmark[1]
 
-                act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
+                act = QtGui.QAction(parent=self.ui.menuhelp_bookmarks)
                 act.setText(title)
 
                 act.setIcon(QtGui.QIcon(self.resource_location + '/link16.png'))
@@ -7017,7 +7021,7 @@ class App(QtCore.QObject):
 
     def set_grid(self):
         menu_action = self.sender()
-        assert isinstance(menu_action, QtWidgets.QAction), "Expected QAction got %s" % type(menu_action)
+        assert isinstance(menu_action, QtGui.QAction), "Expected QAction got %s" % type(menu_action)
 
         self.ui.grid_gap_x_entry.setText(menu_action.text())
         self.ui.grid_gap_y_entry.setText(menu_action.text())
@@ -7308,7 +7312,7 @@ class App(QtCore.QObject):
         if event.button == 1:  # left click
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-            if modifiers == QtCore.Qt.ShiftModifier:
+            if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 # do not auto open the Project Tab
                 self.click_noproject = True
 
@@ -7354,9 +7358,9 @@ class App(QtCore.QObject):
                         return
                 else:
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if key_modifier == QtCore.Qt.ShiftModifier:
+                    if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
                         mod_key = 'Shift'
-                    elif key_modifier == QtCore.Qt.ControlModifier:
+                    elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
                         mod_key = 'Control'
                     else:
                         mod_key = None
@@ -7983,7 +7987,7 @@ class App(QtCore.QObject):
         if dia_box.ok:
             # make sure to move first the cursor at the end so after finding the line the line will be positioned
             # at the top of the window
-            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.End)
+            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.MoveOperation.End)
             # get the document() of the AppTextEditor
             doc = self.ui.plot_tab_area.currentWidget().code_editor.document()
             # create a Text Cursor based on the searched line
@@ -8164,7 +8168,7 @@ class App(QtCore.QObject):
 
             if recent['kind'] == 'project':
                 try:
-                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+                    action = QtGui.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
                     # Attach callback
                     o = make_callback(openers[recent["kind"]], recent['filename'])
@@ -8176,7 +8180,7 @@ class App(QtCore.QObject):
                     self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action_proj = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+        clear_action_proj = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
                                               (_("Clear Recent projects")), self)
         clear_action_proj.triggered.connect(reset_recent_projects)
         self.ui.recent_projects.addSeparator()
@@ -8188,7 +8192,7 @@ class App(QtCore.QObject):
 
             if recent['kind'] != 'project':
                 try:
-                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+                    action = QtGui.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
                     # Attach callback
                     o = make_callback(openers[recent["kind"]], recent['filename'])
@@ -8200,7 +8204,7 @@ class App(QtCore.QObject):
                     self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+        clear_action = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
                                          (_("Clear Recent files")), self)
         clear_action.triggered.connect(reset_recent_files)
         self.ui.recent.addSeparator()
@@ -8228,7 +8232,7 @@ class App(QtCore.QObject):
 
         # sel_title = QtWidgets.QTextEdit()
         # sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        # sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # sel_title.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         #
         # f_settings = QSettings("Open Source", "FlatCAM")
         # if f_settings.contains("notebook_font_size"):
@@ -8241,12 +8245,12 @@ class App(QtCore.QObject):
         # selected_text = ''
         #
         # sel_title.setText(selected_text)
-        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
         # Tree Widget
         d_properties_tw = FCTree(columns=2)
         d_properties_tw.setObjectName("default_properties")
-        d_properties_tw.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        d_properties_tw.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         d_properties_tw.setStyleSheet("QTreeWidget {border: 0px;}")
 
         root = d_properties_tw.invisibleRootItem()
@@ -8396,7 +8400,7 @@ class App(QtCore.QObject):
             plot_container = self.ui.right_layout
 
         modifier = QtWidgets.QApplication.queryKeyboardModifiers()
-        if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
+        if self.is_legacy is True or modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             self.is_legacy = True
             self.defaults["global_graphic_engine"] = "2D"
             plotcanvas = PlotCanvasLegacy(self)
@@ -9057,7 +9061,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Gerber file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9096,7 +9100,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Excellon file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9140,7 +9144,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening G-Code file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9206,7 +9210,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening HPGL2 file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9960,7 +9964,7 @@ class MenuFileHandlers(QtCore.QObject):
                                            "Canvas initialization finished in"), '%.2f' % self.app.used_time,
                                          _("Executing ScriptObject file.")
                                          ),
-                                        alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                        alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                         color=QtGui.QColor("gray"))
         else:
             _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
@@ -11253,7 +11257,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Config file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         # # add the tab if it was closed
         # self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
@@ -11318,7 +11322,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Project file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         # Open and parse an uncompressed Project file

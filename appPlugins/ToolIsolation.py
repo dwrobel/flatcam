@@ -5,7 +5,7 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
@@ -579,14 +579,14 @@ class ToolIsolation(AppTool, Gerber):
 
             # Tool name/id
             id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-            id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            id_.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             row_no = tool_id - 1
             self.ui.tools_table.setItem(row_no, 0, id_)
 
             # Diameter
             truncated_dia = self.app.dec_format(tooluid_value['tooldia'], self.decimals)
             dia = QtWidgets.QTableWidgetItem(str(truncated_dia))
-            dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(row_no, 1, dia)
 
             # Tool Type
@@ -604,7 +604,7 @@ class ToolIsolation(AppTool, Gerber):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -2731,16 +2731,16 @@ class ToolIsolation(AppTool, Gerber):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -2748,7 +2748,7 @@ class ToolIsolation(AppTool, Gerber):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
 
             if self.area_sel_disconnect_flag is True:
                 if self.app.is_legacy is False:
@@ -3217,8 +3217,8 @@ class IsoUI:
         self.tools_box.addWidget(self.object_combo)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.tools_box.addWidget(separator_line)
 
         # ### Tools ## ##
@@ -3280,8 +3280,8 @@ class IsoUI:
         grid1.addWidget(self.order_radio, 1, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         # #############################################################
@@ -3363,14 +3363,14 @@ class IsoUI:
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
         self.add_tool_separator_line = QtWidgets.QFrame()
-        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
@@ -3452,8 +3452,8 @@ class IsoUI:
         self.grid3.addWidget(self.iso_type_radio, 17, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 18, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
@@ -3465,8 +3465,8 @@ class IsoUI:
         self.grid3.addWidget(self.apply_param_to_all, 22, 0, 1, 2)
 
         self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.all_param_separator_line2, 23, 0, 1, 2)
 
         # General Parameters
@@ -3645,8 +3645,8 @@ class IsoUI:
         self.area_shape_radio.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 44, 0, 1, 2)
 
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))

@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable, FCLabel, VerticalScrollArea
@@ -170,11 +170,11 @@ class PcbWizard(AppTool):
         tool_row = 0
         for tool in sorted_tools:
             tool_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool))
-            tool_id_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(tool_row, 0, tool_id_item)  # Tool name/id
 
             tool_dia_item = QtWidgets.QTableWidgetItem(str(self.tools_from_inf[tool]))
-            tool_dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(tool_row, 1, tool_dia_item)
             tool_row += 1
 

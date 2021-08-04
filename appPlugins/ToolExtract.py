@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, VerticalScrollArea
@@ -277,11 +277,11 @@ class ToolExtract(AppTool):
 
             # Aperture CODE
             ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
-            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture TYPE
             ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture SIZE
             try:
@@ -292,15 +292,15 @@ class ToolExtract(AppTool):
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
                 ap_size_item = QtWidgets.QTableWidgetItem('')
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture MARK Item
             mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            mark_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             # Empty PLOT ITEM
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.apertures_table.setItem(row, 0, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(row, 1, ap_type_item)  # Aperture Type
@@ -1020,13 +1020,13 @@ class ExtractUI:
         self.apertures_table.horizontalHeaderItem(3).setToolTip(
             _("Mark the aperture instances on canvas."))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Grid Layout
@@ -1065,8 +1065,8 @@ class ExtractUI:
         # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 5, 0, 1, 2)
 
         self.ring_frame = QtWidgets.QFrame()
@@ -1199,8 +1199,8 @@ class ExtractUI:
         grid3.addWidget(self.factor_entry, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 10, 0, 1, 2)
 
         # Extract drills from Gerber apertures flashes (pads)
@@ -1218,8 +1218,8 @@ class ExtractUI:
         grid3.addWidget(self.e_drills_button, 12, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 14, 0, 1, 2)
 
         # grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
@@ -1245,8 +1245,8 @@ class ExtractUI:
         grid3.addWidget(self.clearance_entry, 20, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 22, 0, 1, 2)
 
         # Extract solderemask from Gerber apertures flashes (pads)
@@ -1264,8 +1264,8 @@ class ExtractUI:
         grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 25, 0, 1, 2)
 
         # EXTRACT CUTOUT
@@ -1303,8 +1303,8 @@ class ExtractUI:
         grid3.addWidget(self.thick_cut_entry, 30, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 32, 0, 1, 2)
 
         # Extract cutout from Gerber apertures flashes (pads)

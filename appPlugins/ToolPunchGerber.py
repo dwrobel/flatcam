@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable, FCButton, FCLabel, \
@@ -314,11 +314,11 @@ class ToolPunchGerber(AppTool, Gerber):
 
             # Aperture CODE
             ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
-            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture TYPE
             ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture SIZE
             try:
@@ -329,15 +329,15 @@ class ToolPunchGerber(AppTool, Gerber):
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
                 ap_size_item = QtWidgets.QTableWidgetItem('')
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture MARK Item
             mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            mark_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             # Empty PLOT ITEM
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.apertures_table.setItem(row, 0, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(row, 1, ap_type_item)  # Aperture Type
@@ -1785,16 +1785,16 @@ class ToolPunchGerber(AppTool, Gerber):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -1802,7 +1802,7 @@ class ToolPunchGerber(AppTool, Gerber):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.area_sel_disconnect_flag is True:
                 try:
                     if self.app.is_legacy is False:
@@ -2010,8 +2010,8 @@ class PunchUI:
         grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
@@ -2099,13 +2099,13 @@ class PunchUI:
         self.apertures_table.horizontalHeaderItem(3).setToolTip(
             _("Mark the aperture instances on canvas."))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 10, 0, 1, 2)
 
         # Grid Layout
@@ -2135,8 +2135,8 @@ class PunchUI:
         grid0.addWidget(self.method_punch, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         self.exc_label = FCLabel('<b>%s</b>' % _("Excellon"))
@@ -2282,8 +2282,8 @@ class PunchUI:
         grid0.addWidget(self.factor_entry, 14, 1)
 
         separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line3, 16, 0, 1, 2)
 
         # Proportional value
@@ -2324,8 +2324,8 @@ class PunchUI:
         grid0.addLayout(sel_hlay, 22, 0, 1, 2)
 
         self.separator_line3 = QtWidgets.QFrame()
-        self.separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.separator_line3, 24, 0, 1, 2)
 
         # Buttons

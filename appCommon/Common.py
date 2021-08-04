@@ -10,7 +10,7 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 11/4/2019                                          #
 # ##########################################################
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from shapely.geometry import Polygon, Point, LineString
 from shapely.ops import unary_union

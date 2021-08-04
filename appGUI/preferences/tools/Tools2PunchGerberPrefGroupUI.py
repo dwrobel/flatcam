@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -82,8 +82,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 8, 0, 1, 2)
 
         # ## Axis
@@ -110,8 +110,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 10, 0, 1, 2)
 
         # Annular Ring

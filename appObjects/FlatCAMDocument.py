@@ -109,11 +109,14 @@ class DocumentObject(FlatCAMObj):
         self.ui.sel_color_entry.editingFinished.connect(self.on_selection_color_entry)
         self.ui.sel_color_button.clicked.connect(self.on_selection_color_button)
 
-        self.ui.al_left_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignLeft))
-        self.ui.al_center_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignCenter))
-        self.ui.al_right_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignRight))
+        self.ui.al_left_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignLeft))
+        self.ui.al_center_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignCenter))
+        self.ui.al_right_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignRight))
         self.ui.al_justify_tb.clicked.connect(
-            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignJustify)
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignJustify)
         )
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
@@ -300,8 +303,8 @@ class DocumentObject(FlatCAMObj):
             return
 
         p = QtGui.QPalette()
-        p.setColor(QtGui.QPalette.Highlight, sel_color)
-        p.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('white'))
+        p.setColor(QtGui.QPalette.ColorRole.Highlight, sel_color)
+        p.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor('white'))
 
         self.document_editor_tab.code_editor.setPalette(p)
 

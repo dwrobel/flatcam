@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 4.08.2021
 
 - toggling the plot is now deleting the selection shape, if any
+- porting to PyQt6
 
 23.07.2021
 

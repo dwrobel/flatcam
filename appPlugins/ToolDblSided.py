@@ -1,5 +1,5 @@
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel, \
@@ -677,7 +677,7 @@ class DsidedUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -717,8 +717,8 @@ class DsidedUI:
         grid_lay.addWidget(self.object_combo, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # #############################################################################################################
@@ -823,8 +823,8 @@ class DsidedUI:
         grid0.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
 
         self.bounds_separator_line = QtWidgets.QFrame()
-        self.bounds_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.bounds_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.bounds_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.bounds_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.bounds_separator_line, 14, 0, 1, 2)
 
         # #############################################################################################################
@@ -977,8 +977,8 @@ class DsidedUI:
         grid1.addWidget(self.mirror_button, 16, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 18, 0, 1, 3)
 
         # #############################################################################################################

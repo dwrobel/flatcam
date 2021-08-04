@@ -11,10 +11,10 @@
 # Date: 3/10/2019                                          #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
-from PyQt5.QtGui import QKeySequence, QTextCursor
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt6.QtWidgets import QTextEdit, QCompleter
+from PyQt6.QtGui import QKeySequence, QTextCursor, QAction
 
 from copy import copy
 import re
@@ -173,11 +173,11 @@ class FCTree(QtWidgets.QTreeWidget):
         self.setColumnCount(columns)
         self.setHeaderHidden(header_hidden)
         self.tree_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Expanding)
 
         palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
-                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+        palette.setColor(QtGui.QPalette.ColorGroup.Inactive, QtGui.QPalette.ColorRole.Highlight,
+                         palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.Highlight))
 
         # make inactive rows text some color as active; may be useful in the future
         # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
@@ -199,9 +199,9 @@ class FCTree(QtWidgets.QTreeWidget):
         # from here: https://stackoverflow.com/questions/2801959/making-only-one-column-of-a-qtreewidgetitem-editable
         tmp_flags = item.flags()
         if self.is_editable(column):
-            item.setFlags(tmp_flags | QtCore.Qt.ItemIsEditable)
-        elif tmp_flags & QtCore.Qt.ItemIsEditable:
-            item.setFlags(tmp_flags ^ QtCore.Qt.ItemIsEditable)
+            item.setFlags(tmp_flags | QtCore.Qt.ItemFlag.ItemIsEditable)
+        elif tmp_flags & QtCore.Qt.ItemFlag.ItemIsEditable:
+            item.setFlags(tmp_flags ^ QtCore.Qt.ItemFlag.ItemIsEditable)
 
     def on_header_double_click(self, column):
         self.tree_header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
@@ -218,7 +218,7 @@ class FCTree(QtWidgets.QTreeWidget):
 
     def addParent(self, parent, title, expanded=False, color=None, font=None):
         item = QtWidgets.QTreeWidgetItem(parent, [title])
-        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.ShowIndicator)
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.ChildIndicatorPolicy.ShowIndicator)
         item.setExpanded(expanded)
         if color is not None:
             # item.setTextColor(0, color) # PyQt4
@@ -229,11 +229,11 @@ class FCTree(QtWidgets.QTreeWidget):
 
     def addParentEditable(self, parent, title, color=None, font=None, font_items=None, editable=False):
         item = QtWidgets.QTreeWidgetItem(parent)
-        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.DontShowIndicator)
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.ChildIndicatorPolicy.DontShowIndicator)
         if editable:
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            item.setFlags(item.flags() | QtCore.Qt.ItemFlag.ItemIsEditable)
 
-        item.setFlags(item.flags() | QtCore.Qt.ItemIsSelectable)
+        item.setFlags(item.flags() | QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         for t in range(len(title)):
             item.setText(t, title[t])
@@ -255,7 +255,7 @@ class FCTree(QtWidgets.QTreeWidget):
     def addChild(self, parent, title, column1=None, font=None, font_items=None, editable=False):
         item = QtWidgets.QTreeWidgetItem(parent)
         if editable:
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            item.setFlags(item.flags() | QtCore.Qt.ItemFlag.ItemIsEditable)
 
         item.setText(0, str(title[0]))
         if column1 is not None:
@@ -402,7 +402,7 @@ class LengthEntry(FCLineEdit):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -460,7 +460,7 @@ class FloatEntry(FCLineEdit):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -513,7 +513,7 @@ class FloatEntry2(FCLineEdit):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(FloatEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -558,7 +558,7 @@ class IntEntry(FCLineEdit):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -599,11 +599,11 @@ class FCEntry(FCLineEdit):
 
         if alignment:
             if alignment == 'center':
-                align_val = QtCore.Qt.AlignHCenter
+                align_val = QtCore.Qt.AlignmentFlag.AlignHCenter
             elif alignment == 'right':
-                align_val = QtCore.Qt.AlignRight
+                align_val = QtCore.Qt.AlignmentFlag.AlignRight
             else:
-                align_val = QtCore.Qt.AlignLeft
+                align_val = QtCore.Qt.AlignmentFlag.AlignLeft
             self.setAlignment(align_val)
 
     def on_edit_finished(self):
@@ -616,7 +616,7 @@ class FCEntry(FCLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -691,7 +691,7 @@ class EvalEntry(FCLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(EvalEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -737,7 +737,7 @@ class EvalEntry2(FCLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(EvalEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.deselect()
             self.readyToEdit = True
@@ -769,8 +769,8 @@ class NumericalEvalEntry(FCEntry):
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\,\s]*")
-        validator = QtGui.QRegExpValidator(regex, self)
+        regex = QtCore.QRegularExpression("[0-9\/\*\+\-\%\.\,\s]*")
+        validator = QtGui.QRegularExpressionValidator(regex, self)
         self.setValidator(validator)
 
     def get_value(self):
@@ -793,8 +793,8 @@ class NumericalEvalTupleEntry(EvalEntry):
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
-        validator = QtGui.QRegExpValidator(regex, self)
+        regex = QtCore.QRegularExpression("[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
+        validator = QtGui.QRegularExpressionValidator(regex, self)
         self.setValidator(validator)
 
     def get_value(self):
@@ -814,8 +814,8 @@ class FCColorEntry(QtWidgets.QFrame):
         super().__init__(**kwargs)
 
         self.entry = FCEntry()
-        regex = QtCore.QRegExp("[#A-Fa-f0-9]*")
-        validator = QtGui.QRegExpValidator(regex, self.entry)
+        regex = QtCore.QRegularExpression("[#A-Fa-f0-9]*")
+        validator = QtGui.QRegularExpressionValidator(regex, self.entry)
         self.entry.setValidator(validator)
 
         self.button = QtWidgets.QPushButton()
@@ -823,7 +823,7 @@ class FCColorEntry(QtWidgets.QFrame):
         self.button.setStyleSheet("border-color: dimgray;")
 
         self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.entry)
         self.layout.addWidget(self.button)
@@ -871,7 +871,7 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
     def __init__(self, min=0, max=100, step=1, **kwargs):
         super().__init__(**kwargs)
 
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.slider.setMinimum(min)
         self.slider.setMaximum(max)
         self.slider.setSingleStep(step)
@@ -881,11 +881,11 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         self.spinner.set_step(step)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.slider)
         self.layout.addWidget(self.spinner)
@@ -930,22 +930,22 @@ class FCSpinner(QtWidgets.QSpinBox):
 
         if alignment:
             if alignment == 'center':
-                align_val = QtCore.Qt.AlignHCenter
+                align_val = QtCore.Qt.AlignmentFlag.AlignHCenter
             elif alignment == 'right':
-                align_val = QtCore.Qt.AlignRight
+                align_val = QtCore.Qt.AlignmentFlag.AlignRight
             else:
-                align_val = QtCore.Qt.AlignLeft
+                align_val = QtCore.Qt.AlignmentFlag.AlignLeft
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
         self.menu = None
 
         if policy:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+        if event.type() == QtCore.QEvent.Type.MouseButtonPress and self.prev_readyToEdit is True:
             self.prev_readyToEdit = False
             if self.isEnabled():
                 if self.readyToEdit:
@@ -957,7 +957,7 @@ class FCSpinner(QtWidgets.QSpinBox):
         return False
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Enter:
+        if event.key() == Qt.Key.Key_Enter:
             self.returnPressed.emit()
             self.clearFocus()
         else:
@@ -980,7 +980,7 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
@@ -1116,12 +1116,12 @@ class FCSpinner(QtWidgets.QSpinBox):
         try:
             if int(text) < min_val or int(text) > max_val:
                 self.confirmation_signal.emit(False, min_val, max_val)
-                return QtGui.QValidator.Intermediate, text, p_int
+                return QtGui.QValidator.State.Intermediate, text, p_int
         except ValueError:
             pass
 
         self.confirmation_signal.emit(True, min_val, max_val)
-        return QtGui.QValidator.Acceptable, p_str, p_int
+        return QtGui.QValidator.State.Acceptable, p_str, p_int
 
     def set_range(self, min_val, max_val):
         self.blockSignals(True)
@@ -1146,9 +1146,9 @@ class FCDoubleSlider(QtWidgets.QSlider):
 
     def __init__(self, decimals=3, orientation='horizontal', *args, **kargs):
         if orientation == 'horizontal':
-            super(FCDoubleSlider, self).__init__(QtCore.Qt.Horizontal, *args, **kargs)
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Horizontal, *args, **kargs)
         else:
-            super(FCDoubleSlider, self).__init__(QtCore.Qt.Vertical, *args, **kargs)
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Orientation.Vertical, *args, **kargs)
 
         self._multi = 10 ** decimals
 
@@ -1206,11 +1206,11 @@ class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_step(step)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.slider)
         self.layout.addWidget(self.spinner)
@@ -1271,11 +1271,11 @@ class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_precision(decimals)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
-        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.spinner)
         self.layout.addWidget(self.button)
@@ -1327,25 +1327,25 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
         # between 0.00 and 99.00 (2 decimals)
         self.lineEdit().setValidator(
-            QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+            QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
 
         if alignment:
             if alignment == 'center':
-                align_val = QtCore.Qt.AlignHCenter
+                align_val = QtCore.Qt.AlignmentFlag.AlignHCenter
             elif alignment == 'right':
-                align_val = QtCore.Qt.AlignRight
+                align_val = QtCore.Qt.AlignmentFlag.AlignRight
             else:
-                align_val = QtCore.Qt.AlignLeft
+                align_val = QtCore.Qt.AlignmentFlag.AlignLeft
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
         self.menu = None
 
         if policy:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
     def on_edit_finished(self):
@@ -1353,7 +1353,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.returnPressed.emit()
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+        if event.type() == QtCore.QEvent.Type.MouseButtonPress and self.prev_readyToEdit is True:
             self.prev_readyToEdit = False
             if self.isEnabled():
                 if self.readyToEdit:
@@ -1366,7 +1366,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         return False
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Enter:
+        if event.key() == Qt.Key.Key_Enter:
             self.returnPressed.emit()
             self.clearFocus()
         else:
@@ -1379,7 +1379,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
@@ -1505,12 +1505,12 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         try:
             if float(text) < min_val or float(text) > max_val:
                 self.confirmation_signal.emit(False, min_val, max_val)
-                return QtGui.QValidator.Intermediate, text, p_int
+                return QtGui.QValidator.State.Intermediate, text, p_int
         except ValueError:
             pass
 
         self.confirmation_signal.emit(True, min_val, max_val)
-        return QtGui.QValidator.Acceptable, p_str, p_int
+        return QtGui.QValidator.State.Acceptable, p_str, p_int
 
     def get_value(self):
         return float(self.value())
@@ -1529,15 +1529,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # make sure that the user can't type more decimals than the set precision
         if self.minimum() < 0 or self.maximum() <= 0:
             self.lineEdit().setValidator(
-                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
         else:
             self.lineEdit().setValidator(
-                QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
     def set_range(self, min_val, max_val):
         if min_val < 0 or max_val <= 0:
             self.lineEdit().setValidator(
-                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
 
@@ -1726,7 +1726,7 @@ class FCTextAreaExtended(FCTextEdit):
 
     def insert_completion_click(self):
         self.completer.insertText.emit(self.completer.getSelected())
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -1738,8 +1738,8 @@ class FCTextAreaExtended(FCTextEdit):
             self.completer.popup().hide()
             return
 
-        tc.movePosition(QTextCursor.Left)
-        tc.movePosition(QTextCursor.EndOfWord)
+        tc.movePosition(QTextCursor.MoveOperation.Left)
+        tc.movePosition(QTextCursor.MoveOperation.EndOfWord)
         tc.insertText(completion[-extra:])
         # add a space after inserting the word
         tc.insertText(' ')
@@ -1765,7 +1765,7 @@ class FCTextAreaExtended(FCTextEdit):
         :return:
         """
         modifier = QtWidgets.QApplication.keyboardModifiers()
-        if modifier == Qt.ShiftModifier:
+        if modifier == Qt.KeyboardModifier.ShiftModifier:
             text = data.text()
             text = text.replace('\\', '/')
             self.insertPlainText(text)
@@ -1781,51 +1781,51 @@ class FCTextAreaExtended(FCTextEdit):
         key = event.key()
         modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
-            if key == QtCore.Qt.Key_V:
+        if modifier & Qt.KeyboardModifier.ControlModifier and modifier & Qt.KeyboardModifier.ShiftModifier:
+            if key == QtCore.Qt.Key.Key_V:
                 clipboard = QtWidgets.QApplication.clipboard()
                 clip_text = clipboard.text()
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
-        elif modifier & Qt.ControlModifier:
-            if key == Qt.Key_Slash:
+        elif modifier & Qt.KeyboardModifier.ControlModifier:
+            if key == Qt.Key.Key_Slash:
                 self.comment()
 
         tc = self.textCursor()
-        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
-        elif key == Qt.Key_BraceLeft:
+        elif key == Qt.Key.Key_BraceLeft:
             tc.insertText('{}')
-            self.moveCursor(QtGui.QTextCursor.Left)
-        elif key == Qt.Key_BracketLeft:
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
+        elif key == Qt.Key.Key_BracketLeft:
             tc.insertText('[]')
-            self.moveCursor(QtGui.QTextCursor.Left)
-        elif key == Qt.Key_ParenLeft:
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
+        elif key == Qt.Key.Key_ParenLeft:
             tc.insertText('()')
-            self.moveCursor(QtGui.QTextCursor.Left)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
 
-        elif key == Qt.Key_BraceRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == '}':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
                 self.textCursor().insertText('}')
-        elif key == Qt.Key_BracketRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.SelectionTypeWordUnderCursor)
             if tc.selectedText() == ']':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
                 self.textCursor().insertText(']')
-        elif key == Qt.Key_ParenRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.SelectionTypeWordUnderCursor)
             if tc.selectedText() == ')':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
@@ -1834,7 +1834,7 @@ class FCTextAreaExtended(FCTextEdit):
             super(FCTextAreaExtended, self).keyPressEvent(event)
 
         if self.completer_enable:
-            tc.select(QTextCursor.WordUnderCursor)
+            tc.select(QTextCursor.SelectionTypeWordUnderCursor)
             cr = self.cursorRect()
 
             if len(tc.selectedText()) > 0:
@@ -1855,21 +1855,21 @@ class FCTextAreaExtended(FCTextEdit):
         :return:
         """
         pos = self.textCursor().position()
-        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        self.moveCursor(QtGui.QTextCursor.MoveOperation.StartOfLine)
         line_text = self.textCursor().block().text()
         if self.textCursor().block().text().startswith(" "):
             # skip the white space
-            self.moveCursor(QtGui.QTextCursor.NextWord)
-        self.moveCursor(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.NextWord)
+        self.moveCursor(QtGui.QTextCursor.MoveOperation.NextCharacter, QtGui.QTextCursor.MoveMode.KeepAnchor)
         character = self.textCursor().selectedText()
         if character == "#":
             # delete #
             self.textCursor().deletePreviousChar()
             # delete white space 
-            self.moveCursor(QtGui.QTextCursor.NextWord, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.NextWord, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.textCursor().removeSelectedText()
         else:
-            self.moveCursor(QtGui.QTextCursor.PreviousCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.PreviousCharacter, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.textCursor().insertText("# ")
         cursor = QtGui.QTextCursor(self.textCursor())
         cursor.setPosition(pos)
@@ -1957,7 +1957,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
     def insert_completion_click(self):
         self.completer.insertText.emit(self.completer.getSelected())
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -1969,8 +1969,8 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
             self.completer.popup().hide()
             return
 
-        tc.movePosition(QTextCursor.Left)
-        tc.movePosition(QTextCursor.EndOfWord)
+        tc.movePosition(QTextCursor.MoveOperation.Left)
+        tc.movePosition(QTextCursor.MoveOperation.EndOfWord)
         tc.insertText(completion[-extra:])
         # add a space after inserting the word
         tc.insertText(' ')
@@ -2073,7 +2073,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         :return:
         """
         modifier = QtWidgets.QApplication.keyboardModifiers()
-        if modifier == Qt.ShiftModifier:
+        if modifier == Qt.KeyboardModifier.ShiftModifier:
             text = data.text()
             text = text.replace('\\', '/')
             self.insertPlainText(text)
@@ -2089,51 +2089,51 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         key = event.key()
         modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
-            if key == QtCore.Qt.Key_V:
+        if modifier & Qt.KeyboardModifier.ControlModifier and modifier & Qt.KeyboardModifier.ShiftModifier:
+            if key == QtCore.Qt.Key.Key_V:
                 clipboard = QtWidgets.QApplication.clipboard()
                 clip_text = clipboard.text()
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
 
-        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
+        if modifier & Qt.KeyboardModifier.ControlModifier and key == Qt.Key.Key_Slash:
             self.comment()
 
         tc = self.textCursor()
-        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
-        elif key == Qt.Key_BraceLeft:
+        elif key == Qt.Key.Key_BraceLeft:
             tc.insertText('{}')
-            self.moveCursor(QtGui.QTextCursor.Left)
-        elif key == Qt.Key_BracketLeft:
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
+        elif key == Qt.Key.Key_BracketLeft:
             tc.insertText('[]')
-            self.moveCursor(QtGui.QTextCursor.Left)
-        elif key == Qt.Key_ParenLeft:
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
+        elif key == Qt.Key.Key_ParenLeft:
             tc.insertText('()')
-            self.moveCursor(QtGui.QTextCursor.Left)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.Left)
 
-        elif key == Qt.Key_BraceRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == '}':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
                 self.textCursor().insertText('}')
-        elif key == Qt.Key_BracketRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == ']':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
                 self.textCursor().insertText(']')
-        elif key == Qt.Key_ParenRight:
-            tc.select(QtGui.QTextCursor.WordUnderCursor)
+        elif key == Qt.Key.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == ')':
-                tc.movePosition(QTextCursor.Right)
+                tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
             else:
                 tc.clearSelection()
@@ -2142,7 +2142,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
             super(FCPlainTextAreaExtended, self).keyPressEvent(event)
 
         if self.completer_enable:
-            tc.select(QTextCursor.WordUnderCursor)
+            tc.select(QTextCursor.SelectionType.WordUnderCursor)
             cr = self.cursorRect()
 
             if len(tc.selectedText()) > 0:
@@ -2163,21 +2163,21 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         :return:
         """
         pos = self.textCursor().position()
-        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        self.moveCursor(QtGui.QTextCursor.MoveOperation.StartOfLine)
         self.textCursor().block().text()
         if self.textCursor().block().text().startswith(" "):
             # skip the white space
-            self.moveCursor(QtGui.QTextCursor.NextWord)
-        self.moveCursor(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.NextWord)
+        self.moveCursor(QtGui.QTextCursor.MoveOperation.NextCharacter, QtGui.QTextCursor.MoveMode.KeepAnchor)
         character = self.textCursor().selectedText()
         if character == "#":
             # delete #
             self.textCursor().deletePreviousChar()
             # delete white space
-            self.moveCursor(QtGui.QTextCursor.NextWord, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.NextWord, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.textCursor().removeSelectedText()
         else:
-            self.moveCursor(QtGui.QTextCursor.PreviousCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.MoveOperation.PreviousCharacter, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.textCursor().insertText("# ")
         cursor = QtGui.QTextCursor(self.textCursor())
         cursor.setPosition(pos)
@@ -2188,16 +2188,16 @@ class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None, policy=True):
         super(FCComboBox, self).__init__(parent)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.view = self.view()
         self.view.viewport().installEventFilter(self)
-        self.view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 
         self._set_last = False
         self._obj_type = None
 
         if policy is True:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
@@ -2207,8 +2207,8 @@ class FCComboBox(QtWidgets.QComboBox):
             self.view.customContextMenuRequested.connect(lambda pos: callback(pos, self))
 
     def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.MouseButtonRelease:
-            if event.button() == Qt.RightButton:
+        if event.type() == QtCore.QEvent.Type.MouseButtonRelease:
+            if event.button() == Qt.MouseButton.RightButton:
                 return True
         return False
 
@@ -2245,7 +2245,7 @@ class FCComboBox(QtWidgets.QComboBox):
         self._obj_type = val
 
     def on_model_changed(self, parent, first, last):
-        if self.model().data(parent, QtCore.Qt.DisplayRole) == self.obj_type:
+        if self.model().data(parent, QtCore.Qt.ItemDataRole.DisplayRole) == self.obj_type:
             self.setCurrentIndex(first)
 
 
@@ -2409,7 +2409,7 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.wdg.set_step(self.step)
         self.wdg.set_precision(decimals)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         self.wdg.setSizePolicy(sizePolicy)
 
         QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
@@ -2614,13 +2614,13 @@ class FCLabel(QtWidgets.QLabel):
         self.right_clicked_state = False
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self.clicked_state = not self.clicked_state
             self.clicked.emit(self.clicked_state)
-        elif event.button() == Qt.RightButton:
+        elif event.button() == Qt.MouseButton.RightButton:
             self.right_clicked_state = not self.right_clicked_state
             self.right_clicked.emit(True)
-        elif event.button() == Qt.MiddleButton:
+        elif event.button() == Qt.MouseButton.MiddleButton:
             self.middle_clicked_state = not self.middle_clicked_state
             self.middle_clicked.emit(True)
 
@@ -2659,7 +2659,7 @@ class FCTab(QtWidgets.QTabWidget):
         self.removeTab(currentIndex)
 
     def protectTab(self, currentIndex):
-        self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
+        self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
 
 
 # class FCTabBar(QtWidgets.QTabBar):
@@ -2738,11 +2738,11 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         return val
 
     def setupContextMenu(self):
-        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
 
     def addContextMenu(self, entry, call_function, icon=None, initial_checked=False):
         action_name = str(entry)
-        action = QtWidgets.QAction(self)
+        action = QtGui.QAction(self)
         action.setCheckable(True)
         action.setText(action_name)
         if icon:
@@ -2789,7 +2789,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
-        self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
+        self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.ButtonPosition.RightSide, None)
 
     def setMovable(self, movable):
         """
@@ -2845,7 +2845,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         # Create a new detached tab window
         detachedTab = self.FCDetachedTab(name, contentWidget)
-        detachedTab.setWindowModality(QtCore.Qt.NonModal)
+        detachedTab.setWindowModality(QtCore.Qt.WindowModality.NonModal)
         detachedTab.setWindowIcon(icon)
         detachedTab.setGeometry(contentWidgetRect)
         detachedTab.onCloseSignal.connect(self.attachTab)
@@ -3102,7 +3102,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 """
 
                 # If a NonClientAreaMouseMove (173) event immediately follows a Move event...
-                if self.lastEvent == QtCore.QEvent.Move and event.type() == 173:
+                if self.lastEvent == QtCore.QEvent.Type.Move and event.type() == 173:
 
                     # Determine the position of the mouse cursor and emit it with the
                     # onDropSignal
@@ -3127,8 +3127,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             QtWidgets.QTabBar.__init__(self, parent)
 
             self.setAcceptDrops(True)
-            self.setElideMode(QtCore.Qt.ElideRight)
-            self.setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectLeftTab)
+            self.setElideMode(QtCore.Qt.TextElideMode.ElideRight)
+            self.setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectionBehavior.SelectLeftTab)
 
             self.prev_index = -1
 
@@ -3159,9 +3159,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :param event:   a mouse press event
             :return:
             """
-            if event.button() == QtCore.Qt.LeftButton:
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
                 self.dragStartPos = event.pos()
-            elif event.button() == QtCore.Qt.RightButton:
+            elif event.button() == QtCore.Qt.MouseButton.RightButton:
                 self.prev_index = self.tabAt(event.pos())
 
             self.dragDropedPos.setX(0)
@@ -3178,10 +3178,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :param event:   a mouse press event
             :return:
             """
-            if event.button() == QtCore.Qt.RightButton and self.prev_index == self.tabAt(event.pos()):
+            if event.button() == QtCore.Qt.MouseButton.RightButton and self.prev_index == self.tabAt(event.pos()):
                 self.right_click.emit(self.prev_index)
 
-            if event.button() == QtCore.Qt.MiddleButton:
+            if event.button() == QtCore.Qt.MouseButton.MiddleButton:
                 self.onCloseTabSignal.emit(int(self.tabAt(event.pos())))
 
             self.prev_index = -1
@@ -3203,11 +3203,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if (event.buttons() & QtCore.Qt.LeftButton) and self.dragInitiated and self.can_be_dragged:
+            if (event.buttons() & QtCore.Qt.MouseButton.LeftButton) and self.dragInitiated and self.can_be_dragged:
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
-                    QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.NoButton, QtCore.Qt.NoButton, QtCore.Qt.NoModifier
+                    QtCore.QEvent.Type.MouseMove, event.pos(), QtCore.Qt.MouseButton.NoButton,
+                    QtCore.Qt.MouseButton.NoButton, QtCore.Qt.KeyboardModifier.NoModifier
                 )
                 QtWidgets.QTabBar.mouseMoveEvent(self, finishMoveEvent)
 
@@ -3225,7 +3226,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     return
 
                 targetPixmap = QtGui.QPixmap(pixmap.size())
-                targetPixmap.fill(QtCore.Qt.transparent)
+                targetPixmap.fill(QtCore.Qt.GlobalColor.transparent)
                 painter = QtGui.QPainter(targetPixmap)
                 painter.setOpacity(0.85)
                 painter.drawPixmap(0, 0, pixmap)
@@ -3233,21 +3234,21 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 drag.setPixmap(targetPixmap)
 
                 # Initiate the drag
-                dropAction = drag.exec_(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction)
+                dropAction = drag.exec_(QtCore.Qt.DropAction.MoveAction | QtCore.Qt.DropAction.CopyAction)
 
                 # For Linux:  Here, drag.exec_() will not return MoveAction on Linux.  So it
                 #             must be set manually
                 if self.dragDropedPos.x() != 0 and self.dragDropedPos.y() != 0:
-                    dropAction = QtCore.Qt.MoveAction
+                    dropAction = QtCore.Qt.DropAction.MoveAction
 
                 # If the drag completed outside of the tab bar, detach the tab and move
                 # the content to the current cursor position
-                if dropAction == QtCore.Qt.IgnoreAction:
+                if dropAction == QtCore.Qt.DropAction.IgnoreAction:
                     event.accept()
                     self.onDetachTabSignal.emit(self.tabAt(self.dragStartPos), self.mouseCursor.pos())
 
                 # Else if the drag completed inside the tab bar, move the selected tab to the new position
-                elif dropAction == QtCore.Qt.MoveAction:
+                elif dropAction == QtCore.Qt.DropAction.MoveAction:
                     if not self.dragDropedPos.isNull():
                         event.accept()
                         self.onMoveTabSignal.emit(self.tabAt(self.dragStartPos), self.tabAt(self.dragDropedPos))
@@ -3340,7 +3341,7 @@ class FCDetachableTab2(FCDetachableTab):
         """
 
         # if tab is protected don't delete it
-        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.RightSide) is not None:
+        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.ButtonPosition.RightSide) is not None:
             self.closeTab(current_index)
 
     def closeTab(self, currentIndex):
@@ -3368,8 +3369,8 @@ class VerticalScrollArea(QtWidgets.QScrollArea):
     def __init__(self, parent=None):
         QtWidgets.QScrollArea.__init__(self, parent=parent)
         self.setWidgetResizable(True)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
     def eventFilter(self, source, event):
         """
@@ -3380,7 +3381,7 @@ class VerticalScrollArea(QtWidgets.QScrollArea):
         :param event:
         :return:
         """
-        if event.type() == QtCore.QEvent.Resize and source == self.widget():
+        if event.type() == QtCore.QEvent.Type.Resize and source == self.widget():
             # log.debug("VerticalScrollArea: Widget resized:")
             # log.debug(" minimumSizeHint().width() = %d" % self.widget().minimumSizeHint().width())
             # log.debug(" verticalScrollBar().width() = %d" % self.verticalScrollBar().width())
@@ -3487,12 +3488,12 @@ class FCTable(QtWidgets.QTableWidget):
         super(FCTable, self).__init__(parent)
 
         palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
-                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+        palette.setColor(QtGui.QPalette.ColorGroup.Inactive, QtGui.QPalette.ColorRole.Highlight,
+                         palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.Highlight))
 
         # make inactive rows text some color as active; may be useful in the future
-        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
-                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
+        palette.setColor(QtGui.QPalette.ColorGroup.Inactive, QtGui.QPalette.ColorRole.HighlightedText,
+                         palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.HighlightedText))
         self.setPalette(palette)
 
         if drag_drop:
@@ -3553,14 +3554,14 @@ class FCTable(QtWidgets.QTableWidget):
         super().focusOutEvent(event)
 
     def setupContextMenu(self):
-        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
 
     def removeContextMenu(self):
-        self.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
 
     def addContextMenu(self, entry, call_function, icon=None):
         action_name = str(entry)
-        action = QtWidgets.QAction(self)
+        action = QtGui.QAction(self)
         action.setText(action_name)
         if icon:
             assert isinstance(icon, QtGui.QIcon), \
@@ -3633,7 +3634,7 @@ class FCTable(QtWidgets.QTableWidget):
     #         return True
     #     # noinspection PyTypeChecker
     #     return rect.contains(pos, True) and not (
-    #                 int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
+    #                 int(self.model().flags(index)) & Qt.ItemFlag.ItemIsDropEnabled) and pos.y() >= rect.center().y()
 
     def dragEnterEvent(self, e: QtGui.QDragEnterEvent) -> None:
         if e.source() == self:
@@ -3787,7 +3788,7 @@ class FCTable(QtWidgets.QTableWidget):
         elif rect.bottom() - pos.y() < margin:
             return True
         # noinspection PyTypeChecker
-        drop_enabled = int(self.model().flags(index)) & Qt.ItemIsDropEnabled
+        drop_enabled = int(self.model().flags(index)) & Qt.ItemFlag.ItemIsDropEnabled
         return rect.contains(pos, True) and not drop_enabled and pos.y() >= rect.center().y()
 
 
@@ -3812,7 +3813,7 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
 
     def setEditorData(self, spinBox, index):
         try:
-            value = float(index.model().data(index, Qt.EditRole))
+            value = float(index.model().data(index, Qt.ItemDataRole.EditRole))
         except ValueError:
             value = self.current_value
             # return
@@ -3824,7 +3825,7 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
         value = spinBox.value()
         self.current_value = value
 
-        model.setData(index, value, Qt.EditRole)
+        model.setData(index, value, Qt.ItemDataRole.EditRole)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
@@ -3865,7 +3866,7 @@ class Dialog_box(QtWidgets.QWidget):
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
+        if e.reason() != QtCore.Qt.FocusReason.PopupFocusReason:
             super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
@@ -3927,7 +3928,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
         grid0.addWidget(self.lineEdit, 6, 1)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                                                     orientation=Qt.Horizontal, parent=self)
+                                                     orientation=Qt.Orientation.Horizontal, parent=self)
         grid0.addWidget(self.button_box, 8, 0, 1, 2)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
@@ -4005,13 +4006,13 @@ class _BrowserTextEdit(QTextEdit):
         # Save
         if self.app:
             self.save_action = QAction('%s\t%s' % (_("Save Log"), _('Ctrl+S')), self)
-            # save_action.setShortcut(QKeySequence(Qt.Key_S))
+            # save_action.setShortcut(QKeySequence(Qt.Key.Key_S))
             self.menu.addAction(self.save_action)
             self.save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
         # Clear
         self.clear_action = QAction('%s\t%s' % (_("Clear All"), _('Shift+Del')), self)
-        # clear_action.setShortcut(QKeySequence(Qt.Key_Delete))
+        # clear_action.setShortcut(QKeySequence(Qt.Key.Key_Delete))
         self.menu.addAction(self.clear_action)
         self.clear_action.triggered.connect(self.clear)
 
@@ -4059,43 +4060,43 @@ class _BrowserTextEdit(QTextEdit):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         key = event.key()
 
-        if modifiers == QtCore.Qt.ControlModifier:
+        if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
             # Select All
-            if key == QtCore.Qt.Key_A:
+            if key == QtCore.Qt.Key.Key_A:
                 self.selectAll()
             # Copy Text
-            elif key == QtCore.Qt.Key_C:
+            elif key == QtCore.Qt.Key.Key_C:
                 self.copy_text()
             # Find Text
-            elif key == QtCore.Qt.Key_F:
+            elif key == QtCore.Qt.Key.Key_F:
                 self.find_text()
             # Save Log
-            elif key == QtCore.Qt.Key_S:
+            elif key == QtCore.Qt.Key.Key_S:
                 if self.app:
                     self.save_log(app=self.app)
             # Cut Text
-            elif key == QtCore.Qt.Key_X:
+            elif key == QtCore.Qt.Key.Key_X:
                 self.cut_text()
             # Undo Text
-            elif key == QtCore.Qt.Key_Z:
+            elif key == QtCore.Qt.Key.Key_Z:
                 if self.isUndoAvailable:
                     self.undo()
             # Redo Text
-            elif key == QtCore.Qt.Key_Y:
+            elif key == QtCore.Qt.Key.Key_Y:
                 if self.isRedoAvailable:
                     self.redo()
 
-        if modifiers == QtCore.Qt.ShiftModifier:
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
             # Clear all
-            if key == QtCore.Qt.Key_Delete:
+            if key == QtCore.Qt.Key.Key_Delete:
                 self.clear()
 
-        elif modifiers == QtCore.Qt.NoModifier:
+        elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
             # Clear all
-            if key == QtCore.Qt.Key_Delete:
+            if key == QtCore.Qt.Key.Key_Delete:
                 self.delete_text()
             # Shell toggle
-            if key == QtCore.Qt.Key_S:
+            if key == QtCore.Qt.Key.Key_S:
                 self.app.ui.toggle_shell_ui()
 
     def copy_text(self):
@@ -4135,7 +4136,7 @@ class _BrowserTextEdit(QTextEdit):
         text = text.replace('!', '<b>')
         text = text.replace('?', '</b>')
         text += '<br><br>'
-        self.moveCursor(QTextCursor.End)
+        self.moveCursor(QTextCursor.MoveOperation.End)
         self.insertHtml(text)
 
     def save_log(self, app):
@@ -4175,7 +4176,7 @@ class _ExpandableTextEdit(FCTextEdit):
 
     def insert_completion_click(self):
         self.completer.insertText.emit(self.completer.getSelected())
-        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -4187,8 +4188,8 @@ class _ExpandableTextEdit(FCTextEdit):
             self.completer.popup().hide()
             return
 
-        tc.movePosition(QTextCursor.Left)
-        tc.movePosition(QTextCursor.EndOfWord)
+        tc.movePosition(QTextCursor.MoveOperation.Left)
+        tc.movePosition(QTextCursor.MoveOperation.EndOfWord)
         tc.insertText(completion[-extra:])
         # add a space after inserting the word
         tc.insertText(' ')
@@ -4206,17 +4207,17 @@ class _ExpandableTextEdit(FCTextEdit):
         """
 
         key = event.key()
-        if (key == Qt.Key_Tab or key == Qt.Key_Return or key == Qt.Key_Enter) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Return or key == Qt.Key.Key_Enter) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
 
-        if event.matches(QKeySequence.InsertParagraphSeparator):
+        if event.matches(QKeySequence.StandardKey.InsertParagraphSeparator):
             text = self.toPlainText()
             if self._termWidget.is_command_complete(text):
                 self._termWidget.exec_current_command()
                 return
-        elif event.matches(QKeySequence.MoveToNextLine):
+        elif event.matches(QKeySequence.StandardKey.MoveToNextLine):
             text = self.toPlainText()
             cursor_pos = self.textCursor().position()
             textBeforeEnd = text[cursor_pos:]
@@ -4224,7 +4225,7 @@ class _ExpandableTextEdit(FCTextEdit):
             if len(textBeforeEnd.split('\n')) <= 1:
                 self.historyNext.emit()
                 return
-        elif event.matches(QKeySequence.MoveToPreviousLine):
+        elif event.matches(QKeySequence.StandardKey.MoveToPreviousLine):
             text = self.toPlainText()
             cursor_pos = self.textCursor().position()
             text_before_start = text[:cursor_pos]
@@ -4236,15 +4237,15 @@ class _ExpandableTextEdit(FCTextEdit):
             if line_count <= 1:
                 self.historyPrev.emit()
                 return
-        elif event.matches(QKeySequence.MoveToNextPage) or event.matches(QKeySequence.MoveToPreviousPage):
+        elif event.matches(QKeySequence.StandardKey.MoveToNextPage) or event.matches(QKeySequence.StandardKey.MoveToPreviousPage):
             return self._termWidget.browser().keyPressEvent(event)
-        elif event.key() == QtCore.Qt.Key_Escape:
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
             self.on_escape_key()
 
         tc = self.textCursor()
 
         QTextEdit.keyPressEvent(self, event)
-        tc.select(QTextCursor.WordUnderCursor)
+        tc.select(QTextCursor.SelectionType.WordUnderCursor)
         cr = self.cursorRect()
 
         if len(tc.selectedText()) > 0:
@@ -4285,7 +4286,7 @@ class MyCompleter(QCompleter):
 
     def __init__(self, parent=None):
         QCompleter.__init__(self, parent=parent)
-        self.setCompletionMode(QCompleter.PopupCompletion)
+        self.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         self.highlighted.connect(self.setHighlighted)
 
         self.lastSelected = ''
@@ -4321,7 +4322,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
         def adjustWidth(self, count):
             # three spaces added to the width to make up for the space added in the line number
-            width = self.fontMetrics().width(str(count) + '   ')
+            width = self.fontMetrics().boundingRect(str(count) + '   ').width()
             if self.width() != width:
                 self.setFixedWidth(width)
 
@@ -4349,7 +4350,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             self.color_storage = color_dict if color_dict else {}
 
             # self.setFrameStyle(QFrame.NoFrame)
-            self.setFrameStyle(QtWidgets.QFrame.NoFrame)
+            self.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
             self.highlight()
             # self.setLineWrapMode(QPlainTextEdit.NoWrap)
             self.cursorPositionChanged.connect(self.highlight)
@@ -4377,107 +4378,107 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                     comment = QtGui.QTextCharFormat()
                     # comment
-                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("\(.*\)")
+                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("\(.*\)")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
                     # Marlin comment
-                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("^;\s*.*$")
+                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("^;\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
                     # Python comment
-                    brush = QtGui.QBrush(Qt.gray, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("^\#\s*.*$")
+                    brush = QtGui.QBrush(Qt.GlobalColor.gray, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("^\#\s*.*$")
                     comment.setForeground(brush)
                     rule = (pattern, comment)
                     self.highlightingRules.append(rule)
 
                     keyword = QtGui.QTextCharFormat()
                     # keyword
-                    brush = QtGui.QBrush(Qt.blue, Qt.SolidPattern)
+                    brush = QtGui.QBrush(Qt.GlobalColor.blue, Qt.BrushStyle.SolidPattern)
                     keyword.setForeground(brush)
-                    keyword.setFontWeight(QtGui.QFont.Bold)
+                    keyword.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["G", "T"]
                     for word in keywords:
-                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
-                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
                         rule = (pattern, keyword)
                         self.highlightingRules.append(rule)
 
                     keyword1 = QtGui.QTextCharFormat()
                     # keyword 1
-                    brush = QtGui.QBrush(QtGui.QColor("teal"), Qt.SolidPattern)
+                    brush = QtGui.QBrush(QtGui.QColor("teal"), Qt.BrushStyle.SolidPattern)
                     keyword1.setForeground(brush)
-                    keyword1.setFontWeight(QtGui.QFont.Bold)
+                    keyword1.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["F"]
                     for word in keywords:
-                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
-                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
                         rule = (pattern, keyword1)
                         self.highlightingRules.append(rule)
 
                     # keyword 2
                     keyword2 = QtGui.QTextCharFormat()
                     # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
-                    brush = QtGui.QBrush(QtGui.QColor("coral"), Qt.SolidPattern)
+                    brush = QtGui.QBrush(QtGui.QColor("coral"), Qt.BrushStyle.SolidPattern)
                     keyword2.setForeground(brush)
-                    keyword2.setFontWeight(QtGui.QFont.Bold)
+                    keyword2.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["M"]
                     for word in keywords:
-                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
-                        pattern = QtCore.QRegExp("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+(\.\d*)?\s?" + "\\b")
                         rule = (pattern, keyword2)
                         self.highlightingRules.append(rule)
 
                     # keyword 3
                     keyword3 = QtGui.QTextCharFormat()
                     # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
-                    brush = QtGui.QBrush(QtGui.QColor("purple"), Qt.SolidPattern)
+                    brush = QtGui.QBrush(QtGui.QColor("purple"), Qt.BrushStyle.SolidPattern)
                     keyword3.setForeground(brush)
-                    keyword3.setFontWeight(QtGui.QFont.Bold)
+                    keyword3.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["Z"]
                     for word in keywords:
-                        # pattern = QtCore.QRegExp("\\b" + word + "\\b")
-                        pattern = QtCore.QRegExp("\\b" + word + "[\-|\+]?\d+(\.\d*)?\s?" + "\\b")
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "[\-|\+]?\d+(\.\d*)?\s?" + "\\b")
                         rule = (pattern, keyword3)
                         self.highlightingRules.append(rule)
 
                     # reservedClasses
                     reservedClasses.setForeground(brush)
-                    reservedClasses.setFontWeight(QtGui.QFont.Bold)
+                    reservedClasses.setFontWeight(QtGui.QFont.Weight.Bold)
                     keywords = ["array", "character", "complex", "data.frame", "double", "factor",
                                 "function", "integer", "list", "logical", "matrix", "numeric", "vector"]
                     for word in keywords:
-                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
                         rule = (pattern, reservedClasses)
                         self.highlightingRules.append(rule)
 
                     # parameter
-                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("\-[0-9a-zA-Z]*\s")
+                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("\-[0-9a-zA-Z]*\s")
                     parameterOperator.setForeground(brush)
-                    parameterOperator.setFontWeight(QtGui.QFont.Bold)
+                    parameterOperator.setFontWeight(QtGui.QFont.Weight.Bold)
                     rule = (pattern, parameterOperator)
                     self.highlightingRules.append(rule)
 
                     # delimiter
-                    pattern = QtCore.QRegExp("[\)\(]+|[\{\}]+|[][]+")
+                    pattern = QtCore.QRegularExpression("[\)\(]+|[\{\}]+|[][]+")
                     delimiter.setForeground(brush)
-                    delimiter.setFontWeight(QtGui.QFont.Bold)
+                    delimiter.setFontWeight(QtGui.QFont.Weight.Bold)
                     rule = (pattern, delimiter)
                     self.highlightingRules.append(rule)
 
                     # specialConstant
-                    brush = QtGui.QBrush(Qt.green, Qt.SolidPattern)
+                    brush = QtGui.QBrush(Qt.GlobalColor.green, Qt.BrushStyle.SolidPattern)
                     specialConstant.setForeground(brush)
                     keywords = ["Inf", "NA", "NaN", "NULL"]
                     for word in keywords:
-                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
                         rule = (pattern, specialConstant)
                         self.highlightingRules.append(rule)
 
@@ -4485,46 +4486,46 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     boolean.setForeground(brush)
                     keywords = ["TRUE", "True","FALSE", "False"]
                     for word in keywords:
-                        pattern = QtCore.QRegExp("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
                         rule = (pattern, boolean)
                         self.highlightingRules.append(rule)
 
                     # number
-                    # pattern = QtCore.QRegExp("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
+                    # pattern = QtCore.QRegularExpression("[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
                     # pattern.setMinimal(True)
                     # number.setForeground(brush)
                     # rule = (pattern, number)
                     # self.highlightingRules.append(rule)
 
                     # string
-                    brush = QtGui.QBrush(Qt.red, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("\".*\"")
+                    brush = QtGui.QBrush(Qt.GlobalColor.red, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("\".*\"")
                     pattern.setMinimal(True)
                     string.setForeground(brush)
                     rule = (pattern, string)
                     self.highlightingRules.append(rule)
 
                     # singleQuotedString
-                    pattern = QtCore.QRegExp("\'.*\'")
+                    pattern = QtCore.QRegularExpression("\'.*\'")
                     pattern.setMinimal(True)
                     singleQuotedString.setForeground(brush)
                     rule = (pattern, singleQuotedString)
                     self.highlightingRules.append(rule)
 
                     # X coordinate
-                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("X")
+                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("X")
                     pattern.setMinimal(True)
-                    x_chars.setFontWeight(QtGui.QFont.Bold)
+                    x_chars.setFontWeight(QtGui.QFont.Weight.Bold)
                     x_chars.setForeground(brush)
                     rule = (pattern, x_chars)
                     self.highlightingRules.append(rule)
 
                     # Y coordinate
-                    brush = QtGui.QBrush(Qt.darkBlue, Qt.SolidPattern)
-                    pattern = QtCore.QRegExp("Y")
+                    brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
+                    pattern = QtCore.QRegularExpression("Y")
                     pattern.setMinimal(True)
-                    y_chars.setFontWeight(QtGui.QFont.Bold)
+                    y_chars.setFontWeight(QtGui.QFont.Weight.Bold)
                     y_chars.setForeground(brush)
                     rule = (pattern, y_chars)
                     self.highlightingRules.append(rule)
@@ -4542,7 +4543,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                 # go in reverse from the last element to the first
                 for rule in self.highlightingRules[::-1]:
-                    expression = QtCore.QRegExp(rule[0])
+                    expression = QtCore.QRegularExpression(rule[0])
                     index = expression.indexIn(text)
                     while index >= 0:
                         length = expression.matchedLength()
@@ -4562,7 +4563,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             hi_selection = QTextEdit.ExtraSelection()
 
             hi_selection.format.setBackground(self.palette().alternateBase())
-            hi_selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            hi_selection.format.setProperty(QtGui.QTextFormat.Property.FullWidthSelection, True)
             hi_selection.cursor = self.textCursor()
             hi_selection.cursor.clearSelection()
 
@@ -4573,7 +4574,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
 
             painter = QtGui.QPainter(number_bar)
-            painter.fillRect(event.rect(), QtCore.Qt.lightGray)
+            painter.fillRect(event.rect(), QtCore.Qt.GlobalColor.lightGray)
 
             block = self.firstVisibleBlock()
             line_count = int(block.blockNumber())
@@ -4592,7 +4593,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     if line_count == current_line:
                         font = painter.font()
                         font.setBold(True)
-                        painter.setPen(QtCore.Qt.blue)
+                        painter.setPen(QtCore.Qt.GlobalColor.blue)
                         painter.setFont(font)
                     else:
                         font = painter.font()
@@ -4604,7 +4605,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
                     # I add some spaces to the line_count to prettify; make sure to remember adjust the width in the
                     # NumberBar() class above
-                    painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
+                    painter.drawText(paint_rect, Qt.AlignmentFlag.AlignRight, ' ' + str(line_count) + '  ')
 
                 block = block.next()
                 block_top = block_bottom
@@ -4615,7 +4616,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
     def __init__(self, *args, color_dict=None):
         QtWidgets.QFrame.__init__(self, *args)
 
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Shadow.Sunken)
 
         self.edit = self.PlainTextEdit(color_dict=color_dict)
         self.number_bar = self.NumberBar(self.edit)
@@ -4675,10 +4676,10 @@ class FCDock(QtWidgets.QDockWidget):
         super(FCDock, self).__init__(*args)
         self.close_callback = kwargs["close_callback"] if "close_callback" in kwargs else None
 
-        self.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu.PreventContextMenu)
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
-        if event.button() == Qt.MiddleButton:
+        if event.button() == Qt.MouseButton.MiddleButton:
             try:
                 self.close_callback()
             except Exception:
@@ -4705,7 +4706,7 @@ class FCJog(QtWidgets.QFrame):
 
         # JOG axes
         grbl_jog_grid = QtWidgets.QGridLayout()
-        grbl_jog_grid.setAlignment(QtCore.Qt.AlignCenter)
+        grbl_jog_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
 
@@ -4756,7 +4757,7 @@ class FCJog(QtWidgets.QFrame):
         self.jog_z_up_button = QtWidgets.QToolButton()
         self.jog_z_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
         self.jog_z_up_button.setText('Z')
-        self.jog_z_up_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_up_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.jog_z_up_button.setToolTip(
             _("Jog the Z axis.")
         )
@@ -4766,7 +4767,7 @@ class FCJog(QtWidgets.QFrame):
         self.jog_z_down_button = QtWidgets.QToolButton()
         self.jog_z_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
         self.jog_z_down_button.setText('Z')
-        self.jog_z_down_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_down_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.jog_z_down_button.setToolTip(
             _("Jog the Z axis.")
         )
@@ -4821,7 +4822,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         # Zeroo all axes
         self.grbl_zero_all_button = QtWidgets.QToolButton()
         self.grbl_zero_all_button.setText(_("All"))
-        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         self.grbl_zero_all_button.setToolTip(
             _("Zero all CNC axes at current position.")
@@ -4977,7 +4978,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(5, 0, 5, 0)
-        layout.setAlignment(QtCore.Qt.AlignLeft)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.setLayout(layout)
 
         layout.addWidget(self.icon)
@@ -5089,7 +5090,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu = QtWidgets.QMenu(parent)
 
-        menu_runscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
+        menu_runscript = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
                                            '%s' % _('Run Script ...'), self)
         menu_runscript.setToolTip(
             _("Will run the opened Tcl Script thus\n"
@@ -5104,23 +5105,23 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
             self.menu_open = menu.addMenu(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
 
             # Open Project ...
-            menu_openproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
+            menu_openproject = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
                                                  '%s ...' % _('Open Project'), self)
             self.menu_open.addAction(menu_openproject)
             self.menu_open.addSeparator()
 
             # Open Gerber ...
-            menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
+            menu_opengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
                                                 '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
-            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
+            menu_openexcellon = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
                                                   '%s ...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...
-            menu_opengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
+            menu_opengcode = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
                                                '%s ...' % _('Open G-Code'), self)
             self.menu_open.addAction(menu_opengcode)
 

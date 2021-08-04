@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appGUI.GUIElements import FCLabel, FCComboBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI

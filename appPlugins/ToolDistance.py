@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appTool import AppTool
 from appGUI.VisPyVisuals import *
@@ -598,8 +598,8 @@ class DistUI:
         grid0.addWidget(self.snap_center_cb, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         self.start_label = FCLabel("%s:" % _('Start Coords'))
@@ -607,7 +607,7 @@ class DistUI:
 
         self.start_entry = FCEntry()
         self.start_entry.setReadOnly(True)
-        self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.start_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
 
         grid0.addWidget(self.start_label, 3, 0)
@@ -618,7 +618,7 @@ class DistUI:
 
         self.stop_entry = FCEntry()
         self.stop_entry.setReadOnly(True)
-        self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.stop_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
 
         grid0.addWidget(self.stop_label, 4, 0)
@@ -629,7 +629,7 @@ class DistUI:
 
         self.distance_x_entry = FCEntry()
         self.distance_x_entry.setReadOnly(True)
-        self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.distance_x_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
         grid0.addWidget(self.distance_x_label, 5, 0)
@@ -640,7 +640,7 @@ class DistUI:
 
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setReadOnly(True)
-        self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.distance_y_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
         grid0.addWidget(self.distance_y_label, 6, 0)
@@ -651,7 +651,7 @@ class DistUI:
 
         self.angle_entry = FCEntry()
         self.angle_entry.setReadOnly(True)
-        self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.angle_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
         grid0.addWidget(self.angle_label, 7, 0)
@@ -662,7 +662,7 @@ class DistUI:
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setReadOnly(True)
-        self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.total_distance_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
         grid0.addWidget(self.total_distance_label, 8, 0)

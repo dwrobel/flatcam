@@ -1,5 +1,5 @@
-from PyQt5 import QtGui
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtGui
+from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import FCTextArea, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI

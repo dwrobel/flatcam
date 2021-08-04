@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
@@ -234,12 +234,12 @@ class ToolFiducials(AppTool):
 
     def on_second_point(self, val):
         if val == 'no':
-            self.ui.id_item_3.setFlags(QtCore.Qt.NoItemFlags)
-            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.NoItemFlags)
+            self.ui.id_item_3.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
             self.ui.sec_points_coords_entry.setDisabled(True)
         else:
-            self.ui.id_item_3.setFlags(QtCore.Qt.ItemIsEnabled)
-            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.id_item_3.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.sec_points_coords_entry.setDisabled(False)
 
     def on_method_change(self, val):
@@ -824,7 +824,7 @@ class FidoUI:
         )
         self.points_table.setRowCount(3)
         row = 0
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
 
         # BOTTOM LEFT
         id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
@@ -890,8 +890,8 @@ class FidoUI:
         self.layout.addWidget(self.points_table)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.layout.addWidget(separator_line)
 
         # ## Grid Layout
@@ -965,8 +965,8 @@ class FidoUI:
         grid_lay.addWidget(self.pos_radio, 4, 1)
 
         self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(self.separator_line, 5, 0, 1, 2)
 
         # Fiducial type #
@@ -999,8 +999,8 @@ class FidoUI:
         grid_lay.addWidget(self.line_thickness_entry, 7, 1)
 
         separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line_1, 8, 0, 1, 2)
 
         # Copper Gerber object
@@ -1033,8 +1033,8 @@ class FidoUI:
         grid_lay.addWidget(self.add_cfid_button, 11, 0, 1, 2)
 
         separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line_2, 12, 0, 1, 2)
 
         # Soldermask Gerber object #

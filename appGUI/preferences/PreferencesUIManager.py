@@ -1,6 +1,6 @@
 import os
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import QSettings
 from defaults import FlatCAMDefaults
 import logging
 

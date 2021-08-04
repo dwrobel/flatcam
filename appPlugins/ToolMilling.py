@@ -5,7 +5,7 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, FCComboBox2, \
@@ -549,7 +549,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.pp_geo_name_cb.addItem(name)
         # and add ToolTips (useful when names are too long)
         for it in range(self.ui.pp_geo_name_cb.count()):
-            self.ui.pp_geo_name_cb.setItemData(it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+            self.ui.pp_geo_name_cb.setItemData(it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
 
         # Fill form fields
         self.to_form()
@@ -931,12 +931,12 @@ class ToolMilling(AppTool, Excellon):
 
             # --------------------  ID  -------------------------------
             area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
-            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            area_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
 
             # --------------------  Object Type  ----------------------
             object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            object_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
 
             # --------------------  Strategy  -------------------------
@@ -952,14 +952,14 @@ class ToolMilling(AppTool, Excellon):
 
             # --------------------  Over Z  ---------------------------
             overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            overz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
 
         # make the Overz column editable
         for row in range(e_len):
-            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
-                                                          QtCore.Qt.ItemIsEditable |
-                                                          QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEditable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.exclusion_table.resizeColumnsToContents()
         self.ui.exclusion_table.resizeRowsToContents()
@@ -1018,12 +1018,12 @@ class ToolMilling(AppTool, Excellon):
 
             # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
-            tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            tool_id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- TOOL TYPE ------------------------------------- #
@@ -1045,10 +1045,10 @@ class ToolMilling(AppTool, Excellon):
 
             # -------------------- PLOT       ------------------------------------- #
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 4, empty_plot_item)
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
             self.ui.geo_tools_table.setCellWidget(row_idx, 4, plot_item)
@@ -1057,9 +1057,9 @@ class ToolMilling(AppTool, Excellon):
 
         # make the diameter column editable
         for row in range(row_idx):
-            self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
-                                                          QtCore.Qt.ItemIsEditable |
-                                                          QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEditable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # sort the tool diameter column
         # self.ui.geo_tools_table.sortItems(1)
@@ -1155,17 +1155,17 @@ class ToolMilling(AppTool, Excellon):
 
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.obj_tools[tool_no]['tooldia']))
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
             # Number of drills per tool
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)
 
             # Tool unique ID
@@ -1177,22 +1177,22 @@ class ToolMilling(AppTool, Excellon):
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
-            slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            slot_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 4, slot_count_item)
 
             self.tool_row += 1
 
         # add a last row with the Total number of drills
         empty_1 = QtWidgets.QTableWidgetItem('')
-        empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         empty_1_1 = QtWidgets.QTableWidgetItem('')
-        empty_1_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
-        label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
-        tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
@@ -1211,14 +1211,14 @@ class ToolMilling(AppTool, Excellon):
 
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
-        empty_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         empty_2_1 = QtWidgets.QTableWidgetItem('')
-        empty_2_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
-        label_tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
-        tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
@@ -1232,7 +1232,7 @@ class ToolMilling(AppTool, Excellon):
         # make the diameter column editable
         for row in range(self.ui.tools_table.rowCount() - 2):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
@@ -3351,16 +3351,16 @@ class ToolMilling(AppTool, Excellon):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -3368,7 +3368,7 @@ class ToolMilling(AppTool, Excellon):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             self.points = []
             self.poly_drawn = False
             self.delete_moving_selection_shape()
@@ -3566,7 +3566,7 @@ class MillingUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -3602,8 +3602,8 @@ class MillingUI:
         grid0.addWidget(self.object_combo, 2, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
-        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ####
@@ -3616,7 +3616,7 @@ class MillingUI:
         # Plot CB
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         grid0.addWidget(self.plot_cb, 6, 1)
 
         # ################################################
@@ -3765,14 +3765,14 @@ class MillingUI:
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 15, 0, 1, 2)
 
         self.add_tool_frame.hide()
@@ -3808,8 +3808,8 @@ class MillingUI:
         self.exc_tools_box.addLayout(self.grid1)
 
         # separator_line = QtWidgets.QFrame()
-        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # self.grid3.addWidget(separator_line, 1, 0, 1, 2)
 
         # Milling Type
@@ -3894,8 +3894,8 @@ class MillingUI:
         self.grid1.addWidget(self.offset_entry, 6, 1)
 
         self.offset_separator_line = QtWidgets.QFrame()
-        self.offset_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.offset_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid1.addWidget(self.offset_separator_line, 7, 0, 1, 2)
 
         # Tool Type
@@ -3996,8 +3996,8 @@ class MillingUI:
         self.polish_method_combo.hide()
 
         self.job_separator_line = QtWidgets.QFrame()
-        self.job_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.job_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid1.addWidget(self.job_separator_line, 18, 0, 1, 2)
 
         # Tip Dia
@@ -4236,8 +4236,8 @@ class MillingUI:
         self.exc_tools_box.addLayout(self.grid3)
 
         separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
@@ -4249,8 +4249,8 @@ class MillingUI:
         self.grid3.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
 
         self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.all_param_separator_line2, 2, 0, 1, 2)
 
         # #############################################################################################################
@@ -4376,7 +4376,7 @@ class MillingUI:
               "Gcode output for Geometry (Milling) Objects.")
         )
         self.pp_geo_name_cb = FCComboBox()
-        self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.pp_geo_name_cb.setObjectName("mill_ppname_g")
 
         self.grid3.addWidget(pp_geo_label, 16, 0)
@@ -4490,8 +4490,8 @@ class MillingUI:
         # ------------------------------------------------------------------------------------------------------------
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 25, 0, 1, 2)
 
         # #################################################################

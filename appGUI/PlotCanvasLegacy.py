@@ -7,8 +7,8 @@
 # Modified by Marius Stanciu 09/21/2019                    #
 ############################################################
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
+from PyQt6 import QtCore
+from PyQt6.QtCore import pyqtSignal
 
 # needed for legacy mode
 # Used for solid polygons in Matplotlib
@@ -257,7 +257,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
 
-        self.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.canvas.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
         self.canvas.setFocus()
         self.native = self.canvas
 

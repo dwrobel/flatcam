@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.tools.Tools2sidedPrefGroupUI import Tools2sidedPrefGroupUI
 from appGUI.preferences.tools.ToolsLevelPrefGroupUI import ToolsLevelPrefGroupUI

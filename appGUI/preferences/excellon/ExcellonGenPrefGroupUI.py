@@ -1,6 +1,6 @@
 import platform
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -51,8 +51,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.multicolored_cb, 0, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 1, 0, 1, 3)
 
         grid2 = QtWidgets.QGridLayout()
@@ -130,7 +130,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         excellon_separator_mm_label = FCLabel(':')
         excellon_separator_mm_label.setFixedWidth(5)
-        hlay2.addWidget(excellon_separator_mm_label, QtCore.Qt.AlignLeft)
+        hlay2.addWidget(excellon_separator_mm_label, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.excellon_format_lower_mm_entry = FCSpinner()
         self.excellon_format_lower_mm_entry.set_range(0, 9)
@@ -145,7 +145,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addLayout(hlay2, 2, 1)
 
         self.excellon_zeros_label = FCLabel('%s:' % _('Zeros'))
-        self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.excellon_zeros_label.setToolTip(
             _("This sets the type of Excellon zeros.\n"
               "If LZ then Leading Zeros are kept and\n"
@@ -163,7 +163,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.excellon_zeros_radio, 3, 1)
 
         self.excellon_units_label = FCLabel('%s:' % _('Units'))
-        self.excellon_units_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.excellon_units_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.excellon_units_label.setToolTip(
             _("This sets the default units of Excellon files.\n"
               "If it is not detected in the parsed file the value here\n"
@@ -196,8 +196,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.excellon_defaults_button, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid2.addWidget(separator_line, 7, 0, 1, 2)
 
         self.excellon_general_label = FCLabel("<b>%s:</b>" % _("Path Optimization"))
@@ -224,7 +224,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.excellon_optimization_radio, 9, 1)
 
         self.optimization_time_label = FCLabel('%s:' % _('Duration'))
-        self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.optimization_time_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.optimization_time_label.setToolTip(
             _("When OR-Tools Metaheuristic (MH) is enabled there is a\n"
               "maximum threshold for how much time is spent doing the\n"
@@ -240,8 +240,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.optimization_time_entry, 10, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid2.addWidget(separator_line, 11, 0, 1, 2)
 
         # Fuse Tools
@@ -256,8 +256,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.fuse_tools_cb, 13, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid2.addWidget(separator_line, 14, 0, 1, 2)
 
         # Excellon Object Color

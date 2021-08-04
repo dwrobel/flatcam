@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from camlib import grace
 from appTool import AppTool
@@ -1307,8 +1307,8 @@ class ThievingUI:
         i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Grid Layout
@@ -1362,7 +1362,7 @@ class ThievingUI:
         self.area_entry.set_range(0.0, 10000.0000)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.setSingleStep(0.1)
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
 
         if self.units.upper() == 'MM':
             units_area_label = FCLabel('%s<sup>2</sup>' % _("mm"))
@@ -1438,8 +1438,8 @@ class ThievingUI:
         self.bbox_type_radio.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 16, 0, 1, 2)
 
         # Fill Type
@@ -1602,8 +1602,8 @@ class ThievingUI:
         grid_lay_1.setColumnStretch(2, 0)
 
         separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
 
         # grid_lay_1.addWidget(FCLabel(''))
@@ -1660,8 +1660,8 @@ class ThievingUI:
         grid_lay_1.addWidget(self.rb_button, 8, 0, 1, 3)
 
         separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay_1.addWidget(separator_line_2, 10, 0, 1, 3)
 
         self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' %

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.utilities.AutoCompletePrefGroupUI import AutoCompletePrefGroupUI
 from appGUI.preferences.utilities.FAGrbPrefGroupUI import FAGrbPrefGroupUI

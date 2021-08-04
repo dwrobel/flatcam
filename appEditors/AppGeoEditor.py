@@ -11,8 +11,8 @@
 # Date: 3/10/2019                                          #
 # ######################################################### ##
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 
 # import inspect
 
@@ -776,8 +776,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.point_button, 2, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 3)
 
         # ## Rotate Title
@@ -813,8 +813,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.rotate_button, 7, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 3)
 
         # ## Skew Title
@@ -875,8 +875,8 @@ class TransformEditorTool(AppTool):
                                            logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 3)
 
         # ## Scale Title
@@ -939,8 +939,8 @@ class TransformEditorTool(AppTool):
                                           ], logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 21, 0, 1, 3)
 
         # ## Flip Title
@@ -964,8 +964,8 @@ class TransformEditorTool(AppTool):
         hlay0.addWidget(self.flipy_button)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 27, 0, 1, 3)
 
         # ## Offset Title
@@ -1013,8 +1013,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.offy_button, 32, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 34, 0, 1, 3)
 
         # ## Buffer Title
@@ -2016,7 +2016,7 @@ class DrawTool(object):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
         return
 
@@ -2209,15 +2209,15 @@ class FCArc(FCShapeTool):
         return ""
 
     def on_key(self, key):
-        if key == 'D' or key == QtCore.Qt.Key_D:
+        if key == 'D' or key == QtCore.Qt.Key.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
             return '%s: %s' % (_('Direction'), self.direction.upper())
 
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'M' or key == QtCore.Qt.Key_M:
+        if key == 'M' or key == QtCore.Qt.Key.Key_M:
             # delete the possible points made before this action; we want to start anew
             self.points[:] = []
             # and delete the utility geometry made up until this point
@@ -2530,10 +2530,10 @@ class FCPolygon(FCShapeTool):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
+        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
                 # Remove any previous utility shape
@@ -2596,10 +2596,10 @@ class FCPath(FCPolygon):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
+        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
                 # Remove any previous utility shape
@@ -2683,9 +2683,9 @@ class FCSelect(DrawTool):
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-                if key_modifier == QtCore.Qt.ShiftModifier:
+                if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
                     mod_key = 'Shift'
-                elif key_modifier == QtCore.Qt.ControlModifier:
+                elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
                     mod_key = 'Control'
                 else:
                     mod_key = None
@@ -2957,7 +2957,7 @@ class FCMove(FCShapeTool):
                 if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
                     # if CONTROL key is pressed then we add to the selected list the current shape but if it's
                     # already in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == Qt.ControlModifier:
+                    if key_modifier == Qt.KeyboardModifier.ControlModifier:
                         if obj_to_add in self.draw_app.selected:
                             self.draw_app.selected.remove(obj_to_add)
                         else:
@@ -2966,7 +2966,7 @@ class FCMove(FCShapeTool):
                         self.draw_app.selected = []
                         self.draw_app.selected.append(obj_to_add)
                 else:
-                    if key_modifier == Qt.ShiftModifier:
+                    if key_modifier == Qt.KeyboardModifier.ShiftModifier:
                         if obj_to_add in self.draw_app.selected:
                             self.draw_app.selected.remove(obj_to_add)
                         else:
@@ -3441,7 +3441,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # ## Title label
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
-        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
         # App Level label
@@ -3485,7 +3485,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
         self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
         self.tw.setIndentation(0)
-        self.tw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tw.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.tw.header().setStretchLastSection(True)
         self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.tools_box.addWidget(self.tw)
@@ -3512,8 +3512,8 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.geo_zoom, 0, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 3)
 
         # Parameters Title
@@ -3600,8 +3600,8 @@ class AppGeoEditor(QtCore.QObject):
         grid0.addWidget(self.geo_vertex_entry, 26, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 28, 0, 1, 3)
 
         # Simplification Title
@@ -4598,7 +4598,7 @@ class AppGeoEditor(QtCore.QObject):
         :return:        Boolean. Status of the checkbox that toggled the Editor Tool
         """
         cb_widget = self.sender()
-        assert isinstance(cb_widget, QtWidgets.QAction), "Expected a QAction got %s" % type(cb_widget)
+        assert isinstance(cb_widget, QtGui.QAction), "Expected a QAction got %s" % type(cb_widget)
         self.options[key] = cb_widget.isChecked()
 
         return 1 if self.options[key] is True else 0
@@ -4698,7 +4698,7 @@ class AppGeoEditor(QtCore.QObject):
 
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-            if modifiers == QtCore.Qt.ShiftModifier:
+            if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 self.app.clipboard.setText(
                     self.app.defaults["global_point_clipboard_format"] %
                     (self.decimals, self.pos[0], self.decimals, self.pos[1])
@@ -4903,9 +4903,9 @@ class AppGeoEditor(QtCore.QObject):
 
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None

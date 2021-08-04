@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
@@ -713,8 +713,8 @@ class CornersUI:
         self.layout.addWidget(self.object_combo)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.layout.addWidget(separator_line)
 
         self.points_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Locations').upper())
@@ -744,8 +744,8 @@ class CornersUI:
         grid_loc.addWidget(self.br_cb, 1, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.layout.addWidget(separator_line)
 
         # Toggle ALL
@@ -753,8 +753,8 @@ class CornersUI:
         self.layout.addWidget(self.toggle_all_cb)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.layout.addWidget(separator_line)
 
         # ## Grid Layout
@@ -824,8 +824,8 @@ class CornersUI:
         grid_lay.addWidget(self.margin_entry, 8, 1)
 
         # separator_line_2 = QtWidgets.QFrame()
-        # separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        # separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid_lay.addWidget(separator_line_2, 10, 0, 1, 2)
 
         # ## Insert Corner Marker
@@ -843,8 +843,8 @@ class CornersUI:
         grid_lay.addWidget(self.add_marker_button, 12, 0, 1, 2)
 
         separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line_2, 14, 0, 1, 2)
 
         # Drill is corners
@@ -879,8 +879,8 @@ class CornersUI:
         grid_lay.addWidget(self.drill_button, 20, 0, 1, 2)
 
         self.separator_line_2 = QtWidgets.QFrame()
-        self.separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(self.separator_line_2, 22, 0, 1, 2)
 
         # Check is corners

@@ -3,7 +3,7 @@ import re
 import app_Main
 import abc
 import collections
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from contextlib import contextmanager
 
 

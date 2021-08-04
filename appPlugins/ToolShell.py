@@ -7,10 +7,10 @@
 # ##########################################################
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QTextCursor, QPixmap
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import QSettings
+from PyQt6.QtGui import QTextCursor, QPixmap
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
 from appGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
 import html
 import sys
@@ -168,7 +168,7 @@ class TermWidget(QWidget):
         old_value = scrollbar.value()
         # scrollattheend = old_value == scrollbar.maximum()
 
-        self._browser.moveCursor(QTextCursor.End)
+        self._browser.moveCursor(QTextCursor.MoveOperation.End)
         self._browser.insertHtml(text)
 
         """TODO When user enters second line to the input, and input is resized, scrollbar changes its position
@@ -279,7 +279,7 @@ class TermWidget(QWidget):
         if (self._historyIndex + 1) < len(self._history):
             self._historyIndex += 1
             self._edit.setPlainText(self._history[self._historyIndex])
-            self._edit.moveCursor(QTextCursor.End)
+            self._edit.moveCursor(QTextCursor.MoveOperation.End)
 
     def _on_history_prev(self):
         """
@@ -290,7 +290,7 @@ class TermWidget(QWidget):
                 self._history[-1] = self._edit.toPlainText()
             self._historyIndex -= 1
             self._edit.setPlainText(self._history[self._historyIndex])
-            self._edit.moveCursor(QTextCursor.End)
+            self._edit.moveCursor(QTextCursor.MoveOperation.End)
 
 
 class FCShell(TermWidget):
@@ -360,7 +360,7 @@ class FCShell(TermWidget):
 
         r = self._browser.find(str(searched_txt))
         if r is False:
-            self._browser.moveCursor(QtGui.QTextCursor.Start)
+            self._browser.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
             self._browser.find(str(searched_txt))
 
     def init_tcl(self):

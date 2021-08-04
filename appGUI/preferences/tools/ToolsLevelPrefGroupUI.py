@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -119,8 +119,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.feedrate_probe_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         self.al_controller_label = FCLabel('%s:' % _("Controller"))

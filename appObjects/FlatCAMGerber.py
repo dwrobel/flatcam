@@ -275,16 +275,16 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 # ------------------------ Aperture ID ----------------------------------------------------------------
                 ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-                ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                ap_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                 self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
                 # ------------------------ Aperture CODE --------------------------------------------------------------
                 ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
-                ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture TYPE --------------------------------------------------------------
                 ap_type_item = QtWidgets.QTableWidgetItem(str(self.tools[ap_code]['type']))
-                ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 if str(self.tools[ap_code]['type']) == 'R' or str(self.tools[ap_code]['type']) == 'O':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
@@ -292,16 +292,16 @@ class GerberObject(FlatCAMObj, Gerber):
                                         self.decimals, self.tools[ap_code]['height']
                                         )
                     )
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                 elif str(self.tools[ap_code]['type']) == 'P':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
                         '%.*f, %.*f' % (self.decimals, self.tools[ap_code]['diam'],
                                         self.decimals, self.tools[ap_code]['nVertices'])
                     )
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                 else:
                     ap_dim_item = QtWidgets.QTableWidgetItem('')
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture SIZE --------------------------------------------------------------
                 try:
@@ -312,11 +312,11 @@ class GerberObject(FlatCAMObj, Gerber):
                         ap_size_item = QtWidgets.QTableWidgetItem('')
                 except KeyError:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
-                ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture MARK --------------------------------------------------------------
                 mark_item = FCCheckBox()
-                mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+                mark_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                 # if self.ui.aperture_table_visibility_cb.isChecked():
                 #     mark_item.setChecked(True)
 
@@ -326,7 +326,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
 
                 empty_plot_item = QtWidgets.QTableWidgetItem('')
-                empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                 self.ui.apertures_table.setItem(self.apertures_row, 5, empty_plot_item)
                 self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
 

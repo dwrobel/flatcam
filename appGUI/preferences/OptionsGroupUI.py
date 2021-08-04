@@ -7,7 +7,7 @@
 
 from typing import Dict
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 import gettext
 import appTranslation as fcTranslate

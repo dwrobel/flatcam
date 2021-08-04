@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCCheckBox, FCComboBox, FCButton, OptionalInputSection, \
     FCDoubleSpinner, FCLabel
@@ -84,8 +84,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ge_radio, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Application Level for FlatCAM
@@ -118,8 +118,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.verbose_cb, 16, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 18, 0, 1, 2)
 
         # Languages for FlatCAM
@@ -137,8 +137,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.language_apply_btn, 24, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 26, 0, 1, 2)
 
         # -----------------------------------------------------------
@@ -207,8 +207,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 42, 0, 1, 2)
 
         # Worker Numbers
@@ -245,8 +245,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tol_entry, 46, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # Save Settings
@@ -304,8 +304,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # self.as_ois = OptionalInputSection(self.autosave_cb, [self.autosave_label, self.autosave_entry], True)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 60, 0, 1, 2)
 
         self.pdf_param_label = FCLabel('<B>%s:</b>' % _("Text to PDF parameters"))

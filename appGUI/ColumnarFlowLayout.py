@@ -7,8 +7,8 @@
 
 import sys
 
-from PyQt5.QtCore import QRect, QSize, Qt
-from PyQt5.QtWidgets import QLayout
+from PyQt6.QtCore import QRect, QSize, Qt
+from PyQt6.QtWidgets import QLayout
 import math
 
 

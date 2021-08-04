@@ -217,7 +217,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             row_no = tool_idx - 1
 
             t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
@@ -245,11 +245,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
-            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            job_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            tool_shape_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # hack so the checkbox stay centered in the table cell
             # used this:
@@ -262,7 +262,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
             # qhboxlayout.setContentsMargins(0, 0, 0, 0)
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
@@ -278,12 +278,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # make the diameter column editable
         # for row in range(tool_idx):
-        #     self.ui.cnc_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
-        #                                                   QtCore.Qt.ItemIsEnabled)
+        #     self.ui.cnc_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+        #                                                   QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         for row in range(tool_idx):
             self.ui.cnc_tools_table.item(row, 0).setFlags(
-                self.ui.cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+                self.ui.cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         self.ui.cnc_tools_table.resizeColumnsToContents()
         self.ui.cnc_tools_table.resizeRowsToContents()
@@ -341,11 +341,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
 
-            t_id_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            cutz_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # hack so the checkbox stay centered in the table cell
             # used this:
@@ -359,7 +359,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # qhboxlayout.setContentsMargins(0, 0, 0, 0)
 
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
@@ -376,7 +376,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         for row in range(row_no):
             self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
-                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         self.ui.exc_cnc_tools_table.resizeColumnsToContents()
         self.ui.exc_cnc_tools_table.resizeRowsToContents()
@@ -617,7 +617,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
 
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 

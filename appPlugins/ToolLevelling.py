@@ -5,8 +5,8 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
 
 from appObjects.FlatCAMObj import ObjectDeleted
 from appTool import AppTool
@@ -447,9 +447,9 @@ class ToolLevelling(AppTool, CNCjob):
             height = self.app.dec_format(value['height'], dec=self.app.decimals)
             height_item = QtWidgets.QTableWidgetItem(str(height))
 
-            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
-            coords_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            height_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            coords_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            height_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.al_probe_points_table.setItem(row_no, 0, t_id)  # Tool name/id
             self.ui.al_probe_points_table.setItem(row_no, 1, coords_item)  # X-Y coords
@@ -919,16 +919,16 @@ class ToolLevelling(AppTool, CNCjob):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
         # events from Vispy are of type KeyEvent
@@ -936,7 +936,7 @@ class ToolLevelling(AppTool, CNCjob):
             key = event.key
 
         # Escape = Deselect All
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.mouse_events_connected is True:
                 self.mouse_events_connected = False
                 if self.app.is_legacy is False:
@@ -954,11 +954,11 @@ class ToolLevelling(AppTool, CNCjob):
                 self.app.defaults['global_selection_shape'] = self.old_selection_state
 
         # Grid toggle
-        if key == QtCore.Qt.Key_G or key == 'G':
+        if key == QtCore.Qt.Key.Key_G or key == 'G':
             self.app.ui.grid_snap_btn.trigger()
 
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.app.on_jump_to()
 
     def autolevell_gcode(self):
@@ -1760,7 +1760,7 @@ class LevelUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -1783,8 +1783,8 @@ class LevelUI:
         self.tools_box.addWidget(self.object_combo)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.tools_box.addWidget(separator_line)
 
         # Autolevelling
@@ -1811,7 +1811,7 @@ class LevelUI:
         hor_lay = QtWidgets.QHBoxLayout()
         hor_lay.addWidget(self.al_title)
         hor_lay.addStretch()
-        hor_lay.addWidget(self.show_al_table, alignment=QtCore.Qt.AlignRight)
+        hor_lay.addWidget(self.show_al_table, alignment=QtCore.Qt.AlignmentFlag.AlignRight)
 
         grid0.addLayout(hor_lay, 0, 0, 1, 2)
 
@@ -1831,8 +1831,8 @@ class LevelUI:
         grid0.addWidget(self.plot_probing_pts_cb, 3, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         # #############################################################################################################
@@ -1885,8 +1885,8 @@ class LevelUI:
         grid0.addWidget(self.feedrate_probe_entry, 13, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 15, 0, 1, 2)
 
         # AUTOLEVELL MODE
@@ -1947,8 +1947,8 @@ class LevelUI:
         grid0.addWidget(self.al_add_button, 23, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 25, 0, 1, 2)
 
         self.al_controller_label = FCLabel('<b>%s</b>:' % _("Controller"))
@@ -2157,7 +2157,7 @@ class LevelUI:
         grbl_ctrl_grid.addWidget(self.zero_axs_wdg, 2, 2)
 
         self.pause_resume_button = RotatedToolButton()
-        self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.pause_resume_button.setText(_("Pause/Resume"))
         self.pause_resume_button.setCheckable(True)
         self.pause_resume_button.setStyleSheet("""
@@ -2171,7 +2171,7 @@ class LevelUI:
 
         pause_frame = QtWidgets.QFrame()
         pause_frame.setContentsMargins(0, 0, 0, 0)
-        pause_frame.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+        pause_frame.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Expanding)
         pause_hlay = QtWidgets.QHBoxLayout()
         pause_hlay.setContentsMargins(0, 0, 0, 0)
 
@@ -2275,7 +2275,7 @@ class LevelUI:
         self.grbl_save_height_map_button.setToolTip(
             _("Will save the GRBL height map.")
         )
-        hm_lay.addWidget(self.grbl_save_height_map_button, stretch=0, alignment=Qt.AlignRight)
+        hm_lay.addWidget(self.grbl_save_height_map_button, stretch=0, alignment=Qt.AlignmentFlag.AlignRight)
 
         grbl_send_grid.addLayout(hm_lay, 12, 0, 1, 2)
 
@@ -2287,12 +2287,12 @@ class LevelUI:
         self.h_gcode_button.setToolTip(
             _("Will save the probing GCode.")
         )
-        self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
 
         height_lay.addWidget(self.h_gcode_button)
         self.view_h_gcode_button = QtWidgets.QToolButton()
         self.view_h_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-        # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Ignored)
         self.view_h_gcode_button.setToolTip(
             _("View/Edit the probing GCode.")
         )
@@ -2314,8 +2314,8 @@ class LevelUI:
         self.import_heights_button.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 35, 0, 1, 2)
 
         self.tools_box.addStretch(1)

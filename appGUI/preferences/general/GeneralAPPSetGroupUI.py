@@ -1,5 +1,5 @@
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
     FCColorEntry, FCLabel
@@ -77,8 +77,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.snap_max_dist_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Workspace
@@ -174,8 +174,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.wk_orientation_radio, 16, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 18, 0, 1, 2)
 
         # Font Size
@@ -262,8 +262,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.hud_font_size_spinner, 28, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 30, 0, 1, 2)
 
         # Axis Color
@@ -277,8 +277,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.axis_color_entry, 32, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 34, 0, 1, 2)
 
         # -----------------------------------------------------------
@@ -380,8 +380,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mselect_radio, 50, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 52, 0, 1, 2)
 
         # Delete confirmation

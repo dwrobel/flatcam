@@ -194,7 +194,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
-            tool_id.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
@@ -203,7 +203,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
             # -------------------- OFFSET   ------------------------------------- #
@@ -212,7 +212,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             except TypeError:
                 offset_item_txt = tooluid_value['data']['tools_mill_offset_type']
             offset_item = QtWidgets.QTableWidgetItem(offset_item_txt)
-            offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 2, offset_item)  # Offset Type
 
             # -------------------- JOB     ------------------------------------- #
@@ -221,7 +221,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             except TypeError:
                 job_item_txt = tooluid_value['data']['tools_mill_job_type']
             job_item = QtWidgets.QTableWidgetItem(job_item_txt)
-            job_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 3, job_item)  # Job Type
 
             # -------------------- TOOL SHAPE ------------------------------------- #
@@ -230,7 +230,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             except TypeError:
                 tool_shape_item_txt = tooluid_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
-            tool_shape_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 4, tool_shape_item)  # Tool Shape
 
             # -------------------- TOOL UID   ------------------------------------- #
@@ -240,10 +240,10 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # -------------------- PLOT       ------------------------------------- #
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 6, empty_plot_item)
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
             self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
@@ -252,7 +252,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         for row in range(row_idx):
             self.ui.geo_tools_table.item(row, 0).setFlags(
-                self.ui.geo_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+                self.ui.geo_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         self.ui.geo_tools_table.resizeColumnsToContents()
         self.ui.geo_tools_table.resizeRowsToContents()
@@ -319,15 +319,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         #     area_dict = self.app.exc_areas.exclusion_areas_storage[area]
         #
         #     area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_dict["idx"]))
-        #     area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     area_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         #     self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
         #
         #     object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-        #     object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     object_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         #     self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
         #
         #     # strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-        #     # strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     # strategy_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         #     strategy_item = FCComboBox2(policy=False)
         #     strategy_item.addItems([_("Around"), _("Over")])
         #     idx = 0 if area_dict["strategy"] == 'around' else 1
@@ -339,14 +339,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         #     self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
         #
         #     overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-        #     overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     overz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         #     self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
         #
         # # make the Overz column editable
         # for row in range(e_len):
-        #     self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
-        #                                                   QtCore.Qt.ItemIsEditable |
-        #                                                   QtCore.Qt.ItemIsEnabled)
+        #     self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+        #                                                   QtCore.Qt.ItemFlag.ItemIsEditable |
+        #                                                   QtCore.Qt.ItemFlag.ItemIsEnabled)
         #
         # self.ui.exclusion_table.resizeColumnsToContents()
         # self.ui.exclusion_table.resizeRowsToContents()
@@ -680,7 +680,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 

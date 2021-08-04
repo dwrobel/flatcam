@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
     VerticalScrollArea
@@ -456,12 +456,12 @@ class CalcUI:
         self.inch_entry = NumericalEvalEntry(border_color='#0069A9')
 
         # self.inch_entry.setFixedWidth(70)
-        # self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.inch_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.inch_entry.setToolTip(_("Here you enter the value to be converted from INCH to MM"))
 
         self.mm_entry = NumericalEvalEntry(border_color='#0069A9')
         # self.mm_entry.setFixedWidth(130)
-        # self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.mm_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.mm_entry.setToolTip(_("Here you enter the value to be converted from MM to INCH"))
 
         grid_units_layout.addWidget(self.mm_entry, 1, 0)
@@ -578,7 +578,7 @@ class CalcUI:
         self.pcblengthlabel = FCLabel('%s:' % _("Board Length"))
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
         self.pcblength_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.pcblength_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.pcblength_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcblength_entry.set_precision(self.decimals)
         self.pcblength_entry.set_range(0.0, 10000.0000)
 
@@ -596,7 +596,7 @@ class CalcUI:
         self.pcbwidthlabel = FCLabel('%s:' % _("Board Width"))
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
         self.pcbwidth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.pcbwidth_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.pcbwidth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcbwidth_entry.set_precision(self.decimals)
         self.pcbwidth_entry.set_range(0.0, 10000.0000)
 
@@ -614,7 +614,7 @@ class CalcUI:
         self.area_label = FCLabel('%s:' % _("Area"))
         self.area_label.setToolTip(_('This is the board area.'))
         self.area_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.set_range(0.0, 10000.0000)
 
@@ -629,8 +629,8 @@ class CalcUI:
         grid_electro.addLayout(a_hlay, 12, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_electro.addWidget(separator_line, 14, 0, 1, 2)
 
         # DENSITY
@@ -638,7 +638,7 @@ class CalcUI:
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
                                          "In Amps per Square Feet ASF."))
         self.cdensity_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cdensity_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.cdensity_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.cdensity_entry.set_precision(self.decimals)
         self.cdensity_entry.set_range(0.0, 10000.0000)
         self.cdensity_entry.setSingleStep(0.1)
@@ -658,7 +658,7 @@ class CalcUI:
         self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
                                        "In microns."))
         self.growth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.growth_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.growth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.growth_entry.set_precision(self.decimals)
         self.growth_entry.set_range(0.0, 10000.0000)
         self.growth_entry.setSingleStep(0.01)
@@ -678,7 +678,7 @@ class CalcUI:
         self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
                                       'to be set on the Power Supply. In Amps.'))
         self.cvalue_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cvalue_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.cvalue_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.cvalue_entry.set_precision(self.decimals)
         self.cvalue_entry.set_range(0.0, 10000.0000)
         self.cvalue_entry.setSingleStep(0.1)
@@ -699,7 +699,7 @@ class CalcUI:
         self.timelabel.setToolTip(_('This is the calculated time required for the procedure.\n'
                                     'In minutes.'))
         self.time_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.time_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.time_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.time_entry.set_precision(self.decimals)
         self.time_entry.set_range(0.0, 10000.0000)
         self.time_entry.setSingleStep(0.1)

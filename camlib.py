@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 from io import StringIO
 
 from numpy.linalg import solve, norm

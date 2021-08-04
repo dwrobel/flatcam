@@ -1,5 +1,5 @@
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtWidgets, QtGui
+from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import VerticalScrollArea, FCButton, FCTextArea, FCEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -29,7 +29,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         scroll = VerticalScrollArea()
         scroll.setWidget(scroll_widget)
         scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the extension list to the default state."))

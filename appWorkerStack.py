@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from appWorker import Worker
 
 
@@ -24,7 +24,7 @@ class WorkerStack(QtCore.QObject):
             thread.started.connect(worker.run)
             worker.task_completed.connect(self.on_task_completed)
 
-            thread.start(QtCore.QThread.NormalPriority)
+            thread.start(QtCore.QThread.Priority.NormalPriority)
 
             self.workers.append(worker)
             self.threads.append(thread)

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.gerber.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
 from appGUI.preferences.gerber.GerberExpPrefGroupUI import GerberExpPrefGroupUI

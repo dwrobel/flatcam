@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
@@ -1169,7 +1169,7 @@ class FilmUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -1226,8 +1226,8 @@ class FilmUI:
         grid0.addWidget(self.tf_box_combo, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         self.film_adj_label = FCLabel('<b>%s</b>' % _("Film Adjustments"))
@@ -1298,8 +1298,8 @@ class FilmUI:
                                                   ])
 
         self.scale_separator_line = QtWidgets.QFrame()
-        self.scale_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.scale_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.scale_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.scale_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.scale_separator_line, 20, 0, 1, 2)
 
         # Skew Geometry
@@ -1342,8 +1342,8 @@ class FilmUI:
                                                  ])
 
         self.skew_separator_line1 = QtWidgets.QFrame()
-        self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.skew_separator_line1, 28, 0, 1, 2)
 
         # Mirror Geometry
@@ -1375,8 +1375,8 @@ class FilmUI:
                                                    ])
 
         self.mirror_separator_line2 = QtWidgets.QFrame()
-        self.mirror_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.mirror_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.mirror_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.mirror_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.mirror_separator_line2, 34, 0, 1, 2)
 
         self.film_param_label = FCLabel('<b>%s</b>' % _("Film Parameters"))
@@ -1504,8 +1504,8 @@ class FilmUI:
         self.grid1.setColumnStretch(1, 1)
 
         separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid1.addWidget(separator_line3, 0, 0, 1, 2)
 
         # File type
