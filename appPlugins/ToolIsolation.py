@@ -286,9 +286,11 @@ class ToolIsolation(AppTool, Gerber):
         # try to select in the Gerber combobox the active object
         try:
             selected_obj = self.app.collection.get_active()
-            if selected_obj.kind == 'gerber':
+            if selected_obj is not None and selected_obj.kind == 'gerber':
                 current_name = selected_obj.options['name']
                 self.ui.object_combo.set_value(current_name)
+            if selected_obj is None and [self.ui.object_combo.itemText(i) for i in range(self.ui.object_combo.count())]:
+                self.ui.object_combo.setCurrentIndex(0)
         except Exception as ee:
             self.app.log.debug("ToolIsolation.set_tool_ui() Select Gerber object -> %s" % str(ee))
 

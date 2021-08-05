@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - more fixes for porting to PyQt6
 - changes the exit method from exit(0) to quit()
 - more work in PyQt6 porting
+- Isolation Plugin - if there is no object selected try to select the first one if there is any
+- Fixed setting a new style
 
 4.08.2021
 

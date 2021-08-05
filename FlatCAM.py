@@ -155,7 +155,8 @@ if __name__ == '__main__':
     # apply style
     settings = QSettings("Open Source", "FlatCAM")
     if settings.contains("style"):
-        style = settings.value('style', type=str)
+        style_index = settings.value('style', type=str)
+        style = QtWidgets.QStyleFactory.keys()[int(style_index)]
         app.setStyle(style)
 
     fc = App(qapp=app)
