@@ -4018,7 +4018,8 @@ class App(QtCore.QObject):
 
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
-        sys.exit(0)
+        # sys.exit(0)
+        QtWidgets.QApplication.quit()
 
     @staticmethod
     def kill_app():

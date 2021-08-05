@@ -160,6 +160,7 @@ if __name__ == '__main__':
 
     fc = App(qapp=app)
 
+    # interrupt the Qt loop such that Python events have a chance to be responsive
     timer = QTimer()
     timer.timeout.connect(lambda: None)
     timer.start(100)

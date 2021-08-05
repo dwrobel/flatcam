@@ -4044,7 +4044,8 @@ class MainGUI(QtWidgets.QMainWindow):
             try:
                 self.final_save.emit()
             except SystemError:
-                sys.exit(0)
+                QtWidgets.QApplication.quit()
+                # sys.exit(0)
         event.ignore()
 
     def on_fullscreen(self, disable=False):
