@@ -174,7 +174,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
     def handlePrint(self):
         dialog = QtPrintSupport.QPrintDialog()
-        if dialog.exec() == QtWidgets.QDialog.Accepted:
+        if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):

@@ -5390,14 +5390,14 @@ class App(QtCore.QObject):
                 grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                    Qt.Horizontal, parent=self)
+                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+                    Qt.Orientation.Horizontal, parent=self)
                 grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:
@@ -5661,14 +5661,14 @@ class App(QtCore.QObject):
                 grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                    Qt.Horizontal, parent=self)
+                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+                    Qt.Orientation.Horizontal, parent=self)
                 grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:

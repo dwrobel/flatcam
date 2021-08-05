@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed fullscreen functionality for PyQt6 and a few other fixes regarding the port to PyQt6
 - more fixes for porting to PyQt6
 - changes the exit method from exit(0) to quit()
+- more work in PyQt6 porting
 
 4.08.2021
 

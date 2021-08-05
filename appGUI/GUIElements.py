@@ -2338,7 +2338,7 @@ class FCInputDoubleSpinner(QtWidgets.QDialog):
         self.wdg.set_step(self.step)
         self.wdg.set_value(self.init_value)
 
-        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
@@ -2349,8 +2349,8 @@ class FCInputDoubleSpinner(QtWidgets.QDialog):
         self.layout.addWidget(self.wdg)
         self.layout.addWidget(self.buttonBox)
 
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
 
         self.setLayout(self.layout)
 
@@ -2379,7 +2379,7 @@ class FCInputDoubleSpinner(QtWidgets.QDialog):
         self.wdg.set_value(val)
 
     def get_value(self):
-        if self.exec() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -2412,14 +2412,14 @@ class FCInputSpinner(QtWidgets.QDialog):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         self.wdg.setSizePolicy(sizePolicy)
 
-        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -2446,7 +2446,7 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.wdg.spinner.set_step(val)
 
     def get_value(self):
-        if self.exec() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             return [self.wdg.get_value(), True]
         else:
             return [None, False]
@@ -2473,14 +2473,14 @@ class FCInputDialogSlider(QtWidgets.QDialog):
         self.wdg = FCSliderWithSpinner(min=self.min, max=self.max, step=self.step)
         self.wdg.set_value(self.init_value)
 
-        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -2507,7 +2507,7 @@ class FCInputDialogSlider(QtWidgets.QDialog):
         self.wdg.spinner.set_step(val)
 
     def get_results(self):
-        if self.exec() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -2538,14 +2538,14 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
         self.wdg.spinner.selectAll()
         self.wdg.set_value(self.init_value)
 
-        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.lbl)
@@ -2578,7 +2578,7 @@ class FCInputDialogSpinnerButton(QtWidgets.QDialog):
         self.wdg.spinner.set_value(val)
 
     def get_results(self):
-        if self.exec() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             return self.wdg.get_value(), True
         else:
             return None, False
@@ -3928,19 +3928,20 @@ class DialogBoxRadio(QtWidgets.QDialog):
         grid0.addWidget(self.loc_label, 6, 0)
         grid0.addWidget(self.lineEdit, 6, 1)
 
-        self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                                                     orientation=Qt.Orientation.Horizontal, parent=self)
+        self.button_box = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+            orientation=Qt.Orientation.Horizontal, parent=self)
         grid0.addWidget(self.button_box, 8, 0, 1, 2)
 
-        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText(_("Ok"))
-        self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText(_("Cancel"))
+        self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText(_("Ok"))
+        self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText(_("Cancel"))
 
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
 
         self.readyToEdit = True
 
-        if self.exec() == QtWidgets.QDialog.Accepted:
+        if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             self.ok = True
             self.location = self.lineEdit.text()
             self.reference = self.ref_radio.get_value()
