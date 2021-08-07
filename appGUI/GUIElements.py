@@ -4730,7 +4730,7 @@ class FCJog(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # JOG axes
-        grbl_jog_grid = FCGridLayout(v_spacing=3)
+        grbl_jog_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         grbl_jog_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinimumSize)
         grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
@@ -4809,7 +4809,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # Zero the axes
-        grbl_zero_grid = FCGridLayout(v_spacing=3)
+        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
         grbl_zero_grid.setColumnStretch(0, 0)
         grbl_zero_grid.setColumnStretch(1, 0)
@@ -5182,12 +5182,15 @@ class FCGridLayout(QtWidgets.QGridLayout):
 
         super().__init__(*args, parent=parent)
 
+        # block signals so there is a single repaint signal fired
+        self.blockSignals(True)
         if h_spacing is not None:
             self.setHorizontalSpacing(h_spacing)
         if v_spacing is not None:
             self.setVerticalSpacing(v_spacing)
         if margins is not None:
             self.setContentsMargins(margins[0], margins[1], margins[2], margins[3])
+        self.blockSignals(False)
 
 
 def message_dialog(title, message, kind="info", parent=None):

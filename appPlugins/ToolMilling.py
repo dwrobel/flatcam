@@ -3571,7 +3571,7 @@ class MillingUI:
         self.title_box.addWidget(self.level)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -3706,7 +3706,7 @@ class MillingUI:
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         grid0.addWidget(self.add_tool_frame, 14, 0, 1, 2)
-        grid_tool = FCGridLayout(v_spacing=3)
+        grid_tool = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_tool.setColumnStretch(0, 0)
         grid_tool.setColumnStretch(1, 1)
         grid_tool.setContentsMargins(0, 0, 0, 0)
@@ -3731,7 +3731,7 @@ class MillingUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=3)
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         grid_tool.addLayout(button_grid, 5, 0, 1, 2)
@@ -3802,7 +3802,7 @@ class MillingUI:
         # ################# GRID LAYOUT 3   ###############################
         # #################################################################
 
-        self.grid1 = FCGridLayout(v_spacing=3)
+        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid1.setColumnStretch(0, 0)
         self.grid1.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid1)
@@ -4230,7 +4230,7 @@ class MillingUI:
         # #################################################################
         # ################# COMMON PARAMETERS #############################
 
-        self.grid3 = FCGridLayout(v_spacing=3)
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid3)
@@ -4426,7 +4426,7 @@ class MillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid_a1 = FCGridLayout(v_spacing=3)
+        grid_a1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_a1.setColumnStretch(0, 0)
         grid_a1.setColumnStretch(1, 1)
         self.exclusion_box.addLayout(grid_a1)
@@ -4497,7 +4497,7 @@ class MillingUI:
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################
         # #################################################################
-        self.grid4 = FCGridLayout(v_spacing=3)
+        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid4.setColumnStretch(0, 0)
         self.grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid4)

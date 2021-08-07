@@ -1175,7 +1175,7 @@ class FilmUI:
         self.title_box.addWidget(self.level)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(grid0)
 
         grid0.setColumnStretch(0, 0)
@@ -1449,7 +1449,7 @@ class FilmUI:
         self.punch_frame = QtWidgets.QFrame()
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.punch_frame)
-        punch_grid = FCGridLayout(v_spacing=3)
+        punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         punch_grid.setContentsMargins(0, 0, 0, 0)
         self.punch_frame.setLayout(punch_grid)
 
@@ -1499,7 +1499,7 @@ class FilmUI:
         self.punch_size_label.hide()
         self.punch_size_spinner.hide()
 
-        self.grid1 = FCGridLayout(v_spacing=3)
+        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(self.grid1)
         self.grid1.setColumnStretch(0, 0)
         self.grid1.setColumnStretch(1, 1)

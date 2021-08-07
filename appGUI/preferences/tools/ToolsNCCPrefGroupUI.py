@@ -29,7 +29,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         ncctdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))

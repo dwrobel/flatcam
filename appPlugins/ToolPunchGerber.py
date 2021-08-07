@@ -1991,7 +1991,7 @@ class PunchUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=3)
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
@@ -2023,12 +2023,12 @@ class PunchUI:
 
         grid_lay.addWidget(self.padt_label, 3, 0, 1, 2)
 
-        pad_all_grid = FCGridLayout(v_spacing=3)
+        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_all_grid.setColumnStretch(0, 0)
         pad_all_grid.setColumnStretch(1, 1)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = FCGridLayout(v_spacing=3)
+        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_grid.setColumnStretch(0, 0)
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
@@ -2110,7 +2110,7 @@ class PunchUI:
         grid_lay.addWidget(separator_line, 10, 0, 1, 2)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -2192,7 +2192,7 @@ class PunchUI:
         self.ring_box.addWidget(self.ring_label)
 
         # ## Grid Layout
-        self.grid1 = FCGridLayout(v_spacing=3)
+        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid1.setColumnStretch(0, 0)
         self.grid1.setColumnStretch(1, 1)
         self.ring_box.addLayout(self.grid1)

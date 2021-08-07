@@ -4142,7 +4142,7 @@ class NccUI:
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -4224,7 +4224,7 @@ class NccUI:
         #       "If it's not successful then the non-copper clearing will fail, too.\n"
         #       "- Clear -> the regular non-copper clearing."))
 
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
@@ -4260,7 +4260,7 @@ class NccUI:
         # ############### Tool selection ##############################
         # #############################################################
 
-        self.grid3 = FCGridLayout(v_spacing=3)
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(self.grid3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
@@ -4300,7 +4300,7 @@ class NccUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=3)
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         self.grid3.addLayout(button_grid, 7, 0, 1, 2)

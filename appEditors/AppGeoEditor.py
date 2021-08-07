@@ -83,7 +83,7 @@ class BufferSelectionTool(AppTool):
         self.buffer_tool_frame.setLayout(self.buffer_tools_box)
 
         # Grid Layout
-        grid_buffer = FCGridLayout(v_spacing=3)
+        grid_buffer = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_buffer.setColumnStretch(0, 0)
         grid_buffer.setColumnStretch(1, 1)
         self.buffer_tools_box.addLayout(grid_buffer)
@@ -267,7 +267,7 @@ class TextInputTool(AppTool):
         self.text_tools_box.addWidget(title_label)
 
         # Grid Layout
-        self.grid_text = FCGridLayout(v_spacing=3)
+        self.grid_text = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid_text.setColumnStretch(0, 0)
         self.grid_text.setColumnStretch(1, 1)
         self.text_tools_box.addLayout(self.grid_text)
@@ -505,7 +505,7 @@ class PaintOptionsTool(AppTool):
                         """)
         self.layout.addWidget(title_label)
 
-        grid = FCGridLayout(v_spacing=3)
+        grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid)
         grid.setColumnStretch(0, 0)
         grid.setColumnStretch(1, 1)
@@ -735,7 +735,7 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -3457,7 +3457,7 @@ class AppGeoEditor(QtCore.QObject):
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.grid_d = FCGridLayout(v_spacing=3)
+        self.grid_d = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid_d.setColumnStretch(0, 0)
         self.grid_d.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid_d)
@@ -3501,7 +3501,7 @@ class AppGeoEditor(QtCore.QObject):
         self.adv_frame.setContentsMargins(0, 0, 0, 0)
         self.tools_box.addWidget(self.adv_frame)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         grid0.setContentsMargins(0, 0, 0, 0)

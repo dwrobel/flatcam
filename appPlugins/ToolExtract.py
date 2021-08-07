@@ -916,7 +916,7 @@ class ExtractUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=3)
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
@@ -944,12 +944,12 @@ class ExtractUI:
 
         grid_lay.addWidget(self.padt_label, 4, 0, 1, 2)
 
-        pad_all_grid = FCGridLayout(v_spacing=3)
+        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_all_grid.setColumnStretch(0, 0)
         pad_all_grid.setColumnStretch(1, 1)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = FCGridLayout(v_spacing=3)
+        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_grid.setColumnStretch(0, 0)
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
@@ -1031,7 +1031,7 @@ class ExtractUI:
         grid_lay.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Grid Layout
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
@@ -1079,7 +1079,7 @@ class ExtractUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # ## Grid Layout
-        grid2 = FCGridLayout(v_spacing=3)
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
         self.ring_box.addLayout(grid2)
@@ -1158,7 +1158,7 @@ class ExtractUI:
         grid2.addWidget(self.other_ring_label, 5, 0)
         grid2.addWidget(self.other_ring_entry, 5, 1)
 
-        grid3 = FCGridLayout(v_spacing=3)
+        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid3)
         grid3.setColumnStretch(0, 0)
         grid3.setColumnStretch(1, 1)

@@ -4060,7 +4060,7 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ######################## ADD New Tool Grid ##################################################################
         # #############################################################################################################
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.ui_vertical_lay.addLayout(grid1)
@@ -4114,7 +4114,7 @@ class AppExcEditorUI:
         self.resize_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.resize_frame)
 
-        self.resize_grid = FCGridLayout(v_spacing=3)
+        self.resize_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.resize_grid.setColumnStretch(0, 0)
         self.resize_grid.setColumnStretch(1, 1)
         self.resize_grid.setContentsMargins(0, 0, 0, 0)
@@ -4170,7 +4170,7 @@ class AppExcEditorUI:
         self.array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.array_frame)
 
-        self.array_grid = FCGridLayout(v_spacing=3)
+        self.array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.array_grid.setColumnStretch(0, 0)
         self.array_grid.setColumnStretch(1, 1)
         self.array_grid.setContentsMargins(0, 0, 0, 0)
@@ -4213,7 +4213,7 @@ class AppExcEditorUI:
         self.array_linear_frame = QtWidgets.QFrame()
         self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_linear_frame, 6, 0, 1, 2)
-        self.lin_grid = FCGridLayout(v_spacing=3)
+        self.lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.lin_grid.setColumnStretch(0, 0)
         self.lin_grid.setColumnStretch(1, 1)
         self.lin_grid.setContentsMargins(0, 0, 0, 0)
@@ -4272,7 +4272,7 @@ class AppExcEditorUI:
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_circular_frame, 8, 0, 1, 2)
 
-        self.circ_grid = FCGridLayout(v_spacing=3)
+        self.circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.circ_grid.setColumnStretch(0, 0)
         self.circ_grid.setColumnStretch(1, 1)
         self.circ_grid.setContentsMargins(0, 0, 0, 0)
@@ -4316,7 +4316,7 @@ class AppExcEditorUI:
         self.slot_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_frame)
 
-        self.slot_grid = FCGridLayout(v_spacing=3)
+        self.slot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_grid.setColumnStretch(0, 0)
         self.slot_grid.setColumnStretch(1, 1)
         self.slot_grid.setContentsMargins(0, 0, 0, 0)
@@ -4390,7 +4390,7 @@ class AppExcEditorUI:
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_array_frame)
 
-        self.slot_array_grid = FCGridLayout(v_spacing=3)
+        self.slot_array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_grid.setColumnStretch(0, 0)
         self.slot_array_grid.setColumnStretch(1, 1)
         self.slot_array_grid.setContentsMargins(0, 0, 0, 0)
@@ -4434,7 +4434,7 @@ class AppExcEditorUI:
         self.slot_array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_linear_frame, 6, 0, 1, 2)
 
-        self.slot_array_lin_grid = FCGridLayout(v_spacing=3)
+        self.slot_array_lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_lin_grid.setColumnStretch(0, 0)
         self.slot_array_lin_grid.setColumnStretch(1, 1)
         self.slot_array_lin_grid.setContentsMargins(0, 0, 0, 0)
@@ -4494,7 +4494,7 @@ class AppExcEditorUI:
         self.slot_array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_circular_frame, 8, 0, 1, 2)
 
-        self.slot_array_circ_grid = FCGridLayout(v_spacing=3)
+        self.slot_array_circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_circ_grid.setColumnStretch(0, 0)
         self.slot_array_circ_grid.setColumnStretch(1, 1)
         self.slot_array_circ_grid.setContentsMargins(0, 0, 0, 0)

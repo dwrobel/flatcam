@@ -37,7 +37,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         font = QtGui.QFont()
         font.setPointSize(tb_fsize)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

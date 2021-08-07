@@ -6090,7 +6090,7 @@ class AppGerberEditorUI:
         # #############################################################################################################
         # ############################ Add/Delete an new Aperture #####################################################
         # #############################################################################################################
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.apertures_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
@@ -6191,7 +6191,7 @@ class AppGerberEditorUI:
         self.shape_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.shape_frame)
 
-        self.shape_grid = FCGridLayout(v_spacing=3)
+        self.shape_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.shape_grid.setColumnStretch(0, 0)
         self.shape_grid.setColumnStretch(1, 1)
         self.shape_grid.setContentsMargins(0, 0, 0, 0)
@@ -6213,7 +6213,7 @@ class AppGerberEditorUI:
         )
         self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
 
-        p_grid = FCGridLayout(v_spacing=3)
+        p_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         p_grid.setColumnStretch(0, 0)
         p_grid.setColumnStretch(1, 0)
         p_grid.setColumnStretch(2, 0)
@@ -6330,7 +6330,7 @@ class AppGerberEditorUI:
         self.buffer_tools_box.addWidget(buf_title_lbl)
 
         # Grid Layout
-        buff_grid = FCGridLayout(v_spacing=3)
+        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         buff_grid.setColumnStretch(0, 0)
         buff_grid.setColumnStretch(1, 1)
         self.buffer_tools_box.addLayout(buff_grid)
@@ -6390,7 +6390,7 @@ class AppGerberEditorUI:
         self.scale_tools_box.addWidget(scale_title_lbl)
 
         # Grid Layout
-        scale_grid = FCGridLayout(v_spacing=3)
+        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         scale_grid.setColumnStretch(0, 0)
         scale_grid.setColumnStretch(1, 1)
         self.scale_tools_box.addLayout(scale_grid)
@@ -6441,7 +6441,7 @@ class AppGerberEditorUI:
         self.ma_tools_box.addWidget(ma_title_lbl)
 
         # Form Layout
-        mark_grid = FCGridLayout(v_spacing=3)
+        mark_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         mark_grid.setColumnStretch(0, 0)
         mark_grid.setColumnStretch(1, 1)
         self.ma_tools_box.addLayout(mark_grid)
@@ -6512,7 +6512,7 @@ class AppGerberEditorUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.array_box.addWidget(separator_line)
 
-        array_grid = FCGridLayout(v_spacing=3)
+        array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         array_grid.setColumnStretch(0, 0)
         array_grid.setColumnStretch(1, 1)
         self.array_box.addLayout(array_grid)
@@ -6689,7 +6689,7 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

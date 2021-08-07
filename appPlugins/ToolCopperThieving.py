@@ -1288,7 +1288,7 @@ class ThievingUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        i_grid_lay = FCGridLayout(v_spacing=3)
+        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
@@ -1313,7 +1313,7 @@ class ThievingUI:
         i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=3)
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -1464,7 +1464,7 @@ class ThievingUI:
         self.dots_frame = QtWidgets.QFrame()
         self.dots_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.dots_frame)
-        dots_grid = FCGridLayout(v_spacing=3)
+        dots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         dots_grid.setColumnStretch(0, 0)
         dots_grid.setColumnStretch(1, 1)
         dots_grid.setContentsMargins(0, 0, 0, 0)
@@ -1504,7 +1504,7 @@ class ThievingUI:
         self.squares_frame = QtWidgets.QFrame()
         self.squares_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.squares_frame)
-        squares_grid = FCGridLayout(v_spacing=3)
+        squares_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         squares_grid.setColumnStretch(0, 0)
         squares_grid.setColumnStretch(1, 1)
         squares_grid.setContentsMargins(0, 0, 0, 0)
@@ -1544,7 +1544,7 @@ class ThievingUI:
         self.lines_frame = QtWidgets.QFrame()
         self.lines_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.lines_frame)
-        lines_grid = FCGridLayout(v_spacing=3)
+        lines_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         lines_grid.setColumnStretch(0, 0)
         lines_grid.setColumnStretch(1, 1)
         lines_grid.setContentsMargins(0, 0, 0, 0)
@@ -1596,7 +1596,7 @@ class ThievingUI:
         self.layout.addWidget(self.fill_button)
 
         # ## Grid Layout
-        grid_lay_1 = FCGridLayout(v_spacing=3)
+        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay_1)
         grid_lay_1.setColumnStretch(0, 0)
         grid_lay_1.setColumnStretch(1, 1)

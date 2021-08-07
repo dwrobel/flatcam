@@ -682,7 +682,7 @@ class DsidedUI:
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=3)
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
         self.tools_box.addLayout(grid_lay)
@@ -724,7 +724,7 @@ class DsidedUI:
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
         # #############################################################################################################
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -830,7 +830,7 @@ class DsidedUI:
         # #############################################################################################################
         # ##########    MIRROR OPERATION    ###########################################################################
         # #############################################################################################################
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
@@ -928,7 +928,7 @@ class DsidedUI:
         grid1.addWidget(self.pick_hole_button, 12, 0, 1, 3)
 
         # ## Grid Layout
-        grid_lay3 = FCGridLayout(v_spacing=3)
+        grid_lay3 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_lay3.setColumnStretch(0, 0)
         grid_lay3.setColumnStretch(1, 1)
         grid1.addLayout(grid_lay3, 14, 0, 1, 3)
@@ -984,7 +984,7 @@ class DsidedUI:
         # #############################################################################################################
         # ##########    ALIGNMENT OPERATION    ########################################################################
         # #############################################################################################################
-        grid4 = FCGridLayout(v_spacing=3)
+        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid4.setColumnStretch(0, 0)
         grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid4)
@@ -1050,7 +1050,7 @@ class DsidedUI:
         grid4.addWidget(self.align_ref_label, 6, 0)
         grid4.addWidget(self.align_ref_label_val, 6, 1)
 
-        grid5 = FCGridLayout(v_spacing=3)
+        grid5 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(grid5)
 
         # ## Alignment holes

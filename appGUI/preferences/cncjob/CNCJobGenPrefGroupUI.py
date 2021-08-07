@@ -24,7 +24,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

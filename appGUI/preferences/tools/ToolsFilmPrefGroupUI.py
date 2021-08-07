@@ -29,7 +29,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.film_label)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},

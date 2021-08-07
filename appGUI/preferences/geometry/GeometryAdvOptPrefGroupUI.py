@@ -32,7 +32,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.geo_label)
 
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
 
         # Size of trace segment on X axis

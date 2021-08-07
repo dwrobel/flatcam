@@ -28,7 +28,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.solderpastelabel)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Nozzle Tool Diameters

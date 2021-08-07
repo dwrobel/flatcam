@@ -28,7 +28,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.cncjob_label)
 
-        grid2 = FCGridLayout(v_spacing=3)
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)

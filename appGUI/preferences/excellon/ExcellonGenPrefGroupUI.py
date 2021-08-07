@@ -26,7 +26,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
 
         # Plot CB
@@ -55,7 +55,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 1, 0, 1, 3)
 
-        grid2 = FCGridLayout(v_spacing=3)
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)

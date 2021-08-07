@@ -21,7 +21,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=3)
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)

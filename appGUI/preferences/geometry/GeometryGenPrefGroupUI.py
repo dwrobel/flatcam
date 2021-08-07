@@ -43,7 +43,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         )
         plot_hlay.addWidget(self.multicolored_cb)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

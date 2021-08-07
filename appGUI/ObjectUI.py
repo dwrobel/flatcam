@@ -86,7 +86,7 @@ class ObjectUI(QtWidgets.QWidget):
         # ## Common to all objects ##
         # ###########################
         if common is True:
-            self.common_grid = FCGridLayout(v_spacing=3)
+            self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
             self.common_grid.setColumnStretch(0, 1)
             self.common_grid.setColumnStretch(1, 0)
             layout.addLayout(self.common_grid)
@@ -178,7 +178,7 @@ class GerberObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
         # Plot options
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
@@ -425,7 +425,7 @@ class GerberObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=3)
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -540,7 +540,7 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -706,7 +706,7 @@ class ExcellonObjectUI(ObjectUI):
         # ########## TOOLS GRID ###########################################
         # #################################################################
 
-        grid2 = FCGridLayout(v_spacing=3)
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
         grid0.addLayout(grid2, 12, 0, 1, 3)
@@ -773,7 +773,7 @@ class ExcellonObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=3)
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -868,7 +868,7 @@ class GeometryObjectUI(ObjectUI):
         )
 
         # Plot options
-        grid_header = FCGridLayout(v_spacing=3)
+        grid_header = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_header.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(grid_header)
         grid_header.setColumnStretch(0, 0)
@@ -958,7 +958,7 @@ class GeometryObjectUI(ObjectUI):
         self.geo_table_box.setContentsMargins(0, 0, 0, 0)
         self.geo_table_frame.setLayout(self.geo_table_box)
 
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.geo_table_box.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -1029,7 +1029,7 @@ class GeometryObjectUI(ObjectUI):
             _("Plot column. It is visible only for MultiGeo Geometry objects.\n"
               "Enable plot for the selected tool geometry."))
 
-        self.grid4 = FCGridLayout(v_spacing=3)
+        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid4.setColumnStretch(0, 0)
         self.grid4.setColumnStretch(1, 1)
         self.geo_tools_box.addLayout(self.grid4)
@@ -1109,7 +1109,7 @@ class GeometryObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=3)
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -1209,7 +1209,7 @@ class CNCObjectUI(ObjectUI):
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
 
-        f_lay = FCGridLayout(v_spacing=3)
+        f_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         f_lay.setColumnStretch(0, 0)
         f_lay.setColumnStretch(1, 1)
         self.custom_box.addLayout(f_lay)
@@ -1599,7 +1599,7 @@ class DocumentObjectUI(ObjectUI):
         # ############ Grid LAYOUT #####################################
         # ##############################################################
 
-        self.grid0 = FCGridLayout(v_spacing=3)
+        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid0.setColumnStretch(0, 0)
         self.grid0.setColumnStretch(1, 1)
         self.grid0.setColumnStretch(2, 0)

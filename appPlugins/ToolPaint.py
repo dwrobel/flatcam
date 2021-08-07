@@ -2948,7 +2948,7 @@ class PaintUI:
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -3058,7 +3058,7 @@ class PaintUI:
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
         
-        self.grid3 = FCGridLayout(v_spacing=3)
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid3)
@@ -3084,7 +3084,7 @@ class PaintUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=3)
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         self.grid3.addLayout(button_grid, 7, 0, 1, 2)
@@ -3138,7 +3138,7 @@ class PaintUI:
         )
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
-        grid4 = FCGridLayout(v_spacing=3)
+        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid4.setColumnStretch(0, 0)
         grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid4)

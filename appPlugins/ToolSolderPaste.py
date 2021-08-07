@@ -1192,7 +1192,7 @@ class SolderUI:
         self.layout.addWidget(title_label)
 
         # ## Form Layout
-        obj_form_layout = FCGridLayout(v_spacing=3)
+        obj_form_layout = FCGridLayout(v_spacing=5, h_spacing=3)
         obj_form_layout.setColumnStretch(0, 0)
         obj_form_layout.setColumnStretch(1, 1)
         self.layout.addLayout(obj_form_layout)
@@ -1244,7 +1244,7 @@ class SolderUI:
               "is the width of the solder paste dispensed."))
 
         # ### Add a new Tool ## ##
-        grid0 = FCGridLayout(v_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -1291,7 +1291,7 @@ class SolderUI:
         self.gcode_frame.setLayout(self.tool_box)
 
         # Parameter Layout
-        self.param_grid = FCGridLayout(v_spacing=3)
+        self.param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tool_box.addLayout(self.param_grid)
 
         step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('Parameters'))
@@ -1503,7 +1503,7 @@ class SolderUI:
         self.param_grid.addWidget(separator_line, 30, 0, 1, 2)
 
         # Buttons Grid
-        self.button_grid = FCGridLayout(v_spacing=3)
+        self.button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.button_grid.setColumnStretch(0, 0)
         self.button_grid.setColumnStretch(1, 1)
         self.tool_box.addLayout(self.button_grid)

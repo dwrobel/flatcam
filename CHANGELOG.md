@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - more changes due of porting to PyQt6
 - fixed the Autocompleter highlighting to work in PyQt6
 - created a new custom layout based on the Grid Layout where I can set the horizontal and vertical spacings between grid items and used it throughout the app
+- changed the spacings in the new custom Grid layout
 
 5.08.2021
 

@@ -32,7 +32,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid1 = FCGridLayout(v_spacing=3)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
 
         # Margin
@@ -66,7 +66,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.boundingbox_label = FCLabel('<b>%s:</b>' % _('Bounding Box'))
         self.layout.addWidget(self.boundingbox_label)
 
-        grid2 = FCGridLayout(v_spacing=3)
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
