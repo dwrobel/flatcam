@@ -3473,7 +3473,7 @@ class AppGeoEditor(QtCore.QObject):
         self.tooldia_entry.set_range(-10000.0000, 10000.0000)
 
         self.grid_d.addWidget(tooldia_lbl, 0, 0)
-        self.grid_d.addWidget( self.tooldia_entry, 0, 1)
+        self.grid_d.addWidget(self.tooldia_entry, 0, 1)
         # Tree Widget Title
         tw_label = FCLabel('<b>%s</b>:' % _("Geometry Table"))
         tw_label.setToolTip(

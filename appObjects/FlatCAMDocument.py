@@ -136,7 +136,7 @@ class DocumentObject(FlatCAMObj):
         # self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
-        if Qt.mightBeRichText(self.source_file):
+        if QtGui.Qt.mightBeRichText(self.source_file):
             # self.document_editor_tab.code_editor.setHtml(self.source_file)
             self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=True)
         else:
@@ -245,10 +245,10 @@ class DocumentObject(FlatCAMObj):
 
     def on_bold_button(self):
         if self.ui.font_bold_tb.isChecked():
-            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Bold)
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Weight.Bold)
             self.font_bold = True
         else:
-            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Normal)
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Weight.Normal)
             self.font_bold = False
 
     def on_italic_button(self):

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.08.2021
+
+- more changes due of porting to PyQt6
+- fixed the Autocompleter highlighting to work in PyQt6
+
 5.08.2021
 
 - continuing to fix the PyQt6 port

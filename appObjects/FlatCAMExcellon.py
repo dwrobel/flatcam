@@ -674,7 +674,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                         QtWidgets.QSizePolicy.Policy.MinimumExpanding)
 
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
@@ -751,7 +752,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             exc_x_formatted = exc_x_formatted.partition('.')
                             exc_y_formatted = exc_y_formatted.partition('.')
 
-                            # left padd the 'whole' part with zeros
+                            # left pad the 'whole' part with zeros
                             x_whole = exc_x_formatted[0].rjust(whole, 0)
                             y_whole = exc_y_formatted[0].rjust(whole, 0)
 
@@ -824,7 +825,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             stop_slot_x_formatted = stop_slot_x_formatted.partition('.')
                             stop_slot_y_formatted = stop_slot_y_formatted.partition('.')
 
-                            # left padd the 'whole' part with zeros
+                            # left pad the 'whole' part with zeros
                             start_x_whole = start_slot_x_formatted[0].rjust(whole, 0)
                             start_y_whole = start_slot_y_formatted[0].rjust(whole, 0)
                             stop_x_whole = stop_slot_x_formatted[0].rjust(whole, 0)

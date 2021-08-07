@@ -1640,8 +1640,8 @@ class DiscEditorGrb(ShapeToolEditorGrb):
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             size_ap = 0.0
-            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # self.draw_app.app.inform.emit(
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -1764,8 +1764,8 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             size_ap = 0.0
-            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # self.draw_app.app.inform.emit(
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -2456,7 +2456,8 @@ class EraserEditorGrb(ShapeToolEditorGrb):
                     if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
+            self.draw_app.ui.apertures_table.setSelectionMode(
+                QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
             self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
@@ -3615,13 +3616,17 @@ class AppGerberEditor(QtCore.QObject):
                                     self.decimals, self.storage_dict[ap_code]['height']
                                     )
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsEditable)
+                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                     QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                     QtCore.Qt.ItemFlag.ItemIsEditable)
             elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
                     '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['diam'],
                                     self.decimals, self.storage_dict[ap_code]['nVertices'])
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsEditable)
+                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                     QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                     QtCore.Qt.ItemFlag.ItemIsEditable)
             else:
                 ap_dim_item = QtWidgets.QTableWidgetItem('')
                 ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
@@ -3636,9 +3641,12 @@ class AppGerberEditor(QtCore.QObject):
                 ap_size_item = QtWidgets.QTableWidgetItem('')
 
             if str(self.storage_dict[ap_code]['type']) == 'C':
-                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsEditable)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                      QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                      QtCore.Qt.ItemFlag.ItemIsEditable)
             else:
-                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                      QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
@@ -6166,7 +6174,8 @@ class AppGerberEditorUI:
         )
 
         self.delaperture_btn = FCButton(_('Delete'))
-        # self.delaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        # self.delaperture_btn.setSizePolicy(
+        #     QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         self.delaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delaperture_btn.setToolTip(
@@ -6331,7 +6340,7 @@ class AppGerberEditorUI:
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
-        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0 ,0 )
+        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
         buff_grid.addWidget(self.buffer_distance_entry, 0, 1)
 
         # Buffer Corner

@@ -376,8 +376,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         # # End Build Exclusion Areas
         # # -----------------------------
         #
-        # # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
-        # # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
+        # # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful
+        # rename done in the collection view but only for Geometry objects. Perhaps some references remains.
+        # Should be fixed.
         # self.ui.name_entry.set_value(self.options['name'])
         # self.ui_connect()
         #
@@ -680,7 +681,8 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                         QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 
@@ -705,8 +707,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             for geo in flattened_geo:
                 if geo.geom_type == 'Polygon':
                     vertex_points += len(list(geo.exterior.coords))
-                    for int in geo.interiors:
-                        vertex_points += len(list(int.coords))
+                    for inter in geo.interiors:
+                        vertex_points += len(list(inter.coords))
                 if geo.geom_type in ['LineString', 'LinearRing']:
                     vertex_points += len(list(geo.coords))
 
@@ -2144,7 +2146,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param outname:
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
-        :param tools_in_use:    the tools that are used, needed by some preprocessors
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted

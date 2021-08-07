@@ -617,7 +617,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
 
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                         QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 
@@ -1313,7 +1314,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             dia_plot = float(self.options["tools_mill_tooldia"])
                         except ValueError:
                             # we may have a tuple with only one element and a comma
-                            dia_plot = [float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''][0]
+                            dia_plot = [
+                                float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''
+                            ][0]
 
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
@@ -1328,7 +1331,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             if not gcode_parsed:
                                 continue
                             # gcode_parsed = self.gcode_parsed
-                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
+                                       kind=kind)
                 else:
                     # multiple tools usage
                     if self.tools:
@@ -1338,7 +1342,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                 self.decimals
                             )
                             gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
-                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
+                                       kind=kind)
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):

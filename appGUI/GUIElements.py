@@ -881,7 +881,8 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         self.spinner.set_step(step)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
@@ -1792,7 +1793,8 @@ class FCTextAreaExtended(FCTextEdit):
                 self.comment()
 
         tc = self.textCursor()
-        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and \
+                self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
@@ -1815,7 +1817,7 @@ class FCTextAreaExtended(FCTextEdit):
                 tc.clearSelection()
                 self.textCursor().insertText('}')
         elif key == Qt.Key.Key_BracketRight:
-            tc.select(QtGui.QTextCursor.SelectionTypeWordUnderCursor)
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == ']':
                 tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
@@ -1823,7 +1825,7 @@ class FCTextAreaExtended(FCTextEdit):
                 tc.clearSelection()
                 self.textCursor().insertText(']')
         elif key == Qt.Key.Key_ParenRight:
-            tc.select(QtGui.QTextCursor.SelectionTypeWordUnderCursor)
+            tc.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
             if tc.selectedText() == ')':
                 tc.movePosition(QTextCursor.MoveOperation.Right)
                 self.setTextCursor(tc)
@@ -1834,7 +1836,7 @@ class FCTextAreaExtended(FCTextEdit):
             super(FCTextAreaExtended, self).keyPressEvent(event)
 
         if self.completer_enable:
-            tc.select(QTextCursor.SelectionTypeWordUnderCursor)
+            tc.select(QTextCursor.SelectionType.WordUnderCursor)
             cr = self.cursorRect()
 
             if len(tc.selectedText()) > 0:
@@ -2100,7 +2102,8 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
             self.comment()
 
         tc = self.textCursor()
-        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Enter or key == Qt.Key.Key_Return) and \
+                self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
@@ -2409,7 +2412,8 @@ class FCInputSpinner(QtWidgets.QDialog):
         self.wdg.set_step(self.step)
         self.wdg.set_precision(decimals)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.wdg.setSizePolicy(sizePolicy)
 
         QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
@@ -2590,7 +2594,7 @@ class FCButton(QtWidgets.QPushButton):
         if checkable is not None:
             self.setCheckable(checkable)
 
-        if not click_callback is None:
+        if click_callback is not None:
             self.clicked.connect(click_callback)
 
     def get_value(self):
@@ -3199,8 +3203,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :return:
             """
             # Determine if the current movement is detected as a drag
-            if not self.dragStartPos.isNull() and \
-                    ((event.position().toPoint() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
+            if not self.dragStartPos.isNull() and (
+                    (event.position().toPoint() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
@@ -4209,7 +4213,8 @@ class _ExpandableTextEdit(FCTextEdit):
         """
 
         key = event.key()
-        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Return or key == Qt.Key.Key_Enter) and self.completer.popup().isVisible():
+        if (key == Qt.Key.Key_Tab or key == Qt.Key.Key_Return or key == Qt.Key.Key_Enter) and \
+                self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             return
@@ -4486,7 +4491,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                     # boolean
                     boolean.setForeground(brush)
-                    keywords = ["TRUE", "True","FALSE", "False"]
+                    keywords = ["TRUE", "True", "FALSE", "False"]
                     for word in keywords:
                         pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
                         rule = (pattern, boolean)
@@ -4502,14 +4507,17 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # string
                     brush = QtGui.QBrush(Qt.GlobalColor.red, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("\".*\"")
-                    pattern.setMinimal(True)
+                    # pattern.setMinimal
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
                     string.setForeground(brush)
                     rule = (pattern, string)
                     self.highlightingRules.append(rule)
 
                     # singleQuotedString
                     pattern = QtCore.QRegularExpression("\'.*\'")
-                    pattern.setMinimal(True)
+                    # pattern.setMinimal(True)
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
+
                     singleQuotedString.setForeground(brush)
                     rule = (pattern, singleQuotedString)
                     self.highlightingRules.append(rule)
@@ -4517,7 +4525,9 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # X coordinate
                     brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("X")
-                    pattern.setMinimal(True)
+                    # pattern.setMinimal(True)
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
+
                     x_chars.setFontWeight(QtGui.QFont.Weight.Bold)
                     x_chars.setForeground(brush)
                     rule = (pattern, x_chars)
@@ -4526,7 +4536,9 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # Y coordinate
                     brush = QtGui.QBrush(Qt.GlobalColor.darkBlue, Qt.BrushStyle.SolidPattern)
                     pattern = QtCore.QRegularExpression("Y")
-                    pattern.setMinimal(True)
+                    # pattern.setMinimal(True)
+                    pattern.setPatternOptions(QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption)
+
                     y_chars.setFontWeight(QtGui.QFont.Weight.Bold)
                     y_chars.setForeground(brush)
                     rule = (pattern, y_chars)
@@ -4545,12 +4557,20 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
                 # go in reverse from the last element to the first
                 for rule in self.highlightingRules[::-1]:
-                    expression = QtCore.QRegularExpression(rule[0])
-                    index = expression.indexIn(text)
-                    while index >= 0:
-                        length = expression.matchedLength()
-                        self.setFormat(index, length, rule[1])
-                        index = expression.indexIn(text, index + length)
+                    # expression = QtCore.QRegularExpression(rule[0])
+                    # index = expression.indexIn(text)
+                    # while index >= 0:
+                    #     length = expression.matchedLength()
+                    #     self.setFormat(index, length, rule[1])
+                    #     index = expression.indexIn(text, index + length)
+                    expression = rule[0]
+                    index = expression.globalMatch(text)
+                    while index.hasNext():
+                        match = index.next()
+                        length = match.capturedLength(0)
+                        start = match.capturedStart(0)
+                        self.setFormat(start, length, rule[1])
+
                 self.setCurrentBlockState(0)
 
         # def format_text_color(self):
@@ -4618,7 +4638,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
     def __init__(self, *args, color_dict=None):
         QtWidgets.QFrame.__init__(self, *args)
 
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Shadow.Sunken)
+        self.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Sunken)
 
         self.edit = self.PlainTextEdit(color_dict=color_dict)
         self.number_bar = self.NumberBar(self.edit)

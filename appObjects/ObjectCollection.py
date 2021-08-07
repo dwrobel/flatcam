@@ -226,6 +226,7 @@ class TreeItem(KeySensitiveListView):
         except AttributeError:
             pass
 
+
 class ObjectCollection(QtCore.QAbstractItemModel):
     """
     Object storage and management.

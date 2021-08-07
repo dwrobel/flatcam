@@ -14,7 +14,7 @@ from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawTo
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 import shapely.affinity as affinity
-from appCommon.Common import LoudDict
+# from appCommon.Common import LoudDict
 
 import numpy as np
 
@@ -2124,7 +2124,9 @@ class AppExcEditor(QtCore.QObject):
         # make the diameter column editable
         for row in range(self.tool_row):
             self.ui.tools_table_exc.item(row, 1).setFlags(
-                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable |
+                QtCore.Qt.ItemFlag.ItemIsSelectable |
+                QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table_exc.item(row, 2).setForeground(QtGui.QColor(0, 0, 0))
             self.ui.tools_table_exc.item(row, 3).setForeground(QtGui.QColor(0, 0, 0))
 
@@ -4132,7 +4134,8 @@ class AppExcEditorUI:
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.resdrill_entry = FCDoubleSpinner(policy=False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.resdrill_entry.setSizePolicy(sizePolicy)
         self.resdrill_entry.set_precision(self.decimals)
         self.resdrill_entry.set_range(0.0000, 10000.0000)
