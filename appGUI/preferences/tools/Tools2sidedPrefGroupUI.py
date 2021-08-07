@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.dblsided_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid0)
 
         # ## Drill diameter for alignment holes

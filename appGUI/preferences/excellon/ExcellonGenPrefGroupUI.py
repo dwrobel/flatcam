@@ -2,7 +2,7 @@ import platform
 
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -26,7 +26,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid1)
 
         # Plot CB
@@ -55,7 +55,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 1, 0, 1, 3)
 
-        grid2 = QtWidgets.QGridLayout()
+        grid2 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid2)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)

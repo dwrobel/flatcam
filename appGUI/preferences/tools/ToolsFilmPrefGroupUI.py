@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +29,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.film_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid0)
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},

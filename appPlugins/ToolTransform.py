@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea
+    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea, FCGridLayout
 
 import numpy as np
 
@@ -598,7 +598,7 @@ class TransformUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

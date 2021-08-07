@@ -10,7 +10,7 @@ from PyQt6.QtCore import Qt
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 from appParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -761,7 +761,7 @@ class QRcodeUI:
         self.layout.addWidget(QtWidgets.QLabel(''))
 
         # ## Grid Layout
-        i_grid_lay = QtWidgets.QGridLayout()
+        i_grid_lay = FCGridLayout(v_spacing=3)
         self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
@@ -803,7 +803,7 @@ class QRcodeUI:
         i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -926,7 +926,7 @@ class QRcodeUI:
         self.export_frame = QtWidgets.QFrame()
         self.export_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.export_frame)
-        self.export_lay = QtWidgets.QGridLayout()
+        self.export_lay = FCGridLayout(v_spacing=3)
         self.export_lay.setContentsMargins(0, 0, 0, 0)
         self.export_frame.setLayout(self.export_lay)
         self.export_lay.setColumnStretch(0, 0)

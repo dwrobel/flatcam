@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox, \
-    FCButton, FCLabel, VerticalScrollArea
+    FCButton, FCLabel, VerticalScrollArea, FCGridLayout
 from camlib import grace
 
 from copy import deepcopy
@@ -1127,7 +1127,7 @@ class PanelizeUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCSpinner, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel
+    NumericalEvalTupleEntry, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,7 +33,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.cncjob_label)
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)

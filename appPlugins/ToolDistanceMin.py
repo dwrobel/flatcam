@@ -7,7 +7,7 @@
 
 from PyQt6 import QtWidgets, QtCore
 from appTool import AppTool
-from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea
+from appGUI.GUIElements import FCEntry, FCLabel, FCButton, VerticalScrollArea, FCGridLayout
 
 from shapely.ops import nearest_points
 from shapely.geometry import Point, MultiPolygon
@@ -253,7 +253,7 @@ class DistMinUI:
         self.layout.addWidget(title_label)
 
         # ## Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

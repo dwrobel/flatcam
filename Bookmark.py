@@ -1,5 +1,5 @@
 from PyQt6 import QtGui, QtCore, QtWidgets
-from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog
+from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog, FCGridLayout
 
 import sys
 import webbrowser
@@ -78,7 +78,7 @@ class BookmarkManager(QtWidgets.QWidget):
         new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         new_vlay.addLayout(grid0)

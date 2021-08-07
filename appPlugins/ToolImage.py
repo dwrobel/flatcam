@@ -8,7 +8,7 @@
 from PyQt6 import QtGui, QtWidgets
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCLabel, VerticalScrollArea, FCGridLayout
 
 import os
 
@@ -223,7 +223,7 @@ class ImageUI:
         self.layout.addWidget(title_label)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

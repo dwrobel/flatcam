@@ -2200,7 +2200,8 @@ class FCComboBox(QtWidgets.QComboBox):
         self._obj_type = None
 
         if policy is True:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
@@ -3204,7 +3205,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             """
             # Determine if the current movement is detected as a drag
             if not self.dragStartPos.isNull() and (
-                    (event.position().toPoint() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
+                    ((event.position().toPoint() - self.dragStartPos).manhattanLength()) <
+                    QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
@@ -4244,7 +4246,8 @@ class _ExpandableTextEdit(FCTextEdit):
             if line_count <= 1:
                 self.historyPrev.emit()
                 return
-        elif event.matches(QKeySequence.StandardKey.MoveToNextPage) or event.matches(QKeySequence.StandardKey.MoveToPreviousPage):
+        elif event.matches(QKeySequence.StandardKey.MoveToNextPage) or \
+                event.matches(QKeySequence.StandardKey.MoveToPreviousPage):
             return self._termWidget.browser().keyPressEvent(event)
         elif event.key() == QtCore.Qt.Key.Key_Escape:
             self.on_escape_key()
@@ -4727,7 +4730,7 @@ class FCJog(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # JOG axes
-        grbl_jog_grid = QtWidgets.QGridLayout()
+        grbl_jog_grid = FCGridLayout(v_spacing=3)
         grbl_jog_grid.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinimumSize)
         grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
@@ -4806,7 +4809,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # Zero the axes
-        grbl_zero_grid = QtWidgets.QGridLayout()
+        grbl_zero_grid = FCGridLayout(v_spacing=3)
         grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
         grbl_zero_grid.setColumnStretch(0, 0)
         grbl_zero_grid.setColumnStretch(1, 0)
@@ -4844,7 +4847,8 @@ class FCZeroAxes(QtWidgets.QFrame):
         # Zeroo all axes
         self.grbl_zero_all_button = QtWidgets.QToolButton()
         self.grbl_zero_all_button.setText(_("All"))
-        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum,
+                                                QtWidgets.QSizePolicy.Policy.Expanding)
 
         self.grbl_zero_all_button.setToolTip(
             _("Zero all CNC axes at current position.")
@@ -4883,11 +4887,11 @@ class RotatedToolButton(QtWidgets.QToolButton):
         size = options.rect.size()
         size.transpose()
         options.rect.setSize(size)
-        options.features = QtWidgets.QStyleOptionButton.None_
+        options.features = QtWidgets.QStyleOptionButton.ButtonFeature.None_
         # if self.isFlat():
         #     options.features |= QtWidgets.QStyleOptionButton.Flat
         if self.menu():
-            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+            options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.HasMenu
         # if self.autoDefault() or self.isDefault():
         #     options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
         # if self.isDefault():
@@ -4936,15 +4940,15 @@ class RotatedButton(QtWidgets.QPushButton):
         size = options.rect.size()
         size.transpose()
         options.rect.setSize(size)
-        options.features = QtWidgets.QStyleOptionButton.None_
+        options.features = QtWidgets.QStyleOptionButton.ButtonFeature.None_
         if self.isFlat():
-            options.features |= QtWidgets.QStyleOptionButton.Flat
+            options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.Flat
         if self.menu():
-            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+            options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.HasMenu
         if self.autoDefault() or self.isDefault():
-            options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
+            options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.AutoDefaultButton
         if self.isDefault():
-            options.features |= QtWidgets.QStyleOptionButton.DefaultButton
+            options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.DefaultButton
         if self.isDown() or (self.menu() and self.menu().isVisible()):
             options.state |= QtWidgets.QStyle.State_Sunken
         if self.isChecked():
@@ -5113,7 +5117,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         menu = QtWidgets.QMenu(parent)
 
         menu_runscript = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
-                                           '%s' % _('Run Script ...'), self)
+                                       '%s' % _('Run Script ...'), self)
         menu_runscript.setToolTip(
             _("Will run the opened Tcl Script thus\n"
               "enabling the automation of certain\n"
@@ -5128,23 +5132,23 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             # Open Project ...
             menu_openproject = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
-                                                 '%s ...' % _('Open Project'), self)
+                                             '%s ...' % _('Open Project'), self)
             self.menu_open.addAction(menu_openproject)
             self.menu_open.addSeparator()
 
             # Open Gerber ...
             menu_opengerber = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
+                                            '%s ...\t%s' % (_('Open Gerber'), _('Ctrl+G')), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
             menu_openexcellon = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                  '%s ...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
+                                              '%s ...\t%s' % (_('Open Excellon'), _('Ctrl+E')), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...
             menu_opengcode = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
-                                               '%s ...' % _('Open G-Code'), self)
+                                           '%s ...' % _('Open G-Code'), self)
             self.menu_open.addAction(menu_opengcode)
 
             self.menu_open.addSeparator()
@@ -5162,6 +5166,28 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
             silent=True if self.app.cmd_line_headless == 1 else False))
 
         exitAction.triggered.connect(self.app.final_save)
+
+
+class FCGridLayout(QtWidgets.QGridLayout):
+    """
+    This class create the Sys Tray icon for the app
+    """
+
+    def __init__(self, v_spacing=None, h_spacing=None, margins=None, *args, parent=None):
+        """
+        Class that makes a custom grid layout
+
+        :param parent:
+        """
+
+        super().__init__(*args, parent=parent)
+
+        if h_spacing is not None:
+            self.setHorizontalSpacing(h_spacing)
+        if v_spacing is not None:
+            self.setVerticalSpacing(v_spacing)
+        if margins is not None:
+            self.setContentsMargins(margins[0], margins[1], margins[2], margins[3])
 
 
 def message_dialog(title, message, kind="info", parent=None):

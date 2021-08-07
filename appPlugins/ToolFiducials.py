@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 from appCommon.Common import LoudDict
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
@@ -895,7 +895,7 @@ class FidoUI:
         self.layout.addWidget(separator_line)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)

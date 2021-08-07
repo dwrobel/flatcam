@@ -4,7 +4,7 @@ from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
-    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea, FCLabel
+    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea, FCLabel, FCGridLayout
 
 import gettext
 import appTranslation as fcTranslate

@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
-    FCLabel, VerticalScrollArea
+    FCLabel, VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
 from shapely.ops import unary_union, linemerge
@@ -2332,7 +2332,7 @@ class CutoutUI:
         # self.tools_box.addWidget(FCLabel(''))
 
         # Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)

@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 import math
 
 import gettext
@@ -445,7 +445,7 @@ class CalcUI:
         self.layout.addWidget(units_label)
 
         # Grid Layout
-        grid_units_layout = QtWidgets.QGridLayout()
+        grid_units_layout = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_units_layout)
 
         inch_label = FCLabel(_("INCH"))
@@ -470,7 +470,7 @@ class CalcUI:
         # #############################################################################################################
         # ################################ V-shape Tool Calculator ####################################################
         # #############################################################################################################
-        grid_vshape = QtWidgets.QGridLayout()
+        grid_vshape = FCGridLayout(v_spacing=3)
         grid_vshape.setColumnStretch(0, 0)
         grid_vshape.setColumnStretch(1, 1)
         self.layout.addLayout(grid_vshape)
@@ -546,9 +546,10 @@ class CalcUI:
         # #############################################################################################################
         # ############################## ElectroPlating Tool Calculator ###############################################
         # #############################################################################################################
-        grid_electro = QtWidgets.QGridLayout()
+        grid_electro = FCGridLayout(v_spacing=3)
         grid_electro.setColumnStretch(0, 0)
         grid_electro.setColumnStretch(1, 1)
+
         self.layout.addLayout(grid_electro)
 
         grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)

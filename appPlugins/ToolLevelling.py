@@ -14,7 +14,7 @@ from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, FCFileSaveDialog, FCCheckBox, FCTable, \
     FCDoubleSpinner, FCSpinner, FCDetachableTab, FCZeroAxes, FCJog, FCSliderWithDoubleSpinner, RotatedToolButton, \
-    FCEntry, VerticalScrollArea
+    FCEntry, VerticalScrollArea, FCGridLayout
 from appEditors.AppTextEditor import AppTextEditor
 
 from camlib import CNCjob
@@ -1796,7 +1796,7 @@ class LevelUI:
         self.al_box.setContentsMargins(0, 0, 0, 0)
         self.al_frame.setLayout(self.al_box)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.al_box.addLayout(grid0)
@@ -2023,7 +2023,7 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONNECT
         # #############################################################################################################
-        grbl_conn_grid = QtWidgets.QGridLayout()
+        grbl_conn_grid = FCGridLayout(v_spacing=3)
         grbl_conn_grid.setColumnStretch(0, 0)
         grbl_conn_grid.setColumnStretch(1, 1)
         grbl_conn_grid.setColumnStretch(2, 0)
@@ -2104,13 +2104,13 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONTROL
         # #############################################################################################################
-        grbl_ctrl_grid = QtWidgets.QGridLayout()
+        grbl_ctrl_grid = FCGridLayout(v_spacing=3)
         grbl_ctrl_grid.setColumnStretch(0, 0)
         grbl_ctrl_grid.setColumnStretch(1, 1)
         grbl_ctrl_grid.setColumnStretch(2, 0)
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
 
-        grbl_ctrl2_grid = QtWidgets.QGridLayout()
+        grbl_ctrl2_grid = FCGridLayout(v_spacing=3)
         grbl_ctrl2_grid.setColumnStretch(0, 0)
         grbl_ctrl2_grid.setColumnStretch(1, 1)
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl2_grid)
@@ -2210,7 +2210,7 @@ class LevelUI:
         # #############################################################################################################
         # GRBL SENDER
         # #############################################################################################################
-        grbl_send_grid = QtWidgets.QGridLayout()
+        grbl_send_grid = FCGridLayout(v_spacing=3)
         grbl_send_grid.setColumnStretch(0, 1)
         grbl_send_grid.setColumnStretch(1, 0)
         self.gr_send_tab_layout.addLayout(grbl_send_grid)

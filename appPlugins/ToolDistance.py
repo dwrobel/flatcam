@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore
 
 from appTool import AppTool
 from appGUI.VisPyVisuals import *
-from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel, VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import Point, MultiLineString, Polygon
 
@@ -577,7 +577,7 @@ class DistUI:
         self.layout.addWidget(title_label)
 
         # ## Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

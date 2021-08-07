@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -20,7 +20,7 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Corner Markers Options")))
         self.decimals = decimals
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

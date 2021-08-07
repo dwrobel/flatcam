@@ -1,7 +1,8 @@
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,7 +22,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # Create a grid layout for the Application general settings
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

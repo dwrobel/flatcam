@@ -9,7 +9,8 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, VerticalScrollArea
+    FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, \
+    VerticalScrollArea, FCGridLayout
 from appParsers.ParseGerber import Gerber
 from camlib import grace
 
@@ -3260,7 +3261,7 @@ class IsoUI:
               "B = ball tip milling tool\n"
               "V = v-shape milling tool"))
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
@@ -3290,7 +3291,7 @@ class IsoUI:
         # ############### Tool adding #################################
         # #############################################################
 
-        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3 = FCGridLayout(v_spacing=3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid3)
@@ -3331,7 +3332,7 @@ class IsoUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = QtWidgets.QGridLayout()
+        button_grid = FCGridLayout(v_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         self.grid3.addLayout(button_grid, 7, 0, 1, 2)

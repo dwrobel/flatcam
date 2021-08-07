@@ -7,7 +7,7 @@
 
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMCNCJob import CNCJobObject
-from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable
+from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, FCGridLayout
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 # from io import StringIO
@@ -827,7 +827,7 @@ class AppGCodeEditorUI:
         self.snippet_frame.setContentsMargins(0, 0, 0, 0)
         self.edit_box.addWidget(self.snippet_frame)
 
-        self.snippet_grid = QtWidgets.QGridLayout()
+        self.snippet_grid = FCGridLayout(v_spacing=3)
         # self.snippet_grid.setColumnStretch(0, 0)
         # self.snippet_grid.setColumnStretch(1, 1)
         self.snippet_grid.setContentsMargins(0, 0, 0, 0)

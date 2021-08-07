@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCComboBox, FCSpinner, FCColorEntry, FCLabel, FCDoubleSpinner, RadioSet
+from appGUI.GUIElements import FCComboBox, FCSpinner, FCColorEntry, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -19,7 +19,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("CNC Job Adv. Options")))
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

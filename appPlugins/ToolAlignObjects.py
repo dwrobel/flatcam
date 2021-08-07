@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 
-from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea
+from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout
 
 import math
 
@@ -414,7 +414,7 @@ class AlignUI:
         self.layout.addWidget(QtWidgets.QLabel(""))
 
         # Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

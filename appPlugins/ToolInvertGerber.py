@@ -8,7 +8,8 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, \
+    VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import box
 
@@ -239,7 +240,7 @@ class InvertUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)

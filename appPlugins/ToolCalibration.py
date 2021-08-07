@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry, VerticalScrollArea
-from appGUI.GUIElements import FCTable, FCComboBox, RadioSet
+from appGUI.GUIElements import FCTable, FCComboBox, RadioSet, FCGridLayout
 from appEditors.AppTextEditor import AppTextEditor
 
 from shapely.geometry import Point
@@ -783,7 +783,7 @@ class CalibrationUI:
         self.layout.addWidget(QtWidgets.QLabel(""))
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)

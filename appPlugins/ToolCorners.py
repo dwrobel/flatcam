@@ -9,7 +9,8 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel, \
+    VerticalScrollArea, FCGridLayout
 from shapely.geometry import MultiPolygon, LineString, Point
 from shapely.ops import unary_union
 
@@ -724,7 +725,7 @@ class CornersUI:
         self.layout.addWidget(self.points_label)
 
         # ## Grid Layout
-        grid_loc = QtWidgets.QGridLayout()
+        grid_loc = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_loc)
 
         # TOP LEFT
@@ -758,7 +759,7 @@ class CornersUI:
         self.layout.addWidget(separator_line)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
