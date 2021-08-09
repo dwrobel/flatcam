@@ -142,7 +142,7 @@ class ToolOptimal(AppTool):
         self.ui.locations_textb.clear()
         # new cursor - select all document
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -316,7 +316,7 @@ class ToolOptimal(AppTool):
     def on_textbox_clicked(self):
         # new cursor - select all document
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -325,11 +325,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         self.selected_text = cursor.selectedText()
@@ -345,7 +345,7 @@ class ToolOptimal(AppTool):
     def on_distances_textb_clicked(self):
         # new cursor - select all document
         cursor = self.ui.distances_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -354,11 +354,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.distances_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         distance_text = cursor.selectedText()
@@ -376,7 +376,7 @@ class ToolOptimal(AppTool):
     def on_locations_sec_clicked(self):
         # new cursor - select all document
         cursor = self.ui.locations_sec_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -385,11 +385,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.locations_sec_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         self.selected_locations_text = cursor.selectedText()

@@ -5377,7 +5377,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                grid0 = QtWidgets.QGridLayout(self)
+                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Quadrant 1"), "value": "bl"},
@@ -5648,7 +5648,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                grid0 = QtWidgets.QGridLayout(self)
+                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Bottom Left"), "value": "bl"},

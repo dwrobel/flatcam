@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.08.2021
+
+- wip in porting to PyQt6: fixed OptionalInput and OptionalHideInput GUI elements
+
 6.08.2021
 
 - more changes due of porting to PyQt6

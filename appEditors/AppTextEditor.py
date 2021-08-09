@@ -6,7 +6,7 @@
 # ##########################################################
 
 from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton, \
-    FCGridLayout
+    FCGridLayout, FCCheckBox
 from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -106,7 +106,7 @@ class AppTextEditor(QtWidgets.QWidget):
         control_lay.addWidget(self.entryReplace)
 
         # Select All
-        self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
+        self.sel_all_cb = FCCheckBox(_('All'))
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
         control_lay.addWidget(self.sel_all_cb)

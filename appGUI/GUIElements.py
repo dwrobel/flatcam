@@ -69,7 +69,7 @@ class RadioSet(QtWidgets.QWidget):
 
         layout.setContentsMargins(0, 0, 0, 0)
 
-        if stretch is False:
+        if stretch is False or stretch is None:
             pass
         else:
             layout.addStretch()
@@ -3430,8 +3430,7 @@ class OptionalInputSection:
         self.cb.stateChanged.connect(self.on_cb_change)
 
     def on_cb_change(self):
-
-        if self.cb.checkState():
+        if self.cb.checkState() is Qt.CheckState.Checked:
             for widget in self.optinputs:
                 if self.logic is True:
                     widget.setEnabled(True)
@@ -3473,7 +3472,7 @@ class OptionalHideInputSection:
 
     def on_cb_change(self):
 
-        if self.cb.checkState():
+        if self.cb.checkState() is Qt.CheckState.Checked:
             for widget in self.optinputs:
                 if self.logic is True:
                     widget.show()
@@ -3737,12 +3736,12 @@ class FCTable(QtWidgets.QTableWidget):
                         table_item = QtWidgets.QTableWidgetItem(col_data)
                     else:
                         old_item = self.cellWidget(row_index, column_index)
-                        if isinstance(old_item, QtWidgets.QComboBox):
+                        if isinstance(old_item, (QtWidgets.QComboBox, FCComboBox, FCComboBox2)):
                             table_item = FCComboBox()
                             items = [old_item.itemText(i) for i in range(old_item.count())]
                             table_item.addItems(items)
                             table_item.setCurrentIndex(old_item.currentIndex())
-                        elif isinstance(old_item, QtWidgets.QCheckBox):
+                        elif isinstance(old_item, (QtWidgets.QCheckBox, FCCheckBox)):
                             table_item = FCCheckBox()
                             table_item.setChecked(old_item.isChecked())
                             table_item.setText(old_item.text())
@@ -3897,11 +3896,11 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.setWindowIcon(icon)
         self.setWindowTitle(str(title))
 
-        grid0 = QtWidgets.QGridLayout(self)
+        grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        self.ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.ref_label = FCLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
             _("The reference can be:\n"
               "- Absolute -> the reference point is point (0,0)\n"

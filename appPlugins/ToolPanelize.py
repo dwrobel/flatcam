@@ -129,7 +129,6 @@ class Panelize(AppTool):
         self.clear_ui(self.layout)
         self.ui = PanelizeUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-        self.connect_signals_at_init()
 
         self.reset_fields()
 
@@ -194,6 +193,8 @@ class Panelize(AppTool):
         self.on_type_obj_index_changed()
         self.on_type_box_index_changed()
 
+        self.connect_signals_at_init()
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
@@ -209,7 +210,8 @@ class Panelize(AppTool):
         if obj_type != 1:   # not Excellon
             self.ui.panel_type_label.setDisabled(False)
             self.ui.panel_type_radio.setDisabled(False)
-            self.ui.on_panel_type(val=self.ui.panel_type_radio.get_value())
+            panel_type = self.ui.panel_type_radio.get_value()
+            self.ui.on_panel_type(val=panel_type)
         else:
             self.ui.panel_type_label.setDisabled(True)
             self.ui.panel_type_radio.setDisabled(True)

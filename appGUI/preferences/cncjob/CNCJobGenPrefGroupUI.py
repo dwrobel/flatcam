@@ -30,7 +30,6 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(1, 1)
 
         # Plot CB
-        # self.plot_cb = QtWidgets.QCheckBox('Plot')
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
         grid0.addWidget(self.plot_cb, 0, 0, 1, 2)
