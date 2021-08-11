@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.08.2021
+
+- fixed splash screen position on current screen when using multiple screens
+- some changes due of porting to PyQt6
+
 9.08.2021
 
 - wip in porting to PyQt6: fixed OptionalInput and OptionalHideInput GUI elements
