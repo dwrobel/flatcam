@@ -3977,7 +3977,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
     def dropEvent(self, event):
         if event.mimeData().hasUrls:
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
             for url in event.mimeData().urls():
                 self.filename = str(url.toLocalFile())

@@ -891,7 +891,8 @@ class App(QtCore.QObject):
             # move splashscreen to the current monitor
             # desktop = QtWidgets.QApplication.desktop()
             # screen = desktop.screenNumber(QtGui.QCursor.pos())
-            screen = QtWidgets.QWidget.screen(self.splash)
+            # screen = QtWidgets.QWidget.screen(self.splash)
+            screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
             current_screen_center = screen.availableGeometry().center()
             self.splash.move(current_screen_center - self.splash.rect().center())
 

@@ -97,8 +97,8 @@ class TermWidget(QWidget):
         :return: None
         """
 
-        self._edit.setTextColor(QtCore.Qt.white)
-        self._edit.setTextBackgroundColor(QtCore.Qt.darkGreen)
+        self._edit.setTextColor(QtCore.Qt.GlobalColor.white)
+        self._edit.setTextBackgroundColor(QtCore.Qt.GlobalColor.darkGreen)
         if detail is None:
             self._edit.setPlainText(_("...processing..."))
         else:
@@ -113,8 +113,8 @@ class TermWidget(QWidget):
         :return:
         """
 
-        self._edit.setTextColor(QtCore.Qt.black)
-        self._edit.setTextBackgroundColor(QtCore.Qt.white)
+        self._edit.setTextColor(QtCore.Qt.GlobalColor.black)
+        self._edit.setTextBackgroundColor(QtCore.Qt.GlobalColor.white)
         self._edit.setPlainText('')
         self._edit.setDisabled(False)
         self._edit.setFocus()
