@@ -537,7 +537,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             return False
 
     def supportedDropActions(self):
-        return Qt.MoveAction
+        return Qt.DropAction.MoveAction
 
     def flags(self, index):
         default_flags = QtCore.QAbstractItemModel.flags(self, index)
