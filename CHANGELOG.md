@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.08.2021
+
+- small change due of porting to PyQt6 in self.on_portable_checked() method
+
 11.08.2021
 
 - fixed splash screen position on current screen when using multiple screens

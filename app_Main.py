@@ -4071,7 +4071,7 @@ class App(QtCore.QObject):
                 break
             line_no += 1
 
-        if state:
+        if state == QtCore.Qt.CheckState.Checked:
             data[line_no] = 'portable=True\n'
             # create the new defauults files
             # create current_defaults.FlatConfig file if there is none
