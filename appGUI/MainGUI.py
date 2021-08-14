@@ -1786,6 +1786,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.popmenu_save.setVisible(False)
         self.popMenu.addSeparator()
 
+        self.popmenu_move2origin = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _("Move2Origin"))
         self.popmenu_move = self.popMenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
         self.popmenu_properties = self.popMenu.addAction(

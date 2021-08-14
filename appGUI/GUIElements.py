@@ -348,7 +348,7 @@ class FCLineEdit(QtWidgets.QLineEdit):
         self.menu.addAction(sel_all_action)
         sel_all_action.triggered.connect(self.selectAll)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def cut_text(self):
         clipboard = QtWidgets.QApplication.clipboard()
@@ -1063,7 +1063,7 @@ class FCSpinner(QtWidgets.QSpinBox):
         if line_edit.isReadOnly():
             step_down_action.setDisabled(True)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def cut_text(self):
         clipboard = QtWidgets.QApplication.clipboard()
@@ -1462,7 +1462,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         if line_edit.isReadOnly():
             step_down_action.setDisabled(True)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def cut_text(self):
         clipboard = QtWidgets.QApplication.clipboard()
@@ -1655,7 +1655,7 @@ class FCTextEdit(QtWidgets.QTextEdit):
         self.menu.addAction(sel_all_action)
         sel_all_action.triggered.connect(self.selectAll)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def cut_text(self):
         tcursor = self.textCursor()
@@ -2012,7 +2012,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         else:
             self.copy_action.setDisabled(False)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def add_action_to_context_menu(self, text, shortcut='', icon=None, callback=lambda: None, separator=None):
         """
@@ -3241,9 +3241,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 drag.setPixmap(targetPixmap)
 
                 # Initiate the drag
-                dropAction = drag.exec_(QtCore.Qt.DropAction.MoveAction | QtCore.Qt.DropAction.CopyAction)
+                dropAction = drag.exec(QtCore.Qt.DropAction.MoveAction | QtCore.Qt.DropAction.CopyAction)
 
-                # For Linux:  Here, drag.exec_() will not return MoveAction on Linux.  So it
+                # For Linux:  Here, drag.exec() will not return MoveAction on Linux.  So it
                 #             must be set manually
                 if self.dragDropedPos.x() != 0 and self.dragDropedPos.y() != 0:
                     dropAction = QtCore.Qt.DropAction.MoveAction
@@ -4061,7 +4061,7 @@ class _BrowserTextEdit(QTextEdit):
             self.cut_action.setDisabled(False)
             self.copy_action.setDisabled(False)
 
-        self.menu.exec_(event.globalPos())
+        self.menu.exec(event.globalPos())
 
     def keyPressEvent(self, event) -> None:
         modifiers = QtWidgets.QApplication.keyboardModifiers()

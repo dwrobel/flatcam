@@ -2211,6 +2211,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
         self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
+        self.ui.popmenu_move2origin.triggered.connect(self.on_move2origin)
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 

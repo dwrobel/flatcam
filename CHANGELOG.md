@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.08.2021
+
+- fixed some issues with using the exec_() which now should be exec()
+- added a context menu action in the canvas context menu for moving selected objects to origin
+
 14.08.2021
 
 - small change due of porting to PyQt6 in self.on_portable_checked() method

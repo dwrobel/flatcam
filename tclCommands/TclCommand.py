@@ -391,7 +391,7 @@ class TclCommandSignaled(TclCommand):
                 QtCore.QTimer.singleShot(time_val, report_quit)
 
             # Block
-            loop.exec_()
+            loop.exec()
 
             # Restore exception management
             sys.excepthook = oeh

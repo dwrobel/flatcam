@@ -167,4 +167,4 @@ if __name__ == '__main__':
     timer.start(100)
 
     sys.exit(app.exec())
-    # app.exec_()
+    # app.exec()
