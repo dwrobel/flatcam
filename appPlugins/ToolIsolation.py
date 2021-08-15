@@ -1096,6 +1096,7 @@ class ToolIsolation(AppTool, Gerber):
 
         min_list = list(min_dict.keys())
         min_dist = min(min_list)
+        min_dist -= 0.0001  # make sure that this works for isolation case
 
         return msg, min_dist
 

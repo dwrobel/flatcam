@@ -166,5 +166,8 @@ if __name__ == '__main__':
     timer.timeout.connect(lambda: None)
     timer.start(100)
 
-    sys.exit(app.exec())
+    try:
+        sys.exit(app.exec())
+    except SystemError:
+        pass
     # app.exec()

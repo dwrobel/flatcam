@@ -257,6 +257,7 @@ class ToolOptimal(AppTool):
 
                 min_list = list(self.min_dict.keys())
                 min_dist = min(min_list)
+                min_dist -= 0.0001  # make sure that this will work for isolation case
                 min_dist_string = '%.*f' % (self.decimals, float(min_dist))
                 self.ui.result_entry.set_value(min_dist_string)
 

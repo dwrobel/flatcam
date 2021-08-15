@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed some issues with using the exec_() which now should be exec()
 - added a context menu action in the canvas context menu for moving selected objects to origin
+- made sure that the optimal tool detected works for isolation
 
 14.08.2021
 
