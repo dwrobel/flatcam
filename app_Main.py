@@ -8681,6 +8681,9 @@ class App(QtCore.QObject):
 
         :return:
         """
+
+        self.log.debug("App.on_set_color_triggered() launched...")
+
         new_color = self.defaults['gerber_plot_fill']
         clicked_action = self.sender()
 
@@ -8695,10 +8698,9 @@ class App(QtCore.QObject):
         alpha_level = 'BF'
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
-                alpha_level = str(hex(
-                    self.ui.excellon_pref_form.excellon_gen_group.excellon_alpha_entry.get_value())[2:])
+                alpha_level = str(hex(int(self.defaults['excellon_plot_fill'][7:9], 16))[2:])
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_pref_form.gerber_gen_group.gerber_alpha_entry.get_value())[2:])
+                alpha_level = str(hex(int(self.defaults['gerber_plot_fill'][7:9], 16))[2:])
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:
@@ -8756,12 +8758,11 @@ class App(QtCore.QObject):
 
                 sel_obj.fill_color = new_color
                 sel_obj.outline_color = new_line_color
-
                 sel_obj.shapes.redraw(
                     update_colors=(new_color, new_line_color)
                 )
 
-            self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
+            self.set_obj_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
             return
 
         # set of a custom transparency level
@@ -8810,16 +8811,16 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
 
-        self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
+        self.set_obj_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
 
-    def set_gerber_color_in_preferences_dict(self, list_of_gerber_obj, fill_color, outline_color):
+    def set_obj_color_in_preferences_dict(self, list_of_obj, fill_color, outline_color):
         """
         This method will save the set colors into a list that will be used next time when Gerber objects are loaded.
         First loaded Gerber will have the first color in the list, second loaded Gerber object will have set the second
         color in the list and so on.
 
-        :param list_of_gerber_obj:  a list of Gerber objects that are currently loaded and selected
-        :type list_of_gerber_obj:   list
+        :param list_of_obj:         a list of App objects that are currently loaded and selected
+        :type list_of_obj:          list
         :param fill_color:          the fill color that will be set for the selected objects
         :type fill_color:           str
         :param outline_color:       the outline color that will be set for the selected objects
@@ -8829,16 +8830,24 @@ class App(QtCore.QObject):
         """
 
         # make sure to set the color in the Gerber colors storage self.defaults["gerber_color_list"]
-        group = self.collection.group_items["gerber"]
-        group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
+        group_gerber = self.collection.group_items["gerber"]
+        group_gerber_index = self.collection.index(group_gerber.row(), 0, QtCore.QModelIndex())
+        all_gerber_list = [x for x in self.collection.get_list() if x.kind == 'gerber']
 
         new_c = (outline_color, fill_color)
-        for sel_obj in list_of_gerber_obj:
+        for sel_obj in list_of_obj:
             if sel_obj.kind == 'gerber':
                 item = sel_obj.item
-                item_index = self.collection.index(item.row(), 0, group_index)
+                item_index = self.collection.index(item.row(), 0, group_gerber_index)
                 idx = item_index.row()
-                self.defaults["gerber_color_list"][idx] = new_c
+                try:
+                    self.defaults["gerber_color_list"][idx] = new_c
+                except IndexError:
+                    for x in range(len(self.defaults["gerber_color_list"]), len(all_gerber_list)):
+                        self.defaults["gerber_color_list"].append(
+                            (self.defaults["gerber_plot_fill"], self.defaults["gerber_plot_line"])
+                        )
+                    self.defaults["gerber_color_list"][idx] = new_c
 
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """

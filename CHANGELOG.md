@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.08.2021
+
+- fixed the "Set Color" functionality broken by recent changes
+- updated the "Set Color" functionality to store the used color in a correct way
+
 17.08.2021
 
 - made sure that the optimal tool detected works for isolation - the offset amount changed to reflect the number of decimals used by the app
