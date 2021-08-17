@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.08.2021
+
+- made sure that the optimal tool detected works for isolation - the offset amount changed to reflect the number of decimals used by the app
+
 15.08.2021
 
 - fixed some issues with using the exec_() which now should be exec()
