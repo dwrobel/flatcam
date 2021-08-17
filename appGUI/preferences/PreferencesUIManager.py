@@ -1152,7 +1152,7 @@ class PreferencesUIManager:
 
         :param silent:      Whether to display a message in status bar or not; boolean
         :param data_path:   The path where to save the preferences file (current_defaults.FlatConfig)
-        When the application is portable it should be a mobile location.
+                            When the application is portable it should be a mobile location.
         :param first_time:  Boolean. If True will execute some code when the app is run first time
         :return:            None
         """

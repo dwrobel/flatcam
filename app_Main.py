@@ -9861,6 +9861,23 @@ class MenuFileHandlers(QtCore.QObject):
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
 
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("Do you want to save the current settings/preferences?"))
+        msgbox.setWindowTitle(_("Save preferences"))
+        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+        # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec()
+        response = msgbox.clickedButton()
+
+        if response == bt_yes:
+            self.app.preferencesUiManager.save_defaults()
+
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 

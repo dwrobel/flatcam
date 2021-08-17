@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed the "Set Color" functionality broken by recent changes
 - updated the "Set Color" functionality to store the used color in a correct way
+- when creating a nw project the user is asked if he wants to save the preferences
 
 17.08.2021
 
