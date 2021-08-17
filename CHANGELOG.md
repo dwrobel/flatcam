@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed the "Set Color" functionality broken by recent changes
 - updated the "Set Color" functionality to store the used color in a correct way
 - when creating a nw project the user is asked if he wants to save the preferences
+- changed the ColorRole in the on_about() method to 'window' os the programmers and translator tab is set to white color
 
 17.08.2021
 

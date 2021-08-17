@@ -3263,7 +3263,7 @@ class App(QtCore.QObject):
                 self.splash_tab_layout.addWidget(title, stretch=1)
 
                 pal = QtGui.QPalette()
-                pal.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.white)
+                pal.setColor(QtGui.QPalette.ColorRole.Window, Qt.GlobalColor.white)
 
                 programmers = [
                     {
