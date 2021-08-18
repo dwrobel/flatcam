@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - changed the translators tab in the on_about() method
 - added the usage of the FCLabel widget instead of QtWidgets.QLabel
 - cleaning up Isolation Plugin
+- made sure that the KeyboardInterrupt exception is not logged to the log.txt file
 
 17.08.2021
 

@@ -132,18 +132,19 @@ if __name__ == '__main__':
 
     def excepthook(exc_type, exc_value, exc_tb):
         msg = '%s\n' % str(datetime.today())
-        msg += "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        if exc_type != KeyboardInterrupt:
+            msg += "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
 
-        try:
-            with open(log_file_path) as f:
-                log_file = f.read()
-            log_file += '\n' + msg
+            try:
+                with open(log_file_path) as f:
+                    log_file = f.read()
+                log_file += '\n' + msg
 
-            with open(log_file_path, 'w') as f:
-                f.write(log_file)
-        except IOError:
-            with open(log_file_path, 'w') as f:
-                f.write(msg)
+                with open(log_file_path, 'w') as f:
+                    f.write(log_file)
+            except IOError:
+                with open(log_file_path, 'w') as f:
+                    f.write(msg)
         QtWidgets.QApplication.quit()
         # or QtWidgets.QApplication.exit(0)
 
