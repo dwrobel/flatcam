@@ -276,6 +276,7 @@ class ToolIsolation(AppTool, Gerber):
         self.init_context_menu()
 
         self.form_fields = {
+            "tools_mill_tool_shape":    self.ui.tool_shape_combo,
             "tools_iso_passes":         self.ui.passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
             "tools_iso_milling_type":   self.ui.milling_type_radio,

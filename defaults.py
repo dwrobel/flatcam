@@ -350,7 +350,6 @@ class FlatCAMDefaults:
         # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
         "tools_iso_order": 'rev',
-        "tools_iso_tool_type": 'C1',
         "tools_iso_tool_vtipdia": 0.1,
         "tools_iso_tool_vtipangle": 30,
         "tools_iso_tool_cutz": -0.05,
@@ -408,9 +407,6 @@ class FlatCAMDefaults:
         "tools_drill_area_shape": "polygon",
         "tools_drill_area_strategy": "over",
         "tools_drill_area_overz": 1.0,
-
-        # Milling Plugin
-        "tools_mill_tool_type": 'C1',
 
         # Milling Plugin Options
         "tools_mill_tooldia": "2.4",
@@ -493,7 +489,6 @@ class FlatCAMDefaults:
         "tools_ncc_ref": 0,     # ITSELF
         "tools_ncc_area_shape": "square",
         "tools_ncc_milling_type": 'cl',
-        "tools_ncc_tool_type": 'C1',
         "tools_ncc_cutz": -0.05,
         "tools_ncc_tipdia": 0.1,
         "tools_ncc_tipangle": 30,
@@ -532,7 +527,6 @@ class FlatCAMDefaults:
         "tools_paint_contour": True,
         "tools_paint_plotting": 'normal',
         "tools_paint_rest": False,
-        "tools_paint_tool_type": 'C1',
         "tools_paint_cutz": -0.05,
         "tools_paint_tipdia": 0.1,
         "tools_paint_tipangle": 30,

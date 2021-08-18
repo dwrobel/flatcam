@@ -51,17 +51,6 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- Circular")
         )
 
-        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
-                                         {'label': _('Circular'), 'value': 'C1'}])
-        self.tool_type_radio.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        grid0.addWidget(self.tool_type_label, 1, 0)
-        grid0.addWidget(self.tool_type_radio, 1, 1)
-
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(

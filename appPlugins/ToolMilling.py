@@ -596,7 +596,6 @@ class ToolMilling(AppTool, Excellon):
         #     "tools_mill_polish_overlap": 10,
         #     "tools_mill_polish_method": _("Standard"),
         #
-        #     "tools_mill_tool_type": 'C1',
         #     "tools_mill_vtipdia": 0.1,
         #     "tools_mill_vtipangle": 30,
         #

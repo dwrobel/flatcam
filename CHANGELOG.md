@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.08.2021
+
+- some cleaning up in the Preferences
+
 18.08.2021
 
 - fixed the "Set Color" functionality broken by recent changes

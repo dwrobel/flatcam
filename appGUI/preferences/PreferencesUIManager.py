@@ -281,7 +281,6 @@ class PreferencesUIManager:
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.plugin_eng_pref_form.tools_iso_group.tool_dia_entry,
             "tools_iso_order":          self.ui.plugin_eng_pref_form.tools_iso_group.order_radio,
-            "tools_iso_tool_type":      self.ui.plugin_eng_pref_form.tools_iso_group.tool_type_radio,
             "tools_iso_tool_vtipdia":   self.ui.plugin_eng_pref_form.tools_iso_group.tipdia_entry,
             "tools_iso_tool_vtipangle": self.ui.plugin_eng_pref_form.tools_iso_group.tipangle_entry,
             "tools_iso_tool_cutz":      self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
@@ -422,7 +421,6 @@ class PreferencesUIManager:
             "tools_ncc_ref":             self.ui.plugin_eng_pref_form.tools_ncc_group.select_combo,
             "tools_ncc_area_shape":     self.ui.plugin_eng_pref_form.tools_ncc_group.area_shape_radio,
             "tools_ncc_milling_type":    self.ui.plugin_eng_pref_form.tools_ncc_group.milling_type_radio,
-            "tools_ncc_tool_type":       self.ui.plugin_eng_pref_form.tools_ncc_group.tool_type_radio,
             "tools_ncc_cutz":            self.ui.plugin_eng_pref_form.tools_ncc_group.cutz_entry,
             "tools_ncc_tipdia":          self.ui.plugin_eng_pref_form.tools_ncc_group.tipdia_entry,
             "tools_ncc_tipangle":        self.ui.plugin_eng_pref_form.tools_ncc_group.tipangle_entry,
@@ -464,7 +462,6 @@ class PreferencesUIManager:
             "tools_paint_plotting":     self.ui.plugin_eng_pref_form.tools_paint_group.paint_plotting_radio,
 
             "tools_paint_rest":          self.ui.plugin_eng_pref_form.tools_paint_group.rest_cb,
-            "tools_paint_tool_type":     self.ui.plugin_eng_pref_form.tools_paint_group.tool_type_radio,
             "tools_paint_cutz":          self.ui.plugin_eng_pref_form.tools_paint_group.cutz_entry,
             "tools_paint_tipdia":        self.ui.plugin_eng_pref_form.tools_paint_group.tipdia_entry,
             "tools_paint_tipangle":      self.ui.plugin_eng_pref_form.tools_paint_group.tipangle_entry,
