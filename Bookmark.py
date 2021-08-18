@@ -1,5 +1,5 @@
 from PyQt6 import QtGui, QtCore, QtWidgets
-from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog, FCGridLayout
+from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog, FCGridLayout, FCLabel
 
 import sys
 import webbrowser
@@ -33,7 +33,7 @@ class BookmarkManager(QtWidgets.QWidget):
         # self.setWindowTitle(_("Bookmark Manager"))
         # self.resize(600, 400)
 
-        # title = QtWidgets.QLabel(
+        # title = FCLabel(
         #     "<font size=8><B>FlatCAM</B></font><BR>"
         # )
         # title.setOpenExternalLinks(True)
@@ -75,7 +75,7 @@ class BookmarkManager(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
+        new_title_lbl = FCLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -83,12 +83,12 @@ class BookmarkManager(QtWidgets.QWidget):
         grid0.setColumnStretch(1, 1)
         new_vlay.addLayout(grid0)
 
-        title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
+        title_lbl = FCLabel('%s:' % _("Title"))
         self.title_entry = FCEntry()
         grid0.addWidget(title_lbl, 0, 0)
         grid0.addWidget(self.title_entry, 0, 1)
 
-        link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
+        link_lbl = FCLabel('%s:' % _("Web Link"))
         self.link_entry = FCEntry()
         self.link_entry.set_value('http://')
         grid0.addWidget(link_lbl, 2, 0)

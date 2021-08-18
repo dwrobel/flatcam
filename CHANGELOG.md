@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - updated the "Set Color" functionality to store the used color in a correct way
 - when creating a nw project the user is asked if he wants to save the preferences
 - changed the ColorRole in the on_about() method to 'window' os the programmers and translator tab is set to white color
+- changed the translators tab in the on_about() method
+- added the usage of the FCLabel widget instead of QtWidgets.QLabel
 
 17.08.2021
 
@@ -6423,7 +6425,6 @@ This fork features:
 - Added capability so FlatCAM can now read Gerber files with traces having zero value (aperture size is zero);
 - Added Paint All / Seed based Paint functions from the JP's FlatCAM;
 - Added Excellon move optimization (travelling salesman algorithm) cherry-picked from David Kahler: https://bitbucket.org/dakahler/flatcam
-- Updated make_win32.py so it will work with cx_freeze 5.0.1
 - Corrected small typo in DblSidedTool.py
 - Added the TCL commands in the new format. Picked from FLATCAM master.
 - Hack to fix the issue with geometry not being updated after a TCL command was executed. Now after each TCL command the plot_all() function is executed and the canvas is refreshed.

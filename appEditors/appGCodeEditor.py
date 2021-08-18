@@ -7,7 +7,7 @@
 
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMCNCJob import CNCJobObject
-from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, FCGridLayout
+from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, FCGridLayout, FCLabel
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 # from io import StringIO
@@ -758,12 +758,12 @@ class AppGCodeEditorUI:
 
         # ## Page Title icon
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
-        self.icon = QtWidgets.QLabel()
+        self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
         # ## Title label
-        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('GCode Editor'))
+        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('GCode Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
@@ -783,7 +783,7 @@ class AppGCodeEditorUI:
         # ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
         self.edit_box.addLayout(self.name_box)
-        name_label = QtWidgets.QLabel(_("Name:"))
+        name_label = FCLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
@@ -834,7 +834,7 @@ class AppGCodeEditorUI:
         self.snippet_frame.setLayout(self.snippet_grid)
 
         # Prepend text to GCode
-        prependlabel = QtWidgets.QLabel('%s 1:' % _('CNC Code Snippet'))
+        prependlabel = FCLabel('%s 1:' % _('CNC Code Snippet'))
         prependlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )
@@ -856,7 +856,7 @@ class AppGCodeEditorUI:
         self.snippet_grid.addWidget(self.update_gcode_button, 2, 0)
 
         # Append text to GCode
-        appendlabel = QtWidgets.QLabel('%s 2:' % _('CNC Code Snippet'))
+        appendlabel = FCLabel('%s 2:' % _('CNC Code Snippet'))
         appendlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )

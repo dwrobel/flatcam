@@ -2264,7 +2264,7 @@ class DrillingUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % name)
+        title_label = FCLabel("%s" % name)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -2297,7 +2297,7 @@ class DrillingUI:
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
-        self.obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("EXCELLON"))
+        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("EXCELLON"))
         self.obj_combo_label.setToolTip(
             _("Excellon object for drilling/milling operation.")
         )
@@ -2347,7 +2347,7 @@ class DrillingUI:
               "milling them with an endmill bit."))
 
         # Tool order
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -2380,7 +2380,7 @@ class DrillingUI:
         # ###########################################################
         # ############# Create CNC Job ##############################
         # ###########################################################
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -2408,7 +2408,7 @@ class DrillingUI:
         self.exc_tools_box.addLayout(self.grid1)
 
         # Cut Z
-        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
@@ -2450,7 +2450,7 @@ class DrillingUI:
         self.grid1.addWidget(self.maxdepth_entry, 5, 1)
 
         # Travel Z (z_move)
-        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
         self.travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
@@ -2467,7 +2467,7 @@ class DrillingUI:
         self.grid1.addWidget(self.travelz_entry, 6, 1)
 
         # Excellon Feedrate Z
-        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
         self.frzlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -2484,7 +2484,7 @@ class DrillingUI:
         self.grid1.addWidget(self.feedrate_z_entry, 14, 1)
 
         # Excellon Rapid Feedrate
-        self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         self.feedrate_rapid_label.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -2506,7 +2506,7 @@ class DrillingUI:
         self.feedrate_rapid_entry.hide()
 
         # Spindlespeed
-        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
@@ -2545,7 +2545,7 @@ class DrillingUI:
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # Tool Offset
-        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        self.tool_offset_label = FCLabel('%s:' % _('Offset Z'))
         self.tool_offset_label.setToolTip(
             _("Some drill bits (the larger ones) need to drill deeper\n"
               "to create the desired exit hole diameter due of the tip shape.\n"
@@ -2569,7 +2569,7 @@ class DrillingUI:
         self.grid1.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
 
         # Drill Overlap
-        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
         self.drill_overlap_label.setToolTip(
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
@@ -2635,7 +2635,7 @@ class DrillingUI:
         self.grid3.addWidget(separator_line2, 2, 0, 1, 2)
 
         # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -2683,7 +2683,7 @@ class DrillingUI:
                                               ])
 
         # Start move Z:
-        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
+        self.estartz_label = FCLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
             _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
@@ -2695,7 +2695,7 @@ class DrillingUI:
         self.grid3.addWidget(self.estartz_entry, 9, 1)
 
         # End move Z:
-        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
+        self.endz_label = FCLabel('%s:' % _("End move Z"))
         self.endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
@@ -2711,7 +2711,7 @@ class DrillingUI:
         self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # End Move X,Y
-        self.endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        self.endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
         self.endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
@@ -2725,7 +2725,7 @@ class DrillingUI:
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -2744,7 +2744,7 @@ class DrillingUI:
         self.pdepth_entry.setVisible(False)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
@@ -2762,7 +2762,7 @@ class DrillingUI:
         self.feedrate_probe_entry.setVisible(False)
 
         # Preprocessor Excellon selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_excellon_label = FCLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Excellon Objects.")

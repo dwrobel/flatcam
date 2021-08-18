@@ -17,7 +17,7 @@ import simplejson as json
 import shutil
 import lzma
 from datetime import datetime
-import time
+# import time
 import ctypes
 import traceback
 
@@ -75,7 +75,8 @@ from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
 from appGUI.PlotCanvas3d import *
 from appGUI.MainGUI import *
-from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, FCGridLayout
+from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, \
+    FCGridLayout, FCLabel
 
 # FlatCAM Pre-processors
 from appPreProcessor import load_preprocessors
@@ -3132,10 +3133,10 @@ class App(QtCore.QObject):
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
-                logo = QtWidgets.QLabel()
+                logo = FCLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
 
-                title = QtWidgets.QLabel(
+                title = FCLabel(
                     "<font size=8><B>FlatCAM Evo</B></font><BR>"
                     "{title}<BR>"
                     "<BR>"
@@ -3154,7 +3155,7 @@ class App(QtCore.QObject):
                 closebtn = QtWidgets.QPushButton(_("Close"))
 
                 tab_widget = QtWidgets.QTabWidget()
-                description_label = QtWidgets.QLabel(
+                description_label = FCLabel(
                     "FlatCAM Evo {version} {beta} ({date}) - {arch}<br>"
                     "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>".format(
                         version=version,
@@ -3164,7 +3165,7 @@ class App(QtCore.QObject):
                 )
                 description_label.setOpenExternalLinks(True)
 
-                lic_lbl_header = QtWidgets.QLabel(
+                lic_lbl_header = FCLabel(
                     '%s:<br>%s<br>' % (
                         _('Licensed under the MIT license'),
                         "<a href = \"http://www.opensource.org/licenses/mit-license.php\">"
@@ -3173,7 +3174,7 @@ class App(QtCore.QObject):
                 )
                 lic_lbl_header.setOpenExternalLinks(True)
 
-                lic_lbl_body = QtWidgets.QLabel(
+                lic_lbl_body = FCLabel(
                     _(
                         'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
                         'of this software and associated documentation files (the "Software"), to deal\n'
@@ -3195,7 +3196,7 @@ class App(QtCore.QObject):
                     )
                 )
 
-                attributions_label = QtWidgets.QLabel(
+                attributions_label = FCLabel(
                     _(
                         'Some of the icons used are from the following sources:<br>'
                         '<div>Icons by <a href="https://www.flaticon.com/authors/freepik" '
@@ -3327,6 +3328,11 @@ class App(QtCore.QObject):
                         'email': ''
                     },
                     {
+                        'name': "David Kahler",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
                         'name': "Damian Wrobel",
                         'description': '',
                         'email': ''
@@ -3439,31 +3445,31 @@ class App(QtCore.QObject):
                 self.programmmers_tab_layout.addWidget(prog_scroll)
 
                 # Headers
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Programmer")), 0, 0)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Status")), 0, 1)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 # FlatCAM Author
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Author")), 1, 1)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "Juan Pablo Caram"), 1, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % _("FlatCAM Author")), 1, 1)
 
                 # FlatCAM EVO Author
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 2, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 2, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 2, 2)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 3, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "Marius Stanciu"), 2, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 2, 1)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "<marius_adrian@yahoo.com>"), 2, 2)
+                self.prog_grid_lay.addWidget(FCLabel(''), 3, 0)
 
                 # randomize the order of the programmers at each launch
                 random.shuffle(programmers)
                 line = 4
                 for prog in programmers:
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['name']), line, 0)
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['description']), line, 1)
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['email']), line, 2)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['name']), line, 0)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['description']), line, 1)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['email']), line, 2)
 
                     line += 1
                     if (line % 4) == 0:
-                        self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), line, 0)
+                        self.prog_grid_lay.addWidget(FCLabel(''), line, 0)
                         line += 1
 
                 self.translator_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -3480,51 +3486,35 @@ class App(QtCore.QObject):
                 translators = [
                     {
                         'language': 'BR - Portuguese',
-                        'name': "Carlos Stein",
-                        'corrections': '',
-                        'email': '<carlos.stein@gmail.com>'
+                        'authors': [("Carlos Stein", '<carlos.stein@gmail.com>')],
                     },
                     {
                         'language': 'French',
-                        'name': "Michel Maciejewski",
-                        'corrections': 'Olivier Cornet',
-                        'email': '<micmac589@gmail.com>'
+                        'authors': [("Michel Maciejewski", '<micmac589@gmail.com>'), ('Olivier Cornet', '')]
                     },
                     {
                         'language': 'Italian',
-                        'name': "Massimiliano Golfetto",
-                        'corrections': '',
-                        'email': '<golfetto.pcb@gmail.com>'
+                        'authors': [("Massimiliano Golfetto", '<golfetto.pcb@gmail.com>')]
                     },
                     {
                         'language': 'German',
-                        'name': "Marius Stanciu (Google-Tr)",
-                        'corrections': 'Jens Karstedt, Detlef Eckardt',
-                        'email': ''
+                        'authors': [("Marius Stanciu (Google-Tr)", ''), ('Jens Karstedt', ''), ('Detlef Eckardt', '')],
                     },
                     {
                         'language': 'Romanian',
-                        'name': "Marius Stanciu",
-                        'corrections': '',
-                        'email': '<marius_adrian@yahoo.com>'
+                        'authors': [("Marius Stanciu", '<marius_adrian@yahoo.com>')]
                     },
                     {
                         'language': 'Russian',
-                        'name': "Andrey Kultyapov",
-                        'corrections': '',
-                        'email': '<camellan@yandex.ru>'
+                        'authors': [("Andrey Kultyapov", '<camellan@yandex.ru>')]
                     },
                     {
                         'language': 'Spanish',
-                        'name': "Marius Stanciu (Google-Tr)",
-                        'corrections': '',
-                        'email': ''
+                        'authors': [("Marius Stanciu (Google-Tr)", '')]
                     },
                     {
                         'language': 'Turkish',
-                        'name': "Mehmet Kaya",
-                        'corrections': '',
-                        'email': '<malatyakaya480@gmail.com>'
+                        'authors': [("Mehmet Kaya", '<malatyakaya480@gmail.com>')]
                     },
                 ]
 
@@ -3537,21 +3527,24 @@ class App(QtCore.QObject):
                 trans_scroll.setPalette(pal)
                 self.translators_tab_layout.addWidget(trans_scroll)
 
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Corrections")), 0, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Language")), 0, 0)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Translator")), 0, 1)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 line = 1
                 for i in translators:
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['language']), line, 0)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['name']), line, 1)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['corrections']), line, 2)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['email']), line, 3)
+                    self.translator_grid_lay.addWidget(
+                        FCLabel('<span style="color:blue">%s</span>' % i['language']), line, 0)
+                    for author in range(len(i['authors'])):
+                        auth_widget = FCLabel('%s' % i['authors'][author][0])
+                        email_widget = FCLabel('%s' % i['authors'][author][1])
+                        self.translator_grid_lay.addWidget(auth_widget, line, 1)
+                        self.translator_grid_lay.addWidget(email_widget, line, 2)
+                        line += 1
 
                     line += 1
 
-                self.translator_grid_lay.setColumnStretch(0, 0)
+                self.translator_grid_lay.setColumnStretch(1, 1)
                 self.translators_tab_layout.addStretch()
 
                 self.license_tab_layout.addWidget(lic_lbl_header)
@@ -3595,10 +3588,10 @@ class App(QtCore.QObject):
                 self.setWindowTitle('%s ...' % _("How To"))
                 self.resize(750, 375)
 
-                logo = QtWidgets.QLabel()
+                logo = FCLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/contribute256.png'))
 
-                # content = QtWidgets.QLabel(
+                # content = FCLabel(
                 #     "%s<br>"
                 #     "%s<br><br>"
                 #     "%s,<br>"
@@ -3631,7 +3624,7 @@ class App(QtCore.QObject):
                 # )
 
                 # font-weight: bold;
-                content = QtWidgets.QLabel(
+                content = FCLabel(
                     "%s<br>"
                     "%s<br><br>"
                     "%s,<br>"
@@ -3720,7 +3713,7 @@ class App(QtCore.QObject):
                 links_scroll_area.setPalette(pal)
 
                 self.links_lay.addWidget(
-                    QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+                    FCLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.links_tab_layout.addWidget(links_scroll_area)
 
                 # HOW TO section
@@ -3740,7 +3733,7 @@ class App(QtCore.QObject):
                 howto_scroll_area.setPalette(pal)
 
                 self.howto_lay.addWidget(
-                    QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+                    FCLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.howto_tab_layout.addWidget(howto_scroll_area)
 
                 # BUTTONS section
@@ -8236,7 +8229,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        # label = QtWidgets.QLabel("Choose an item from Project")
+        # label = FCLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
         # sel_title = QtWidgets.QTextEdit()

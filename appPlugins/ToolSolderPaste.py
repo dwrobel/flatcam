@@ -10,7 +10,7 @@ from PyQt6 import QtGui, QtCore, QtWidgets
 from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
-    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout
+    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout, FCLabel
 
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
@@ -1178,7 +1178,7 @@ class SolderUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                QLabel
                                {
@@ -1198,7 +1198,7 @@ class SolderUI:
         self.layout.addLayout(obj_form_layout)
 
         # ## Gerber Object to be used for solderpaste dispensing
-        self.object_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
+        self.object_label = FCLabel('<b>%s</b>:' % _("GERBER"))
         self.object_label.setToolTip(_("Gerber Solderpaste object."))
 
         self.obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
@@ -1216,7 +1216,7 @@ class SolderUI:
         obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for dispensing solder paste.")
@@ -1249,7 +1249,7 @@ class SolderUI:
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('New Tool'))
+        self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Tool'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
@@ -1294,7 +1294,7 @@ class SolderUI:
         self.param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tool_box.addLayout(self.param_grid)
 
-        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('Parameters'))
+        step1_lbl = FCLabel("<b>%s:</b>" % _('Parameters'))
         self.param_grid.addWidget(step1_lbl, 0, 0)
 
         # Z dispense start
@@ -1303,7 +1303,7 @@ class SolderUI:
         self.z_start_entry.set_precision(self.decimals)
         self.z_start_entry.setSingleStep(0.1)
 
-        self.z_start_label = QtWidgets.QLabel('%s:' % _("Z Dispense Start"))
+        self.z_start_label = FCLabel('%s:' % _("Z Dispense Start"))
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
         )
@@ -1316,7 +1316,7 @@ class SolderUI:
         self.z_dispense_entry.set_precision(self.decimals)
         self.z_dispense_entry.setSingleStep(0.1)
 
-        self.z_dispense_label = QtWidgets.QLabel('%s:' % _("Z Dispense"))
+        self.z_dispense_label = FCLabel('%s:' % _("Z Dispense"))
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
         )
@@ -1329,7 +1329,7 @@ class SolderUI:
         self.z_stop_entry.set_precision(self.decimals)
         self.z_stop_entry.setSingleStep(0.1)
 
-        self.z_stop_label = QtWidgets.QLabel('%s:' % _("Z Dispense Stop"))
+        self.z_stop_label = FCLabel('%s:' % _("Z Dispense Stop"))
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
         )
@@ -1347,7 +1347,7 @@ class SolderUI:
         self.z_travel_entry.set_precision(self.decimals)
         self.z_travel_entry.setSingleStep(0.1)
 
-        self.z_travel_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        self.z_travel_label = FCLabel('%s:' % _("Travel Z"))
         self.z_travel_label.setToolTip(
             _("The height (Z) for travel between pads\n"
               "(without dispensing solder paste).")
@@ -1361,7 +1361,7 @@ class SolderUI:
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
 
-        self.z_toolchange_label = QtWidgets.QLabel('%s:' % _("Tool change Z"))
+        self.z_toolchange_label = FCLabel('%s:' % _("Tool change Z"))
         self.z_toolchange_label.setToolTip(
             _("The height (Z) for tool (nozzle) change.")
         )
@@ -1370,7 +1370,7 @@ class SolderUI:
 
         # X,Y Toolchange location
         self.xy_toolchange_entry = FCEntry()
-        self.xy_toolchange_label = QtWidgets.QLabel('%s:' % _("Toolchange X-Y"))
+        self.xy_toolchange_label = FCLabel('%s:' % _("Toolchange X-Y"))
         self.xy_toolchange_label.setToolTip(
             _("The X,Y location for tool (nozzle) change.\n"
               "The format is (x, y) where x and y are real numbers.")
@@ -1389,7 +1389,7 @@ class SolderUI:
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
-        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
+        self.frxy_label = FCLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
             _("Feedrate (speed) while moving on the X-Y plane.")
         )
@@ -1402,7 +1402,7 @@ class SolderUI:
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
-        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
+        self.frz_label = FCLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
@@ -1416,7 +1416,7 @@ class SolderUI:
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
-        self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
+        self.frz_dispense_label = FCLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
               "to Dispense position (on Z plane).")
@@ -1434,7 +1434,7 @@ class SolderUI:
         self.speedfwd_entry.set_range(0, 999999)
         self.speedfwd_entry.set_step(1000)
 
-        self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
+        self.speedfwd_label = FCLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
             _("The dispenser speed while pushing solder paste\n"
               "through the dispenser nozzle.")
@@ -1448,7 +1448,7 @@ class SolderUI:
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
 
-        self.dwellfwd_label = QtWidgets.QLabel('%s:' % _("Dwell FWD"))
+        self.dwellfwd_label = FCLabel('%s:' % _("Dwell FWD"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
         )
@@ -1460,7 +1460,7 @@ class SolderUI:
         self.speedrev_entry.set_range(0, 999999)
         self.speedrev_entry.set_step(1000)
 
-        self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
+        self.speedrev_label = FCLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
             _("The dispenser speed while retracting solder paste\n"
               "through the dispenser nozzle.")
@@ -1474,7 +1474,7 @@ class SolderUI:
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)
 
-        self.dwellrev_label = QtWidgets.QLabel('%s:' % _("Dwell REV"))
+        self.dwellrev_label = FCLabel('%s:' % _("Dwell REV"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
               "to allow pressure equilibrium.")
@@ -1488,7 +1488,7 @@ class SolderUI:
         self.param_grid.addWidget(separator_line, 27, 0, 1, 2)
 
         # Preprocessors
-        pp_label = QtWidgets.QLabel('%s:' % _('Preprocessor'))
+        pp_label = FCLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
@@ -1530,7 +1530,7 @@ class SolderUI:
         self.geo_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "Geometry"
 
-        self.geo_object_label = QtWidgets.QLabel('%s:' % _("Geometry"))
+        self.geo_object_label = FCLabel('%s:' % _("Geometry"))
         self.geo_object_label.setToolTip(
             _("Geometry Solder Paste object.\n"
               "The name of the object has to end in:\n"
@@ -1566,7 +1566,7 @@ class SolderUI:
         self.cnc_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "CNCJob"
 
-        self.cnc_object_label = QtWidgets.QLabel('%s:' % _("CNCJob"))
+        self.cnc_object_label = FCLabel('%s:' % _("CNCJob"))
         self.cnc_object_label.setToolTip(
             _("CNCJob Solder paste object.\n"
               "In order to enable the GCode save section,\n"

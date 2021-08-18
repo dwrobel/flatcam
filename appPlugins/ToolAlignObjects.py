@@ -411,7 +411,7 @@ class AlignUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # Form Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -490,7 +490,7 @@ class AlignUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 11, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 11, 0, 1, 2)
 
         # Alignment Type
         self.a_type_lbl = FCLabel('<b>%s:</b>' % _("Alignment Type"))

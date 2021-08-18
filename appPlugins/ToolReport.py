@@ -7,7 +7,7 @@
 
 from PyQt6 import QtGui, QtCore, QtWidgets
 from appTool import AppTool
-from appGUI.GUIElements import FCTree, VerticalScrollArea
+from appGUI.GUIElements import FCTree, VerticalScrollArea, FCLabel
 
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
@@ -49,7 +49,7 @@ class ObjectReport(AppTool):
         self.info_frame.setLayout(self.info_box)
 
         # ## Title
-        # title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        # title_label = FCLabel("%s" % self.pluginName)
         # title_label.setStyleSheet("""
         #                 QLabel
         #                 {
