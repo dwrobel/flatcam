@@ -287,6 +287,7 @@ class PreferencesUIManager:
             "tools_iso_tool_cutz":      self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
             "tools_iso_newdia":         self.ui.plugin_eng_pref_form.tools_iso_group.newdia_entry,
 
+            "tools_iso_tool_shape":     self.ui.plugin_eng_pref_form.tools_iso_group.tool_shape_combo,  # "C1"
             "tools_iso_passes":         self.ui.plugin_eng_pref_form.tools_iso_group.passes_entry,
             "tools_iso_overlap":        self.ui.plugin_eng_pref_form.tools_iso_group.overlap_entry,
             "tools_iso_milling_type":   self.ui.plugin_eng_pref_form.tools_iso_group.milling_type_radio,

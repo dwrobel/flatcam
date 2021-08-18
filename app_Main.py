@@ -6627,7 +6627,7 @@ class App(QtCore.QObject):
                                  "Do you want to save?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)

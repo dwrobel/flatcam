@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - changed the ColorRole in the on_about() method to 'window' os the programmers and translator tab is set to white color
 - changed the translators tab in the on_about() method
 - added the usage of the FCLabel widget instead of QtWidgets.QLabel
+- cleaning up Isolation Plugin
 
 17.08.2021
 

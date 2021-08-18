@@ -356,6 +356,7 @@ class FlatCAMDefaults:
         "tools_iso_tool_cutz": -0.05,
         "tools_iso_newdia": 0.1,
 
+        "tools_iso_tool_shape": 0,  # "C1"
         "tools_iso_passes": 1,
         "tools_iso_overlap": 10,
         "tools_iso_milling_type": "cl",
