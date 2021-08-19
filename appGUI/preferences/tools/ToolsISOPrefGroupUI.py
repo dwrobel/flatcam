@@ -76,8 +76,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
              "In application units.")
         )
 
-        grid0.addWidget(cutzlabel, 10, 0)
-        grid0.addWidget(self.cutz_entry, 10, 1, 1, 2)
+        grid0.addWidget(cutzlabel, 6, 0)
+        grid0.addWidget(self.cutz_entry, 6, 1, 1, 2)
 
         # New Diameter
         self.newdialabel = FCLabel('%s:' % _('New Dia'))
@@ -91,15 +91,15 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.newdialabel, 12, 0)
-        grid0.addWidget(self.newdia_entry, 12, 1, 1, 2)
+        grid0.addWidget(self.newdialabel, 8, 0)
+        grid0.addWidget(self.newdia_entry, 8, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 3)
+        grid0.addWidget(separator_line, 10, 0, 1, 3)
 
-        # Tool Type
+        # Shape
         tool_shape_label = FCLabel('%s:' % _('Shape'))
         tool_shape_label.setToolTip(
             _("Tool Shape. \n"
@@ -110,11 +110,10 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
 
         self.tool_shape_combo = FCComboBox2(policy=False)
-        self.tool_shape_combo.setObjectName('i_tool_shape')
         self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
 
-        grid0.addWidget(tool_shape_label, 16, 0)
-        grid0.addWidget(self.tool_shape_combo, 16, 1, 1, 2)
+        grid0.addWidget(tool_shape_label, 12, 0)
+        grid0.addWidget(self.tool_shape_combo, 12, 1, 1, 2)
 
         # Passes
         passlabel = FCLabel('%s:' % _('Passes'))
@@ -124,10 +123,21 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
         self.passes_entry = FCSpinner()
         self.passes_entry.set_range(1, 999)
-        self.passes_entry.setObjectName("i_passes")
 
-        grid0.addWidget(passlabel, 18, 0)
-        grid0.addWidget(self.passes_entry, 18, 1, 1, 2)
+        grid0.addWidget(passlabel, 14, 0)
+        grid0.addWidget(self.passes_entry, 14, 1, 1, 2)
+
+        # Pad Passes
+        padpasslabel = FCLabel('%s:' % _('Pad Passes'))
+        padpasslabel.setToolTip(
+            _("Width of the extra isolation gap for pads only,\n"
+              "in number (integer) of tool widths.")
+        )
+        self.pad_passes_entry = FCSpinner()
+        self.pad_passes_entry.set_range(0, 999)
+
+        grid0.addWidget(padpasslabel, 16, 0)
+        grid0.addWidget(self.pad_passes_entry, 16, 1, 1, 2)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -139,7 +149,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.overlap_entry.setWrapping(True)
         self.overlap_entry.set_range(0.0000, 99.9999)
         self.overlap_entry.setSingleStep(0.1)
-        self.overlap_entry.setObjectName("i_overlap")
 
         grid0.addWidget(overlabel, 20, 0)
         grid0.addWidget(self.overlap_entry, 20, 1, 1, 2)
@@ -178,7 +187,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
                                         {'label': _('Ext'), 'value': 'ext'},
                                         {'label': _('Int'), 'value': 'int'}])
-        self.iso_type_radio.setObjectName("i_type")
 
         grid0.addWidget(self.iso_type_label, 24, 0)
         grid0.addWidget(self.iso_type_radio, 24, 1, 1, 2)
@@ -190,7 +198,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
 
         # Rest machining CheckBox
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
-        self.rest_cb.setObjectName("i_rest_machining")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will process copper outside PCB features,\n"
@@ -208,7 +215,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
-        self.combine_passes_cb.setObjectName("i_combine")
 
         grid0.addWidget(self.combine_passes_cb, 28, 1)
 
@@ -217,7 +223,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
-        self.except_cb.setObjectName("i_except")
         grid0.addWidget(self.except_cb, 28, 2)
 
         # Check Tool validity
@@ -226,7 +231,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("If checked then the tools diameters are verified\n"
               "if they will provide a complete isolation.")
         )
-        self.valid_cb.setObjectName("i_check")
 
         grid0.addWidget(self.valid_cb, 30, 0, 1, 3)
 
@@ -243,7 +247,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.select_combo.addItems(
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
-        self.select_combo.setObjectName("i_selection")
 
         grid0.addWidget(self.select_label, 32, 0)
         grid0.addWidget(self.select_combo, 32, 1, 1, 2)

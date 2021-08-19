@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - some cleaning up in the Preferences
 - cleaned up the Geometry and Gerber object classes
 - more cleanup in Isolation Plugin
+- started the work in adding to Isolation Plugin a new feature to extra isolate the pads
 
 18.08.2021
 

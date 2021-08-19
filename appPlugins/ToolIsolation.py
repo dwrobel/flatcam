@@ -118,6 +118,7 @@ class ToolIsolation(AppTool, Gerber):
         self.form_fields = {
             "tools_mill_tool_shape":     self.ui.tool_shape_combo,
             "tools_iso_passes":         self.ui.passes_entry,
+            "tools_iso_pad_passes":     self.ui.pad_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
             "tools_iso_milling_type":   self.ui.milling_type_radio,
             "tools_iso_combine":        self.ui.combine_passes_cb,
@@ -127,6 +128,7 @@ class ToolIsolation(AppTool, Gerber):
         self.name2option = {
             "i_tool_shape":     "tools_mill_tool_shape",
             "i_passes":         "tools_iso_passes",
+            "i_pad_passes":     "tools_iso_pad_passes",
             "i_overlap":        "tools_iso_overlap",
             "i_milling_type":   "tools_iso_milling_type",
             "i_combine":        "tools_iso_combine",
@@ -278,6 +280,7 @@ class ToolIsolation(AppTool, Gerber):
         self.form_fields = {
             "tools_mill_tool_shape":    self.ui.tool_shape_combo,
             "tools_iso_passes":         self.ui.passes_entry,
+            "tools_iso_pad_passes":     self.ui.pad_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
             "tools_iso_milling_type":   self.ui.milling_type_radio,
             "tools_iso_combine":        self.ui.combine_passes_cb,
@@ -324,6 +327,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.order_radio.set_value(self.app.defaults["tools_iso_order"])
         self.ui.tool_shape_combo.set_value(self.app.defaults["tools_iso_tool_shape"])
         self.ui.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
+        self.ui.pad_passes_entry.set_value(self.app.defaults["tools_iso_pad_passes"])
         self.ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
         self.ui.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
@@ -1668,7 +1672,7 @@ class ToolIsolation(AppTool, Gerber):
                     self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.ui.select_combo.get_value()
                     self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.ui.area_shape_radio.get_value()
                     self.iso_tools[tool_iso][key]["tools_mill_job_type"] = 2    # _("Isolation")
-                    self.iso_tools[tool_iso][key]["tools_mill_tool_shape"] = 5  # "V"
+                    self.iso_tools[tool_iso][key]["tools_mill_tool_shape"] = self.ui.tool_shape_combo.get_value()
 
         if combine:
             if self.ui.rest_cb.get_value():
@@ -1704,8 +1708,6 @@ class ToolIsolation(AppTool, Gerber):
 
                 tool_dia = tools_storage[tool]['tooldia']
                 for i in range(passes):
-                    tool_type = tools_storage[tool]['data']['tools_mill_tool_shape']
-
                     iso_offset = tool_dia * ((2 * i + 1) / 2.0000001) - (i * overlap * tool_dia)
                     if negative_dia:
                         iso_offset = -iso_offset
@@ -1770,10 +1772,6 @@ class ToolIsolation(AppTool, Gerber):
                         geo_obj.tools.update({
                             '1': {
                                 'tooldia':          float(tool_dia),
-                                'offset':           'Path',
-                                'offset_value':     0.0,
-                                'type':             'Rough',
-                                'tool_type':        tool_type,
                                 'data':             tool_data,
                                 'solid_geometry':   geo_obj.solid_geometry
                             }
@@ -1878,7 +1876,6 @@ class ToolIsolation(AppTool, Gerber):
                 if float('%.*f' % (self.decimals, tools_storage[tool]['tooldia'])) == sorted_tool:
 
                     tool_dia = tools_storage[tool]['tooldia']
-                    tool_type = tools_storage[tool]['data']['tools_mill_tool_shape']
                     tool_data = tools_storage[tool]['data']
 
                     passes = tool_data['tools_iso_passes']
@@ -1932,10 +1929,6 @@ class ToolIsolation(AppTool, Gerber):
                     tools_storage.update({
                         tool: {
                             'tooldia':          float(tool_dia),
-                            'offset':           'Path',
-                            'offset_value':     0.0,
-                            'type':             'Rough',
-                            'tool_type':        tool_type,
                             'data':             tool_data,
                             'solid_geometry':   deepcopy(new_solid_geo)
                         }
@@ -3378,6 +3371,19 @@ class IsoUI:
 
         self.grid3.addWidget(passlabel, 15, 0)
         self.grid3.addWidget(self.passes_entry, 15, 1)
+
+        # Pad Passes
+        padpasslabel = FCLabel('%s:' % _('Pad Passes'))
+        padpasslabel.setToolTip(
+            _("Width of the extra isolation gap for pads only,\n"
+              "in number (integer) of tool widths.")
+        )
+        self.pad_passes_entry = FCSpinner()
+        self.pad_passes_entry.set_range(0, 999)
+        self.pad_passes_entry.setObjectName("i_pad_passes")
+
+        self.grid3.addWidget(padpasslabel, 16, 0)
+        self.grid3.addWidget(self.pad_passes_entry, 16, 1, 1, 2)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
