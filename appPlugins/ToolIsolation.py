@@ -1690,6 +1690,8 @@ class ToolIsolation(AppTool, Gerber):
 
                 work_geo = geometry
                 if work_geo is None:
+                    # we do isolation over all the geometry of the Gerber object
+                    # because it is already fused together
                     work_geo = isolated_obj.solid_geometry
 
                 iso_t = {

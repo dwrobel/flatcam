@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - cleaned up the Geometry and Gerber object classes
 - more cleanup in Isolation Plugin
 - started the work in adding to Isolation Plugin a new feature to extra isolate the pads
+- some changes due of porting to PyQt6
 
 18.08.2021
 

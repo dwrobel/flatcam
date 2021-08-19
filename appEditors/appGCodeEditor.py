@@ -381,7 +381,7 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        flags = QtGui.QTextDocument.FindCaseSensitively
+        flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
         self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
 
         if self.gcode_obj.options['type'].lower() == 'geometry':
