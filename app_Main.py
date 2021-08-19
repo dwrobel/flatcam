@@ -4718,7 +4718,7 @@ class App(QtCore.QObject):
             "cncjob_al_grbl_jog_fr", "cncjob_al_grbl_travelz",
 
             # Isolation Tool
-            "tools_iso_tool_vtipdia", 'tools_iso_tooldia', "tools_iso_tool_cutz",
+            "tools_iso_tool_cutz",
 
             # Drilling Tool
             'tools_drill_cutz', 'tools_drill_depthperpass', 'tools_drill_travelz', 'tools_drill_endz',
@@ -4962,7 +4962,10 @@ class App(QtCore.QObject):
                             self.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Please enter a tool diameter with non-zero value, in Float format."))
                             return
-                        self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                        try:
+                            self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                        except Exception as err:
+                            self.log.debug("App.on_tool_add_keypress() --> %s" % str(err))
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:

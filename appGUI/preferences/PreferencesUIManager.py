@@ -281,8 +281,6 @@ class PreferencesUIManager:
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.plugin_eng_pref_form.tools_iso_group.tool_dia_entry,
             "tools_iso_order":          self.ui.plugin_eng_pref_form.tools_iso_group.order_radio,
-            "tools_iso_tool_vtipdia":   self.ui.plugin_eng_pref_form.tools_iso_group.tipdia_entry,
-            "tools_iso_tool_vtipangle": self.ui.plugin_eng_pref_form.tools_iso_group.tipangle_entry,
             "tools_iso_tool_cutz":      self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
             "tools_iso_newdia":         self.ui.plugin_eng_pref_form.tools_iso_group.newdia_entry,
 

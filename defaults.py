@@ -350,8 +350,6 @@ class FlatCAMDefaults:
         # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
         "tools_iso_order": 'rev',
-        "tools_iso_tool_vtipdia": 0.1,
-        "tools_iso_tool_vtipangle": 30,
         "tools_iso_tool_cutz": -0.05,
         "tools_iso_newdia": 0.1,
 

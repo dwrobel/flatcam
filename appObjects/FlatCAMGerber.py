@@ -395,17 +395,6 @@ class GerberObject(FlatCAMObj, Gerber):
         except (TypeError, AttributeError):
             pass
 
-    @staticmethod
-    def buffer_handler(geo):
-        new_geo = geo
-        if isinstance(new_geo, list):
-            new_geo = MultiPolygon(new_geo)
-
-        new_geo = new_geo.buffer(0.0000001)
-        new_geo = new_geo.buffer(-0.0000001)
-
-        return new_geo
-
     def on_properties(self, state):
         if state:
             self.ui.info_frame.show()
@@ -435,6 +424,17 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.plot_single_object.emit()
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
+
+    @staticmethod
+    def buffer_handler(geo):
+        new_geo = geo
+        if isinstance(new_geo, list):
+            new_geo = MultiPolygon(new_geo)
+
+        new_geo = new_geo.buffer(0.0000001)
+        new_geo = new_geo.buffer(-0.0000001)
+
+        return new_geo
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.defaults.report_usage("gerber_on_generatenoncopper_button")
@@ -552,57 +552,22 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 geo_obj.solid_geometry = []
 
-                # transfer the Cut Z and Vtip and Vangle values in case that we use the V-Shape tool in Gerber UI
-                if geo_obj.tool_type.lower() == 'v':
-                    new_cutz = self.app.defaults["tools_iso_tool_cutz"]
-                    new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
-                    new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
-                    tool_type = 'V'
-                else:
-                    new_cutz = self.app.defaults['geometry_cutz']
-                    new_vtipdia = self.app.defaults['tools_mill_vtipdia']
-                    new_vtipangle = self.app.defaults['tools_mill_vtipangle']
-                    tool_type = 'C1'
-
                 # store here the default data for Geometry Data
                 default_data = {}
-                default_data.update({
-                    "name": iso_name,
-                    "plot": self.app.defaults['geometry_plot'],
-                    "cutz": new_cutz,
-                    "vtipdia": new_vtipdia,
-                    "vtipangle": new_vtipangle,
-                    "travelz": self.app.defaults['geometry_travelz'],
-                    "feedrate": self.app.defaults['geometry_feedrate'],
-                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                    "dwell": self.app.defaults['geometry_dwell'],
-                    "dwelltime": self.app.defaults['geometry_dwelltime'],
-                    "multidepth": self.app.defaults['geometry_multidepth'],
-                    "ppname_g": self.app.defaults['geometry_ppname_g'],
-                    "depthperpass": self.app.defaults['geometry_depthperpass'],
-                    "extracut": self.app.defaults['geometry_extracut'],
-                    "extracut_length": self.app.defaults['geometry_extracut_length'],
-                    "toolchange": self.app.defaults['geometry_toolchange'],
-                    "toolchangez": self.app.defaults['geometry_toolchangez'],
-                    "endz": self.app.defaults['geometry_endz'],
-                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                    "startz": self.app.defaults['geometry_startz']
-                })
+                for opt_key, opt_val in app_obj.options.items():
+                    if opt_key.find('geometry' + "_") == 0:
+                        oname = opt_key[len('geometry') + 1:]
+                        default_data[oname] = self.app.options[opt_key]
+                    if opt_key.find('tools_mill' + "_") == 0:
+                        default_data[opt_key] = self.app.options[opt_key]
 
-                geo_obj.tools = {'1': {}}
-                geo_obj.tools.update({
+                geo_obj.tools = {
                     '1': {
                         'tooldia':          dia,
-                        'offset':           'Path',
-                        'offset_value':     0.0,
-                        'type':             'Rough',
-                        'tool_type':        tool_type,
                         'data':             default_data,
                         'solid_geometry':   geo_obj.solid_geometry
                     }
-                })
+                }
 
                 for nr_pass in range(passes):
                     iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
@@ -695,59 +660,22 @@ class GerberObject(FlatCAMObj, Gerber):
 
                     geo_obj.solid_geometry = geom
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
-                    # required to be transfered to the Geometry object
-                    if self.app.defaults["tools_iso_tool_type"].lower() == 'v':
-                        new_cutz = self.app.defaults["tools_iso_tool_cutz"]
-                        new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
-                        new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
-                        tool_type = 'V'
-                    else:
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['tools_mill_vtipdia']
-                        new_vtipangle = self.app.defaults['tools_mill_vtipangle']
-                        tool_type = 'C1'
-
                     # store here the default data for Geometry Data
                     default_data = {}
-                    default_data.update({
-                        "name": iso_name,
-                        "plot": self.app.defaults['geometry_plot'],
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                        "travelz": self.app.defaults['geometry_travelz'],
-                        "feedrate": self.app.defaults['geometry_feedrate'],
-                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                        "dwell": self.app.defaults['geometry_dwell'],
-                        "dwelltime": self.app.defaults['geometry_dwelltime'],
-                        "multidepth": self.app.defaults['geometry_multidepth'],
-                        "ppname_g": self.app.defaults['geometry_ppname_g'],
-                        "depthperpass": self.app.defaults['geometry_depthperpass'],
-                        "extracut": self.app.defaults['geometry_extracut'],
-                        "extracut_length": self.app.defaults['geometry_extracut_length'],
-                        "toolchange": self.app.defaults['geometry_toolchange'],
-                        "toolchangez": self.app.defaults['geometry_toolchangez'],
-                        "endz": self.app.defaults['geometry_endz'],
-                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                        "startz": self.app.defaults['geometry_startz']
-                    })
+                    for opt_key, opt_val in app_obj.options.items():
+                        if opt_key.find('geometry' + "_") == 0:
+                            oname = opt_key[len('geometry') + 1:]
+                            default_data[oname] = self.app.options[opt_key]
+                        if opt_key.find('tools_mill' + "_") == 0:
+                            default_data[opt_key] = self.app.options[opt_key]
 
-                    geo_obj.tools = {'1': {}}
-                    geo_obj.tools.update({
+                    geo_obj.tools = {
                         '1': {
                             'tooldia':          dia,
-                            'offset':           'Path',
-                            'offset_value':     0.0,
-                            'type':             'Rough',
-                            'tool_type':        tool_type,
                             'data':             default_data,
                             'solid_geometry':   geo_obj.solid_geometry
                         }
-                    })
+                    }
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
@@ -856,16 +784,11 @@ class GerberObject(FlatCAMObj, Gerber):
                     oname = opt_key[len('geometry') + 1:]
                     default_data[oname] = self.app.options[opt_key]
                 if opt_key.find('tools_mill' + "_") == 0:
-                    oname = opt_key[len('tools_mill') + 1:]
-                    default_data[oname] = self.app.options[opt_key]
+                    default_data[opt_key] = self.app.options[opt_key]
 
             new_obj.tools = {
                 1: {
                     'tooldia':  app_obj.dec_format(float(tools_list[0]), self.decimals),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Rough',
-                    'tool_type': 'C1',
                     'data': deepcopy(default_data),
                     'solid_geometry': new_obj.solid_geometry
                 }
@@ -1051,7 +974,6 @@ class GerberObject(FlatCAMObj, Gerber):
         except Exception as e:
             self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
-    # experimental plot() when the solid_geometry is stored in the self.tools
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
 

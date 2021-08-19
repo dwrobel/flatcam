@@ -60,40 +60,6 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.order_label, 2, 0)
         grid0.addWidget(self.order_radio, 2, 1, 1, 2)
 
-        # Tool Type Radio Button
-        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        # Tip Dia
-        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
-        self.tipdialabel.setToolTip(
-            _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = FCDoubleSpinner()
-        self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0, 1000)
-        self.tipdia_entry.setSingleStep(0.1)
-
-        grid0.addWidget(self.tipdialabel, 6, 0)
-        grid0.addWidget(self.tipdia_entry, 6, 1, 1, 2)
-
-        # Tip Angle
-        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
-        self.tipanglelabel.setToolTip(
-            _("The tip angle for V-Shape Tool.\n"
-              "In degrees."))
-        self.tipangle_entry = FCDoubleSpinner()
-        self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(1, 180)
-        self.tipangle_entry.setSingleStep(5)
-        self.tipangle_entry.setWrapping(True)
-
-        grid0.addWidget(self.tipanglelabel, 8, 0)
-        grid0.addWidget(self.tipangle_entry, 8, 1, 1, 2)
-
         # Cut Z entry
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(

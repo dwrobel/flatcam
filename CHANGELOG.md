@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 19.08.2021
 
 - some cleaning up in the Preferences
+- cleaned up the Geometry and Gerber object classes
+- more cleanup in Isolation Plugin
 
 18.08.2021
 
