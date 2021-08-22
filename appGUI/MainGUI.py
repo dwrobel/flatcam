@@ -573,6 +573,11 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/hud_32.png'),
             '%s\t%s' % (_("Toggle HUD"), _('Shift+H')))
 
+        self.menuview.addSeparator()
+        self.menuview_show_log = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/log32.png'),
+            '%s\t%s' % (_("Log"), ''))
+
         # ########################################################################
         # ########################## Objects # ###################################
         # ########################################################################

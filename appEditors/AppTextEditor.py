@@ -222,7 +222,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         if path:
             file = QtCore.QFile(path)
-            if file.open(QtCore.QIODevice.ReadOnly):
+            if file.open(QtCore.QIODevice.OpenModeFlag.ReadOnly):
                 stream = QtCore.QTextStream(file)
                 self.code_edited = stream.readAll()
                 self.code_editor.setPlainText(self.code_edited)

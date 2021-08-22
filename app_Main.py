@@ -1825,6 +1825,9 @@ class App(QtCore.QObject):
     def preprocessors_path(self):
         return os.path.join(self.data_path, 'preprocessors')
 
+    def log_path(self):
+        return os.path.join(self.data_path, 'log.txt')
+
     def on_app_restart(self):
 
         # make sure that the Sys Tray icon is hidden before restart otherwise it will
@@ -2167,6 +2170,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
         self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
         self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
+        self.ui.menuview_show_log.triggered.connect(self.on_show_log)
 
     def connect_menuhelp_signals(self):
         self.ui.menuhelp_about.triggered.connect(self.on_about)
@@ -4916,6 +4920,15 @@ class App(QtCore.QObject):
         self.ui.general_pref_form.general_app_set_group.workspace_cb.set_value(state)
         self.ui.general_pref_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
+
+    def on_show_log(self):
+        if sys.platform == 'win32':
+            subprocess.Popen('explorer %s' % self.log_path())
+        elif sys.platform == 'darwin':
+            os.system('open "%s"' % self.log_path())
+        else:
+            subprocess.Popen(['xdg-open', self.log_path()])
+        self.inform.emit('[success] %s' % _("FlatCAM log opened."))
 
     def on_cursor_type(self, val):
         """

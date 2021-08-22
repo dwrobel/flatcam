@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.08.2021
+
+- added a new menu entry in the View menu to show the application log file where even the fatal crashes are logged
+- fixed an issue due of porting to Qt6
+
 19.08.2021
 
 - some cleaning up in the Preferences
