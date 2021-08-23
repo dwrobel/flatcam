@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - added a partial translation for Chinese Simplified language, by 俊霄 余
 - trying to separate the Preferences settings from App init and to make them dependent on the self.defaults dictionary
 - updated the language strings from the source
+- translation to Simplified Chinese language is done by 俊霄 余
 
 22.08.2021
 
