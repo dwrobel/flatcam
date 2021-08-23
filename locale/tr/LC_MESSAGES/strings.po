@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-08-23 14:00+0300\n"
-"PO-Revision-Date: 2021-08-23 14:00+0300\n"
+"POT-Creation-Date: 2021-08-23 21:09+0300\n"
+"PO-Revision-Date: 2021-08-23 21:10+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -1038,8 +1038,8 @@ msgid ""
 "Width of the isolation gap in\n"
 "number (integer) of tool widths."
 msgstr ""
-"Yalıtım aralığının uç genişliği\n"
-"sayısı (tamsayı) cinsinden genişliği."
+"Yalıtım oluşturmak için tamsayı\n"
+"cinsinde uç geçiş sayısı."
 
 #: appDatabase.py:836 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:146
 #: appGUI/preferences/tools/ToolsMillPrefGroupUI.py:491
@@ -1618,7 +1618,7 @@ msgstr "Araçlar Veri Tabanı boş."
 
 #: appDatabase.py:2689
 msgid "Tools in Tools Database edited but not saved."
-msgstr "Ayarlar düzenlendi ancak kaydedilmedi."
+msgstr "Ayarlar değiştirildi; ancak kaydedilmedi."
 
 #: appDatabase.py:2698
 msgid "Cancelled adding tool from DB."
@@ -5182,10 +5182,8 @@ msgid "Shift+H"
 msgstr "Shift+H"
 
 #: appGUI/MainGUI.py:579
-#, fuzzy
-#| msgid "Jog"
 msgid "Log"
-msgstr "İlerlet"
+msgstr "Kayıt Dosyası"
 
 #: appGUI/MainGUI.py:584
 msgid "Objects"
@@ -5759,7 +5757,7 @@ msgstr "Köşeye yasla"
 
 #: appGUI/MainGUI.py:1326 appGUI/preferences/general/GeneralAPPSetGroupUI.py:72
 msgid "Max. magnet distance"
-msgstr "Maksimum Yapışma Mesafesi"
+msgstr "Maksimum Tutturma Mesafesi"
 
 #: appGUI/MainGUI.py:1336
 msgid "Toggle the display of axis on canvas"
@@ -5782,7 +5780,7 @@ msgid ""
 "Relative measurement.\n"
 "Reference is last click position"
 msgstr ""
-"Değişen ölçüm.\n"
+"Göreceli ölçüm.\n"
 "Referans, son tıklama konumudur"
 
 #: appGUI/MainGUI.py:1381
@@ -5832,11 +5830,11 @@ msgstr "Kazıma"
 
 #: appGUI/MainGUI.py:1559
 msgid "Processing"
-msgstr "İşleniyor"
+msgstr "İŞLEME"
 
 #: appGUI/MainGUI.py:1568
 msgid "Extra Plugins"
-msgstr "Ekstra Eklentiler"
+msgstr "EKSTRA EKLENTİLER"
 
 #: appGUI/MainGUI.py:1578
 msgid "UTILITIES"
@@ -5853,7 +5851,7 @@ msgid ""
 "to the initial values loaded after first launch."
 msgstr ""
 "İlk başlatmadan sonra yüklenen ayarları temizleyerek \n"
-"başlangıç değerlerine geri dön."
+"varsayılan değerlere geri dön."
 
 #: appGUI/MainGUI.py:1604
 msgid "Open Pref Folder"
@@ -5944,8 +5942,6 @@ msgid "Exc Editor"
 msgstr "Excellon Düzenleyici"
 
 #: appGUI/MainGUI.py:1795
-#, fuzzy
-#| msgid "Move to Origin"
 msgid "Move2Origin"
 msgstr "Orijine Taşı"
 
@@ -6804,7 +6800,7 @@ msgstr "Çokgenleri keserek yollar oluşturma işlemi."
 msgid ""
 "Create the Geometry Object\n"
 "for non-copper routing."
-msgstr "Bakırı kazıyarak bakırsız alanlar oluşturun."
+msgstr "Yol dışındaki bakırları kazıyarak yolların ortaya çıkmasını sağlar."
 
 #: appGUI/ObjectUI.py:380
 msgid ""
@@ -7081,35 +7077,34 @@ msgid "Dia"
 msgstr "Boyut"
 
 #: appGUI/ObjectUI.py:1006
-#, fuzzy
-#| msgid ""
-#| "This is the Tool Number.\n"
-#| "When ToolChange is checked, on toolchange event this value\n"
-#| "will be showed as a T1, T2 ... Tn"
 msgid ""
 "Tool Number.\n"
 "When ToolChange is checked, on toolchange event this value\n"
 "will be showed as a T1, T2 ... Tn"
 msgstr ""
-"Bu uç numarasıdır.\n"
-"Uç değiştirme onay kutusu seçilirse, uç değişikliği durumunda\n"
+"Uç Numarası.\n"
+"Uç değiştirme onay kutusu işaretlendiğinde, uç değişikliği durumunda\n"
 "bu değer T1, T2 ... Tn olarak gösterilecek"
 
 #: appGUI/ObjectUI.py:1015
 msgid "Offset Type. The kind of cut offset to be used."
-msgstr ""
+msgstr "Hizalama Tipi. Kullanılacak kesme hizalama tipi."
 
 #: appGUI/ObjectUI.py:1019
 msgid ""
 "Job Type. Usually the UI form values \n"
 "are choose based on the operation type and this will serve as a reminder."
 msgstr ""
+"İş Tipi. Genellikle Kullanıcı Arayüzü form değerleri işlem tipine göre "
+"seçilir ve bu bir hatırlatma görevi görür."
 
 #: appGUI/ObjectUI.py:1029
 msgid ""
 "Plot column. It is visible only for MultiGeo Geometry objects.\n"
 "Enable plot for the selected tool geometry."
 msgstr ""
+"Çizim sütunu. Yalnızca Çoklu şekle sahip nesneler için görünür.\n"
+"Seçilen uç çizim şekli için Çizimi Göster onay kutusunu işaretleyin."
 
 #: appGUI/ObjectUI.py:1042
 msgid "Launch Paint Tool in Tools Tab."
@@ -7123,7 +7118,7 @@ msgstr "Bir Şekli frezeleyerek bir CNC İşi oluşturun."
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon."
-msgstr "Bir çokgenin tüm alanlarını kaplayacak yollar oluşturur."
+msgstr "Bir çokgenin tüm alanını kaplayarak yollar oluşturur."
 
 #: appGUI/ObjectUI.py:1125
 msgid "Points"
@@ -7409,7 +7404,7 @@ msgstr "Ayarlar kaydedildi."
 
 #: appGUI/preferences/PreferencesUIManager.py:1227
 msgid "Preferences edited but not saved."
-msgstr "Ayarlar düzenlendi ancak kaydedilmedi."
+msgstr "Ayarlar değiştirildi; ancak kaydedilmedi."
 
 #: appGUI/preferences/PreferencesUIManager.py:1280
 msgid ""
@@ -8238,11 +8233,11 @@ msgstr "Y Değeri"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:61
 msgid "This is the Grid snap value on Y axis."
-msgstr "Bu, Y ekseni ızgarası ek değeridir."
+msgstr "Bu, Y eksenindeki ızgaraya tutturma değeridir."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:71
 msgid "Snap Max"
-msgstr "Maksimum Yapışma"
+msgstr "Maksimum Tutturma"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:86
 msgid "Workspace Settings"
@@ -8845,7 +8840,7 @@ msgid ""
 "While active, some operations may block this feature."
 msgstr ""
 "Otomatik kaydetmek için milisaniye cinsinden zaman aralığı.\n"
-"Otomatik kaydetmemenin yapılabilmesi için projenin en az \n"
+"Otomatik kaydetmenin yapılabilmesi için projenin en az \n"
 "bir kere elle kaydedilmiş olması gerekir.\n"
 "Otomatik kaydetme aktifken, bazı işlemler bu özelliği engelleyebilir."
 
@@ -8993,8 +8988,8 @@ msgid ""
 "right to left."
 msgstr ""
 "Uygulama nesneleri için seçim şeklinin görüntülenmesini sağlar.\n"
-"Fare bir nesneyi seçtiğinde, fareyi soldan sağa veya sağdan sola\n"
-"sürükleyerek veya sürükleyerek görüntülenir."
+"Fare ile bir nesneyi seçtiğinizde, fareyi soldan sağa veya sağdan sola\n"
+"sürüklediğinizde görüntülenir."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:148
 msgid "Left-Right Selection Color"
@@ -10514,7 +10509,7 @@ msgstr "QR Kod'un arka plan rengini ayarlar."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:20
 msgid "Check Rules Plugin"
-msgstr "Kontrol Kuralları Eklentis"
+msgstr "Kontrol Kuralları Eklentisi"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:26
 msgid ""
@@ -11674,23 +11669,17 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:132
 #: appPlugins/ToolIsolation.py:3378
-#, fuzzy
-#| msgid "Passes"
 msgid "Pad Passes"
-msgstr "Geçişler"
+msgstr "Ped Geçişleri"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:134
 #: appPlugins/ToolIsolation.py:3380
-#, fuzzy
-#| msgid ""
-#| "Width of the isolation gap in\n"
-#| "number (integer) of tool widths."
 msgid ""
 "Width of the extra isolation gap for pads only,\n"
 "in number (integer) of tool widths."
 msgstr ""
-"Yalıtım aralığının uç genişliği\n"
-"sayısı (tamsayı) cinsinden genişliği."
+"Yalnızca pedler için ek yalıtım oluşturmak için \n"
+"tamsayı cinsinden uç geçiş sayısı."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:201
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:270
@@ -18387,10 +18376,8 @@ msgid "Workspace disabled."
 msgstr "Çalışma alanı devre dışı."
 
 #: app_Main.py:4913
-#, fuzzy
-#| msgid "FlatCAM Preferences Folder opened."
 msgid "FlatCAM log opened."
-msgstr "FlatCAM Ayarları Klasörü açıldı."
+msgstr "FlatCAM dosyası açıldı."
 
 #: app_Main.py:4968
 msgid ""
@@ -18832,14 +18819,10 @@ msgstr ""
 "siler. Projeyi kaydetmek istiyor musunuz?"
 
 #: app_Main.py:9856
-#, fuzzy
-#| msgid "Do you want to save the edited object?"
 msgid "Do you want to save the current settings/preferences?"
-msgstr "Düzenlenen nesneyi kaydetmek istiyor musunuz?"
+msgstr "Mevcut ayarları/tercihleri kaydetmek istiyor musunuz?"
 
 #: app_Main.py:9857
-#, fuzzy
-#| msgid "Save Preferences"
 msgid "Save preferences"
 msgstr "Ayarları Kaydet"
 
@@ -20533,7 +20516,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "Done. All fiducials have been added."
 #~ msgstr "Bitti. Tüm referans işaretleri başarıyla eklendi."
 
-#, python-format
 #~ msgid "Direction: %s"
 #~ msgstr "Talimatlar: %s"
 
@@ -20564,7 +20546,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ "Önce Araçlar Tablosunda bir satır(lar) seçerek\n"
 #~ "burada seçilen ucu silin."
 
-#, python-format
 #~ msgid "Could not retrieve object: %s"
 #~ msgstr "Nesne alınamadı: %s"
 

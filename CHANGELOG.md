@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - trying to separate the Preferences settings from App init and to make them dependent on the self.defaults dictionary
 - updated the language strings from the source
 - translation to Simplified Chinese language is done by 俊霄 余
+- updated the Turkish translation files, by Mehmet Kaya
 
 22.08.2021
 
