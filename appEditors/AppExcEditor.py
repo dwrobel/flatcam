@@ -5,16 +5,16 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 
 from camlib import distance, arc, FlatCAMRTreeStorage
-from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel
+from appGUI.GUIElements import FCEntry, FCTable, FCDoubleSpinner, RadioSet, FCSpinner, FCButton, FCLabel, FCGridLayout
 from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 import shapely.affinity as affinity
-from appCommon.Common import LoudDict
+# from appCommon.Common import LoudDict
 
 import numpy as np
 
@@ -64,9 +64,9 @@ class SelectEditorExc(FCShapeTool):
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
@@ -115,9 +115,9 @@ class SelectEditorExc(FCShapeTool):
         else:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
 
-            if modifiers == QtCore.Qt.ShiftModifier:
+            if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 mod_key = 'Shift'
-            elif modifiers == QtCore.Qt.ControlModifier:
+            elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
                 mod_key = 'Control'
             else:
                 mod_key = None
@@ -183,7 +183,7 @@ class SelectEditorExc(FCShapeTool):
         #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
         #
         #         if self.draw_app.app.defaults["global_mselect_key"] == 'Shift':
-        #             if self.draw_app.modifiers == Qt.ShiftModifier:
+        #             if self.draw_app.modifiers == Qt.KeyboardModifier.ShiftModifier:
         #                 if obj_to_add in self.draw_app.selected:
         #                     self.draw_app.selected.remove(obj_to_add)
         #                 else:
@@ -194,7 +194,7 @@ class SelectEditorExc(FCShapeTool):
         #         else:
         #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
         #             # in the selected list, we removed it. Therefore first click selects, second deselects.
-        #             if self.draw_app.modifiers == Qt.ControlModifier:
+        #             if self.draw_app.modifiers == Qt.KeyboardModifier.ControlModifier:
         #                 if obj_to_add in self.draw_app.selected:
         #                     self.draw_app.selected.remove(obj_to_add)
         #                 else:
@@ -602,9 +602,9 @@ class DrillArray(FCShapeTool):
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
@@ -613,7 +613,7 @@ class DrillArray(FCShapeTool):
             pass
         elif mod_key is None:
             # Toggle Drill Array Direction
-            if key == QtCore.Qt.Key_Space:
+            if key == QtCore.Qt.Key.Key_Space:
                 if self.draw_app.ui.drill_axis_radio.get_value() == 'X':
                     self.draw_app.ui.drill_axis_radio.set_value('Y')
                 elif self.draw_app.ui.drill_axis_radio.get_value() == 'Y':
@@ -828,7 +828,7 @@ class SlotAdd(FCShapeTool):
 
     def on_key(self, key):
         # Toggle Pad Direction
-        if key == QtCore.Qt.Key_Space:
+        if key == QtCore.Qt.Key.Key_Space:
             if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
                 self.draw_app.ui.slot_axis_radio.set_value('Y')
             elif self.draw_app.ui.slot_axis_radio.get_value() == 'Y':
@@ -1243,16 +1243,16 @@ class SlotArray(FCShapeTool):
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
 
         if mod_key == 'Control':
             # Toggle Pad Array Direction
-            if key == QtCore.Qt.Key_Space:
+            if key == QtCore.Qt.Key.Key_Space:
                 if self.draw_app.ui.slot_array_axis_radio.get_value() == 'X':
                     self.draw_app.ui.slot_array_axis_radio.set_value('Y')
                 elif self.draw_app.ui.slot_array_axis_radio.get_value() == 'Y':
@@ -1264,7 +1264,7 @@ class SlotArray(FCShapeTool):
                 self.draw_app.update_utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
         elif mod_key is None:
             # Toggle Pad Direction
-            if key == QtCore.Qt.Key_Space:
+            if key == QtCore.Qt.Key.Key_Space:
                 if self.draw_app.ui.slot_axis_radio.get_value() == 'X':
                     self.draw_app.ui.slot_axis_radio.set_value('Y')
                 elif self.draw_app.ui.slot_axis_radio.get_value() == 'Y':
@@ -2091,7 +2091,7 @@ class AppExcEditor(QtCore.QObject):
             self.tot_slot_cnt += slot_cnt
 
             idd = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-            idd.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            idd.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
@@ -2099,17 +2099,17 @@ class AppExcEditor(QtCore.QObject):
             # For INCH the decimals should be no more than 4. There are no drills under 10mils
             dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.olddia_newdia[tool_no]))
 
-            dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             drill_count = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             if slot_cnt > 0:
                 slot_count = QtWidgets.QTableWidgetItem('%d' % slot_cnt)
             else:
                 slot_count = QtWidgets.QTableWidgetItem('')
-            slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.tools_table_exc.setItem(self.tool_row, 1, dia)  # Diameter
             self.ui.tools_table_exc.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
@@ -2124,7 +2124,9 @@ class AppExcEditor(QtCore.QObject):
         # make the diameter column editable
         for row in range(self.tool_row):
             self.ui.tools_table_exc.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable |
+                QtCore.Qt.ItemFlag.ItemIsSelectable |
+                QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table_exc.item(row, 2).setForeground(QtGui.QColor(0, 0, 0))
             self.ui.tools_table_exc.item(row, 3).setForeground(QtGui.QColor(0, 0, 0))
 
@@ -2134,15 +2136,15 @@ class AppExcEditor(QtCore.QObject):
         empty = QtWidgets.QTableWidgetItem('9998')
         empty.setForeground(QtGui.QColor(255, 255, 255))
 
-        empty.setFlags(empty.flags() ^ QtCore.Qt.ItemIsEnabled)
+        empty.setFlags(empty.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
         empty_b = QtWidgets.QTableWidgetItem('')
-        empty_b.setFlags(empty_b.flags() ^ QtCore.Qt.ItemIsEnabled)
+        empty_b.setFlags(empty_b.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
 
-        label_tot_drill_count.setFlags(label_tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-        tot_drill_count.setFlags(tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
+        label_tot_drill_count.setFlags(label_tot_drill_count.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_drill_count.setFlags(tot_drill_count.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table_exc.setItem(self.tool_row, 0, empty)
         self.ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_drill_count)
@@ -2165,15 +2167,15 @@ class AppExcEditor(QtCore.QObject):
         empty_2 = QtWidgets.QTableWidgetItem('9999')
         empty_2.setForeground(QtGui.QColor(255, 255, 255))
 
-        empty_2.setFlags(empty_2.flags() ^ QtCore.Qt.ItemIsEnabled)
+        empty_2.setFlags(empty_2.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         empty_3 = QtWidgets.QTableWidgetItem('')
-        empty_3.setFlags(empty_3.flags() ^ QtCore.Qt.ItemIsEnabled)
+        empty_3.setFlags(empty_3.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
-        label_tot_slot_count.setFlags(label_tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-        tot_slot_count.setFlags(tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
+        label_tot_slot_count.setFlags(label_tot_slot_count.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_slot_count.setFlags(tot_slot_count.flags() ^ QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table_exc.setItem(self.tool_row, 0, empty_2)
         self.ui.tools_table_exc.setItem(self.tool_row, 1, label_tot_slot_count)
@@ -2191,15 +2193,15 @@ class AppExcEditor(QtCore.QObject):
         self.ui.tools_table_exc.resizeRowsToContents()
 
         vertical_header = self.ui.tools_table_exc.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table_exc.horizontalHeader()
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
         # self.ui.tools_table_exc.setSortingEnabled(True)
@@ -3190,9 +3192,9 @@ class AppExcEditor(QtCore.QObject):
     def on_row_selected(self, row, col):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
         if self.app.defaults["global_mselect_key"] == 'Control':
-            modifier_to_use = Qt.ControlModifier
+            modifier_to_use = Qt.KeyboardModifier.ControlModifier
         else:
-            modifier_to_use = Qt.ShiftModifier
+            modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
         if key_modifier == modifier_to_use:
             pass
@@ -3254,9 +3256,9 @@ class AppExcEditor(QtCore.QObject):
                     # else return to the current tool
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
                     if self.app.defaults["global_mselect_key"] == 'Control':
-                        modifier_to_use = Qt.ControlModifier
+                        modifier_to_use = Qt.KeyboardModifier.ControlModifier
                     else:
-                        modifier_to_use = Qt.ShiftModifier
+                        modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
@@ -3563,9 +3565,9 @@ class AppExcEditor(QtCore.QObject):
 
         # detect if a modifier key was pressed while the left mouse button was released
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.modifiers == QtCore.Qt.ShiftModifier:
+        if self.modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
             modifiers = 'Shift'
-        elif self.modifiers == QtCore.Qt.ControlModifier:
+        elif self.modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
             modifiers = 'Control'
 
         if modifiers == self.app.defaults["global_mselect_key"]:
@@ -3598,7 +3600,7 @@ class AppExcEditor(QtCore.QObject):
         # first deselect all rows (tools) in the Tools Table
         self.ui.tools_table_exc.clearSelection()
         # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for storage in self.storage_dict:
             for shape_s in self.selected:
                 if shape_s in self.storage_dict[storage].get_objects():
@@ -3616,7 +3618,7 @@ class AppExcEditor(QtCore.QObject):
                                 self.ui.tools_table_exc.selectRow(row_to_sel)
                             self.last_tool_selected = int(key_tool_nr)
 
-        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
         self.replot()
@@ -3981,7 +3983,7 @@ class AppExcEditorUI:
         self.icon.setPixmap(pixmap)
 
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Excellon Editor'))
-        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         self.title_box.addWidget(self.icon, stretch=0)
         self.title_box.addWidget(self.title_label, stretch=1)
@@ -3995,7 +3997,7 @@ class AppExcEditorUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
@@ -4025,13 +4027,13 @@ class AppExcEditorUI:
         self.tools_table_exc.setColumnCount(4)
         self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.tools_table_exc.setSortingEnabled(False)
-        self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.ui_vertical_lay.addWidget(self.tools_table_exc)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.ui_vertical_lay.addWidget(separator_line)
 
         self.convert_slots_btn = FCButton('%s' % _("Convert Slots"))
@@ -4043,8 +4045,8 @@ class AppExcEditorUI:
         self.ui_vertical_lay.addWidget(self.convert_slots_btn)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.ui_vertical_lay.addWidget(separator_line)
 
         # Add a new Tool
@@ -4058,7 +4060,7 @@ class AppExcEditorUI:
         # #############################################################################################################
         # ######################## ADD New Tool Grid ##################################################################
         # #############################################################################################################
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.ui_vertical_lay.addLayout(grid1)
@@ -4099,8 +4101,8 @@ class AppExcEditorUI:
         grid1.addWidget(self.deltool_btn, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 4, 0, 1, 2)
 
         # #############################################################################################################
@@ -4112,7 +4114,7 @@ class AppExcEditorUI:
         self.resize_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.resize_frame)
 
-        self.resize_grid = QtWidgets.QGridLayout()
+        self.resize_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.resize_grid.setColumnStretch(0, 0)
         self.resize_grid.setColumnStretch(1, 1)
         self.resize_grid.setContentsMargins(0, 0, 0, 0)
@@ -4132,7 +4134,8 @@ class AppExcEditorUI:
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.resdrill_entry = FCDoubleSpinner(policy=False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.resdrill_entry.setSizePolicy(sizePolicy)
         self.resdrill_entry.set_precision(self.decimals)
         self.resdrill_entry.set_range(0.0000, 10000.0000)
@@ -4151,8 +4154,8 @@ class AppExcEditorUI:
         self.resize_grid.addLayout(hlay2, 2, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.resize_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         self.resize_frame.hide()
@@ -4167,7 +4170,7 @@ class AppExcEditorUI:
         self.array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.array_frame)
 
-        self.array_grid = QtWidgets.QGridLayout()
+        self.array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.array_grid.setColumnStretch(0, 0)
         self.array_grid.setColumnStretch(1, 1)
         self.array_grid.setContentsMargins(0, 0, 0, 0)
@@ -4210,7 +4213,7 @@ class AppExcEditorUI:
         self.array_linear_frame = QtWidgets.QFrame()
         self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_linear_frame, 6, 0, 1, 2)
-        self.lin_grid = QtWidgets.QGridLayout()
+        self.lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.lin_grid.setColumnStretch(0, 0)
         self.lin_grid.setColumnStretch(1, 1)
         self.lin_grid.setContentsMargins(0, 0, 0, 0)
@@ -4269,7 +4272,7 @@ class AppExcEditorUI:
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.array_grid.addWidget(self.array_circular_frame, 8, 0, 1, 2)
 
-        self.circ_grid = QtWidgets.QGridLayout()
+        self.circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.circ_grid.setColumnStretch(0, 0)
         self.circ_grid.setColumnStretch(1, 1)
         self.circ_grid.setContentsMargins(0, 0, 0, 0)
@@ -4299,8 +4302,8 @@ class AppExcEditorUI:
         self.circ_grid.addWidget(self.drill_angle_entry, 2, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.array_grid.addWidget(separator_line, 10, 0, 1, 2)
 
         # #############################################################################################################
@@ -4313,7 +4316,7 @@ class AppExcEditorUI:
         self.slot_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_frame)
 
-        self.slot_grid = QtWidgets.QGridLayout()
+        self.slot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_grid.setColumnStretch(0, 0)
         self.slot_grid.setColumnStretch(1, 1)
         self.slot_grid.setContentsMargins(0, 0, 0, 0)
@@ -4376,8 +4379,8 @@ class AppExcEditorUI:
         self.slot_grid.addWidget(self.slot_angle_spinner, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.slot_grid.addWidget(separator_line, 8, 0, 1, 2)
 
         # #############################################################################################################
@@ -4387,7 +4390,7 @@ class AppExcEditorUI:
         self.slot_array_frame.setContentsMargins(0, 0, 0, 0)
         self.ui_vertical_lay.addWidget(self.slot_array_frame)
 
-        self.slot_array_grid = QtWidgets.QGridLayout()
+        self.slot_array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_grid.setColumnStretch(0, 0)
         self.slot_array_grid.setColumnStretch(1, 1)
         self.slot_array_grid.setContentsMargins(0, 0, 0, 0)
@@ -4431,7 +4434,7 @@ class AppExcEditorUI:
         self.slot_array_linear_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_linear_frame, 6, 0, 1, 2)
 
-        self.slot_array_lin_grid = QtWidgets.QGridLayout()
+        self.slot_array_lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_lin_grid.setColumnStretch(0, 0)
         self.slot_array_lin_grid.setColumnStretch(1, 1)
         self.slot_array_lin_grid.setContentsMargins(0, 0, 0, 0)
@@ -4491,7 +4494,7 @@ class AppExcEditorUI:
         self.slot_array_circular_frame.setContentsMargins(0, 0, 0, 0)
         self.slot_array_grid.addWidget(self.slot_array_circular_frame, 8, 0, 1, 2)
 
-        self.slot_array_circ_grid = QtWidgets.QGridLayout()
+        self.slot_array_circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.slot_array_circ_grid.setColumnStretch(0, 0)
         self.slot_array_circ_grid.setColumnStretch(1, 1)
         self.slot_array_circ_grid.setContentsMargins(0, 0, 0, 0)

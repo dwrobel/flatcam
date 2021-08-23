@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 from appCommon.Common import LoudDict
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
@@ -234,12 +234,12 @@ class ToolFiducials(AppTool):
 
     def on_second_point(self, val):
         if val == 'no':
-            self.ui.id_item_3.setFlags(QtCore.Qt.NoItemFlags)
-            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.NoItemFlags)
+            self.ui.id_item_3.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
             self.ui.sec_points_coords_entry.setDisabled(True)
         else:
-            self.ui.id_item_3.setFlags(QtCore.Qt.ItemIsEnabled)
-            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.id_item_3.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            self.ui.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.sec_points_coords_entry.setDisabled(False)
 
     def on_method_change(self, val):
@@ -812,7 +812,7 @@ class FidoUI:
         self.layout.addWidget(self.points_label)
 
         self.points_table = FCTable()
-        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.points_table.setColumnCount(3)
         self.points_table.setHorizontalHeaderLabels(
@@ -824,7 +824,7 @@ class FidoUI:
         )
         self.points_table.setRowCount(3)
         row = 0
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
 
         # BOTTOM LEFT
         id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
@@ -863,22 +863,22 @@ class FidoUI:
 
         vertical_header = self.points_table.verticalHeader()
         vertical_header.hide()
-        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.points_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
 
-        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         # for x in range(4):
         #     self.points_table.resizeColumnToContents(x)
         self.points_table.resizeColumnsToContents()
         self.points_table.resizeRowsToContents()
 
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 2)
@@ -890,12 +890,12 @@ class FidoUI:
         self.layout.addWidget(self.points_table)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.layout.addWidget(separator_line)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -965,8 +965,8 @@ class FidoUI:
         grid_lay.addWidget(self.pos_radio, 4, 1)
 
         self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(self.separator_line, 5, 0, 1, 2)
 
         # Fiducial type #
@@ -999,8 +999,8 @@ class FidoUI:
         grid_lay.addWidget(self.line_thickness_entry, 7, 1)
 
         separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line_1, 8, 0, 1, 2)
 
         # Copper Gerber object
@@ -1033,8 +1033,8 @@ class FidoUI:
         grid_lay.addWidget(self.add_cfid_button, 11, 0, 1, 2)
 
         separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line_2, 12, 0, 1, 2)
 
         # Soldermask Gerber object #

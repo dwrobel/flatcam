@@ -10,12 +10,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 class ToolsSubPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(ToolsSubPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Substractor Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Subtractor Tool Parameters
         self.sublabel = FCLabel("<b>%s:</b>" % _("Parameters"))

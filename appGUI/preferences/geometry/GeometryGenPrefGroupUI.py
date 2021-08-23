@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet, FCLabel
+from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import platform
@@ -15,12 +15,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry General Preferences", parent=parent)
         super(GeometryGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
@@ -43,7 +44,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         )
         plot_hlay.addWidget(self.multicolored_cb)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -61,8 +62,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.opt_label = FCLabel("<b>%s:</b>" % _("Path Optimization"))
@@ -107,8 +108,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.optimization_time_entry, 14, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Fuse Tools
@@ -123,8 +124,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.fuse_tools_cb, 20, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         # Geometry Object Color
@@ -162,6 +163,14 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
 
     def optimization_selection(self, val):
+        if platform.architecture()[0] != '64bit':
+            # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
+            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
+            if val in ['M', 'B']:
+                self.opt_algorithm_radio.blockSignals(True)
+                self.opt_algorithm_radio.set_value('R')
+                self.opt_algorithm_radio.blockSignals(False)
+
         if val == 'M':
             self.optimization_time_label.setDisabled(False)
             self.optimization_time_entry.setDisabled(False)

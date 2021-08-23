@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -13,11 +13,12 @@ if '_' not in builtins.__dict__:
 
 class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ExcellonExpPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon Export")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Plot options
         self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
@@ -27,7 +28,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_options_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -65,11 +66,11 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the whole part of Excellon coordinates.")
         )
-        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         excellon_separator_label = FCLabel(':')
         excellon_separator_label.setFixedWidth(5)
-        hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.format_dec_entry = FCSpinner()
         self.format_dec_entry.set_range(0, 9)
@@ -78,7 +79,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
         )
-        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
         hlay1.addStretch()
 
         grid0.addWidget(self.digits_label, 2, 0)
@@ -110,7 +111,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         # Excellon Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
-        self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.zeros_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Excellon zeros.\n"
               "If LZ then Leading Zeros are kept and\n"
@@ -134,7 +135,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         # Slot type
         self.slot_type_label = FCLabel('%s:' % _('Slot type'))
-        self.slot_type_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.slot_type_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.slot_type_label.setToolTip(
             _("This sets how the slots will be exported.\n"
               "If ROUTED then the slots will be routed\n"

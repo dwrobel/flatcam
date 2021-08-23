@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, OptionalInputSection
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, OptionalInputSection, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class GerberAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GerberAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Gerber Adv. Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Advanced Gerber Parameters
         self.adv_param_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
@@ -29,7 +30,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.adv_param_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Follow Attribute
@@ -49,8 +50,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         # Buffering Type

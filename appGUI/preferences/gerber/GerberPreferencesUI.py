@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.gerber.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
 from appGUI.preferences.gerber.GerberExpPrefGroupUI import GerberExpPrefGroupUI
@@ -17,21 +17,22 @@ if '_' not in builtins.__dict__:
 
 class GerberPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, decimals, defaults, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals)
+        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.gerber_gen_group.setMinimumWidth(250)
-        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals)
+        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.gerber_opt_group.setMinimumWidth(250)
-        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals)
+        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.gerber_exp_group.setMinimumWidth(230)
-        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals)
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.gerber_adv_opt_group.setMinimumWidth(200)
-        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals)
+        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.gerber_editor_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()

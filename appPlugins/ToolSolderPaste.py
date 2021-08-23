@@ -5,12 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt6 import QtGui, QtCore, QtWidgets
 
 from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCDoubleSpinner, FCSpinner, FCFileSaveDialog, \
-    FCInputSpinner, FCButton, VerticalScrollArea
+    FCInputSpinner, FCButton, VerticalScrollArea, FCGridLayout, FCLabel
 
 from camlib import distance
 from appEditors.AppTextEditor import AppTextEditor
@@ -260,13 +260,13 @@ class SolderPaste(AppTool):
 
                     # Tool name/id
                     id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_item)
 
                     # Diameter
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
-                    dia.setFlags(QtCore.Qt.ItemIsEnabled)
+                    dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                     self.ui.tools_table.setItem(row_no, 1, dia)
 
                     # Tool unique ID
@@ -276,7 +276,7 @@ class SolderPaste(AppTool):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -286,13 +286,13 @@ class SolderPaste(AppTool):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         # self.ui.tools_table.setSortingEnabled(True)
         # sort by tool diameter
@@ -1178,7 +1178,7 @@ class SolderUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                QLabel
                                {
@@ -1192,13 +1192,13 @@ class SolderUI:
         self.layout.addWidget(title_label)
 
         # ## Form Layout
-        obj_form_layout = QtWidgets.QGridLayout()
+        obj_form_layout = FCGridLayout(v_spacing=5, h_spacing=3)
         obj_form_layout.setColumnStretch(0, 0)
         obj_form_layout.setColumnStretch(1, 1)
         self.layout.addLayout(obj_form_layout)
 
         # ## Gerber Object to be used for solderpaste dispensing
-        self.object_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
+        self.object_label = FCLabel('<b>%s</b>:' % _("GERBER"))
         self.object_label.setToolTip(_("Gerber Solderpaste object."))
 
         self.obj_combo = FCComboBox(callback=solder_class.on_rmb_combo)
@@ -1211,12 +1211,12 @@ class SolderUI:
         obj_form_layout.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         obj_form_layout.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for dispensing solder paste.")
@@ -1244,12 +1244,12 @@ class SolderUI:
               "is the width of the solder paste dispensed."))
 
         # ### Add a new Tool ## ##
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('New Tool'))
+        self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Tool'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
@@ -1278,8 +1278,8 @@ class SolderUI:
         grid0.addWidget(self.deltool_btn, 0, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 4)
 
         self.gcode_frame = QtWidgets.QFrame()
@@ -1291,10 +1291,10 @@ class SolderUI:
         self.gcode_frame.setLayout(self.tool_box)
 
         # Parameter Layout
-        self.param_grid = QtWidgets.QGridLayout()
+        self.param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tool_box.addLayout(self.param_grid)
 
-        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('Parameters'))
+        step1_lbl = FCLabel("<b>%s:</b>" % _('Parameters'))
         self.param_grid.addWidget(step1_lbl, 0, 0)
 
         # Z dispense start
@@ -1303,7 +1303,7 @@ class SolderUI:
         self.z_start_entry.set_precision(self.decimals)
         self.z_start_entry.setSingleStep(0.1)
 
-        self.z_start_label = QtWidgets.QLabel('%s:' % _("Z Dispense Start"))
+        self.z_start_label = FCLabel('%s:' % _("Z Dispense Start"))
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
         )
@@ -1316,7 +1316,7 @@ class SolderUI:
         self.z_dispense_entry.set_precision(self.decimals)
         self.z_dispense_entry.setSingleStep(0.1)
 
-        self.z_dispense_label = QtWidgets.QLabel('%s:' % _("Z Dispense"))
+        self.z_dispense_label = FCLabel('%s:' % _("Z Dispense"))
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
         )
@@ -1329,7 +1329,7 @@ class SolderUI:
         self.z_stop_entry.set_precision(self.decimals)
         self.z_stop_entry.setSingleStep(0.1)
 
-        self.z_stop_label = QtWidgets.QLabel('%s:' % _("Z Dispense Stop"))
+        self.z_stop_label = FCLabel('%s:' % _("Z Dispense Stop"))
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
         )
@@ -1337,8 +1337,8 @@ class SolderUI:
         self.param_grid.addWidget(self.z_stop_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 7, 0, 1, 2)
 
         # Z travel
@@ -1347,7 +1347,7 @@ class SolderUI:
         self.z_travel_entry.set_precision(self.decimals)
         self.z_travel_entry.setSingleStep(0.1)
 
-        self.z_travel_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        self.z_travel_label = FCLabel('%s:' % _("Travel Z"))
         self.z_travel_label.setToolTip(
             _("The height (Z) for travel between pads\n"
               "(without dispensing solder paste).")
@@ -1361,7 +1361,7 @@ class SolderUI:
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
 
-        self.z_toolchange_label = QtWidgets.QLabel('%s:' % _("Tool change Z"))
+        self.z_toolchange_label = FCLabel('%s:' % _("Tool change Z"))
         self.z_toolchange_label.setToolTip(
             _("The height (Z) for tool (nozzle) change.")
         )
@@ -1370,7 +1370,7 @@ class SolderUI:
 
         # X,Y Toolchange location
         self.xy_toolchange_entry = FCEntry()
-        self.xy_toolchange_label = QtWidgets.QLabel('%s:' % _("Toolchange X-Y"))
+        self.xy_toolchange_label = FCLabel('%s:' % _("Toolchange X-Y"))
         self.xy_toolchange_label.setToolTip(
             _("The X,Y location for tool (nozzle) change.\n"
               "The format is (x, y) where x and y are real numbers.")
@@ -1379,8 +1379,8 @@ class SolderUI:
         self.param_grid.addWidget(self.xy_toolchange_entry, 12, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 13, 0, 1, 2)
 
         # Feedrate X-Y
@@ -1389,7 +1389,7 @@ class SolderUI:
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
-        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
+        self.frxy_label = FCLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
             _("Feedrate (speed) while moving on the X-Y plane.")
         )
@@ -1402,7 +1402,7 @@ class SolderUI:
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
-        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
+        self.frz_label = FCLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
@@ -1416,7 +1416,7 @@ class SolderUI:
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
-        self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
+        self.frz_dispense_label = FCLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
               "to Dispense position (on Z plane).")
@@ -1425,8 +1425,8 @@ class SolderUI:
         self.param_grid.addWidget(self.frz_dispense_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 19, 0, 1, 2)
 
         # Spindle Speed Forward
@@ -1434,7 +1434,7 @@ class SolderUI:
         self.speedfwd_entry.set_range(0, 999999)
         self.speedfwd_entry.set_step(1000)
 
-        self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
+        self.speedfwd_label = FCLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
             _("The dispenser speed while pushing solder paste\n"
               "through the dispenser nozzle.")
@@ -1448,7 +1448,7 @@ class SolderUI:
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
 
-        self.dwellfwd_label = QtWidgets.QLabel('%s:' % _("Dwell FWD"))
+        self.dwellfwd_label = FCLabel('%s:' % _("Dwell FWD"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
         )
@@ -1460,7 +1460,7 @@ class SolderUI:
         self.speedrev_entry.set_range(0, 999999)
         self.speedrev_entry.set_step(1000)
 
-        self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
+        self.speedrev_label = FCLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
             _("The dispenser speed while retracting solder paste\n"
               "through the dispenser nozzle.")
@@ -1474,7 +1474,7 @@ class SolderUI:
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)
 
-        self.dwellrev_label = QtWidgets.QLabel('%s:' % _("Dwell REV"))
+        self.dwellrev_label = FCLabel('%s:' % _("Dwell REV"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
               "to allow pressure equilibrium.")
@@ -1483,12 +1483,12 @@ class SolderUI:
         self.param_grid.addWidget(self.dwellrev_entry, 26, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 27, 0, 1, 2)
 
         # Preprocessors
-        pp_label = QtWidgets.QLabel('%s:' % _('Preprocessor'))
+        pp_label = FCLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
@@ -1498,12 +1498,12 @@ class SolderUI:
         self.param_grid.addWidget(self.pp_combo, 28, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.param_grid.addWidget(separator_line, 30, 0, 1, 2)
 
         # Buttons Grid
-        self.button_grid = QtWidgets.QGridLayout()
+        self.button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.button_grid.setColumnStretch(0, 0)
         self.button_grid.setColumnStretch(1, 1)
         self.tool_box.addLayout(self.button_grid)
@@ -1530,7 +1530,7 @@ class SolderUI:
         self.geo_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "Geometry"
 
-        self.geo_object_label = QtWidgets.QLabel('%s:' % _("Geometry"))
+        self.geo_object_label = FCLabel('%s:' % _("Geometry"))
         self.geo_object_label.setToolTip(
             _("Geometry Solder Paste object.\n"
               "The name of the object has to end in:\n"
@@ -1540,8 +1540,8 @@ class SolderUI:
         self.button_grid.addWidget(self.geo_obj_combo, 2, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.button_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # ## Buttons
@@ -1566,7 +1566,7 @@ class SolderUI:
         self.cnc_obj_combo.is_last = True
         self.geo_obj_combo.obj_type = "CNCJob"
 
-        self.cnc_object_label = QtWidgets.QLabel('%s:' % _("CNCJob"))
+        self.cnc_object_label = FCLabel('%s:' % _("CNCJob"))
         self.cnc_object_label.setToolTip(
             _("CNCJob Solder paste object.\n"
               "In order to enable the GCode save section,\n"
@@ -1577,8 +1577,8 @@ class SolderUI:
         self.button_grid.addWidget(self.cnc_obj_combo, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.button_grid.addWidget(separator_line, 10, 0, 1, 2)
 
         # Save and Review GCode
@@ -1621,7 +1621,7 @@ class SolderUI:
         self.layout.addWidget(self.reset_button)
 
         # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
+        self.combo_context_del_action = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
                                                           _("Delete Object"))
 
         # #################################### FINSIHED GUI ###########################

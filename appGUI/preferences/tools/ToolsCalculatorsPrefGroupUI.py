@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Calculators Plugin", parent=parent)
         super(ToolsCalculatorsPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Calculators Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## V-shape Calculator Tool
         self.vshape_tool_label = FCLabel("<b>%s:</b>" % _("V-Shape Tool Calculator"))
@@ -29,7 +30,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.vshape_tool_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -112,7 +113,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.area_label = FCLabel('%s:' % _("Area"))
         self.area_label.setToolTip(_('This is the board area.'))
         self.area_entry = FCDoubleSpinner()
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.set_range(0.0, 10000.0000)
         

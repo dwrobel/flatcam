@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsLevelPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsLevelPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Levelling Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Board cuttout
         self.levelling_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.levelling_label)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -119,8 +120,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.feedrate_probe_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         self.al_controller_label = FCLabel('%s:' % _("Controller"))

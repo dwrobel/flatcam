@@ -1,6 +1,6 @@
 import os
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import QSettings
 from defaults import FlatCAMDefaults
 import logging
 
@@ -50,7 +50,7 @@ class PreferencesUIManager:
             "global_log_verbose": self.ui.general_pref_form.general_app_group.verbose_cb,
             "global_portable": self.ui.general_pref_form.general_app_group.portability_cb,
 
-            "global_language": self.ui.general_pref_form.general_app_group.language_cb,
+            "global_language_current": self.ui.general_pref_form.general_app_group.language_combo,
 
             "global_systray_icon": self.ui.general_pref_form.general_app_group.systray_cb,
             "global_shell_at_startup": self.ui.general_pref_form.general_app_group.shell_startup_cb,
@@ -281,13 +281,12 @@ class PreferencesUIManager:
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.plugin_eng_pref_form.tools_iso_group.tool_dia_entry,
             "tools_iso_order":          self.ui.plugin_eng_pref_form.tools_iso_group.order_radio,
-            "tools_iso_tool_type":      self.ui.plugin_eng_pref_form.tools_iso_group.tool_type_radio,
-            "tools_iso_tool_vtipdia":   self.ui.plugin_eng_pref_form.tools_iso_group.tipdia_entry,
-            "tools_iso_tool_vtipangle": self.ui.plugin_eng_pref_form.tools_iso_group.tipangle_entry,
             "tools_iso_tool_cutz":      self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
             "tools_iso_newdia":         self.ui.plugin_eng_pref_form.tools_iso_group.newdia_entry,
 
+            "tools_iso_tool_shape":     self.ui.plugin_eng_pref_form.tools_iso_group.tool_shape_combo,  # "C1"
             "tools_iso_passes":         self.ui.plugin_eng_pref_form.tools_iso_group.passes_entry,
+            "tools_iso_pad_passes":     self.ui.plugin_eng_pref_form.tools_iso_group.pad_passes_entry,
             "tools_iso_overlap":        self.ui.plugin_eng_pref_form.tools_iso_group.overlap_entry,
             "tools_iso_milling_type":   self.ui.plugin_eng_pref_form.tools_iso_group.milling_type_radio,
             "tools_iso_isotype":        self.ui.plugin_eng_pref_form.tools_iso_group.iso_type_radio,
@@ -421,7 +420,6 @@ class PreferencesUIManager:
             "tools_ncc_ref":             self.ui.plugin_eng_pref_form.tools_ncc_group.select_combo,
             "tools_ncc_area_shape":     self.ui.plugin_eng_pref_form.tools_ncc_group.area_shape_radio,
             "tools_ncc_milling_type":    self.ui.plugin_eng_pref_form.tools_ncc_group.milling_type_radio,
-            "tools_ncc_tool_type":       self.ui.plugin_eng_pref_form.tools_ncc_group.tool_type_radio,
             "tools_ncc_cutz":            self.ui.plugin_eng_pref_form.tools_ncc_group.cutz_entry,
             "tools_ncc_tipdia":          self.ui.plugin_eng_pref_form.tools_ncc_group.tipdia_entry,
             "tools_ncc_tipangle":        self.ui.plugin_eng_pref_form.tools_ncc_group.tipangle_entry,
@@ -463,7 +461,6 @@ class PreferencesUIManager:
             "tools_paint_plotting":     self.ui.plugin_eng_pref_form.tools_paint_group.paint_plotting_radio,
 
             "tools_paint_rest":          self.ui.plugin_eng_pref_form.tools_paint_group.rest_cb,
-            "tools_paint_tool_type":     self.ui.plugin_eng_pref_form.tools_paint_group.tool_type_radio,
             "tools_paint_cutz":          self.ui.plugin_eng_pref_form.tools_paint_group.cutz_entry,
             "tools_paint_tipdia":        self.ui.plugin_eng_pref_form.tools_paint_group.tipdia_entry,
             "tools_paint_tipangle":      self.ui.plugin_eng_pref_form.tools_paint_group.tipangle_entry,
@@ -1035,10 +1032,10 @@ class PreferencesUIManager:
             msgbox.setText(_("Are you sure you want to continue?"))
             msgbox.setWindowTitle(_("Application will restart"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()
@@ -1152,7 +1149,7 @@ class PreferencesUIManager:
 
         :param silent:      Whether to display a message in status bar or not; boolean
         :param data_path:   The path where to save the preferences file (current_defaults.FlatConfig)
-        When the application is portable it should be a mobile location.
+                            When the application is portable it should be a mobile location.
         :param first_time:  Boolean. If True will execute some code when the app is run first time
         :return:            None
         """
@@ -1284,10 +1281,10 @@ class PreferencesUIManager:
                              "Do you want to save?"))
             msgbox.setWindowTitle(_("Save Preferences"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()

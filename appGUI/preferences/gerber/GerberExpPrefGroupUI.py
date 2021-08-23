@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -14,11 +14,12 @@ if '_' not in builtins.__dict__:
 
 class GerberExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GerberExpPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Gerber Export")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Plot options
         self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
@@ -28,7 +29,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_options_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -67,11 +68,11 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the whole part of Gerber coordinates.")
         )
-        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         gerber_separator_label = FCLabel(':')
         gerber_separator_label.setFixedWidth(5)
-        hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.format_dec_entry = FCSpinner()
         self.format_dec_entry.set_range(0, 9)
@@ -83,7 +84,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the decimal part of Gerber coordinates.")
         )
-        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
         hlay1.addStretch()
 
         grid0.addWidget(self.digits_label, 2, 0)
@@ -91,7 +92,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
 
         # Gerber Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
-        self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.zeros_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Gerber zeros.\n"
               "If LZ then Leading Zeros are removed and\n"

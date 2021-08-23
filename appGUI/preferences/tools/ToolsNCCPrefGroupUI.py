@@ -1,6 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "NCC Plugin", parent=parent)
         super(ToolsNCCPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("NCC Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.clearcopper_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +30,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         ncctdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
@@ -49,17 +51,6 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- 'V-shape'\n"
               "- Circular")
         )
-
-        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
-                                         {'label': _('Circular'), 'value': 'C1'}])
-        self.tool_type_radio.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        grid0.addWidget(self.tool_type_label, 1, 0)
-        grid0.addWidget(self.tool_type_radio, 1, 1)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -122,8 +113,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.newdia_entry, 5, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         # Milling Type Radio Button
@@ -167,8 +158,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_order_radio, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Overlap Entry
@@ -271,8 +262,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_offset_spinner, 15, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Rest machining CheckBox
@@ -322,8 +313,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.area_shape_radio, 19, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Plotting type

@@ -217,7 +217,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             row_no = tool_idx - 1
 
             t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
@@ -245,11 +245,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
-            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            job_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            tool_shape_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # hack so the checkbox stay centered in the table cell
             # used this:
@@ -262,7 +262,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
             # qhboxlayout.setContentsMargins(0, 0, 0, 0)
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
@@ -278,34 +278,34 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # make the diameter column editable
         # for row in range(tool_idx):
-        #     self.ui.cnc_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
-        #                                                   QtCore.Qt.ItemIsEnabled)
+        #     self.ui.cnc_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+        #                                                   QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         for row in range(tool_idx):
             self.ui.cnc_tools_table.item(row, 0).setFlags(
-                self.ui.cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+                self.ui.cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         self.ui.cnc_tools_table.resizeColumnsToContents()
         self.ui.cnc_tools_table.resizeRowsToContents()
 
         vertical_header = self.ui.cnc_tools_table.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.cnc_tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(4, 40)
-        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(4, 17)
         # horizontal_header.setStretchLastSection(True)
-        self.ui.cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.cnc_tools_table.setColumnWidth(0, 20)
         self.ui.cnc_tools_table.setColumnWidth(4, 40)
@@ -341,11 +341,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             cutz_item = QtWidgets.QTableWidgetItem('%f' % offset_val)
 
-            t_id_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            cutz_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # hack so the checkbox stay centered in the table cell
             # used this:
@@ -359,7 +359,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # qhboxlayout.setContentsMargins(0, 0, 0, 0)
 
             plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            plot_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
 
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
@@ -376,29 +376,29 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         for row in range(row_no):
             self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
-                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemFlag.ItemIsSelectable)
 
         self.ui.exc_cnc_tools_table.resizeColumnsToContents()
         self.ui.exc_cnc_tools_table.resizeRowsToContents()
 
         vertical_header = self.ui.exc_cnc_tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.exc_cnc_tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
-        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.ResizeMode.Fixed)
 
         # horizontal_header.setStretchLastSection(True)
-        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
         self.ui.exc_cnc_tools_table.setColumnWidth(6, 17)
@@ -617,7 +617,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.treeWidget.clear()
         self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
 
-        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                         QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         # make sure that the FCTree widget columns are resized to content
         self.ui.treeWidget.resize_sig.emit()
 
@@ -1313,7 +1314,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             dia_plot = float(self.options["tools_mill_tooldia"])
                         except ValueError:
                             # we may have a tuple with only one element and a comma
-                            dia_plot = [float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''][0]
+                            dia_plot = [
+                                float(el) for el in self.options["tools_mill_tooldia"].split(',') if el != ''
+                            ][0]
 
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
@@ -1328,7 +1331,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             if not gcode_parsed:
                                 continue
                             # gcode_parsed = self.gcode_parsed
-                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
+                                       kind=kind)
                 else:
                     # multiple tools usage
                     if self.tools:
@@ -1338,7 +1342,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                 self.decimals
                             )
                             gcode_parsed = self.tools[tooluid_key]['gcode_parsed']
-                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                            self.plot2(tooldia=dia_plot, obj=self, visible=visible, gcode_parsed=gcode_parsed,
+                                       kind=kind)
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):

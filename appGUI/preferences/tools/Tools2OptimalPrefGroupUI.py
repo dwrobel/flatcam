@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, FCLabel
+from appGUI.GUIElements import FCSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2OptimalPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2OptimalPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Optimal Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Parameters
         self.optlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.optlabel)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

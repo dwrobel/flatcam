@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 from appTool import AppTool
 from appGUI.VisPyVisuals import *
 
@@ -33,7 +33,7 @@ class ToolMove(AppTool):
         self.decimals = self.app.decimals
 
         self.layout.setContentsMargins(0, 0, 3, 0)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Maximum)
 
         self.clicked_move = 0
 

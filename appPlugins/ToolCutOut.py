@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
-    FCLabel, VerticalScrollArea
+    FCLabel, VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
 from shapely.ops import unary_union, linemerge
@@ -2071,16 +2071,16 @@ class CutOut(AppTool):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ShiftModifier
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
         # events from Vispy are of type KeyEvent
@@ -2088,7 +2088,7 @@ class CutOut(AppTool):
             key = event.key
 
         # Escape = Deselect All
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.mouse_events_connected is True:
                 self.mouse_events_connected = False
                 if self.app.is_legacy is False:
@@ -2117,11 +2117,11 @@ class CutOut(AppTool):
             self.app.geo_editor.tool_shape.enabled = False
 
         # Grid toggle
-        if key == QtCore.Qt.Key_G or key == 'G':
+        if key == QtCore.Qt.Key.Key_G or key == 'G':
             self.app.ui.grid_snap_btn.trigger()
 
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             l_x, l_y = self.app.on_jump_to()
             self.app.geo_editor.tool_shape.clear(update=True)
             geo = self.cutting_geo(pos=(l_x, l_y))
@@ -2325,14 +2325,14 @@ class CutoutUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # self.tools_box.addWidget(FCLabel(''))
 
         # Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -2398,8 +2398,8 @@ class CutoutUI:
         grid0.addWidget(self.convex_box_cb, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
         self.tool_sel_label = FCLabel('<b>%s</b>' % _('Cutout Tool'))
@@ -2446,8 +2446,8 @@ class CutoutUI:
         grid0.addLayout(hlay, 16, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 18, 0, 1, 2)
 
         self.param_label = FCLabel('<b>%s:</b>' % _("Tool Parameters"))
@@ -2580,8 +2580,8 @@ class CutoutUI:
         grid0.addWidget(self.mb_spacing_entry, 36, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # ##############################################################################################################
@@ -2671,8 +2671,8 @@ class CutoutUI:
         grid0.addWidget(self.rect_cutout_object_btn, 46, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
-        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # # MANUAL BRIDGE GAPS
@@ -2744,8 +2744,8 @@ class CutoutUI:
         grid0.addWidget(self.man_gaps_creation_btn, 58, 0, 1, 2)
 
         self.tool_param_separator_line = QtWidgets.QFrame()
-        self.tool_param_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.tool_param_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.tool_param_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.tool_param_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.tool_param_separator_line, 60, 0, 1, 2)
 
         # grid0.addWidget(FCLabel(""), 62, 0, 1, 2)

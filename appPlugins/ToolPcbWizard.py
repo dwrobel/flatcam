@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable, FCLabel, VerticalScrollArea, FCGridLayout
 
 import re
 import os
@@ -170,11 +170,11 @@ class PcbWizard(AppTool):
         tool_row = 0
         for tool in sorted_tools:
             tool_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool))
-            tool_id_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(tool_row, 0, tool_id_item)  # Tool name/id
 
             tool_dia_item = QtWidgets.QTableWidgetItem(str(self.tools_from_inf[tool]))
-            tool_dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.tools_table.setItem(tool_row, 1, tool_dia_item)
             tool_row += 1
 
@@ -183,15 +183,15 @@ class PcbWizard(AppTool):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
         # horizontal_header.setMinimumSectionSize(10)
         # horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
-        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.ui.tools_table.setSortingEnabled(False)
         self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
@@ -416,7 +416,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Load files")))
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -456,7 +456,7 @@ class WizardUI:
         self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon Format")))
 
         # Grid Layout
-        grid01 = QtWidgets.QGridLayout()
+        grid01 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid01.setColumnStretch(0, 0)
         grid01.setColumnStretch(1, 1)
         self.layout.addLayout(grid01)

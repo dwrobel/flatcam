@@ -1,8 +1,8 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtCore
+from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry
+    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsMillPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ToolsMillPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Milling Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.mill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.mill_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Tooldia
@@ -263,15 +264,22 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "the Machine Code (like GCode, RML, HPGL) output.")
         )
         self.pp_geometry_name_cb = FCComboBox()
-        self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.pp_geometry_name_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_geometry_name_cb.addItems(self.defaults["tools_mill_preprocessor_list"])
+
+
+        for it in range(self.pp_geometry_name_cb.count()):
+            self.pp_geometry_name_cb.setItemData(it, self.pp_geometry_name_cb.itemText(it),
+                                                 QtCore.Qt.ItemDataRole.ToolTipRole)
 
         grid0.addWidget(pp_label, 28, 0)
         grid0.addWidget(self.pp_geometry_name_cb, 28, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 30, 0, 1, 2)
 
         # Toolchange X,Y
@@ -390,8 +398,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.fplunge_cb, 46, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # -----------------------------
@@ -450,8 +458,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.over_z_entry, 60, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 62, 0, 1, 2)
 
         # -----------------------------

@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2sidedPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "2sided Plugin", parent=parent)
         super(Tools2sidedPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("2-Sided Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Board cuttout
         self.dblsided_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.dblsided_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # ## Drill diameter for alignment holes
@@ -65,8 +66,8 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         )
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         grid0.addWidget(self.mirax_label, 3, 0)

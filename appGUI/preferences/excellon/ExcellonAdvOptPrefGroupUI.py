@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCLabel
+from appGUI.GUIElements import FCCheckBox, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Advanced Options", parent=parent)
         super(ExcellonAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon Adv. Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # #######################
         # ## ADVANCED OPTIONS ###
@@ -32,7 +33,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.exc_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

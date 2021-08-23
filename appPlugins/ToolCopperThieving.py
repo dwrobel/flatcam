@@ -5,11 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from camlib import grace
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, VerticalScrollArea
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, \
+    VerticalScrollArea, FCGridLayout
 from appCommon.Common import LoudDict
 
 import shapely.geometry.base as base
@@ -1287,7 +1288,7 @@ class ThievingUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        i_grid_lay = QtWidgets.QGridLayout()
+        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
@@ -1307,12 +1308,12 @@ class ThievingUI:
         i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -1362,7 +1363,7 @@ class ThievingUI:
         self.area_entry.set_range(0.0, 10000.0000)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.setSingleStep(0.1)
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
 
         if self.units.upper() == 'MM':
             units_area_label = FCLabel('%s<sup>2</sup>' % _("mm"))
@@ -1438,8 +1439,8 @@ class ThievingUI:
         self.bbox_type_radio.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 16, 0, 1, 2)
 
         # Fill Type
@@ -1463,7 +1464,7 @@ class ThievingUI:
         self.dots_frame = QtWidgets.QFrame()
         self.dots_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.dots_frame)
-        dots_grid = QtWidgets.QGridLayout()
+        dots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         dots_grid.setColumnStretch(0, 0)
         dots_grid.setColumnStretch(1, 1)
         dots_grid.setContentsMargins(0, 0, 0, 0)
@@ -1503,7 +1504,7 @@ class ThievingUI:
         self.squares_frame = QtWidgets.QFrame()
         self.squares_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.squares_frame)
-        squares_grid = QtWidgets.QGridLayout()
+        squares_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         squares_grid.setColumnStretch(0, 0)
         squares_grid.setColumnStretch(1, 1)
         squares_grid.setContentsMargins(0, 0, 0, 0)
@@ -1543,7 +1544,7 @@ class ThievingUI:
         self.lines_frame = QtWidgets.QFrame()
         self.lines_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.lines_frame)
-        lines_grid = QtWidgets.QGridLayout()
+        lines_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         lines_grid.setColumnStretch(0, 0)
         lines_grid.setColumnStretch(1, 1)
         lines_grid.setContentsMargins(0, 0, 0, 0)
@@ -1595,15 +1596,15 @@ class ThievingUI:
         self.layout.addWidget(self.fill_button)
 
         # ## Grid Layout
-        grid_lay_1 = QtWidgets.QGridLayout()
+        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay_1)
         grid_lay_1.setColumnStretch(0, 0)
         grid_lay_1.setColumnStretch(1, 1)
         grid_lay_1.setColumnStretch(2, 0)
 
         separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
 
         # grid_lay_1.addWidget(FCLabel(''))
@@ -1660,8 +1661,8 @@ class ThievingUI:
         grid_lay_1.addWidget(self.rb_button, 8, 0, 1, 3)
 
         separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay_1.addWidget(separator_line_2, 10, 0, 1, 3)
 
         self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' %

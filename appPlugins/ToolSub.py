@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
 from shapely.ops import unary_union
@@ -710,7 +710,7 @@ class ToolSub(AppTool):
                 pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.HighPriority)
+        self.check_thread.start(QtCore.QThread.Priority.HighPriority)
 
     def periodic_check_handler(self):
         """
@@ -813,7 +813,7 @@ class SubUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -826,8 +826,8 @@ class SubUI:
         grid0.addWidget(self.delete_sources_cb, 0, 0, 1, 2)
 
         self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.separator_line, 2, 0, 1, 3)
 
         self.extra_empty_label = FCLabel('')

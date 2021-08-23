@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCComboBox, \
-    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea
+    NumericalEvalTupleEntry, FCLabel, VerticalScrollArea, FCGridLayout
 
 import numpy as np
 
@@ -598,7 +598,7 @@ class TransformUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -669,8 +669,8 @@ class TransformUI:
         grid0.addWidget(self.object_combo, 4, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 3)
 
         # ## Rotate Title
@@ -691,7 +691,7 @@ class TransformUI:
         self.rotate_entry.setWrapping(True)
         self.rotate_entry.set_range(-360, 360)
 
-        # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.rotate_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         self.rotate_button = FCButton(_("Rotate"))
         self.rotate_button.setToolTip(
@@ -706,8 +706,8 @@ class TransformUI:
         grid0.addWidget(self.rotate_button, 7, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 3)
 
         # ## Skew Title
@@ -728,7 +728,7 @@ class TransformUI:
               "Float number between -360 and 360.")
         )
         self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.skewx_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.set_range(-360, 360)
 
@@ -749,7 +749,7 @@ class TransformUI:
               "Float number between -360 and 360.")
         )
         self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.skewy_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.set_range(-360, 360)
 
@@ -768,8 +768,8 @@ class TransformUI:
                                            logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 3)
 
         # ## Scale Title
@@ -789,7 +789,7 @@ class TransformUI:
             _("Factor for scaling on X axis.")
         )
         self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.scalex_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setMinimum(-1e6)
 
@@ -809,7 +809,7 @@ class TransformUI:
             _("Factor for scaling on Y axis.")
         )
         self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.scaley_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setMinimum(-1e6)
 
@@ -832,8 +832,8 @@ class TransformUI:
                                           ], logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 21, 0, 1, 3)
 
         # ## Flip Title
@@ -857,8 +857,8 @@ class TransformUI:
         hlay0.addWidget(self.flipy_button)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 27, 0, 1, 3)
 
         # ## Offset Title
@@ -870,7 +870,7 @@ class TransformUI:
             _("Distance to offset on X axis. In current units.")
         )
         self.offx_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.offx_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setMinimum(-1e6)
 
@@ -890,7 +890,7 @@ class TransformUI:
             _("Distance to offset on Y axis. In current units.")
         )
         self.offy_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        # self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.offy_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setMinimum(-1e6)
 
@@ -906,8 +906,8 @@ class TransformUI:
         grid0.addWidget(self.offy_button, 32, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 34, 0, 1, 3)
 
         # ## Buffer Title

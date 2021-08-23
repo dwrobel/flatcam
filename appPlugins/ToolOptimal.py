@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox, \
-    FCLabel, FCButton, VerticalScrollArea
+    FCLabel, FCButton, VerticalScrollArea, FCGridLayout
 from camlib import grace
 
 from shapely.geometry import MultiPolygon
@@ -142,7 +142,7 @@ class ToolOptimal(AppTool):
         self.ui.locations_textb.clear()
         # new cursor - select all document
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -257,6 +257,7 @@ class ToolOptimal(AppTool):
 
                 min_list = list(self.min_dict.keys())
                 min_dist = min(min_list)
+                min_dist -= 10**-self.decimals  # make sure that this will work for isolation case
                 min_dist_string = '%.*f' % (self.decimals, float(min_dist))
                 self.ui.result_entry.set_value(min_dist_string)
 
@@ -316,7 +317,7 @@ class ToolOptimal(AppTool):
     def on_textbox_clicked(self):
         # new cursor - select all document
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -325,11 +326,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.locations_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         self.selected_text = cursor.selectedText()
@@ -345,7 +346,7 @@ class ToolOptimal(AppTool):
     def on_distances_textb_clicked(self):
         # new cursor - select all document
         cursor = self.ui.distances_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -354,11 +355,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.distances_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         distance_text = cursor.selectedText()
@@ -376,7 +377,7 @@ class ToolOptimal(AppTool):
     def on_locations_sec_clicked(self):
         # new cursor - select all document
         cursor = self.ui.locations_sec_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.Document)
+        cursor.select(QtGui.QTextCursor.SelectionType.Document)
 
         # clear previous selection highlight
         tmp = cursor.blockFormat()
@@ -385,11 +386,11 @@ class ToolOptimal(AppTool):
 
         # new cursor - select the current line
         cursor = self.ui.locations_sec_textb.textCursor()
-        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.LineUnderCursor)
 
         # highlight the current selected line
         tmp = cursor.blockFormat()
-        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.GlobalColor.yellow))
         cursor.setBlockFormat(tmp)
 
         self.selected_locations_text = cursor.selectedText()
@@ -446,7 +447,7 @@ class OptimalUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -466,8 +467,8 @@ class OptimalUI:
         grid0.addWidget(self.gerber_object_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Precision = nr of decimals

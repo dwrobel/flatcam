@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry, \
-    FCLabel
+    FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -13,24 +13,24 @@ if '_' not in builtins.__dict__:
 
 
 class CNCJobGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job General Preferences", parent=None)
         super(CNCJobGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("CNC Job General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
         # Plot CB
-        # self.plot_cb = QtWidgets.QCheckBox('Plot')
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
         grid0.addWidget(self.plot_cb, 0, 0, 1, 2)
@@ -121,8 +121,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.line_ending_cb, 9, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 12, 0, 1, 2)
 
         # Travel Line Color
@@ -162,8 +162,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cncjob_alpha_entry, 16, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 17, 0, 1, 2)
 
         # CNCJob Object Color

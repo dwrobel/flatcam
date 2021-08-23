@@ -5,9 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtCore
-from PyQt5.QtGui import QPalette
-# from PyQt5.QtCore import QSettings
+from PyQt6 import QtCore
+from PyQt6.QtGui import QPalette
+# from PyQt6.QtCore import QSettings
 
 import time
 
@@ -74,7 +74,7 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
         if theme == 'white':
             theme_color = Color('#FFFFFF')
             tick_color = Color('#000000')
-            back_color = str(QPalette().color(QPalette.Window).name())
+            back_color = str(QPalette().color(QPalette.ColorRole.Window).name())
         else:
             theme_color = Color('#000000')
             tick_color = Color('gray')

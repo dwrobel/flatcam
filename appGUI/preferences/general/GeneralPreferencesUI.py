@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
 from appGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
@@ -14,19 +14,20 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
-    def __init__(self, decimals, parent=None):
+    def __init__(self, decimals, defaults, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
+        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.general_app_group.setMinimumWidth(250)
 
-        self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
+        self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.general_gui_group.setMinimumWidth(250)
 
-        self.general_app_set_group = GeneralAPPSetGroupUI(decimals=self.decimals)
+        self.general_app_set_group = GeneralAPPSetGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.general_app_set_group.setMinimumWidth(250)
 
         self.layout.addWidget(self.general_app_group)

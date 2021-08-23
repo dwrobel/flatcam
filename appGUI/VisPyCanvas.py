@@ -6,8 +6,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5.QtGui import QPalette
-from PyQt5.QtCore import QSettings
+from PyQt6.QtGui import QPalette
+from PyQt6.QtCore import QSettings
 
 import numpy as np
 
@@ -44,7 +44,7 @@ class VisPyCanvas(scene.SceneCanvas):
         if theme == 'white':
             theme_color = Color('#FFFFFF')
             tick_color = Color('#000000')
-            back_color = str(QPalette().color(QPalette.Window).name())
+            back_color = str(QPalette().color(QPalette.ColorRole.Window).name())
         else:
             theme_color = Color('#000000')
             tick_color = Color('gray')
@@ -71,7 +71,8 @@ class VisPyCanvas(scene.SceneCanvas):
             orientation='bottom', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1,
             anchors=['center', 'bottom']
         )
-        self.xaxis.height_max = 30
+        self.xaxis.height_min = 5
+        self.xaxis.height_max = 35
         self.grid_widget.add_widget(self.xaxis, row=2, col=1)
 
         right_padding = self.grid_widget.add_widget(row=0, col=2, row_span=2)

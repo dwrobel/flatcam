@@ -5,10 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, VerticalScrollArea
+from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, \
+    VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import box
 
@@ -239,7 +240,7 @@ class InvertUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -260,8 +261,8 @@ class InvertUI:
         grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 3, 0, 1, 2)
 
         self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -301,8 +302,8 @@ class InvertUI:
         grid0.addWidget(self.join_radio, 8, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.invert_btn = FCButton(_('Invert Gerber'))

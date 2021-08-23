@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from shapely.geometry import Polygon, LineString
 
@@ -36,7 +36,7 @@ class AppTool(QtWidgets.QWidget):
         self.app = app
         self.decimals = self.app.decimals
 
-        # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
@@ -60,7 +60,7 @@ class AppTool(QtWidgets.QWidget):
             before = (kwargs['before'])
 
         # create the new Action
-        self.menuAction = QtWidgets.QAction(self)
+        self.menuAction = QtGui.QAction(self)
         # if provided, add an icon to this Action
         if icon is not None:
             self.menuAction.setIcon(icon)

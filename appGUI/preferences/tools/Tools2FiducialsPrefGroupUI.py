@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,15 +13,16 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2FiducialsPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Fiducials Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -91,8 +92,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.pos_radio, 4, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 5, 0, 1, 2)
 
         # Fiducial type #

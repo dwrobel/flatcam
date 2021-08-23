@@ -27,6 +27,7 @@ class FlatCAMDefaults:
         "version": 8.992,  # defaults format version, not necessarily equal to app version
         "first_run": True,
         "root_folder_path": '',
+
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": False,
@@ -73,7 +74,6 @@ class FlatCAMDefaults:
         "grid_toggle_key": 'G',
         "global_zoom_ratio": 1.5,
         "global_point_clipboard_format": "(%.*f, %.*f)",
-        "global_zdownrate": None,
 
         "global_tcl_path": '',
 
@@ -86,7 +86,9 @@ class FlatCAMDefaults:
 
         "global_log_verbose": True,
         "global_portable": False,
-        "global_language": 'English',
+
+        "global_languages": ['English', 'Romanian'],
+        "global_language_current": 'English',
 
         "global_systray_icon": True,
         "global_shell_at_startup": False,  # Show the shell at startup.
@@ -350,13 +352,12 @@ class FlatCAMDefaults:
         # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
         "tools_iso_order": 'rev',
-        "tools_iso_tool_type": 'C1',
-        "tools_iso_tool_vtipdia": 0.1,
-        "tools_iso_tool_vtipangle": 30,
         "tools_iso_tool_cutz": -0.05,
         "tools_iso_newdia": 0.1,
 
+        "tools_iso_tool_shape": 0,  # "C1"
         "tools_iso_passes": 1,
+        "tools_iso_pad_passes": 0,
         "tools_iso_overlap": 10,
         "tools_iso_milling_type": "cl",
         "tools_iso_isotype": "full",
@@ -386,6 +387,7 @@ class FlatCAMDefaults:
         "tools_drill_dwelltime": 1,
         "tools_drill_toolchange": False,
         "tools_drill_toolchangez": 15,
+        "tools_drill_preprocessor_list": ['default'],
         "tools_drill_ppname_e": 'default',
 
         "tools_drill_drill_slots": False,
@@ -407,9 +409,6 @@ class FlatCAMDefaults:
         "tools_drill_area_shape": "polygon",
         "tools_drill_area_strategy": "over",
         "tools_drill_area_overz": 1.0,
-
-        # Milling Plugin
-        "tools_mill_tool_type": 'C1',
 
         # Milling Plugin Options
         "tools_mill_tooldia": "2.4",
@@ -435,6 +434,7 @@ class FlatCAMDefaults:
         "tools_mill_spindlespeed": 0,
         "tools_mill_dwell": False,
         "tools_mill_dwelltime": 1,
+        "tools_mill_preprocessor_list": ['default'],
         "tools_mill_ppname_g": 'default',
 
         # Milling Plugin Advanced Options
@@ -492,7 +492,6 @@ class FlatCAMDefaults:
         "tools_ncc_ref": 0,     # ITSELF
         "tools_ncc_area_shape": "square",
         "tools_ncc_milling_type": 'cl',
-        "tools_ncc_tool_type": 'C1',
         "tools_ncc_cutz": -0.05,
         "tools_ncc_tipdia": 0.1,
         "tools_ncc_tipangle": 30,
@@ -531,7 +530,6 @@ class FlatCAMDefaults:
         "tools_paint_contour": True,
         "tools_paint_plotting": 'normal',
         "tools_paint_rest": False,
-        "tools_paint_tool_type": 'C1',
         "tools_paint_cutz": -0.05,
         "tools_paint_tipdia": 0.1,
         "tools_paint_tipangle": 30,
@@ -620,6 +618,7 @@ class FlatCAMDefaults:
         "tools_solderpaste_dwellfwd": 1,
         "tools_solderpaste_speedrev": 200,
         "tools_solderpaste_dwellrev": 1,
+        "tools_solderpaste_preprocessor_list": ['default'],
         "tools_solderpaste_pp": 'Paste_1',
 
         # Subtract Tool
@@ -971,7 +970,6 @@ class FlatCAMDefaults:
 
         # Which objects to update the given parameters.
         routes = {
-            "global_zdownrate": CNCjob,
             "excellon_zeros": Excellon,
             "excellon_format_upper_in": Excellon,
             "excellon_format_lower_in": Excellon,

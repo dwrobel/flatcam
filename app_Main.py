@@ -17,7 +17,7 @@ import simplejson as json
 import shutil
 import lzma
 from datetime import datetime
-import time
+# import time
 import ctypes
 import traceback
 
@@ -75,7 +75,8 @@ from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
 from appGUI.PlotCanvas3d import *
 from appGUI.MainGUI import *
-from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider
+from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider, \
+    FCGridLayout, FCLabel
 
 # FlatCAM Pre-processors
 from appPreProcessor import load_preprocessors
@@ -448,7 +449,7 @@ class App(QtCore.QObject):
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
             self.listen_th = QtCore.QThread()
-            self.listen_th.start(priority=QtCore.QThread.LowestPriority)
+            self.listen_th.start(priority=QtCore.QThread.Priority.LowestPriority)
 
             self.new_launch = ArgsThread()
             self.new_launch.open_signal[list].connect(self.on_startup_args)
@@ -885,77 +886,48 @@ class App(QtCore.QObject):
 
         if show_splash and self.cmd_line_headless != 1:
             splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
-            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
             # self.splash.setMask(splash_pix.mask())
 
             # move splashscreen to the current monitor
-            desktop = QtWidgets.QApplication.desktop()
-            screen = desktop.screenNumber(QtGui.QCursor.pos())
-            current_screen_center = desktop.availableGeometry(screen).center()
+            # desktop = QtWidgets.QApplication.desktop()
+            # screen = desktop.screenNumber(QtGui.QCursor.pos())
+            # screen = QtWidgets.QWidget.screen(self.splash)
+            screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
+            current_screen_center = screen.availableGeometry().center()
             self.splash.move(current_screen_center - self.splash.rect().center())
 
             self.splash.show()
             self.splash.showMessage(_("The application is initializing ..."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         else:
             self.splash = None
             show_splash = 0
 
         # ###########################################################################################################
-        # ######################################### Initialize GUI ##################################################
+        # ########################################## LOAD LANGUAGES  ################################################
         # ###########################################################################################################
 
-        # FlatCAM colors used in plotting
-        self.FC_light_green = '#BBF268BF'
-        self.FC_dark_green = '#006E20BF'
-        self.FC_light_blue = '#a5a5ffbf'
-        self.FC_dark_blue = '#0000ffbf'
+        self.languages = fcTranslate.load_languages()
+        aval_languages = []
+        for name in sorted(self.languages.values()):
+            aval_languages.append(name)
+        self.defaults["global_languages"] = aval_languages
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
+        # ###########################################################################################################
+        # ####################################### APPLY APP LANGUAGE ################################################
+        # ###########################################################################################################
+
+        ret_val = fcTranslate.apply_language('strings')
+
+        if ret_val == "no language":
+            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
+            self.log.debug("Could not find the Language files. The App strings are missing.")
         else:
-            theme = 'white'
-
-        if self.defaults["global_cursor_color_enabled"]:
-            self.cursor_color_3D = self.defaults["global_cursor_color"]
-        else:
-            if theme == 'white':
-                self.cursor_color_3D = 'black'
-            else:
-                self.cursor_color_3D = 'gray'
-
-        # update the defaults dict with the setting in QSetting
-        self.defaults['global_theme'] = theme
-
-        self.ui = MainGUI(self)
-
-        # set FlatCAM units in the Status bar
-        self.set_screen_units(self.defaults['units'])
-
-        # decide if to show or hide the Notebook side of the screen at startup
-        if self.defaults["global_project_at_startup"] is True:
-            self.ui.splitter.setSizes([1, 1])
-        else:
-            self.ui.splitter.setSizes([0, 1])
-
-        # ###########################################################################################################
-        # ########################################### Initialize Tcl Shell ##########################################
-        # ###########################    always initialize it after the UI is initialized   #########################
-        # ###########################################################################################################
-        self.shell = FCShell(app=self, version=self.version)
-        self.log.debug("Stardate: %s" % self.date)
-        self.log.debug("TCL Shell has been initialized.")
-
-        # ###########################################################################################################
-        # ########################################### AUTOSAVE SETUP ################################################
-        # ###########################################################################################################
-
-        self.block_autosave = False
-        self.autosave_timer = QtCore.QTimer(self)
-        self.save_project_auto_update()
-        self.autosave_timer.timeout.connect(self.save_project_auto)
+            # make the current language the current selection on the language combobox
+            self.defaults["global_language_current"] = ret_val
+            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
         # #################################### LOAD PREPROCESSORS ###################################################
@@ -985,34 +957,80 @@ class App(QtCore.QObject):
             # and now put back the ordered dict with 'default' key first
             self.preprocessors = deepcopy(new_ppp_dict)
 
-        # populate the Preprocessor ComboBoxes in the PREFERENCES
+        # populate the Plugins Preprocessors
+        self.defaults["tools_drill_preprocessor_list"] = []
+        self.defaults["tools_mill_preprocessor_list"] = []
+        self.defaults["tools_solderpaste_preprocessor_list"] = []
         for name in list(self.preprocessors.keys()):
-            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
-            if name.partition('_')[0] == 'Paste':
-                self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.addItem(name)
+            lowered_name = name.lower()
+
+            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Plugin
+            if 'paste' in lowered_name:
+                self.defaults["tools_solderpaste_preprocessor_list"].append(name)
                 continue
 
-            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.addItem(name)
+            self.defaults["tools_mill_preprocessor_list"].append(name)
+
             # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
-            if name == 'hpgl':
-                continue
+            if 'hpgl' not in lowered_name:
+                self.defaults["tools_drill_preprocessor_list"].append(name)
 
-            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
+        # ###########################################################################################################
+        # ######################################### Initialize GUI ##################################################
+        # ###########################################################################################################
 
-        # add ToolTips for the Preprocessor ComboBoxes in Preferences
-        for it in range(self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.count()):
-            self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+        # FlatCAM colors used in plotting
+        self.FC_light_green = '#BBF268BF'
+        self.FC_dark_green = '#006E20BF'
+        self.FC_light_blue = '#a5a5ffbf'
+        self.FC_dark_blue = '#0000ffbf'
 
-        for it in range(self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.count()):
-            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.setItemData(
-                it, self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
 
-        for it in range(self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.count()):
-            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.setItemData(
-                it, self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
-                QtCore.Qt.ToolTipRole)
+        if self.defaults["global_cursor_color_enabled"]:
+            self.cursor_color_3D = self.defaults["global_cursor_color"]
+        else:
+            if theme == 'white':
+                self.cursor_color_3D = 'black'
+            else:
+                self.cursor_color_3D = 'gray'
+
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
+
+        # ########################
+        self.ui = MainGUI(self)
+        # ########################
+
+        # set FlatCAM units in the Status bar
+        self.set_screen_units(self.defaults['units'])
+
+        # decide if to show or hide the Notebook side of the screen at startup
+        if self.defaults["global_project_at_startup"] is True:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
+        # ###########################################################################################################
+        # ########################################### Initialize Tcl Shell ##########################################
+        # ###########################    always initialize it after the UI is initialized   #########################
+        # ###########################################################################################################
+        self.shell = FCShell(app=self, version=self.version)
+        self.log.debug("Stardate: %s" % self.date)
+        self.log.debug("TCL Shell has been initialized.")
+
+        # ###########################################################################################################
+        # ########################################### AUTOSAVE SETUP ################################################
+        # ###########################################################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
@@ -1027,29 +1045,7 @@ class App(QtCore.QObject):
         self.defaults.set_change_callback(self.on_defaults_dict_change)
 
         # set the value used in the Windows Title
-        self.engine = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
-
-        # ###########################################################################################################
-        # ########################################## LOAD LANGUAGES  ################################################
-        # ###########################################################################################################
-
-        self.languages = fcTranslate.load_languages()
-        for name in sorted(self.languages.values()):
-            self.ui.general_pref_form.general_app_group.language_cb.addItem(name)
-
-        # ###########################################################################################################
-        # ####################################### APPLY APP LANGUAGE ################################################
-        # ###########################################################################################################
-
-        ret_val = fcTranslate.apply_language('strings')
-
-        if ret_val == "no language":
-            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
-            self.log.debug("Could not find the Language files. The App strings are missing.")
-        else:
-            # make the current language the current selection on the language combobox
-            self.ui.general_pref_form.general_app_group.language_cb.setCurrentText(ret_val)
-            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
+        self.engine = self.defaults["global_graphic_engine"]
 
         # ###########################################################################################################
         # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
@@ -1123,16 +1119,21 @@ class App(QtCore.QObject):
         if show_splash:
             self.splash.showMessage(_("The application is initializing ...\n"
                                       "Canvas initialization started."),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()  # debug
-
-        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
 
         # setup the PlotCanvas
         self.plotcanvas = self.on_plotcanvas_setup()
         if self.plotcanvas == 'fail':
-            return
+            self.splash.finish(self.ui)
+            self.log.debug("Failed to start the Canvas.")
+
+            # terminate workers
+            # self.workers.__del__()
+            self.clear_pool()
+
+            raise BaseException("Failed to start the Canvas")
 
         # add he PlotCanvas setup to the UI
         self.on_plotcanvas_add(self.plotcanvas, self.ui.right_layout)
@@ -1163,7 +1164,7 @@ class App(QtCore.QObject):
             self.splash.showMessage('%s: %ssec' % (_("The application is initializing ...\n"
                                                      "Canvas initialization started.\n"
                                                      "Canvas initialization finished in"), '%.2f' % self.used_time),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
@@ -1270,13 +1271,12 @@ class App(QtCore.QObject):
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
-        if (self.beta is False or self.beta is None) and \
-                self.ui.general_pref_form.general_app_group.version_check_cb.get_value() is True:
+        if (self.beta is False or self.beta is None) and self.defaults["global_version_check"] is True:
             self.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check, 'params': []})
-            # self.thr2.start(QtCore.QThread.LowPriority)
+            # self.thr2.start(QtCore.QThread.Priority.LowPriority)
 
         # ###########################################################################################################
         # ##################################### Register files with FlatCAM;  #######################################
@@ -1314,20 +1314,6 @@ class App(QtCore.QObject):
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.ui.set_ui_title(name=_("New Project - Not saved"))
-        
-        # ###########################################################################################################
-        # ########################################## Install OPTIMIZATIONS for GCode generation #####################
-        # ###########################################################################################################
-        current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
-            # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
-            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
-            if self.defaults['excellon_optimization_type'] in ['M', 'B']:
-                self.ui.excellon_pref_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
-            # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
-            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
-            if self.defaults['geometry_optimization_type'] in ['M', 'B']:
-                self.ui.geo_pref_form.geometry_gen_group.opt_algorithm_radio.set_value('R')
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################
@@ -1400,7 +1386,7 @@ class App(QtCore.QObject):
         # signals for displaying messages in the Tcl Shell are now connected in the ToolShell class
 
         # signal to be called when the app is quiting
-        self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
+        self.app_quit.connect(self.quit_application, type=Qt.ConnectionType.QueuedConnection)
         self.message.connect(lambda: message_dialog(parent=self.ui))
         # self.progress.connect(self.set_progress_bar)
 
@@ -1817,6 +1803,9 @@ class App(QtCore.QObject):
     def preprocessors_path(self):
         return os.path.join(self.data_path, 'preprocessors')
 
+    def log_path(self):
+        return os.path.join(self.data_path, 'log.txt')
+
     def on_app_restart(self):
 
         # make sure that the Sys Tray icon is hidden before restart otherwise it will
@@ -1870,7 +1859,8 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menu_plugins,
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'),
+                                  pos=self.ui.menu_plugins,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
 
@@ -2158,6 +2148,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
         self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
         self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
+        self.ui.menuview_show_log.triggered.connect(self.on_show_log)
 
     def connect_menuhelp_signals(self):
         self.ui.menuhelp_about.triggered.connect(self.on_about)
@@ -2203,6 +2194,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
         self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
+        self.ui.popmenu_move2origin.triggered.connect(self.on_move2origin)
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
@@ -2645,12 +2637,12 @@ class App(QtCore.QObject):
             msgbox.setText(_("Do you want to save the edited object?"))
             msgbox.setWindowTitle(_("Exit Editor"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
             if edited_obj.kind in ["geometry", "gerber", "excellon"] or force_cancel is not None:
-                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
             else:
                 bt_cancel = None
 
@@ -3123,10 +3115,10 @@ class App(QtCore.QObject):
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
-                logo = QtWidgets.QLabel()
+                logo = FCLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
 
-                title = QtWidgets.QLabel(
+                title = FCLabel(
                     "<font size=8><B>FlatCAM Evo</B></font><BR>"
                     "{title}<BR>"
                     "<BR>"
@@ -3145,7 +3137,7 @@ class App(QtCore.QObject):
                 closebtn = QtWidgets.QPushButton(_("Close"))
 
                 tab_widget = QtWidgets.QTabWidget()
-                description_label = QtWidgets.QLabel(
+                description_label = FCLabel(
                     "FlatCAM Evo {version} {beta} ({date}) - {arch}<br>"
                     "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>".format(
                         version=version,
@@ -3155,7 +3147,7 @@ class App(QtCore.QObject):
                 )
                 description_label.setOpenExternalLinks(True)
 
-                lic_lbl_header = QtWidgets.QLabel(
+                lic_lbl_header = FCLabel(
                     '%s:<br>%s<br>' % (
                         _('Licensed under the MIT license'),
                         "<a href = \"http://www.opensource.org/licenses/mit-license.php\">"
@@ -3164,7 +3156,7 @@ class App(QtCore.QObject):
                 )
                 lic_lbl_header.setOpenExternalLinks(True)
 
-                lic_lbl_body = QtWidgets.QLabel(
+                lic_lbl_body = FCLabel(
                     _(
                         'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
                         'of this software and associated documentation files (the "Software"), to deal\n'
@@ -3186,7 +3178,7 @@ class App(QtCore.QObject):
                     )
                 )
 
-                attributions_label = QtWidgets.QLabel(
+                attributions_label = FCLabel(
                     _(
                         'Some of the icons used are from the following sources:<br>'
                         '<div>Icons by <a href="https://www.flaticon.com/authors/freepik" '
@@ -3254,7 +3246,7 @@ class App(QtCore.QObject):
                 self.splash_tab_layout.addWidget(title, stretch=1)
 
                 pal = QtGui.QPalette()
-                pal.setColor(QtGui.QPalette.Background, Qt.white)
+                pal.setColor(QtGui.QPalette.ColorRole.Window, Qt.GlobalColor.white)
 
                 programmers = [
                     {
@@ -3314,6 +3306,11 @@ class App(QtCore.QObject):
                     },
                     {
                         'name': "Chris Hemingway",
+                        'description': '',
+                        'email': ''
+                    },
+                    {
+                        'name': "David Kahler",
                         'description': '',
                         'email': ''
                     },
@@ -3414,7 +3411,7 @@ class App(QtCore.QObject):
                     },
                 ]
 
-                self.prog_grid_lay = QtWidgets.QGridLayout()
+                self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
                 self.prog_grid_lay.setHorizontalSpacing(20)
                 self.prog_grid_lay.setColumnStretch(0, 0)
                 self.prog_grid_lay.setColumnStretch(2, 1)
@@ -3424,40 +3421,40 @@ class App(QtCore.QObject):
                 prog_scroll = QtWidgets.QScrollArea()
                 prog_scroll.setWidget(prog_widget)
                 prog_scroll.setWidgetResizable(True)
-                prog_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                prog_scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 prog_scroll.setPalette(pal)
 
                 self.programmmers_tab_layout.addWidget(prog_scroll)
 
                 # Headers
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Programmer")), 0, 0)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Status")), 0, 1)
+                self.prog_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 # FlatCAM Author
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Author")), 1, 1)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "Juan Pablo Caram"), 1, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % _("FlatCAM Author")), 1, 1)
 
                 # FlatCAM EVO Author
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 2, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 2, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 2, 2)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 3, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "Marius Stanciu"), 2, 0)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % _("FlatCAM Evo Author/Maintainer")), 2, 1)
+                self.prog_grid_lay.addWidget(FCLabel('%s' % "<marius_adrian@yahoo.com>"), 2, 2)
+                self.prog_grid_lay.addWidget(FCLabel(''), 3, 0)
 
                 # randomize the order of the programmers at each launch
                 random.shuffle(programmers)
                 line = 4
                 for prog in programmers:
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['name']), line, 0)
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['description']), line, 1)
-                    self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % prog['email']), line, 2)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['name']), line, 0)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['description']), line, 1)
+                    self.prog_grid_lay.addWidget(FCLabel('%s' % prog['email']), line, 2)
 
                     line += 1
                     if (line % 4) == 0:
-                        self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), line, 0)
+                        self.prog_grid_lay.addWidget(FCLabel(''), line, 0)
                         line += 1
 
-                self.translator_grid_lay = QtWidgets.QGridLayout()
+                self.translator_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translator_grid_lay.setColumnStretch(1, 0)
                 self.translator_grid_lay.setColumnStretch(2, 1)
@@ -3471,51 +3468,39 @@ class App(QtCore.QObject):
                 translators = [
                     {
                         'language': 'BR - Portuguese',
-                        'name': "Carlos Stein",
-                        'corrections': '',
-                        'email': '<carlos.stein@gmail.com>'
+                        'authors': [("Carlos Stein", '<carlos.stein@gmail.com>')],
+                    },
+                    {
+                        'language': 'Chinese Simplified',
+                        'authors': [("俊霄 余 (Jun Xiao Yu)", '')]
                     },
                     {
                         'language': 'French',
-                        'name': "Michel Maciejewski",
-                        'corrections': 'Olivier Cornet',
-                        'email': '<micmac589@gmail.com>'
+                        'authors': [("Michel Maciejewski", '<micmac589@gmail.com>'), ('Olivier Cornet', '')]
                     },
                     {
                         'language': 'Italian',
-                        'name': "Massimiliano Golfetto",
-                        'corrections': '',
-                        'email': '<golfetto.pcb@gmail.com>'
+                        'authors': [("Massimiliano Golfetto", '<golfetto.pcb@gmail.com>')]
                     },
                     {
                         'language': 'German',
-                        'name': "Marius Stanciu (Google-Tr)",
-                        'corrections': 'Jens Karstedt, Detlef Eckardt',
-                        'email': ''
+                        'authors': [("Marius Stanciu (Google-Tr)", ''), ('Jens Karstedt', ''), ('Detlef Eckardt', '')],
                     },
                     {
                         'language': 'Romanian',
-                        'name': "Marius Stanciu",
-                        'corrections': '',
-                        'email': '<marius_adrian@yahoo.com>'
+                        'authors': [("Marius Stanciu", '<marius_adrian@yahoo.com>')]
                     },
                     {
                         'language': 'Russian',
-                        'name': "Andrey Kultyapov",
-                        'corrections': '',
-                        'email': '<camellan@yandex.ru>'
+                        'authors': [("Andrey Kultyapov", '<camellan@yandex.ru>')]
                     },
                     {
                         'language': 'Spanish',
-                        'name': "Marius Stanciu (Google-Tr)",
-                        'corrections': '',
-                        'email': ''
+                        'authors': [("Marius Stanciu (Google-Tr)", '')]
                     },
                     {
                         'language': 'Turkish',
-                        'name': "Mehmet Kaya",
-                        'corrections': '',
-                        'email': '<malatyakaya480@gmail.com>'
+                        'authors': [("Mehmet Kaya", '<malatyakaya480@gmail.com>')]
                     },
                 ]
 
@@ -3524,25 +3509,28 @@ class App(QtCore.QObject):
                 trans_scroll = QtWidgets.QScrollArea()
                 trans_scroll.setWidget(trans_widget)
                 trans_scroll.setWidgetResizable(True)
-                trans_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                trans_scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 trans_scroll.setPalette(pal)
                 self.translators_tab_layout.addWidget(trans_scroll)
 
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Corrections")), 0, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Language")), 0, 0)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("Translator")), 0, 1)
+                self.translator_grid_lay.addWidget(FCLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 line = 1
                 for i in translators:
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['language']), line, 0)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['name']), line, 1)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['corrections']), line, 2)
-                    self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % i['email']), line, 3)
+                    self.translator_grid_lay.addWidget(
+                        FCLabel('<span style="color:blue">%s</span>' % i['language']), line, 0)
+                    for author in range(len(i['authors'])):
+                        auth_widget = FCLabel('%s' % i['authors'][author][0])
+                        email_widget = FCLabel('%s' % i['authors'][author][1])
+                        self.translator_grid_lay.addWidget(auth_widget, line, 1)
+                        self.translator_grid_lay.addWidget(email_widget, line, 2)
+                        line += 1
 
                     line += 1
 
-                self.translator_grid_lay.setColumnStretch(0, 0)
+                self.translator_grid_lay.setColumnStretch(1, 1)
                 self.translators_tab_layout.addStretch()
 
                 self.license_tab_layout.addWidget(lic_lbl_header)
@@ -3586,10 +3574,10 @@ class App(QtCore.QObject):
                 self.setWindowTitle('%s ...' % _("How To"))
                 self.resize(750, 375)
 
-                logo = QtWidgets.QLabel()
+                logo = FCLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/contribute256.png'))
 
-                # content = QtWidgets.QLabel(
+                # content = FCLabel(
                 #     "%s<br>"
                 #     "%s<br><br>"
                 #     "%s,<br>"
@@ -3622,7 +3610,7 @@ class App(QtCore.QObject):
                 # )
 
                 # font-weight: bold;
-                content = QtWidgets.QLabel(
+                content = FCLabel(
                     "%s<br>"
                     "%s<br><br>"
                     "%s,<br>"
@@ -3652,7 +3640,7 @@ class App(QtCore.QObject):
 
                 # palette
                 pal = QtGui.QPalette()
-                pal.setColor(QtGui.QPalette.Background, Qt.white)
+                pal.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.white)
 
                 # layouts
                 main_layout = QtWidgets.QVBoxLayout()
@@ -3677,7 +3665,7 @@ class App(QtCore.QObject):
                 self.intro_tab_layout.setContentsMargins(2, 2, 2, 2)
                 tab_widget.addTab(self.intro_tab, _("Contribute"))
 
-                self.grid_lay = QtWidgets.QGridLayout()
+                self.grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
                 self.grid_lay.setHorizontalSpacing(20)
                 self.grid_lay.setColumnStretch(0, 0)
                 self.grid_lay.setColumnStretch(1, 1)
@@ -3687,7 +3675,7 @@ class App(QtCore.QObject):
                 intro_scroll_area = QtWidgets.QScrollArea()
                 intro_scroll_area.setWidget(intro_wdg)
                 intro_scroll_area.setWidgetResizable(True)
-                intro_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                intro_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 intro_scroll_area.setPalette(pal)
 
                 self.grid_lay.addWidget(logo, 0, 0)
@@ -3707,10 +3695,11 @@ class App(QtCore.QObject):
                 links_scroll_area = QtWidgets.QScrollArea()
                 links_scroll_area.setWidget(links_wdg)
                 links_scroll_area.setWidgetResizable(True)
-                links_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                links_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 links_scroll_area.setPalette(pal)
 
-                self.links_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.links_lay.addWidget(
+                    FCLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.links_tab_layout.addWidget(links_scroll_area)
 
                 # HOW TO section
@@ -3726,10 +3715,11 @@ class App(QtCore.QObject):
                 howto_scroll_area = QtWidgets.QScrollArea()
                 howto_scroll_area.setWidget(howto_wdg)
                 howto_scroll_area.setWidgetResizable(True)
-                howto_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                howto_scroll_area.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 howto_scroll_area.setPalette(pal)
 
-                self.howto_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.howto_lay.addWidget(
+                    FCLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.howto_tab_layout.addWidget(howto_scroll_area)
 
                 # BUTTONS section
@@ -3786,7 +3776,7 @@ class App(QtCore.QObject):
                 title = bookmark[0]
                 weblink = bookmark[1]
 
-                act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
+                act = QtGui.QAction(parent=self.ui.menuhelp_bookmarks)
                 act.setText(title)
 
                 act.setIcon(QtGui.QIcon(self.resource_location + '/link16.png'))
@@ -3845,9 +3835,9 @@ class App(QtCore.QObject):
 
         msgbox.setWindowTitle(_("Alternative website"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-        bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
+        bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.ButtonRole.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec()
@@ -3872,11 +3862,11 @@ class App(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()
@@ -3960,7 +3950,7 @@ class App(QtCore.QObject):
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(
                 'language',
-                self.ui.general_pref_form.general_app_group.language_cb.get_value()
+                self.ui.general_pref_form.general_app_group.language_combo.get_value()
             )
             stgs.setValue(
                 'notebook_font_size',
@@ -4008,15 +3998,17 @@ class App(QtCore.QObject):
         self.clear_pool()
 
         # quit app by signalling for self.kill_app() method
-        self.close_app_signal.emit()
+        # self.close_app_signal.emit()
+        # sys.exit(0)
+        QtWidgets.QApplication.quit()
 
     @staticmethod
     def kill_app():
         QtCore.QCoreApplication.instance().quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        # sys.exit(0)
-        raise SystemExit
+        sys.exit(0)
+        # raise SystemExit
 
     def on_portable_checked(self, state):
         """
@@ -4059,7 +4051,7 @@ class App(QtCore.QObject):
                 break
             line_no += 1
 
-        if state:
+        if state == QtCore.Qt.CheckState.Checked:
             data[line_no] = 'portable=True\n'
             # create the new defauults files
             # create current_defaults.FlatConfig file if there is none
@@ -4712,7 +4704,7 @@ class App(QtCore.QObject):
             "cncjob_al_grbl_jog_fr", "cncjob_al_grbl_travelz",
 
             # Isolation Tool
-            "tools_iso_tool_vtipdia", 'tools_iso_tooldia', "tools_iso_tool_cutz",
+            "tools_iso_tool_cutz",
 
             # Drilling Tool
             'tools_drill_cutz', 'tools_drill_depthperpass', 'tools_drill_travelz', 'tools_drill_endz',
@@ -4798,13 +4790,13 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
         msgbox.setText(_("Changing the units of the project\n"
                          "will scale all objects.\n\n"
                          "Do you want to continue?"))
-        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-        msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+        msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
         msgbox.setDefaultButton(bt_ok)
         msgbox.exec()
@@ -4911,6 +4903,15 @@ class App(QtCore.QObject):
         self.ui.general_pref_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
+    def on_show_log(self):
+        if sys.platform == 'win32':
+            subprocess.Popen('explorer %s' % self.log_path())
+        elif sys.platform == 'darwin':
+            os.system('open "%s"' % self.log_path())
+        else:
+            subprocess.Popen(['xdg-open', self.log_path()])
+        self.inform.emit('[success] %s' % _("FlatCAM log opened."))
+
     def on_cursor_type(self, val):
         """
 
@@ -4956,7 +4957,10 @@ class App(QtCore.QObject):
                             self.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Please enter a tool diameter with non-zero value, in Float format."))
                             return
-                        self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                        try:
+                            self.collection.get_active().on_tool_add(clicked_state=False, dia=float(val))
+                        except Exception as err:
+                            self.log.debug("App.on_tool_add_keypress() --> %s" % str(err))
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
@@ -4965,9 +4969,9 @@ class App(QtCore.QObject):
                                      "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
-                    msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+                    msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
-                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
                     msgbox.exec()
@@ -5051,13 +5055,13 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
                 # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
-                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-                msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+                msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
                 msgbox.setDefaultButton(bt_ok)
                 msgbox.exec()
@@ -5366,7 +5370,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                grid0 = QtWidgets.QGridLayout(self)
+                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Quadrant 1"), "value": "bl"},
@@ -5379,14 +5383,14 @@ class App(QtCore.QObject):
                 grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                    Qt.Horizontal, parent=self)
+                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+                    Qt.Orientation.Horizontal, parent=self)
                 grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:
@@ -5637,7 +5641,7 @@ class App(QtCore.QObject):
                 self.setWindowIcon(icon)
                 self.setWindowTitle(str(title))
 
-                grid0 = QtWidgets.QGridLayout(self)
+                grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
 
                 self.ref_radio = RadioSet([
                     {"label": _("Bottom Left"), "value": "bl"},
@@ -5650,14 +5654,14 @@ class App(QtCore.QObject):
                 grid0.addWidget(self.ref_radio, 0, 0)
 
                 self.button_box = QtWidgets.QDialogButtonBox(
-                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                    Qt.Horizontal, parent=self)
+                    QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+                    Qt.Orientation.Horizontal, parent=self)
                 grid0.addWidget(self.button_box, 1, 0)
 
                 self.button_box.accepted.connect(self.accept)
                 self.button_box.rejected.connect(self.reject)
 
-                if self.exec() == QtWidgets.QDialog.Accepted:
+                if self.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                     self.ok = True
                     self.location_point = self.ref_radio.get_value()
                 else:
@@ -6621,10 +6625,10 @@ class App(QtCore.QObject):
                                  "Do you want to save?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+                msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 msgbox.exec()
@@ -7017,7 +7021,7 @@ class App(QtCore.QObject):
 
     def set_grid(self):
         menu_action = self.sender()
-        assert isinstance(menu_action, QtWidgets.QAction), "Expected QAction got %s" % type(menu_action)
+        assert isinstance(menu_action, QtGui.QAction), "Expected QAction got %s" % type(menu_action)
 
         self.ui.grid_gap_x_entry.setText(menu_action.text())
         self.ui.grid_gap_y_entry.setText(menu_action.text())
@@ -7308,7 +7312,7 @@ class App(QtCore.QObject):
         if event.button == 1:  # left click
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-            if modifiers == QtCore.Qt.ShiftModifier:
+            if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 # do not auto open the Project Tab
                 self.click_noproject = True
 
@@ -7354,9 +7358,9 @@ class App(QtCore.QObject):
                         return
                 else:
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if key_modifier == QtCore.Qt.ShiftModifier:
+                    if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
                         mod_key = 'Shift'
-                    elif key_modifier == QtCore.Qt.ControlModifier:
+                    elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
                         mod_key = 'Control'
                     else:
                         mod_key = None
@@ -7561,7 +7565,7 @@ class App(QtCore.QObject):
                 else:
                     self.call_source = 'app'
         except Exception as e:
-            self.log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
+            self.log.error("Something went bad in App.select_objects(). %s" % str(e))
 
     def selected_message(self, curr_sel_obj):
         """
@@ -7983,7 +7987,7 @@ class App(QtCore.QObject):
         if dia_box.ok:
             # make sure to move first the cursor at the end so after finding the line the line will be positioned
             # at the top of the window
-            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.End)
+            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.MoveOperation.End)
             # get the document() of the AppTextEditor
             doc = self.ui.plot_tab_area.currentWidget().code_editor.document()
             # create a Text Cursor based on the searched line
@@ -8164,7 +8168,7 @@ class App(QtCore.QObject):
 
             if recent['kind'] == 'project':
                 try:
-                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+                    action = QtGui.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
                     # Attach callback
                     o = make_callback(openers[recent["kind"]], recent['filename'])
@@ -8176,7 +8180,7 @@ class App(QtCore.QObject):
                     self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action_proj = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+        clear_action_proj = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
                                               (_("Clear Recent projects")), self)
         clear_action_proj.triggered.connect(reset_recent_projects)
         self.ui.recent_projects.addSeparator()
@@ -8188,7 +8192,7 @@ class App(QtCore.QObject):
 
             if recent['kind'] != 'project':
                 try:
-                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+                    action = QtGui.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
                     # Attach callback
                     o = make_callback(openers[recent["kind"]], recent['filename'])
@@ -8200,7 +8204,7 @@ class App(QtCore.QObject):
                     self.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+        clear_action = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
                                          (_("Clear Recent files")), self)
         clear_action.triggered.connect(reset_recent_files)
         self.ui.recent.addSeparator()
@@ -8223,12 +8227,12 @@ class App(QtCore.QObject):
 
         :return:
         """
-        # label = QtWidgets.QLabel("Choose an item from Project")
+        # label = FCLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
         # sel_title = QtWidgets.QTextEdit()
         # sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        # sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # sel_title.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         #
         # f_settings = QSettings("Open Source", "FlatCAM")
         # if f_settings.contains("notebook_font_size"):
@@ -8241,12 +8245,12 @@ class App(QtCore.QObject):
         # selected_text = ''
         #
         # sel_title.setText(selected_text)
-        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
         # Tree Widget
         d_properties_tw = FCTree(columns=2)
         d_properties_tw.setObjectName("default_properties")
-        d_properties_tw.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        d_properties_tw.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         d_properties_tw.setStyleSheet("QTreeWidget {border: 0px;}")
 
         root = d_properties_tw.invisibleRootItem()
@@ -8396,10 +8400,16 @@ class App(QtCore.QObject):
             plot_container = self.ui.right_layout
 
         modifier = QtWidgets.QApplication.queryKeyboardModifiers()
-        if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
-            self.is_legacy = True
+        if modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             self.defaults["global_graphic_engine"] = "2D"
+
+        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
+
+        if self.is_legacy is True or modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
+            self.is_legacy = True
             plotcanvas = PlotCanvasLegacy(self)
+            if plotcanvas.status != 'ok':
+                return 'fail'
         else:
             try:
                 plotcanvas = PlotCanvas(self)
@@ -8662,6 +8672,9 @@ class App(QtCore.QObject):
 
         :return:
         """
+
+        self.log.debug("App.on_set_color_triggered() launched...")
+
         new_color = self.defaults['gerber_plot_fill']
         clicked_action = self.sender()
 
@@ -8676,10 +8689,9 @@ class App(QtCore.QObject):
         alpha_level = 'BF'
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
-                alpha_level = str(hex(
-                    self.ui.excellon_pref_form.excellon_gen_group.excellon_alpha_entry.get_value())[2:])
+                alpha_level = str(hex(int(self.defaults['excellon_plot_fill'][7:9], 16))[2:])
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_pref_form.gerber_gen_group.gerber_alpha_entry.get_value())[2:])
+                alpha_level = str(hex(int(self.defaults['gerber_plot_fill'][7:9], 16))[2:])
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:
@@ -8737,12 +8749,11 @@ class App(QtCore.QObject):
 
                 sel_obj.fill_color = new_color
                 sel_obj.outline_color = new_line_color
-
                 sel_obj.shapes.redraw(
                     update_colors=(new_color, new_line_color)
                 )
 
-            self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
+            self.set_obj_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
             return
 
         # set of a custom transparency level
@@ -8791,16 +8802,16 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
 
-        self.set_gerber_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
+        self.set_obj_color_in_preferences_dict(sel_obj_list, new_color, new_line_color)
 
-    def set_gerber_color_in_preferences_dict(self, list_of_gerber_obj, fill_color, outline_color):
+    def set_obj_color_in_preferences_dict(self, list_of_obj, fill_color, outline_color):
         """
         This method will save the set colors into a list that will be used next time when Gerber objects are loaded.
         First loaded Gerber will have the first color in the list, second loaded Gerber object will have set the second
         color in the list and so on.
 
-        :param list_of_gerber_obj:  a list of Gerber objects that are currently loaded and selected
-        :type list_of_gerber_obj:   list
+        :param list_of_obj:         a list of App objects that are currently loaded and selected
+        :type list_of_obj:          list
         :param fill_color:          the fill color that will be set for the selected objects
         :type fill_color:           str
         :param outline_color:       the outline color that will be set for the selected objects
@@ -8810,16 +8821,24 @@ class App(QtCore.QObject):
         """
 
         # make sure to set the color in the Gerber colors storage self.defaults["gerber_color_list"]
-        group = self.collection.group_items["gerber"]
-        group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
+        group_gerber = self.collection.group_items["gerber"]
+        group_gerber_index = self.collection.index(group_gerber.row(), 0, QtCore.QModelIndex())
+        all_gerber_list = [x for x in self.collection.get_list() if x.kind == 'gerber']
 
         new_c = (outline_color, fill_color)
-        for sel_obj in list_of_gerber_obj:
+        for sel_obj in list_of_obj:
             if sel_obj.kind == 'gerber':
                 item = sel_obj.item
-                item_index = self.collection.index(item.row(), 0, group_index)
+                item_index = self.collection.index(item.row(), 0, group_gerber_index)
                 idx = item_index.row()
-                self.defaults["gerber_color_list"][idx] = new_c
+                try:
+                    self.defaults["gerber_color_list"][idx] = new_c
+                except IndexError:
+                    for x in range(len(self.defaults["gerber_color_list"]), len(all_gerber_list)):
+                        self.defaults["gerber_color_list"].append(
+                            (self.defaults["gerber_plot_fill"], self.defaults["gerber_plot_line"])
+                        )
+                    self.defaults["gerber_color_list"][idx] = new_c
 
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """
@@ -9057,7 +9076,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Gerber file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9096,7 +9115,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening Excellon file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9140,7 +9159,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening G-Code file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9206,7 +9225,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening HPGL2 file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
@@ -9259,10 +9278,10 @@ class MenuFileHandlers(QtCore.QObject):
                 and not isinstance(obj, ExcellonObject)):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
             msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
             return
@@ -9607,10 +9626,10 @@ class MenuFileHandlers(QtCore.QObject):
         if obj.kind != 'geometry':
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
-            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Warning)
 
             msgbox.setInformativeText(msg)
-            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.ButtonRole.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
             msgbox.exec()
             return
@@ -9715,11 +9734,11 @@ class MenuFileHandlers(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
-            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+            msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
 
             msgbox.setDefaultButton(bt_yes)
             msgbox.exec()
@@ -9832,6 +9851,23 @@ class MenuFileHandlers(QtCore.QObject):
             # # And then add again the Plot Area
             self.app.ui.plot_tab_area.insertTab(0, self.app.ui.plot_tab, _("Plot Area"))
             self.app.ui.plot_tab_area.protectTab(0)
+
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("Do you want to save the current settings/preferences?"))
+        msgbox.setWindowTitle(_("Save preferences"))
+        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
+
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
+        # bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.ButtonRole.RejectRole)
+
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec()
+        response = msgbox.clickedButton()
+
+        if response == bt_yes:
+            self.app.preferencesUiManager.save_defaults()
 
         # take the focus of the Notebook on Project Tab.
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
@@ -9960,7 +9996,7 @@ class MenuFileHandlers(QtCore.QObject):
                                            "Canvas initialization finished in"), '%.2f' % self.app.used_time,
                                          _("Executing ScriptObject file.")
                                          ),
-                                        alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                        alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                         color=QtGui.QColor("gray"))
         else:
             _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
@@ -11253,7 +11289,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Config file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
         # # add the tab if it was closed
         # self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
@@ -11318,7 +11354,7 @@ class MenuFileHandlers(QtCore.QObject):
                                                          "Canvas initialization finished in"),
                                                        '%.2f' % self.app.used_time,
                                                        _("Opening FlatCAM Project file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft,
                                     color=QtGui.QColor("gray"))
 
         # Open and parse an uncompressed Project file

@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,11 +13,12 @@ if '_' not in builtins.__dict__:
 
 
 class GerberOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Options Preferences", parent=parent)
         super(GerberOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.decimals = decimals
+        self.defaults = defaults
 
         self.setTitle(str(_("Gerber Options")))
 
@@ -32,7 +33,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
 
         # Margin
@@ -58,15 +59,15 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Bounding box
         self.boundingbox_label = FCLabel('<b>%s:</b>' % _('Bounding Box'))
         self.layout.addWidget(self.boundingbox_label)
 
-        grid2 = QtWidgets.QGridLayout()
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))

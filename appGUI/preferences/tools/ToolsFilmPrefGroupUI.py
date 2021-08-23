@@ -1,6 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsFilmPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsFilmPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Film Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Parameters
         self.film_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +30,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.film_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
@@ -198,8 +200,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_mirror_axis, 13, 1)
 
         separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line3, 14, 0, 1, 2)
 
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.tools.ToolsSubPrefGroupUI import ToolsSubPrefGroupUI
 from appGUI.preferences.tools.ToolsSolderpastePrefGroupUI import ToolsSolderpastePrefGroupUI
@@ -24,40 +24,41 @@ if '_' not in builtins.__dict__:
 
 class PluginsPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, defaults, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.tools_drill_group = ToolsDrillPrefGroupUI(decimals=self.decimals)
+        self.tools_drill_group = ToolsDrillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_drill_group.setMinimumWidth(220)
 
-        self.tools_mill_group = ToolsMillPrefGroupUI(decimals=self.decimals)
+        self.tools_mill_group = ToolsMillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_mill_group.setMinimumWidth(220)
 
-        self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals)
+        self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_cutout_group.setMinimumWidth(220)
 
-        self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals)
+        self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_film_group.setMinimumWidth(220)
 
-        self.tools_panelize_group = ToolsPanelizePrefGroupUI(decimals=self.decimals)
+        self.tools_panelize_group = ToolsPanelizePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_panelize_group.setMinimumWidth(220)
 
-        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(decimals=self.decimals)
+        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_calculators_group.setMinimumWidth(220)
 
-        self.tools_transform_group = ToolsTransformPrefGroupUI(decimals=self.decimals)
+        self.tools_transform_group = ToolsTransformPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_transform_group.setMinimumWidth(200)
 
-        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals)
+        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_solderpaste_group.setMinimumWidth(200)
 
-        self.tools_corners_group = ToolsCornersPrefGroupUI(decimals=self.decimals)
+        self.tools_corners_group = ToolsCornersPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_corners_group.setMinimumWidth(200)
 
-        self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals)
+        self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_sub_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()

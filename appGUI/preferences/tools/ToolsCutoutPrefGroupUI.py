@@ -1,6 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel, OptionalInputSection
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel, OptionalInputSection, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsCutoutPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsCutoutPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Cutout Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Board cutout
         self.board_cutout_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -29,7 +31,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.board_cutout_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         tdclabel = FCLabel('%s:' % _('Tool Diameter'))

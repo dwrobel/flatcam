@@ -5,12 +5,12 @@
 # License:  MIT Licence                                    #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
     FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel, \
-    NumericalEvalTupleEntry, FCComboBox2, VerticalScrollArea
+    NumericalEvalTupleEntry, FCComboBox2, VerticalScrollArea, FCGridLayout
 from appParsers.ParseExcellon import Excellon
 
 from copy import deepcopy
@@ -440,7 +440,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # add tooltips
         for it in range(self.ui.pp_excellon_name_cb.count()):
-            self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
+            self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
 
         self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
 
@@ -726,17 +726,17 @@ class ToolDrilling(AppTool, Excellon):
 
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
+            exc_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
             dia_item = QtWidgets.QTableWidgetItem(str(self.dec_format(self.excellon_tools[tool_no]['tooldia'])))
-            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
             # Number of drills per tool
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
+            drill_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)
 
             # Tool unique ID
@@ -748,22 +748,22 @@ class ToolDrilling(AppTool, Excellon):
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
-            slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
+            slot_count_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsDragEnabled)
             self.ui.tools_table.setItem(self.tool_row, 4, slot_count_item)
 
             self.tool_row += 1
 
         # add a last row with the Total number of drills
         empty_1 = QtWidgets.QTableWidgetItem('')
-        empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         empty_1_1 = QtWidgets.QTableWidgetItem('')
-        empty_1_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
-        label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % tot_drill_cnt)
-        tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
@@ -782,14 +782,14 @@ class ToolDrilling(AppTool, Excellon):
 
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
-        empty_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         empty_2_1 = QtWidgets.QTableWidgetItem('')
-        empty_2_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % tot_slot_cnt)
-        label_tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
-        tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+        label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
@@ -803,26 +803,26 @@ class ToolDrilling(AppTool, Excellon):
         # make the diameter column editable
         # for row in range(self.ui.tools_table.rowCount() - 2):
         #     self.ui.tools_table.item(row, 1).setFlags(
-        #         QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #         QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
-        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
 
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         self.ui.tools_table.setSortingEnabled(False)
 
@@ -848,15 +848,15 @@ class ToolDrilling(AppTool, Excellon):
             area_dict = self.app.exc_areas.exclusion_areas_storage[area]
 
             area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
-            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            area_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
 
             object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            object_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
 
             # strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            # strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # strategy_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             strategy_item = FCComboBox2(policy=False)
             strategy_item.addItems([_("Around"), _("Over")])
             idx = 0 if area_dict["strategy"] == 'around' else 1
@@ -868,34 +868,34 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.exclusion_table.setCellWidget(area, 2, strategy_item)  # Strategy
 
             overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            overz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
 
         # make the Overz column editable
         for row in range(e_len):
-            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemIsSelectable |
-                                                          QtCore.Qt.ItemIsEditable |
-                                                          QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.item(row, 3).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEditable |
+                                                          QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         self.ui.exclusion_table.resizeColumnsToContents()
         self.ui.exclusion_table.resizeRowsToContents()
 
         area_vheader = self.ui.exclusion_table.verticalHeader()
         area_vheader.hide()
-        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         area_hheader = self.ui.exclusion_table.horizontalHeader()
         area_hheader.setMinimumSectionSize(10)
         area_hheader.setDefaultSectionSize(70)
 
-        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         area_hheader.resizeSection(0, 20)
-        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         # area_hheader.setStretchLastSection(True)
-        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.exclusion_table.setColumnWidth(0, 20)
 
@@ -1604,16 +1604,16 @@ class ToolDrilling(AppTool, Excellon):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -1621,7 +1621,7 @@ class ToolDrilling(AppTool, Excellon):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             self.points = []
             self.poly_drawn = False
             self.delete_moving_selection_shape()
@@ -2264,7 +2264,7 @@ class DrillingUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % name)
+        title_label = FCLabel("%s" % name)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -2287,17 +2287,17 @@ class DrillingUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
-        self.obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("EXCELLON"))
+        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("EXCELLON"))
         self.obj_combo_label.setToolTip(
             _("Excellon object for drilling/milling operation.")
         )
@@ -2316,8 +2316,8 @@ class DrillingUI:
         grid0.addWidget(self.object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 2, 0, 1, 2)
 
         # ################################################
@@ -2347,7 +2347,7 @@ class DrillingUI:
               "milling them with an endmill bit."))
 
         # Tool order
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -2373,14 +2373,14 @@ class DrillingUI:
         grid0.addWidget(self.search_load_db_btn, 5, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         # ###########################################################
         # ############# Create CNC Job ##############################
         # ###########################################################
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -2402,13 +2402,13 @@ class DrillingUI:
         # ################# GRID LAYOUT 3   ###############################
         # #################################################################
 
-        self.grid1 = QtWidgets.QGridLayout()
+        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid1.setColumnStretch(0, 0)
         self.grid1.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid1)
 
         # Cut Z
-        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
@@ -2450,7 +2450,7 @@ class DrillingUI:
         self.grid1.addWidget(self.maxdepth_entry, 5, 1)
 
         # Travel Z (z_move)
-        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
         self.travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
@@ -2467,7 +2467,7 @@ class DrillingUI:
         self.grid1.addWidget(self.travelz_entry, 6, 1)
 
         # Excellon Feedrate Z
-        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
         self.frzlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -2484,7 +2484,7 @@ class DrillingUI:
         self.grid1.addWidget(self.feedrate_z_entry, 14, 1)
 
         # Excellon Rapid Feedrate
-        self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         self.feedrate_rapid_label.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -2506,7 +2506,7 @@ class DrillingUI:
         self.feedrate_rapid_entry.hide()
 
         # Spindlespeed
-        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
@@ -2545,7 +2545,7 @@ class DrillingUI:
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # Tool Offset
-        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        self.tool_offset_label = FCLabel('%s:' % _('Offset Z'))
         self.tool_offset_label.setToolTip(
             _("Some drill bits (the larger ones) need to drill deeper\n"
               "to create the desired exit hole diameter due of the tip shape.\n"
@@ -2569,7 +2569,7 @@ class DrillingUI:
         self.grid1.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
 
         # Drill Overlap
-        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
         self.drill_overlap_label.setToolTip(
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
@@ -2611,14 +2611,14 @@ class DrillingUI:
         # #################################################################
         # ################# COMMON PARAMETERS #############################
 
-        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
         self.exc_tools_box.addLayout(self.grid3)
 
         self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.all_param_separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
@@ -2630,12 +2630,12 @@ class DrillingUI:
         self.grid3.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
 
         separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line2, 2, 0, 1, 2)
 
         # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -2683,7 +2683,7 @@ class DrillingUI:
                                               ])
 
         # Start move Z:
-        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
+        self.estartz_label = FCLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
             _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
@@ -2695,7 +2695,7 @@ class DrillingUI:
         self.grid3.addWidget(self.estartz_entry, 9, 1)
 
         # End move Z:
-        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
+        self.endz_label = FCLabel('%s:' % _("End move Z"))
         self.endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
@@ -2711,7 +2711,7 @@ class DrillingUI:
         self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # End Move X,Y
-        self.endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        self.endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
         self.endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
@@ -2725,7 +2725,7 @@ class DrillingUI:
         self.grid3.addWidget(self.endxy_entry, 12, 1)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -2744,7 +2744,7 @@ class DrillingUI:
         self.pdepth_entry.setVisible(False)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
@@ -2762,13 +2762,13 @@ class DrillingUI:
         self.feedrate_probe_entry.setVisible(False)
 
         # Preprocessor Excellon selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_excellon_label = FCLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output for Excellon Objects.")
         )
         self.pp_excellon_name_cb = FCComboBox()
-        self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.pp_excellon_name_cb.setObjectName("e_pp")
 
         self.grid3.addWidget(pp_excellon_label, 15, 0)
@@ -2800,7 +2800,7 @@ class DrillingUI:
 
         self.exclusion_table = FCTable()
         self.exclusion_box.addWidget(self.exclusion_table)
-        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.exclusion_table.setColumnCount(4)
         self.exclusion_table.setColumnWidth(0, 20)
@@ -2815,9 +2815,9 @@ class DrillingUI:
             _("If the strategy is to go over the area then this is the height at which the tool will go to avoid the "
               "exclusion area."))
 
-        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid_a1 = QtWidgets.QGridLayout()
+        grid_a1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_a1.setColumnStretch(0, 0)
         grid_a1.setColumnStretch(1, 1)
         self.exclusion_box.addLayout(grid_a1)
@@ -2881,14 +2881,14 @@ class DrillingUI:
         # ------------------------------------------------------------------------------------------------------------
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 25, 0, 1, 2)
 
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################
         # #################################################################
-        self.grid4 = QtWidgets.QGridLayout()
+        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid4.setColumnStretch(0, 0)
         self.grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid4)

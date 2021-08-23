@@ -62,7 +62,7 @@ class ObjectUI(QtWidgets.QWidget):
 
         # ## Title label
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % title)
-        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
         # App Level label
@@ -86,15 +86,15 @@ class ObjectUI(QtWidgets.QWidget):
         # ## Common to all objects ##
         # ###########################
         if common is True:
-            self.common_grid = QtWidgets.QGridLayout()
+            self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
             self.common_grid.setColumnStretch(0, 1)
             self.common_grid.setColumnStretch(1, 0)
             layout.addLayout(self.common_grid)
 
             # self.common_grid.addWidget(FCLabel(''), 1, 0, 1, 2)
             separator_line = QtWidgets.QFrame()
-            separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-            separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+            separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+            separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
             self.common_grid.addWidget(separator_line, 1, 0, 1, 2)
 
             self.transform_label = FCLabel('<b>%s</b>' % _('Transformations'))
@@ -178,8 +178,8 @@ class GerberObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
         # Plot options
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -208,7 +208,7 @@ class GerberObjectUI(ObjectUI):
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
@@ -280,7 +280,7 @@ class GerberObjectUI(ObjectUI):
         self.aperture_table_visibility_cb.setToolTip(
             _("Toggle the display of the Tools Table.")
         )
-        # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         grid0.addWidget(self.aperture_table_visibility_cb, 8, 1)
 
         hlay_plot = QtWidgets.QHBoxLayout()
@@ -294,7 +294,7 @@ class GerberObjectUI(ObjectUI):
               "that are drawn on canvas.")
 
         )
-        self.mark_all_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.mark_all_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.mark_all_cb)
 
@@ -336,8 +336,8 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.create_buffer_button, 12, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line1, 13, 0, 1, 3)
 
         self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
@@ -400,8 +400,8 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.generate_follow_button, 22, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 24, 0, 1, 3)
 
         # UTILITIES BUTTON
@@ -425,7 +425,7 @@ class GerberObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = QtWidgets.QGridLayout()
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -471,8 +471,8 @@ class GerberObjectUI(ObjectUI):
         util_grid.addWidget(self.generate_noncopper_button, 4, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         util_grid.addWidget(separator_line1, 6, 0, 1, 3)
 
         # ## Bounding box
@@ -540,8 +540,8 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.custom_box.addLayout(grid0)
@@ -570,7 +570,7 @@ class ExcellonObjectUI(ObjectUI):
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
@@ -636,7 +636,7 @@ class ExcellonObjectUI(ObjectUI):
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.plot_cb)
 
@@ -660,8 +660,8 @@ class ExcellonObjectUI(ObjectUI):
         self.drills_frame.setLayout(self.tools_box)
 
         self.tools_table = FCTable()
-        self.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
@@ -706,14 +706,14 @@ class ExcellonObjectUI(ObjectUI):
         # ########## TOOLS GRID ###########################################
         # #################################################################
 
-        grid2 = QtWidgets.QGridLayout()
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
         grid0.addLayout(grid2, 12, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid2.addWidget(separator_line, 0, 0, 1, 2)
 
         self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
@@ -748,8 +748,8 @@ class ExcellonObjectUI(ObjectUI):
         grid2.addWidget(self.milling_button, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid2.addWidget(separator_line, 8, 0, 1, 2)
 
         # UTILITIES BUTTON
@@ -773,7 +773,7 @@ class ExcellonObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = QtWidgets.QGridLayout()
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -868,8 +868,8 @@ class GeometryObjectUI(ObjectUI):
         )
 
         # Plot options
-        grid_header = QtWidgets.QGridLayout()
-        grid_header.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        grid_header = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_header.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(grid_header)
         grid_header.setColumnStretch(0, 0)
         grid_header.setColumnStretch(1, 1)
@@ -893,7 +893,7 @@ class GeometryObjectUI(ObjectUI):
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
@@ -958,7 +958,7 @@ class GeometryObjectUI(ObjectUI):
         self.geo_table_box.setContentsMargins(0, 0, 0, 0)
         self.geo_table_frame.setLayout(self.geo_table_box)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.geo_table_box.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -987,12 +987,12 @@ class GeometryObjectUI(ObjectUI):
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         grid0.addWidget(self.plot_cb, 0, 1)
 
         self.geo_tools_table = FCTable(drag_drop=True)
         grid0.addWidget(self.geo_tools_table, 1, 0, 1, 2)
-        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.geo_tools_table.setColumnCount(7)
         self.geo_tools_table.setColumnWidth(0, 20)
@@ -1029,7 +1029,7 @@ class GeometryObjectUI(ObjectUI):
             _("Plot column. It is visible only for MultiGeo Geometry objects.\n"
               "Enable plot for the selected tool geometry."))
 
-        self.grid4 = QtWidgets.QGridLayout()
+        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid4.setColumnStretch(0, 0)
         self.grid4.setColumnStretch(1, 1)
         self.geo_tools_box.addLayout(self.grid4)
@@ -1083,8 +1083,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid4.addWidget(self.generate_ncc_button, 38, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid4.addWidget(separator_line, 40, 0, 1, 2)
 
         # UTILITIES BUTTON
@@ -1109,7 +1109,7 @@ class GeometryObjectUI(ObjectUI):
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = QtWidgets.QGridLayout()
+        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         util_grid.setColumnStretch(0, 0)
         util_grid.setColumnStretch(1, 1)
         self.util_box.addLayout(util_grid)
@@ -1209,7 +1209,7 @@ class CNCObjectUI(ObjectUI):
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
 
-        f_lay = QtWidgets.QGridLayout()
+        f_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         f_lay.setColumnStretch(0, 0)
         f_lay.setColumnStretch(1, 1)
         self.custom_box.addLayout(f_lay)
@@ -1240,7 +1240,7 @@ class CNCObjectUI(ObjectUI):
         # ## Object name
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
 
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
@@ -1296,8 +1296,8 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.annotation_cb, 8, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         f_lay.addWidget(separator_line, 10, 0, 1, 3)
 
         # Travelled Distance
@@ -1332,8 +1332,8 @@ class CNCObjectUI(ObjectUI):
         self.t_time_entry.setVisible(False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         f_lay.addWidget(separator_line, 16, 0, 1, 3)
 
         hlay = QtWidgets.QHBoxLayout()
@@ -1362,7 +1362,7 @@ class CNCObjectUI(ObjectUI):
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         hlay.addStretch()
         hlay.addWidget(self.plot_cb)
 
@@ -1407,8 +1407,8 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.snippets_cb)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.custom_box.addWidget(separator_line)
 
         # #############################################################################################################
@@ -1438,8 +1438,8 @@ class CNCObjectUI(ObjectUI):
         # ## Export G-Code ##
         # #############################################################################################################
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.custom_box.addWidget(separator_line)
 
         g_export_lay = QtWidgets.QHBoxLayout()
@@ -1451,7 +1451,7 @@ class CNCObjectUI(ObjectUI):
         self.export_gcode_button.setToolTip(
             _("Opens dialog to save CNC Code file.")
         )
-        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         g_export_lay.addWidget(self.export_gcode_button)
 
         self.review_gcode_button = QtWidgets.QToolButton()
@@ -1501,12 +1501,12 @@ class ScriptObjectUI(ObjectUI):
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
         h_lay = QtWidgets.QHBoxLayout()
-        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        h_lay.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(h_lay)
 
         self.autocomplete_cb = FCCheckBox("%s" % _("Auto Completer"))
@@ -1524,7 +1524,7 @@ class ScriptObjectUI(ObjectUI):
         # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
         # established and I don't want to changed it right now
         self.plot_cb = FCCheckBox()
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.custom_box.addWidget(self.plot_cb)
         self.plot_cb.hide()
 
@@ -1568,19 +1568,19 @@ class DocumentObjectUI(ObjectUI):
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
         # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
         # established and I don't want to changed it right now
         self.plot_cb = FCCheckBox()
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         self.custom_box.addWidget(self.plot_cb)
         self.plot_cb.hide()
 
         h_lay = QtWidgets.QHBoxLayout()
-        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        h_lay.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.custom_box.addLayout(h_lay)
 
         self.autocomplete_cb = FCCheckBox("%s" % _("Auto Completer"))
@@ -1599,7 +1599,7 @@ class DocumentObjectUI(ObjectUI):
         # ############ Grid LAYOUT #####################################
         # ##############################################################
 
-        self.grid0 = QtWidgets.QGridLayout()
+        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid0.setColumnStretch(0, 0)
         self.grid0.setColumnStretch(1, 1)
         self.grid0.setColumnStretch(2, 0)
@@ -1703,7 +1703,7 @@ class DocumentObjectUI(ObjectUI):
 
         self.grid0_child_1.addWidget(self.font_color_entry)
         self.grid0_child_1.addWidget(self.font_color_button)
-        self.grid0_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.grid0_child_1.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         self.grid0.addWidget(self.font_color_label, 6, 0)
         self.grid0.addLayout(self.grid0_child_1, 6, 1)
@@ -1722,7 +1722,7 @@ class DocumentObjectUI(ObjectUI):
 
         self.grid0_child_2.addWidget(self.sel_color_entry)
         self.grid0_child_2.addWidget(self.sel_color_button)
-        self.grid0_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.grid0_child_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         self.grid0.addWidget(self.sel_color_label, 8, 0)
         self.grid0.addLayout(self.grid0_child_2, 8, 1)

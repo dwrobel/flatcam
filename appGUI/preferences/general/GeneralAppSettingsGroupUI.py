@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from appGUI.GUIElements import OptionalInputSection
 from appGUI.preferences.OptionUI import *
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI2

@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry, VerticalScrollArea
-from appGUI.GUIElements import FCTable, FCComboBox, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry, \
+    VerticalScrollArea, FCTable, FCComboBox, RadioSet, FCGridLayout, FCLabel
 from appEditors.AppTextEditor import AppTextEditor
 
 from shapely.geometry import Point
@@ -770,7 +770,7 @@ class CalibrationUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -780,23 +780,23 @@ class CalibrationUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
         grid_lay.setColumnStretch(2, 0)
 
-        self.gcode_title_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.gcode_title_label = FCLabel('<b>%s:</b>' % _('Parameters'))
         self.gcode_title_label.setToolTip(
             _("Parameters used when creating the GCode in this tool.")
         )
         grid_lay.addWidget(self.gcode_title_label, 0, 0, 1, 3)
 
         # Travel Z entry
-        travelz_lbl = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        travelz_lbl = FCLabel('%s:' % _("Travel Z"))
         travelz_lbl.setToolTip(
             _("Height (Z) for travelling between the points.")
         )
@@ -810,7 +810,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.travelz_entry, 1, 1, 1, 2)
 
         # Verification Z entry
-        verz_lbl = QtWidgets.QLabel('%s:' % _("Verification Z"))
+        verz_lbl = FCLabel('%s:' % _("Verification Z"))
         verz_lbl.setToolTip(
             _("Height (Z) for checking the point.")
         )
@@ -833,7 +833,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.zeroz_cb, 3, 0, 1, 3)
 
         # Toolchange Z entry
-        toolchangez_lbl = QtWidgets.QLabel('%s:' % _("Toolchange Z"))
+        toolchangez_lbl = FCLabel('%s:' % _("Toolchange Z"))
         toolchangez_lbl.setToolTip(
             _("Height (Z) for mounting the verification probe.")
         )
@@ -847,7 +847,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.toolchangez_entry, 4, 1, 1, 2)
 
         # Toolchange X-Y entry
-        toolchangexy_lbl = QtWidgets.QLabel('%s:' % _('Toolchange X-Y'))
+        toolchangexy_lbl = FCLabel('%s:' % _('Toolchange X-Y'))
         toolchangexy_lbl.setToolTip(
             _("Toolchange X,Y position.\n"
               "If no value is entered then the current\n"
@@ -870,12 +870,12 @@ class CalibrationUI:
         )
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 6, 0, 1, 3)
 
         # Second point choice
-        second_point_lbl = QtWidgets.QLabel('%s:' % _("Second point"))
+        second_point_lbl = FCLabel('%s:' % _("Second point"))
         second_point_lbl.setToolTip(
             _("Second point in the Gcode verification can be:\n"
               "- top-left -> the user will align the PCB vertically\n"
@@ -889,13 +889,13 @@ class CalibrationUI:
         grid_lay.addWidget(self.second_point_radio, 7, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 8, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 3)
+        grid_lay.addWidget(FCLabel(''), 9, 0, 1, 3)
 
-        step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1: Acquire Calibration Points"))
+        step_1 = FCLabel('<b>%s</b>' % _("STEP 1: Acquire Calibration Points"))
         step_1.setToolTip(
             _("Pick four points by clicking on canvas.\n"
               "Those four points should be in the four\n"
@@ -903,7 +903,7 @@ class CalibrationUI:
         )
         grid_lay.addWidget(step_1, 10, 0, 1, 3)
 
-        self.cal_source_lbl = QtWidgets.QLabel("<b>%s:</b>" % _("Source Type"))
+        self.cal_source_lbl = FCLabel("<b>%s:</b>" % _("Source Type"))
         self.cal_source_lbl.setToolTip(_("The source of calibration points.\n"
                                          "It can be:\n"
                                          "- Object -> click a hole geo for Excellon or a pad for Gerber\n"
@@ -915,7 +915,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.cal_source_lbl, 11, 0)
         grid_lay.addWidget(self.cal_source_radio, 11, 1, 1, 2)
 
-        self.obj_type_label = QtWidgets.QLabel("%s:" % _("Object Type"))
+        self.obj_type_label = FCLabel("%s:" % _("Object Type"))
 
         self.obj_type_combo = FCComboBox()
         self.obj_type_combo.addItem(_("Gerber"))
@@ -932,7 +932,7 @@ class CalibrationUI:
         self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.object_combo.is_last = True
 
-        self.object_label = QtWidgets.QLabel("%s:" % _("Source object selection"))
+        self.object_label = FCLabel("%s:" % _("Source object selection"))
         self.object_label.setToolTip(
             _("FlatCAM Object to be used as a source for reference points.")
         )
@@ -940,7 +940,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.object_label, 13, 0, 1, 3)
         grid_lay.addWidget(self.object_combo, 14, 0, 1, 3)
 
-        self.points_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Calibration Points'))
+        self.points_table_label = FCLabel('<b>%s</b>' % _('Calibration Points'))
         self.points_table_label.setToolTip(
             _("Contain the expected calibration points and the\n"
               "ones measured.")
@@ -948,7 +948,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.points_table_label, 15, 0, 1, 3)
 
         self.points_table = FCTable()
-        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         # self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         grid_lay.addWidget(self.points_table, 16, 0, 1, 3)
 
@@ -966,11 +966,11 @@ class CalibrationUI:
 
         # BOTTOM LEFT
         id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_1.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_1)  # Tool name/id
 
-        self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('Bot Left X'))
+        self.bottom_left_coordx_lbl = FCLabel('%s' % _('Bot Left X'))
         self.points_table.setCellWidget(row, 1, self.bottom_left_coordx_lbl)
         self.bottom_left_coordx_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.bottom_left_coordx_tgt)
@@ -979,7 +979,7 @@ class CalibrationUI:
         self.points_table.setCellWidget(row, 3, self.bottom_left_coordx_found)
         row += 1
 
-        self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Bot Left Y'))
+        self.bottom_left_coordy_lbl = FCLabel('%s' % _('Bot Left Y'))
         self.points_table.setCellWidget(row, 1, self.bottom_left_coordy_lbl)
         self.bottom_left_coordy_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.bottom_left_coordy_tgt)
@@ -993,11 +993,11 @@ class CalibrationUI:
 
         # BOTTOM RIGHT
         id_item_2 = QtWidgets.QTableWidgetItem('%d' % 2)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_2.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_2)  # Tool name/id
 
-        self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('Bot Right X'))
+        self.bottom_right_coordx_lbl = FCLabel('%s' % _('Bot Right X'))
         self.points_table.setCellWidget(row, 1, self.bottom_right_coordx_lbl)
         self.bottom_right_coordx_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.bottom_right_coordx_tgt)
@@ -1007,7 +1007,7 @@ class CalibrationUI:
 
         row += 1
 
-        self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Bot Right Y'))
+        self.bottom_right_coordy_lbl = FCLabel('%s' % _('Bot Right Y'))
         self.points_table.setCellWidget(row, 1, self.bottom_right_coordy_lbl)
         self.bottom_right_coordy_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.bottom_right_coordy_tgt)
@@ -1018,11 +1018,11 @@ class CalibrationUI:
 
         # TOP LEFT
         id_item_3 = QtWidgets.QTableWidgetItem('%d' % 3)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_3.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_3)  # Tool name/id
 
-        self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('Top Left X'))
+        self.top_left_coordx_lbl = FCLabel('%s' % _('Top Left X'))
         self.points_table.setCellWidget(row, 1, self.top_left_coordx_lbl)
         self.top_left_coordx_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.top_left_coordx_tgt)
@@ -1031,7 +1031,7 @@ class CalibrationUI:
         self.points_table.setCellWidget(row, 3, self.top_left_coordx_found)
         row += 1
 
-        self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Top Left Y'))
+        self.top_left_coordy_lbl = FCLabel('%s' % _('Top Left Y'))
         self.points_table.setCellWidget(row, 1, self.top_left_coordy_lbl)
         self.top_left_coordy_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.top_left_coordy_tgt)
@@ -1042,11 +1042,11 @@ class CalibrationUI:
 
         # TOP RIGHT
         id_item_4 = QtWidgets.QTableWidgetItem('%d' % 4)
-        flags = QtCore.Qt.ItemIsEnabled
+        flags = QtCore.Qt.ItemFlag.ItemIsEnabled
         id_item_4.setFlags(flags)
         self.points_table.setItem(row, 0, id_item_4)  # Tool name/id
 
-        self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('Top Right X'))
+        self.top_right_coordx_lbl = FCLabel('%s' % _('Top Right X'))
         self.points_table.setCellWidget(row, 1, self.top_right_coordx_lbl)
         self.top_right_coordx_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.top_right_coordx_tgt)
@@ -1056,7 +1056,7 @@ class CalibrationUI:
         self.points_table.setCellWidget(row, 3, self.top_right_coordx_found)
         row += 1
 
-        self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Top Right Y'))
+        self.top_right_coordy_lbl = FCLabel('%s' % _('Top Right Y'))
         self.points_table.setCellWidget(row, 1, self.top_right_coordy_lbl)
         self.top_right_coordy_tgt = EvalEntry()
         self.points_table.setCellWidget(row, 2, self.top_right_coordy_tgt)
@@ -1067,23 +1067,23 @@ class CalibrationUI:
 
         vertical_header = self.points_table.verticalHeader()
         vertical_header.hide()
-        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.points_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
 
-        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         # for x in range(4):
         #     self.points_table.resizeColumnToContents(x)
         self.points_table.resizeColumnsToContents()
         self.points_table.resizeRowsToContents()
 
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 3)
@@ -1105,14 +1105,14 @@ class CalibrationUI:
         grid_lay.addWidget(self.start_button, 17, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 18, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 19, 0)
+        grid_lay.addWidget(FCLabel(''), 19, 0)
 
         # STEP 2 #
-        step_2 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 2: Verification GCode"))
+        step_2 = FCLabel('<b>%s</b>' % _("STEP 2: Verification GCode"))
         step_2.setToolTip(
             _("Generate GCode file to locate and align the PCB by using\n"
               "the four points acquired above.\n"
@@ -1144,14 +1144,14 @@ class CalibrationUI:
         grid_lay.addWidget(self.gcode_button, 21, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 22, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 23, 0, 1, 3)
+        grid_lay.addWidget(FCLabel(''), 23, 0, 1, 3)
 
         # STEP 3 #
-        step_3 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 3: Adjustments"))
+        step_3 = FCLabel('<b>%s</b>' % _("STEP 3: Adjustments"))
         step_3.setToolTip(
             _("Calculate Scale and Skew factors based on the differences (delta)\n"
               "found when checking the PCB pattern. The differences must be filled\n"
@@ -1175,21 +1175,21 @@ class CalibrationUI:
         grid_lay.addWidget(self.generate_factors_button, 25, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 26, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 27, 0, 1, 3)
+        grid_lay.addWidget(FCLabel(''), 27, 0, 1, 3)
 
         # STEP 4 #
-        step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
+        step_4 = FCLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
         step_4.setToolTip(
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
         grid_lay.addWidget(step_4, 28, 0, 1, 3)
 
-        self.scalex_label = QtWidgets.QLabel(_("Scale Factor X:"))
+        self.scalex_label = FCLabel(_("Scale Factor X:"))
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
@@ -1201,7 +1201,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.scalex_label, 29, 0)
         grid_lay.addWidget(self.scalex_entry, 29, 1, 1, 2)
 
-        self.scaley_label = QtWidgets.QLabel(_("Scale Factor Y:"))
+        self.scaley_label = FCLabel(_("Scale Factor Y:"))
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
@@ -1225,7 +1225,7 @@ class CalibrationUI:
                                       """)
         grid_lay.addWidget(self.scale_button, 31, 0, 1, 3)
 
-        self.skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
+        self.skewx_label = FCLabel(_("Skew Angle X:"))
         self.skewx_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
@@ -1238,7 +1238,7 @@ class CalibrationUI:
         grid_lay.addWidget(self.skewx_label, 32, 0)
         grid_lay.addWidget(self.skewx_entry, 32, 1, 1, 2)
 
-        self.skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
+        self.skewy_label = FCLabel(_("Skew Angle Y:"))
         self.skewy_label.setToolTip(
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
@@ -1263,14 +1263,14 @@ class CalibrationUI:
                                       """)
         grid_lay.addWidget(self.skew_button, 34, 0, 1, 3)
 
-        # final_factors_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Final Factors"))
+        # final_factors_lbl = FCLabel('<b>%s</b>' % _("Final Factors"))
         # final_factors_lbl.setToolTip(
         #     _("Generate verification GCode file adjusted with\n"
         #       "the factors above.")
         # )
         # grid_lay.addWidget(final_factors_lbl, 27, 0, 1, 3)
         #
-        # self.fin_scalex_label = QtWidgets.QLabel(_("Scale Factor X:"))
+        # self.fin_scalex_label = FCLabel(_("Scale Factor X:"))
         # self.fin_scalex_label.setToolTip(
         #     _("Final factor for Scale action over X axis.")
         # )
@@ -1282,7 +1282,7 @@ class CalibrationUI:
         # grid_lay.addWidget(self.fin_scalex_label, 28, 0)
         # grid_lay.addWidget(self.fin_scalex_entry, 28, 1, 1, 2)
         #
-        # self.fin_scaley_label = QtWidgets.QLabel(_("Scale Factor Y:"))
+        # self.fin_scaley_label = FCLabel(_("Scale Factor Y:"))
         # self.fin_scaley_label.setToolTip(
         #     _("Final factor for Scale action over Y axis.")
         # )
@@ -1294,7 +1294,7 @@ class CalibrationUI:
         # grid_lay.addWidget(self.fin_scaley_label, 29, 0)
         # grid_lay.addWidget(self.fin_scaley_entry, 29, 1, 1, 2)
         #
-        # self.fin_skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
+        # self.fin_skewx_label = FCLabel(_("Skew Angle X:"))
         # self.fin_skewx_label.setToolTip(
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
@@ -1307,7 +1307,7 @@ class CalibrationUI:
         # grid_lay.addWidget(self.fin_skewx_label, 30, 0)
         # grid_lay.addWidget(self.fin_skewx_entry, 30, 1, 1, 2)
         #
-        # self.fin_skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
+        # self.fin_skewy_label = FCLabel(_("Skew Angle Y:"))
         # self.fin_skewy_label.setToolTip(
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
@@ -1338,14 +1338,14 @@ class CalibrationUI:
         grid_lay.addWidget(self.adj_gcode_button, 42, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line1, 43, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 44, 0, 1, 3)
+        grid_lay.addWidget(FCLabel(''), 44, 0, 1, 3)
 
         # STEP 5 #
-        step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
+        step_5 = FCLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
         step_5.setToolTip(
             _("Adjust the FlatCAM objects\n"
               "with the factors determined and verified above.")
@@ -1359,7 +1359,7 @@ class CalibrationUI:
         self.adj_object_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
+        self.adj_object_type_label = FCLabel("%s:" % _("Adjusted object type"))
         self.adj_object_type_label.setToolTip(_("Type of the Application Object to be adjusted."))
 
         grid_lay.addWidget(self.adj_object_type_label, 46, 0, 1, 3)
@@ -1373,7 +1373,7 @@ class CalibrationUI:
             _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
         }[self.adj_object_type_combo.get_value()]
 
-        self.adj_object_label = QtWidgets.QLabel("%s:" % _("Adjusted object selection"))
+        self.adj_object_label = FCLabel("%s:" % _("Adjusted object selection"))
         self.adj_object_label.setToolTip(
             _("The Application Object to be adjusted.")
         )
@@ -1396,11 +1396,11 @@ class CalibrationUI:
         grid_lay.addWidget(self.cal_button, 50, 0, 1, 3)
 
         separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line2, 51, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 52, 0, 1, 3)
+        grid_lay.addWidget(FCLabel(''), 52, 0, 1, 3)
 
         self.layout.addStretch()
 

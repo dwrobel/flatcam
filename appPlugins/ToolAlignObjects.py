@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 
-from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea
+from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout
 
 import math
 
@@ -411,10 +411,10 @@ class AlignUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # Form Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -450,8 +450,8 @@ class AlignUI:
         grid0.addWidget(self.object_combo, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         grid0.addWidget(FCLabel(''), 6, 0, 1, 2)
@@ -486,11 +486,11 @@ class AlignUI:
         grid0.addWidget(self.aligner_object_combo, 9, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 11, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 11, 0, 1, 2)
 
         # Alignment Type
         self.a_type_lbl = FCLabel('<b>%s:</b>' % _("Alignment Type"))
@@ -509,8 +509,8 @@ class AlignUI:
         grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Buttons

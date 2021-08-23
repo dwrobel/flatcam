@@ -275,16 +275,16 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 # ------------------------ Aperture ID ----------------------------------------------------------------
                 ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-                ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                ap_id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                 self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
                 # ------------------------ Aperture CODE --------------------------------------------------------------
                 ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
-                ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture TYPE --------------------------------------------------------------
                 ap_type_item = QtWidgets.QTableWidgetItem(str(self.tools[ap_code]['type']))
-                ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 if str(self.tools[ap_code]['type']) == 'R' or str(self.tools[ap_code]['type']) == 'O':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
@@ -292,16 +292,16 @@ class GerberObject(FlatCAMObj, Gerber):
                                         self.decimals, self.tools[ap_code]['height']
                                         )
                     )
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                 elif str(self.tools[ap_code]['type']) == 'P':
                     ap_dim_item = QtWidgets.QTableWidgetItem(
                         '%.*f, %.*f' % (self.decimals, self.tools[ap_code]['diam'],
                                         self.decimals, self.tools[ap_code]['nVertices'])
                     )
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                 else:
                     ap_dim_item = QtWidgets.QTableWidgetItem('')
-                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture SIZE --------------------------------------------------------------
                 try:
@@ -312,11 +312,11 @@ class GerberObject(FlatCAMObj, Gerber):
                         ap_size_item = QtWidgets.QTableWidgetItem('')
                 except KeyError:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
-                ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
                 # ------------------------ Aperture MARK --------------------------------------------------------------
                 mark_item = FCCheckBox()
-                mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+                mark_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
                 # if self.ui.aperture_table_visibility_cb.isChecked():
                 #     mark_item.setChecked(True)
 
@@ -326,7 +326,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
 
                 empty_plot_item = QtWidgets.QTableWidgetItem('')
-                empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                 self.ui.apertures_table.setItem(self.apertures_row, 5, empty_plot_item)
                 self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
 
@@ -337,24 +337,24 @@ class GerberObject(FlatCAMObj, Gerber):
             self.ui.apertures_table.resizeRowsToContents()
 
             vertical_header = self.ui.apertures_table.verticalHeader()
-            # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
             vertical_header.hide()
-            self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
             horizontal_header = self.ui.apertures_table.horizontalHeader()
             horizontal_header.setMinimumSectionSize(10)
             horizontal_header.setDefaultSectionSize(70)
-            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
             horizontal_header.resizeSection(0, 27)
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(4,  QtWidgets.QHeaderView.Stretch)
-            horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+            horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+            horizontal_header.setSectionResizeMode(4,  QtWidgets.QHeaderView.ResizeMode.Stretch)
+            horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeMode.Fixed)
             horizontal_header.resizeSection(5, 17)
             self.ui.apertures_table.setColumnWidth(5, 17)
 
-            self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             self.ui.apertures_table.setSortingEnabled(False)
             self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
             self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
@@ -395,17 +395,6 @@ class GerberObject(FlatCAMObj, Gerber):
         except (TypeError, AttributeError):
             pass
 
-    @staticmethod
-    def buffer_handler(geo):
-        new_geo = geo
-        if isinstance(new_geo, list):
-            new_geo = MultiPolygon(new_geo)
-
-        new_geo = new_geo.buffer(0.0000001)
-        new_geo = new_geo.buffer(-0.0000001)
-
-        return new_geo
-
     def on_properties(self, state):
         if state:
             self.ui.info_frame.show()
@@ -435,6 +424,17 @@ class GerberObject(FlatCAMObj, Gerber):
                 self.plot_single_object.emit()
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
+
+    @staticmethod
+    def buffer_handler(geo):
+        new_geo = geo
+        if isinstance(new_geo, list):
+            new_geo = MultiPolygon(new_geo)
+
+        new_geo = new_geo.buffer(0.0000001)
+        new_geo = new_geo.buffer(-0.0000001)
+
+        return new_geo
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.defaults.report_usage("gerber_on_generatenoncopper_button")
@@ -552,57 +552,22 @@ class GerberObject(FlatCAMObj, Gerber):
 
                 geo_obj.solid_geometry = []
 
-                # transfer the Cut Z and Vtip and Vangle values in case that we use the V-Shape tool in Gerber UI
-                if geo_obj.tool_type.lower() == 'v':
-                    new_cutz = self.app.defaults["tools_iso_tool_cutz"]
-                    new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
-                    new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
-                    tool_type = 'V'
-                else:
-                    new_cutz = self.app.defaults['geometry_cutz']
-                    new_vtipdia = self.app.defaults['tools_mill_vtipdia']
-                    new_vtipangle = self.app.defaults['tools_mill_vtipangle']
-                    tool_type = 'C1'
-
                 # store here the default data for Geometry Data
                 default_data = {}
-                default_data.update({
-                    "name": iso_name,
-                    "plot": self.app.defaults['geometry_plot'],
-                    "cutz": new_cutz,
-                    "vtipdia": new_vtipdia,
-                    "vtipangle": new_vtipangle,
-                    "travelz": self.app.defaults['geometry_travelz'],
-                    "feedrate": self.app.defaults['geometry_feedrate'],
-                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                    "dwell": self.app.defaults['geometry_dwell'],
-                    "dwelltime": self.app.defaults['geometry_dwelltime'],
-                    "multidepth": self.app.defaults['geometry_multidepth'],
-                    "ppname_g": self.app.defaults['geometry_ppname_g'],
-                    "depthperpass": self.app.defaults['geometry_depthperpass'],
-                    "extracut": self.app.defaults['geometry_extracut'],
-                    "extracut_length": self.app.defaults['geometry_extracut_length'],
-                    "toolchange": self.app.defaults['geometry_toolchange'],
-                    "toolchangez": self.app.defaults['geometry_toolchangez'],
-                    "endz": self.app.defaults['geometry_endz'],
-                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                    "startz": self.app.defaults['geometry_startz']
-                })
+                for opt_key, opt_val in app_obj.options.items():
+                    if opt_key.find('geometry' + "_") == 0:
+                        oname = opt_key[len('geometry') + 1:]
+                        default_data[oname] = self.app.options[opt_key]
+                    if opt_key.find('tools_mill' + "_") == 0:
+                        default_data[opt_key] = self.app.options[opt_key]
 
-                geo_obj.tools = {'1': {}}
-                geo_obj.tools.update({
+                geo_obj.tools = {
                     '1': {
                         'tooldia':          dia,
-                        'offset':           'Path',
-                        'offset_value':     0.0,
-                        'type':             'Rough',
-                        'tool_type':        tool_type,
                         'data':             default_data,
                         'solid_geometry':   geo_obj.solid_geometry
                     }
-                })
+                }
 
                 for nr_pass in range(passes):
                     iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
@@ -695,59 +660,22 @@ class GerberObject(FlatCAMObj, Gerber):
 
                     geo_obj.solid_geometry = geom
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
-                    # required to be transfered to the Geometry object
-                    if self.app.defaults["tools_iso_tool_type"].lower() == 'v':
-                        new_cutz = self.app.defaults["tools_iso_tool_cutz"]
-                        new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
-                        new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
-                        tool_type = 'V'
-                    else:
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['tools_mill_vtipdia']
-                        new_vtipangle = self.app.defaults['tools_mill_vtipangle']
-                        tool_type = 'C1'
-
                     # store here the default data for Geometry Data
                     default_data = {}
-                    default_data.update({
-                        "name": iso_name,
-                        "plot": self.app.defaults['geometry_plot'],
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                        "travelz": self.app.defaults['geometry_travelz'],
-                        "feedrate": self.app.defaults['geometry_feedrate'],
-                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                        "dwell": self.app.defaults['geometry_dwell'],
-                        "dwelltime": self.app.defaults['geometry_dwelltime'],
-                        "multidepth": self.app.defaults['geometry_multidepth'],
-                        "ppname_g": self.app.defaults['geometry_ppname_g'],
-                        "depthperpass": self.app.defaults['geometry_depthperpass'],
-                        "extracut": self.app.defaults['geometry_extracut'],
-                        "extracut_length": self.app.defaults['geometry_extracut_length'],
-                        "toolchange": self.app.defaults['geometry_toolchange'],
-                        "toolchangez": self.app.defaults['geometry_toolchangez'],
-                        "endz": self.app.defaults['geometry_endz'],
-                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                        "startz": self.app.defaults['geometry_startz']
-                    })
+                    for opt_key, opt_val in app_obj.options.items():
+                        if opt_key.find('geometry' + "_") == 0:
+                            oname = opt_key[len('geometry') + 1:]
+                            default_data[oname] = self.app.options[opt_key]
+                        if opt_key.find('tools_mill' + "_") == 0:
+                            default_data[opt_key] = self.app.options[opt_key]
 
-                    geo_obj.tools = {'1': {}}
-                    geo_obj.tools.update({
+                    geo_obj.tools = {
                         '1': {
                             'tooldia':          dia,
-                            'offset':           'Path',
-                            'offset_value':     0.0,
-                            'type':             'Rough',
-                            'tool_type':        tool_type,
                             'data':             default_data,
                             'solid_geometry':   geo_obj.solid_geometry
                         }
-                    })
+                    }
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
@@ -856,16 +784,11 @@ class GerberObject(FlatCAMObj, Gerber):
                     oname = opt_key[len('geometry') + 1:]
                     default_data[oname] = self.app.options[opt_key]
                 if opt_key.find('tools_mill' + "_") == 0:
-                    oname = opt_key[len('tools_mill') + 1:]
-                    default_data[oname] = self.app.options[opt_key]
+                    default_data[opt_key] = self.app.options[opt_key]
 
             new_obj.tools = {
                 1: {
                     'tooldia':  app_obj.dec_format(float(tools_list[0]), self.decimals),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Rough',
-                    'tool_type': 'C1',
                     'data': deepcopy(default_data),
                     'solid_geometry': new_obj.solid_geometry
                 }
@@ -1051,7 +974,6 @@ class GerberObject(FlatCAMObj, Gerber):
         except Exception as e:
             self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
-    # experimental plot() when the solid_geometry is stored in the self.tools
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
 

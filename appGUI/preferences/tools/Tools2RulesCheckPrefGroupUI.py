@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, FCLabel
+from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2RulesCheckPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Check Rules Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         self.crlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(
@@ -28,7 +29,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.crlabel)
 
         # Form Layout
-        self.grid0 = QtWidgets.QGridLayout()
+        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid0.setColumnStretch(0, 0)
         self.grid0.setColumnStretch(1, 1)
         self.layout.addLayout(self.grid0)

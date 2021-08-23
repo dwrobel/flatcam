@@ -1,5 +1,5 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
-from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog
+from PyQt6 import QtGui, QtCore, QtWidgets
+from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog, FCGridLayout, FCLabel
 
 import sys
 import webbrowser
@@ -33,7 +33,7 @@ class BookmarkManager(QtWidgets.QWidget):
         # self.setWindowTitle(_("Bookmark Manager"))
         # self.resize(600, 400)
 
-        # title = QtWidgets.QLabel(
+        # title = FCLabel(
         #     "<font size=8><B>FlatCAM</B></font><BR>"
         # )
         # title.setOpenExternalLinks(True)
@@ -46,7 +46,7 @@ class BookmarkManager(QtWidgets.QWidget):
         layout.addLayout(table_hlay)
 
         self.table_widget = FCTable(drag_drop=True, protected_rows=[0, 1])
-        self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
         self.table_widget.setColumnCount(3)
@@ -75,20 +75,20 @@ class BookmarkManager(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
+        new_title_lbl = FCLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         new_vlay.addLayout(grid0)
 
-        title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
+        title_lbl = FCLabel('%s:' % _("Title"))
         self.title_entry = FCEntry()
         grid0.addWidget(title_lbl, 0, 0)
         grid0.addWidget(self.title_entry, 0, 1)
 
-        link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
+        link_lbl = FCLabel('%s:' % _("Web Link"))
         self.link_entry = FCEntry()
         self.link_entry.set_value('http://')
         grid0.addWidget(link_lbl, 2, 0)
@@ -149,7 +149,7 @@ class BookmarkManager(QtWidgets.QWidget):
             weblink = bookmark[1]
 
             id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.table_widget.setItem(row, 0, id_item)  # Tool name/id
 
             title_item = QtWidgets.QTableWidgetItem(title)
@@ -157,7 +157,7 @@ class BookmarkManager(QtWidgets.QWidget):
 
             weblink_txt = QtWidgets.QTextBrowser()
             weblink_txt.setOpenExternalLinks(True)
-            weblink_txt.setFrameStyle(QtWidgets.QFrame.NoFrame)
+            weblink_txt.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
             weblink_txt.document().setDefaultStyleSheet("a{ text-decoration: none; }")
 
             weblink_txt.setHtml('<a href=%s>%s</a>' % (weblink, weblink))
@@ -170,10 +170,10 @@ class BookmarkManager(QtWidgets.QWidget):
             horizontal_header = self.table_widget.horizontalHeader()
             horizontal_header.setMinimumSectionSize(10)
             horizontal_header.setDefaultSectionSize(70)
-            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
             horizontal_header.resizeSection(0, 20)
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.mark_table_rows_for_actions()
 
@@ -222,7 +222,7 @@ class BookmarkManager(QtWidgets.QWidget):
         # add the link to the menu but only if it is within the set limit
         bm_limit = int(self.app.defaults["global_bookmarks_limit"])
         if len(self.bm_dict) < bm_limit:
-            act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
+            act = QtGui.QAction(parent=self.app.ui.menuhelp_bookmarks)
             act.setText(title)
             act.setIcon(QtGui.QIcon(self.app.resource_location + '/link16.png'))
             act.triggered.connect(lambda: webbrowser.open(link))

@@ -5,12 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout, FCLabel
 from appParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -736,7 +736,7 @@ class QRcodeUI:
         self.layout.addLayout(self.title_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -758,10 +758,10 @@ class QRcodeUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.layout.addWidget(QtWidgets.QLabel(''))
+        self.layout.addWidget(FCLabel(''))
 
         # ## Grid Layout
-        i_grid_lay = QtWidgets.QGridLayout()
+        i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
@@ -772,7 +772,7 @@ class QRcodeUI:
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label = FCLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )
@@ -781,12 +781,12 @@ class QRcodeUI:
         i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # Text box
-        self.text_label = QtWidgets.QLabel('<b>%s</b>:' % _("QRCode Data"))
+        self.text_label = FCLabel('<b>%s</b>:' % _("QRCode Data"))
         self.text_label.setToolTip(
             _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
         )
@@ -798,24 +798,24 @@ class QRcodeUI:
         i_grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.qrcode_label = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
+        self.qrcode_label = FCLabel('<b>%s</b>' % _('Parameters'))
         self.qrcode_label.setToolTip(
             _("The parameters used to shape the QRCode.")
         )
         grid_lay.addWidget(self.qrcode_label, 0, 0, 1, 2)
 
         # VERSION #
-        self.version_label = QtWidgets.QLabel('%s:' % _("Version"))
+        self.version_label = FCLabel('%s:' % _("Version"))
         self.version_label.setToolTip(
             _("QRCode version can have values from 1 (21x21 boxes)\n"
               "to 40 (177x177 boxes).")
@@ -828,7 +828,7 @@ class QRcodeUI:
         grid_lay.addWidget(self.version_entry, 2, 1)
 
         # ERROR CORRECTION #
-        self.error_label = QtWidgets.QLabel('%s:' % _("Error correction"))
+        self.error_label = FCLabel('%s:' % _("Error correction"))
         self.error_label.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
               "L = maximum 7%% errors can be corrected\n"
@@ -851,7 +851,7 @@ class QRcodeUI:
         grid_lay.addWidget(self.error_radio, 4, 1)
 
         # BOX SIZE #
-        self.bsize_label = QtWidgets.QLabel('%s:' % _("Box Size"))
+        self.bsize_label = FCLabel('%s:' % _("Box Size"))
         self.bsize_label.setToolTip(
             _("Box size control the overall size of the QRcode\n"
               "by adjusting the size of each box in the code.")
@@ -864,7 +864,7 @@ class QRcodeUI:
         grid_lay.addWidget(self.bsize_entry, 6, 1)
 
         # BORDER SIZE #
-        self.border_size_label = QtWidgets.QLabel('%s:' % _("Border Size"))
+        self.border_size_label = FCLabel('%s:' % _("Border Size"))
         self.border_size_label.setToolTip(
             _("Size of the QRCode border. How many boxes thick is the border.\n"
               "Default value is 4. The width of the clearance around the QRCode.")
@@ -877,7 +877,7 @@ class QRcodeUI:
         grid_lay.addWidget(self.border_size_entry, 8, 1)
 
         # POLARITY CHOICE #
-        self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))
+        self.pol_label = FCLabel('%s:' % _("Polarity"))
         self.pol_label.setToolTip(
             _("Choose the polarity of the QRCode.\n"
               "It can be drawn in a negative way (squares are clear)\n"
@@ -895,7 +895,7 @@ class QRcodeUI:
         grid_lay.addWidget(self.pol_radio, 10, 1)
 
         # BOUNDING BOX TYPE #
-        self.bb_label = QtWidgets.QLabel('%s:' % _("Bounding Box"))
+        self.bb_label = FCLabel('%s:' % _("Bounding Box"))
         self.bb_label.setToolTip(
             _("The bounding box, meaning the empty space that surrounds\n"
               "the QRCode geometry, can have a rounded or a square shape.")
@@ -910,8 +910,8 @@ class QRcodeUI:
         grid_lay.addWidget(self.bb_radio, 12, 1)
 
         self.separator_line_2 = QtWidgets.QFrame()
-        self.separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(self.separator_line_2, 14, 0, 1, 2)
 
         # Export QRCode
@@ -926,7 +926,7 @@ class QRcodeUI:
         self.export_frame = QtWidgets.QFrame()
         self.export_frame.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.export_frame)
-        self.export_lay = QtWidgets.QGridLayout()
+        self.export_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.export_lay.setContentsMargins(0, 0, 0, 0)
         self.export_frame.setLayout(self.export_lay)
         self.export_lay.setColumnStretch(0, 0)
@@ -936,7 +936,7 @@ class QRcodeUI:
         self.export_frame.hide()
 
         # FILL COLOR #
-        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill Color'))
+        self.fill_color_label = FCLabel('%s:' % _('Fill Color'))
         self.fill_color_label.setToolTip(
             _("Set the QRCode fill color (squares color).")
         )
@@ -947,8 +947,8 @@ class QRcodeUI:
         fill_lay_child = QtWidgets.QHBoxLayout()
         fill_lay_child.setContentsMargins(0, 0, 0, 0)
         fill_lay_child.addWidget(self.fill_color_entry)
-        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignRight)
-        fill_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignmentFlag.AlignRight)
+        fill_lay_child.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         fill_color_widget = QtWidgets.QWidget()
         fill_color_widget.setLayout(fill_lay_child)
@@ -960,7 +960,7 @@ class QRcodeUI:
         self.export_lay.addWidget(self.transparent_cb, 1, 0, 1, 2)
 
         # BACK COLOR #
-        self.back_color_label = QtWidgets.QLabel('%s:' % _('Back Color'))
+        self.back_color_label = FCLabel('%s:' % _('Back Color'))
         self.back_color_label.setToolTip(
             _("Set the QRCode background color.")
         )
@@ -971,8 +971,8 @@ class QRcodeUI:
         back_lay_child = QtWidgets.QHBoxLayout()
         back_lay_child.setContentsMargins(0, 0, 0, 0)
         back_lay_child.addWidget(self.back_color_entry)
-        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignRight)
-        back_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignmentFlag.AlignRight)
+        back_lay_child.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         back_color_widget = QtWidgets.QWidget()
         back_color_widget.setLayout(back_lay_child)

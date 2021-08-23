@@ -5,8 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton
-from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
+from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton, \
+    FCGridLayout, FCCheckBox
+from PyQt6 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
@@ -35,8 +36,8 @@ class AppTextEditor(QtWidgets.QWidget):
         self.callback = lambda x: None
 
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.MinimumExpanding
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding
         )
 
         # UI Layout
@@ -105,7 +106,7 @@ class AppTextEditor(QtWidgets.QWidget):
         control_lay.addWidget(self.entryReplace)
 
         # Select All
-        self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
+        self.sel_all_cb = FCCheckBox(_('All'))
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
         control_lay.addWidget(self.sel_all_cb)
@@ -174,7 +175,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
     def handlePrint(self):
         dialog = QtPrintSupport.QPrintDialog()
-        if dialog.exec() == QtWidgets.QDialog.Accepted:
+        if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
@@ -202,9 +203,9 @@ class AppTextEditor(QtWidgets.QWidget):
         else:
             self.code_editor.setHtml(text)
         if move_to_start:
-            self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
         elif move_to_end:
-            self.code_editor.moveCursor(QtGui.QTextCursor.End)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         self.code_editor.textChanged.connect(self.handleTextChanged)
 
     def handleOpen(self, filt=None):
@@ -221,7 +222,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         if path:
             file = QtCore.QFile(path)
-            if file.open(QtCore.QIODevice.ReadOnly):
+            if file.open(QtCore.QIODevice.OpenModeFlag.ReadOnly):
                 stream = QtCore.QTextStream(file)
                 self.code_edited = stream.readAll()
                 self.code_editor.setPlainText(self.code_edited)
@@ -333,7 +334,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
-            self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
             self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
@@ -353,7 +354,7 @@ class AppTextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

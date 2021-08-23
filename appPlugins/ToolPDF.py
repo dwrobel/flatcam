@@ -4,7 +4,7 @@
 # Date: 4/23/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from appTool import AppTool
 
@@ -396,7 +396,7 @@ class ToolPDF(AppTool):
             pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.HighPriority)
+        self.check_thread.start(QtCore.QThread.Priority.HighPriority)
 
     def periodic_check_handler(self):
         """

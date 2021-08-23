@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,14 +13,15 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsCornersPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Calculators Plugin", parent=parent)
         super(ToolsCornersPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Corner Markers Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

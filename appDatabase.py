@@ -1,6 +1,6 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt6 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2
+    FCTree, RadioSet, FCFileSaveDialog, FCLabel, FCComboBox2, FCGridLayout
 from camlib import to_dict
 
 import sys
@@ -37,8 +37,8 @@ class ToolsDB2UI:
         self.tree_widget = FCTree(columns=3, header_hidden=False, protected_column=[0, 2, 3])
         self.tree_widget.setHeaderLabels([_("ID"), _("Name"), _("Target"), _("Diameter")])
         self.tree_widget.setIndentation(0)
-        self.tree_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.tree_widget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # set alternating colors
         # self.tree_widget.setAlternatingRowColors(True)
@@ -46,7 +46,7 @@ class ToolsDB2UI:
         # p.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(226, 237, 253) )
         # self.tree_widget.setPalette(p)
 
-        self.tree_widget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.tree_widget.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         tree_layout.addWidget(self.tree_widget)
 
         param_hlay = QtWidgets.QHBoxLayout()
@@ -75,7 +75,7 @@ class ToolsDB2UI:
         self.description_vlay = QtWidgets.QVBoxLayout()
         self.tool_description_box.setTitle(_("Tool Description"))
         self.tool_description_box.setMinimumWidth(250)
-        self.tool_description_box.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.tool_description_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
 
         # Milling box
         self.milling_box = QtWidgets.QGroupBox()
@@ -193,7 +193,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################ Tool UI form #############################################
         # ###########################################################################
-        self.grid_tool = QtWidgets.QGridLayout()
+        self.grid_tool = FCGridLayout(v_spacing=5, h_spacing=3)
         self.description_vlay.addLayout(self.grid_tool)
         self.grid_tool.setColumnStretch(0, 0)
         self.grid_tool.setColumnStretch(1, 1)
@@ -277,7 +277,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ############### MILLING UI form ###########################################
         # ###########################################################################
-        self.grid0 = QtWidgets.QGridLayout()
+        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.milling_vlay.addLayout(self.grid0)
         self.grid0.setColumnStretch(0, 0)
         self.grid0.setColumnStretch(1, 1)
@@ -329,8 +329,8 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.mill_vangle_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Tool Type
@@ -383,8 +383,8 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.mill_custom_offset_entry, 14, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Cut Z
@@ -477,8 +477,8 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.mill_ecut_length_entry, 28, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid0.addWidget(separator_line, 30, 0, 1, 2)
 
         # Feedrate X-Y
@@ -526,8 +526,8 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.mill_frapids_entry, 36, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Spindle Spped
@@ -576,7 +576,7 @@ class ToolsDB2UI:
         # ############### NCC UI form ###############################################
         # ###########################################################################
 
-        self.grid2 = QtWidgets.QGridLayout()
+        self.grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.ncc_vlay.addLayout(self.grid2)
         self.grid2.setColumnStretch(0, 0)
         self.grid2.setColumnStretch(1, 1)
@@ -722,7 +722,7 @@ class ToolsDB2UI:
         # ############### Paint UI form #############################################
         # ###########################################################################
 
-        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.paint_vlay.addLayout(self.grid3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
@@ -811,7 +811,7 @@ class ToolsDB2UI:
         # ############### Isolation UI form #########################################
         # ###########################################################################
 
-        self.grid4 = QtWidgets.QGridLayout()
+        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.iso_vlay.addLayout(self.grid4)
         self.grid4.setColumnStretch(0, 0)
         self.grid4.setColumnStretch(1, 1)
@@ -888,7 +888,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################ DRILLING UI form #########################################
         # ###########################################################################
-        self.grid5 = QtWidgets.QGridLayout()
+        self.grid5 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.drill_vlay.addLayout(self.grid5)
         self.grid5.setColumnStretch(0, 0)
         self.grid5.setColumnStretch(1, 1)
@@ -979,8 +979,8 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_travelz_entry, 10, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid5.addWidget(separator_line, 12, 0, 1, 2)
 
         # Excellon Feedrate Z
@@ -1019,8 +1019,8 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_feedrate_rapid_entry, 16, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid5.addWidget(separator_line, 18, 0, 1, 2)
 
         # Spindlespeed
@@ -1066,8 +1066,8 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_dwelltime_entry, 22, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid5.addWidget(separator_line, 24, 0, 1, 2)
 
         # Drill slots
@@ -1113,7 +1113,7 @@ class ToolsDB2UI:
         # ###########################################################################
         # ################### Cutout UI form ########################################
         # ###########################################################################
-        self.grid6 = QtWidgets.QGridLayout()
+        self.grid6 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.cutout_vlay.addLayout(self.grid6)
         self.grid6.setColumnStretch(0, 0)
         self.grid6.setColumnStretch(1, 1)
@@ -1399,7 +1399,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # TOOLS DATABASE UI
         # ##############################################################################
         # ##############################################################################
-        layout = QtWidgets.QGridLayout()
+        layout = FCGridLayout(v_spacing=5, h_spacing=3)
         layout.setColumnStretch(0, 0)
         layout.setColumnStretch(1, 1)
         self.setLayout(layout)
@@ -1794,9 +1794,9 @@ class ToolsDB2(QtWidgets.QWidget):
                 try:
                     item = self.ui.tree_widget.addParentEditable(
                         parent=parent, title=[str(row+1), t_name, op_name, str(dia)], editable=True)
-                    item.setData(1, QtCore.Qt.ToolTipRole, t_name)
-                    item.setData(2, QtCore.Qt.ToolTipRole, op_name)
-                    item.setData(3, QtCore.Qt.ToolTipRole, str(dia))
+                    item.setData(1, QtCore.Qt.ItemDataRole.ToolTipRole, t_name)
+                    item.setData(2, QtCore.Qt.ItemDataRole.ToolTipRole, op_name)
+                    item.setData(3, QtCore.Qt.ItemDataRole.ToolTipRole, str(dia))
                 except Exception as e:
                     self.app.log.error('FlatCAMCoomn.ToolDB2.build_db_ui() -> ', str(e))
 
@@ -1806,9 +1806,9 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app.log.error("ToolDB.build_db_ui.add_plugin_table_line() --> %s" % str(e))
 
         header = self.ui.tree_widget.header()
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         if self.current_toolid is None or self.current_toolid < 1:
             if self.db_tool_dict:
@@ -2068,7 +2068,7 @@ class ToolsDB2(QtWidgets.QWidget):
         """
         new_tool_id = len(self.db_tool_dict)
         for item in self.ui.tree_widget.selectedItems():
-            old_tool_id = item.data(0, QtCore.Qt.DisplayRole)
+            old_tool_id = item.data(0, QtCore.Qt.ItemDataRole.DisplayRole)
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
                 if int(old_tool_id) == int(toolid):
@@ -2100,7 +2100,7 @@ class ToolsDB2(QtWidgets.QWidget):
         :return:
         """
         for item in self.ui.tree_widget.selectedItems():
-            pluginName_to_remove = item.data(0, QtCore.Qt.DisplayRole)
+            pluginName_to_remove = item.data(0, QtCore.Qt.ItemDataRole.DisplayRole)
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
                 if int(pluginName_to_remove) == int(toolid):
@@ -2419,7 +2419,7 @@ class ToolsDB2(QtWidgets.QWidget):
             return
         # I'm setting the value for the second column (designated by 1) because first column holds the ID
         # and second column holds the Name (this behavior is set in the build_ui method)
-        item.setData(1, QtCore.Qt.DisplayRole, val)
+        item.setData(1, QtCore.Qt.ItemDataRole.DisplayRole, val)
 
     def update_tree_target(self):
         val = self.ui.tool_op_combo.get_value()
@@ -2438,12 +2438,12 @@ class ToolsDB2(QtWidgets.QWidget):
         if item is None:
             return
         # I'm setting the value for the third column (designated by 2) because first column holds the ID
-        item.setData(2, QtCore.Qt.DisplayRole, op_name)
+        item.setData(2, QtCore.Qt.ItemDataRole.DisplayRole, op_name)
 
         header = self.ui.tree_widget.header()
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
     def update_tree_tooldia(self):
         val = self.ui.dia_entry.get_value()
@@ -2452,7 +2452,7 @@ class ToolsDB2(QtWidgets.QWidget):
         if item is None:
             return
         # I'm setting the value for the forth column (designated by 3) because first column holds the ID
-        item.setData(3, QtCore.Qt.DisplayRole, val)
+        item.setData(3, QtCore.Qt.ItemDataRole.DisplayRole, val)
 
     def update_storage(self):
         """
@@ -2465,13 +2465,13 @@ class ToolsDB2(QtWidgets.QWidget):
         try:
             wdg = self.sender()
 
-            assert isinstance(wdg, QtWidgets.QWidget) or isinstance(wdg, QtWidgets.QAction), \
+            assert isinstance(wdg, QtWidgets.QWidget) or isinstance(wdg, QtGui.QAction), \
                 "Expected a QWidget got %s" % type(wdg)
 
             if wdg is None:
                 return
 
-            if isinstance(wdg, FCButton) or isinstance(wdg, QtWidgets.QAction):
+            if isinstance(wdg, FCButton) or isinstance(wdg, QtGui.QAction):
                 # this is called when adding a new tool; no need to run the update below since that section is for
                 # when editing a tool
                 self.on_tools_db_edited()
@@ -2494,7 +2494,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # for now change values only for one tool at once
         sel_rows = []
         for item in self.ui.tree_widget.selectedItems():
-            sel_rows.append(item.data(0, QtCore.Qt.DisplayRole))
+            sel_rows.append(item.data(0, QtCore.Qt.ItemDataRole.DisplayRole))
 
         len_sel_rows = len(sel_rows)
         if len_sel_rows > 1:
@@ -2663,7 +2663,7 @@ class ToolsDB2(QtWidgets.QWidget):
             return
 
         for item in self.ui.tree_widget.selectedItems():
-            tool_uid = item.data(0, QtCore.Qt.DisplayRole)
+            tool_uid = item.data(0, QtCore.Qt.ItemDataRole.DisplayRole)
 
             for key in self.db_tool_dict.keys():
                 if str(key) == str(tool_uid):
@@ -2757,7 +2757,7 @@ class ToolsDB2(QtWidgets.QWidget):
 #         layout.addLayout(table_hlay)
 #
 #         self.table_widget = FCTable(drag_drop=True)
-#         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+#         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 #         table_hlay.addWidget(self.table_widget)
 #
 #         # set the number of columns and the headers tool tips
@@ -3049,13 +3049,13 @@ class ToolsDB2(QtWidgets.QWidget):
 #             for x in range(27):
 #                 self.table_widget.resizeColumnToContents(x)
 #
-#             horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-#             # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.Fixed)
+#             horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
+#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+#             # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.ResizeMode.Fixed)
 #
 #             horizontal_header.resizeSection(0, 20)
-#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-#             # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+#             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+#             # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
 #
 #         self.ui_connect()
 #
@@ -3064,8 +3064,8 @@ class ToolsDB2(QtWidgets.QWidget):
 #
 #         nr_crt = row + 1
 #         id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-#         # id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-#         flags = id_item.flags() & ~QtCore.Qt.ItemIsEditable
+#         # id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+#         flags = id_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEditable
 #         id_item.setFlags(flags)
 #         widget.setItem(row, 0, id_item)  # Tool name/id
 #

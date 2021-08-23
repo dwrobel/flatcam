@@ -5,10 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, VerticalScrollArea
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, \
+    VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import Point, MultiPolygon, Polygon, box
 
@@ -277,11 +278,11 @@ class ToolExtract(AppTool):
 
             # Aperture CODE
             ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
-            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture TYPE
             ap_type_item = QtWidgets.QTableWidgetItem(str(ap_type))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture SIZE
             try:
@@ -292,15 +293,15 @@ class ToolExtract(AppTool):
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
                 ap_size_item = QtWidgets.QTableWidgetItem('')
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             # Aperture MARK Item
             mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            mark_item.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
             # Empty PLOT ITEM
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.apertures_table.setItem(row, 0, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(row, 1, ap_type_item)  # Aperture Type
@@ -321,14 +322,14 @@ class ToolExtract(AppTool):
         horizontal_header = self.ui.apertures_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(3, 17)
         self.ui.apertures_table.setColumnWidth(3, 17)
 
-        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
         # self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         # self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
@@ -915,7 +916,7 @@ class ExtractUI:
         self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
@@ -943,12 +944,12 @@ class ExtractUI:
 
         grid_lay.addWidget(self.padt_label, 4, 0, 1, 2)
 
-        pad_all_grid = QtWidgets.QGridLayout()
+        pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_all_grid.setColumnStretch(0, 0)
         pad_all_grid.setColumnStretch(1, 1)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = QtWidgets.QGridLayout()
+        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_grid.setColumnStretch(0, 0)
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
@@ -1020,17 +1021,17 @@ class ExtractUI:
         self.apertures_table.horizontalHeaderItem(3).setToolTip(
             _("Mark the aperture instances on canvas."))
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.apertures_table.setSizePolicy(sizePolicy)
-        self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Grid Layout
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
@@ -1065,8 +1066,8 @@ class ExtractUI:
         # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 5, 0, 1, 2)
 
         self.ring_frame = QtWidgets.QFrame()
@@ -1078,7 +1079,7 @@ class ExtractUI:
         self.ring_frame.setLayout(self.ring_box)
 
         # ## Grid Layout
-        grid2 = QtWidgets.QGridLayout()
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
         self.ring_box.addLayout(grid2)
@@ -1157,7 +1158,7 @@ class ExtractUI:
         grid2.addWidget(self.other_ring_label, 5, 0)
         grid2.addWidget(self.other_ring_entry, 5, 1)
 
-        grid3 = QtWidgets.QGridLayout()
+        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid3)
         grid3.setColumnStretch(0, 0)
         grid3.setColumnStretch(1, 1)
@@ -1199,8 +1200,8 @@ class ExtractUI:
         grid3.addWidget(self.factor_entry, 8, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 10, 0, 1, 2)
 
         # Extract drills from Gerber apertures flashes (pads)
@@ -1218,8 +1219,8 @@ class ExtractUI:
         grid3.addWidget(self.e_drills_button, 12, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 14, 0, 1, 2)
 
         # grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
@@ -1245,8 +1246,8 @@ class ExtractUI:
         grid3.addWidget(self.clearance_entry, 20, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 22, 0, 1, 2)
 
         # Extract solderemask from Gerber apertures flashes (pads)
@@ -1264,8 +1265,8 @@ class ExtractUI:
         grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 25, 0, 1, 2)
 
         # EXTRACT CUTOUT
@@ -1303,8 +1304,8 @@ class ExtractUI:
         grid3.addWidget(self.thick_cut_entry, 30, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(separator_line, 32, 0, 1, 2)
 
         # Extract cutout from Gerber apertures flashes (pads)

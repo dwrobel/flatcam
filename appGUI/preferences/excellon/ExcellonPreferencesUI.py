@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.preferences.excellon.ExcellonEditorPrefGroupUI import ExcellonEditorPrefGroupUI
 from appGUI.preferences.excellon.ExcellonExpPrefGroupUI import ExcellonExpPrefGroupUI
@@ -17,21 +17,22 @@ if '_' not in builtins.__dict__:
 
 class ExcellonPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, decimals, defaults, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals)
+        self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.excellon_gen_group.setMinimumWidth(240)
-        self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
+        self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.excellon_opt_group.setMinimumWidth(290)
-        self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)
+        self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.excellon_exp_group.setMinimumWidth(250)
-        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
+        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.excellon_adv_opt_group.setMinimumWidth(250)
-        self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
+        self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.excellon_editor_group.setMinimumWidth(260)
 
         self.vlay = QtWidgets.QVBoxLayout()

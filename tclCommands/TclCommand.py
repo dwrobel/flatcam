@@ -3,7 +3,7 @@ import re
 import app_Main
 import abc
 import collections
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from contextlib import contextmanager
 
 
@@ -391,7 +391,7 @@ class TclCommandSignaled(TclCommand):
                 QtCore.QTimer.singleShot(time_val, report_quit)
 
             # Block
-            loop.exec_()
+            loop.exec()
 
             # Restore exception management
             sys.excepthook = oeh

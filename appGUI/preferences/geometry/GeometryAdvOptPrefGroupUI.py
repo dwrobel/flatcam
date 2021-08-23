@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel, NumericalEvalTupleEntry, \
-    NumericalEvalEntry, FCComboBox2
+    NumericalEvalEntry, FCComboBox2, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry Advanced Options Preferences", parent=parent)
         super(GeometryAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry Adv. Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ------------------------------
         # ## Advanced Options
@@ -32,7 +33,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.geo_label)
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
 
         # Size of trace segment on X axis

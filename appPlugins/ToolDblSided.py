@@ -1,9 +1,9 @@
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 
 from numpy import Inf
 from copy import deepcopy
@@ -677,12 +677,12 @@ class DsidedUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_lay.setColumnStretch(0, 1)
         grid_lay.setColumnStretch(1, 0)
         self.tools_box.addLayout(grid_lay)
@@ -717,14 +717,14 @@ class DsidedUI:
         grid_lay.addWidget(self.object_combo, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
         # #############################################################################################################
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -823,14 +823,14 @@ class DsidedUI:
         grid0.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
 
         self.bounds_separator_line = QtWidgets.QFrame()
-        self.bounds_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.bounds_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.bounds_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.bounds_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.bounds_separator_line, 14, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    MIRROR OPERATION    ###########################################################################
         # #############################################################################################################
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
@@ -928,7 +928,7 @@ class DsidedUI:
         grid1.addWidget(self.pick_hole_button, 12, 0, 1, 3)
 
         # ## Grid Layout
-        grid_lay3 = QtWidgets.QGridLayout()
+        grid_lay3 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_lay3.setColumnStretch(0, 0)
         grid_lay3.setColumnStretch(1, 1)
         grid1.addLayout(grid_lay3, 14, 0, 1, 3)
@@ -977,14 +977,14 @@ class DsidedUI:
         grid1.addWidget(self.mirror_button, 16, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 18, 0, 1, 3)
 
         # #############################################################################################################
         # ##########    ALIGNMENT OPERATION    ########################################################################
         # #############################################################################################################
-        grid4 = QtWidgets.QGridLayout()
+        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid4.setColumnStretch(0, 0)
         grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid4)
@@ -1050,7 +1050,7 @@ class DsidedUI:
         grid4.addWidget(self.align_ref_label, 6, 0)
         grid4.addWidget(self.align_ref_label_val, 6, 1)
 
-        grid5 = QtWidgets.QGridLayout()
+        grid5 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(grid5)
 
         # ## Alignment holes

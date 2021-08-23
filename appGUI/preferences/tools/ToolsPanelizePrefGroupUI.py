@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsPanelizePrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsPanelizePrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Panelize Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Board cuttout
         self.panelize_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -29,7 +30,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.panelize_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

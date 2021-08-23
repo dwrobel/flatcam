@@ -3,8 +3,8 @@ import os
 import traceback
 from datetime import datetime
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings, Qt
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import QSettings, Qt, QTimer
 from app_Main import App
 from appGUI import VisPyPatches
 
@@ -25,7 +25,7 @@ def debug_trace():
     Set a tracepoint in the Python debugger that works with Qt
     :return: None
     """
-    from PyQt5.QtCore import pyqtRemoveInputHook
+    from PyQt6.QtCore import pyqtRemoveInputHook
     # from pdb import set_trace
     pyqtRemoveInputHook()
     # set_trace()
@@ -95,10 +95,11 @@ if __name__ == '__main__':
             with open(log_file_path, 'w') as f:
                 f.write(msg)
 
-        if minor_v >= 8:
-            os._exit(0)
-        else:
-            sys.exit(0)
+        # if minor_v >= 8:
+        #     os._exit(0)
+        # else:
+        #     sys.exit(0)
+        sys.exit(0)
 
     debug_trace()
     VisPyPatches.apply_patches()
@@ -123,41 +124,51 @@ if __name__ == '__main__':
     # else:
     #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
-    if hdpi_support == 2:
-        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    else:
-        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+    # if hdpi_support == 2:
+    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    # else:
+    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
 
     def excepthook(exc_type, exc_value, exc_tb):
         msg = '%s\n' % str(datetime.today())
-        msg += "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        if exc_type != KeyboardInterrupt:
+            msg += "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
 
-        try:
-            with open(log_file_path) as f:
-                log_file = f.read()
-            log_file += '\n' + msg
+            try:
+                with open(log_file_path) as f:
+                    log_file = f.read()
+                log_file += '\n' + msg
 
-            with open(log_file_path, 'w') as f:
-                f.write(log_file)
-        except IOError:
-            with open(log_file_path, 'w') as f:
-                f.write(msg)
+                with open(log_file_path, 'w') as f:
+                    f.write(log_file)
+            except IOError:
+                with open(log_file_path, 'w') as f:
+                    f.write(msg)
         QtWidgets.QApplication.quit()
         # or QtWidgets.QApplication.exit(0)
 
     sys.excepthook = excepthook
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    # app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # apply style
     settings = QSettings("Open Source", "FlatCAM")
     if settings.contains("style"):
-        style = settings.value('style', type=str)
+        style_index = settings.value('style', type=str)
+        style = QtWidgets.QStyleFactory.keys()[int(style_index)]
         app.setStyle(style)
 
     fc = App(qapp=app)
 
-    sys.exit(app.exec_())
-    # app.exec_()
+    # interrupt the Qt loop such that Python events have a chance to be responsive
+    timer = QTimer()
+    timer.timeout.connect(lambda: None)
+    timer.start(100)
+
+    try:
+        sys.exit(app.exec())
+    except SystemError:
+        pass
+    # app.exec()

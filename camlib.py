@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 from io import StringIO
 
 from numpy.linalg import solve, norm
@@ -2690,7 +2690,6 @@ class CNCjob(Geometry):
     """
 
     defaults = {
-        "global_zdownrate": None,
         "pp_geometry_name": 'default',
         "pp_excellon_name": 'default',
         "excellon_optimization_type": "B",

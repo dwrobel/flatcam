@@ -10,17 +10,16 @@ import sys
 import logging
 from pathlib import Path
 
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtWidgets, QtGui
+from PyQt6.QtCore import QSettings
 
 import gettext
+import builtins
 
 log = logging.getLogger('base')
 
-# import builtins
-#
-# if '_' not in builtins.__dict__:
-#     _ = gettext.gettext
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {
@@ -79,7 +78,7 @@ def on_language_apply_click(app, restart=False):
 
     :return:
     """
-    name = app.ui.general_pref_form.general_app_group.language_cb.currentText()
+    name = app.ui.general_pref_form.general_app_group.language_combo.currentText()
 
     theme_settings = QSettings("Open Source", "FlatCAM")
     if theme_settings.contains("theme"):
@@ -106,10 +105,10 @@ def on_language_apply_click(app, restart=False):
                                   (_("Are you sure do you want to change the current language to"), name.capitalize()))
         msgbox.setWindowTitle('%s ...' % _("Apply Language"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/language32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-        bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
+        bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.ButtonRole.YesRole)
+        bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec()
@@ -143,6 +142,7 @@ def apply_language(domain, lang=None):
             # This will write the setting to the platform specific storage.
             del settings
     else:
+        # TODO if lang is None we make a string from it?
         name = str(lang)
 
     for lang_code, lang_usable in load_languages().items():
@@ -208,10 +208,10 @@ def restart_program(app, ask=None):
                          "Do you want to Save the project?"))
         msgbox.setWindowTitle(_("Save changes"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/save_as.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        msgbox.setIcon(QtWidgets.QMessageBox.Icon.Question)
 
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(_('No'), QtWidgets.QMessageBox.ButtonRole.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec()

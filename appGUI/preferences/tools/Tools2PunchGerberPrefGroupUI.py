@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,15 +13,16 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2PunchGerberPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Punch Gerber Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
@@ -82,8 +83,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 8, 0, 1, 2)
 
         # ## Axis
@@ -110,8 +111,8 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
         # grid_lay1.addWidget(FCLabel(''))
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid_lay.addWidget(separator_line, 10, 0, 1, 2)
 
         # Annular Ring

@@ -7,13 +7,14 @@
 
 from typing import Dict
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 import gettext
 import appTranslation as fcTranslate
 import builtins
 
 from appGUI.preferences.OptionUI import OptionUI
+from appGUI.GUIElements import FCGridLayout
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -47,7 +48,7 @@ class OptionsGroupUI2(OptionsGroupUI):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.grid = QtWidgets.QGridLayout()
+        self.grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(self.grid)
         self.grid.setColumnStretch(0, 0)
         self.grid.setColumnStretch(1, 1)

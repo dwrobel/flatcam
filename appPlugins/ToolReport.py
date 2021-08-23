@@ -5,9 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt6 import QtGui, QtCore, QtWidgets
 from appTool import AppTool
-from appGUI.GUIElements import FCTree, VerticalScrollArea
+from appGUI.GUIElements import FCTree, VerticalScrollArea, FCLabel
 
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
@@ -35,7 +35,7 @@ class ObjectReport(AppTool):
     def __init__(self, app):
         AppTool.__init__(self, app)
 
-        # self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Ignored)
 
         self.decimals = self.app.decimals
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -49,7 +49,7 @@ class ObjectReport(AppTool):
         self.info_frame.setLayout(self.info_box)
 
         # ## Title
-        # title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        # title_label = FCLabel("%s" % self.pluginName)
         # title_label.setStyleSheet("""
         #                 QLabel
         #                 {
@@ -60,7 +60,7 @@ class ObjectReport(AppTool):
         # self.info_box.addWidget(title_label)
 
         self.treeWidget = FCTree(columns=2)
-        self.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         self.treeWidget.setStyleSheet("QTreeWidget {border: 0px;}")
 
         self.info_box.addWidget(self.treeWidget)

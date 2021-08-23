@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsTransformPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(ToolsTransformPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Transform Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Transformations
         self.transform_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.transform_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)

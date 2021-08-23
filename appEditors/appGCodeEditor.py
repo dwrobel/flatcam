@@ -7,8 +7,8 @@
 
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMCNCJob import CNCJobObject
-from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable
-from PyQt5 import QtWidgets, QtCore, QtGui
+from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable, FCGridLayout, FCLabel
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 # from io import StringIO
 
@@ -158,19 +158,19 @@ class AppGCodeEditor(QtCore.QObject):
 
         # add the All Gcode selection
         allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All"))
-        allgcode_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        allgcode_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, allgcode_item)
         row_no += 1
 
         # add the Header Gcode selection
         header_item = QtWidgets.QTableWidgetItem('%s' % _("Header"))
-        header_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        header_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, header_item)
         row_no += 1
 
         # add the Start Gcode selection
         start_item = QtWidgets.QTableWidgetItem('%s' % _("Start"))
-        start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        start_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, start_item)
 
         for dia_key, dia_value in self.gcode_obj.tools.items():
@@ -179,7 +179,7 @@ class AppGCodeEditor(QtCore.QObject):
             row_no += 1
 
             t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            # id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
@@ -204,11 +204,11 @@ class AppGCodeEditor(QtCore.QObject):
                 tool_shape_item_txt = dia_value['data']['tools_mill_tool_shape']
             tool_shape_item = QtWidgets.QTableWidgetItem(tool_shape_item_txt)
 
-            t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            offset_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            job_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            tool_shape_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            offset_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            job_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            tool_shape_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
             self.ui.cnc_tools_table.setItem(row_no, 2, offset_item)  # Offset
@@ -223,22 +223,22 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.cnc_tools_table.resizeRowsToContents()
 
         vertical_header = self.ui.cnc_tools_table.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.cnc_tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(4, 40)
 
         # horizontal_header.setStretchLastSection(True)
-        self.ui.cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.cnc_tools_table.setColumnWidth(0, 20)
         self.ui.cnc_tools_table.setColumnWidth(4, 40)
@@ -264,19 +264,19 @@ class AppGCodeEditor(QtCore.QObject):
 
         # add the All Gcode selection
         allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
-        allgcode_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        allgcode_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, allgcode_item)
         row_no += 1
 
         # add the Header Gcode selection
         header_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
-        header_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        header_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, header_item)
         row_no += 1
 
         # add the Start Gcode selection
         start_item = QtWidgets.QTableWidgetItem('%s' % _("Start GCode"))
-        start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        start_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
 
         for toolid_key, t_value in self.gcode_obj.tools.items():
@@ -291,11 +291,11 @@ class AppGCodeEditor(QtCore.QObject):
             cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
                 self.decimals, float(t_value['offset']) + float(t_value['data']['tools_drill_cutz'])))
 
-            t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            nr_drills_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            nr_slots_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            cutz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
             self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
@@ -312,20 +312,20 @@ class AppGCodeEditor(QtCore.QObject):
 
         vertical_header = self.ui.exc_cnc_tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.exc_cnc_tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         # horizontal_header.setStretchLastSection(True)
-        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
         self.ui.exc_cnc_tools_table.setColumnWidth(6, 17)
@@ -381,8 +381,8 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        flags = QtGui.QTextDocument.FindCaseSensitively
-        self.edit_area.moveCursor(QtGui.QTextCursor.Start)
+        flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
+        self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.Start)
 
         if self.gcode_obj.options['type'].lower() == 'geometry':
             t_table = self.ui.cnc_tools_table
@@ -420,7 +420,7 @@ class AppGCodeEditor(QtCore.QObject):
                 end_sel = my_text_cursor.selectionEnd()
 
             my_text_cursor.setPosition(start_sel)
-            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.edit_area.setTextCursor(my_text_cursor)
 
         if 2 in sel_rows:
@@ -440,7 +440,7 @@ class AppGCodeEditor(QtCore.QObject):
                 end_sel = my_text_cursor.selectionEnd()
 
             my_text_cursor.setPosition(start_sel)
-            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.edit_area.setTextCursor(my_text_cursor)
 
         sel_list = []
@@ -490,7 +490,7 @@ class AppGCodeEditor(QtCore.QObject):
                     m6 = self.edit_area.find('M6', flags)
                     if m6 is False:
                         # this mean that we are in the last tool, we take all to the end
-                        self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                        self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.End)
                         my_text_cursor = self.edit_area.textCursor()
                         end_sel = my_text_cursor.selectionEnd()
                     else:
@@ -522,12 +522,12 @@ class AppGCodeEditor(QtCore.QObject):
                             end_sel = max(belong_to_tool_list)
                         else:
                             # this mean that we are in the last tool, we take all to the end
-                            self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                            self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.End)
                             my_text_cursor = self.edit_area.textCursor()
                             end_sel = my_text_cursor.selectionEnd()
 
                     my_text_cursor.setPosition(start_sel)
-                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.MoveMode.KeepAnchor)
                     self.edit_area.setTextCursor(my_text_cursor)
 
                     tool_selection = QtWidgets.QTextEdit.ExtraSelection()
@@ -544,12 +544,12 @@ class AppGCodeEditor(QtCore.QObject):
                     my_text_cursor = self.edit_area.textCursor()
                     start_sel = my_text_cursor.selectionStart()
 
-                    self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                    self.edit_area.moveCursor(QtGui.QTextCursor.MoveOperation.End)
                     my_text_cursor = self.edit_area.textCursor()
                     end_sel = my_text_cursor.selectionEnd()
 
                     my_text_cursor.setPosition(start_sel)
-                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+                    my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.MoveMode.KeepAnchor)
                     self.edit_area.setTextCursor(my_text_cursor)
 
         self.edit_area.setExtraSelections(sel_list)
@@ -731,8 +731,8 @@ class AppGCodeEditorUI:
         self.units = self.app.defaults['units'].upper()
 
         # self.setSizePolicy(
-        #     QtWidgets.QSizePolicy.MinimumExpanding,
-        #     QtWidgets.QSizePolicy.MinimumExpanding
+        #     QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        #     QtWidgets.QSizePolicy.Policy.MinimumExpanding
         # )
 
         self.gcode_editor_tab = None
@@ -758,13 +758,13 @@ class AppGCodeEditorUI:
 
         # ## Page Title icon
         pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
-        self.icon = QtWidgets.QLabel()
+        self.icon = FCLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
         # ## Title label
-        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('GCode Editor'))
-        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('GCode Editor'))
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
         # App Level label
@@ -783,20 +783,20 @@ class AppGCodeEditorUI:
         # ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
         self.edit_box.addLayout(self.name_box)
-        name_label = QtWidgets.QLabel(_("Name:"))
+        name_label = FCLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.edit_box.addWidget(separator_line)
 
         # CNC Tools Table when made out of Geometry
         self.cnc_tools_table = FCTable()
         self.cnc_tools_table.setSortingEnabled(False)
-        self.cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.edit_box.addWidget(self.cnc_tools_table)
 
         self.cnc_tools_table.setColumnCount(6)
@@ -807,7 +807,7 @@ class AppGCodeEditorUI:
         # CNC Tools Table when made out of Excellon
         self.exc_cnc_tools_table = FCTable()
         self.exc_cnc_tools_table.setSortingEnabled(False)
-        self.exc_cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.exc_cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.edit_box.addWidget(self.exc_cnc_tools_table)
 
         self.exc_cnc_tools_table.setColumnCount(6)
@@ -816,8 +816,8 @@ class AppGCodeEditorUI:
         self.exc_cnc_tools_table.setColumnHidden(4, True)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.edit_box.addWidget(separator_line)
 
         # #############################################################################################################
@@ -827,14 +827,14 @@ class AppGCodeEditorUI:
         self.snippet_frame.setContentsMargins(0, 0, 0, 0)
         self.edit_box.addWidget(self.snippet_frame)
 
-        self.snippet_grid = QtWidgets.QGridLayout()
+        self.snippet_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         # self.snippet_grid.setColumnStretch(0, 0)
         # self.snippet_grid.setColumnStretch(1, 1)
         self.snippet_grid.setContentsMargins(0, 0, 0, 0)
         self.snippet_frame.setLayout(self.snippet_grid)
 
         # Prepend text to GCode
-        prependlabel = QtWidgets.QLabel('%s 1:' % _('CNC Code Snippet'))
+        prependlabel = FCLabel('%s 1:' % _('CNC Code Snippet'))
         prependlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )
@@ -856,7 +856,7 @@ class AppGCodeEditorUI:
         self.snippet_grid.addWidget(self.update_gcode_button, 2, 0)
 
         # Append text to GCode
-        appendlabel = QtWidgets.QLabel('%s 2:' % _('CNC Code Snippet'))
+        appendlabel = FCLabel('%s 2:' % _('CNC Code Snippet'))
         appendlabel.setToolTip(
             _("Code snippet defined in Preferences.")
         )

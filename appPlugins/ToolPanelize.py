@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox, \
-    FCButton, FCLabel, VerticalScrollArea
+    FCButton, FCLabel, VerticalScrollArea, FCGridLayout
 from camlib import grace
 
 from copy import deepcopy
@@ -129,7 +129,6 @@ class Panelize(AppTool):
         self.clear_ui(self.layout)
         self.ui = PanelizeUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
-        self.connect_signals_at_init()
 
         self.reset_fields()
 
@@ -194,6 +193,8 @@ class Panelize(AppTool):
         self.on_type_obj_index_changed()
         self.on_type_box_index_changed()
 
+        self.connect_signals_at_init()
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
@@ -209,7 +210,8 @@ class Panelize(AppTool):
         if obj_type != 1:   # not Excellon
             self.ui.panel_type_label.setDisabled(False)
             self.ui.panel_type_radio.setDisabled(False)
-            self.ui.on_panel_type(val=self.ui.panel_type_radio.get_value())
+            panel_type = self.ui.panel_type_radio.get_value()
+            self.ui.on_panel_type(val=panel_type)
         else:
             self.ui.panel_type_label.setDisabled(True)
             self.ui.panel_type_radio.setDisabled(True)
@@ -1127,7 +1129,7 @@ class PanelizeUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
@@ -1218,8 +1220,8 @@ class PanelizeUI:
         grid0.addWidget(self.box_combo, 12, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         panel_data_label = FCLabel("<b>%s:</b>" % _("Panel Data"))
@@ -1282,8 +1284,8 @@ class PanelizeUI:
         grid0.addWidget(self.rows, 24, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 26, 0, 1, 2)
 
         # Type of resulting Panel object
@@ -1347,8 +1349,8 @@ class PanelizeUI:
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
 
         self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(self.separator_line, 38, 0, 1, 2)
 
         # Buttons

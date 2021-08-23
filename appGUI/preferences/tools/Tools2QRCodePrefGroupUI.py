@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry
+from appGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCLabel, FCColorEntry, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2QRCodePrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2QRCodePrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("QRCode Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Parameters
         self.qrlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -29,7 +30,7 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.qrlabel)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)

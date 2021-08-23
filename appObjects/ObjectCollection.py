@@ -11,10 +11,10 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
-from PyQt5.QtGui import QColor
-# from PyQt5.QtCore import QModelIndex
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtGui import QColor
+# from PyQt6.QtCore import QModelIndex
 
 from appObjects.FlatCAMObj import FlatCAMObj
 from appObjects.FlatCAMCNCJob import CNCJobObject
@@ -53,7 +53,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
 
         # self.setRootIsDecorated(False)
         # self.setExpandsOnDoubleClick(False)
-        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)    # No edit in the Project Tab Tree
+        self.setEditTriggers(QtWidgets.QTreeView.EditTrigger.NoEditTriggers)    # No edit in the Project Tab Tree
 
         # Enable dragging and dropping onto the appGUI
         self.setAcceptDrops(True)
@@ -61,7 +61,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
         self.app = app
 
         # Enabling Drag and Drop for the items in the Project Tab
-        # Example: https://github.com/d1vanov/PyQt5-reorderable-list-model/blob/master/reorderable_list_model.py
+        # Example: https://github.com/d1vanov/PyQt6-reorderable-list-model/blob/master/reorderable_list_model.py
         # https://github.com/jimmykuu/PyQt-PySide-Cookbook/blob/master/tree/drop_indicator.md
         # self.setDragEnabled(True)
         # self.viewport().setAcceptDrops(True)
@@ -122,7 +122,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
                 self.filename = str(url.toLocalFile())
 
                 # file drop from outside application
-                if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+                if drop_indicator == QtWidgets.QAbstractItemView.DropIndicatorPosition.OnItem:
                     if self.filename == "":
                         self.app.inform.emit(_("Cancelled."))
                     else:
@@ -221,7 +221,10 @@ class TreeItem(KeySensitiveListView):
         self.parent_item = parent_item
 
     def __del__(self):
-        del self.icon
+        try:
+            del self.icon
+        except AttributeError:
+            pass
 
 
 class ObjectCollection(QtCore.QAbstractItemModel):
@@ -307,13 +310,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.view = KeySensitiveListView(self.app)
         self.view.setModel(self)
 
-        self.view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.view.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.view.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         if self.app.defaults["global_allow_edit_in_project_tab"] is True:
-            self.view.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)  # allow Edit on Tree
+            self.view.setEditTriggers(QtWidgets.QTreeView.EditTrigger.SelectedClicked)  # allow Edit on Tree
         else:
-            self.view.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
+            self.view.setEditTriggers(QtWidgets.QTreeView.EditTrigger.NoEditTriggers)
 
         # self.view.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         # self.view.setDragEnabled(True)
@@ -465,14 +468,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role in [Qt.DisplayRole, Qt.EditRole]:
+        if role in [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]:
             obj = index.internalPointer().obj
             if obj:
                 return obj.options["name"]
             else:
                 return index.internalPointer().data(index.column())
 
-        if role == Qt.ForegroundRole:
+        if role == Qt.ItemDataRole.ForegroundRole:
             color = QColor(self.app.defaults['global_proj_item_color'])
             color_disabled = QColor(self.app.defaults['global_proj_item_dis_color'])
             obj = index.internalPointer().obj
@@ -481,13 +484,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             else:
                 return index.internalPointer().data(index.column())
 
-        elif role == Qt.DecorationRole:
+        elif role == Qt.ItemDataRole.DecorationRole:
             icon = index.internalPointer().icon
             if icon:
                 return icon
             else:
                 return QtGui.QPixmap()
-        elif role == Qt.ToolTipRole:
+        elif role == Qt.ItemDataRole.ToolTipRole:
             try:
                 obj = index.internalPointer().obj
             except AttributeError:
@@ -534,23 +537,23 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             return False
 
     def supportedDropActions(self):
-        return Qt.MoveAction
+        return Qt.DropAction.MoveAction
 
     def flags(self, index):
         default_flags = QtCore.QAbstractItemModel.flags(self, index)
 
         if not index.isValid():
-            return Qt.ItemIsEnabled | default_flags
+            return Qt.ItemFlag.ItemIsEnabled | default_flags
 
         # Prevent groups from selection
         try:
             if not index.internalPointer().obj:
-                return Qt.ItemIsEnabled
+                return Qt.ItemFlag.ItemIsEnabled
             else:
-                return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable | \
-                       Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
+                return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | \
+                       Qt.ItemFlag.ItemIsDragEnabled | Qt.ItemFlag.ItemIsDropEnabled
         except AttributeError:
-            return Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsEnabled
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
     def append(self, obj, active=False, to_index=None):
@@ -875,7 +878,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             group_index = self.index(group.row(), 0, QtCore.QModelIndex())
             item_index = self.index(item.row(), 0, group_index)
 
-            self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.Select)
+            self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.SelectionFlag.Select)
         except Exception as e:
             self.app.log.error("[ERROR] Cause: %s" % str(e))
             raise
@@ -917,7 +920,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         group_index = self.index(group.row(), 0, QtCore.QModelIndex())
         item_index = self.index(item.row(), 0, group_index)
 
-        self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.Deselect)
+        self.view.selectionModel().select(item_index, QtCore.QItemSelectionModel.SelectionFlag.Deselect)
 
     def set_all_inactive(self):
         """
@@ -1113,7 +1116,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             def add_act(o_name):
                 obj_for_icon = self.get_by_name(o_name)
-                menu_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
+                menu_action = QtGui.QAction(parent=self.app.ui.menuobjects)
                 menu_action.setCheckable(True)
                 menu_action.setText(o_name)
                 menu_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
@@ -1169,7 +1172,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         elif state == 'rename':
             for act in self.app.ui.menuobjects.actions():
                 if act.text() == old_name:
-                    add_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
+                    add_action = QtGui.QAction(parent=self.app.ui.menuobjects)
                     add_action.setText(obj.options['name'])
                     add_action.setIcon(QtGui.QIcon(icon_files[obj.kind]))
                     add_action.triggered.connect(

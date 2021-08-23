@@ -5,8 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6.QtCore import Qt
 
 from appTool import AppTool
 from copy import deepcopy
@@ -14,7 +14,7 @@ from copy import deepcopy
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage, grace
 from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
-    FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea
+    FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import unary_union, linemerge
@@ -397,7 +397,7 @@ class ToolPaint(AppTool, Gerber):
 
             # if the Paint Method is "Single" disable the tool table context menu
             if self.default_data["tools_paint_selectmethod"] == "single":
-                self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
+                self.ui.tools_table.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             return
 
         for dia in diameters:
@@ -407,7 +407,7 @@ class ToolPaint(AppTool, Gerber):
 
         # if the Paint Method is "Polygon Selection" disable the tool table context menu
         if self.default_data["tools_paint_selectmethod"] == 1:
-            self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
+            self.ui.tools_table.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
         # make sure that we can't get selection of Laser Lines for Geometry even if it's set in the Preferences
         # because we don't select the default object type in Preferences but here
@@ -764,12 +764,12 @@ class ToolPaint(AppTool, Gerber):
                     tool_id += 1
 
                     id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_item)  # Tool name/id
 
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
-                    dia.setFlags(QtCore.Qt.ItemIsEnabled)
+                    dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                     self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
 
                     tool_type_item = FCComboBox()
@@ -787,7 +787,7 @@ class ToolPaint(AppTool, Gerber):
         # make the diameter column editable
         for row in range(tool_id):
             self.ui.tools_table.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
@@ -797,13 +797,13 @@ class ToolPaint(AppTool, Gerber):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         # self.ui.tools_table.setSortingEnabled(True)
         # sort by tool diameter
@@ -1013,10 +1013,6 @@ class ToolPaint(AppTool, Gerber):
         self.paint_tools.update({
             int(self.tooluid): {
                 'tooldia':          truncated_tooldia,
-                'offset':           'Path',
-                'offset_value':     0.0,
-                'type':             'Iso' if self.app.defaults["tools_paint_tool_type"] == 'V' else 'Rough',
-                'tool_type':        deepcopy(self.app.defaults["tools_paint_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
             }
@@ -1548,16 +1544,16 @@ class ToolPaint(AppTool, Gerber):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -1565,7 +1561,7 @@ class ToolPaint(AppTool, Gerber):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
             if self.area_sel_disconnect_flag is True:
                 try:
                     if self.app.is_legacy is False:
@@ -2943,12 +2939,12 @@ class PaintUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -2986,8 +2982,8 @@ class PaintUI:
         grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         # ### Tools ## ##
@@ -3050,15 +3046,15 @@ class PaintUI:
         grid0.addWidget(self.order_radio, 9, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
         # ##############################################################################
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
         
-        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid3)
@@ -3084,7 +3080,7 @@ class PaintUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = QtWidgets.QGridLayout()
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         self.grid3.addLayout(button_grid, 7, 0, 1, 2)
@@ -3118,14 +3114,14 @@ class PaintUI:
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
         self.add_tool_separator_line = QtWidgets.QFrame()
-        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
@@ -3138,7 +3134,7 @@ class PaintUI:
         )
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
-        grid4 = QtWidgets.QGridLayout()
+        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid4.setColumnStretch(0, 0)
         grid4.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid4)
@@ -3223,8 +3219,8 @@ class PaintUI:
         grid4.addWidget(self.paintcontour_cb, 10, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid4.addWidget(separator_line, 11, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
@@ -3236,8 +3232,8 @@ class PaintUI:
         grid4.addWidget(self.apply_param_to_all, 12, 0, 1, 2)
 
         self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid4.addWidget(self.all_param_separator_line2, 13, 0, 1, 2)
 
         # General Parameters
@@ -3414,7 +3410,7 @@ class PaintUI:
             self.new_tooldia_entry.setDisabled(False)
             self.search_and_add_btn.setDisabled(False)
             self.deltool_btn.setDisabled(False)
-            self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.tools_table.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
             self.area_shape_label.hide()
             self.area_shape_radio.hide()

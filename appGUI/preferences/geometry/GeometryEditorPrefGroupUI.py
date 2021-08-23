@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel
+from appGUI.GUIElements import FCSpinner, RadioSet, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryEditorPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GeometryEditorPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry Editor")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Editor Parameters
         self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -27,7 +28,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.param_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Selection Limit

@@ -5,8 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6 import QtGui, QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
 from shapely.ops import unary_union
@@ -20,7 +20,7 @@ import logging
 from camlib import distance, arc, three_point_circle
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
     FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCTextEdit, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 from appTool import AppTool
 
 import numpy as np
@@ -139,7 +139,7 @@ class DrawTool(object):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
     def utility_geometry(self, data=None):
@@ -819,9 +819,9 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
     def on_key(self, key):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
@@ -830,7 +830,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
             pass
         elif mod_key is None:
             # Toggle Drill Array Direction
-            if key == QtCore.Qt.Key_Space:
+            if key == QtCore.Qt.Key.Key_Space:
                 if self.draw_app.ui.pad_axis_radio.get_value() == 'X':
                     self.draw_app.ui.pad_axis_radio.set_value('Y')
                 elif self.draw_app.ui.pad_axis_radio.get_value() == 'Y':
@@ -944,9 +944,9 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
         # else return to the current tool
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
         if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
-            modifier_to_use = Qt.ControlModifier
+            modifier_to_use = Qt.KeyboardModifier.ControlModifier
         else:
-            modifier_to_use = Qt.ShiftModifier
+            modifier_to_use = Qt.KeyboardModifier.ShiftModifier
         # if modifier key is pressed then we add to the selected list the current shape but if it's already
         # in the selected list, we removed it. Therefore first click selects, second deselects.
         if key_modifier == modifier_to_use:
@@ -1254,10 +1254,10 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
     def on_key(self, key):
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
+        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
             if len(self.points) > 0:
                 if self.draw_app.bend_mode == 5:
                     self.points = self.points[0:-1]
@@ -1269,7 +1269,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 self.draw_app.draw_utility_geometry(geo_shape=geo)
                 return _("Backtracked one point ...")
 
-        if key == 'T' or key == QtCore.Qt.Key_T:
+        if key == 'T' or key == QtCore.Qt.Key.Key_T:
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
                 msg = _('Corner Mode 2: Reverse 45 degrees ...')
@@ -1293,7 +1293,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
             return msg
 
-        if key == 'R' or key == QtCore.Qt.Key_R:
+        if key == 'R' or key == QtCore.Qt.Key.Key_R:
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
                 msg = _('Corner Mode 5: Free angle ...')
@@ -1514,7 +1514,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_key(self, key):
-        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
+        if key == 'Backspace' or key == QtCore.Qt.Key.Key_Backspace:
             if len(self.points) > 0:
                 self.temp_points = self.points[0:-1]
                 # Remove any previous utility shape
@@ -1524,14 +1524,14 @@ class TrackEditorGrb(ShapeToolEditorGrb):
                 return _("Backtracked one point ...")
 
         # Jump to coords
-        if key == QtCore.Qt.Key_G or key == 'G':
+        if key == QtCore.Qt.Key.Key_G or key == 'G':
             self.draw_app.app.ui.grid_snap_btn.trigger()
 
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'T' or key == QtCore.Qt.Key_T:
+        if key == 'T' or key == QtCore.Qt.Key.Key_T:
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
@@ -1570,7 +1570,7 @@ class TrackEditorGrb(ShapeToolEditorGrb):
 
             return msg
 
-        if key == 'R' or key == QtCore.Qt.Key_R:
+        if key == 'R' or key == QtCore.Qt.Key.Key_R:
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
@@ -1640,8 +1640,8 @@ class DiscEditorGrb(ShapeToolEditorGrb):
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             size_ap = 0.0
-            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # self.draw_app.app.inform.emit(
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -1764,8 +1764,8 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
             size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         except KeyError:
             size_ap = 0.0
-            # self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-            #                               _("You need to preselect a aperture in the Aperture Table that has a size."))
+            # self.draw_app.app.inform.emit(
+            #     '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size."))
             # try:
             #     QtGui.QGuiApplication.restoreOverrideCursor()
             # except Exception:
@@ -1819,15 +1819,15 @@ class DiscSemiEditorGrb(ShapeToolEditorGrb):
         return ""
 
     def on_key(self, key):
-        if key == 'D' or key == QtCore.Qt.Key_D:
+        if key == 'D' or key == QtCore.Qt.Key.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
             return '%s: %s' % (_('Direction'), self.direction.upper())
 
         # Jump to coords
-        if key == QtCore.Qt.Key_J or key == 'J':
+        if key == QtCore.Qt.Key.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
 
-        if key == 'M' or key == QtCore.Qt.Key_M:
+        if key == 'M' or key == QtCore.Qt.Key.Key_M:
             # delete the possible points made before this action; we want to start anew
             self.points = []
             # and delete the utility geometry made up until this point
@@ -2450,13 +2450,14 @@ class EraserEditorGrb(ShapeToolEditorGrb):
             except Exception as e:
                 log.error("AppGerberEditor.EraserEditorGrb.click_release() --> %s" % str(e))
 
-            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
             for aper in sel_aperture:
                 for row in range(self.draw_app.ui.apertures_table.rowCount()):
                     if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-            self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.draw_app.ui.apertures_table.setSelectionMode(
+                QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
             self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
@@ -2607,9 +2608,9 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
@@ -2623,9 +2624,9 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
         self.draw_app.ui.apertures_table.clearSelection()
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-        if key_modifier == QtCore.Qt.ShiftModifier:
+        if key_modifier == QtCore.Qt.KeyboardModifier.ShiftModifier:
             mod_key = 'Shift'
-        elif key_modifier == QtCore.Qt.ControlModifier:
+        elif key_modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
             mod_key = 'Control'
         else:
             mod_key = None
@@ -2708,14 +2709,14 @@ class SelectEditorGrb(QtCore.QObject, DrawTool):
                     self.sel_aperture.add(storage)
 
         # actual row selection is done here
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for aper in self.sel_aperture:
             for row in range(self.draw_app.ui.apertures_table.rowCount()):
                 if str(aper) == self.draw_app.ui.apertures_table.item(row, 1).text():
                     if row not in set(idx.row() for idx in self.draw_app.ui.apertures_table.selectedIndexes()):
                         self.draw_app.ui.apertures_table.selectRow(row)
                         self.draw_app.last_aperture_selected = aper
-        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.draw_app.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # reconnect signal when clicking in the table
         self.draw_app.ui.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
@@ -3425,7 +3426,7 @@ class AppGerberEditor(QtCore.QObject):
         self.app.ui.aperture_delete_btn.triggered.connect(self.on_delete_btn)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
 
-        self.ui.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
+        self.ui.aptype_cb.currentIndexChanged.connect(self.on_aptype_changed)
 
         self.ui.addaperture_btn.clicked.connect(self.on_aperture_add)
         self.ui.apsize_entry.returnPressed.connect(self.on_aperture_add)
@@ -3600,14 +3601,14 @@ class AppGerberEditor(QtCore.QObject):
             ap_code = ap_code
 
             ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.apertures_table.setItem(self.apertures_row, 0, ap_code_item)  # Tool name/id
 
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             ap_type_item = QtWidgets.QTableWidgetItem(str(self.storage_dict[ap_code]['type']))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == '0':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
@@ -3615,16 +3616,20 @@ class AppGerberEditor(QtCore.QObject):
                                     self.decimals, self.storage_dict[ap_code]['height']
                                     )
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
+                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                     QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                     QtCore.Qt.ItemFlag.ItemIsEditable)
             elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
                     '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['diam'],
                                     self.decimals, self.storage_dict[ap_code]['nVertices'])
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
+                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                     QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                     QtCore.Qt.ItemFlag.ItemIsEditable)
             else:
                 ap_dim_item = QtWidgets.QTableWidgetItem('')
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                ap_dim_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             try:
                 if self.storage_dict[ap_code]['size'] is not None:
@@ -3636,9 +3641,12 @@ class AppGerberEditor(QtCore.QObject):
                 ap_size_item = QtWidgets.QTableWidgetItem('')
 
             if str(self.storage_dict[ap_code]['type']) == 'C':
-                ap_size_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                      QtCore.Qt.ItemFlag.ItemIsEnabled |
+                                      QtCore.Qt.ItemFlag.ItemIsEditable)
             else:
-                ap_size_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                ap_size_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                                      QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
@@ -3654,13 +3662,13 @@ class AppGerberEditor(QtCore.QObject):
         #     ap_code = ap_code
         #
         #     ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-        #     ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         #     self.ui.apertures_table.setItem(self.apertures_row, 0, ap_code_item)  # Tool name/id
         #
         #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
         #
         #     ap_type_item = QtWidgets.QTableWidgetItem('AM')
-        #     ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+        #     ap_type_item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         #
         #     self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
         #     self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
@@ -3675,21 +3683,21 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.resizeRowsToContents()
 
         vertical_header = self.ui.apertures_table.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         vertical_header.hide()
-        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.apertures_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 27)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
-        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
         self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
@@ -4222,9 +4230,10 @@ class AppGerberEditor(QtCore.QObject):
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
 
-    def on_aptype_changed(self, current_text):
+    def on_aptype_changed(self, current_index):
         # 'O' is letter O not zero.
-        if current_text == 'R' or current_text == 'O':
+        print(current_index)
+        if current_index == 1 or current_index == 2:    # 1 == 'R' and 2 == 'O'
             self.ui.apdim_lbl.setDisabled(False)
             self.ui.apdim_entry.setDisabled(False)
             self.ui.apsize_entry.setDisabled(True)
@@ -4728,7 +4737,7 @@ class AppGerberEditor(QtCore.QObject):
             def run(self):
                 self.worker_job(self.app)
 
-        # self.thread.start(QtCore.QThread.NormalPriority)
+        # self.thread.start(QtCore.QThread.Priority.NormalPriority)
 
         executable_edit = Execute_Edit(app=self)
         # executable_edit.moveToThread(self.thread)
@@ -4963,9 +4972,9 @@ class AppGerberEditor(QtCore.QObject):
         # if col == 0:
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
         if self.app.defaults["global_mselect_key"] == 'Control':
-            modifier_to_use = Qt.ControlModifier
+            modifier_to_use = Qt.KeyboardModifier.ControlModifier
         else:
-            modifier_to_use = Qt.ShiftModifier
+            modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
         if key_modifier == modifier_to_use:
             pass
@@ -5120,7 +5129,7 @@ class AppGerberEditor(QtCore.QObject):
                 modifiers = QtWidgets.QApplication.keyboardModifiers()
 
                 # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-                if modifiers == QtCore.Qt.ShiftModifier:
+                if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
                     self.app.clipboard.setText(
                         self.app.defaults["global_point_clipboard_format"] %
                         (self.decimals, self.pos[0], self.decimals, self.pos[1])
@@ -5141,9 +5150,9 @@ class AppGerberEditor(QtCore.QObject):
                     # else return to the current tool
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
                     if self.app.defaults["global_mselect_key"] == 'Control':
-                        modifier_to_use = Qt.ControlModifier
+                        modifier_to_use = Qt.KeyboardModifier.ControlModifier
                     else:
-                        modifier_to_use = Qt.ShiftModifier
+                        modifier_to_use = Qt.KeyboardModifier.ShiftModifier
 
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
@@ -5223,9 +5232,9 @@ class AppGerberEditor(QtCore.QObject):
                                 else:
                                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
                                     if (self.app.defaults["global_mselect_key"] == 'Control' and
-                                        key_modifier == Qt.ControlModifier) or \
+                                        key_modifier == Qt.KeyboardModifier.ControlModifier) or \
                                             (self.app.defaults["global_mselect_key"] == 'Shift' and
-                                             key_modifier == Qt.ShiftModifier):
+                                             key_modifier == Qt.KeyboardModifier.ShiftModifier):
 
                                         self.select_tool(self.active_tool.name)
                                     else:
@@ -5290,14 +5299,14 @@ class AppGerberEditor(QtCore.QObject):
         except Exception as e:
             self.app.log.error("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
 
-        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
         for aper in sel_aperture:
             for row_to_sel in range(self.ui.apertures_table.rowCount()):
                 if str(aper) == self.ui.apertures_table.item(row_to_sel, 1).text():
                     if row_to_sel not in set(index.row() for index in self.ui.apertures_table.selectedIndexes()):
                         self.ui.apertures_table.selectRow(row_to_sel)
                     self.last_aperture_selected = aper
-        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
 
         # #############################################################################################################
         # ######################### calculate vertex numbers for all selected shapes ##################################
@@ -6002,7 +6011,7 @@ class AppGerberEditorUI:
 
         # Title label
         self.title_label = FCLabel("<font size=5><b>%s</b></font>" % _('Gerber Editor'))
-        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
         # App Level label
@@ -6049,7 +6058,7 @@ class AppGerberEditorUI:
         self.apertures_table.setColumnCount(5)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
         self.apertures_table.setSortingEnabled(False)
-        self.apertures_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.apertures_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.apertures_table.horizontalHeaderItem(0).setToolTip(
             _("Index"))
@@ -6065,8 +6074,8 @@ class AppGerberEditorUI:
               " - (dia, nVertices) for P type"))
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.custom_box.addWidget(separator_line)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Apertures widgets
@@ -6081,7 +6090,7 @@ class AppGerberEditorUI:
         # #############################################################################################################
         # ############################ Add/Delete an new Aperture #####################################################
         # #############################################################################################################
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.apertures_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
@@ -6149,8 +6158,8 @@ class AppGerberEditorUI:
         grid1.addWidget(self.apdim_entry, 4, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 5, 0, 1, 3)
 
         # Aperture Buttons
@@ -6158,14 +6167,15 @@ class AppGerberEditorUI:
         grid1.addLayout(vlay_buttons, 1, 2, 4, 1)
 
         self.addaperture_btn = FCButton(_('Add'))
-        self.addaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.addaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.addaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addaperture_btn.setToolTip(
             _("Add a new aperture to the aperture list.")
         )
 
         self.delaperture_btn = FCButton(_('Delete'))
-        # self.delaperture_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        # self.delaperture_btn.setSizePolicy(
+        #     QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         self.delaperture_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.delaperture_btn.setToolTip(
@@ -6181,7 +6191,7 @@ class AppGerberEditorUI:
         self.shape_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.shape_frame)
 
-        self.shape_grid = QtWidgets.QGridLayout()
+        self.shape_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.shape_grid.setColumnStretch(0, 0)
         self.shape_grid.setColumnStretch(1, 1)
         self.shape_grid.setContentsMargins(0, 0, 0, 0)
@@ -6192,8 +6202,8 @@ class AppGerberEditorUI:
         self.shape_grid.addWidget(self.geo_zoom, 0, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.shape_grid.addWidget(separator_line, 2, 0, 1, 3)
 
         # Parameters Title
@@ -6203,7 +6213,7 @@ class AppGerberEditorUI:
         )
         self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
 
-        p_grid = QtWidgets.QGridLayout()
+        p_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         p_grid.setColumnStretch(0, 0)
         p_grid.setColumnStretch(1, 0)
         p_grid.setColumnStretch(2, 0)
@@ -6260,8 +6270,8 @@ class AppGerberEditorUI:
         self.shape_grid.addWidget(self.geo_vertex_entry, 10, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.shape_grid.addWidget(separator_line, 12, 0, 1, 3)
 
         # Simplification Title
@@ -6320,7 +6330,7 @@ class AppGerberEditorUI:
         self.buffer_tools_box.addWidget(buf_title_lbl)
 
         # Grid Layout
-        buff_grid = QtWidgets.QGridLayout()
+        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         buff_grid.setColumnStretch(0, 0)
         buff_grid.setColumnStretch(1, 1)
         self.buffer_tools_box.addLayout(buff_grid)
@@ -6330,7 +6340,7 @@ class AppGerberEditorUI:
         self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(-10000.0000, 10000.0000)
 
-        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0 ,0 )
+        buff_grid.addWidget(FCLabel('%s:' % _("Buffer distance")), 0, 0)
         buff_grid.addWidget(self.buffer_distance_entry, 0, 1)
 
         # Buffer Corner
@@ -6349,8 +6359,8 @@ class AppGerberEditorUI:
         buff_grid.addWidget(self.buffer_corner_cb, 2, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         buff_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # Buttons
@@ -6380,7 +6390,7 @@ class AppGerberEditorUI:
         self.scale_tools_box.addWidget(scale_title_lbl)
 
         # Grid Layout
-        scale_grid = QtWidgets.QGridLayout()
+        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         scale_grid.setColumnStretch(0, 0)
         scale_grid.setColumnStretch(1, 1)
         self.scale_tools_box.addLayout(scale_grid)
@@ -6398,8 +6408,8 @@ class AppGerberEditorUI:
         scale_grid.addWidget(self.scale_factor_entry, 0, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         scale_grid.addWidget(separator_line, 2, 0, 1, 2)
 
         # Buttons
@@ -6419,8 +6429,8 @@ class AppGerberEditorUI:
         self.ma_tool_frame.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.ma_tools_box.addWidget(separator_line)
 
         # Title
@@ -6431,7 +6441,7 @@ class AppGerberEditorUI:
         self.ma_tools_box.addWidget(ma_title_lbl)
 
         # Form Layout
-        mark_grid = QtWidgets.QGridLayout()
+        mark_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         mark_grid.setColumnStretch(0, 0)
         mark_grid.setColumnStretch(1, 1)
         self.ma_tools_box.addLayout(mark_grid)
@@ -6498,11 +6508,11 @@ class AppGerberEditorUI:
         self.array_frame.setLayout(self.array_box)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.array_box.addWidget(separator_line)
 
-        array_grid = QtWidgets.QGridLayout()
+        array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         array_grid.setColumnStretch(0, 0)
         array_grid.setColumnStretch(1, 1)
         self.array_box.addLayout(array_grid)
@@ -6543,8 +6553,8 @@ class AppGerberEditorUI:
         # ############################ Linear Pad Array ###############################################################
         # #############################################################################################################
         self.lin_separator_line = QtWidgets.QFrame()
-        self.lin_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.lin_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.lin_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.lin_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         array_grid.addWidget(self.lin_separator_line, 6, 0, 1, 2)
 
         # Linear Direction
@@ -6597,8 +6607,8 @@ class AppGerberEditorUI:
         # ################################### Circular Pad Array ######################################################
         # #############################################################################################################
         self.circ_separator_line = QtWidgets.QFrame()
-        self.circ_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.circ_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.circ_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.circ_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         array_grid.addWidget(self.circ_separator_line, 14, 0, 1, 2)
 
         # Circular Direction
@@ -6679,7 +6689,7 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -6720,8 +6730,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.point_button, 2, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 5, 0, 1, 3)
 
         # ## Rotate Title
@@ -6757,8 +6767,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.rotate_button, 7, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 8, 0, 1, 3)
 
         # ## Skew Title
@@ -6819,8 +6829,8 @@ class TransformEditorTool(AppTool):
                                            logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 3)
 
         # ## Scale Title
@@ -6883,8 +6893,8 @@ class TransformEditorTool(AppTool):
                                           ], logic=False)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 21, 0, 1, 3)
 
         # ## Flip Title
@@ -6908,8 +6918,8 @@ class TransformEditorTool(AppTool):
         hlay0.addWidget(self.flipy_button)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 27, 0, 1, 3)
 
         # ## Offset Title
@@ -6957,8 +6967,8 @@ class TransformEditorTool(AppTool):
         grid0.addWidget(self.offy_button, 32, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 34, 0, 1, 3)
 
         # ## Buffer Title

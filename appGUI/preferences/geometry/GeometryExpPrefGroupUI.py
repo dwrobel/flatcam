@@ -1,6 +1,6 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import FCLabel, FCComboBox
+from appGUI.GUIElements import FCLabel, FCComboBox, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -13,11 +13,12 @@ if '_' not in builtins.__dict__:
 
 class GeometryExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GeometryExpPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry Export")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Plot options
         self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
@@ -27,7 +28,7 @@ class GeometryExpPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_options_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)

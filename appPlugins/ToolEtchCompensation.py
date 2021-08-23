@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry, FCEntry, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout, FCLabel
 
 from shapely.ops import unary_union
 
@@ -317,7 +317,7 @@ class EtchUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Title
-        title_label = QtWidgets.QLabel("%s" % self.pluginName)
+        title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -328,12 +328,12 @@ class EtchUI:
         self.tools_box.addWidget(title_label)
 
         # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 0, 0, 1, 2)
+        grid0.addWidget(FCLabel(''), 0, 0, 1, 2)
 
         # Target Gerber Object
         self.gerber_combo = FCComboBox()
@@ -342,7 +342,7 @@ class EtchUI:
         self.gerber_combo.is_last = True
         self.gerber_combo.obj_type = "Gerber"
 
-        self.gerber_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
+        self.gerber_label = FCLabel('<b>%s:</b>' % _("GERBER"))
         self.gerber_label.setToolTip(
             _("Gerber object that will be inverted.")
         )
@@ -351,17 +351,17 @@ class EtchUI:
         grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 3, 0, 1, 2)
 
-        self.util_label = QtWidgets.QLabel("<b>%s:</b>" % _("Utilities"))
+        self.util_label = FCLabel("<b>%s:</b>" % _("Utilities"))
         self.util_label.setToolTip('%s.' % _("Conversion utilities"))
 
         grid0.addWidget(self.util_label, 4, 0, 1, 2)
 
         # Oz to um conversion
-        self.oz_um_label = QtWidgets.QLabel('%s:' % _('Oz to Microns'))
+        self.oz_um_label = FCLabel('%s:' % _('Oz to Microns'))
         self.oz_um_label.setToolTip(
             _("Will convert from oz thickness to microns [um].\n"
               "Can use formulas with operators: /, *, +, -, %, .\n"
@@ -382,7 +382,7 @@ class EtchUI:
         grid0.addLayout(hlay_1, 6, 0, 1, 2)
 
         # Mils to um conversion
-        self.mils_um_label = QtWidgets.QLabel('%s:' % _('Mils to Microns'))
+        self.mils_um_label = FCLabel('%s:' % _('Mils to Microns'))
         self.mils_um_label.setToolTip(
             _("Will convert from mils to microns [um].\n"
               "Can use formulas with operators: /, *, +, -, %, .\n"
@@ -403,17 +403,17 @@ class EtchUI:
         grid0.addLayout(hlay_2, 8, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
-        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
 
         grid0.addWidget(self.param_label, 10, 0, 1, 2)
 
         # Thickness
-        self.thick_label = QtWidgets.QLabel('%s:' % _('Copper Thickness'))
+        self.thick_label = FCLabel('%s:' % _('Copper Thickness'))
         self.thick_label.setToolTip(
             _("The thickness of the copper foil.\n"
               "In microns [um].")
@@ -425,7 +425,7 @@ class EtchUI:
         grid0.addWidget(self.thick_label, 12, 0)
         grid0.addWidget(self.thick_entry, 12, 1)
 
-        self.ratio_label = QtWidgets.QLabel('%s:' % _("Ratio"))
+        self.ratio_label = FCLabel('%s:' % _("Ratio"))
         self.ratio_label.setToolTip(
             _("The ratio of lateral etch versus depth etch.\n"
               "Can be:\n"
@@ -442,7 +442,7 @@ class EtchUI:
         grid0.addWidget(self.ratio_radio, 16, 0, 1, 2)
 
         # Etchants
-        self.etchants_label = QtWidgets.QLabel('%s:' % _('Etchants'))
+        self.etchants_label = FCLabel('%s:' % _('Etchants'))
         self.etchants_label.setToolTip(
             _("A list of etchants.")
         )
@@ -453,7 +453,7 @@ class EtchUI:
         grid0.addWidget(self.etchants_combo, 18, 1)
 
         # Etch Factor
-        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch Factor'))
+        self.factor_label = FCLabel('%s:' % _('Etch Factor'))
         self.factor_label.setToolTip(
             _("The ratio between depth etch and lateral etch .\n"
               "Accepts real numbers and formulas using the operators: /,*,+,-,%")
@@ -465,7 +465,7 @@ class EtchUI:
         grid0.addWidget(self.factor_entry, 19, 1)
 
         # Manual Offset
-        self.offset_label = QtWidgets.QLabel('%s:' % _('Offset'))
+        self.offset_label = FCLabel('%s:' % _('Offset'))
         self.offset_label.setToolTip(
             _("Value with which to increase or decrease (buffer)\n"
               "the copper features. In microns [um].")
@@ -486,8 +486,8 @@ class EtchUI:
         self.offset_entry.hide()
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         self.compensate_btn = FCButton(_('Compensate'))

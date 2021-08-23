@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox, FCLabel, FCButton, \
-    VerticalScrollArea
+    VerticalScrollArea, FCGridLayout
 from copy import deepcopy
 
 from appPool import *
@@ -1193,7 +1193,7 @@ class RulesUI:
         self.layout.addWidget(title_label)
 
         # Form Layout
-        self.grid_layout = QtWidgets.QGridLayout()
+        self.grid_layout = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(self.grid_layout)
 
         self.grid_layout.setColumnStretch(0, 0)
@@ -1398,7 +1398,7 @@ class RulesUI:
         self.layout.addWidget(self.all_cb)
 
         # Form Layout
-        self.grid_lay1 = QtWidgets.QGridLayout()
+        self.grid_lay1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.grid_lay1.setColumnStretch(0, 0)
         self.grid_lay1.setColumnStretch(1, 1)
         self.layout.addLayout(self.grid_lay1)

@@ -5,11 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton,\
-    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, VerticalScrollArea
+    FCComboBox, OptionalInputSection, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, \
+    VerticalScrollArea, FCGridLayout
 from appParsers.ParseGerber import Gerber
 
 from camlib import grace
@@ -837,7 +838,7 @@ class NonCopperClear(AppTool, Gerber):
 
                     # ------------------------ Tool ID ----------------------------------------------------------------
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    flags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
+                    flags = QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
                     id_.setFlags(flags)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_)  # Tool name/id
@@ -845,7 +846,7 @@ class NonCopperClear(AppTool, Gerber):
                     # ------------------------ Tool Diameter ----------------------------------------------------------
                     # Make sure that the drill diameter when in MM is with no more than self.decimals decimals
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
-                    dia.setFlags(QtCore.Qt.ItemIsEnabled)
+                    dia.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
                     self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
 
                     # ------------------------ Tool Shape -------------------------------------------------------------
@@ -862,7 +863,7 @@ class NonCopperClear(AppTool, Gerber):
 
         # make the diameter column editable
         for row in range(tool_id):
-            flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled
             self.ui.tools_table.item(row, 1).setFlags(flags)
 
         self.ui.tools_table.resizeColumnsToContents()
@@ -870,13 +871,13 @@ class NonCopperClear(AppTool, Gerber):
 
         vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
         self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
@@ -1056,6 +1057,7 @@ class NonCopperClear(AppTool, Gerber):
 
         min_list = list(min_dict.keys())
         min_dist = min(min_list)
+        min_dist -= 10**-decimals  # make sure that this works for isolation case
 
         return msg, min_dist
 
@@ -1873,16 +1875,16 @@ class NonCopperClear(AppTool, Gerber):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    # modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.ControlModifier
                     pass
                 elif mod.lower() == 'alt':
-                    # modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.AltModifier
                     pass
                 elif mod.lower() == 'shift':
-                    # modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.
                     pass
                 else:
-                    # modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.KeyboardModifier.NoModifier
                     pass
                 key = QtGui.QKeySequence(key_text)
 
@@ -1890,7 +1892,7 @@ class NonCopperClear(AppTool, Gerber):
         else:
             key = event.key
 
-        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+        if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
 
             if self.area_sel_disconnect_flag is True:
                 if self.app.is_legacy is False:
@@ -4136,12 +4138,12 @@ class NccUI:
                 "Permanent change is done in 'Preferences' menu."
             )
         )
-        # self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.level.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
         # ## Grid Layout
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid0)
@@ -4176,8 +4178,8 @@ class NccUI:
         grid0.addWidget(self.object_combo, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # ### Tools ## ##
@@ -4223,7 +4225,7 @@ class NccUI:
         #       "If it's not successful then the non-copper clearing will fail, too.\n"
         #       "- Clear -> the regular non-copper clearing."))
 
-        grid1 = QtWidgets.QGridLayout()
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid1)
@@ -4251,15 +4253,15 @@ class NccUI:
         grid1.addWidget(self.ncc_order_radio, 1, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         # #############################################################
         # ############### Tool selection ##############################
         # #############################################################
 
-        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.tools_box.addLayout(self.grid3)
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
@@ -4287,7 +4289,7 @@ class NccUI:
         self.find_optimal_button = QtWidgets.QToolButton()
         self.find_optimal_button.setText(_('Optimal'))
         self.find_optimal_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
-        self.find_optimal_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.find_optimal_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.find_optimal_button.setToolTip(
             _("Find a tool diameter that is guaranteed\n"
               "to do a complete isolation.")
@@ -4299,7 +4301,7 @@ class NccUI:
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = QtWidgets.QGridLayout()
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
         self.grid3.addLayout(button_grid, 7, 0, 1, 2)
@@ -4333,14 +4335,14 @@ class NccUI:
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
-        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
         self.add_tool_separator_line = QtWidgets.QFrame()
-        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = FCLabel(
@@ -4500,8 +4502,8 @@ class NccUI:
         self.ois_ncc_offset = OptionalInputSection(self.ncc_choice_offset_cb, [self.ncc_offset_spinner])
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 21, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
@@ -4513,8 +4515,8 @@ class NccUI:
         self.grid3.addWidget(self.apply_param_to_all, 22, 0, 1, 2)
 
         self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(self.all_param_separator_line2, 23, 0, 1, 2)
 
         # General Parameters
@@ -4659,8 +4661,8 @@ class NccUI:
         self.grid3.addWidget(self.valid_cb, 37, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.grid3.addWidget(separator_line, 39, 0, 1, 2)
 
         self.generate_ncc_button = FCButton(_('Generate Geometry'))

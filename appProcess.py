@@ -7,7 +7,7 @@
 # ##########################################################
 
 from appGUI.GUIElements import FlatCAMActivityView
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 import weakref
 
 import gettext

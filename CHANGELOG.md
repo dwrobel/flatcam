@@ -7,9 +7,81 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.08.2021
+
+- added a partial translation for Chinese Simplified language, by 俊霄 余
+- trying to separate the Preferences settings from App init and to make them dependent on the self.defaults dictionary
+- updated the language strings from the source
+
+22.08.2021
+
+- added a new menu entry in the View menu to show the application log file where even the fatal crashes are logged
+- fixed an issue due of porting to Qt6
+
+19.08.2021
+
+- some cleaning up in the Preferences
+- cleaned up the Geometry and Gerber object classes
+- more cleanup in Isolation Plugin
+- started the work in adding to Isolation Plugin a new feature to extra isolate the pads
+- some changes due of porting to PyQt6
+
+18.08.2021
+
+- fixed the "Set Color" functionality broken by recent changes
+- updated the "Set Color" functionality to store the used color in a correct way
+- when creating a nw project the user is asked if he wants to save the preferences
+- changed the ColorRole in the on_about() method to 'window' os the programmers and translator tab is set to white color
+- changed the translators tab in the on_about() method
+- added the usage of the FCLabel widget instead of QtWidgets.QLabel
+- cleaning up Isolation Plugin
+- made sure that the KeyboardInterrupt exception is not logged to the log.txt file
+
+17.08.2021
+
+- made sure that the optimal tool detected works for isolation - the offset amount changed to reflect the number of decimals used by the app
+
+15.08.2021
+
+- fixed some issues with using the exec_() which now should be exec()
+- added a context menu action in the canvas context menu for moving selected objects to origin
+- made sure that the optimal tool detected works for isolation
+
+14.08.2021
+
+- small change due of porting to PyQt6 in self.on_portable_checked() method
+
+11.08.2021
+
+- fixed splash screen position on current screen when using multiple screens
+- some changes due of porting to PyQt6
+
+9.08.2021
+
+- wip in porting to PyQt6: fixed OptionalInput and OptionalHideInput GUI elements
+
+6.08.2021
+
+- more changes due of porting to PyQt6
+- fixed the Autocompleter highlighting to work in PyQt6
+- created a new custom layout based on the Grid Layout where I can set the horizontal and vertical spacings between grid items and used it throughout the app
+- changed the spacings in the new custom Grid layout
+
+5.08.2021
+
+- continuing to fix the PyQt6 port
+- added an Exception when App.on_canvas_setup() fails
+- fixed fullscreen functionality for PyQt6 and a few other fixes regarding the port to PyQt6
+- more fixes for porting to PyQt6
+- changes the exit method from exit(0) to quit()
+- more work in PyQt6 porting
+- Isolation Plugin - if there is no object selected try to select the first one if there is any
+- Fixed setting a new style
+
 4.08.2021
 
 - toggling the plot is now deleting the selection shape, if any
+- porting to PyQt6
 
 23.07.2021
 
@@ -6374,7 +6446,6 @@ This fork features:
 - Added capability so FlatCAM can now read Gerber files with traces having zero value (aperture size is zero);
 - Added Paint All / Seed based Paint functions from the JP's FlatCAM;
 - Added Excellon move optimization (travelling salesman algorithm) cherry-picked from David Kahler: https://bitbucket.org/dakahler/flatcam
-- Updated make_win32.py so it will work with cx_freeze 5.0.1
 - Corrected small typo in DblSidedTool.py
 - Added the TCL commands in the new format. Picked from FLATCAM master.
 - Hack to fix the issue with geometry not being updated after a TCL command was executed. Now after each TCL command the plot_all() function is executed and the canvas is refreshed.

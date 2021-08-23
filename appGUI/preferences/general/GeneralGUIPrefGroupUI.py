@@ -1,7 +1,8 @@
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QSettings
+from PyQt6 import QtWidgets, QtCore
+from PyQt6.QtCore import QSettings
 
-from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel
+from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
+    FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -14,14 +15,15 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralGUIPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Create a grid layout for the Application general settings
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -59,8 +61,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # grid0.addWidget(self.theme_button, 2, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 3, 0, 1, 2)
 
         # Layout selection
@@ -94,10 +96,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.style_combo = FCComboBox()
         self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
         # find current style
-        current_style = QtCore.QCoreApplication.instance().style().objectName()
-        index = self.style_combo.findText(current_style, QtCore.Qt.MatchFixedString)
+        current_style = QtWidgets.QApplication.style().objectName()
+        index = self.style_combo.findText(current_style, QtCore.Qt.MatchFlag.MatchFixedString)
         self.style_combo.setCurrentIndex(index)
-        self.style_combo.activated[str].connect(self.handle_style)
+        self.style_combo.activated.connect(self.handle_style)
 
         grid0.addWidget(self.style_label, 5, 0)
         grid0.addWidget(self.style_combo, 5, 1)
@@ -138,8 +140,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.selection_cb, 9, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Plot Selection (left - right) Color
@@ -178,8 +180,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.left_right_alpha_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # Plot Selection (left - right) Color
@@ -220,8 +222,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.right_left_alpha_entry, 23, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 24, 0, 1, 2)
 
         # ------------------------------------------------------------------
@@ -252,8 +254,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_draw_color_entry, 27, 1)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 28, 0, 1, 2)
 
         # ------------------------------------------------------------------
@@ -327,7 +329,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def handle_style(style):
         # set current style
         qsettings = QSettings("Open Source", "FlatCAM")
-        qsettings.setValue('style', style)
+        qsettings.setValue('style', str(style))
 
         # This will write the setting to the platform specific storage.
         del qsettings

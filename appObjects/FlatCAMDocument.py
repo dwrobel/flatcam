@@ -109,11 +109,14 @@ class DocumentObject(FlatCAMObj):
         self.ui.sel_color_entry.editingFinished.connect(self.on_selection_color_entry)
         self.ui.sel_color_button.clicked.connect(self.on_selection_color_button)
 
-        self.ui.al_left_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignLeft))
-        self.ui.al_center_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignCenter))
-        self.ui.al_right_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignRight))
+        self.ui.al_left_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignLeft))
+        self.ui.al_center_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignCenter))
+        self.ui.al_right_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignRight))
         self.ui.al_justify_tb.clicked.connect(
-            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignJustify)
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignmentFlag.AlignJustify)
         )
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
@@ -133,7 +136,7 @@ class DocumentObject(FlatCAMObj):
         # self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
-        if Qt.mightBeRichText(self.source_file):
+        if QtGui.Qt.mightBeRichText(self.source_file):
             # self.document_editor_tab.code_editor.setHtml(self.source_file)
             self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=True)
         else:
@@ -221,7 +224,7 @@ class DocumentObject(FlatCAMObj):
             self.ui.tab_size_spinner.set_value(val)
 
         tab_balue = int(self.ui.tab_size_spinner.get_value())
-        self.document_editor_tab.code_editor.setTabStopWidth(tab_balue)
+        self.document_editor_tab.code_editor.setTabStopDistance(tab_balue)
         self.app.defaults['document_tab_size'] = tab_balue
 
         self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
@@ -242,10 +245,10 @@ class DocumentObject(FlatCAMObj):
 
     def on_bold_button(self):
         if self.ui.font_bold_tb.isChecked():
-            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Bold)
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Weight.Bold)
             self.font_bold = True
         else:
-            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Normal)
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Weight.Normal)
             self.font_bold = False
 
     def on_italic_button(self):
@@ -300,8 +303,8 @@ class DocumentObject(FlatCAMObj):
             return
 
         p = QtGui.QPalette()
-        p.setColor(QtGui.QPalette.Highlight, sel_color)
-        p.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('white'))
+        p.setColor(QtGui.QPalette.ColorRole.Highlight, sel_color)
+        p.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor('white'))
 
         self.document_editor_tab.code_editor.setPalette(p)
 

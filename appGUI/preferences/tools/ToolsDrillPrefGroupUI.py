@@ -1,8 +1,8 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6 import QtWidgets, QtCore
+from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel
+    OptionalInputSection, NumericalEvalEntry, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsDrillPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ToolsDrillPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Drilling Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.drill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -28,7 +29,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.drill_label)
 
-        grid0 = QtWidgets.QGridLayout()
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
 
         # Tool order Radio Button
@@ -203,15 +204,21 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
 
         self.pp_excellon_name_cb = FCComboBox()
-        self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        self.pp_excellon_name_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_excellon_name_cb.addItems(self.defaults["tools_drill_preprocessor_list"])
+
+        for it in range(self.pp_excellon_name_cb.count()):
+            self.pp_excellon_name_cb.setItemData(it, self.pp_excellon_name_cb.itemText(it),
+                                                 QtCore.Qt.ItemDataRole.ToolTipRole)
 
         grid0.addWidget(pp_excellon_label, 27, 0)
         grid0.addWidget(self.pp_excellon_name_cb, 27, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 29, 0, 1, 3)
 
         # DRILL SLOTS LABEL
@@ -248,8 +255,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.last_drill_cb, 37, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 39, 0, 1, 3)
 
         self.exc_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
@@ -369,8 +376,8 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.fretract_cb, 59, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid0.addWidget(separator_line, 61, 0, 1, 3)
 
         # -----------------------------

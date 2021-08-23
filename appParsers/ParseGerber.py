@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
@@ -2227,6 +2227,8 @@ class Gerber(Geometry):
         self.geo_len = 0
         try:
             self.geo_len = len(self.solid_geometry)
+        except AttributeError:
+            self.geo_len = len(self.solid_geometry.geoms)
         except TypeError:
             self.geo_len = 1
 
