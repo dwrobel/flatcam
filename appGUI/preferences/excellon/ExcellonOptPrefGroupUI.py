@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Create CNC Job
         self.cncjob_label = FCLabel('<b>%s</b>' % _('Parameters'))

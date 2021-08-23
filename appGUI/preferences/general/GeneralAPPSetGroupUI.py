@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralAPPSetGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GeneralAPPSetGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("App Settings")))
         self.decimals = decimals
+        self.defaults = defaults
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):

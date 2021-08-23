@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsCutoutPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Plugin", parent=parent)
         super(ToolsCutoutPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Cutout Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Board cutout
         self.board_cutout_label = FCLabel("<b>%s:</b>" % _("Parameters"))

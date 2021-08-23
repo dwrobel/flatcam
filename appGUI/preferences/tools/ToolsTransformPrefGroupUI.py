@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsTransformPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(ToolsTransformPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Transform Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Transformations
         self.transform_label = FCLabel("<b>%s:</b>" % _("Parameters"))

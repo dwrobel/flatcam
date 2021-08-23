@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsDrillPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ToolsDrillPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Drilling Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.drill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -204,7 +205,13 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
 
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_excellon_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_excellon_name_cb.addItems(self.defaults["tools_drill_preprocessor_list"])
+
+        for it in range(self.pp_excellon_name_cb.count()):
+            self.pp_excellon_name_cb.setItemData(it, self.pp_excellon_name_cb.itemText(it),
+                                                 QtCore.Qt.ItemDataRole.ToolTipRole)
 
         grid0.addWidget(pp_excellon_label, 27, 0)
         grid0.addWidget(self.pp_excellon_name_cb, 27, 1, 1, 2)

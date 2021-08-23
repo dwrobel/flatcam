@@ -13,11 +13,12 @@ if '_' not in builtins.__dict__:
 
 class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ExcellonExpPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon Export")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Plot options
         self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))

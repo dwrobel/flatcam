@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsMillPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ToolsMillPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Milling Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.mill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -264,7 +265,14 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_geometry_name_cb.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pp_geometry_name_cb.addItems(self.defaults["tools_mill_preprocessor_list"])
+
+
+        for it in range(self.pp_geometry_name_cb.count()):
+            self.pp_geometry_name_cb.setItemData(it, self.pp_geometry_name_cb.itemText(it),
+                                                 QtCore.Qt.ItemDataRole.ToolTipRole)
 
         grid0.addWidget(pp_label, 28, 0)
         grid0.addWidget(self.pp_geometry_name_cb, 28, 1)

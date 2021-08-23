@@ -15,12 +15,13 @@ if '_' not in builtins.__dict__:
 
 class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
@@ -325,8 +326,16 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
 
-    def optimization_selection(self):
-        if self.excellon_optimization_radio.get_value() == 'M':
+    def optimization_selection(self, val):
+        if platform.architecture()[0] != '64bit':
+            # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
+            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
+            if val in ['M', 'B']:
+                self.opt_algorithm_radio.blockSignals(True)
+                self.excellon_optimization_radio.set_value('T')
+                self.opt_algorithm_radio.blockSignals(False)
+
+        if val == 'M':
             self.optimization_time_label.setDisabled(False)
             self.optimization_time_entry.setDisabled(False)
         else:

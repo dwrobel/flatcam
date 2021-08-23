@@ -27,6 +27,7 @@ class FlatCAMDefaults:
         "version": 8.992,  # defaults format version, not necessarily equal to app version
         "first_run": True,
         "root_folder_path": '',
+
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": False,
@@ -73,7 +74,6 @@ class FlatCAMDefaults:
         "grid_toggle_key": 'G',
         "global_zoom_ratio": 1.5,
         "global_point_clipboard_format": "(%.*f, %.*f)",
-        "global_zdownrate": None,
 
         "global_tcl_path": '',
 
@@ -86,7 +86,9 @@ class FlatCAMDefaults:
 
         "global_log_verbose": True,
         "global_portable": False,
-        "global_language": 'English',
+
+        "global_languages": ['English', 'Romanian'],
+        "global_language_current": 'English',
 
         "global_systray_icon": True,
         "global_shell_at_startup": False,  # Show the shell at startup.
@@ -385,6 +387,7 @@ class FlatCAMDefaults:
         "tools_drill_dwelltime": 1,
         "tools_drill_toolchange": False,
         "tools_drill_toolchangez": 15,
+        "tools_drill_preprocessor_list": ['default'],
         "tools_drill_ppname_e": 'default',
 
         "tools_drill_drill_slots": False,
@@ -431,6 +434,7 @@ class FlatCAMDefaults:
         "tools_mill_spindlespeed": 0,
         "tools_mill_dwell": False,
         "tools_mill_dwelltime": 1,
+        "tools_mill_preprocessor_list": ['default'],
         "tools_mill_ppname_g": 'default',
 
         # Milling Plugin Advanced Options
@@ -614,6 +618,7 @@ class FlatCAMDefaults:
         "tools_solderpaste_dwellfwd": 1,
         "tools_solderpaste_speedrev": 200,
         "tools_solderpaste_dwellrev": 1,
+        "tools_solderpaste_preprocessor_list": ['default'],
         "tools_solderpaste_pp": 'Paste_1',
 
         # Subtract Tool
@@ -965,7 +970,6 @@ class FlatCAMDefaults:
 
         # Which objects to update the given parameters.
         routes = {
-            "global_zdownrate": CNCjob,
             "excellon_zeros": Excellon,
             "excellon_format_upper_in": Excellon,
             "excellon_format_lower_in": Excellon,

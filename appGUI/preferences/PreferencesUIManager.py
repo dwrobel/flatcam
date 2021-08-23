@@ -50,7 +50,7 @@ class PreferencesUIManager:
             "global_log_verbose": self.ui.general_pref_form.general_app_group.verbose_cb,
             "global_portable": self.ui.general_pref_form.general_app_group.portability_cb,
 
-            "global_language": self.ui.general_pref_form.general_app_group.language_cb,
+            "global_language_current": self.ui.general_pref_form.general_app_group.language_combo,
 
             "global_systray_icon": self.ui.general_pref_form.general_app_group.systray_cb,
             "global_shell_at_startup": self.ui.general_pref_form.general_app_group.shell_startup_cb,

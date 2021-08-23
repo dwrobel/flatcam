@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2RulesCheckPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Check Rules Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         self.crlabel = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(

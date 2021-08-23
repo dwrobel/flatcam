@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsCornersPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Calculators Plugin", parent=parent)
         super(ToolsCornersPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Corner Markers Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)

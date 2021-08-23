@@ -906,59 +906,28 @@ class App(QtCore.QObject):
             show_splash = 0
 
         # ###########################################################################################################
-        # ######################################### Initialize GUI ##################################################
+        # ########################################## LOAD LANGUAGES  ################################################
         # ###########################################################################################################
 
-        # FlatCAM colors used in plotting
-        self.FC_light_green = '#BBF268BF'
-        self.FC_dark_green = '#006E20BF'
-        self.FC_light_blue = '#a5a5ffbf'
-        self.FC_dark_blue = '#0000ffbf'
+        self.languages = fcTranslate.load_languages()
+        aval_languages = []
+        for name in sorted(self.languages.values()):
+            aval_languages.append(name)
+        self.defaults["global_languages"] = aval_languages
 
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
+        # ###########################################################################################################
+        # ####################################### APPLY APP LANGUAGE ################################################
+        # ###########################################################################################################
+
+        ret_val = fcTranslate.apply_language('strings')
+
+        if ret_val == "no language":
+            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
+            self.log.debug("Could not find the Language files. The App strings are missing.")
         else:
-            theme = 'white'
-
-        if self.defaults["global_cursor_color_enabled"]:
-            self.cursor_color_3D = self.defaults["global_cursor_color"]
-        else:
-            if theme == 'white':
-                self.cursor_color_3D = 'black'
-            else:
-                self.cursor_color_3D = 'gray'
-
-        # update the defaults dict with the setting in QSetting
-        self.defaults['global_theme'] = theme
-
-        self.ui = MainGUI(self)
-
-        # set FlatCAM units in the Status bar
-        self.set_screen_units(self.defaults['units'])
-
-        # decide if to show or hide the Notebook side of the screen at startup
-        if self.defaults["global_project_at_startup"] is True:
-            self.ui.splitter.setSizes([1, 1])
-        else:
-            self.ui.splitter.setSizes([0, 1])
-
-        # ###########################################################################################################
-        # ########################################### Initialize Tcl Shell ##########################################
-        # ###########################    always initialize it after the UI is initialized   #########################
-        # ###########################################################################################################
-        self.shell = FCShell(app=self, version=self.version)
-        self.log.debug("Stardate: %s" % self.date)
-        self.log.debug("TCL Shell has been initialized.")
-
-        # ###########################################################################################################
-        # ########################################### AUTOSAVE SETUP ################################################
-        # ###########################################################################################################
-
-        self.block_autosave = False
-        self.autosave_timer = QtCore.QTimer(self)
-        self.save_project_auto_update()
-        self.autosave_timer.timeout.connect(self.save_project_auto)
+            # make the current language the current selection on the language combobox
+            self.defaults["global_language_current"] = ret_val
+            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
         # #################################### LOAD PREPROCESSORS ###################################################
@@ -988,34 +957,80 @@ class App(QtCore.QObject):
             # and now put back the ordered dict with 'default' key first
             self.preprocessors = deepcopy(new_ppp_dict)
 
-        # populate the Preprocessor ComboBoxes in the PREFERENCES
+        # populate the Plugins Preprocessors
+        self.defaults["tools_drill_preprocessor_list"] = []
+        self.defaults["tools_mill_preprocessor_list"] = []
+        self.defaults["tools_solderpaste_preprocessor_list"] = []
         for name in list(self.preprocessors.keys()):
-            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
-            if name.partition('_')[0] == 'Paste':
-                self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.addItem(name)
+            lowered_name = name.lower()
+
+            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Plugin
+            if 'paste' in lowered_name:
+                self.defaults["tools_solderpaste_preprocessor_list"].append(name)
                 continue
 
-            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.addItem(name)
+            self.defaults["tools_mill_preprocessor_list"].append(name)
+
             # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
-            if name == 'hpgl':
-                continue
+            if 'hpgl' not in lowered_name:
+                self.defaults["tools_drill_preprocessor_list"].append(name)
 
-            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.addItem(name)
+        # ###########################################################################################################
+        # ######################################### Initialize GUI ##################################################
+        # ###########################################################################################################
 
-        # add ToolTips for the Preprocessor ComboBoxes in Preferences
-        for it in range(self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.count()):
-            self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.setItemData(
-                it, self.ui.plugin_pref_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
+        # FlatCAM colors used in plotting
+        self.FC_light_green = '#BBF268BF'
+        self.FC_dark_green = '#006E20BF'
+        self.FC_light_blue = '#a5a5ffbf'
+        self.FC_dark_blue = '#0000ffbf'
 
-        for it in range(self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.count()):
-            self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.setItemData(
-                it, self.ui.plugin_pref_form.tools_mill_group.pp_geometry_name_cb.itemText(it),
-                QtCore.Qt.ItemDataRole.ToolTipRole)
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
 
-        for it in range(self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.count()):
-            self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.setItemData(
-                it, self.ui.plugin_pref_form.tools_drill_group.pp_excellon_name_cb.itemText(it),
-                QtCore.Qt.ItemDataRole.ToolTipRole)
+        if self.defaults["global_cursor_color_enabled"]:
+            self.cursor_color_3D = self.defaults["global_cursor_color"]
+        else:
+            if theme == 'white':
+                self.cursor_color_3D = 'black'
+            else:
+                self.cursor_color_3D = 'gray'
+
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
+
+        # ########################
+        self.ui = MainGUI(self)
+        # ########################
+
+        # set FlatCAM units in the Status bar
+        self.set_screen_units(self.defaults['units'])
+
+        # decide if to show or hide the Notebook side of the screen at startup
+        if self.defaults["global_project_at_startup"] is True:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
+        # ###########################################################################################################
+        # ########################################### Initialize Tcl Shell ##########################################
+        # ###########################    always initialize it after the UI is initialized   #########################
+        # ###########################################################################################################
+        self.shell = FCShell(app=self, version=self.version)
+        self.log.debug("Stardate: %s" % self.date)
+        self.log.debug("TCL Shell has been initialized.")
+
+        # ###########################################################################################################
+        # ########################################### AUTOSAVE SETUP ################################################
+        # ###########################################################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
@@ -1030,29 +1045,7 @@ class App(QtCore.QObject):
         self.defaults.set_change_callback(self.on_defaults_dict_change)
 
         # set the value used in the Windows Title
-        self.engine = self.ui.general_pref_form.general_app_group.ge_radio.get_value()
-
-        # ###########################################################################################################
-        # ########################################## LOAD LANGUAGES  ################################################
-        # ###########################################################################################################
-
-        self.languages = fcTranslate.load_languages()
-        for name in sorted(self.languages.values()):
-            self.ui.general_pref_form.general_app_group.language_cb.addItem(name)
-
-        # ###########################################################################################################
-        # ####################################### APPLY APP LANGUAGE ################################################
-        # ###########################################################################################################
-
-        ret_val = fcTranslate.apply_language('strings')
-
-        if ret_val == "no language":
-            self.inform.emit('[ERROR] %s' % _("Could not find the Language files. The App strings are missing."))
-            self.log.debug("Could not find the Language files. The App strings are missing.")
-        else:
-            # make the current language the current selection on the language combobox
-            self.ui.general_pref_form.general_app_group.language_cb.setCurrentText(ret_val)
-            self.log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
+        self.engine = self.defaults["global_graphic_engine"]
 
         # ###########################################################################################################
         # ###################################### CREATE UNIQUE SERIAL NUMBER ########################################
@@ -1278,8 +1271,7 @@ class App(QtCore.QObject):
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
-        if (self.beta is False or self.beta is None) and \
-                self.ui.general_pref_form.general_app_group.version_check_cb.get_value() is True:
+        if (self.beta is False or self.beta is None) and self.defaults["global_version_check"] is True:
             self.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
@@ -1322,20 +1314,6 @@ class App(QtCore.QObject):
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.ui.set_ui_title(name=_("New Project - Not saved"))
-        
-        # ###########################################################################################################
-        # ########################################## Install OPTIMIZATIONS for GCode generation #####################
-        # ###########################################################################################################
-        current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
-            # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
-            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
-            if self.defaults['excellon_optimization_type'] in ['M', 'B']:
-                self.ui.excellon_pref_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
-            # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
-            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
-            if self.defaults['geometry_optimization_type'] in ['M', 'B']:
-                self.ui.geo_pref_form.geometry_gen_group.opt_algorithm_radio.set_value('R')
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################
@@ -3493,6 +3471,10 @@ class App(QtCore.QObject):
                         'authors': [("Carlos Stein", '<carlos.stein@gmail.com>')],
                     },
                     {
+                        'language': 'Chinese Simplified',
+                        'authors': [("俊霄 余 (Jun Xiao Yu)", '')]
+                    },
+                    {
                         'language': 'French',
                         'authors': [("Michel Maciejewski", '<micmac589@gmail.com>'), ('Olivier Cornet', '')]
                     },
@@ -3968,7 +3950,7 @@ class App(QtCore.QObject):
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(
                 'language',
-                self.ui.general_pref_form.general_app_group.language_cb.get_value()
+                self.ui.general_pref_form.general_app_group.language_combo.get_value()
             )
             stgs.setValue(
                 'notebook_font_size',

@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class FAGrbPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
         super(FAGrbPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Gerber File associations")))
         self.decimals = decimals
+        self.defaults = defaults
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the extension list to the default state."))

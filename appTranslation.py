@@ -14,13 +14,12 @@ from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSettings
 
 import gettext
+import builtins
 
 log = logging.getLogger('base')
 
-# import builtins
-#
-# if '_' not in builtins.__dict__:
-#     _ = gettext.gettext
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {
@@ -79,7 +78,7 @@ def on_language_apply_click(app, restart=False):
 
     :return:
     """
-    name = app.ui.general_pref_form.general_app_group.language_cb.currentText()
+    name = app.ui.general_pref_form.general_app_group.language_combo.currentText()
 
     theme_settings = QSettings("Open Source", "FlatCAM")
     if theme_settings.contains("theme"):
@@ -143,6 +142,7 @@ def apply_language(domain, lang=None):
             # This will write the setting to the platform specific storage.
             del settings
     else:
+        # TODO if lang is None we make a string from it?
         name = str(lang)
 
     for lang_code, lang_usable in load_languages().items():

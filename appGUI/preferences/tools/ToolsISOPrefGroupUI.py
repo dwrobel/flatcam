@@ -14,11 +14,12 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsISOPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(ToolsISOPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Isolation Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Clear non-copper regions
         self.iso_label = FCLabel("<b>%s:</b>" % _("Parameters"))

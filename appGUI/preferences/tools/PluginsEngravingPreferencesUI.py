@@ -18,25 +18,26 @@ if '_' not in builtins.__dict__:
 
 class PluginsEngravingPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, defaults, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.tools_iso_group = ToolsISOPrefGroupUI(decimals=self.decimals)
+        self.tools_iso_group = ToolsISOPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_iso_group.setMinimumWidth(220)
 
-        self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
+        self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_ncc_group.setMinimumWidth(220)
 
-        self.tools_paint_group = ToolsPaintPrefGroupUI(decimals=self.decimals)
+        self.tools_paint_group = ToolsPaintPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_paint_group.setMinimumWidth(220)
 
-        self.tools_2sided_group = Tools2sidedPrefGroupUI(decimals=self.decimals)
+        self.tools_2sided_group = Tools2sidedPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_2sided_group.setMinimumWidth(220)
 
-        self.tools_level_group = ToolsLevelPrefGroupUI(decimals=self.decimals)
+        self.tools_level_group = ToolsLevelPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_level_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()

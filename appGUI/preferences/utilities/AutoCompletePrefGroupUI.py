@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class AutoCompletePrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
         super().__init__(self, parent=parent)
 
         self.setTitle(str(_("Autocompleter Keywords")))
         self.decimals = decimals
+        self.defaults = defaults
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the autocompleter keywords list to the default state."))

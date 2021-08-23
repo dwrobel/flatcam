@@ -2690,7 +2690,6 @@ class CNCjob(Geometry):
     """
 
     defaults = {
-        "global_zdownrate": None,
         "pp_geometry_name": 'default',
         "pp_excellon_name": 'default',
         "excellon_optimization_type": "B",

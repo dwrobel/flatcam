@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2FiducialsPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Fiducials Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)

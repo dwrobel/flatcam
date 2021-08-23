@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class GerberAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GerberAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Gerber Adv. Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Advanced Gerber Parameters
         self.adv_param_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.08.2021
+
+- added a partial translation for Chinese Simplified language, by 俊霄 余
+- trying to separate the Preferences settings from App init and to make them dependent on the self.defaults dictionary
+- updated the language strings from the source
+
 22.08.2021
 
 - added a new menu entry in the View menu to show the application log file where even the fatal crashes are logged

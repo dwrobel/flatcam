@@ -1874,16 +1874,16 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals)
-        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals)
-        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals)
-        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals)
-        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals)
-        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals)
-        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals)
-        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals)
+        self.general_pref_form = GeneralPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.gerber_pref_form = GerberPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.excellon_pref_form = ExcellonPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.geo_pref_form = GeometryPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.cncjob_pref_form = CNCJobPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.plugin_pref_form = PluginsPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.plugin2_pref_form = Plugins2PreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
+        self.plugin_eng_pref_form = PluginsEngravingPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
 
-        self.util_pref_form = UtilPreferencesUI(decimals=self.decimals)
+        self.util_pref_form = UtilPreferencesUI(decimals=self.decimals, defaults=self.app.defaults)
 
         QtCore.QCoreApplication.instance().installEventFilter(self)
 

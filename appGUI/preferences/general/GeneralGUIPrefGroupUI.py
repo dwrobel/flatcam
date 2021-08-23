@@ -15,11 +15,12 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralGUIPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Create a grid layout for the Application general settings
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)

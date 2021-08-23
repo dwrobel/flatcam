@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
         super(GerberGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Gerber General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))

@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2OptimalPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2OptimalPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Optimal Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Parameters
         self.optlabel = FCLabel("<b>%s:</b>" % _("Parameters"))

@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class CNCJobOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job Options Preferences", parent=None)
         super(CNCJobOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("CNC Job Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Export G-Code
         self.export_gcode_label = FCLabel("<b>%s:</b>" % _("Export G-Code"))

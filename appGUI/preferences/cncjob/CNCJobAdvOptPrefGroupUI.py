@@ -12,10 +12,11 @@ if '_' not in builtins.__dict__:
 
 
 class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job Advanced Options Preferences", parent=None)
         super(CNCJobAdvOptPrefGroupUI, self).__init__(self, parent=parent)
         self.decimals = decimals
+        self.defaults = defaults
 
         self.setTitle(str(_("CNC Job Adv. Options")))
 

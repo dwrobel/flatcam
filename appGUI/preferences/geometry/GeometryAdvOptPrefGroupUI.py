@@ -14,12 +14,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry Advanced Options Preferences", parent=parent)
         super(GeometryAdvOptPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry Adv. Options")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ------------------------------
         # ## Advanced Options

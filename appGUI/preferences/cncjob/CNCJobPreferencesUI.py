@@ -8,21 +8,22 @@ from appGUI.preferences.cncjob.CNCJobEditorPrefGroupUI import CNCJobEditorPrefGr
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, defaults, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+        self.defaults = defaults
 
-        self.cncjob_gen_group = CNCJobGenPrefGroupUI(decimals=self.decimals)
+        self.cncjob_gen_group = CNCJobGenPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.cncjob_gen_group.setMinimumWidth(260)
 
-        self.cncjob_opt_group = CNCJobOptPrefGroupUI(decimals=self.decimals)
+        self.cncjob_opt_group = CNCJobOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.cncjob_opt_group.setMinimumWidth(260)
-        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI(decimals=self.decimals)
+        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.cncjob_adv_opt_group.setMinimumWidth(260)
 
-        self.cncjob_editor_group = CNCJobEditorPrefGroupUI(decimals=self.decimals)
+        self.cncjob_editor_group = CNCJobEditorPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.cncjob_editor_group.setMinimumWidth(260)
 
         vlay = QtWidgets.QVBoxLayout()

@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtCore
 
 from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry, FCLabel, FCGridLayout
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(ToolsSolderpastePrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("SolderPaste Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Solder Paste Dispensing
         self.solderpastelabel = FCLabel("<b>%s:</b>" % _("Parameters"))
@@ -233,6 +234,12 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         )
 
         self.pp_combo = FCComboBox()
+        self.pp_combo.addItems(self.defaults["tools_solderpaste_preprocessor_list"])
+
+        # add ToolTips for the Preprocessor ComboBoxes in Preferences
+        for it in range(self.pp_combo.count()):
+            self.pp_combo.setItemData(it, self.pp_combo.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
+
         grid0.addWidget(pp_label, 15, 0)
         grid0.addWidget(self.pp_combo, 15, 1)
 

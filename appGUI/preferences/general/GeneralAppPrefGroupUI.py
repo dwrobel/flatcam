@@ -17,11 +17,12 @@ if '_' not in builtins.__dict__:
 
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         super(GeneralAppPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(_("App Preferences"))
         self.decimals = decimals
+        self.defaults = defaults
 
         # Create a form layout for the Application general settings
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -127,8 +128,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         grid0.addWidget(self.languagelabel, 20, 0, 1, 2)
 
-        self.language_cb = FCComboBox()
-        grid0.addWidget(self.language_cb, 22, 0, 1, 2)
+        self.language_combo = FCComboBox()
+        grid0.addWidget(self.language_combo, 22, 0, 1, 2)
+        self.language_combo.addItems(self.defaults["global_languages"])
 
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"

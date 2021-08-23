@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class CNCJobGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job General Preferences", parent=None)
         super(CNCJobGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("CNC Job General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))

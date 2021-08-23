@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2InvertPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2InvertPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Invert Gerber Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Subtractor Tool Parameters
         self.sublabel = FCLabel("<b>%s:</b>" % _("Parameters"))

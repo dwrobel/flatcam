@@ -13,12 +13,13 @@ if '_' not in builtins.__dict__:
 
 
 class Tools2QRCodePrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
 
         super(Tools2QRCodePrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("QRCode Plugin")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Parameters
         self.qrlabel = FCLabel("<b>%s:</b>" % _("Parameters"))

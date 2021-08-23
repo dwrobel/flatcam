@@ -15,12 +15,13 @@ if '_' not in builtins.__dict__:
 
 
 class GeometryGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
+    def __init__(self, defaults, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry General Preferences", parent=parent)
         super(GeometryGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Geometry General")))
         self.decimals = decimals
+        self.defaults = defaults
 
         # ## Plot options
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
@@ -162,6 +163,14 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
 
     def optimization_selection(self, val):
+        if platform.architecture()[0] != '64bit':
+            # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
+            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
+            if val in ['M', 'B']:
+                self.opt_algorithm_radio.blockSignals(True)
+                self.opt_algorithm_radio.set_value('R')
+                self.opt_algorithm_radio.blockSignals(False)
+
         if val == 'M':
             self.optimization_time_label.setDisabled(False)
             self.optimization_time_entry.setDisabled(False)
