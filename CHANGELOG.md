@@ -14,6 +14,8 @@ CHANGELOG for FlatCAM beta
 - updated the language strings from the source
 - translation to Simplified Chinese language is done by 俊霄 余
 - updated the Turkish translation files, by Mehmet Kaya
+- in 2sided Plugin I've added ability to use shortcut keys (like Escape) when waiting for picking a hole when the Hole Snap feature is used
+- in 2sided Plugin entering in the Hole Snap feature will disable the notebook to signal that you need somehow to escape this mode
 
 22.08.2021
 

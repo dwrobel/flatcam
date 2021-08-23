@@ -383,6 +383,10 @@ class DblSidedTool(AppTool):
 
         self.local_connected = True
 
+        # disable the Notebook while in this feature
+        self.app.ui.notebook.setDisabled(True)
+        self.app.call_source = "2_sided_tool"
+
         self.app.inform.emit('%s.' % _("Click on canvas within the desired Excellon drill hole"))
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
 
@@ -426,10 +430,16 @@ class DblSidedTool(AppTool):
 
                                 # set the reference point for mirror
                                 self.ui.point_entry.set_value(center_pt_coords)
-
+                                self.on_exit()
                                 self.app.inform.emit('[success] %s' % _("Mirror reference point set."))
 
         elif event.button == right_button and self.app.event_is_dragging is False:
+            self.on_exit(cancelled=True)
+
+    def on_exit(self, cancelled=None):
+        self.app.call_source = "app"
+        self.app.ui.notebook.setDisabled(False)
+        if cancelled is True:
             self.app.delete_selection_shape()
             self.disconnect_events()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
