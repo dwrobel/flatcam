@@ -98,6 +98,7 @@ def apply_patches():
             offset = domain[0]
             scale = domain[1] - domain[0]
 
+            # trying to solve artifacts at maximum zoom
             if scale == 0 or not scale:
                 scale = 0.00000001
 
