@@ -8421,6 +8421,7 @@ class App(QtCore.QObject):
                 msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
                          "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
                 msg += msg_txt
+                self.log.error(msg)
                 self.inform.emit(msg)
                 return 'fail'
 

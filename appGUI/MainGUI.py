@@ -49,6 +49,7 @@ class MainGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
+    screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
@@ -1987,6 +1988,24 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
         self.build_infobar_context_menu()
 
+        self.screenChanged.connect(self.on_screen_change)
+
+    def on_screen_change(self, old_screen, new_screen):
+        """
+        Handler of a signal that emits when screens are changed in a multi-monitor setup
+
+        :param old_screen:  QtGui.QScreen where the app windows was located before move
+        :param new_screen:  QtGui.QScreen where the app windows is located after move
+        :return:
+        """
+        old_pixel_ratio = old_screen.devicePixelRatio()
+        new_pixel_ratio = new_screen.devicePixelRatio()
+
+        if old_pixel_ratio != 1.0 or new_pixel_ratio != 1.0:
+            # update canvas dpi
+            ratio = new_pixel_ratio / old_pixel_ratio
+            self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
+
     def set_ui_title(self, name):
         """
         Sets the title of the main window.
@@ -2156,22 +2175,6 @@ class MainGUI(QtWidgets.QMainWindow):
     def toggle_statusbar(self, checked):
         self.app.defaults["global_statusbar_show"] = checked
         self.status_toolbar.setVisible(checked)
-
-    def eventFilter(self, obj, event):
-        """
-        Filter the ToolTips display based on a Preferences setting
-
-        :param obj:
-        :param event: QT event to filter
-        :return:
-        """
-        if self.app.defaults["global_toggle_tooltips"] is False:
-            if event.type() == QtCore.QEvent.Type.ToolTip:
-                return True
-            else:
-                return False
-
-        return False
 
     def on_preferences_open_folder(self):
         """
@@ -2534,6 +2537,198 @@ class MainGUI(QtWidgets.QMainWindow):
                 self.geo_edit_toolbar.setDisabled(True)
                 self.grb_edit_toolbar.setVisible(True)
                 self.grb_edit_toolbar.setDisabled(True)
+
+    def on_shortcut_list(self):
+        # add the tab if it was closed
+        self.plot_tab_area.addTab(self.shortcuts_tab, _("Key Shortcut List"))
+
+        # delete the absolute and relative position and messages in the infobar
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.coords_toolbar.hide()
+        self.delta_coords_toolbar.hide()
+
+        # Switch plot_area to preferences page
+        self.plot_tab_area.setCurrentWidget(self.shortcuts_tab)
+        # self.show()
+
+    def on_select_tab(self, name):
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.splitter.sizes()[0] == 0:
+            self.splitter.setSizes([1, 1])
+        else:
+            if self.notebook.currentWidget().objectName() == name + '_tab':
+                self.splitter.setSizes([0, 1])
+
+        if name == 'project':
+            self.notebook.setCurrentWidget(self.project_tab)
+        elif name == 'properties':
+            self.notebook.setCurrentWidget(self.properties_tab)
+        elif name == 'tool':
+            self.notebook.setCurrentWidget(self.plugin_tab)
+
+    def createPopupMenu(self):
+        menu = super().createPopupMenu()
+
+        menu.addSeparator()
+        menu.addAction(self.lock_action)
+        return menu
+
+    def lock_toolbar(self, lock=False):
+        """
+        Used to (un)lock the toolbars of the app.
+
+        :param lock: boolean, will lock all toolbars in place when set True
+        :return: None
+        """
+
+        if lock:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setMovable(False)
+        else:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setMovable(True)
+
+    def on_fullscreen(self, disable=False):
+        """
+
+        :param disable:
+        :return:
+        """
+        flags = self.windowFlags()
+        if self.toggle_fscreen is False and disable is False:
+            # self.ui.showFullScreen()
+            self.setWindowFlags(flags | Qt.WindowType.FramelessWindowHint)
+            a = self.geometry()
+            self.x_pos = a.x()
+            self.y_pos = a.y()
+            self.width = a.width()
+            self.height = a.height()
+            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
+
+            # set new geometry to full desktop rect
+            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
+            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
+            # everything else will not work without this hack. This happen in Windows.
+            # https://bugreports.qt.io/browse/QTBUG-41309
+            # desktop = self.app.qapp.desktop()
+            # screen = desktop.screenNumber(QtGui.QCursor.pos())
+
+            # rec = desktop.screenGeometry(screen)
+
+            # x = rec.x() - 1
+            # y = rec.y() - 1
+            # h = rec.height() + 2
+            # w = rec.width() + 2
+            #
+            # self.setGeometry(x, y, w, h)
+            # self.show()
+
+            self.app.ui.showFullScreen()
+
+            # hide all Toolbars
+            for tb in self.findChildren(QtWidgets.QToolBar):
+                tb.setVisible(False)
+
+            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
+            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
+            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
+            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
+
+            self.splitter.setSizes([0, 1])
+            self.toggle_fscreen = True
+        elif self.toggle_fscreen is True or disable is True:
+            self.setWindowFlags(flags & ~Qt.WindowType.FramelessWindowHint)
+            # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
+            # self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
+            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+13, self.width, self.height)
+
+            self.showNormal()
+            self.restore_toolbar_view()
+            self.toggle_fscreen = False
+
+    def on_toggle_plotarea(self):
+        """
+
+        :return:
+        """
+        try:
+            name = self.plot_tab_area.widget(0).objectName()
+        except AttributeError:
+            self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.plot_tab_area.protectTab(0)
+            return
+
+        if name != 'plotarea_tab':
+            self.plot_tab_area.insertTab(0, self.plot_tab, _("Plot Area"))
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.plot_tab_area.protectTab(0)
+        else:
+            self.plot_tab_area.closeTab(0)
+
+    def on_toggle_notebook(self):
+        """
+
+        :return:
+        """
+        if self.splitter.sizes()[0] == 0:
+            self.splitter.setSizes([1, 1])
+            self.menu_toggle_nb.setChecked(True)
+        else:
+            self.splitter.setSizes([0, 1])
+            self.menu_toggle_nb.setChecked(False)
+
+    def on_toggle_grid(self):
+        """
+
+        :return:
+        """
+        self.grid_snap_btn.trigger()
+
+    def toggle_shell_ui(self):
+        """
+        Toggle shell dock: if is visible close it, if it is closed then open it
+
+        :return: None
+        """
+
+        if self.shell_dock.isVisible():
+            self.shell_dock.hide()
+            self.app.plotcanvas.native.setFocus()
+        else:
+            self.shell_dock.show()
+
+            # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
+            # self.shell._edit.setFocus()
+            QtCore.QTimer.singleShot(0, lambda: self.shell_dock.widget()._edit.setFocus())
+
+            # HACK - simulate a mouse click - alternative
+            # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.KeyboardModifier.NoModifier)    # no KB modifier
+            # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
+            # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, e)
+            # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, f)
+
+    def on_shelldock_toggled(self, visibility):
+        if visibility is True:
+            self.shell_status_label.setStyleSheet("""
+                                                  QLabel
+                                                  {
+                                                      color: black;
+                                                      background-color: lightcoral;
+                                                  }
+                                                  """)
+            self.app.inform[str, bool].emit(_("Shell enabled."), False)
+        else:
+            self.shell_status_label.setStyleSheet("")
+            self.app.inform[str, bool].emit(_("Shell disabled."), False)
 
     def keyPressEvent(self, event):
         """
@@ -3941,59 +4136,21 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key.Key_J or key == 'J':
                     self.app.on_jump_to()
 
-    def on_shortcut_list(self):
-        # add the tab if it was closed
-        self.plot_tab_area.addTab(self.shortcuts_tab, _("Key Shortcut List"))
-
-        # delete the absolute and relative position and messages in the infobar
-        # self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
-        # hide coordinates toolbars in the infobar while in DB
-        self.coords_toolbar.hide()
-        self.delta_coords_toolbar.hide()
-
-        # Switch plot_area to preferences page
-        self.plot_tab_area.setCurrentWidget(self.shortcuts_tab)
-        # self.show()
-
-    def on_select_tab(self, name):
-        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-        if self.splitter.sizes()[0] == 0:
-            self.splitter.setSizes([1, 1])
-        else:
-            if self.notebook.currentWidget().objectName() == name + '_tab':
-                self.splitter.setSizes([0, 1])
-
-        if name == 'project':
-            self.notebook.setCurrentWidget(self.project_tab)
-        elif name == 'properties':
-            self.notebook.setCurrentWidget(self.properties_tab)
-        elif name == 'tool':
-            self.notebook.setCurrentWidget(self.plugin_tab)
-
-    def createPopupMenu(self):
-        menu = super().createPopupMenu()
-
-        menu.addSeparator()
-        menu.addAction(self.lock_action)
-        return menu
-
-    def lock_toolbar(self, lock=False):
+    def eventFilter(self, obj, event):
         """
-        Used to (un)lock the toolbars of the app.
+        Filter the ToolTips display based on a Preferences setting
 
-        :param lock: boolean, will lock all toolbars in place when set True
-        :return: None
+        :param obj:
+        :param event: QT event to filter
+        :return:
         """
+        if self.app.defaults["global_toggle_tooltips"] is False:
+            if event.type() == QtCore.QEvent.Type.ToolTip:
+                return True
+            else:
+                return False
 
-        if lock:
-            for widget in self.children():
-                if isinstance(widget, QtWidgets.QToolBar):
-                    widget.setMovable(False)
-        else:
-            for widget in self.children():
-                if isinstance(widget, QtWidgets.QToolBar):
-                    widget.setMovable(True)
+        return False
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
@@ -4080,143 +4237,14 @@ class MainGUI(QtWidgets.QMainWindow):
                 # sys.exit(0)
         event.ignore()
 
-    def on_fullscreen(self, disable=False):
-        """
+    def moveEvent(self, event):
+        oldScreen = QtWidgets.QApplication.screenAt(event.oldPos())
+        newScreen = QtWidgets.QApplication.screenAt(event.pos())
 
-        :param disable:
-        :return:
-        """
-        flags = self.windowFlags()
-        if self.toggle_fscreen is False and disable is False:
-            # self.ui.showFullScreen()
-            self.setWindowFlags(flags | Qt.WindowType.FramelessWindowHint)
-            a = self.geometry()
-            self.x_pos = a.x()
-            self.y_pos = a.y()
-            self.width = a.width()
-            self.height = a.height()
-            self.titlebar_height = self.app.qapp.style().pixelMetric(QtWidgets.QStyle.PixelMetric.PM_TitleBarHeight)
+        if not oldScreen == newScreen:
+            self.screenChanged.emit(oldScreen, newScreen)
 
-            # set new geometry to full desktop rect
-            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
-            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
-            # everything else will not work without this hack. This happen in Windows.
-            # https://bugreports.qt.io/browse/QTBUG-41309
-            # desktop = self.app.qapp.desktop()
-            # screen = desktop.screenNumber(QtGui.QCursor.pos())
-
-            # rec = desktop.screenGeometry(screen)
-
-            # x = rec.x() - 1
-            # y = rec.y() - 1
-            # h = rec.height() + 2
-            # w = rec.width() + 2
-            #
-            # self.setGeometry(x, y, w, h)
-            # self.show()
-
-            self.app.ui.showFullScreen()
-
-            # hide all Toolbars
-            for tb in self.findChildren(QtWidgets.QToolBar):
-                tb.setVisible(False)
-
-            self.coords_toolbar.setVisible(self.app.defaults["global_coordsbar_show"])
-            self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coordsbar_show"])
-            self.grid_toolbar.setVisible(self.app.defaults["global_gridbar_show"])
-            self.status_toolbar.setVisible(self.app.defaults["global_statusbar_show"])
-
-            self.splitter.setSizes([0, 1])
-            self.toggle_fscreen = True
-        elif self.toggle_fscreen is True or disable is True:
-            self.setWindowFlags(flags & ~Qt.WindowType.FramelessWindowHint)
-            # the additions are made to account for the pixels we subtracted/added above in the (x, y, h, w)
-            # self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+4, self.width, self.height)
-            self.setGeometry(self.x_pos+1, self.y_pos+self.titlebar_height+13, self.width, self.height)
-
-            self.showNormal()
-            self.restore_toolbar_view()
-            self.toggle_fscreen = False
-
-    def on_toggle_plotarea(self):
-        """
-
-        :return:
-        """
-        try:
-            name = self.plot_tab_area.widget(0).objectName()
-        except AttributeError:
-            self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
-            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
-            self.plot_tab_area.protectTab(0)
-            return
-
-        if name != 'plotarea_tab':
-            self.plot_tab_area.insertTab(0, self.plot_tab, _("Plot Area"))
-            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
-            self.plot_tab_area.protectTab(0)
-        else:
-            self.plot_tab_area.closeTab(0)
-
-    def on_toggle_notebook(self):
-        """
-
-        :return:
-        """
-        if self.splitter.sizes()[0] == 0:
-            self.splitter.setSizes([1, 1])
-            self.menu_toggle_nb.setChecked(True)
-        else:
-            self.splitter.setSizes([0, 1])
-            self.menu_toggle_nb.setChecked(False)
-
-    def on_toggle_grid(self):
-        """
-
-        :return:
-        """
-        self.grid_snap_btn.trigger()
-
-    def toggle_shell_ui(self):
-        """
-        Toggle shell dock: if is visible close it, if it is closed then open it
-
-        :return: None
-        """
-
-        if self.shell_dock.isVisible():
-            self.shell_dock.hide()
-            self.app.plotcanvas.native.setFocus()
-        else:
-            self.shell_dock.show()
-
-            # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
-            # self.shell._edit.setFocus()
-            QtCore.QTimer.singleShot(0, lambda: self.shell_dock.widget()._edit.setFocus())
-
-            # HACK - simulate a mouse click - alternative
-            # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.KeyboardModifier.NoModifier)    # no KB modifier
-            # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
-            # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
-            #                       no_km)
-            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, e)
-            # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
-            #                       no_km)
-            # QtCore.QCoreApplication.instance().sendEvent(self.shell._edit, f)
-
-    def on_shelldock_toggled(self, visibility):
-        if visibility is True:
-            self.shell_status_label.setStyleSheet("""
-                                                  QLabel
-                                                  {
-                                                      color: black;
-                                                      background-color: lightcoral;
-                                                  }
-                                                  """)
-            self.app.inform[str, bool].emit(_("Shell enabled."), False)
-        else:
-            self.shell_status_label.setStyleSheet("")
-            self.app.inform[str, bool].emit(_("Shell disabled."), False)
+        return super().moveEvent(event)
 
 
 class ShortcutsTab(QtWidgets.QWidget):
