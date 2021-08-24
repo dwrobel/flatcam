@@ -4,7 +4,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCSpinner, FCCheckBox, FCComboBox, FCButton, OptionalInputSection, \
-    FCDoubleSpinner, FCLabel, FCGridLayout
+    FCDoubleSpinner, FCLabel, FCGridLayout, RadioSetDefaults
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,8 +35,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel.setToolTip(_("The default value for the application units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "FlatCAM is started."))
-        self.units_radio = RadioSet([{'label': _('MM'), 'value': 'MM'},
-                                     {'label': _('IN'), 'value': 'IN'}])
+        self.units_radio = RadioSetDefaults(
+            choices=[{'label': _('MM'), 'value': 'MM'}, {'label': _('IN'), 'value': 'IN'}]
+        )
 
         grid0.addWidget(self.unitslabel, 0, 0)
         grid0.addWidget(self.units_radio, 0, 1)

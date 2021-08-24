@@ -1396,7 +1396,7 @@ class App(QtCore.QObject):
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
         # when the defaults dictionary values change
-        self.defaults.defaults.set_change_callback(callback=self.on_properties_tab_click)
+        self.defaults.defaults.set_change_callback(callback=self.on_defaults_value_changed)
 
         # ###########################################################################################################
         # ########################################## Standard signals ###############################################
@@ -1805,6 +1805,18 @@ class App(QtCore.QObject):
 
     def log_path(self):
         return os.path.join(self.data_path, 'log.txt')
+
+    def on_defaults_value_changed(self, key_changed):
+        # when changing those properties the associated keys change so we get an updated Properties default Tab
+        if key_changed in [
+            "global_grid_lines", "global_grid_snap", "global_axis", "global_workspace", "global_workspaceT",
+            "global_workspace_orientation", "global_hud"
+        ]:
+            self.on_properties_tab_click(index=None)
+
+        # TODO handle changing the units in the Preferences
+        # if key_changed == "units":
+        #     self.on_toggle_units(no_pref=False)
 
     def on_app_restart(self):
 
@@ -4600,7 +4612,7 @@ class App(QtCore.QObject):
             if dim in ['tools_mill_tooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
                        'tools_paint_tooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
                        'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
-                       'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
+                       'tools_mill_toolchangexy', 'tools_mill_endxy', 'tools_solderpaste_xy_toolchange']:
                 if not self.defaults[dim] or self.defaults[dim] == '':
                     continue
 
@@ -4672,6 +4684,8 @@ class App(QtCore.QObject):
             self.log.debug("on_toggle_units(): Same as previous, ignoring.")
             return
 
+        # new_units = self.defaults["units"]
+
         # Keys in self.defaults for which to scale their values
         dimensions = [
             # Global
@@ -4693,15 +4707,15 @@ class App(QtCore.QObject):
             "excellon_editor_slot_length",
 
             # Geometry Object
-            'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
-            'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
-            "geometry_toolchangexy", 'tools_mill_tooldia', 'geometry_endz', 'geometry_endxy',
-            "geometry_extracut_length", "geometry_z_pdepth",
-            "geometry_feedrate_probe", "geometry_startz", "geometry_segx", "geometry_segy", "geometry_area_overz",
+            'tools_mill_cutz', "tools_mill_depthperpass", 'tools_mill_travelz', 'tools_mill_feedrate',
+            'tools_mill_feedrate_rapid', "tools_mill_toolchangez", "tools_mill_feedrate_z",
+            "tools_mill_toolchangexy", 'tools_mill_tooldia', 'tools_mill_endz', 'tools_mill_endxy',
+            "tools_mill_extracut_length", "tools_mill_z_pdepth",
+            "tools_mill_feedrate_probe", "tools_mill_startz", "geometry_segx", "geometry_segy", "tools_mill_area_overz",
 
             # CNCJob Object
-            'cncjob_tooldia', "cncjob_al_travelz", "cncjob_al_probe_depth", "cncjob_al_grbl_jog_step",
-            "cncjob_al_grbl_jog_fr", "cncjob_al_grbl_travelz",
+            'cncjob_tooldia', "tools_al_travelz", "tools_al_probe_depth", "tools_al_grbl_jog_step",
+            "tools_al_grbl_jog_fr", "tools_al_grbl_travelz",
 
             # Isolation Tool
             "tools_iso_tool_cutz",

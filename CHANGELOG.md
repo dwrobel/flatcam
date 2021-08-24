@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.08.2021
+
+- fixed some issues in the convert_units
+- added a new GUI element, a radio button that can change a setting in the self.defaults preferences dict
+- made sure that the update of the default properties tab (in the Notebook) is done only for certain keys in self.defaults not for all
+
 24.08.2021
 
 - using PyQt6 with multi monitors, when the pixel ratio (scaling in WIndows) is different than 1.0 there are visual issues in the 3D canvas - trying to solve by updating the dpi - partial solve

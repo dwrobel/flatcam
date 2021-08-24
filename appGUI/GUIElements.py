@@ -109,6 +109,40 @@ class RadioSet(QtWidgets.QWidget):
                 option['radio'].setDisabled(val)
 
 
+class RadioSetDefaults(RadioSet):
+
+    def __init__(self, choices, dictionary=None, key_spec=None, orientation='horizontal', stretch=None, parent=None):
+        """
+        When a choice is made then the selected value is set in the key key_spec from the dictionary 'dictionary'
+        The choices are specified as a list of dictionaries containing:
+
+        * 'label': Shown in the UI
+        * 'value': The value returned is selected
+
+        :param choices: List of choices. See description.
+        :param orientation: 'horizontal' (default) of 'vertical'.
+        :param parent: Qt parent widget.
+        :type choices:      list
+        :param dictionary:
+        :type dictionary:   "dict"
+        :param key_spec:
+        :type key_spec:      'str'
+        """
+
+        super(RadioSetDefaults, self).__init__(choices=choices, orientation=orientation, stretch=stretch, parent=parent)
+        self.dictionary = dictionary
+        self.key_spec = key_spec
+
+    def on_toggle(self, checked):
+        if checked:
+            self.group_toggle_fn()
+            ret_val = str(self.get_value())
+            if self.dictionary is not None and self.key_spec is not None:
+                self.dictionary[self.key_spec] = ret_val
+            self.activated_custom.emit(ret_val)
+        return
+
+
 # class RadioGroupChoice(QtWidgets.QWidget):
 #     def __init__(self, label_1, label_2, to_check, hide_list, show_list, parent=None):
 #         """
