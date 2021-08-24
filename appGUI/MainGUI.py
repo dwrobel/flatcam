@@ -49,7 +49,7 @@ class MainGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
-    screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
+    # screenChanged = QtCore.pyqtSignal(QtGui.QScreen, QtGui.QScreen)
 
     # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
     def __init__(self, app):
@@ -1988,23 +1988,23 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
         self.build_infobar_context_menu()
 
-        self.screenChanged.connect(self.on_screen_change)
+        # self.screenChanged.connect(self.on_screen_change)
 
-    def on_screen_change(self, old_screen, new_screen):
-        """
-        Handler of a signal that emits when screens are changed in a multi-monitor setup
-
-        :param old_screen:  QtGui.QScreen where the app windows was located before move
-        :param new_screen:  QtGui.QScreen where the app windows is located after move
-        :return:
-        """
-        old_pixel_ratio = old_screen.devicePixelRatio()
-        new_pixel_ratio = new_screen.devicePixelRatio()
-
-        if old_pixel_ratio != 1.0 or new_pixel_ratio != 1.0:
-            # update canvas dpi
-            ratio = new_pixel_ratio / old_pixel_ratio
-            self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
+    # def on_screen_change(self, old_screen, new_screen):
+    #     """
+    #     Handler of a signal that emits when screens are changed in a multi-monitor setup
+    #
+    #     :param old_screen:  QtGui.QScreen where the app windows was located before move
+    #     :param new_screen:  QtGui.QScreen where the app windows is located after move
+    #     :return:
+    #     """
+    #     old_pixel_ratio = old_screen.devicePixelRatio()
+    #     new_pixel_ratio = new_screen.devicePixelRatio()
+    #
+    #     if old_pixel_ratio != 1.0 or new_pixel_ratio != 1.0:
+    #         # update canvas dpi
+    #         ratio = new_pixel_ratio / old_pixel_ratio
+    #         self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
 
     def set_ui_title(self, name):
         """
@@ -4237,14 +4237,14 @@ class MainGUI(QtWidgets.QMainWindow):
                 # sys.exit(0)
         event.ignore()
 
-    def moveEvent(self, event):
-        oldScreen = QtWidgets.QApplication.screenAt(event.oldPos())
-        newScreen = QtWidgets.QApplication.screenAt(event.pos())
-
-        if not oldScreen == newScreen:
-            self.screenChanged.emit(oldScreen, newScreen)
-
-        return super().moveEvent(event)
+    # def moveEvent(self, event):
+    #     oldScreen = QtWidgets.QApplication.screenAt(event.oldPos())
+    #     newScreen = QtWidgets.QApplication.screenAt(event.pos())
+    #
+    #     if not oldScreen == newScreen:
+    #         self.screenChanged.emit(oldScreen, newScreen)
+    #
+    #     return super().moveEvent(event)
 
 
 class ShortcutsTab(QtWidgets.QWidget):

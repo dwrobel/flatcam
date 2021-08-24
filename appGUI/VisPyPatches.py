@@ -7,6 +7,7 @@
 # ##########################################################
 
 from vispy.visuals import markers, InfiniteLineVisual
+from vispy.app.backends._pyqt6 import CanvasBackendDesktop
 from vispy.visuals.axis import Ticker, _get_ticks_talbot
 from vispy.scene.widgets import Grid
 import numpy as np
@@ -55,7 +56,7 @@ def apply_patches():
     Grid._prepare_draw = _prepare_draw
     Grid._update_clipper = _update_clipper
 
-    # Patch InfiniteLine visual to 1px width
+    # Patch InfiniteLine visual to 1.5px width
     def _prepare_draw(self, view=None):
         """This method is called immediately before each draw.
         The *view* argument indicates which view is about to be drawn.
@@ -72,7 +73,7 @@ def apply_patches():
 
         if GL:
             GL.glDisable(GL.GL_LINE_SMOOTH)
-            GL.glLineWidth(2.0)
+            GL.glLineWidth(1.5)
 
         if self._changed['pos']:
             self.pos_buf.set_data(self._pos)
@@ -139,3 +140,19 @@ def apply_patches():
             return NotImplementedError
 
     Ticker._get_tick_frac_labels = _get_tick_frac_labels
+
+    def _resizeGL(self, w, h):
+        if self._vispy_canvas is None:
+            return
+        if hasattr(self, 'devicePixelRatio'):
+            # We take into account devicePixelRatio, which is non-unity on
+            # e.g HiDPI displays.
+            # self.devicePixelRatio() is a float and should have been in Qt5 according to the documentation
+            ratio = self.devicePixelRatio()
+            w = int(w * ratio)
+            h = int(h * ratio)
+        self._vispy_set_physical_size(w, h)
+        self._vispy_canvas.events.resize(size=(self.width(), self.height()),
+                                         physical_size=(w, h))
+
+    CanvasBackendDesktop.resizeGL = _resizeGL

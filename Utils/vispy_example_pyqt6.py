@@ -2,7 +2,6 @@ from PyQt6.QtGui import QPalette, QScreen
 from PyQt6 import QtCore, QtWidgets
 
 import vispy.scene as scene
-from vispy.scene.visuals import Rectangle, Text
 from vispy.color import Color
 
 import sys
@@ -24,6 +23,7 @@ class VisPyCanvas(scene.SceneCanvas):
         self.central_widget.bgcolor = back_color
         self.central_widget.border_color = back_color
 
+        # Add a Grid Widget
         self.grid_widget = self.central_widget.add_grid(margin=10)
         self.grid_widget.spacing = 0
 
@@ -60,6 +60,7 @@ class VisPyCanvas(scene.SceneCanvas):
         self.xaxis.link_view(self.view)
         self.yaxis.link_view(self.view)
 
+        # add GridLines
         self.grid = scene.GridLines(parent=self.view.scene, color='dimgray')
         self.grid.set_gl_state(depth_test=False)
 
@@ -166,8 +167,15 @@ class MyGui(QtWidgets.QMainWindow):
         :param new_screen:  QtGui.QScreen where the app windows is located after move
         :return:
         """
-        old_pixel_ratio = old_screen.devicePixelRatio()
-        new_pixel_ratio = new_screen.devicePixelRatio()
+        try:
+            old_pixel_ratio = old_screen.devicePixelRatio()
+        except AttributeError:
+            return
+
+        try:
+            new_pixel_ratio = new_screen.devicePixelRatio()
+        except AttributeError:
+            return
 
         if old_pixel_ratio != new_pixel_ratio:
             # update canvas dpi
