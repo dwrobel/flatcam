@@ -10,7 +10,8 @@ CHANGELOG for FlatCAM beta
 24.08.2021
 
 - using PyQt6 with multi monitors, when the pixel ratio (scaling in WIndows) is different than 1.0 there are visual issues in the 3D canvas - trying to solve by updating the dpi - partial solve
-- failing to load the #d graphic engine is now reported on the log.txt file found in the Preferences folder (in appData/Roaming/app_name for Windows)
+- failing to load the 3d graphic engine is now reported on the log.txt file found in the Preferences folder (in appData/Roaming/app_name for Windows)
+- added an example to ilustrate the issue with scaling in Qt6 and VisPy
 
 23.08.2021
 
