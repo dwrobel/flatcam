@@ -5149,6 +5149,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu = QtWidgets.QMenu(parent)
 
+        # Run Script
         menu_runscript = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
                                        '%s' % _('Run Script ...'), self)
         menu_runscript.setToolTip(
@@ -5157,6 +5158,14 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
               "functions of FlatCAM.")
         )
         menu.addAction(menu_runscript)
+
+        # Toggle GUI
+        menu_toggle_gui = QtGui.QAction(QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'),
+                                        '%s' % _('Toggle GUI ...'), self)
+        menu_toggle_gui.setToolTip(
+            _("Will show/hide the GUI.")
+        )
+        menu.addAction(menu_toggle_gui)
 
         menu.addSeparator()
 
@@ -5194,6 +5203,8 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.setContextMenu(menu)
+
+        menu_toggle_gui.triggered.connect(self.app.ui.on_toggle_gui)
 
         menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
             silent=True if self.app.cmd_line_headless == 1 else False))

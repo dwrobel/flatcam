@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - fixed some issues in the convert_units
 - added a new GUI element, a radio button that can change a setting in the self.defaults preferences dict
 - made sure that the update of the default properties tab (in the Notebook) is done only for certain keys in self.defaults not for all
+- fixed the "headless" feature; running headless still start the GUI just it does not show it
+- when running headless the sys tray icon will always be shown so the user can close the app correctly
+- in the systray icon context menu I've added a menu entry to toggle the GUI
 
 24.08.2021
 

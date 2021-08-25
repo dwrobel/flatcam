@@ -2017,6 +2017,20 @@ class MainGUI(QtWidgets.QMainWindow):
             self.app.version, ('BETA' if self.app.beta else ''), platform.architecture()[0], self.app.engine, name)
         self.setWindowTitle(title)
 
+    def on_toggle_gui(self):
+        if self.isHidden():
+            mgui_settings = QSettings("Open Source", "FlatCAM")
+            if mgui_settings.contains("maximized_gui"):
+                maximized_ui = mgui_settings.value('maximized_gui', type=bool)
+                if maximized_ui is True:
+                    self.showMaximized()
+                else:
+                    self.show()
+            else:
+                self.show()
+        else:
+            self.hide()
+
     def save_geometry(self, x, y, width, height, notebook_width):
         """
         Will save the application geometry and positions in the defaults dicitionary to be restored at the next

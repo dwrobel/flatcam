@@ -492,8 +492,6 @@ class App(QtCore.QObject):
                             if param[0] == 'headless':
                                 if param[2].lower() == 'true':
                                     self.cmd_line_headless = 1
-                                else:
-                                    self.cmd_line_headless = None
                     except Exception as e:
                         self.log.error('App.__init__() -->%s' % str(e))
                         return
@@ -1352,16 +1350,16 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ############################################### SYS TRAY ##################################################
         # ###########################################################################################################
-        if self.defaults["global_systray_icon"]:
-            self.parent_w = QtWidgets.QWidget()
-
-            if self.cmd_line_headless == 1:
-                self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location +
-                                                                   '/flatcam_icon32_green.png'),
-                                                  headless=True,
-                                                  parent=self.parent_w)
-            else:
+        self.parent_w = QtWidgets.QWidget()
+        if self.cmd_line_headless == 1:
+            # if running headless always have the systray to be able to quit the app correctly
+            self.trayIcon = FlatCAMSystemTray(app=self,
+                                              icon=QtGui.QIcon(self.resource_location +
+                                                               '/flatcam_icon32_green.png'),
+                                              headless=True,
+                                              parent=self.parent_w)
+        else:
+            if self.defaults["global_systray_icon"]:
                 self.trayIcon = FlatCAMSystemTray(app=self,
                                                   icon=QtGui.QIcon(self.resource_location +
                                                                    '/flatcam_icon32_green.png'),
@@ -1576,6 +1574,10 @@ class App(QtCore.QObject):
             if self.defaults["global_systray_icon"]:
                 self.trayIcon.show()
         else:
+            try:
+                self.trayIcon.show()
+            except Exception as err:
+                self.log.error("App.__init__() Running headless and trying to show the systray got: %s" % str(err))
             self.log.warning("*******************  RUNNING HEADLESS  *******************")
 
         # ###########################################################################################################
