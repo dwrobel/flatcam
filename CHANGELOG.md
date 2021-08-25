@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed the "headless" feature; running headless still start the GUI just it does not show it
 - when running headless the sys tray icon will always be shown so the user can close the app correctly
 - in the systray icon context menu I've added a menu entry to toggle the GUI
+- fixed a possible issue with having older versions of QSettings (leftovers from previous installations of this app)
 
 24.08.2021
 
