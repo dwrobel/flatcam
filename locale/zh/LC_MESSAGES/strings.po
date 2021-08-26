@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-08-26 03:48+0300\n"
-"PO-Revision-Date: 2021-08-26 03:49+0300\n"
+"PO-Revision-Date: 2021-08-26 21:41+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -331,7 +331,7 @@ msgstr "钻孔参数"
 
 #: appDatabase.py:155
 msgid "Cutout Parameters"
-msgstr "剪切参数"
+msgstr "切割参数"
 
 #: appDatabase.py:205
 msgid ""
@@ -421,7 +421,7 @@ msgstr "NCC"
 #: appGUI/ObjectUI.py:377 appPlugins/ToolCutOut.py:179
 #: appPlugins/ToolCutOut.py:522 appPlugins/ToolCutOut.py:2286
 msgid "Cutout"
-msgstr "剪切"
+msgstr "切割"
 
 #: appDatabase.py:287 appEditors/appGCodeEditor.py:804 appGUI/ObjectUI.py:999
 #: appGUI/ObjectUI.py:1374
@@ -1198,7 +1198,7 @@ msgid ""
 "add a drill hole on the slot end point."
 msgstr ""
 "如果槽长度未完全被钻孔覆盖，\n"
-"在插槽端点上添加钻孔。"
+"在槽端点上添加钻孔。"
 
 #: appDatabase.py:1131 appGUI/preferences/tools/Tools2ExtractPrefGroupUI.py:254
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109
@@ -1322,7 +1322,7 @@ msgstr ""
 "用于自动切断的间隙数。\n"
 "最多可以有8个桥/间隙。\n"
 "这些选择包括：\n"
-"-None-：无差距\n"
+"-None-：无间隙\n"
 "-lr-：左+右\n"
 "-tb-：顶部+底部\n"
 "-4-：左+右+上+下\n"
@@ -1684,7 +1684,7 @@ msgstr "失败。"
 
 #: appEditors/AppExcEditor.py:660
 msgid "To add a slot first select a tool"
-msgstr "要添加插槽，请首先选择工具"
+msgstr "要添加槽，请首先选择工具"
 
 #: appEditors/AppExcEditor.py:720 appEditors/AppExcEditor.py:727
 #: appEditors/AppExcEditor.py:1082 appEditors/AppExcEditor.py:1089
@@ -1697,7 +1697,7 @@ msgstr "若要添加钻孔阵列，请首先在刀具表中选择一个刀具"
 
 #: appEditors/AppExcEditor.py:933
 msgid "Click on the Slot Circular Array Start position"
-msgstr "单击插槽圆形阵列的开始位置"
+msgstr "单击槽圆形阵列的开始位置"
 
 #: appEditors/AppExcEditor.py:958 appEditors/AppGerberEditor.py:538
 msgid "The value is mistyped. Check the value."
@@ -1892,7 +1892,7 @@ msgstr "此Excellon对象中的刀具用于钻孔时。"
 
 #: appEditors/AppExcEditor.py:4039
 msgid "Convert Slots"
-msgstr "转换插槽"
+msgstr "转换槽"
 
 #: appEditors/AppExcEditor.py:4043
 msgid "Convert the slots in the selected tools to drills."
@@ -2181,13 +2181,13 @@ msgstr "圆形组中每个元素的放置角度。"
 
 #: appEditors/AppExcEditor.py:4326
 msgid "Slot Parameters"
-msgstr "插槽参数"
+msgstr "槽参数"
 
 #: appEditors/AppExcEditor.py:4328
 msgid ""
 "Parameters for adding a slot (hole with oval shape)\n"
 "either single or as an part of an array."
-msgstr "用于添加单个或作为阵列一部分的插槽（椭圆形孔）的参数。"
+msgstr "用于添加单个或作为阵列一部分的槽（椭圆形孔）的参数。"
 
 #: appEditors/AppExcEditor.py:4334 appEditors/AppGeoEditor.py:3568
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:156
@@ -2200,7 +2200,7 @@ msgstr "长度"
 #: appEditors/AppExcEditor.py:4336
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:158
 msgid "Length. The length of the slot."
-msgstr "长度。插槽的长度。"
+msgstr "长度。槽的长度。"
 
 #: appEditors/AppExcEditor.py:4350
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:174
@@ -2210,7 +2210,7 @@ msgid ""
 "- 'Y' - vertical axis or \n"
 "- 'Angle' - a custom angle for the slot inclination"
 msgstr ""
-"插槽的定向方向：\n"
+"槽的定向方向：\n"
 "-“X”-水平轴\n"
 "-“Y”-垂直轴或\n"
 "-“角度”-槽倾斜的自定义角度"
@@ -2223,31 +2223,31 @@ msgid ""
 "Min value is: -360.00 degrees.\n"
 "Max value is: 360.00 degrees."
 msgstr ""
-"插槽放置的角度。\n"
+"槽放置的角度。\n"
 "精度最大为2位小数。\n"
 "最小值为：-360.00度。\n"
 "最大值为：360.00度。"
 
 #: appEditors/AppExcEditor.py:4400
 msgid "Slot Array Parameters"
-msgstr "插槽阵列参数"
+msgstr "槽阵列参数"
 
 #: appEditors/AppExcEditor.py:4402
 msgid "Parameters for the array of slots (linear or circular array)"
-msgstr "插槽阵列的参数（线性或圆形阵列）"
+msgstr "槽阵列的参数（线性或圆形阵列）"
 
 #: appEditors/AppExcEditor.py:4410
 msgid ""
 "Select the type of slot array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
-"选择要创建的插槽阵列的类型。\n"
+"选择要创建的槽阵列的类型。\n"
 "它可以是线性X（Y）或圆形"
 
 #: appEditors/AppExcEditor.py:4422
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:215
 msgid "Specify how many slots to be in the array."
-msgstr "指定阵列中的插槽数量。"
+msgstr "指定阵列中的槽数量。"
 
 #: appEditors/AppExcEditor.py:4530 appEditors/AppGeoEditor.py:3646
 #: appEditors/AppGerberEditor.py:6645 appEditors/appGCodeEditor.py:74
@@ -2870,7 +2870,7 @@ msgstr ""
 #: appPlugins/ToolMilling.py:4415 appPlugins/ToolPanelize.py:1187
 #: appPlugins/ToolTransform.py:620
 msgid "Object"
-msgstr "目标"
+msgstr "对象"
 
 #: appEditors/AppGeoEditor.py:1247 appEditors/AppGerberEditor.py:7201
 #: appPlugins/ToolTransform.py:184
@@ -4130,7 +4130,7 @@ msgstr "钻孔"
 #: appPlugins/ToolMilling.py:3631 appPlugins/ToolMilling.py:3825
 #: appPlugins/ToolReport.py:196
 msgid "Slots"
-msgstr "插槽"
+msgstr "槽"
 
 #: appEditors/appGCodeEditor.py:837 appEditors/appGCodeEditor.py:859
 msgid "CNC Code Snippet"
@@ -4393,7 +4393,7 @@ msgstr "将运行打开的Tcl脚本，从而实现FlatCAM某些功能的自动�
 
 #: appGUI/GUIElements.py:5164
 msgid "Toggle GUI ..."
-msgstr "切换GUI"
+msgstr "切换GUI..."
 
 #: appGUI/GUIElements.py:5166
 msgid "Will show/hide the GUI."
@@ -4440,7 +4440,7 @@ msgstr "退出"
 
 #: appGUI/MainGUI.py:73 appGUI/MainGUI.py:75 appGUI/MainGUI.py:1665
 msgid "Toggle Panel"
-msgstr "切换面板"
+msgstr "切换拼板"
 
 #: appGUI/MainGUI.py:85
 msgid "File"
@@ -4789,7 +4789,7 @@ msgstr ""
 "- Gerber\n"
 "- Excellon\n"
 "- Geometry\n"
-"进入一个新的组合几何体对象。"
+"进入一个新的组合Geometry对象。"
 
 #: appGUI/MainGUI.py:403
 msgid "Join Excellon(s) -> Excellon"
@@ -4838,7 +4838,7 @@ msgstr "转到位置"
 #: appGUI/MainGUI.py:442 appGUI/MainGUI.py:4686 appGUI/MainGUI.py:4954
 #: appGUI/MainGUI.py:5072 appGUI/MainGUI.py:5212
 msgid "J"
-msgstr "J"
+msgstr ""
 
 #: appGUI/MainGUI.py:445 appGUI/MainGUI.py:1054 appGUI/MainGUI.py:2305
 #: appGUI/MainGUI.py:4722
@@ -5277,12 +5277,12 @@ msgstr "添加钻孔"
 #: appGUI/MainGUI.py:744 appGUI/MainGUI.py:1176 appGUI/MainGUI.py:1779
 #: appGUI/MainGUI.py:2427 appGUI/MainGUI.py:5074
 msgid "Add Slot Array"
-msgstr "添加插槽阵列"
+msgstr "添加槽阵列"
 
 #: appGUI/MainGUI.py:747 appGUI/MainGUI.py:1174 appGUI/MainGUI.py:1777
 #: appGUI/MainGUI.py:2425 appGUI/MainGUI.py:5077
 msgid "Add Slot"
-msgstr "添加插槽"
+msgstr "添加槽"
 
 #: appGUI/MainGUI.py:747 appGUI/MainGUI.py:5077
 msgid "W"
@@ -5503,7 +5503,7 @@ msgstr "跟随"
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102
 #: appPlugins/ToolCutOut.py:2355
 msgid "Panel"
-msgstr "面板"
+msgstr "拼板"
 
 #: appGUI/MainGUI.py:1114 appGUI/MainGUI.py:2363 appPlugins/ToolFilm.py:151
 #: appPlugins/ToolFilm.py:1132
@@ -5718,7 +5718,7 @@ msgstr "雕刻"
 
 #: appGUI/MainGUI.py:1560
 msgid "Processing"
-msgstr "处理中"
+msgstr "加工"
 
 #: appGUI/MainGUI.py:1569
 msgid "Extra Plugins"
@@ -6235,7 +6235,7 @@ msgstr "Alt+X"
 
 #: appGUI/MainGUI.py:4753
 msgid "Cutout PCB"
-msgstr "剪切电路板"
+msgstr "切割PCB"
 
 #: appGUI/MainGUI.py:4754
 msgid "Alt+Z"
@@ -6653,20 +6653,20 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:347
 msgid "Isolation Routing"
-msgstr "隔离布线"
+msgstr "隔离线路"
 
 #: appGUI/ObjectUI.py:350 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:27
 #: appPlugins/ToolIsolation.py:3143
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut around polygons."
-msgstr "使用工具路径创建Geometry对象以围绕多边形进行切割。"
+msgstr "创建一个带有刀具路径的Geometry对象来切割多边形。"
 
 #: appGUI/ObjectUI.py:365 appGUI/ObjectUI.py:1074 appPlugins/ToolNCC.py:4671
 msgid ""
 "Create the Geometry Object\n"
 "for non-copper routing."
-msgstr "为非铜布线创建Geometry对象。"
+msgstr "为非铜线路创建Geometry对象。"
 
 #: appGUI/ObjectUI.py:380
 msgid ""
@@ -7535,7 +7535,7 @@ msgstr "新直径"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:62
 msgid "Nr of drills"
-msgstr "钻头数量"
+msgstr "钻孔数量"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:74
 msgid "Linear Drill Array"
@@ -7565,15 +7565,15 @@ msgstr "圆形角度"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:209
 msgid "Linear Slot Array"
-msgstr "线槽阵列"
+msgstr "线性槽阵列"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:213
 msgid "Nr of slots"
-msgstr "线槽数量"
+msgstr "槽数量"
 
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:270
 msgid "Circular Slot Array"
-msgstr "圆形插槽阵列"
+msgstr "圆形槽阵列"
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:19
 msgid "Excellon Export"
@@ -7723,7 +7723,7 @@ msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:137
 msgid "Slot type"
-msgstr "插槽类型"
+msgstr "槽类型"
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:140
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:150
@@ -7734,8 +7734,8 @@ msgid ""
 "If DRILLED(G85) the slots will be exported\n"
 "using the Drilled slot command (G85)."
 msgstr ""
-"这将设置插槽的导出方式。\n"
-"如果已布线，则将使用M15/M16命令布线插槽。\n"
+"这将设置槽的导出方式。\n"
+"如果已布线，则将使用M15/M16命令布槽。\n"
 "如果钻孔（G85），将使用钻孔槽命令（G85）导出槽。"
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:147
@@ -8138,7 +8138,7 @@ msgstr "Small"
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:302
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:205
 msgid "Big"
-msgstr "大"
+msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:309
 msgid "Cursor Size"
@@ -8935,7 +8935,7 @@ msgid ""
 "Create a CNC Job object\n"
 "tracing the contours of this\n"
 "Geometry object."
-msgstr "创建一个CNC任务对象，跟踪这个几何对象的轮廓。"
+msgstr "创建一个CNC任务对象，跟踪这个Geometry象的轮廓。"
 
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:45
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:55
@@ -9525,7 +9525,7 @@ msgid ""
 msgstr ""
 "校准点的来源。\n"
 "它可以是：\n"
-"-对象->单击几何图形的孔或Gerber的焊盘\n"
+"-对象->单击Excellon的孔或Gerber的焊盘\n"
 "-自由->在画布上自由单击以获取校准点"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:43
@@ -10013,7 +10013,7 @@ msgid ""
 "percentage of the pad diameter."
 msgstr ""
 "打孔源可以是：\n"
-"-几何对象->几何对象中心将作为参考。\n"
+"-Excellon对象->Excellon 对象钻孔中心将作为参考。\n"
 "-固定直径->将尝试使用焊盘中心作为添加固定直径孔的参考。\n"
 "-固定环->将尝试保持固定环。\n"
 "-比例->将制作一个直径为焊盘直径百分比的Gerber打孔。"
@@ -10574,7 +10574,7 @@ msgstr "钻孔直径"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:21
 msgid "Cutout Plugin"
-msgstr "切割电路板"
+msgstr "切割插件"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:28
 msgid ""
@@ -10613,7 +10613,7 @@ msgid ""
 msgstr ""
 "选择要剪切的对象的类型。\n"
 "-单个：包含单个PCB Gerber轮廓对象。\n"
-"-面板：一个面板PCB Gerber对象，由许多单独的PCB轮廓组成。"
+"-拼板：一个拼板PCB Gerber对象，由许多单独的PCB轮廓组成。"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:101
 #: appPlugins/ToolCutOut.py:2354
@@ -11031,7 +11031,7 @@ msgid ""
 "Create a PCB film from a Gerber or Geometry object.\n"
 "The file is saved in SVG format."
 msgstr ""
-"从Gerber或几何对象创建PCB胶片。\n"
+"从Gerber或Geometry对象创建PCB胶片。\n"
 "该文件以SVG格式保存。"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:38
@@ -11675,7 +11675,7 @@ msgstr "NCC插件"
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut all non-copper regions."
-msgstr "使用刀具路径创建几何体对象以剪切所有非铜区域。"
+msgstr "使用刀具路径创建Geometry对象以剪切所有非铜区域。"
 
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:55
@@ -11760,7 +11760,7 @@ msgid ""
 "Spacing between columns of the desired panel.\n"
 "In current units."
 msgstr ""
-"所需面板的列之间的间距。\n"
+"所需拼板的列之间的间距。\n"
 "以当前单位计算。"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:58
@@ -11774,18 +11774,18 @@ msgid ""
 "Spacing between rows of the desired panel.\n"
 "In current units."
 msgstr ""
-"所需面板行之间的间距。\n"
+"所需拼板行之间的间距。\n"
 "以当前单位计算。"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:73
 #: appPlugins/ToolPanelize.py:1270
 msgid "Number of columns of the desired panel"
-msgstr "所需面板的列数"
+msgstr "所需拼板的列数"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:85
 #: appPlugins/ToolPanelize.py:1281
 msgid "Number of rows of the desired panel"
-msgstr "所需面板的行数"
+msgstr "所需拼板的行数"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:92
 #: appPlugins/ToolPanelize.py:1293
@@ -11795,7 +11795,7 @@ msgstr "Geometry"
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:93
 #: appPlugins/ToolPanelize.py:1294
 msgid "Panel Type"
-msgstr "面板类型"
+msgstr "拼板类型"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:95
 #: appPlugins/ToolPanelize.py:1296
@@ -11804,7 +11804,7 @@ msgid ""
 "- Gerber\n"
 "- Geometry"
 msgstr ""
-"选择面板对象的对象类型：\n"
+"选择拼板对象的对象类型：\n"
 "- Gerber\n"
 "- Geometry"
 
@@ -11816,8 +11816,8 @@ msgid ""
 "any two overlapping Line elements in the panel\n"
 "and will remove the overlapping parts, keeping only one of them."
 msgstr ""
-"仅对“几何图形”面板类型有效。\n"
-"选中后，应用程序将在面板中找到任意两个重叠的线条元素，并将删除重叠部分，只保"
+"仅对拼板Geometry类型有效。\n"
+"选中后，应用程序将在拼板中找到任意两个重叠的线条元素，并将删除重叠部分，只保"
 "留其中一个。"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:114
@@ -11833,10 +11833,10 @@ msgid ""
 "the final panel will have as many columns and rows as\n"
 "they fit completely within selected area."
 msgstr ""
-"区域内由DX和DY定义以约束面板。\n"
+"区域内由DX和DY定义以约束拼板。\n"
 "DX和DY值以当前单位表示。\n"
 "无论需要多少列和行，\n"
-"最后一个面板将有尽可能多的列和行，因为它们完全适合所选区域。"
+"最后一个拼板将有尽可能多的列和行，因为它们完全适合所选区域。"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:129
 #: appPlugins/ToolPanelize.py:1328
@@ -11849,7 +11849,7 @@ msgid ""
 "The width (DX) within which the panel must fit.\n"
 "In current units."
 msgstr ""
-"面板必须适合的宽度（DX）。\n"
+"拼板必须适合的宽度（DX）。\n"
 "以当前单位计算。"
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:142
@@ -11863,7 +11863,7 @@ msgid ""
 "The height (DY)within which the panel must fit.\n"
 "In current units."
 msgstr ""
-"面板必须安装的高度（DY）。\n"
+"拼板必须安装的高度（DY）。\n"
 "以当前单位计算。"
 
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:20
@@ -12032,7 +12032,7 @@ msgid ""
 "A tool to substract one Gerber or Geometry object\n"
 "from another of the same type."
 msgstr ""
-"从同一类型的另一个Gerber或几何对象中减去一个Gerber或几何对象对象的工具。"
+"从同一类型的另一个Gerber或几何对象中减去一个Gerber或Geometry对象的工具。"
 
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:29 appPlugins/ToolSub.py:925
 msgid "Close paths"
@@ -12513,7 +12513,7 @@ msgstr "G代码文本"
 #: appObjects/FlatCAMObj.py:754 appObjects/FlatCAMObj.py:794
 #: appPlugins/ToolReport.py:487 appPlugins/ToolReport.py:527
 msgid "GCode Geometry"
-msgstr "G代码几何"
+msgstr "Geometry G代码"
 
 #: appObjects/FlatCAMObj.py:762 appObjects/FlatCAMObj.py:837
 #: appPlugins/ToolReport.py:495 appPlugins/ToolReport.py:570
@@ -13323,7 +13323,7 @@ msgstr "盗铜工具。准备用铜填充的区域。"
 
 #: appPlugins/ToolCopperThieving.py:670
 msgid "Geometry not supported for"
-msgstr "不支持的几何图形"
+msgstr "不支持的Geometry"
 
 #: appPlugins/ToolCopperThieving.py:676 appPlugins/ToolNCC.py:1962
 #: appPlugins/ToolNCC.py:2017 appPlugins/ToolNCC.py:3013
@@ -13600,7 +13600,7 @@ msgid ""
 "There is no object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
-"没有为剪切选择任何对象。\n"
+"没有为切割选择任何对象。\n"
 "请选择一个，然后重试。"
 
 #: appPlugins/ToolCutOut.py:754 appPlugins/ToolCutOut.py:1139
@@ -13629,7 +13629,7 @@ msgstr "打孔连接失败。"
 #: appPlugins/ToolCutOut.py:1113 tclCommands/TclCommandGeoCutout.py:301
 #: tclCommands/TclCommandGeoCutout.py:356
 msgid "Any-form Cutout operation finished."
-msgstr "任何形式的剪切操作都已完成。"
+msgstr "任何形式的切割操作都已完成。"
 
 #: appPlugins/ToolCutOut.py:1134 appPlugins/ToolDrilling.py:1898
 #: appPlugins/ToolEtchCompensation.py:200 appPlugins/ToolFollow.py:217
@@ -13659,12 +13659,12 @@ msgstr "无法添加钻孔。"
 
 #: appPlugins/ToolCutOut.py:1608 appPlugins/ToolCutOut.py:1663
 msgid "Geometry object for manual cutout not found"
-msgstr "找不到手动剪切的几何体对象"
+msgstr "找不到手动剪切的Geometry对象"
 
 #: appPlugins/ToolCutOut.py:1611
 msgid ""
 "Click on the selected geometry object perimeter to create a bridge gap ..."
-msgstr "单击选定的几何体对象周长以创建桥梁间隙。。。"
+msgstr "单击选定的Geometry对象周长以创建桥梁间隙。。。"
 
 #: appPlugins/ToolCutOut.py:1702
 msgid "No tool in the Geometry object."
@@ -13680,7 +13680,7 @@ msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
-"没有为剪切选择Gerber对象。\n"
+"没有为切割选择Gerber对象。\n"
 "请选择一个，然后重试。"
 
 #: appPlugins/ToolCutOut.py:1746
@@ -13731,7 +13731,7 @@ msgstr ""
 
 #: appPlugins/ToolCutOut.py:2405
 msgid "Cutout Tool"
-msgstr "剪切工具"
+msgstr "切割工具"
 
 #: appPlugins/ToolCutOut.py:2424 appPlugins/ToolIsolation.py:214
 #: appPlugins/ToolIsolation.py:3291 appPlugins/ToolMilling.py:3738
@@ -13796,7 +13796,7 @@ msgid ""
 "The cutout shape can be of any shape.\n"
 "Useful when the PCB has a non-rectangular shape."
 msgstr ""
-"剪切选定对象。\n"
+"切割选定对象。\n"
 "切口形状可以是任何形状。\n"
 "当PCB具有非矩形形状时非常有用。"
 
@@ -13807,7 +13807,7 @@ msgid ""
 "always a rectangle shape and it will be\n"
 "the bounding box of the Object."
 msgstr ""
-"剪切选定对象。\n"
+"切割选定对象。\n"
 "生成的剪切形状如下所示\n"
 "始终为矩形，它将是对象的边界框。"
 
@@ -13823,7 +13823,7 @@ msgid ""
 "Select the source Gerber file in the top object combobox."
 msgstr ""
 "如果要剪切的对象是Gerber\n"
-"首先创建一个围绕它的几何体，\n"
+"首先创建一个围绕它的Geometry，\n"
 "如果还不存在，用作断流器。\n"
 "在顶部对象组合框中选择源Gerber文件。"
 
@@ -13848,7 +13848,7 @@ msgid ""
 "the Geometry object used as a cutout geometry."
 msgstr ""
 "使用鼠标左键（LMB）单击创建桥接间隙，以将PCB与周围材料分开。\n"
-"必须在用作剪切几何体的几何体对象的周长上执行LMB单击。"
+"必须在用作剪切几何体的Geometry对象的周长上执行LMB单击。"
 
 #: appPlugins/ToolCutOut.py:2754 appPlugins/ToolCutOut.py:2817
 msgid "Cut by Drilling"
@@ -14522,7 +14522,7 @@ msgid ""
 "for custom selection of tools."
 msgstr ""
 "生成CNC任务。\n"
-"如果进行铣削，则将创建一个附加的几何体对象。\n"
+"如果进行铣削，则将创建一个附加的Geometry对象。\n"
 "在刀具表中添加/选择至少一个刀具。\n"
 "单击#标题选择全部，或Ctrl+LMB或自定义工具选择。"
 
@@ -14940,7 +14940,7 @@ msgstr ""
 msgid ""
 "Using the Pad center does not work on Geometry objects. Only a Gerber object "
 "has pads."
-msgstr "使用焊盘中心不适用于几何体对象。只有Gerber对象具有焊盘。"
+msgstr "使用焊盘中心不适用于Geometry对象。只有Gerber对象具有焊盘。"
 
 #: appPlugins/ToolFollow.py:342 appPlugins/ToolFollow.py:413
 msgid "Failed to create Follow Geometry."
@@ -15187,7 +15187,7 @@ msgstr "插入几何体"
 #: appPlugins/ToolIsolation.py:1798 appPlugins/ToolIsolation.py:1990
 #: appPlugins/ToolIsolation.py:2174
 msgid "Empty Geometry in"
-msgstr "清空几何图形自"
+msgstr "清空Geometry自"
 
 #: appPlugins/ToolIsolation.py:1999
 msgid ""
@@ -15237,7 +15237,7 @@ msgstr "新刀具添加到刀具表中。"
 
 #: appPlugins/ToolIsolation.py:3163
 msgid "Gerber object for isolation routing."
-msgstr "隔离布线的Gerber对象。"
+msgstr "用于隔离线路的 Gerber 对象。"
 
 #: appPlugins/ToolIsolation.py:3187 appPlugins/ToolNCC.py:4188
 msgid ""
@@ -15316,9 +15316,9 @@ msgid ""
 "inside the actual Gerber feature, use a negative tool\n"
 "diameter above."
 msgstr ""
-"使用刀路创建几何体对象，以在对象的外部、内部或两侧切割隔离。对于Gerber对象，"
-"外部指Gerber特征外部，内部指Gerber特征内部，如果可能的话。这意味着，只有在"
-"Gerber特征内部有开口时，它们才会被隔离。如果想要在实际Gerber特征内部切割隔"
+"使用刀路创建Geometry对象，以在对象的外部、内部或两侧切割隔离。对于Gerber对"
+"象，外部指Gerber特征外部，内部指Gerber特征内部，如果可能的话。这意味着，只有"
+"在Gerber特征内部有开口时，它们才会被隔离。如果想要在实际Gerber特征内部切割隔"
 "离，请使用上面的负刀具直径。"
 
 #: appPlugins/ToolLevelling.py:564 appPlugins/ToolLevelling.py:894
@@ -15698,11 +15698,11 @@ msgstr "正在生成打孔几何体。。。"
 
 #: appPlugins/ToolMilling.py:2604
 msgid "Generating slot milling geometry..."
-msgstr "正在生成插槽几何体。。。"
+msgstr "正在生成槽几何体。。。"
 
 #: appPlugins/ToolMilling.py:2696
 msgid "This Geometry can't be processed because it is"
-msgstr "无法处理此几何体，因为它是"
+msgstr "无法处理此Geometry，因为它是"
 
 #: appPlugins/ToolMilling.py:2730
 msgid "Failed. No tool selected in the tool table ..."
@@ -15710,7 +15710,7 @@ msgstr "失败。刀具表中未选择任何刀具。。。"
 
 #: appPlugins/ToolMilling.py:3031 appPlugins/ToolPaint.py:1851
 msgid "Geometry could not be painted completely"
-msgstr "无法完全绘制几何体"
+msgstr "无法完全绘制Geometry"
 
 #: appPlugins/ToolMilling.py:3580
 msgid "Object for milling operation."
@@ -15794,7 +15794,7 @@ msgstr ""
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output for Geometry (Milling) Objects."
-msgstr "为几何体（铣削）对象指定G代码输出的预处理器JSON文件。"
+msgstr "为Geometry（铣削）对象指定G代码输出的预处理器JSON文件。"
 
 #: appPlugins/ToolMove.py:102
 msgid "MOVE: Click on the Start point ..."
@@ -15921,7 +15921,7 @@ msgid ""
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
-"文件中没有NCC几何图形。\n"
+"文件中没有NCC Geometry。\n"
 "通常这意味着工具直径对于绘制的几何体来说太大。\n"
 "更改绘制参数，然后重试。"
 
@@ -16187,7 +16187,7 @@ msgid ""
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
-"文件中没有绘制几何图形。\n"
+"文件中没有绘制Geometry。\n"
 "通常这意味着工具直径对于绘制的几何体来说太大。\n"
 "更改绘制参数，然后重试。"
 
@@ -16275,7 +16275,7 @@ msgstr ""
 
 #: appPlugins/ToolPaint.py:3336
 msgid "Create a Geometry Object which paints the polygons."
-msgstr "创建绘制多边形的几何体对象。"
+msgstr "创建绘制多边形的Geometry对象。"
 
 #: appPlugins/ToolPanelize.py:112 appPlugins/ToolPanelize.py:1099
 msgid "Panelization"
@@ -16287,12 +16287,12 @@ msgstr "列或行为零值。将它们更改为正整数。"
 
 #: appPlugins/ToolPanelize.py:416
 msgid "Generating panel ... "
-msgstr "正在生成面板。。。 "
+msgstr "正在生成拼板。。。 "
 
 #: appPlugins/ToolPanelize.py:509 appPlugins/ToolPanelize.py:801
 #: appPlugins/ToolPanelize.py:1051
 msgid "Generating panel ... Adding the source code."
-msgstr "正在生成面板。。。添加源代码。"
+msgstr "正在生成拼板。。。添加源代码。"
 
 #: appPlugins/ToolPanelize.py:729
 msgid "Optimizing the overlapping paths."
@@ -16304,18 +16304,18 @@ msgstr "优化完成。"
 
 #: appPlugins/ToolPanelize.py:1060
 msgid "Generating panel... Spawning copies"
-msgstr "正在生成面板。。。生成副本"
+msgstr "正在生成拼板。。。生成副本"
 
 #: appPlugins/ToolPanelize.py:1076
 #, python-brace-format
 msgid ""
 "{text} Too big for the constrain area. Final panel has {col} columns and "
 "{row} rows"
-msgstr "{text}对于约束区域来说太大。最后一个面板有{col}列和{row}行"
+msgstr "{text}对于约束区域来说太大。最后一个拼板有{col}列和{row}行"
 
 #: appPlugins/ToolPanelize.py:1084
 msgid "Panel created successfully."
-msgstr "面板创建成功。"
+msgstr "拼板创建成功。"
 
 #: appPlugins/ToolPanelize.py:1139
 msgid ""
@@ -16372,7 +16372,7 @@ msgstr "用作要拼板的选定对象的容器的实际对象。"
 
 #: appPlugins/ToolPanelize.py:1227
 msgid "Panel Data"
-msgstr "面板数据"
+msgstr "拼板数据"
 
 #: appPlugins/ToolPanelize.py:1229
 msgid ""
@@ -16383,13 +16383,13 @@ msgid ""
 "The spacings will set the distance between any two\n"
 "elements of the panel array."
 msgstr ""
-"这些信息将形成最终的面板。\n"
+"这些信息将形成最终的拼板。\n"
 "行数和列数将设置将生成多少个原始几何图形的副本。\n"
-"间距将设置面板阵列任意两个元素之间的距离。"
+"间距将设置拼板阵列任意两个元素之间的距离。"
 
 #: appPlugins/ToolPanelize.py:1314
 msgid "Constrain panel within"
-msgstr "将面板约束在"
+msgstr "将拼板约束在"
 
 #: appPlugins/ToolPanelize.py:1357
 msgid "Panelize Object"
@@ -16861,7 +16861,7 @@ msgstr "检查规则的底部Gerber丝印对象。"
 
 #: appPlugins/ToolRulesCheck.py:1330
 msgid "The Gerber Outline (Cutout) object for which rules are checked."
-msgstr "为其检查规则的Gerber轮廓（剪切）对象。"
+msgstr "为其检查规则的Gerber轮廓（切割）对象。"
 
 #: appPlugins/ToolRulesCheck.py:1343
 msgid "Excellon objects for which to check rules."
@@ -16961,11 +16961,11 @@ msgstr "正在生成锡膏分配几何体。。。"
 
 #: appPlugins/ToolSolderPaste.py:909
 msgid "There is no Geometry object available."
-msgstr "没有可用的几何体对象。"
+msgstr "没有可用的Geometry对象。"
 
 #: appPlugins/ToolSolderPaste.py:914
 msgid "This Geometry can't be processed. NOT a solder_paste_tool geometry."
-msgstr "无法处理此几何体。不是锡膏工具几何图形。"
+msgstr "无法处理此Geometry。不是锡膏工具几何图形。"
 
 #: appPlugins/ToolSolderPaste.py:1019
 msgid "ToolSolderPaste CNCjob created"
@@ -17034,7 +17034,7 @@ msgid ""
 "The name of the object has to end in:\n"
 "'_solderpaste' as a protection."
 msgstr ""
-"几何焊膏对象。\n"
+"Geometry焊膏对象。\n"
 "对象的名称必须以以下结尾：\n"
 "“_solderpaste”作为保护。"
 
@@ -17155,13 +17155,13 @@ msgstr ""
 msgid ""
 "Geometry object from which to subtract\n"
 "the subtractor Geometry object."
-msgstr "要从中减去差集几何体对象的几何体对象。"
+msgstr "要从中减去差集Geometry对象的Geometry对象。"
 
 #: appPlugins/ToolSub.py:918
 msgid ""
 "Geometry object that will be subtracted\n"
 "from the target Geometry object."
-msgstr "将从目标几何体对象中减去的几何体对象。"
+msgstr "将从目标Geometry对象中减去的Geometry对象。"
 
 #: appPlugins/ToolSub.py:930
 msgid "Subtract Geometry"
@@ -17323,7 +17323,7 @@ msgid ""
 "possible.\n"
 "Edit only one geometry at a time."
 msgstr ""
-"无法在多重几何图形中同时编辑工具几何图形。\n"
+"无法在多重Geometry中同时编辑工具几何图形。\n"
 "一次只能编辑一个几何图形。"
 
 #: app_Main.py:2624
@@ -17605,7 +17605,7 @@ msgid ""
 "be lost and the result may not be what was expected. \n"
 "Check the generated GCODE."
 msgstr ""
-"加入失败。几何体对象的类型不同。\n"
+"加入失败。Geometry对象的类型不同。\n"
 "至少有一个是多几何类型，另一个是单几何类型。一种可能是从一个转换到另一个，然"
 "后重试加入，但在从多几何转换到单几何的情况下，信息可能会丢失，结果可能不是预"
 "期的结果。\n"
@@ -17637,7 +17637,7 @@ msgstr "失败。选择一个Geometry对象，然后重试。"
 
 #: app_Main.py:4522 app_Main.py:4558
 msgid "Expected a GeometryObject, got"
-msgstr "应该是几何体对象，得到"
+msgstr "应该是Geometry对象，得到"
 
 #: app_Main.py:4537
 msgid "A Geometry object was converted to MultiGeo type."
@@ -18342,7 +18342,7 @@ msgstr "来自GERBERS的G代码"
 
 #: camlib.py:707
 msgid "self.solid_geometry is neither BaseGeometry or list."
-msgstr "self.solid_geometry既不是基本几何体，也不是列表。"
+msgstr "self.solid_geometry既不是基本的Geometry，也不是列表。"
 
 #: camlib.py:1101
 msgid "Pass"
@@ -18489,7 +18489,7 @@ msgstr ""
 #: camlib.py:5633
 msgid ""
 "Trying to generate a CNC Job from a Geometry object without solid_geometry."
-msgstr "尝试从没有实体几何体的几何体对象生成CNC任务。"
+msgstr "尝试从没有实体几何体的Geometry对象生成CNC任务。"
 
 #: camlib.py:5675
 msgid ""
@@ -18625,7 +18625,7 @@ msgstr "通过使用偏移所有加载的对象来设置原点 "
 
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
-msgstr "参数中没有几何图形名称。请提供名称，然后重试。"
+msgstr "参数中没有Geometry名称。请提供名称，然后重试。"
 
 #~ msgid "Tool Name"
 #~ msgstr "刀具名"
