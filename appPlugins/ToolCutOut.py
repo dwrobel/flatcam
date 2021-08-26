@@ -1132,6 +1132,7 @@ class CutOut(AppTool):
 
         if cutout_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(name)))
+            return
 
         dia = float(self.ui.dia.get_value())
         if 0 in {dia}:
