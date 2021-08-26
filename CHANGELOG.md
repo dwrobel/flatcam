@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.08.2021
+
+- updated the Italian translation by Massimiliano Golfetto
+
 25.08.2021
 
 - fixed some issues in the convert_units
