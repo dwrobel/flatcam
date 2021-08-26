@@ -6123,6 +6123,8 @@ class App(QtCore.QObject):
         :return:
         """
 
+        self.log.debug("Running conversion to Excellon object...")
+
         def initialize_from_geometry(obj_init, app_obj):
             tools = {}
             tooluid = 1
@@ -6205,11 +6207,12 @@ class App(QtCore.QObject):
                                                 tools[tool]['drills'].append(new_drill)
                                                 tools[tool]['solid_geometry'].append(deepcopy(new_drill_geo))
                                 else:
-                                    tools[tooluid] = {}
-                                    tools[tooluid]['tooldia'] = new_dia
-                                    tools[tooluid]['drills'] = [new_drill]
-                                    tools[tooluid]['slots'] = []
-                                    tools[tooluid]['solid_geometry'] = [new_drill_geo]
+                                    tools[tooluid] = {
+                                        'tooldia': new_dia,
+                                        'drills': [new_drill],
+                                        'slots': [],
+                                        'solid_geometry': [new_drill_geo]
+                                    }
                                     tooluid += 1
 
                                 try:
