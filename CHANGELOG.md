@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed a Qt6 derived issue where dragging tabs outside the app crashed the app
 - updated the Chinese translation, by 俊霄 余
 - fixed bug in Cutout Plugin that when no object is loaded and the Generate Rectangular Geometry is clicked, the app will hard crash
+- improved rendering performance for lines (with help from David Hoese from the VisPy team)
 
 25.08.2021
 

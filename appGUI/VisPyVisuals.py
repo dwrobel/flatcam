@@ -16,16 +16,16 @@ import numpy as np
 from appGUI.VisPyTesselators import GLUTess
 
 
-class FlatCAMLineVisual(LineVisual):
-    def __init__(self, pos=None, color=(0.5, 0.5, 0.5, 1), width=1, connect='strip', method='gl', antialias=False):
-        LineVisual.__init__(self, pos=pos, color=color, width=width, connect=connect,
-                            method=method, antialias=True)
-
-    def clear_data(self):
-        self._bounds = None
-        self._pos = None
-        self._changed['pos'] = True
-        self.update()
+# class FlatCAMLineVisual(LineVisual):
+#     def __init__(self, pos=None, color=(0.5, 0.5, 0.5, 1), width=1, connect='strip', method='gl', antialias=False):
+#         LineVisual.__init__(self, pos=pos, color=color, width=width, connect=connect,
+#                             method=method, antialias=True)
+#
+#     def clear_data(self):
+#         self._bounds = None
+#         self._pos = None
+#         self._changed['pos'] = True
+#         self.update()
 
 
 def _update_shape_buffers(data, triangulation='glu'):
@@ -240,7 +240,7 @@ class ShapeCollectionVisual(CompoundVisual):
 
         self._meshes = [MeshVisual() for _ in range(0, layers)]
         # self._lines = [LineVisual(antialias=True) for _ in range(0, layers)]
-        self._lines = [FlatCAMLineVisual(antialias=True) for _ in range(0, layers)]
+        self._lines = [LineVisual(antialias=True) for _ in range(0, layers)]
 
         self._line_width = linewidth
         self._triangulation = triangulation
@@ -468,6 +468,7 @@ class ShapeCollectionVisual(CompoundVisual):
         if new_line_color and new_line_color != '':
             for i, line in enumerate(self._lines):
                 if len(line_pts[i]) > 0:
+                    line.visible = True
                     try:
                         line._color = np.asarray(line_colors[i])
                         line._changed['color'] = True
@@ -476,8 +477,8 @@ class ShapeCollectionVisual(CompoundVisual):
                         print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                               "Apply line colors --> Data error. %s" % str(e))
                 else:
-                    line.clear_data()
-                    # line.visible = False
+                    # line.clear_data()
+                    line.visible = False
 
         self.update_lock.release()
 
@@ -525,14 +526,15 @@ class ShapeCollectionVisual(CompoundVisual):
         # Updating lines
         for i, line in enumerate(self._lines):
             if len(line_pts[i]) > 0:
+                line.visible = True
                 line.set_data(
                     pos=np.asarray(line_pts[i]),
                     color=np.asarray(line_colors[i]),
                     width=self._line_width,
                     connect='segments')
             else:
-                line.clear_data()
-                # line.visible = False
+                # line.clear_data()
+                line.visible = False
 
             line._bounds_changed()
 
