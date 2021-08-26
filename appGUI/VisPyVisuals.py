@@ -477,6 +477,7 @@ class ShapeCollectionVisual(CompoundVisual):
                               "Apply line colors --> Data error. %s" % str(e))
                 else:
                     line.clear_data()
+                    # line.visible = False
 
         self.update_lock.release()
 
@@ -531,6 +532,7 @@ class ShapeCollectionVisual(CompoundVisual):
                     connect='segments')
             else:
                 line.clear_data()
+                # line.visible = False
 
             line._bounds_changed()
 
