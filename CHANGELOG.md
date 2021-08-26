@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated the Italian translation by Massimiliano Golfetto
 - Turkish and Chinese small updates
+- in Preferences the language names are in the native language
 
 25.08.2021
 

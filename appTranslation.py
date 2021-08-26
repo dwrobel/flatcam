@@ -23,16 +23,16 @@ if '_' not in builtins.__dict__:
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {
-    'zh': 'Chinese',
-    'de': 'German',
+    'zh': '简体中文',
+    'de': 'Deutsche',
     'en': 'English',
-    'es': 'Spanish',
-    'fr': 'French',
-    'it': 'Italian',
-    'pt_BR': 'Brazilian Portuguese',
-    'ro': 'Romanian',
-    'ru': 'Russian',
-    'tr': 'Turkish',
+    'es': 'Español',
+    'fr': 'Français',
+    'it': 'Italiano',
+    'pt_BR': 'Portugues do Brasil',
+    'ro': 'Română',
+    'ru': 'Pусский',
+    'tr': 'Türk',
 }
 
 translations = {}
