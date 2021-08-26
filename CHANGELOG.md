@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - fixed bug in Cutout Plugin that when no object is loaded and the Generate Rectangular Geometry is clicked, the app will hard crash
 - improved rendering performance for lines (with help from David Hoese from the VisPy team)
 - fixed the convert 2 excellon and to geometry functionality
+- minor changes
 
 25.08.2021
 

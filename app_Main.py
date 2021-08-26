@@ -11498,7 +11498,7 @@ class MenuFileHandlers(QtCore.QObject):
         :param from_tcl         True is run from Tcl Shell
         :return:                None
         """
-        self.log.debug("save_project()")
+        self.log.debug("save_project() -> Saving Project")
         self.app.save_in_progress = True
 
         if from_tcl:
@@ -11533,7 +11533,7 @@ class MenuFileHandlers(QtCore.QObject):
                     out2 = compressor_obj.flush()
                     project_zipped = b"".join([out1, out2])
                 except Exception:
-                    self.log.error("Failed to save file: %s", filename)
+                    self.log.error("Failed to save file: %s", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
 
@@ -11541,9 +11541,9 @@ class MenuFileHandlers(QtCore.QObject):
                     with open(filename, "wb") as f_to_write:
                         f_to_write.write(project_zipped)
 
-                    self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
+                    self.inform.emit('[success] %s: %s' % (_("Project saved to"), str(filename)))
                 else:
-                    self.log.error("Failed to save file: %s", filename)
+                    self.log.error("Failed to save file: %s", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
             else:
@@ -11551,7 +11551,7 @@ class MenuFileHandlers(QtCore.QObject):
                 try:
                     f = open(filename, 'w')
                 except IOError:
-                    self.log.error("Failed to open file for saving: %s", filename)
+                    self.log.error("Failed to open file for saving: %s", str(filename))
                     self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
                     return
 
@@ -11566,20 +11566,24 @@ class MenuFileHandlers(QtCore.QObject):
                 except IOError:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to verify project file"), filename, _("Retry to save it.")))
+                                         (_("Failed to verify project file"), str(filename), _("Retry to save it.")))
                     return
 
                 try:
                     saved_d = json.load(saved_f, object_hook=dict2obj)
                     if not saved_d:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
+                                         (_("Failed to parse saved project file"),
+                                          str(filename),
+                                          _("Retry to save it.")))
                         f.close()
                         return
                 except Exception:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
+                                         (_("Failed to parse saved project file"),
+                                          str(filename),
+                                          _("Retry to save it.")))
                     f.close()
                     return
 
@@ -11587,10 +11591,12 @@ class MenuFileHandlers(QtCore.QObject):
 
                 if silent is False:
                     if 'version' in saved_d:
-                        self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
+                        self.inform.emit('[success] %s: %s' % (_("Project saved to"), str(filename)))
                     else:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
+                                         (_("Failed to parse saved project file"),
+                                          str(filename),
+                                          _("Retry to save it.")))
 
                 tb_settings = QSettings("Open Source", "FlatCAM")
                 lock_state = self.app.ui.lock_action.isChecked()
