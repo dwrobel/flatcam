@@ -2106,9 +2106,9 @@ class App(QtCore.QObject):
         self.ui.menueditdelete.triggered.connect(self.on_delete)
 
         self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
-        self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
-        self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
-        self.ui.menueditconvert_any2excellon.triggered.connect(self.convert_any2excellon)
+        self.ui.menueditconvert_any2geo.triggered.connect(lambda: self.convert_any2geo())
+        self.ui.menueditconvert_any2gerber.triggered.connect(lambda: self.convert_any2gerber())
+        self.ui.menueditconvert_any2excellon.triggered.connect(lambda: self.convert_any2excellon())
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
@@ -5942,18 +5942,8 @@ class App(QtCore.QObject):
             if opt_key.find('geometry' + "_") == 0:
                 oname = opt_key[len('geometry') + 1:]
                 default_data[oname] = self.options[opt_key]
-            if opt_key.find('tools_mill' + "_") == 0:
-                oname = opt_key[len('tools_mill') + 1:]
-                default_data[oname] = self.options[opt_key]
-            if opt_key.find('tools_ncc' + "_") == 0:
-                oname = opt_key[len('tools_ncc') + 1:]
-                default_data[oname] = self.options[opt_key]
-            if opt_key.find('tools_paint' + "_") == 0:
-                oname = opt_key[len('tools_paint') + 1:]
-                default_data[oname] = self.options[opt_key]
-            if opt_key.find('tools_cutout' + "_") == 0:
-                oname = opt_key[len('tools_cutout') + 1:]
-                default_data[oname] = self.options[opt_key]
+            else:
+                default_data[opt_key] = self.options[opt_key]
 
         if type(self.defaults["tools_mill_tooldia"]) == float:
             tools_diameters = [self.defaults["tools_mill_tooldia"]]
@@ -6131,6 +6121,9 @@ class App(QtCore.QObject):
 
             obj_init.solid_geometry = []
 
+            for tool in obj.tools:
+                print(obj.tools[tool])
+
             for geo in obj.solid_geometry:
                 if not isinstance(geo, (Polygon, MultiPolygon, LinearRing)):
                     continue
@@ -6304,6 +6297,7 @@ class App(QtCore.QObject):
                     self.log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
 
             except Exception as e:
+                self.log.error("App.convert_any2excellon() --> %s" % str(e))
                 return "Operation failed: %s" % str(e)
 
     def abort_all_tasks(self):
