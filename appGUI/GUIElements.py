@@ -3245,10 +3245,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
             # If the current movement is a drag initiated by the left button
             if (event.buttons() & QtCore.Qt.MouseButton.LeftButton) and self.dragInitiated and self.can_be_dragged:
-
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
-                    QtCore.QEvent.Type.MouseMove, event.position().toPoint(), QtCore.Qt.MouseButton.NoButton,
+                    QtCore.QEvent.Type.MouseMove, event.position(), QtCore.Qt.MouseButton.NoButton,
                     QtCore.Qt.MouseButton.NoButton, QtCore.Qt.KeyboardModifier.NoModifier
                 )
                 QtWidgets.QTabBar.mouseMoveEvent(self, finishMoveEvent)

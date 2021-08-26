@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - updated the Italian translation by Massimiliano Golfetto
 - Turkish and Chinese small updates
 - in Preferences the language names are in the native language
+- fixed a Qt6 derived issue where dragging tabs outside the app crashed the app
 
 25.08.2021
 
