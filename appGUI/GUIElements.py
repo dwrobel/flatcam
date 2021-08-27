@@ -3347,7 +3347,7 @@ class FCDetachableTab2(FCDetachableTab):
         except TypeError:
             pass
 
-        self.__auto_remove_closed_tab = True
+        self._auto_remove_closed_tab = True
 
         self.tabBar.onCloseTabSignal.connect(self.on_closetab_middle_button)
 
@@ -3359,7 +3359,7 @@ class FCDetachableTab2(FCDetachableTab):
         :return:
         :rtype:
         """
-        return self.__auto_remove_closed_tab
+        return self._auto_remove_closed_tab
 
     @auto_remove_closed_tab.setter
     def auto_remove_closed_tab(self, val):
@@ -3371,7 +3371,7 @@ class FCDetachableTab2(FCDetachableTab):
         :return:
         :rtype:
         """
-        self.__auto_remove_closed_tab = val
+        self._auto_remove_closed_tab = val
 
     def on_closetab_middle_button(self, current_index):
         """
@@ -3395,7 +3395,7 @@ class FCDetachableTab2(FCDetachableTab):
         tab_name = self.widget(currentIndex).objectName()
         self.tab_closed_signal.emit(tab_name, currentIndex)
 
-        if self.__auto_remove_closed_tab:
+        if self._auto_remove_closed_tab:
             self.removeTab(currentIndex)
 
 

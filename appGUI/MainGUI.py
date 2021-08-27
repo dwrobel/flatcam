@@ -15,6 +15,7 @@ from PyQt6.QtCore import QSettings
 import platform
 
 from appGUI.GUIElements import *
+
 from appGUI.preferences.cncjob.CNCJobPreferencesUI import CNCJobPreferencesUI
 from appGUI.preferences.excellon.ExcellonPreferencesUI import ExcellonPreferencesUI
 from appGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
@@ -1988,6 +1989,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.infobar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.ActionsContextMenu)
         self.build_infobar_context_menu()
 
+        self.plot_tab_area.tab_detached.connect(self.on_tab_detached)
+
         # self.screenChanged.connect(self.on_screen_change)
 
     # def on_screen_change(self, old_screen, new_screen):
@@ -2005,6 +2008,14 @@ class MainGUI(QtWidgets.QMainWindow):
     #         # update canvas dpi
     #         ratio = new_pixel_ratio / old_pixel_ratio
     #         self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
+
+    def on_tab_detached(self, tab_detached, tab_detached_name):
+        if tab_detached_name == 'FlatCAM Plot Area':
+            pass
+            # print(tab_detached_name)
+            # self.app.plotcanvas.unfreeze()
+            # self.app.plotcanvas.native.setParent(tab_detached)
+            # self.app.plotcanvas.freeze()
 
     def set_ui_title(self, name):
         """
