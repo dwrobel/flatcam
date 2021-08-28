@@ -1617,13 +1617,14 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.clear_btn.setToolTip(
             _("Clear the GUI settings for FlatCAM,\n"
-              "such as: layout, gui state, style, hdpi support etc.")
+              "such as: layout, gui state, style etc.")
         )
 
         self.pref_tab_bottom_layout_1.addWidget(self.clear_btn)
 
         self.pref_tab_bottom_layout_2 = QtWidgets.QHBoxLayout()
-        self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight |
+                                                   QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)
 
         self.pref_apply_button = FCButton()

@@ -104,32 +104,6 @@ if __name__ == '__main__':
     debug_trace()
     VisPyPatches.apply_patches()
 
-    # apply High DPI support
-    settings = QSettings("Open Source", "FlatCAM")
-    if settings.contains("hdpi"):
-        hdpi_support = settings.value('hdpi', type=int)
-    else:
-        hdpi_support = 0
-
-    if hdpi_support == 2:
-        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    else:
-        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
-
-    # if hdpi_support == 2:
-    #     tst_screen = QtWidgets.QApplication(sys.argv)
-    #     if tst_screen.screens()[0].geometry().width() > 1930 or tst_screen.screens()[1].geometry().width() > 1930:
-    #         QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    #         del tst_screen
-    # else:
-    #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-
-    # if hdpi_support == 2:
-    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    # else:
-    #     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-
-
     def excepthook(exc_type, exc_value, exc_tb):
         msg = '%s\n' % str(datetime.today())
         if exc_type != KeyboardInterrupt:
@@ -151,7 +125,6 @@ if __name__ == '__main__':
     sys.excepthook = excepthook
 
     app = QtWidgets.QApplication(sys.argv)
-    # app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # apply style
     settings = QSettings("Open Source", "FlatCAM")

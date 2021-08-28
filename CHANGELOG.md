@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.08.2021
+
+- removed the setting for HDPI from Preferences and QSettings: QT6 does it automatically now
+
 26.08.2021
 
 - updated the Italian translation by Massimiliano Golfetto

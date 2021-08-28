@@ -104,22 +104,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.style_label, 5, 0)
         grid0.addWidget(self.style_combo, 5, 1)
 
-        # Enable High DPI Support
-        self.hdpi_cb = FCCheckBox('%s' % _('HDPI Support'))
-        self.hdpi_cb.setToolTip(
-            _("Enable High DPI support for the application.\n"
-              "It will be applied at the next app start.")
-        )
-
-        qsettings = QSettings("Open Source", "FlatCAM")
-        if qsettings.contains("hdpi"):
-            self.hdpi_cb.set_value(qsettings.value('hdpi', type=int))
-        else:
-            self.hdpi_cb.set_value(False)
-        self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
-
-        grid0.addWidget(self.hdpi_cb, 6, 0, 1, 3)
-
         # Enable Hover box
         self.hover_cb = FCCheckBox('%s' % _('Hover Shape'))
         self.hover_cb.setToolTip(
@@ -330,15 +314,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # set current style
         qsettings = QSettings("Open Source", "FlatCAM")
         qsettings.setValue('style', str(style))
-
-        # This will write the setting to the platform specific storage.
-        del qsettings
-
-    @staticmethod
-    def handle_hdpi(state):
-        # set current HDPI
-        qsettings = QSettings("Open Source", "FlatCAM")
-        qsettings.setValue('hdpi', state)
 
         # This will write the setting to the platform specific storage.
         del qsettings
