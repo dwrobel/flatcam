@@ -61,19 +61,11 @@ def apply_patches():
         """This method is called immediately before each draw.
         The *view* argument indicates which view is about to be drawn.
         """
-        GL = None
-        from vispy.app._default_app import default_app
 
-        if default_app is not None and \
-                default_app.backend_name != 'ipynb_webgl':
-            try:
-                import OpenGL.GL as GL
-            except Exception:  # can be other than ImportError sometimes
-                pass
-
-        if GL:
-            GL.glDisable(GL.GL_LINE_SMOOTH)
-            GL.glLineWidth(1.5)
+        self.update_gl_state(line_smooth=False)
+        px_scale = self.transforms.pixel_scale
+        width = px_scale * 1.5
+        self.update_gl_state(line_width=max(width, 1.0))
 
         if self._changed['pos']:
             self.pos_buf.set_data(self._pos)
@@ -140,19 +132,3 @@ def apply_patches():
             return NotImplementedError
 
     Ticker._get_tick_frac_labels = _get_tick_frac_labels
-
-    def _resizeGL(self, w, h):
-        if self._vispy_canvas is None:
-            return
-        if hasattr(self, 'devicePixelRatio'):
-            # We take into account devicePixelRatio, which is non-unity on
-            # e.g HiDPI displays.
-            # self.devicePixelRatio() is a float and should have been in Qt5 according to the documentation
-            ratio = self.devicePixelRatio()
-            w = int(w * ratio)
-            h = int(h * ratio)
-        self._vispy_set_physical_size(w, h)
-        self._vispy_canvas.events.resize(size=(self.width(), self.height()),
-                                         physical_size=(w, h))
-
-    CanvasBackendDesktop.resizeGL = _resizeGL
