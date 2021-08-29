@@ -5290,8 +5290,12 @@ class App(QtCore.QObject):
             self.should_we_save = True
         elif event is not None and event.button == right_button:
             if self.ui.popMenu.mouse_is_panning is False:
+                if self.is_legacy:
+                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
+                else:
+                    self.plotcanvas.graph_event_disconnect('mouse_release', self.on_set_zero_click)
+                    self.inhibit_context_menu = False
                 self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-                self.inhibit_context_menu = False
 
     def on_move2origin(self, use_thread=True):
         """
