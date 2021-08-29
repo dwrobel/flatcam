@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - removed the setting for HDPI from Preferences and QSettings: QT6 does it automatically now
 - fixed a reported issue with the manual cutout in Cutout Plugin where adding more gaps will crash the app due of the manual geometry being a MultiPolygon and not a Polygon as it was assumed
 - fixed a reported bug in convert 2 geometry where a MultiLineString' object does not support item assignment“ error was issued
+- updated the language strings and the Simplified Chinese language translation
 
 26.08.2021
 

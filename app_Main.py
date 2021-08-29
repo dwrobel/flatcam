@@ -3486,7 +3486,7 @@ class App(QtCore.QObject):
                     },
                     {
                         'language': 'Chinese Simplified',
-                        'authors': [("俊霄 余 (Jun Xiao Yu)", '')]
+                        'authors': [("余俊霄 (Yu Junxiao)", '')]
                     },
                     {
                         'language': 'French',
