@@ -1623,7 +1623,16 @@ class CutOut(AppTool):
         if self.ui.gaptype_radio.get_value() == 'mb':
             mb_dia = self.ui.mb_dia_entry.get_value()
             b_dia = (self.cutting_dia / 2.0) - (mb_dia / 2.0)
-            self.mb_manual_solid_geo = self.flatten(unary_union(self.manual_solid_geo).buffer(b_dia).interiors)
+            # flaten manual geometry
+            unified_man_geo = unary_union(self.manual_solid_geo)
+            buff_man_geo = unified_man_geo.buffer(b_dia)
+            if isinstance(buff_man_geo, MultiPolygon):
+                int_list = []
+                for b_geo in buff_man_geo.geoms:
+                    int_list += b_geo.interiors
+            else:
+                int_list = buff_man_geo.interiors
+            self.mb_manual_solid_geo = self.flatten(int_list)
 
         self.cutting_gapsize = self.ui.gapsize.get_value()
 

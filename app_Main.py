@@ -4563,7 +4563,10 @@ class App(QtCore.QObject):
         for tooluid, dict_value in obj.tools.items():
             total_solid_geometry += deepcopy(dict_value['solid_geometry'])
             # clear the original geometry
-            dict_value['solid_geometry'][:] = []
+            if isinstance(dict_value['solid_geometry'], list):
+                dict_value['solid_geometry'][:] = []
+            else:
+                dict_value['solid_geometry'] = []
         obj.solid_geometry = deepcopy(total_solid_geometry)
         obj.plot()
 
