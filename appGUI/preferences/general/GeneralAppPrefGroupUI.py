@@ -82,6 +82,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                   {'label': _('OpenGL(3D)'), 'value': '3D'}],
                                  orientation='vertical')
 
+        # TODO disabled until matplotlib will support PyQt6
+        self.ge_radio.setDisabled(True)
+
         grid0.addWidget(self.ge_label, 6, 0)
         grid0.addWidget(self.ge_radio, 6, 1)
 

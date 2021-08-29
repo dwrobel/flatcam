@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 30.08.2021
 
 - fixed the reconnection of the mouse events when canceling setting the origin
+- disabled the selection of a Graphic Engine until matplotlib will have support for PyQt6 framework
 
 29.08.2021
 
