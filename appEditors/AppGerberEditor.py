@@ -383,7 +383,7 @@ class PadEditorGrb(ShapeToolEditorGrb):
         try:
             self.geometry = DrawToolShape(self.util_shape(self.points))
         except Exception as e:
-            log.error("PadEditorGrb.make() --> %s" % str(e))
+            log.error("AppGerberEditor.PadEditorGrb.make() --> %s" % str(e))
 
         self.draw_app.in_action = False
         self.complete = True
@@ -624,7 +624,7 @@ class PadArrayEditorGrb(ShapeToolEditorGrb):
 
                     return DrawToolUtilityShape(utility_list)
                 except Exception as e:
-                    log.error(str(e))
+                    log.error("AppGerberEditor.PadArrayEditorGrb.utility_geometry() -> %s" % str(e))
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
@@ -3598,13 +3598,12 @@ class AppGerberEditor(QtCore.QObject):
         self.ui.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
-            ap_code = ap_code
 
             ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
             ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.ui.apertures_table.setItem(self.apertures_row, 0, ap_code_item)  # Tool name/id
 
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item = QtWidgets.QTableWidgetItem(str(ap_code))
             ap_code_item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
 
             ap_type_item = QtWidgets.QTableWidgetItem(str(self.storage_dict[ap_code]['type']))
@@ -4982,13 +4981,13 @@ class AppGerberEditor(QtCore.QObject):
             self.selected = []
 
         try:
-            selected_ap_code = self.ui.apertures_table.item(row, 1).text()
+            selected_ap_code = int(self.ui.apertures_table.item(row, 1).text())
             self.last_aperture_selected = copy(selected_ap_code)
 
             for obj in self.storage_dict[selected_ap_code]['geometry']:
                 self.selected.append(obj)
         except Exception as e:
-            self.app.log.error(str(e))
+            self.app.log.error("AppGerberEditor.on_row_selected() --> %s" % str(e))
 
         # #########################################################################################################
         # ######################### calculate vertex numbers for all selected shapes ##############################

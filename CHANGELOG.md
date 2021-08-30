@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - add HUD rectangle auto size for 2D Graphic Engine
 - the Y axis labels are now rotated at 45 degrees allowing better space management
 - changed the HUD color, with Light theme, to gray
+- in Gerber Editor fixed bug with the row selection that no longer selected the visuals on canvas
 
 29.08.2021
 
