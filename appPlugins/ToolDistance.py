@@ -488,9 +488,10 @@ class Distance(AppTool):
             )
 
             units = self.app.defaults["units"].lower()
-            self.app.plotcanvas.text_hud.text = \
-                'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                    0.0000, units, 0.0000, units, pos[0], units, pos[1], units)
+            # self.app.plotcanvas.text_hud.text = \
+            #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            #         0.0000, units, 0.0000, units, pos[0], units, pos[1], units)
+            self.app.plotcanvas.on_update_text_hud('0.0', '0.0', pos[0], pos[1])
 
             if self.rel_point1 is not None:
                 dx = pos[0] - float(self.rel_point1[0])
