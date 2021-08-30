@@ -352,7 +352,6 @@ class PlotCanvasLegacy(QtCore.QObject):
         # self.container.attach(self.canvas, 0, 0, 600, 400)
         # self.container.addWidget(self.canvas)  # Qt
 
-
     @staticmethod
     def color_hex2tuple(hex_color):
         # strip the # from the beginning
@@ -443,8 +442,9 @@ class PlotCanvasLegacy(QtCore.QObject):
 
             self.p = plotcanvas
             units = self.p.app.defaults['units']
-            self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
-                         ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
+            # self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
+            #              ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
+            self.on_update_text_hud()
 
             # set font size
             qsettings = QtCore.QSettings("Open Source", "FlatCAM")
@@ -466,7 +466,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.hud_holder.patch.set_alpha(fc_alpha)
             self.hud_holder.patch.set_edgecolor((0, 0, 0, 0))
 
-            self. hud_holder.txt._text.set_color(color=text_color)
+            self.hud_holder.txt._text.set_color(color=text_color)
             self.text_changed.connect(self.on_text_changed)
 
         @property
@@ -493,6 +493,29 @@ class PlotCanvasLegacy(QtCore.QObject):
         def remove_artist(self):
             if self.hud_holder in self.p.axes.artists:
                 self.p.axes.artists.remove(self.hud_holder)
+
+        def on_update_text_hud(self, dx=None, dy=None, x=None, y=None):
+            """
+
+            :param dx:
+            :param dy:
+            :param x:
+            :param y:
+            :return:
+            """
+            # units
+            units = self.p.app.defaults['units'].lower()
+
+            dx_dec = str(self.p.app.dec_format(dx, self.p.app.decimals)) if dx else '0.0'
+            dy_dec = str(self.p.app.dec_format(dy, self.p.app.decimals)) if dy else '0.0'
+            x_dec = str(self.p.app.dec_format(x, self.p.app.decimals)) if x else '0.0'
+            y_dec = str(self.p.app.dec_format(y, self.p.app.decimals)) if y else '0.0'
+            l1_hud_text = 'Dx:\t%s [%s]' % (dx_dec, units)
+            l2_hud_text = 'Dy:\t%s [%s]' % (dy_dec, units)
+            l3_hud_text = 'X:  \t%s [%s]' % (x_dec, units)
+            l4_hud_text = 'Y:  \t%s [%s]' % (y_dec, units)
+            hud_text = '%s\n%s\n\n%s\n%s' % (l1_hud_text, l2_hud_text, l3_hud_text, l4_hud_text)
+            self.text = hud_text
 
     def on_toggle_grid_lines(self, signal=None, silent=None):
         state = not self.grid_lines_enabled

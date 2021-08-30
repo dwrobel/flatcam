@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - removed patch to fix scaling on HIDPI displays since now the fix is implemented in VisPy v0.8.1
 - modified a patch for VisPy Infinite Line Visual that set the line width, in order to make it compliant with newer versions of OpenGL
 - add HUD rectangle auto size for 3D Graphic Engine
+- add HUD rectangle auto size for 2D Graphic Engine
 
 29.08.2021
 
