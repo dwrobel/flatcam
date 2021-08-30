@@ -603,9 +603,10 @@ class ExclusionAreas(QtCore.QObject):
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
-        self.app.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
+        # self.app.plotcanvas.text_hud.text = \
+        #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+        #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
+        self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
         if self.obj_type == 'excellon':
             color = "#FF7400"

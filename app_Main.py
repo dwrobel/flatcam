@@ -5628,10 +5628,11 @@ class App(QtCore.QObject):
         self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        units = self.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                dx, units, dy, units, location[0], units, location[1], units)
+        # units = self.defaults["units"].lower()
+        # self.plotcanvas.text_hud.text = \
+        #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+        #         dx, units, dy, units, location[0], units, location[1], units)
+        self.plotcanvas.on_update_text_hud(dx, dy, location[0], location[1])
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -5782,10 +5783,11 @@ class App(QtCore.QObject):
         self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
-        units = self.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                self.dx, units, self.dy, units, location[0], units, location[1], units)
+        # units = self.defaults["units"].lower()
+        # self.plotcanvas.text_hud.text = \
+        #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+        #         self.dx, units, self.dy, units, location[0], units, location[1], units)
+        self.plotcanvas.on_update_text_hud(self.dx, self.dy, location[0], location[1])
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -7229,9 +7231,10 @@ class App(QtCore.QObject):
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
                 units = self.defaults["units"].lower()
-                self.plotcanvas.text_hud.text = \
-                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                        self.dx, units, self.dy, units, pos[0], units, pos[1], units)
+                # self.plotcanvas.text_hud.text = \
+                #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                #         self.dx, units, self.dy, units, pos[0], units, pos[1], units)
+                self.plotcanvas.on_update_text_hud(self.dx, self.dy, pos[0], pos[1])
 
                 self.mouse = [pos[0], pos[1]]
 

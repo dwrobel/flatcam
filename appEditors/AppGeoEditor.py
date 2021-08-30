@@ -4795,9 +4795,10 @@ class AppGeoEditor(QtCore.QObject):
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
-        self.app.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                self.app.dx, units, self.app.dy, units, x, units, y, units)
+        # self.app.plotcanvas.text_hud.text = \
+        #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+        #         self.app.dx, units, self.app.dy, units, x, units, y, units)
+        self.app.plotcanvas.on_update_text_hud(self.app.dx, self.app.dy, x, y)
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass

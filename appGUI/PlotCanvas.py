@@ -5,14 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 
 import logging
 from appGUI.VisPyCanvas import VisPyCanvas, Color
 from appGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line, Rectangle, Text
-
-from PyQt6 import QtWidgets
 
 import gettext
 import appTranslation as fcTranslate
@@ -156,33 +154,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
 
-        # font size
-        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
-        if qsettings.contains("hud_font_size"):
-            fsize = qsettings.value('hud_font_size', type=int)
-        else:
-            fsize = 8
+        # setup HUD
 
-        # units
-        units = self.fcapp.defaults["units"].lower()
-
-        # coordinates and anchors
-        height = fsize * 11     # 90. Constant 11 is something that works
-        width = height * 2      # width is double the height = it is something that works
-        center_x = (width / 2) + 5
-        center_y = (height / 2) + 5
-
-        # text
-        self.text_hud = Text('', color=self.text_hud_color, pos=(10, center_y), method='gpu', anchor_x='left',
+        # TEXT HUD
+        self.text_hud = Text('', color=self.text_hud_color, method='gpu', anchor_x='left',
                              parent=None)
-        self.text_hud.font_size = fsize
-        self.text_hud.text = 'Dx:\t%s [%s]\nDy:\t%s [%s]\n\nX:  \t%s [%s]\nY:  \t%s [%s]' % \
-                             ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
-
-        # rectangle
-        self.rect_hud = Rectangle(center=(center_x, center_y), width=width, height=height, radius=[5, 5, 5, 5],
+        # RECT HUD
+        self.rect_hud = Rectangle(width=10, height=10, radius=[5, 5, 5, 5], center = (20, 20),
                                   border_color=self.rect_hud_color, color=self.rect_hud_color, parent=None)
         self.rect_hud.set_gl_state(depth_test=False)
+
+        self.on_update_text_hud()
 
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
@@ -314,6 +296,67 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.fcapp.ui.hud_label.setStyleSheet("")
             if silent is None:
                 self.fcapp.inform[str, bool].emit(_("HUD disabled."), False)
+
+    def on_update_text_hud(self, dx=None, dy=None, x=None, y=None):
+        """
+
+        :param dx:
+        :param dy:
+        :param x:
+        :param y:
+        :return:
+        """
+        # units
+        units = self.fcapp.defaults["units"].lower()
+
+        dx_dec = str(self.fcapp.dec_format(dx, self.fcapp.decimals)) if dx else '0.0'
+        dy_dec = str(self.fcapp.dec_format(dy, self.fcapp.decimals)) if dy else '0.0'
+        x_dec = str(self.fcapp.dec_format(x, self.fcapp.decimals)) if x else '0.0'
+        y_dec = str(self.fcapp.dec_format(y, self.fcapp.decimals)) if y else '0.0'
+        l1_hud_text = 'Dx:\t%s [%s]' % (dx_dec, units)
+        l2_hud_text = 'Dy:\t%s [%s]' % (dy_dec, units)
+        l3_hud_text = 'X:  \t%s [%s]' % (x_dec, units)
+        l4_hud_text = 'Y:  \t%s [%s]' % (y_dec, units)
+        hud_text = '%s\n%s\n\n%s\n%s' % (l1_hud_text, l2_hud_text, l3_hud_text, l4_hud_text)
+
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        c_font = QtGui.QFont()
+        c_font_metrics = QtGui.QFontMetrics(c_font)
+        l1_length = c_font_metrics.horizontalAdvance(l1_hud_text, len(l1_hud_text))
+        l2_length = c_font_metrics.horizontalAdvance(l2_hud_text, len(l2_hud_text))
+        l3_length = c_font_metrics.horizontalAdvance(l3_hud_text, len(l3_hud_text))
+        l4_length = c_font_metrics.horizontalAdvance(l4_hud_text, len(l4_hud_text))
+
+        l1_height = c_font_metrics.boundingRect(l1_hud_text).height()
+        l2_height = c_font_metrics.boundingRect(l2_hud_text).height()
+        l3_height = c_font_metrics.boundingRect(l3_hud_text).height()
+        l4_height = c_font_metrics.boundingRect(l4_hud_text).height()
+
+        # coordinates and anchors
+        # height = fsize * 11     # 90. Constant 11 is something that works
+        height = l1_height + l2_height + l3_height + l4_height + (2 * c_font_metrics.lineSpacing())
+        # width = height * 2      # width is double the height = it is something that works
+        width = max(l1_length, l2_length, l3_length, l4_length)
+        center_x = (width / 2) + 5
+        center_y = (height / 2) + 5
+
+        # text
+        self.text_hud.font_size = fsize
+        self.text_hud.text = hud_text
+        self.text_hud.pos = 10, center_y
+        self.text_hud.anchors = 'left', 'center'
+
+        # rectangle
+        self.rect_hud.center = center_x, center_y
+        self.rect_hud.width = width
+        self.rect_hud.height = height
+        self.rect_hud.radius = [5, 5, 5, 5]
 
     def on_toggle_grid_lines(self, signal=None, silent=None):
         state = not self.grid_lines_enabled
