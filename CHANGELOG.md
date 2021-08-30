@@ -15,6 +15,8 @@ CHANGELOG for FlatCAM beta
 - modified a patch for VisPy Infinite Line Visual that set the line width, in order to make it compliant with newer versions of OpenGL
 - add HUD rectangle auto size for 3D Graphic Engine
 - add HUD rectangle auto size for 2D Graphic Engine
+- the Y axis labels are now rotated at 45 degrees allowing better space management
+- changed the HUD color, with Light theme, to gray
 
 29.08.2021
 

@@ -65,6 +65,7 @@ class VisPyCanvas(scene.SceneCanvas):
             orientation='left', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1
         )
         self.yaxis.width_max = 55
+        self.yaxis.axis._text.rotation = 45
         self.grid_widget.add_widget(self.yaxis, row=1, col=0)
 
         self.xaxis = scene.AxisWidget(
