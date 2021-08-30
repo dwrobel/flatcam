@@ -2916,12 +2916,13 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.app.dy = y - self.pos[1]
 
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                           "<b>Y</b>: %.4f&nbsp;" % (x, y))
-
-        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        # self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                    "<b>Y</b>: %.4f&nbsp;" % (x, y))
+        #
+        # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
         # Selection area on canvas section # ##
         if self.event_is_dragging == 1 and event.button == 1:
@@ -5406,12 +5407,13 @@ class AppGerberEditor(QtCore.QObject):
         self.app.dy = y - self.pos[1]
 
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                           "<b>Y</b>: %.4f&nbsp;" % (x, y))
-
-        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        # self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                    "<b>Y</b>: %.4f&nbsp;" % (x, y))
+        #
+        # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
         units = self.app.defaults["units"].lower()
         # self.app.plotcanvas.text_hud.text = \

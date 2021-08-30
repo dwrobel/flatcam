@@ -5622,11 +5622,12 @@ class App(QtCore.QObject):
         # Set the relative position label
         dx = location[0] - float(self.rel_point1[0])
         dy = location[1] - float(self.rel_point1[1])
-        self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
-        # Set the position label
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        # self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
+        # # Set the position label
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        self.ui.update_location_labels(dx, dy, location[0], location[1])
 
         # units = self.defaults["units"].lower()
         # self.plotcanvas.text_hud.text = \
@@ -5778,10 +5779,11 @@ class App(QtCore.QObject):
         self.dx = location[0] - float(self.rel_point1[0])
         self.dy = location[1] - float(self.rel_point1[1])
         # Set the position label
-        self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+        # self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+        self.ui.update_location_labels(self.dx, self.dy, location[0], location[1])
 
         # units = self.defaults["units"].lower()
         # self.plotcanvas.text_hud.text = \
@@ -7225,10 +7227,11 @@ class App(QtCore.QObject):
                 self.dx = pos[0] - float(self.rel_point1[0])
                 self.dy = pos[1] - float(self.rel_point1[1])
 
-                self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                               "<b>Y</b>: %.4f&nbsp;" % (pos[0], pos[1]))
-                self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+                # self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                #                                "<b>Y</b>: %.4f&nbsp;" % (pos[0], pos[1]))
+                # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+                self.ui.update_location_labels(self.dx, self.dy, pos[0], pos[1])
 
                 units = self.defaults["units"].lower()
                 # self.plotcanvas.text_hud.text = \
@@ -7290,8 +7293,9 @@ class App(QtCore.QObject):
 
             except Exception as e:
                 self.log.error("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
-                self.ui.position_label.setText("")
-                self.ui.rel_position_label.setText("")
+                # self.ui.position_label.setText("")
+                # self.ui.rel_position_label.setText("")
+                self.ui.update_location_labels(0.0, 0.0, 0.0, 0.0)
                 self.mouse = None
 
     def on_mouse_click_release_over_plot(self, event):

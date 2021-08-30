@@ -300,12 +300,18 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
     def on_update_text_hud(self, dx=None, dy=None, x=None, y=None):
         """
+        Update the text of the location labels from HUD
 
-        :param dx:
-        :param dy:
-        :param x:
-        :param y:
+        :param x:   X location
+        :type x:    float
+        :param y:   Y location
+        :type y:    float
+        :param dx:  Delta X location
+        :type dx:   float
+        :param dy:  Delta Y location
+        :type dy:   float
         :return:
+        :rtype:     None
         """
         # units
         units = self.fcapp.defaults["units"].lower()

@@ -481,11 +481,12 @@ class Distance(AppTool):
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 
-            self.app.ui.position_label.setText(
-                "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
-                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-                )
-            )
+            # self.app.ui.position_label.setText(
+            #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
+            #         '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+            #     )
+            # )
+            self.app.ui.update_location_labels(dx=None, dy=None, x=pos[0], y=pos[1])
 
             units = self.app.defaults["units"].lower()
             # self.app.plotcanvas.text_hud.text = \

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.08.2021
+
+- made sure that the location labels in the InfoBar have only the decimals required when the Grid snapping is ON
+
 30.08.2021
 
 - fixed the reconnection of the mouse events when canceling setting the origin

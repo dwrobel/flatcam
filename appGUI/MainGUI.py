@@ -1370,7 +1370,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ####################### Delta Coordinates TOOLBAR #####################
         # #######################################################################
         self.rel_position_label = FCLabel(
-            "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
+            "<b>Dx</b>: 0.0&nbsp;&nbsp;   <b>Dy</b>: 0.0&nbsp;&nbsp;&nbsp;&nbsp;")
         self.rel_position_label.setMinimumWidth(110)
         self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
         self.delta_coords_toolbar.addWidget(self.rel_position_label)
@@ -1378,7 +1378,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # #######################################################################
         # ####################### Coordinates TOOLBAR ###########################
         # #######################################################################
-        self.position_label = FCLabel("&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
+        self.position_label = FCLabel("&nbsp;<b>X</b>: 0.0&nbsp;&nbsp;   <b>Y</b>: 0.0&nbsp;")
         self.position_label.setMinimumWidth(110)
         self.position_label.setToolTip(_("Absolute measurement.\n"
                                          "Reference is (X=0, Y= 0) position"))
@@ -2009,6 +2009,41 @@ class MainGUI(QtWidgets.QMainWindow):
     #         # update canvas dpi
     #         ratio = new_pixel_ratio / old_pixel_ratio
     #         self.app.plotcanvas.dpi = self.app.plotcanvas.dpi * ratio
+
+    def update_location_labels(self, dx, dy, x, y):
+        """
+        Update the text of the location labels from InfoBar
+
+        :param x:   X location
+        :type x:    float
+        :param y:   Y location
+        :type y:    float
+        :param dx:  Delta X location
+        :type dx:   float
+        :param dy:  Delta Y location
+        :type dy:   float
+        :return:
+        :rtype:     None
+        """
+
+        # Set the position label
+        if x is None or y is None:
+            self.position_label.setText("")
+        else:
+            x_dec = str(self.app.dec_format(x, self.app.decimals)) if x else '0.0'
+            y_dec = str(self.app.dec_format(y, self.app.decimals)) if y else '0.0'
+            self.position_label.setText("&nbsp;<b>X</b>: %s&nbsp;&nbsp;   "
+                                        "<b>Y</b>: %s&nbsp;" % (x_dec, y_dec))
+
+        # Set the Delta position label
+        if dx is None or dy is None:
+            self.rel_position_label.setText("")
+        else:
+            dx_dec = str(self.app.dec_format(dx, self.app.decimals)) if dx else '0.0'
+            dy_dec = str(self.app.dec_format(dy, self.app.decimals)) if dy else '0.0'
+
+            self.rel_position_label.setText("<b>Dx</b>: %s&nbsp;&nbsp;  <b>Dy</b>: "
+                                            "%s&nbsp;&nbsp;&nbsp;&nbsp;" % (dx_dec, dy_dec))
 
     def on_tab_detached(self, tab_detached, tab_detached_name):
         if tab_detached_name == 'FlatCAM Plot Area':
