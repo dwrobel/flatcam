@@ -335,15 +335,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         c_font = QtGui.QFont()
         c_font.setPointSize(fsize)
+
         c_font_metrics = QtGui.QFontMetrics(c_font)
-        # l1_length = c_font_metrics.horizontalAdvance(l1_hud_text)
-        # l2_length = c_font_metrics.horizontalAdvance(l2_hud_text)
-        # l3_length = c_font_metrics.horizontalAdvance(l3_hud_text)
-        # l4_length = c_font_metrics.horizontalAdvance(l4_hud_text)
-        l1_length = c_font_metrics.boundingRect(l1_hud_text).width()
-        l2_length = c_font_metrics.boundingRect(l2_hud_text).width()
-        l3_length = c_font_metrics.boundingRect(l3_hud_text).width()
-        l4_length = c_font_metrics.boundingRect(l4_hud_text).width()
+
+        l1_length = c_font_metrics.horizontalAdvance(l1_hud_text)
+        l2_length = c_font_metrics.horizontalAdvance(l2_hud_text)
+        l3_length = c_font_metrics.horizontalAdvance(l3_hud_text)
+        l4_length = c_font_metrics.horizontalAdvance(l4_hud_text)
+        # l1_length = c_font_metrics.boundingRect(l1_hud_text).width()
+        # l2_length = c_font_metrics.boundingRect(l2_hud_text).width()
+        # l3_length = c_font_metrics.boundingRect(l3_hud_text).width()
+        # l4_length = c_font_metrics.boundingRect(l4_hud_text).width()
 
         l1_height = c_font_metrics.boundingRect(l1_hud_text).height()
         l2_height = c_font_metrics.boundingRect(l2_hud_text).height()
@@ -352,7 +354,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # coordinates and anchors
         # height = fsize * 11     # 90. Constant 11 is something that works
-        height = l1_height + l2_height + l3_height + l4_height + (0. * c_font_metrics.lineSpacing()) + 10
+        height = l1_height + l2_height + l3_height + l4_height + (2. * c_font_metrics.lineSpacing()) + 10
         # width = height * 2      # width is double the height = it is something that works
         width = max(l1_length, l2_length, l3_length, l4_length) * 1.27  # don't know where the 1.27 comes
         center_x = (width / 2) + 5
