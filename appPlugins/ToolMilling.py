@@ -133,6 +133,10 @@ class ToolMilling(AppTool, Excellon):
         self.old_tool_dia = None
         self.poly_drawn = False
 
+        # When object selection on canvas change
+        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
+
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
 
@@ -243,10 +247,6 @@ class ToolMilling(AppTool, Excellon):
         self.launch_job.connect(self.mtool_gen_cncjob)
         self.ui.generate_cnc_button.clicked.connect(self.on_generate_cncjob_click)
 
-        # When object selection on canvas change
-        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
         # Reset Tool
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
@@ -284,6 +284,7 @@ class ToolMilling(AppTool, Excellon):
             self.ui.target_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
+
         try:
             self.ui.job_type_combo.currentIndexChanged.disconnect()
         except (TypeError, AttributeError):
@@ -366,13 +367,6 @@ class ToolMilling(AppTool, Excellon):
         except (TypeError, AttributeError):
             pass
 
-        # When object selection on canvas change
-        # self.app.collection.view.selectionModel().selectionChanged.disconnect()
-        try:
-            self.app.proj_selection_changed.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
         # Reset Tool
         try:
             self.ui.reset_button.clicked.disconnect()
@@ -430,13 +424,22 @@ class ToolMilling(AppTool, Excellon):
         # try to select in the Gerber combobox the active object
         try:
             selected_obj = self.app.collection.get_active()
-            if selected_obj.kind == 'excellon':
-                current_name = selected_obj.options['name']
-                self.ui.object_combo.set_value(current_name)
-        except Exception:
-            pass
 
-        self.form_fields.update({
+            if not selected_obj:
+                self.ui.target_radio.set_value('geo')
+
+            if selected_obj.kind == 'excellon':
+                self.ui.target_radio.set_value('exc')
+                self.ui.object_combo.set_value(selected_obj.options['name'])
+
+            if selected_obj.kind == 'geometry':
+                self.ui.target_radio.set_value('geo')
+                self.ui.object_combo.set_value(selected_obj.options['name'])
+
+        except Exception as err:
+            self.app.log.error("ToolMilling.set_tool_ui() --> %s" % str(err))
+
+        self.form_fields = {
             # Excellon properties
             "tools_mill_milling_type": self.ui.milling_type_radio,
             "tools_mill_milling_dia": self.ui.mill_dia_entry,
@@ -470,9 +473,9 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_spindlespeed": self.ui.spindlespeed_entry,
             "tools_mill_dwell": self.ui.dwell_cb,
             "tools_mill_dwelltime": self.ui.dwelltime_entry,
-        })
+        }
 
-        self.general_form_fields.update({
+        self.general_form_fields = {
             "tools_mill_toolchange": self.ui.toolchange_cb,
             "tools_mill_toolchangez": self.ui.toolchangez_entry,
             "tools_mill_toolchangexy": self.ui.toolchangexy_entry,
@@ -489,9 +492,9 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_area_shape": self.ui.area_shape_radio,
             "tools_mill_area_strategy": self.ui.strategy_radio,
             "tools_mill_area_overz": self.ui.over_z_entry,
-        })
+        }
 
-        self.name2option.update({
+        self.name2option = {
             "milling_type":     "tools_mill_milling_type",
             "milling_dia":      "tools_mill_milling_dia",
 
@@ -540,7 +543,7 @@ class ToolMilling(AppTool, Excellon):
             "mill_area_shape": "tools_mill_area_shape",
             "mill_strategy": "tools_mill_area_strategy",
             "mill_overz": "tools_mill_area_overz",
-        })
+        }
 
         # reset the Geometry preprocessor combo
         self.ui.pp_geo_name_cb.clear()
@@ -1321,11 +1324,11 @@ class ToolMilling(AppTool, Excellon):
         if self.obj_name and self.obj_name != '':
             self.app.collection.set_all_inactive()
             self.app.collection.set_active(self.obj_name)
-        self.build_ui()
+        # self.build_ui()
 
         # new object that is now selected
         obj = self.app.collection.get_by_name(self.obj_name)
-        if obj is not None:
+        if obj is not None and obj.tools:
             last_key = list(obj.tools.keys())[-1]
             self.to_form(storage=obj.tools[last_key]['data'])
 
@@ -1360,9 +1363,14 @@ class ToolMilling(AppTool, Excellon):
                 self.app.collection.set_active(self.obj_name)
             self.build_ui()
 
-        if self.target_obj is not None:
-            last_key = list(self.target_obj.tools.keys())[-1]
-            self.to_form(storage=self.target_obj.tools[last_key]['data'])
+            if self.target_obj.tools:
+                self.ui.param_frame.setDisabled(False)
+                self.ui.generate_cnc_button.setDisabled(False)
+                last_key = list(self.target_obj.tools.keys())[-1]
+                self.to_form(storage=self.target_obj.tools[last_key]['data'])
+            else:
+                self.ui.param_frame.setDisabled(True)
+                self.ui.generate_cnc_button.setDisabled(True)
 
     def on_object_selection_changed(self, current, previous):
         try:
@@ -1371,7 +1379,7 @@ class ToolMilling(AppTool, Excellon):
             kind = sel_obj.kind
             if kind in ['geometry', 'excellon']:
                 self.ui.object_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def on_job_changed(self, idx):

@@ -462,9 +462,6 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def on_milling_button_clicked(self):
         self.app.milling_tool.run(toggle=True)
-        self.app.milling_tool.ui.target_radio.set_value('geo')
-        current_obj = self.app.collection.get_active()
-        self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])
 
     def on_calculate_vertex_points(self):
         self.app.log.debug("GeometryObject.on_calculate_vertex_points()")

@@ -108,6 +108,9 @@ class RadioSet(QtWidgets.QWidget):
             if option['label'] in options:
                 option['radio'].setDisabled(val)
 
+    def values(self):
+        return [choice['value'] for choice in self.choices]
+
 
 class RadioSetDefaults(RadioSet):
 

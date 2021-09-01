@@ -6685,13 +6685,24 @@ class App(QtCore.QObject):
 
     def on_notebook_closed(self, tab_obj_name):
 
-        # closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
+        closed_plugin_name = self.ui.plugin_scroll_area.widget().objectName()
         # # print(closed_plugin_name)
         # if closed_plugin_name == _("Levelling"):
         #     # clear the possible drawn probing shapes
         #     self.levelling_tool.probing_shapes.clear(update=True)
         # elif closed_plugin_name in [_("Isolation"), _("NCC"), _("Paint"), _("Punch Gerber")]:
         #     self.tool_shapes.clear(update=True)
+
+        disconnected_tool = self.ui.plugin_scroll_area.widget()
+
+        # try:
+        #     # if the closed plugin name is Milling
+        #     disconnected_tool.disconnect_signals()
+        #     disconnected_tool.ui_disconnect()
+        #     disconnected_tool.clear_ui(disconnected_tool.layout)
+        #
+        # except Exception as err:
+        #     print(str(err))
 
         try:
             # clear the possible drawn probing shapes for Levelling Tool

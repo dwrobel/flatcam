@@ -686,9 +686,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def on_milling_button_clicked(self):
         self.app.milling_tool.run(toggle=True)
-        self.app.milling_tool.ui.target_radio.set_value('exc')
-        current_obj = self.app.collection.get_active()
-        self.app.milling_tool.ui.object_combo.set_value(current_obj.options['name'])
 
     def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """

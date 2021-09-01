@@ -7,10 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.09.2021
+
+- fixed the issue in Milling Plugin that did not automatically set the object combo to the previously selected object
+
 31.08.2021
 
 - made sure that the location labels in the InfoBar have only the decimals required when the Grid snapping is ON
-- fixed the bug where the HUD did not used the set font size from Preferences
+- fixed the bug where the HUD have not used the set font size from Preferences
 
 30.08.2021
 
