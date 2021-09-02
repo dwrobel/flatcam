@@ -974,7 +974,7 @@ class ToolDrilling(AppTool, Excellon):
             kind = sel_obj.kind
             if kind in ['geometry', 'excellon']:
                 self.ui.object_combo.set_value(name)
-        except IndexError:
+        except Exception:
             pass
 
     def ui_connect(self):

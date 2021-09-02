@@ -1001,7 +1001,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             except RuntimeError:
                 pass
 
-        self.app.proj_selection_changed.emit(current, previous)
+        # don't emit the signal if there more than one objects selected
+        # this signal is intended to be emitted for a single selection in the collection view
+        if len(self.get_selected()) == 1:
+            self.app.proj_selection_changed.emit(current, previous)
 
     def on_item_activated(self, index):
         """

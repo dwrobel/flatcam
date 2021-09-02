@@ -133,10 +133,6 @@ class ToolMilling(AppTool, Excellon):
         self.old_tool_dia = None
         self.poly_drawn = False
 
-        # When object selection on canvas change
-        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
-        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
-
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+M', **kwargs)
 
@@ -412,6 +408,13 @@ class ToolMilling(AppTool, Excellon):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
+        self.obj_name = ""
+        self.target_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
         self.clear_ui(self.layout)
         self.init_ui()
 
@@ -421,9 +424,9 @@ class ToolMilling(AppTool, Excellon):
         self.disconnect_signals()
         self.connect_signals()
 
-        # try to select in the Gerber combobox the active object
+        # try to select in the Target combobox the active object
+        selected_obj = self.app.collection.get_active()
         try:
-            selected_obj = self.app.collection.get_active()
 
             if not selected_obj:
                 self.ui.target_radio.set_value('geo')
@@ -439,6 +442,7 @@ class ToolMilling(AppTool, Excellon):
         except Exception as err:
             self.app.log.error("ToolMilling.set_tool_ui() --> %s" % str(err))
 
+        # Update the GUI data holding structures
         self.form_fields = {
             # Excellon properties
             "tools_mill_milling_type": self.ui.milling_type_radio,
@@ -562,12 +566,6 @@ class ToolMilling(AppTool, Excellon):
         self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_mill_milling_type"])
 
-        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        if loaded_obj:
-            outname = loaded_obj.options['name']
-        else:
-            outname = ''
-
         # init the working variables
         self.default_data.clear()
         kind = 'geometry'
@@ -579,65 +577,6 @@ class ToolMilling(AppTool, Excellon):
             if option.find('tools_') == 0:
                 self.default_data[option] = self.app.options[option]
 
-        # self.default_data.clear()
-        # self.default_data = {
-        #     "name":                     outname + '_mill',
-        #     "plot":                     self.app.defaults["excellon_plot"],
-        #     "solid": False,
-        #     "multicolored": False,
-        #
-        #     "tools_mill_tooldia": 0.1,
-        #
-        #     "tools_mill_offset_type": 0,    # _("Path")
-        #     "tools_mill_offset_value": 0.0,
-        #
-        #     "tools_mill_milling_type": "drills",
-        #     "tools_mill_milling_dia": 0.04,
-        #
-        #     "tools_mill_job_type": 0,   # 'Roughing'
-        #     "tools_mill_polish_margin": 0.0,
-        #     "tools_mill_polish_overlap": 10,
-        #     "tools_mill_polish_method": _("Standard"),
-        #
-        #     "tools_mill_vtipdia": 0.1,
-        #     "tools_mill_vtipangle": 30,
-        #
-        #     "tools_mill_cutz": -0.1,
-        #     "tools_mill_multidepth": False,
-        #     "tools_mill_depthperpass": 0.7,
-        #
-        #     "tools_mill_travelz": 0.1,
-        #     "tools_mill_feedrate": self.app.defaults["geometry_feedrate"],
-        #     "tools_mill_feedrate_z": 5.0,
-        #     "tools_mill_feedrate_rapid": 5.0,
-        #
-        #     "tools_mill_extracut": self.app.defaults["geometry_extracut"],
-        #     "tools_mill_extracut_length": self.app.defaults["geometry_extracut_length"],
-        #
-        #     "tools_mill_spindlespeed": 0,
-        #     "tools_mill_dwell": True,
-        #     "tools_mill_dwelltime": 1000,
-        #
-        #     "tools_mill_toolchange": False,
-        #     "tools_mill_toolchangez": 1.0,
-        #     "tools_mill_toolchangexy": "0.0, 0.0",
-        #
-        #     "tools_mill_endz": 2.0,
-        #     "tools_mill_endxy": '',
-        #
-        #     "tools_mill_startz": None,
-        #
-        #     "tools_mill_z_pdepth": -0.02,
-        #     "tools_mill_feedrate_probe": 3.0,
-        #     "tools_mill_ppname_g": self.app.defaults["geometry_ppname_g"],
-        #     "tools_mill_optimization_type": "B",
-        #
-        #     "tools_mill_area_exclusion": False,
-        #     "tools_mill_area_shape": "polygon",
-        #     "tools_mill_area_strategy": "over",
-        #     "tools_mill_area_overz": 1.0,
-        # }
-
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():
             if opt_key.find('geometry_') == 0:
@@ -647,20 +586,10 @@ class ToolMilling(AppTool, Excellon):
             if opt_key.find('tools_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
 
-        self.obj_name = ""
-        self.target_obj = None
-
-        self.first_click = False
-        self.cursor_pos = None
-        self.mouse_is_dragging = False
-
-        self.units = self.app.defaults['units'].upper()
-
         # ########################################
         # #######3 TEMP SETTINGS #################
         # ########################################
 
-        self.ui.target_radio.set_value("geo")
         self.ui.addtool_entry.set_value(self.app.defaults["tools_mill_tooldia"])
 
         self.on_object_changed()
@@ -1295,6 +1224,10 @@ class ToolMilling(AppTool, Excellon):
             self.ui.job_type_combo.hide()
             self.ui.job_type_combo.set_value(0)  # 'iso' - will hide the Polish UI elements
 
+            self.ui.offset_separator_line.hide()
+            self.ui.tool_shape_label.hide()
+            self.ui.tool_shape_combo.hide()
+
             self.ui.add_tool_frame.hide()
         else:
             self.ui.tools_table.hide()
@@ -1317,6 +1250,10 @@ class ToolMilling(AppTool, Excellon):
             self.ui.job_type_combo.show()
             # self.ui.job_type_combo.set_value(self.app.defaults["tools_mill_job_val"])
 
+            self.ui.offset_separator_line.show()
+            self.ui.tool_shape_label.show()
+            self.ui.tool_shape_combo.show()
+
             self.ui.add_tool_frame.show()
 
         # set the object as active so the Properties is populated by whatever object is selected
@@ -1333,6 +1270,7 @@ class ToolMilling(AppTool, Excellon):
             self.to_form(storage=obj.tools[last_key]['data'])
 
     def on_object_changed(self):
+        # print(self.app.ui.notebook.currentWidget().objectName() != 'plugin_tab')
         if not self.app.ui.notebook.tabText(2) != _("Milling Tool"):
             return
 
@@ -1377,7 +1315,12 @@ class ToolMilling(AppTool, Excellon):
             sel_obj = current.indexes()[0].internalPointer().obj
             name = sel_obj.options['name']
             kind = sel_obj.kind
-            if kind in ['geometry', 'excellon']:
+            if kind == 'excellon':
+                self.ui.target_radio.set_value('exc')
+                self.ui.object_combo.set_value(name)
+
+            if kind == 'geometry':
+                self.ui.target_radio.set_value('geo')
                 self.ui.object_combo.set_value(name)
         except Exception:
             pass
@@ -1420,6 +1363,9 @@ class ToolMilling(AppTool, Excellon):
             self.ui.offset_entry.hide()
 
     def ui_connect(self):
+        # When object selection on canvas change
+        # self.app.collection.view.selectionModel().selectionChanged.connect(self.on_object_selection_changed)
+        self.app.proj_selection_changed.connect(self.on_object_selection_changed)
 
         # Area Exception - exclusion shape added signal
         # first disconnect it from any other object
@@ -1482,6 +1428,11 @@ class ToolMilling(AppTool, Excellon):
         self.ui.exclusion_table.itemChanged.connect(self.on_exclusion_table_overz)
 
     def ui_disconnect(self):
+        try:
+            self.app.proj_selection_changed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
         # Excellon Tool Table - rows selected
         try:
             self.ui.tools_table.clicked.disconnect()

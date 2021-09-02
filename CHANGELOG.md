@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 1.09.2021
 
 - fixed the issue in Milling Plugin that did not automatically set the object combo to the previously selected object
+- some GUI changes in Milling Plugin
+- fixed the multiple selection in the Project Tab collection list; now only a single selection will trigger the signal 'proj_selection_changed'
+- when Milling Plugin is opened, selecting an Excelon object will set the GUI to Excellon Target
 
 31.08.2021
 
