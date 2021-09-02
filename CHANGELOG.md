@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.09.2021
+
+- in Geometry Editor, deleting a shape from the Table context menu will update now the plot
+
 1.09.2021
 
 - fixed the issue in Milling Plugin that did not automatically set the object combo to the previously selected object

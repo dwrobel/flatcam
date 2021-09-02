@@ -4171,13 +4171,15 @@ class AppGeoEditor(QtCore.QObject):
                                 if old_geo.geom_type == 'LineaRing':
                                     processed_shapes.append(obj_shape)
                                     new_shapes.append(LinearRing(list(old_geo.coords)[::-1]))
+                                elif old_geo.geom_type == 'LineString':
+                                    processed_shapes.append(obj_shape)
+                                    new_shapes.append(LineString(list(old_geo.coords)[::-1]))
                                 elif old_geo.geom_type == 'Polygon':
                                     processed_shapes.append(obj_shape)
                                     if old_geo.exterior.is_ccw is True:
                                         new_shapes.append(deepcopy(orient(old_geo, -1)))
                                     else:
                                         new_shapes.append(deepcopy(orient(old_geo, 1)))
-
                         except ValueError:
                             pass
 
@@ -5019,6 +5021,7 @@ class AppGeoEditor(QtCore.QObject):
         tempref = [s for s in self.selected]
         for shape in tempref:
             self.delete_shape(shape)
+        self.plot_all()
         self.selected = []
         self.build_ui()
 
