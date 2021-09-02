@@ -6705,6 +6705,14 @@ class App(QtCore.QObject):
         #     print(str(err))
 
         try:
+            # this signal is used by the Plugins to change the selection on App objects combo boxes when the
+            # selection happen in Project Tab (collection view)
+            # when the plugin is closed then it's not needed
+            self.proj_selection_changed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
             # clear the possible drawn probing shapes for Levelling Tool
             self.levelling_tool.probing_shapes.clear(update=True)
         except AttributeError:

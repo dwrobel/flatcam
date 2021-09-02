@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 2.09.2021
 
 - in Geometry Editor, deleting a shape from the Table context menu will update now the plot
+- when a Plugin is no longer used disconnect a certain signal that control the selection in the App Object Target combobox since it is not needed and it takes cpu cycles
 
 1.09.2021
 
