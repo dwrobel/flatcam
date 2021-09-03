@@ -354,7 +354,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # print(self.fcapp.qapp.devicePixelRatio())
 
         # coordinates and anchors
-        height = (5 * l1_height) + c_font_metrics.lineSpacing() * 3
+        height = (5 * l1_height) + c_font_metrics.lineSpacing() * 1.5
         width = max(l1_length, l2_length, l3_length, l4_length) * 1.3  # don't know where the 1.3 comes
         center_x = (width / 2) + 5
         center_y = (height / 2) + 5
