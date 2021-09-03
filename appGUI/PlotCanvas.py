@@ -158,8 +158,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # setup HUD
 
         # TEXT HUD
-        self.text_hud = Text('', color=self.text_hud_color, method='gpu', anchor_x='left',
-                             parent=None)
+        self.text_hud = Text('', color=self.text_hud_color, method='gpu', anchor_x='left', parent=None)
         # RECT HUD
         self.rect_hud = Rectangle(width=10, height=10, radius=[5, 5, 5, 5], center = (20, 20),
                                   border_color=self.rect_hud_color, color=self.rect_hud_color, parent=None)
@@ -320,10 +319,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         dy_dec = str(self.fcapp.dec_format(dy, self.fcapp.decimals)) if dy else '0.0'
         x_dec = str(self.fcapp.dec_format(x, self.fcapp.decimals)) if x else '0.0'
         y_dec = str(self.fcapp.dec_format(y, self.fcapp.decimals)) if y else '0.0'
-        l1_hud_text = 'Dx:\t%s [%s]' % (dx_dec, units)
-        l2_hud_text = 'Dy:\t%s [%s]' % (dy_dec, units)
-        l3_hud_text = 'X:  \t%s [%s]' % (x_dec, units)
-        l4_hud_text = 'Y:  \t%s [%s]' % (y_dec, units)
+        l1_hud_text = 'Dx: %s [%s]' % (dx_dec, units)
+        l2_hud_text = 'Dy: %s [%s]' % (dy_dec, units)
+        l3_hud_text = 'X:   %s [%s]' % (x_dec, units)
+        l4_hud_text = 'Y:   %s [%s]' % (y_dec, units)
         hud_text = '%s\n%s\n\n%s\n%s' % (l1_hud_text, l2_hud_text, l3_hud_text, l4_hud_text)
 
         # font size
@@ -333,30 +332,30 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         else:
             fsize = 8
 
-        c_font = QtGui.QFont()
-        c_font.setPointSize(fsize)
+        try:
+            c_font = QtGui.QFont("times", fsize)
+        except Exception:
+            # maybe Unix-like OS's don't have the Times font installed, use whatever is available
+            c_font = QtGui.QFont()
+            c_font.setPointSize(fsize)
 
         c_font_metrics = QtGui.QFontMetrics(c_font)
 
-        l1_length = c_font_metrics.horizontalAdvance(l1_hud_text)
-        l2_length = c_font_metrics.horizontalAdvance(l2_hud_text)
-        l3_length = c_font_metrics.horizontalAdvance(l3_hud_text)
-        l4_length = c_font_metrics.horizontalAdvance(l4_hud_text)
+        l1_length = c_font_metrics.horizontalAdvance('Dx:xxx[mm]') + c_font_metrics.horizontalAdvance(str(dx_dec))
+        l2_length = c_font_metrics.horizontalAdvance('Dy:xxx[mm]') + c_font_metrics.horizontalAdvance(str(dy_dec))
+        l3_length = c_font_metrics.horizontalAdvance('X:xxxxx[mm]') + c_font_metrics.horizontalAdvance(str(x_dec))
+        l4_length = c_font_metrics.horizontalAdvance('Y:xxxxx[mm]') + c_font_metrics.horizontalAdvance(str(y_dec))
         # l1_length = c_font_metrics.boundingRect(l1_hud_text).width()
         # l2_length = c_font_metrics.boundingRect(l2_hud_text).width()
         # l3_length = c_font_metrics.boundingRect(l3_hud_text).width()
         # l4_length = c_font_metrics.boundingRect(l4_hud_text).width()
 
         l1_height = c_font_metrics.boundingRect(l1_hud_text).height()
-        l2_height = c_font_metrics.boundingRect(l2_hud_text).height()
-        l3_height = c_font_metrics.boundingRect(l3_hud_text).height()
-        l4_height = c_font_metrics.boundingRect(l4_hud_text).height()
+        # print(self.fcapp.qapp.devicePixelRatio())
 
         # coordinates and anchors
-        # height = fsize * 11     # 90. Constant 11 is something that works
-        height = l1_height + l2_height + l3_height + l4_height + (2. * c_font_metrics.lineSpacing()) + 10
-        # width = height * 2      # width is double the height = it is something that works
-        width = max(l1_length, l2_length, l3_length, l4_length) * 1.27  # don't know where the 1.27 comes
+        height = (5 * l1_height) + c_font_metrics.lineSpacing() * 3
+        width = max(l1_length, l2_length, l3_length, l4_length) * 1.3  # don't know where the 1.3 comes
         center_x = (width / 2) + 5
         center_y = (height / 2) + 5
 

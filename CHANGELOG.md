@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.09.2021
+
+- trying to get the right size of the HUD rectangle
+
 2.09.2021
 
 - in Geometry Editor, deleting a shape from the Table context menu will update now the plot
