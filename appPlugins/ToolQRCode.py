@@ -758,8 +758,6 @@ class QRcodeUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.layout.addWidget(FCLabel(''))
-
         # ## Grid Layout
         i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(i_grid_lay)

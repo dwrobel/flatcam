@@ -839,17 +839,27 @@ class ToolMilling(AppTool, Excellon):
         # Get source object.
         try:
             self.target_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception:
+        except Exception as err:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            self.app.log("ToolMilling.build_ui() getting the object --> %s" % str(err))
+            self.ui_disconnect()
+            self.ui_connect()
             return
 
-        if self.ui.target_radio.get_value() == 'geo':
-            self.build_ui_mill()
-        else:
-            self.build_ui_exc()
+        # build the UI
+        try:
+            if self.ui.target_radio.get_value() == 'geo':
+                self.build_ui_mill()
+            else:
+                self.build_ui_exc()
+        except Exception as err:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not build the Plugin UI"))
+            self.app.log("ToolMilling.build_ui() building the UI --> %s" % str(err))
+            self.ui_connect()
+            return
 
-        self.ui_disconnect()
         # Build Exclusion Areas section
+        self.ui_disconnect()
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
         self.ui.exclusion_table.setRowCount(e_len)
 

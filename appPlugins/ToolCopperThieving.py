@@ -1287,7 +1287,6 @@ class ThievingUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
         i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)

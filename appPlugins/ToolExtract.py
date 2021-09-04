@@ -913,8 +913,6 @@ class ExtractUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(FCLabel(""))
-
         # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid_lay)

@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry, FCLabel, RadioSet, FCButton, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 import math
 
 import gettext
@@ -98,6 +98,8 @@ class ToolCalculator(AppTool):
         self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
+        self.ui.calculate_tin_button.clicked.connect(lambda: self.on_tin_solution_calculation())
+        self.ui.sol_radio.activated_custom.connect(self.on_tin_solution_type)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
@@ -108,6 +110,7 @@ class ToolCalculator(AppTool):
         self.clear_ui(self.layout)
         self.ui = CalcUI(layout=self.layout, app=self.app)
         self.pluginName = self.ui.pluginName
+
         self.connect_signals_at_init()
 
         # ## Initialize form
@@ -140,6 +143,9 @@ class ToolCalculator(AppTool):
         self.on_area_calculation_radio(val='d')
 
         self.on_calculate_eplate()
+
+        # Tinning Calculator
+        self.ui.sol_radio.set_value("sol1")
 
         self.ui_disconnect()
         self.ui_connect()
@@ -303,6 +309,52 @@ class ToolCalculator(AppTool):
 
         self.ui_connect()
 
+    def on_tin_solution_type(self, val):
+        if val == 'sol1':
+            sncl2_val = 0.5
+            thiourea_val = 2.0
+            sulfamic_acid_val = 3.0
+            water_val = 100.0
+            soap_val = 0.1
+        else:
+            sncl2_val = 2.0
+            thiourea_val = 7.5
+            sulfamic_acid_val = 9.0
+            water_val = 100.0
+            soap_val = 0.1
+
+        desired_vol = 100
+
+        self.ui.sn_cl_entry.set_value(sncl2_val)
+        self.ui.th_entry.set_value(thiourea_val)
+        self.ui.sa_entry.set_value(sulfamic_acid_val)
+        self.ui.h2o_entry.set_value(water_val)
+        self.ui.soap_entry.set_value(soap_val)
+        self.ui.vol_entry.set_value(desired_vol)
+
+    def on_tin_solution_calculation(self):
+        solution_type = self.ui.sol_radio.get_value()
+        desired_volume = self.ui.vol_entry.get_value()  # milliliters
+
+        if solution_type == 'sol1':
+            sncl2_val = 0.005
+            thiourea_val = 0.02
+            sulfamic_acid_val = 0.03
+            water_val = 1
+            soap_val = 0.001
+        else:
+            sncl2_val = 0.02
+            thiourea_val = 0.075
+            sulfamic_acid_val = 0.09
+            water_val = 1
+            soap_val = 0.001
+
+        self.ui.sn_cl_entry.set_value(sncl2_val * desired_volume)
+        self.ui.th_entry.set_value(thiourea_val * desired_volume)
+        self.ui.sa_entry.set_value(sulfamic_acid_val * desired_volume)
+        self.ui.h2o_entry.set_value(water_val * desired_volume)
+        self.ui.soap_entry.set_value(soap_val * desired_volume)
+
     def ui_connect(self):
         # V-Shape Calculator
         self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
@@ -412,9 +464,10 @@ class ToolCalculator(AppTool):
 class CalcUI:
 
     pluginName = _("Calculators")
-    v_shapeName = _("V-Shape Tool Calculator")
-    unitsName = _("Units Calculator")
-    eplateName = _("ElectroPlating Calculator")
+    v_shapeName = _("V-Shape Tool")
+    unitsName = _("Units Conversion")
+    eplateName = _("ElectroPlating")
+    tinningName = _("Tinning")
 
     def __init__(self, layout, app):
         self.app = app
@@ -437,16 +490,19 @@ class CalcUI:
         # ## Units Calculator #
         # #####################
 
-        self.unists_spacer_label = FCLabel(" ")
-        self.layout.addWidget(self.unists_spacer_label)
-
         # ## Title of the Units Calculator
-        units_label = FCLabel("<font size=3><b>%s</b></font>" % self.unitsName)
+        units_label = FCLabel('<span style="color:blue;"><b>%s</b></span>'  % self.unitsName)
         self.layout.addWidget(units_label)
+
+        units_frame = FCFrame()
+        units_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        units_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.layout.addWidget(units_frame)
 
         # Grid Layout
         grid_units_layout = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_units_layout)
+        units_frame.setLayout(grid_units_layout)
 
         inch_label = FCLabel(_("INCH"))
         mm_label = FCLabel(_("MM"))
@@ -470,17 +526,23 @@ class CalcUI:
         # #############################################################################################################
         # ################################ V-shape Tool Calculator ####################################################
         # #############################################################################################################
+        # ## Title of the V-shape Tools Calculator
+        v_shape_title_label = FCLabel('<span style="color:green;"><b>%s</b></span>'  % self.v_shapeName)
+        self.layout.addWidget(v_shape_title_label)
+
+        v_frame = FCFrame()
+        v_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        v_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.layout.addWidget(v_frame)
+
         grid_vshape = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_vshape.setColumnStretch(0, 0)
         grid_vshape.setColumnStretch(1, 1)
-        self.layout.addLayout(grid_vshape)
+        v_frame.setLayout(grid_vshape)
 
-        self.v_shape_spacer_label = FCLabel(" ")
-        grid_vshape.addWidget(self.v_shape_spacer_label, 0, 0, 1, 2)
-
-        # ## Title of the V-shape Tools Calculator
-        v_shape_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.v_shapeName)
-        grid_vshape.addWidget(v_shape_title_label, 2, 0, 1, 2)
+        # self.v_shape_spacer_label = FCLabel(" ")
+        # grid_vshape.addWidget(self.v_shape_spacer_label, 0, 0, 1, 2)
 
         # Tip Diameter
         self.tipDia_label = FCLabel('%s:' % _("Tip Diameter"))
@@ -546,21 +608,27 @@ class CalcUI:
         # #############################################################################################################
         # ############################## ElectroPlating Tool Calculator ###############################################
         # #############################################################################################################
+        # ## Title of the ElectroPlating Tools Calculator
+        tin_title_label = FCLabel('<span style="color:purple;"><b>%s</b></span>'  % self.eplateName)
+        tin_title_label.setToolTip(
+            _("This calculator is useful for those who plate the via/pad/drill holes,\n"
+              "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
+        )
+        self.layout.addWidget(tin_title_label)
+
+        ep_frame = FCFrame()
+        ep_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        ep_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.layout.addWidget(ep_frame)
+
         grid_electro = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_electro.setColumnStretch(0, 0)
         grid_electro.setColumnStretch(1, 1)
 
-        self.layout.addLayout(grid_electro)
+        ep_frame.setLayout(grid_electro)
 
-        grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
-
-        # ## Title of the ElectroPlating Tools Calculator
-        plate_title_label = FCLabel("<font size=3><b>%s</b></font>" % self.eplateName)
-        plate_title_label.setToolTip(
-            _("This calculator is useful for those who plate the via/pad/drill holes,\n"
-              "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
-        )
-        grid_electro.addWidget(plate_title_label, 2, 0, 1, 2)
+        # grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
 
         # Area Calculation
         self.area_sel_label = FCLabel('%s:' % _("Area Calculation"))
@@ -629,10 +697,10 @@ class CalcUI:
         grid_electro.addWidget(self.area_label, 12, 0)
         grid_electro.addLayout(a_hlay, 12, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_electro.addWidget(separator_line, 14, 0, 1, 2)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_electro.addWidget(self.separator_line, 14, 0, 1, 2)
 
         # DENSITY
         self.cdensity_label = FCLabel('%s:' % _("Current Density"))
@@ -724,6 +792,202 @@ class CalcUI:
               "depending on the parameters above")
         )
         grid_electro.addWidget(self.calculate_plate_button, 24, 0, 1, 2)
+
+        # #############################################################################################################
+        # ############################## Tinning Calculator ###############################################
+        # #############################################################################################################
+        # ## Title of the Tinning Calculator
+        tin_title_label = FCLabel('<span style="color:orange;"><b>%s</b></span>' % self.tinningName)
+        tin_title_label.setToolTip(
+            _("Calculator for chemical quantities\n"
+              "required for tinning PCB's.")
+        )
+        self.layout.addWidget(tin_title_label)
+
+        tin_frame = FCFrame()
+        tin_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        tin_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.layout.addWidget(tin_frame)
+
+        grid_tin = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_tin.setColumnStretch(0, 0)
+        grid_tin.setColumnStretch(1, 1)
+
+        tin_frame.setLayout(grid_tin)
+
+        # Solution
+        self.solution_lbl = FCLabel('%s:' % _("Solution"))
+        self.solution_lbl.setToolTip(
+            _("Choose one solution for tinning.")
+        )
+        self.sol_radio = RadioSet([
+            {'label': '1', 'value': 'sol1'},
+            {"label": '2', "value": "sol2"}
+        ], stretch=False)
+
+        grid_tin.addWidget(self.solution_lbl, 4, 0)
+        grid_tin.addWidget(self.sol_radio, 4, 1)
+
+        # Stannous Chloride
+        self.sn_cl_lbl = FCLabel('%s :' % "SnCl<sub>2</sub>")
+        self.sn_cl_lbl.setToolTip(_('Stannous Chloride.'))
+        self.sn_cl_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.sn_cl_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                       QtWidgets.QSizePolicy.Policy.Preferred)
+        self.sn_cl_entry.lineEdit().setReadOnly(True)
+        self.sn_cl_entry.set_precision(self.decimals)
+        self.sn_cl_entry.set_range(0.0, 10000.0000)
+
+        self.sncl_unit = FCLabel('%s' % _("g"))
+        self.sncl_unit.setMinimumWidth(25)
+
+        sncl_hlay = QtWidgets.QHBoxLayout()
+        sncl_hlay.addWidget(self.sn_cl_entry)
+        sncl_hlay.addWidget(self.sncl_unit)
+
+        grid_tin.addWidget(self.sn_cl_lbl, 8, 0)
+        grid_tin.addLayout(sncl_hlay, 8, 1)
+
+        # Thiourea
+        self.th_label = FCLabel('%s:' % _("Thiourea"))
+        self.th_label.setToolTip(_('Thiourea.'))
+        self.th_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.th_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                    QtWidgets.QSizePolicy.Policy.Preferred)
+        self.th_entry.lineEdit().setReadOnly(True)
+        self.th_entry.set_precision(self.decimals)
+        self.th_entry.set_range(0.0, 10000.0000)
+
+        self.th_unit = FCLabel('%s' % _("g"))
+        self.th_unit.setMinimumWidth(25)
+
+        th_hlay = QtWidgets.QHBoxLayout()
+        th_hlay.addWidget(self.th_entry)
+        th_hlay.addWidget(self.th_unit)
+
+        grid_tin.addWidget(self.th_label, 12, 0)
+        grid_tin.addLayout(th_hlay, 12, 1)
+
+        # Sulfamic Acid
+        self.sa_label = FCLabel('%s :' % "H<sub>3</sub>NSO<sub>3</sub>")
+        self.sa_label.setToolTip(_('Sulfamic Acid.'))
+        self.sa_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.sa_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                    QtWidgets.QSizePolicy.Policy.Preferred)
+        self.sa_entry.lineEdit().setReadOnly(True)
+        self.sa_entry.set_precision(self.decimals)
+        self.sa_entry.set_range(0.0, 10000.0000)
+
+        self.sa_unit = FCLabel('%s' % _("g"))
+        self.sa_unit.setMinimumWidth(25)
+
+        sa_hlay = QtWidgets.QHBoxLayout()
+        sa_hlay.addWidget(self.sa_entry)
+        sa_hlay.addWidget(self.sa_unit)
+
+        grid_tin.addWidget(self.sa_label, 14, 0)
+        grid_tin.addLayout(sa_hlay, 14, 1)
+
+        # Water
+        self.h2o_label = FCLabel("H<sub>2</sub>O :")
+        self.h2o_label.setToolTip(_('Distilled Water.'))
+        self.h2o_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.h2o_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                    QtWidgets.QSizePolicy.Policy.Preferred)
+        self.h2o_entry.lineEdit().setReadOnly(True)
+        self.h2o_entry.set_precision(self.decimals)
+        self.h2o_entry.set_range(0.0, 10000.0000)
+
+        self.h20_unit = FCLabel('%s' % _("mL"))
+        self.h20_unit.setMinimumWidth(25)
+
+        h2o_hlay = QtWidgets.QHBoxLayout()
+        h2o_hlay.addWidget(self.h2o_entry)
+        h2o_hlay.addWidget(self.h20_unit)
+
+        grid_tin.addWidget(self.h2o_label, 16, 0)
+        grid_tin.addLayout(h2o_hlay, 16, 1)
+
+        # Soap
+        self.soap_label = FCLabel('%s:' % _("Soap"))
+        self.soap_label.setToolTip(_('Liquid soap.'))
+        self.soap_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.soap_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                     QtWidgets.QSizePolicy.Policy.Preferred)
+        self.soap_entry.lineEdit().setReadOnly(True)
+        self.soap_entry.set_precision(self.decimals)
+        self.soap_entry.set_range(0.0, 10000.0000)
+
+        self.soap_unit = FCLabel('%s' % _("mL"))
+        self.soap_unit.setMinimumWidth(25)
+
+        soap_hlay = QtWidgets.QHBoxLayout()
+        soap_hlay.addWidget(self.soap_entry)
+        soap_hlay.addWidget(self.soap_unit)
+
+        grid_tin.addWidget(self.soap_label, 18, 0)
+        grid_tin.addLayout(soap_hlay, 18, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_tin.addWidget(separator_line, 20, 0, 1, 2)
+
+        self.tin_opt_label = FCLabel('%s:' % _("Optional"))
+        grid_tin.addWidget(self.tin_opt_label, 22, 0)
+
+        # Sodium hypophosphite
+        self.hypo_label = FCLabel("NaPO<sub>2</sub>H<sub>2</sub> :")
+        self.hypo_label.setToolTip(_('Sodium hypophosphite. Optional, for solution stability.'))
+        self.hypo_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.hypo_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                      QtWidgets.QSizePolicy.Policy.Preferred)
+        self.hypo_entry.lineEdit().setReadOnly(True)
+        self.hypo_entry.set_precision(self.decimals)
+        self.hypo_entry.set_range(0.0, 10000.0000)
+
+        self.hypo_unit = FCLabel('%s' % _("g"))
+        self.hypo_unit.setMinimumWidth(25)
+
+        hypo_hlay = QtWidgets.QHBoxLayout()
+        hypo_hlay.addWidget(self.hypo_entry)
+        hypo_hlay.addWidget(self.hypo_unit)
+
+        grid_tin.addWidget(self.hypo_label, 24, 0)
+        grid_tin.addLayout(hypo_hlay, 24, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_tin.addWidget(separator_line, 26, 0, 1, 2)
+
+        # Volume
+        self.vol_lbl = FCLabel('<span style="color:red;">%s:</span>' % _("Volume"))
+        self.vol_lbl.setToolTip(_('Desired volume of tinning solution.'))
+        self.vol_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.vol_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                     QtWidgets.QSizePolicy.Policy.Preferred)
+        self.vol_entry.set_precision(self.decimals)
+        self.vol_entry.set_range(0.0, 10000.0000)
+
+        self.vol_unit = FCLabel('%s' % _("mL"))
+        self.vol_unit.setMinimumWidth(25)
+
+        vol_hlay = QtWidgets.QHBoxLayout()
+        vol_hlay.addWidget(self.vol_entry)
+        vol_hlay.addWidget(self.vol_unit)
+
+        grid_tin.addWidget(self.vol_lbl, 28, 0)
+        grid_tin.addLayout(vol_hlay, 28, 1)
+
+        # ## Buttons
+        self.calculate_tin_button = FCButton(_("Calculate"))
+        self.calculate_tin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
+        self.calculate_tin_button.setToolTip(
+            _("Calculate the chemical quantities for the desired volume of tinning solution.")
+        )
+        grid_tin.addWidget(self.calculate_tin_button, 30, 0, 1, 2)
 
         self.layout.addStretch(1)
 

@@ -697,8 +697,6 @@ class CornersUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.layout.addWidget(FCLabel(""))
-
         # Gerber object #
         self.object_label = FCLabel('<b>%s:</b>' % _("GERBER"))
         self.object_label.setToolTip(

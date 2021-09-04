@@ -802,8 +802,6 @@ class FidoUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
         
-        self.layout.addWidget(FCLabel(""))
-
         self.points_label = FCLabel('<b>%s:</b>' % _('Fiducials Coordinates'))
         self.points_label.setToolTip(
             _("A table with the fiducial points coordinates,\n"

@@ -1988,7 +1988,6 @@ class PunchUI:
         self.title_box.addWidget(self.level)
 
         # Punch Drill holes
-        self.layout.addWidget(FCLabel(""))
 
         # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)

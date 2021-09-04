@@ -2224,6 +2224,12 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         self.setTextCursor(cursor)
 
 
+class FCFrame(QtWidgets.QFrame):
+    # used when I want to apply stylesheets but not to children's of the same type
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
 class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None, policy=True):

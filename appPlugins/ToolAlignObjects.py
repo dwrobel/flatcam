@@ -411,8 +411,6 @@ class AlignUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(FCLabel(""))
-
         # Form Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)

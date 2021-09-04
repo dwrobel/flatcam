@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.09.2021
+
+- in Calculators Plugin added a new calculator to calculate the required chemical weights for tinning solutions
+- in Calculators Plugin remade the GUI
+- some minor GUI modifications for a series of App Plugins
+
 3.09.2021
 
 - trying to get the right size of the HUD rectangle

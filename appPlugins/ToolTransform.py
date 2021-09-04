@@ -595,7 +595,6 @@ class TransformUI:
             _("A plugin that allow geometry transformation.")
         )
         self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
 
         # ## Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -603,8 +602,6 @@ class TransformUI:
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         grid0.setColumnStretch(2, 0)
-
-        grid0.addWidget(FCLabel(''))
 
         # Reference
         ref_label = FCLabel('%s:' % _("Reference"))
