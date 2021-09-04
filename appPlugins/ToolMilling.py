@@ -10,7 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, FCComboBox2, \
     FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalTupleEntry, OptionalHideInputSection, FCLabel, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 from appParsers.ParseExcellon import Excellon
 
 from camlib import grace
@@ -712,7 +712,6 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.exclusion_cb.hide()
 
             # All param section
-            self.ui.all_param_separator_line2.hide()
             self.ui.apply_param_to_all.hide()
 
             # Context Menu section
@@ -778,7 +777,6 @@ class ToolMilling(AppTool, Excellon):
                 self.ui.exclusion_cb.show()
 
             # All param section
-            self.ui.all_param_separator_line2.show()
             self.ui.apply_param_to_all.show()
 
             # Context Menu section
@@ -1773,6 +1771,9 @@ class ToolMilling(AppTool, Excellon):
         :return:    None
         :rtype:
         """
+        obj_name = self.ui.object_combo.currentText()
+        if obj_name is None:
+            return
 
         # the Target Object is Excellon
         if self.ui.target_radio.get_value() == 'exc':
@@ -3538,11 +3539,26 @@ class MillingUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
+        # #############################################################################################################
+        # Source Object for Milling Frame
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            _("Source object for milling operation.")
+        )
+        self.tools_box.addWidget(self.obj_combo_label)
+
+        obj_frame = FCFrame()
+        obj_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        obj_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(obj_frame)
+
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
+        obj_frame.setLayout(grid0)
 
         self.target_label = FCLabel('<b>%s</b>:' % _("Target"))
         self.target_label.setToolTip(
@@ -3574,24 +3590,46 @@ class MillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid0.addWidget(separator_line, 4, 0, 1, 2)
 
+        # #############################################################################################################
+        # Tool Table Frame
+        # #############################################################################################################
+
+        # Grid Layout
+        grid_title_tool_table = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_title_tool_table.setColumnStretch(0, 0)
+        grid_title_tool_table.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid_title_tool_table)
+
         # ### Tools ####
-        self.tools_table_label = FCLabel('<b>%s:</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools in the object used for milling.")
         )
-        grid0.addWidget(self.tools_table_label, 6, 0)
+        grid_title_tool_table.addWidget(self.tools_table_label, 0, 0)
 
         # Plot CB
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
         self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        grid0.addWidget(self.plot_cb, 6, 1)
+        grid_title_tool_table.addWidget(self.plot_cb, 0, 1)
+
+        tt_frame = FCFrame()
+        tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(tt_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        tt_frame.setLayout(grid1)
 
         # ################################################
         # ########## Excellon Tool Table #################
         # ################################################
         self.tools_table = FCTable(drag_drop=True)
-        grid0.addWidget(self.tools_table, 8, 0, 1, 2)
+        grid1.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(5)
         self.tools_table.setColumnHidden(3, True)
@@ -3626,8 +3664,8 @@ class MillingUI:
                                      {'label': _('Forward'), 'value': 'fwd'},
                                      {'label': _('Reverse'), 'value': 'rev'}])
 
-        grid0.addWidget(self.order_label, 10, 0)
-        grid0.addWidget(self.order_radio, 10, 1)
+        grid1.addWidget(self.order_label, 2, 0)
+        grid1.addWidget(self.order_radio, 2, 1)
 
         # ************************************************************************
         # ************** Geometry Tool Table *************************************
@@ -3638,7 +3676,7 @@ class MillingUI:
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid0.addWidget(self.geo_tools_table, 12, 0, 1, 2)
+        grid1.addWidget(self.geo_tools_table, 4, 0, 1, 2)
 
         self.geo_tools_table.setColumnCount(5)
         self.geo_tools_table.setColumnWidth(0, 20)
@@ -3673,15 +3711,16 @@ class MillingUI:
         # ADD TOOLS FOR GEOMETRY OBJECT
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.add_tool_frame, 14, 0, 1, 2)
-        grid_tool = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_tool.setColumnStretch(0, 0)
-        grid_tool.setColumnStretch(1, 1)
-        grid_tool.setContentsMargins(0, 0, 0, 0)
-        self.add_tool_frame.setLayout(grid_tool)
+        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
+
+        grid__add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid__add_tool.setColumnStretch(0, 0)
+        grid__add_tool.setColumnStretch(1, 1)
+        grid__add_tool.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(grid__add_tool)
 
         self.tool_sel_label = FCLabel('<b>%s</b>' % _("Add from DB"))
-        grid_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
+        grid__add_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         self.addtool_entry_lbl = FCLabel('%s:' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
@@ -3693,8 +3732,8 @@ class MillingUI:
         self.addtool_entry.setSingleStep(0.1)
         self.addtool_entry.setObjectName("mill_cnctooldia")
 
-        grid_tool.addWidget(self.addtool_entry_lbl, 3, 0)
-        grid_tool.addWidget(self.addtool_entry, 3, 1)
+        grid__add_tool.addWidget(self.addtool_entry_lbl, 3, 0)
+        grid__add_tool.addWidget(self.addtool_entry, 3, 1)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
@@ -3702,7 +3741,7 @@ class MillingUI:
         button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
-        grid_tool.addLayout(button_grid, 5, 0, 1, 2)
+        grid__add_tool.addLayout(button_grid, 5, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -3738,16 +3777,12 @@ class MillingUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 15, 0, 1, 2)
-
         self.add_tool_frame.hide()
 
-        # ###########################################################
-        # ############# Create CNC Job ##############################
-        # ###########################################################
+        # #############################################################################################################
+        # ALL Parameters Frame
+        # #############################################################################################################
+
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
@@ -3756,29 +3791,31 @@ class MillingUI:
                 "Each tool store it's own set of such data."
             )
         )
-        grid0.addWidget(self.tool_data_label, 16, 0, 1, 2)
+        self.tools_box.addWidget(self.tool_data_label)
 
         self.param_frame = QtWidgets.QFrame()
         self.param_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.param_frame, 18, 0, 1, 2)
+        self.tools_box.addWidget(self.param_frame)
 
-        self.exc_tools_box = QtWidgets.QVBoxLayout()
-        self.exc_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.param_frame.setLayout(self.exc_tools_box)
+        self.tool_params_box = QtWidgets.QVBoxLayout()
+        self.tool_params_box.setContentsMargins(0, 0, 0, 0)
+        self.param_frame.setLayout(self.tool_params_box)
 
-        # #################################################################
-        # ################# GRID LAYOUT 3   ###############################
-        # #################################################################
+        # #############################################################################################################
+        # Tool Parameters Frame
+        # #############################################################################################################
 
-        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid1.setColumnStretch(0, 0)
-        self.grid1.setColumnStretch(1, 1)
-        self.exc_tools_box.addLayout(self.grid1)
+        tp_frame = FCFrame()
+        tp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        tp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tool_params_box.addWidget(tp_frame)
 
-        # separator_line = QtWidgets.QFrame()
-        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # self.grid3.addWidget(separator_line, 1, 0, 1, 2)
+        # Grid Layout
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+        tp_frame.setLayout(grid2)
 
         # Milling Type
         self.mill_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -3797,8 +3834,8 @@ class MillingUI:
         )
         self.milling_type_radio.setObjectName("milling_type")
 
-        self.grid1.addWidget(self.mill_type_label, 0, 0)
-        self.grid1.addWidget(self.milling_type_radio, 0, 1)
+        grid2.addWidget(self.mill_type_label, 0, 0)
+        grid2.addWidget(self.milling_type_radio, 0, 1)
 
         # Milling Diameter
         self.mill_dia_label = FCLabel('%s:' % _('Milling Diameter'))
@@ -3811,8 +3848,8 @@ class MillingUI:
         self.mill_dia_entry.set_range(0.0000, 10000.0000)
         self.mill_dia_entry.setObjectName("milling_dia")
 
-        self.grid1.addWidget(self.mill_dia_label, 2, 0)
-        self.grid1.addWidget(self.mill_dia_entry, 2, 1)
+        grid2.addWidget(self.mill_dia_label, 2, 0)
+        grid2.addWidget(self.mill_dia_entry, 2, 1)
 
         self.mill_type_label.hide()
         self.milling_type_radio.hide()
@@ -3836,8 +3873,8 @@ class MillingUI:
         )
         self.offset_type_combo.setObjectName('mill_offset_type')
 
-        self.grid1.addWidget(self.offset_type_lbl, 4, 0)
-        self.grid1.addWidget(self.offset_type_combo, 4, 1)
+        grid2.addWidget(self.offset_type_lbl, 4, 0)
+        grid2.addWidget(self.offset_type_combo, 4, 1)
 
         # Tool Offset
         self.offset_label = FCLabel('%s:' % _('Custom'))
@@ -3858,13 +3895,13 @@ class MillingUI:
         self.offset_label.hide()
         self.offset_entry.hide()
 
-        self.grid1.addWidget(self.offset_label, 6, 0)
-        self.grid1.addWidget(self.offset_entry, 6, 1)
+        grid2.addWidget(self.offset_label, 6, 0)
+        grid2.addWidget(self.offset_entry, 6, 1)
 
         self.offset_separator_line = QtWidgets.QFrame()
         self.offset_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.offset_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid1.addWidget(self.offset_separator_line, 7, 0, 1, 2)
+        grid2.addWidget(self.offset_separator_line, 7, 0, 1, 2)
 
         # Tool Type
         self.tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -3887,8 +3924,8 @@ class MillingUI:
         else:
             self.tool_shape_combo.setCurrentIndex(idx)
 
-        self.grid1.addWidget(self.tool_shape_label, 8, 0)
-        self.grid1.addWidget(self.tool_shape_combo, 8, 1)
+        grid2.addWidget(self.tool_shape_label, 8, 0)
+        grid2.addWidget(self.tool_shape_combo, 8, 1)
 
         # Job Type
         self.job_type_lbl = FCLabel('%s:' % _('Job'))
@@ -3907,8 +3944,8 @@ class MillingUI:
         )
         self.job_type_combo.setObjectName('mill_job_type')
 
-        self.grid1.addWidget(self.job_type_lbl, 10, 0)
-        self.grid1.addWidget(self.job_type_combo, 10, 1)
+        grid2.addWidget(self.job_type_lbl, 10, 0)
+        grid2.addWidget(self.job_type_combo, 10, 1)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
@@ -3920,8 +3957,8 @@ class MillingUI:
         self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
         self.polish_margin_entry.setObjectName("mill_polish_margin")
 
-        self.grid1.addWidget(self.polish_margin_lbl, 12, 0)
-        self.grid1.addWidget(self.polish_margin_entry, 12, 1)
+        grid2.addWidget(self.polish_margin_lbl, 12, 0)
+        grid2.addWidget(self.polish_margin_entry, 12, 1)
 
         # Polish Overlap
         self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
@@ -3935,8 +3972,8 @@ class MillingUI:
         self.polish_over_entry.setSingleStep(0.1)
         self.polish_over_entry.setObjectName("mill_polish_overlap")
 
-        self.grid1.addWidget(self.polish_over_lbl, 14, 0)
-        self.grid1.addWidget(self.polish_over_entry, 14, 1)
+        grid2.addWidget(self.polish_over_lbl, 14, 0)
+        grid2.addWidget(self.polish_over_entry, 14, 1)
 
         # Polish Method
         self.polish_method_lbl = FCLabel('%s:' % _('Method'))
@@ -3953,8 +3990,8 @@ class MillingUI:
         )
         self.polish_method_combo.setObjectName('mill_polish_method')
 
-        self.grid1.addWidget(self.polish_method_lbl, 16, 0)
-        self.grid1.addWidget(self.polish_method_combo, 16, 1)
+        grid2.addWidget(self.polish_method_lbl, 16, 0)
+        grid2.addWidget(self.polish_method_combo, 16, 1)
 
         self.polish_margin_lbl.hide()
         self.polish_margin_entry.hide()
@@ -3966,7 +4003,7 @@ class MillingUI:
         self.job_separator_line = QtWidgets.QFrame()
         self.job_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.job_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid1.addWidget(self.job_separator_line, 18, 0, 1, 2)
+        grid2.addWidget(self.job_separator_line, 18, 0, 1, 2)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -3981,8 +4018,8 @@ class MillingUI:
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName("mill_tipdia")
 
-        self.grid1.addWidget(self.tipdialabel, 20, 0)
-        self.grid1.addWidget(self.tipdia_entry, 20, 1)
+        grid2.addWidget(self.tipdialabel, 20, 0)
+        grid2.addWidget(self.tipdia_entry, 20, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -3998,8 +4035,8 @@ class MillingUI:
         self.tipangle_entry.setSingleStep(1)
         self.tipangle_entry.setObjectName("mill_tipangle")
 
-        self.grid1.addWidget(self.tipanglelabel, 22, 0)
-        self.grid1.addWidget(self.tipangle_entry, 22, 1)
+        grid2.addWidget(self.tipanglelabel, 22, 0)
+        grid2.addWidget(self.tipangle_entry, 22, 1)
 
         self.tipdialabel.hide()
         self.tipdia_entry.hide()
@@ -4021,8 +4058,8 @@ class MillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("mill_cutz")
 
-        self.grid1.addWidget(self.cutzlabel, 24, 0)
-        self.grid1.addWidget(self.cutz_entry, 24, 1)
+        grid2.addWidget(self.cutzlabel, 24, 0)
+        grid2.addWidget(self.cutz_entry, 24, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -4046,8 +4083,8 @@ class MillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        self.grid1.addWidget(self.mpass_cb, 26, 0)
-        self.grid1.addWidget(self.maxdepth_entry, 26, 1)
+        grid2.addWidget(self.mpass_cb, 26, 0)
+        grid2.addWidget(self.maxdepth_entry, 26, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -4064,8 +4101,8 @@ class MillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("mill_travelz")
 
-        self.grid1.addWidget(self.travelzlabel, 28, 0)
-        self.grid1.addWidget(self.travelz_entry, 28, 1)
+        grid2.addWidget(self.travelzlabel, 28, 0)
+        grid2.addWidget(self.travelz_entry, 28, 1)
 
         # Feedrate X-Y
         self.frxylabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -4079,8 +4116,8 @@ class MillingUI:
         self.xyfeedrate_entry.setSingleStep(0.1)
         self.xyfeedrate_entry.setObjectName("mill_feedratexy")
 
-        self.grid1.addWidget(self.frxylabel, 30, 0)
-        self.grid1.addWidget(self.xyfeedrate_entry, 30, 1)
+        grid2.addWidget(self.frxylabel, 30, 0)
+        grid2.addWidget(self.xyfeedrate_entry, 30, 1)
 
         self.frxylabel.hide()
         self.xyfeedrate_entry.hide()
@@ -4099,8 +4136,8 @@ class MillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("mill_feedratez")
 
-        self.grid1.addWidget(self.frzlabel, 32, 0)
-        self.grid1.addWidget(self.feedrate_z_entry, 32, 1)
+        grid2.addWidget(self.frzlabel, 32, 0)
+        grid2.addWidget(self.feedrate_z_entry, 32, 1)
 
         # Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -4117,8 +4154,8 @@ class MillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("mill_fr_rapid")
 
-        self.grid1.addWidget(self.feedrate_rapid_label, 34, 0)
-        self.grid1.addWidget(self.feedrate_rapid_entry, 34, 1)
+        grid2.addWidget(self.feedrate_rapid_label, 34, 0)
+        grid2.addWidget(self.feedrate_rapid_entry, 34, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -4152,8 +4189,8 @@ class MillingUI:
         self.extracut_cb.hide()
         self.e_cut_entry.hide()
 
-        self.grid1.addWidget(self.extracut_cb, 36, 0)
-        self.grid1.addWidget(self.e_cut_entry, 36, 1)
+        grid2.addWidget(self.extracut_cb, 36, 0)
+        grid2.addWidget(self.e_cut_entry, 36, 1)
 
         # Spindlespeed
         self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
@@ -4167,8 +4204,8 @@ class MillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("mill_spindlespeed")
 
-        self.grid1.addWidget(self.spindle_label, 38, 0)
-        self.grid1.addWidget(self.spindlespeed_entry, 38, 1)
+        grid2.addWidget(self.spindle_label, 38, 0)
+        grid2.addWidget(self.spindlespeed_entry, 38, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -4188,47 +4225,40 @@ class MillingUI:
         )
         self.dwelltime_entry.setObjectName("mill_dwelltime")
 
-        self.grid1.addWidget(self.dwell_cb, 40, 0)
-        self.grid1.addWidget(self.dwelltime_entry, 40, 1)
+        grid2.addWidget(self.dwell_cb, 40, 0)
+        grid2.addWidget(self.dwelltime_entry, 40, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        # #################################################################
-        # ################# GRID LAYOUT 3   ###############################
-        # #################################################################
-        # ################# COMMON PARAMETERS #############################
-
-        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid3.setColumnStretch(0, 0)
-        self.grid3.setColumnStretch(1, 1)
-        self.exc_tools_box.addLayout(self.grid3)
-
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(separator_line2, 0, 0, 1, 2)
-
+        # Apply to All Parameters Button
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        self.grid3.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
-
-        self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(self.all_param_separator_line2, 2, 0, 1, 2)
+        self.tool_params_box.addWidget(self.apply_param_to_all)
 
         # #############################################################################################################
-        # #################################### General Parameters #####################################################
+        # COMMON PARAMETERS
         # #############################################################################################################
-        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
+        # General Parameters
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
-        self.grid3.addWidget(self.gen_param_label, 3, 0, 1, 2)
+        self.tool_params_box.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        gp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        gp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tool_params_box.addWidget(gp_frame)
+
+        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
+        gp_frame.setLayout(grid3)
 
         # Tool change Z:
         self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
@@ -4249,8 +4279,8 @@ class MillingUI:
 
         self.toolchangez_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(self.toolchange_cb, 5, 0)
-        self.grid3.addWidget(self.toolchangez_entry, 5, 1)
+        grid3.addWidget(self.toolchange_cb, 0, 0)
+        grid3.addWidget(self.toolchangez_entry, 0, 1)
 
         # Tool change X-Y
         self.toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
@@ -4260,8 +4290,8 @@ class MillingUI:
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.toolchangexy_entry.setObjectName("mill_toolchangexy")
 
-        self.grid3.addWidget(self.toolchange_xy_label, 8, 0)
-        self.grid3.addWidget(self.toolchangexy_entry, 8, 1)
+        grid3.addWidget(self.toolchange_xy_label, 2, 0)
+        grid3.addWidget(self.toolchangexy_entry, 2, 1)
 
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb,
                                               [
@@ -4283,8 +4313,8 @@ class MillingUI:
 
         self.endz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(self.endz_label, 11, 0)
-        self.grid3.addWidget(self.endz_entry, 11, 1)
+        grid3.addWidget(self.endz_label, 4, 0)
+        grid3.addWidget(self.endz_entry, 4, 1)
 
         # End Move X,Y
         self.endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
@@ -4297,8 +4327,8 @@ class MillingUI:
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.endxy_entry.setObjectName("mill_endxy")
 
-        self.grid3.addWidget(self.endmove_xy_label, 12, 0)
-        self.grid3.addWidget(self.endxy_entry, 12, 1)
+        grid3.addWidget(self.endmove_xy_label, 6, 0)
+        grid3.addWidget(self.endxy_entry, 6, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -4313,8 +4343,8 @@ class MillingUI:
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setObjectName("mill_depth_probe")
 
-        self.grid3.addWidget(self.pdepth_label, 13, 0)
-        self.grid3.addWidget(self.pdepth_entry, 13, 1)
+        grid3.addWidget(self.pdepth_label, 8, 0)
+        grid3.addWidget(self.pdepth_entry, 8, 1)
 
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
@@ -4331,8 +4361,8 @@ class MillingUI:
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setObjectName("mill_fr_probe")
 
-        self.grid3.addWidget(self.feedrate_probe_label, 14, 0)
-        self.grid3.addWidget(self.feedrate_probe_entry, 14, 1)
+        grid3.addWidget(self.feedrate_probe_label, 10, 0)
+        grid3.addWidget(self.feedrate_probe_entry, 10, 1)
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
@@ -4347,8 +4377,8 @@ class MillingUI:
         self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.pp_geo_name_cb.setObjectName("mill_ppname_g")
 
-        self.grid3.addWidget(pp_geo_label, 16, 0)
-        self.grid3.addWidget(self.pp_geo_name_cb, 16, 1)
+        grid3.addWidget(pp_geo_label, 12, 0)
+        grid3.addWidget(self.pp_geo_name_cb, 12, 1)
 
         # ------------------------------------------------------------------------------------------------------------
         # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
@@ -4365,11 +4395,11 @@ class MillingUI:
         )
         self.exclusion_cb.setObjectName("mill_exclusion")
 
-        self.grid3.addWidget(self.exclusion_cb, 20, 0, 1, 2)
+        grid3.addWidget(self.exclusion_cb, 14, 0, 1, 2)
 
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
-        self.grid3.addWidget(self.exclusion_frame, 22, 0, 1, 2)
+        grid3.addWidget(self.exclusion_frame, 16, 0, 1, 2)
 
         self.exclusion_box = QtWidgets.QVBoxLayout()
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)
@@ -4457,19 +4487,6 @@ class MillingUI:
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(separator_line, 25, 0, 1, 2)
-
-        # #################################################################
-        # ################# GRID LAYOUT 6   ###############################
-        # #################################################################
-        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid4.setColumnStretch(0, 0)
-        self.grid4.setColumnStretch(1, 1)
-        self.tools_box.addLayout(self.grid4)
-
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip(
@@ -4485,9 +4502,9 @@ class MillingUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.grid4.addWidget(self.generate_cnc_button, 3, 0, 1, 3)
+        self.tool_params_box.addWidget(self.generate_cnc_button)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
