@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - some minor GUI modifications for a series of App Plugins
 - in Calculators Plugin, added sodium hypophosphite optional parameter calculation
 - in Cutout Plugin remade the GUI
+- in 2-sided Plugin remade the GUI
 
 3.09.2021
 
