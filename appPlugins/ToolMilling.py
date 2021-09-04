@@ -1140,7 +1140,7 @@ class ToolMilling(AppTool, Excellon):
 
         font = QtGui.QFont()
         font.setBold(True)
-        font.setWeight(75)
+        # font.setWeight(75)
 
         for k in [1, 2]:
             self.ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
@@ -3629,6 +3629,7 @@ class MillingUI:
         # ########## Excellon Tool Table #################
         # ################################################
         self.tools_table = FCTable(drag_drop=True)
+        self.tools_table.setRowCount(2)
         grid1.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(5)
@@ -3650,6 +3651,77 @@ class MillingUI:
         self.tools_table.horizontalHeaderItem(3).setToolTip(
             _("The number of Slot holes. Holes that are created by\n"
               "milling them with an endmill bit."))
+
+        # #############################################################################################################
+        # This should not be done this, it's the job of the build_mill_ui() from the Milling class
+        # #############################################################################################################
+        # add a last row with the Total number of drills
+        empty_1 = QtWidgets.QTableWidgetItem('')
+        empty_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+        empty_1_1 = QtWidgets.QTableWidgetItem('')
+        empty_1_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+
+        label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
+        label_tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+
+        tot_drill_count = QtWidgets.QTableWidgetItem('%d' % 0)
+        tot_drill_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+
+        self.tools_table.setItem(0, 0, empty_1)
+        self.tools_table.setItem(0, 1, label_tot_drill_count)
+        self.tools_table.setItem(0, 2, tot_drill_count)  # Total number of drills
+        self.tools_table.setItem(0, 4, empty_1_1)
+
+        font = QtGui.QFont()
+        font.setBold(True)
+
+        for k in [1, 2]:
+            self.tools_table.item(0, k).setForeground(QtGui.QColor(127, 0, 255))
+            self.tools_table.item(0, k).setFont(font)
+
+        # add a last row with the Total number of slots
+        empty_2 = QtWidgets.QTableWidgetItem('')
+        empty_2.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+        empty_2_1 = QtWidgets.QTableWidgetItem('')
+        empty_2_1.setFlags(~QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+
+        label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
+        tot_slot_count = QtWidgets.QTableWidgetItem('%d' % 0)
+        label_tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+        tot_slot_count.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
+
+        self.tools_table.setItem(1, 0, empty_2)
+        self.tools_table.setItem(1, 1, label_tot_slot_count)
+        self.tools_table.setItem(1, 2, empty_2_1)
+        self.tools_table.setItem(1, 4, tot_slot_count)  # Total number of slots
+
+        for kl in [1, 2, 4]:
+            self.tools_table.item(1, kl).setFont(font)
+            self.tools_table.item(1, kl).setForeground(QtGui.QColor(0, 70, 255))
+
+        self.tools_table.resizeColumnsToContents()
+        self.tools_table.resizeRowsToContents()
+
+        vertical_header = self.tools_table.verticalHeader()
+        vertical_header.hide()
+        self.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        horizontal_header = self.tools_table.horizontalHeader()
+        self.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+
+        self.tools_table.setSortingEnabled(False)
+
+        self.tools_table.setMinimumHeight(self.tools_table.getHeight())
+        self.tools_table.setMaximumHeight(self.tools_table.getHeight())
 
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
@@ -3673,6 +3745,7 @@ class MillingUI:
 
         # Tool Table for Geometry
         self.geo_tools_table = FCTable(drag_drop=False)
+        self.geo_tools_table.setRowCount(0)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 

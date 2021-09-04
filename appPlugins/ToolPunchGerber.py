@@ -9,7 +9,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCTable, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 
 from copy import deepcopy
 import logging
@@ -398,9 +398,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
             # Add Tool section
             self.ui.sel_label.hide()
-            self.ui.punch_type_label.hide()
-            self.ui.punch_type_radio.hide()
-            self.ui.separator_line3.hide()
+            self.ui.s_frame.hide()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -412,9 +410,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
             # Add Tool section
             self.ui.sel_label.show()
-            self.ui.punch_type_label.show()
-            self.ui.punch_type_radio.show()
-            self.ui.separator_line3.show()
+            self.ui.s_frame.show()
 
     def on_select_all(self, state):
         self.ui_disconnect()
@@ -1961,8 +1957,18 @@ class PunchUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
         self.title_box = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(self.title_box)
+        self.tools_box.addLayout(self.title_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
 
         # ## Title
         title_label = FCLabel("%s" % self.pluginName)
@@ -1987,13 +1993,18 @@ class PunchUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        # Punch Drill holes
+        # #############################################################################################################
+        # Source Object Frame
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
+        self.tools_box.addWidget(self.obj_combo_label)
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 1)
-        grid_lay.setColumnStretch(1, 0)
+        # Grid Layout
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid0)
 
         # ## Gerber Object
         self.gerber_object_combo = FCComboBox()
@@ -2002,30 +2013,30 @@ class PunchUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.grb_label = FCLabel("<b>%s:</b>" % _("GERBER"))
-        self.grb_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
+        grid0.addWidget(self.gerber_object_combo, 0, 0, 1, 2)
 
-        grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
-        grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 2, 0, 1, 2)
-
-        self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
+        self.padt_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
               "disable the Rectangular aperture.")
         )
 
-        grid_lay.addWidget(self.padt_label, 3, 0, 1, 2)
+        self.tools_box.addWidget(self.padt_label)
+
+        # #############################################################################################################
+        # Processed Pads Frame
+        # #############################################################################################################
+        tt_frame = FCFrame()
+        tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(tt_frame)
 
         pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_all_grid.setColumnStretch(0, 0)
         pad_all_grid.setColumnStretch(1, 1)
-        grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
+        tt_frame.setLayout(pad_all_grid)
 
         pad_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_grid.setColumnStretch(0, 0)
@@ -2103,18 +2114,10 @@ class PunchUI:
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 10, 0, 1, 2)
-
-        # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-
-        self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
+        # #############################################################################################################
+        # Method Frame
+        # #############################################################################################################
+        self.method_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Method"))
         self.method_label.setToolTip(
             _("The punch hole source can be:\n"
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
@@ -2122,6 +2125,20 @@ class PunchUI:
               "- Fixed Annular Ring -> will try to keep a set annular ring.\n"
               "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.")
         )
+        self.tools_box.addWidget(self.method_label)
+
+        m_frame = FCFrame()
+        m_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        m_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(m_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        m_frame.setLayout(grid1)
+
         self.method_punch = RadioSet(
             [
                 {'label': _('Excellon'), 'value': 'exc'},
@@ -2131,13 +2148,12 @@ class PunchUI:
             ],
             orientation='vertical',
             stretch=False)
-        grid0.addWidget(self.method_label, 0, 0, 1, 2)
-        grid0.addWidget(self.method_punch, 1, 0, 1, 2)
+        grid1.addWidget(self.method_punch, 0, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         self.exc_label = FCLabel('<b>%s</b>' % _("Excellon"))
         self.exc_label.setToolTip(
@@ -2150,12 +2166,12 @@ class PunchUI:
         self.exc_combo.is_last = True
         self.exc_combo.obj_type = "Excellon"
 
-        grid0.addWidget(self.exc_label, 3, 0, 1, 2)
-        grid0.addWidget(self.exc_combo, 4, 0, 1, 2)
+        grid1.addWidget(self.exc_label, 4, 0, 1, 2)
+        grid1.addWidget(self.exc_combo, 6, 0, 1, 2)
 
         # Fixed Dia
         self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
-        grid0.addWidget(self.fixed_label, 6, 0, 1, 2)
+        grid1.addWidget(self.fixed_label, 8, 0, 1, 2)
 
         # Diameter value
         self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -2167,15 +2183,15 @@ class PunchUI:
             _("Fixed hole diameter.")
         )
 
-        grid0.addWidget(self.dia_label, 8, 0)
-        grid0.addWidget(self.dia_entry, 8, 1)
+        grid1.addWidget(self.dia_label, 10, 0)
+        grid1.addWidget(self.dia_entry, 10, 1)
 
         # #############################################################################################################
         # RING FRAME
         # #############################################################################################################
         self.ring_frame = QtWidgets.QFrame()
         self.ring_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.ring_frame, 10, 0, 1, 2)
+        grid1.addWidget(self.ring_frame, 12, 0, 1, 2)
 
         self.ring_box = QtWidgets.QVBoxLayout()
         self.ring_box.setContentsMargins(0, 0, 0, 0)
@@ -2264,7 +2280,7 @@ class PunchUI:
 
         # Proportional value
         self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
-        grid0.addWidget(self.prop_label, 12, 0, 1, 2)
+        grid1.addWidget(self.prop_label, 14, 0, 1, 2)
 
         # Diameter value
         self.factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
@@ -2278,17 +2294,27 @@ class PunchUI:
               "The hole diameter will be a fraction of the pad size.")
         )
 
-        grid0.addWidget(self.factor_label, 14, 0)
-        grid0.addWidget(self.factor_entry, 14, 1)
+        grid1.addWidget(self.factor_label, 16, 0)
+        grid1.addWidget(self.factor_entry, 16, 1)
 
-        separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line3, 16, 0, 1, 2)
+        # #############################################################################################################
+        # Selection Frame
+        # #############################################################################################################
+        # Selection
+        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.tools_box.addWidget(self.sel_label)
 
-        # Proportional value
-        self.sel_label = FCLabel('<b>%s</b>' % _("Selection"))
-        grid0.addWidget(self.sel_label, 18, 0, 1, 2)
+        self.s_frame = FCFrame()
+        self.s_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        self.s_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(self.s_frame)
+
+        # Grid Layout
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+        self.s_frame.setLayout(grid2)
 
         # Type of doing the punch
         self.punch_type_label = FCLabel('%s:' % _("Type"))
@@ -2303,8 +2329,8 @@ class PunchUI:
             {"label": _("Manual"), "value": "m"},
         ])
 
-        grid0.addWidget(self.punch_type_label, 20, 0)
-        grid0.addWidget(self.punch_type_radio, 20, 1)
+        grid2.addWidget(self.punch_type_label, 0, 0)
+        grid2.addWidget(self.punch_type_radio, 0, 1)
 
         sel_hlay = QtWidgets.QHBoxLayout()
         self.sel_all_btn = FCButton(_("Select All"))
@@ -2321,12 +2347,7 @@ class PunchUI:
         )
         sel_hlay.addWidget(self.sel_all_btn)
         sel_hlay.addWidget(self.clear_all_btn)
-        grid0.addLayout(sel_hlay, 22, 0, 1, 2)
-
-        self.separator_line3 = QtWidgets.QFrame()
-        self.separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(self.separator_line3, 24, 0, 1, 2)
+        grid2.addLayout(sel_hlay, 2, 0, 1, 2)
 
         # Buttons
         self.punch_object_button = FCButton(_("Punch Gerber"))
@@ -2341,9 +2362,9 @@ class PunchUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.punch_object_button)
+        self.tools_box.addWidget(self.punch_object_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

@@ -772,7 +772,7 @@ class ToolDrilling(AppTool, Excellon):
 
         font = QtGui.QFont()
         font.setBold(True)
-        font.setWeight(75)
+        # font.setWeight(75)
 
         for k in [1, 2]:
             self.ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
@@ -2915,7 +2915,7 @@ class DrillingUI:
                                 """)
         self.tools_box.addWidget(self.generate_cnc_button)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))

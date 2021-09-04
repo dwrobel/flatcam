@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.09.2021
+
+- in Punch Gerber Plugin remade the GUI
+- some minor fixes in some of the Plugins
+
 4.09.2021
 
 - in Calculators Plugin added a new calculator to calculate the required chemical weights for tinning solutions

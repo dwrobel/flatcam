@@ -387,7 +387,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         font = QtGui.QFont()
         font.setBold(True)
-        font.setWeight(75)
+        # font.setWeight(75)
 
         for k in [1, 2]:
             self.ui.tools_table.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
