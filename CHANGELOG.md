@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Calculators Plugin added a new calculator to calculate the required chemical weights for tinning solutions
 - in Calculators Plugin remade the GUI
 - some minor GUI modifications for a series of App Plugins
+- in Calculators Plugin, added sodium hypophosphite optional parameter calculation
 
 3.09.2021
 

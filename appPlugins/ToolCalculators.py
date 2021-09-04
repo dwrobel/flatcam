@@ -316,12 +316,14 @@ class ToolCalculator(AppTool):
             sulfamic_acid_val = 3.0
             water_val = 100.0
             soap_val = 0.1
+            hypo_val = 1.5
         else:
             sncl2_val = 2.0
             thiourea_val = 7.5
             sulfamic_acid_val = 9.0
             water_val = 100.0
             soap_val = 0.1
+            hypo_val = 1.5
 
         desired_vol = 100
 
@@ -330,6 +332,7 @@ class ToolCalculator(AppTool):
         self.ui.sa_entry.set_value(sulfamic_acid_val)
         self.ui.h2o_entry.set_value(water_val)
         self.ui.soap_entry.set_value(soap_val)
+        self.ui.hypo_entry.set_value(hypo_val)
         self.ui.vol_entry.set_value(desired_vol)
 
     def on_tin_solution_calculation(self):
@@ -342,18 +345,21 @@ class ToolCalculator(AppTool):
             sulfamic_acid_val = 0.03
             water_val = 1
             soap_val = 0.001
+            hypo_val = 0.015
         else:
             sncl2_val = 0.02
             thiourea_val = 0.075
             sulfamic_acid_val = 0.09
             water_val = 1
             soap_val = 0.001
+            hypo_val = 0.015
 
         self.ui.sn_cl_entry.set_value(sncl2_val * desired_volume)
         self.ui.th_entry.set_value(thiourea_val * desired_volume)
         self.ui.sa_entry.set_value(sulfamic_acid_val * desired_volume)
         self.ui.h2o_entry.set_value(water_val * desired_volume)
         self.ui.soap_entry.set_value(soap_val * desired_volume)
+        self.ui.hypo_entry.set_value(hypo_val * desired_volume)
 
     def ui_connect(self):
         # V-Shape Calculator
