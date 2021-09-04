@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - in 2-sided Plugin remade the GUI
 - in Drilling Plugin remade the GUI
 - in Milling Plugin remade the GUI
+- in Panelize Plugin remade the GUI
 
 3.09.2021
 
