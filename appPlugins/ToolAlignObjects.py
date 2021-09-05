@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 
-from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout
+from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton, VerticalScrollArea, FCGridLayout, FCFrame
 
 import math
 
@@ -411,21 +411,39 @@ class AlignUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        # Form Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.layout.addLayout(grid0)
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
 
-        self.aligned_label = FCLabel('<b>%s:</b>' % _("MOVING object"))
-        grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
 
+        # #############################################################################################################
+        # Moving Object Frame
+        # #############################################################################################################
+        self.aligned_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("MOVING object"))
         self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned.\n"
               "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
+        self.tools_box.addWidget(self.aligned_label)
+
+        m_frame = FCFrame()
+        m_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        m_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(m_frame)
+
+        # Grid Layout
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        m_frame.setLayout(grid0)
 
         # Type of object to be aligned
         self.type_obj_radio = RadioSet([
@@ -433,7 +451,7 @@ class AlignUI:
             {"label": _("Excellon"), "value": "exc"},
         ])
 
-        grid0.addWidget(self.type_obj_radio, 3, 0, 1, 2)
+        grid0.addWidget(self.type_obj_radio, 0, 0, 1, 2)
 
         # Object to be aligned
         self.object_combo = FCComboBox()
@@ -445,23 +463,31 @@ class AlignUI:
             _("Object to be aligned.")
         )
 
-        grid0.addWidget(self.object_combo, 4, 0, 1, 2)
+        grid0.addWidget(self.object_combo, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
-
-        grid0.addWidget(FCLabel(''), 6, 0, 1, 2)
-
-        self.aligned_label = FCLabel('<b>%s:</b>' % _("DESTINATION object"))
+        # #############################################################################################################
+        # Destination Object Frame
+        # #############################################################################################################
+        self.aligned_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("DESTINATION object"))
         self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned to.\n"
               "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
-        grid0.addWidget(self.aligned_label, 7, 0, 1, 2)
+        self.tools_box.addWidget(self.aligned_label)
+
+        d_frame = FCFrame()
+        d_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        d_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(d_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        d_frame.setLayout(grid1)
 
         # Type of object to be aligned to = aligner
         self.type_aligner_obj_radio = RadioSet([
@@ -469,7 +495,7 @@ class AlignUI:
             {"label": _("Excellon"), "value": "exc"},
         ])
 
-        grid0.addWidget(self.type_aligner_obj_radio, 8, 0, 1, 2)
+        grid1.addWidget(self.type_aligner_obj_radio, 0, 0, 1, 2)
 
         # Object to be aligned to = aligner
         self.aligner_object_combo = FCComboBox()
@@ -481,14 +507,25 @@ class AlignUI:
             _("Object to be aligned to. Aligner.")
         )
 
-        grid0.addWidget(self.aligner_object_combo, 9, 0, 1, 2)
+        grid1.addWidget(self.aligner_object_combo, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 2)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.tools_box.addWidget(self.param_label)
 
-        grid0.addWidget(FCLabel(''), 11, 0, 1, 2)
+        par_frame = FCFrame()
+        par_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # par_frame.setContentsMargins(0, 0, 0, 0)
+        par_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(par_frame)
+
+        # Grid Layout
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+        par_frame.setLayout(grid2)
 
         # Alignment Type
         self.a_type_lbl = FCLabel('<b>%s:</b>' % _("Alignment Type"))
@@ -503,13 +540,8 @@ class AlignUI:
                 {'label': _('Dual Point'), 'value': 'dp'}
             ])
 
-        grid0.addWidget(self.a_type_lbl, 12, 0, 1, 2)
-        grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 2)
+        grid2.addWidget(self.a_type_lbl, 0, 0, 1, 2)
+        grid2.addWidget(self.a_type_radio, 2, 0, 1, 2)
 
         # Buttons
         self.align_object_button = FCButton(_("Align Object"))
@@ -525,9 +557,9 @@ class AlignUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.align_object_button)
+        self.tools_box.addWidget(self.align_object_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

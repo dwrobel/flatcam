@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - added some new properties to the FCCheckBox GUI element
 - in Corners Plugin remade the GUI
 - in Corners Markers Plugin added the beginning of the manual marker placement
+- in Alignment Plugin updated the GUI
 
 4.09.2021
 
