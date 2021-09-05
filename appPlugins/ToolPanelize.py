@@ -1377,7 +1377,9 @@ class PanelizeUI:
         self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(self.separator_line, 10, 0, 1, 2)
 
-        # Buttons
+        # #############################################################################################################
+        # Generate Panel Button
+        # #############################################################################################################
         self.panelize_object_button = FCButton(_("Panelize Object"))
         self.panelize_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/panelize16.png'))
         self.panelize_object_button.setToolTip(

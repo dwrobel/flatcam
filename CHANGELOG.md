@@ -24,6 +24,7 @@ CHANGELOG for FlatCAM beta
 - in NCC Plugin updated the GUI
 - in Subtraction Plugin updated the GUI
 - in Follow Plugin updated the GUI
+- in Invert Plugin updated the GUI
 
 4.09.2021
 

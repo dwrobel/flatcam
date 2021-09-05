@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 
 from shapely.geometry import box
 
@@ -229,7 +229,6 @@ class InvertUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(FCLabel(""))
 
         self.tools_frame = QtWidgets.QFrame()
         self.tools_frame.setContentsMargins(0, 0, 0, 0)
@@ -239,11 +238,12 @@ class InvertUI:
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.tools_frame.setLayout(self.tools_box)
 
-        # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
+        # #############################################################################################################
+        # Source Object Frame
+        # #############################################################################################################
+        self.gerber_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.gerber_label.setToolTip(_("Gerber object that will be inverted."))
+        self.tools_box.addWidget(self.gerber_label)
 
         # Target Gerber Object
         self.gerber_combo = FCComboBox()
@@ -252,23 +252,28 @@ class InvertUI:
         self.gerber_combo.is_last = True
         self.gerber_combo.obj_type = "Gerber"
 
-        self.gerber_label = FCLabel('<b>%s:</b>' % _("GERBER"))
-        self.gerber_label.setToolTip(
-            _("Gerber object that will be inverted.")
-        )
+        self.tools_box.addWidget(self.gerber_combo)
 
-        grid0.addWidget(self.gerber_label, 1, 0, 1, 2)
-        grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 3, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 3, 0, 1, 2)
-
-        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # COMMON PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
+        self.tools_box.addWidget(self.param_label)
 
-        grid0.addWidget(self.param_label, 4, 0, 1, 2)
+        self.gp_frame = FCFrame()
+        self.tools_box.addWidget(self.gp_frame)
+
+        # Grid Layout
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.gp_frame.setLayout(grid0)
 
         # Margin
         self.margin_label = FCLabel('%s:' % _('Margin'))
@@ -281,10 +286,10 @@ class InvertUI:
         self.margin_entry.set_range(0.0000, 10000.0000)
         self.margin_entry.setObjectName(_("Margin"))
 
-        grid0.addWidget(self.margin_label, 5, 0, 1, 2)
-        grid0.addWidget(self.margin_entry, 6, 0, 1, 2)
+        grid0.addWidget(self.margin_label, 0, 0)
+        grid0.addWidget(self.margin_entry, 0, 1)
 
-        self.join_label = FCLabel('%s:' % _("Lines Join Style"))
+        self.join_label = FCLabel('%s:  ' % _("Lines Join Style"))
         self.join_label.setToolTip(
             _("The way that the lines in the object outline will be joined.\n"
               "Can be:\n"
@@ -298,14 +303,12 @@ class InvertUI:
             {'label': _('Bevel'), 'value': 'b'}
         ], orientation='vertical', stretch=False)
 
-        grid0.addWidget(self.join_label, 7, 0, 1, 2)
-        grid0.addWidget(self.join_radio, 8, 0, 1, 2)
+        grid0.addWidget(self.join_label, 2, 0)
+        grid0.addWidget(self.join_radio, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
-
+        # #############################################################################################################
+        # Generate Inverted Gerber Button
+        # #############################################################################################################
         self.invert_btn = FCButton(_('Invert Gerber'))
         self.invert_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/invert32.png'))
         self.invert_btn.setToolTip(
@@ -319,9 +322,9 @@ class InvertUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.invert_btn, 10, 0, 1, 2)
+        self.tools_box.addWidget(self.invert_btn)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
