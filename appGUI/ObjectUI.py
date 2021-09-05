@@ -1279,14 +1279,25 @@ class CNCObjectUI(ObjectUI):
 
         # for i in range(0, self.common_grid.count()):
         #     self.common_grid.itemAt(i).widget().hide()
+        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label.setToolTip(_("General data about the object."))
+        self.custom_box.addWidget(self.general_label)
 
-        f_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        f_lay.setColumnStretch(0, 0)
-        f_lay.setColumnStretch(1, 1)
-        self.custom_box.addLayout(f_lay)
+        # #############################################################################################################
+        # General Frame
+        # #############################################################################################################
+        gen_frame = FCFrame()
+        self.custom_box.addWidget(gen_frame)
+
+        # Plot options
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        gen_frame.setLayout(grid0)
 
         # Plot Options
-        self.cncplot_method_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        self.cncplot_method_label = FCLabel("<b>%s: </b>" % _("Plot Options"))
         self.cncplot_method_label.setToolTip(
             _(
                 "This selects the kind of geometries on the canvas to plot.\n"
@@ -1302,14 +1313,14 @@ class CNCObjectUI(ObjectUI):
             {"label": _("Cut"), "value": "cut"}
         ], stretch=False)
 
-        f_lay.addWidget(self.cncplot_method_label, 0, 0)
-        f_lay.addWidget(self.cncplot_method_combo, 0, 1, 1, 2)
+        grid0.addWidget(self.cncplot_method_label, 0, 0)
+        grid0.addWidget(self.cncplot_method_combo, 0, 1, 1, 2)
 
         self.name_hlay = QtWidgets.QHBoxLayout()
-        f_lay.addLayout(self.name_hlay, 2, 0, 1, 3)
+        grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         # ## Object name
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel("<b>%s: </b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
 
@@ -1320,16 +1331,14 @@ class CNCObjectUI(ObjectUI):
         self.editor_button = FCButton(_('GCode Editor'))
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
-        self.editor_button.setToolTip(
-            _("Start the Object Editor")
-        )
+        self.editor_button.setToolTip(_("Start the Object Editor"))
         self.editor_button.setStyleSheet("""
                                        QPushButton
                                        {
                                            font-weight: bold;
                                        }
                                        """)
-        f_lay.addWidget(self.editor_button, 4, 0, 1, 3)
+        self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
         self.info_button = FCButton('%s' % _("INFO"), checkable=True)
@@ -1341,12 +1350,13 @@ class CNCObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        f_lay.addWidget(self.info_button, 6, 0, 1, 3)
+        self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
         self.info_frame = QtWidgets.QFrame()
         self.info_frame.setContentsMargins(0, 0, 0, 0)
-        f_lay.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.custom_box.addWidget(self.info_frame)
+
         self.info_box = QtWidgets.QVBoxLayout()
         self.info_box.setContentsMargins(0, 0, 0, 0)
         self.info_frame.setLayout(self.info_box)
@@ -1357,6 +1367,20 @@ class CNCObjectUI(ObjectUI):
         self.info_box.addWidget(self.treeWidget)
         self.info_box.setStretch(0, 0)
 
+        # #############################################################################################################
+        # COMMON PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.custom_box.addWidget(self.param_label)
+
+        self.gp_frame = FCFrame()
+        self.custom_box.addWidget(self.gp_frame)
+
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        self.gp_frame.setLayout(grid_par)
+
         # Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))
         self.annotation_cb.setToolTip(
@@ -1364,12 +1388,12 @@ class CNCObjectUI(ObjectUI):
               "When checked it will display numbers in order for each end\n"
               "of a travel line.")
         )
-        f_lay.addWidget(self.annotation_cb, 8, 0, 1, 3)
+        grid_par.addWidget(self.annotation_cb, 0, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        f_lay.addWidget(separator_line, 10, 0, 1, 3)
+        self.separator_line = QtWidgets.QFrame()
+        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_par.addWidget(self.separator_line, 2, 0, 1, 3)
 
         # Travelled Distance
         self.t_distance_label = FCLabel("<b>%s:</b>" % _("Travelled distance"))
@@ -1380,9 +1404,9 @@ class CNCObjectUI(ObjectUI):
         self.t_distance_entry = FCEntry()
         self.units_label = FCLabel()
 
-        f_lay.addWidget(self.t_distance_label, 12, 0)
-        f_lay.addWidget(self.t_distance_entry, 12, 1)
-        f_lay.addWidget(self.units_label, 12, 2)
+        grid_par.addWidget(self.t_distance_label, 4, 0)
+        grid_par.addWidget(self.t_distance_entry, 4, 1)
+        grid_par.addWidget(self.units_label, 4, 2)
 
         # Estimated Time
         self.t_time_label = FCLabel("<b>%s:</b>" % _("Estimated time"))
@@ -1393,9 +1417,9 @@ class CNCObjectUI(ObjectUI):
         self.t_time_entry = FCEntry()
         self.units_time_label = FCLabel()
 
-        f_lay.addWidget(self.t_time_label, 14, 0)
-        f_lay.addWidget(self.t_time_entry, 14, 1)
-        f_lay.addWidget(self.units_time_label, 14, 2)
+        grid_par.addWidget(self.t_time_label, 8, 0)
+        grid_par.addWidget(self.t_time_entry, 8, 1)
+        grid_par.addWidget(self.units_time_label, 8, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
@@ -1405,10 +1429,34 @@ class CNCObjectUI(ObjectUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        f_lay.addWidget(separator_line, 16, 0, 1, 3)
+        grid_par.addWidget(separator_line, 10, 0, 1, 3)
+
+        # CNC Code snippets
+        self.snippets_cb = FCCheckBox(_("Use CNC Code Snippets"))
+        self.snippets_cb.setToolTip(
+            _("When selected, it will include CNC Code snippets (append and prepend)\n"
+              "defined in the Preferences.")
+        )
+        grid_par.addWidget(self.snippets_cb, 12, 0, 1, 3)
+
+        # #############################################################################################################
+        # CNC Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
+        self.custom_box.addWidget(self.tools_table_label)
+
+        self.tt_frame = FCFrame()
+        self.custom_box.addWidget(self.tt_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        self.tt_frame.setLayout(grid1)
 
         hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hlay)
+        grid1.addLayout(hlay, 0, 0, 1, 2)
 
         # CNC Tools Table for plot
         self.cnc_tools_table_label = FCLabel('<b>%s</b>' % _('CNC Tools Table'))
@@ -1438,7 +1486,7 @@ class CNCObjectUI(ObjectUI):
         hlay.addWidget(self.plot_cb)
 
         self.cnc_tools_table = FCTable()
-        self.custom_box.addWidget(self.cnc_tools_table)
+        grid1.addWidget(self.cnc_tools_table, 2, 0, 1, 2)
 
         self.cnc_tools_table.setColumnCount(7)
         self.cnc_tools_table.setColumnWidth(0, 20)
@@ -1448,7 +1496,7 @@ class CNCObjectUI(ObjectUI):
         # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
 
         self.exc_cnc_tools_table = FCTable()
-        self.custom_box.addWidget(self.exc_cnc_tools_table)
+        grid1.addWidget(self.exc_cnc_tools_table, 4, 0, 1, 2)
 
         self.exc_cnc_tools_table.setColumnCount(7)
         self.exc_cnc_tools_table.setColumnWidth(0, 20)
@@ -1460,33 +1508,19 @@ class CNCObjectUI(ObjectUI):
         self.tooldia_entry.set_range(0, 10000.0000)
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.setSingleStep(0.1)
-        self.custom_box.addWidget(self.tooldia_entry)
+        grid1.addWidget(self.tooldia_entry, 6, 0, 1, 2)
 
         # Update plot button
         self.updateplot_button = FCButton(_('Update Plot'))
         self.updateplot_button.setToolTip(
             _("Update the plot.")
         )
-        self.custom_box.addWidget(self.updateplot_button)
-
-        # CNC Code snippets
-        self.snippets_cb = FCCheckBox(_("Use CNC Code Snippets"))
-        self.snippets_cb.setToolTip(
-            _("When selected, it will include CNC Code snippets (append and prepend)\n"
-              "defined in the Preferences.")
-        )
-        self.custom_box.addWidget(self.snippets_cb)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_box.addWidget(separator_line)
+        grid1.addWidget(self.updateplot_button, 8, 0, 1, 2)
 
         # #############################################################################################################
         # ######################   PLUGINS   ##########################################################################
         # #############################################################################################################
-
-        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
+        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
         self.custom_box.addWidget(self.tool_lbl)
 
         # Levelling Tool - will process the generated GCode using a Height Map generating levelled GCode

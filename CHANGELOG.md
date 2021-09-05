@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - remade the Excellon Object Properties UI
 - remade the Geometry Object Properties UI
+- remade the CNC Job Object Properties UI
 
 5.09.2021
 
