@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - in Copper Thieving Plugin updated the GUI
 - in Extract Drills Plugin updated the GUI
 - in Paint Plugin updated the GUI
+- in NCC Plugin updated the GUI
 
 4.09.2021
 

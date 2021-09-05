@@ -3131,7 +3131,7 @@ class PaintUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
 
         # #############################################################################################################
-        # Paramters Frame
+        # Parameters Frame
         # #############################################################################################################
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -3230,6 +3230,9 @@ class PaintUI:
         par_grid.addWidget(self.pathconnect_cb, 6, 0)
         par_grid.addWidget(self.paintcontour_cb, 6, 1)
 
+        # #############################################################################################################
+        # Apply All Parameters Button
+        # #############################################################################################################
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
@@ -3254,6 +3257,7 @@ class PaintUI:
         gen_grid.setColumnStretch(1, 1)
         gp_frame.setLayout(gen_grid)
 
+        # Rest machining
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
         self.rest_cb.setObjectName('p_rest_machining')
         self.rest_cb.setToolTip(
