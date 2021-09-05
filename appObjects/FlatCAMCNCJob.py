@@ -564,7 +564,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                                 }
                                                 """)
 
-            self.ui.separator_line.hide()
             self.ui.annotation_cb.hide()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
@@ -575,7 +574,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                                 }
                                                 """)
 
-            self.ui.separator_line.show()
             self.ui.annotation_cb.show()
 
     def ui_connect(self):

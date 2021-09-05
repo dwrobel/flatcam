@@ -1381,20 +1381,6 @@ class CNCObjectUI(ObjectUI):
         grid_par.setColumnStretch(1, 1)
         self.gp_frame.setLayout(grid_par)
 
-        # Annotation
-        self.annotation_cb = FCCheckBox(_("Display Annotation"))
-        self.annotation_cb.setToolTip(
-            _("This selects if to display text annotation on the plot.\n"
-              "When checked it will display numbers in order for each end\n"
-              "of a travel line.")
-        )
-        grid_par.addWidget(self.annotation_cb, 0, 0, 1, 3)
-
-        self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_par.addWidget(self.separator_line, 2, 0, 1, 3)
-
         # Travelled Distance
         self.t_distance_label = FCLabel("<b>%s:</b>" % _("Travelled distance"))
         self.t_distance_label.setToolTip(
@@ -1438,6 +1424,15 @@ class CNCObjectUI(ObjectUI):
               "defined in the Preferences.")
         )
         grid_par.addWidget(self.snippets_cb, 12, 0, 1, 3)
+
+        # Annotation
+        self.annotation_cb = FCCheckBox(_("Display Annotation"))
+        self.annotation_cb.setToolTip(
+            _("This selects if to display text annotation on the plot.\n"
+              "When checked it will display numbers in order for each end\n"
+              "of a travel line.")
+        )
+        grid_par.addWidget(self.annotation_cb, 14, 0, 1, 3)
 
         # #############################################################################################################
         # CNC Tool Table Frame
