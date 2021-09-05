@@ -501,9 +501,6 @@ class CalcUI:
         self.layout.addWidget(units_label)
 
         units_frame = FCFrame()
-        units_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        units_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.layout.addWidget(units_frame)
 
         # Grid Layout
@@ -537,9 +534,6 @@ class CalcUI:
         self.layout.addWidget(v_shape_title_label)
 
         v_frame = FCFrame()
-        v_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        v_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.layout.addWidget(v_frame)
 
         grid_vshape = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -623,9 +617,6 @@ class CalcUI:
         self.layout.addWidget(tin_title_label)
 
         ep_frame = FCFrame()
-        ep_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        ep_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.layout.addWidget(ep_frame)
 
         grid_electro = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -811,9 +802,6 @@ class CalcUI:
         self.layout.addWidget(tin_title_label)
 
         tin_frame = FCFrame()
-        tin_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tin_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.layout.addWidget(tin_frame)
 
         grid_tin = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -945,7 +933,10 @@ class CalcUI:
 
         # Sodium hypophosphite
         self.hypo_label = FCLabel("NaPO<sub>2</sub>H<sub>2</sub> :")
-        self.hypo_label.setToolTip(_('Sodium hypophosphite. Optional, for solution stability.'))
+        self.hypo_label.setToolTip(
+            _('Sodium hypophosphite.\n'
+              'Optional, for solution stability.\n'
+              'Warning: List 1 chemical in USA.'))
         self.hypo_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.hypo_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                       QtWidgets.QSizePolicy.Policy.Preferred)

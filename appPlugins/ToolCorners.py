@@ -749,9 +749,6 @@ class CornersUI:
         self.tools_box.addWidget(self.param_label)
 
         par_frame = FCFrame()
-        par_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        par_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(par_frame)
 
         # ## Grid Layout
@@ -822,9 +819,6 @@ class CornersUI:
         self.tools_box.addWidget(self.locs_label)
 
         self.loc_frame = FCFrame()
-        self.loc_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # self.loc_frame.setContentsMargins(0, 0, 0, 0)
-        self.loc_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.loc_frame)
 
         # Grid Layout
@@ -864,9 +858,6 @@ class CornersUI:
         self.tools_box.addWidget(self.sel_label)
 
         self.s_frame = FCFrame()
-        self.s_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        self.s_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout
@@ -914,9 +905,6 @@ class CornersUI:
         self.tools_box.addWidget(self.drills_label)
 
         self.drill_frame = FCFrame()
-        self.drill_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # drill_frame.setContentsMargins(0, 0, 0, 0)
-        self.drill_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.drill_frame)
 
         # Grid Layout

@@ -434,9 +434,6 @@ class AlignUI:
         self.tools_box.addWidget(self.aligned_label)
 
         m_frame = FCFrame()
-        m_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        m_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(m_frame)
 
         # Grid Layout
@@ -478,9 +475,6 @@ class AlignUI:
         self.tools_box.addWidget(self.aligned_label)
 
         d_frame = FCFrame()
-        d_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        d_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(d_frame)
 
         # Grid Layout
@@ -516,9 +510,6 @@ class AlignUI:
         self.tools_box.addWidget(self.param_label)
 
         par_frame = FCFrame()
-        par_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # par_frame.setContentsMargins(0, 0, 0, 0)
-        par_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(par_frame)
 
         # Grid Layout

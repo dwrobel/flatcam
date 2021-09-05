@@ -1133,9 +1133,6 @@ class PanelizeUI:
         self.tools_box.addWidget(self.object_label)
 
         obj_frame = FCFrame()
-        obj_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        obj_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
@@ -1187,9 +1184,6 @@ class PanelizeUI:
         self.tools_box.addWidget(self.box_label)
 
         pr_frame = FCFrame()
-        pr_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        pr_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(pr_frame)
 
         # Grid Layout
@@ -1248,9 +1242,6 @@ class PanelizeUI:
         self.tools_box.addWidget(panel_data_label)
 
         pd_frame = FCFrame()
-        pd_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        pd_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(pd_frame)
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -1314,9 +1305,6 @@ class PanelizeUI:
         self.tools_box.addWidget(self.param_label)
 
         self.gp_frame = FCFrame()
-        self.gp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        self.gp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.gp_frame)
 
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)

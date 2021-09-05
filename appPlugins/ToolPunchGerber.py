@@ -2028,9 +2028,6 @@ class PunchUI:
         # Processed Pads Frame
         # #############################################################################################################
         tt_frame = FCFrame()
-        tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tt_frame)
 
         pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -2128,9 +2125,6 @@ class PunchUI:
         self.tools_box.addWidget(self.method_label)
 
         m_frame = FCFrame()
-        m_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        m_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(m_frame)
 
         # Grid Layout
@@ -2305,9 +2299,6 @@ class PunchUI:
         self.tools_box.addWidget(self.sel_label)
 
         self.s_frame = FCFrame()
-        self.s_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        self.s_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.s_frame)
 
         # Grid Layout

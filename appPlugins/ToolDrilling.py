@@ -2330,9 +2330,6 @@ class DrillingUI:
         self.tools_box.addWidget(self.tools_table_label)
 
         tt_frame = FCFrame()
-        tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
@@ -2415,9 +2412,6 @@ class DrillingUI:
         # Tool Parameters Frame
         # #############################################################################################################
         tp_frame = FCFrame()
-        tp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.exc_tools_box.addWidget(tp_frame)
 
         # Grid Layout
@@ -2644,9 +2638,6 @@ class DrillingUI:
         self.exc_tools_box.addWidget(self.gen_param_label)
 
         gp_frame = FCFrame()
-        gp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        gp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.exc_tools_box.addWidget(gp_frame)
 
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)

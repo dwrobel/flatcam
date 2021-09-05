@@ -97,8 +97,6 @@ class ObjectUI(QtWidgets.QWidget):
             layout.addWidget(self.transform_label)
 
             trans_frame = FCFrame()
-            trans_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-            trans_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
             layout.addWidget(trans_frame)
 
             self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -192,8 +190,6 @@ class GerberObjectUI(ObjectUI):
         # General Frame
         # #############################################################################################################
         gen_frame = FCFrame()
-        gen_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        gen_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.custom_box.addWidget(gen_frame)
 
         # Plot options
@@ -295,9 +291,6 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(self.tools_table_label)
 
         self.tt_frame = FCFrame()
-        self.tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # self.tt_frame.setContentsMargins(0, 0, 0, 0)
-        self.tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.custom_box.addWidget(self.tt_frame)
 
         # Grid Layout
@@ -497,8 +490,6 @@ class GerberObjectUI(ObjectUI):
         self.util_box.addWidget(self.noncopper_label)
 
         ncc_frame = FCFrame()
-        ncc_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        ncc_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.util_box.addWidget(ncc_frame)
 
         grid_ncc = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -547,9 +538,6 @@ class GerberObjectUI(ObjectUI):
         self.util_box.addWidget(self.boundingbox_label)
 
         bb_frame = FCFrame()
-        bb_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        bb_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.util_box.addWidget(bb_frame)
 
         # Grid Layout

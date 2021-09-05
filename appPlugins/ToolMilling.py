@@ -3501,15 +3501,8 @@ class MillingUI:
         self.decimals = self.app.decimals
         self.layout = layout
 
-        self.tools_frame = QtWidgets.QFrame()
-        self.tools_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.tools_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.tools_frame.setLayout(self.tools_box)
-
         self.title_box = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(self.title_box)
+        self.layout.addLayout(self.title_box)
 
         # ## Title
         title_label = FCLabel("%s" % name)
@@ -3539,6 +3532,13 @@ class MillingUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
         # #############################################################################################################
         # Source Object for Milling Frame
         # #############################################################################################################
@@ -3549,9 +3549,6 @@ class MillingUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         obj_frame = FCFrame()
-        obj_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        obj_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
@@ -3614,9 +3611,6 @@ class MillingUI:
         grid_title_tool_table.addWidget(self.plot_cb, 0, 1)
 
         tt_frame = FCFrame()
-        tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
@@ -3879,9 +3873,6 @@ class MillingUI:
         # #############################################################################################################
 
         tp_frame = FCFrame()
-        tp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
@@ -4323,9 +4314,6 @@ class MillingUI:
         self.tool_params_box.addWidget(self.gen_param_label)
 
         gp_frame = FCFrame()
-        gp_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        gp_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tool_params_box.addWidget(gp_frame)
 
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)

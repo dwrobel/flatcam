@@ -799,9 +799,6 @@ class QRcodeUI:
         self.tools_box.addWidget(self.text_label)
 
         tq_frame = FCFrame()
-        tq_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # tq_frame.setContentsMargins(0, 0, 0, 0)
-        tq_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tq_frame)
 
         # Grid Layout
@@ -832,9 +829,6 @@ class QRcodeUI:
         self.tools_box.addWidget(self.qrcode_label)
 
         p_frame = FCFrame()
-        p_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # p_frame.setContentsMargins(0, 0, 0, 0)
-        p_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(p_frame)
 
         # ## Grid Layout
@@ -951,8 +945,6 @@ class QRcodeUI:
 
         # this way I can hide/show the frame
         self.export_frame = FCFrame()
-        self.export_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        self.export_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.export_frame)
 
         self.export_lay = FCGridLayout(v_spacing=5, h_spacing=3)

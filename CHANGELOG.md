@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - in Alignment Plugin updated the GUI
 - remade the Gerber Object Properties UI
 - fixed a small typo when creating a new Gerber empty App Object
+- in Copper Thieving Plugin updated the GUI
 
 4.09.2021
 

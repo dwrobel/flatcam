@@ -2267,9 +2267,13 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
 
 class FCFrame(QtWidgets.QFrame):
-    # used when I want to apply stylesheets but not to children's of the same type
+    # a styled QFrame
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # self.setContentsMargins(0, 0, 0, 0)
+        self.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
 
 
 class FCComboBox(QtWidgets.QComboBox):

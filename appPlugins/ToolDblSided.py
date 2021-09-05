@@ -681,9 +681,6 @@ class DsidedUI:
         self.tools_box.addWidget(self.m_objects_label)
 
         source_frame = FCFrame()
-        source_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        source_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(source_frame)
 
         # ## Grid Layout
@@ -733,9 +730,6 @@ class DsidedUI:
         self.tools_box.addWidget(self.bv_label)
 
         self.bounds_frame = FCFrame()
-        self.bounds_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        self.bounds_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.bounds_frame)
 
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -836,9 +830,6 @@ class DsidedUI:
         self.tools_box.addWidget(self.param_label)
 
         mirror_frame = FCFrame()
-        mirror_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        mirror_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(mirror_frame)
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -990,9 +981,6 @@ class DsidedUI:
         self.tools_box.addWidget(self.alignment_label)
 
         align_frame = FCFrame()
-        align_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        align_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(align_frame)
 
         grid4 = FCGridLayout(v_spacing=5, h_spacing=3)

@@ -10,7 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from camlib import grace
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 from appCommon.Common import LoudDict
 
 import shapely.geometry.base as base
@@ -1288,11 +1288,25 @@ class ThievingUI:
                                 """)
         self.layout.addWidget(title_label)
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        # #############################################################################################################
+        # Source Object  Frame
+        # #############################################################################################################
+        self.grbobj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grbobj_label.setToolTip(_("Gerber Object to which will be added a copper thieving."))
+        self.tools_box.addWidget(self.grbobj_label)
+
         # ## Grid Layout
         i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
+        self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
@@ -1300,31 +1314,24 @@ class ThievingUI:
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = 'Gerber'
 
-        self.grbobj_label = FCLabel("<b>%s:</b>" % _("GERBER"))
-        self.grbobj_label.setToolTip(
-            _("Gerber Object to which will be added a copper thieving.")
-        )
+        i_grid_lay.addWidget(self.grb_object_combo, 0, 0, 1, 2)
 
-        i_grid_lay.addWidget(self.grbobj_label, 0, 0)
-        i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
+        # #############################################################################################################
+        # Thieving Parameters Frame
+        # #############################################################################################################
+        self.copper_fill_label = FCLabel('<span style="color:blue;"><b>%s %s</b></span>' %
+                                         (_('Thieving'), _("Parameters")))
+        self.copper_fill_label.setToolTip(_("Parameters used for this tool."))
+        self.tools_box.addWidget(self.copper_fill_label)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
+        tp_frame = FCFrame()
+        self.tools_box.addWidget(tp_frame)
 
         # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
-
-        self.copper_fill_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' %
-                                         _('Thieving Parameters').upper())
-        self.copper_fill_label.setToolTip(
-            _("Parameters used for this tool.")
-        )
-        grid_lay.addWidget(self.copper_fill_label, 0, 0, 1, 2)
+        tp_frame.setLayout(grid_lay)
 
         # CLEARANCE #
         self.clearance_label = FCLabel('%s:' % _("Clearance"))
@@ -1461,10 +1468,13 @@ class ThievingUI:
         grid_lay.addWidget(self.fill_type_label, 18, 0)
         grid_lay.addWidget(self.fill_type_radio, 18, 1)
 
+        # #############################################################################################################
         # DOTS FRAME
+        # #############################################################################################################
         self.dots_frame = QtWidgets.QFrame()
         self.dots_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.dots_frame)
+        grid_lay.addWidget(self.dots_frame, 20, 0, 1, 2)
+
         dots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         dots_grid.setColumnStretch(0, 0)
         dots_grid.setColumnStretch(1, 1)
@@ -1472,8 +1482,13 @@ class ThievingUI:
         self.dots_frame.setLayout(dots_grid)
         self.dots_frame.hide()
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        dots_grid.addWidget(separator_line, 0, 0, 1, 2)
+
         self.dots_label = FCLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
-        dots_grid.addWidget(self.dots_label, 0, 0, 1, 2)
+        dots_grid.addWidget(self.dots_label, 2, 0, 1, 2)
 
         # Dot diameter #
         self.dotdia_label = FCLabel('%s:' % _("Dia"))
@@ -1485,8 +1500,8 @@ class ThievingUI:
         self.dot_dia_entry.set_precision(self.decimals)
         self.dot_dia_entry.setSingleStep(0.1)
 
-        dots_grid.addWidget(self.dotdia_label, 1, 0)
-        dots_grid.addWidget(self.dot_dia_entry, 1, 1)
+        dots_grid.addWidget(self.dotdia_label, 4, 0)
+        dots_grid.addWidget(self.dot_dia_entry, 4, 1)
 
         # Dot spacing #
         self.dotspacing_label = FCLabel('%s:' % _("Spacing"))
@@ -1498,13 +1513,16 @@ class ThievingUI:
         self.dot_spacing_entry.set_precision(self.decimals)
         self.dot_spacing_entry.setSingleStep(0.1)
 
-        dots_grid.addWidget(self.dotspacing_label, 2, 0)
-        dots_grid.addWidget(self.dot_spacing_entry, 2, 1)
+        dots_grid.addWidget(self.dotspacing_label, 6, 0)
+        dots_grid.addWidget(self.dot_spacing_entry, 6, 1)
 
+        # #############################################################################################################
         # SQUARES FRAME
+        # #############################################################################################################
         self.squares_frame = QtWidgets.QFrame()
         self.squares_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.squares_frame)
+        grid_lay.addWidget(self.squares_frame, 22, 0, 1, 2)
+
         squares_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         squares_grid.setColumnStretch(0, 0)
         squares_grid.setColumnStretch(1, 1)
@@ -1512,8 +1530,13 @@ class ThievingUI:
         self.squares_frame.setLayout(squares_grid)
         self.squares_frame.hide()
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        squares_grid.addWidget(separator_line, 0, 0, 1, 2)
+
         self.squares_label = FCLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
-        squares_grid.addWidget(self.squares_label, 0, 0, 1, 2)
+        squares_grid.addWidget(self.squares_label, 2, 0, 1, 2)
 
         # Square Size #
         self.square_size_label = FCLabel('%s:' % _("Size"))
@@ -1525,8 +1548,8 @@ class ThievingUI:
         self.square_size_entry.set_precision(self.decimals)
         self.square_size_entry.setSingleStep(0.1)
 
-        squares_grid.addWidget(self.square_size_label, 1, 0)
-        squares_grid.addWidget(self.square_size_entry, 1, 1)
+        squares_grid.addWidget(self.square_size_label, 4, 0)
+        squares_grid.addWidget(self.square_size_entry, 4, 1)
 
         # Squares spacing #
         self.squares_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -1538,13 +1561,16 @@ class ThievingUI:
         self.squares_spacing_entry.set_precision(self.decimals)
         self.squares_spacing_entry.setSingleStep(0.1)
 
-        squares_grid.addWidget(self.squares_spacing_label, 2, 0)
-        squares_grid.addWidget(self.squares_spacing_entry, 2, 1)
+        squares_grid.addWidget(self.squares_spacing_label, 6, 0)
+        squares_grid.addWidget(self.squares_spacing_entry, 6, 1)
 
+        # #############################################################################################################
         # LINES FRAME
+        # #############################################################################################################
         self.lines_frame = QtWidgets.QFrame()
         self.lines_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.lines_frame)
+        grid_lay.addWidget(self.lines_frame, 24, 0, 1, 2)
+
         lines_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         lines_grid.setColumnStretch(0, 0)
         lines_grid.setColumnStretch(1, 1)
@@ -1552,10 +1578,15 @@ class ThievingUI:
         self.lines_frame.setLayout(lines_grid)
         self.lines_frame.hide()
 
-        self.lines_label = FCLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
-        lines_grid.addWidget(self.lines_label, 0, 0, 1, 2)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        lines_grid.addWidget(separator_line, 0, 0, 1, 2)
 
-        # Square Size #
+        self.lines_label = FCLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        lines_grid.addWidget(self.lines_label, 2, 0, 1, 2)
+
+        # Line Size #
         self.line_size_label = FCLabel('%s:' % _("Size"))
         self.line_size_label.setToolTip(
             _("Line thickness size in Lines Grid.")
@@ -1565,8 +1596,8 @@ class ThievingUI:
         self.line_size_entry.set_precision(self.decimals)
         self.line_size_entry.setSingleStep(0.1)
 
-        lines_grid.addWidget(self.line_size_label, 1, 0)
-        lines_grid.addWidget(self.line_size_entry, 1, 1)
+        lines_grid.addWidget(self.line_size_label, 4, 0)
+        lines_grid.addWidget(self.line_size_entry, 4, 1)
 
         # Lines spacing #
         self.lines_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -1578,10 +1609,12 @@ class ThievingUI:
         self.lines_spacing_entry.set_precision(self.decimals)
         self.lines_spacing_entry.setSingleStep(0.1)
 
-        lines_grid.addWidget(self.lines_spacing_label, 2, 0)
-        lines_grid.addWidget(self.lines_spacing_entry, 2, 1)
+        lines_grid.addWidget(self.lines_spacing_label, 6, 0)
+        lines_grid.addWidget(self.lines_spacing_entry, 6, 1)
 
-        # ## Insert Copper Thieving
+        # #############################################################################################################
+        # ## Insert Copper Thieving BUTTON
+        # #############################################################################################################
         self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
         self.fill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/copperfill32.png'))
         self.fill_button.setToolTip(
@@ -1594,29 +1627,33 @@ class ThievingUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.fill_button)
+        self.tools_box.addWidget(self.fill_button)
 
-        # ## Grid Layout
-        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay_1)
-        grid_lay_1.setColumnStretch(0, 0)
-        grid_lay_1.setColumnStretch(1, 1)
-        grid_lay_1.setColumnStretch(2, 0)
-
-        separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
-
-        # grid_lay_1.addWidget(FCLabel(''))
-
+        # #############################################################################################################
+        # ## Robber Bar Parameters
+        # #############################################################################################################
         self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' %
                                         _('Robber Bar Parameters').upper())
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
         )
-        grid_lay_1.addWidget(self.robber_bar_label, 2, 0, 1, 3)
+        self.tools_box.addWidget(self.robber_bar_label)
+
+        rob_frame = FCFrame()
+        self.tools_box.addWidget(rob_frame)
+
+        # ## Grid Layout
+        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay_1.setColumnStretch(0, 0)
+        grid_lay_1.setColumnStretch(1, 1)
+        grid_lay_1.setColumnStretch(2, 0)
+        rob_frame.setLayout(grid_lay_1)
+
+        # separator_line_1 = QtWidgets.QFrame()
+        # separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
 
         # ROBBER BAR MARGIN #
         self.rb_margin_label = FCLabel('%s:' % _("Margin"))
@@ -1644,7 +1681,9 @@ class ThievingUI:
         grid_lay_1.addWidget(self.rb_thickness_label, 6, 0)
         grid_lay_1.addWidget(self.rb_thickness_entry, 6, 1, 1, 2)
 
+        # #############################################################################################################
         # ## Insert Robber Bar
+        # #############################################################################################################
         self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
         self.rb_button.setIcon(QtGui.QIcon(self.app.resource_location + '/robber32.png'))
         self.rb_button.setToolTip(
@@ -1659,21 +1698,19 @@ class ThievingUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay_1.addWidget(self.rb_button, 8, 0, 1, 3)
+        self.tools_box.addWidget(self.rb_button)
 
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay_1.addWidget(separator_line_2, 10, 0, 1, 3)
-
+        # #############################################################################################################
+        # Pattern plating Frame
+        # #############################################################################################################
         self.patern_mask_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' %
-                                         _('Pattern Plating Mask').upper())
+                                         _('Pattern Plating Mask'))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
-        grid_lay_1.addWidget(self.patern_mask_label, 12, 0, 1, 3)
+        self.tools_box.addWidget(self.patern_mask_label)
 
-        self.sm_obj_label = FCLabel("%s:" % _("Select Soldermask object"))
+        self.sm_obj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.sm_obj_label.setToolTip(
             _("Gerber Object with the soldermask.\n"
               "It will be used as a base for\n"
@@ -1686,15 +1723,25 @@ class ThievingUI:
         self.sm_object_combo.is_last = True
         self.sm_object_combo.obj_type = 'Gerber'
 
-        grid_lay_1.addWidget(self.sm_obj_label, 14, 0, 1, 3)
-        grid_lay_1.addWidget(self.sm_object_combo, 16, 0, 1, 3)
+        self.tools_box.addWidget(self.sm_obj_label)
+        self.tools_box.addWidget(self.sm_object_combo)
+
+        pp_frame = FCFrame()
+        self.tools_box.addWidget(pp_frame)
+
+        # ## Grid Layout
+        grid_lay_2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay_2.setColumnStretch(0, 0)
+        grid_lay_2.setColumnStretch(1, 1)
+        grid_lay_2.setColumnStretch(2, 0)
+        pp_frame.setLayout(grid_lay_2)
 
         # Only Pads
         self.only_pads_cb = FCCheckBox(_("Only Pads"))
         self.only_pads_cb.setToolTip(
             _("Select only pads in case the selected object is a copper Gerber.")
         )
-        grid_lay_1.addWidget(self.only_pads_cb, 17, 0, 1, 3)
+        grid_lay_2.addWidget(self.only_pads_cb, 0, 0, 1, 3)
 
         # Openings CLEARANCE #
         self.clearance_ppm_label = FCLabel('%s:' % _("Clearance"))
@@ -1707,8 +1754,8 @@ class ThievingUI:
         self.clearance_ppm_entry.set_precision(self.decimals)
         self.clearance_ppm_entry.setSingleStep(0.1)
 
-        grid_lay_1.addWidget(self.clearance_ppm_label, 18, 0)
-        grid_lay_1.addWidget(self.clearance_ppm_entry, 18, 1, 1, 2)
+        grid_lay_2.addWidget(self.clearance_ppm_label, 2, 0)
+        grid_lay_2.addWidget(self.clearance_ppm_entry, 2, 1, 1, 2)
 
         # Plated area
         self.plated_area_label = FCLabel('%s:' % _("Plated area"))
@@ -1728,9 +1775,9 @@ class ThievingUI:
         else:
             self.units_area_label = FCLabel('%s<sup>2</sup>' % _("in"))
 
-        grid_lay_1.addWidget(self.plated_area_label, 20, 0)
-        grid_lay_1.addWidget(self.plated_area_entry, 20, 1)
-        grid_lay_1.addWidget(self.units_area_label, 20, 2)
+        grid_lay_2.addWidget(self.plated_area_label, 4, 0)
+        grid_lay_2.addWidget(self.plated_area_entry, 4, 1)
+        grid_lay_2.addWidget(self.units_area_label, 4, 2)
 
         # Include geometry
         self.ppm_choice_label = FCLabel('%s:' % _("Add"))
@@ -1743,10 +1790,12 @@ class ThievingUI:
             {"label": _("Robber bar"), "value": "r"},
             {"label": _("None"), "value": "n"}
         ], orientation='vertical', stretch=False)
-        grid_lay_1.addWidget(self.ppm_choice_label, 22, 0)
-        grid_lay_1.addWidget(self.ppm_choice_radio, 22, 1, 1, 2)
+        grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)
+        grid_lay_2.addWidget(self.ppm_choice_radio, 6, 1, 1, 2)
 
-        # ## Pattern Plating Mask
+        # #############################################################################################################
+        # ## Pattern Plating Mask Button
+        # #############################################################################################################
         self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
         self.ppm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/pattern32.png'))
         self.ppm_button.setToolTip(
@@ -1760,7 +1809,7 @@ class ThievingUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay_1.addWidget(self.ppm_button, 24, 0, 1, 3)
+        self.tools_box.addWidget(self.ppm_button)
 
         self.layout.addStretch(1)
 

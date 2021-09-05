@@ -2329,9 +2329,6 @@ class CutoutUI:
         # Object Frame
         # #############################################################################################################
         obj_frame = FCFrame()
-        obj_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        obj_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
@@ -2387,9 +2384,6 @@ class CutoutUI:
         # Tool Frame
         # #############################################################################################################
         tool_frame = FCFrame()
-        tool_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tool_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tool_frame)
 
         # Grid Layout
@@ -2450,9 +2444,6 @@ class CutoutUI:
         # Tool Params Frame
         # #############################################################################################################
         tool_par_frame = FCFrame()
-        tool_par_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        tool_par_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(tool_par_frame)
 
         # Grid Layout
@@ -2767,9 +2758,6 @@ class CutoutUI:
         # Cut by Drilling Frame
         # #############################################################################################################
         self.drill_cut_frame = FCFrame()
-        self.drill_cut_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
-        # units_frame.setContentsMargins(0, 0, 0, 0)
-        self.drill_cut_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
         self.tools_box.addWidget(self.drill_cut_frame)
 
         # Grid Layout
