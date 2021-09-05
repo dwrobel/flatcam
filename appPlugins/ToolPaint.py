@@ -14,7 +14,7 @@ from copy import deepcopy
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage, grace
 from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDoubleSpinner, RadioSet, \
-    FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout
+    FCButton, FCComboBox, FCLabel, FCComboBox2, VerticalScrollArea, FCGridLayout, FCFrame
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import unary_union, linemerge
@@ -450,13 +450,7 @@ class ToolPaint(AppTool, Gerber):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.hide()
-            self.ui.new_tooldia_lbl.hide()
-            self.ui.new_tooldia_entry.hide()
-            self.ui.search_and_add_btn.hide()
-            self.ui.addtool_from_db_btn.hide()
-            self.ui.deltool_btn.hide()
-            self.ui.add_tool_separator_line.hide()
+            self.ui.add_tool_frame.hide()
 
             # Tool parameters section
             if self.paint_tools:
@@ -467,7 +461,6 @@ class ToolPaint(AppTool, Gerber):
             self.ui.rest_cb.hide()
 
             # All param section
-            self.ui.all_param_separator_line2.hide()
             self.ui.apply_param_to_all.hide()
 
             # Context Menu section
@@ -482,13 +475,7 @@ class ToolPaint(AppTool, Gerber):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.show()
-            self.ui.new_tooldia_lbl.show()
-            self.ui.new_tooldia_entry.show()
-            self.ui.search_and_add_btn.show()
-            self.ui.addtool_from_db_btn.show()
-            self.ui.deltool_btn.show()
-            self.ui.add_tool_separator_line.show()
+            self.ui.add_tool_frame.show()
 
             # Tool parameters section
             if self.paint_tools:
@@ -501,7 +488,6 @@ class ToolPaint(AppTool, Gerber):
             self.ui.rest_cb.show()
 
             # All param section
-            self.ui.all_param_separator_line2.show()
             self.ui.apply_param_to_all.show()
 
             # Context Menu section
@@ -2945,16 +2931,27 @@ class PaintUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        # ## Grid Layout
+        # #############################################################################################################
+        # Source Object for Paint Frame
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            _("Source object for milling operation.")
+        )
+        self.tools_box.addWidget(self.obj_combo_label)
+
+        obj_frame = FCFrame()
+        self.tools_box.addWidget(obj_frame)
+
+        # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
+        obj_frame.setLayout(grid0)
 
-        # ################################################
-        # ##### Type of object to be painted #############
-        # ################################################
-
+        # #############################################################################################################
+        # Type of object to be painted
+        # #############################################################################################################
         self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be painted.\n"
@@ -2967,39 +2964,47 @@ class PaintUI:
         self.type_obj_radio = RadioSet([{'label': "Geometry", 'value': 'geometry'},
                                         {'label': "Gerber", 'value': 'gerber'}])
 
-        grid0.addWidget(self.type_obj_combo_label, 1, 0)
-        grid0.addWidget(self.type_obj_radio, 1, 1)
+        grid0.addWidget(self.type_obj_combo_label, 0, 0)
+        grid0.addWidget(self.type_obj_radio, 0, 1)
 
-        # ################################################
-        # ##### The object to be painted #################
-        # ################################################
+        # #############################################################################################################
+        # The object to be painted
+        # #############################################################################################################
         self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
 
-        # self.object_label = FCLabel('%s:' % _("Object"))
-        # self.object_label.setToolTip(_("Object to be painted."))
-
         grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 5, 0, 1, 2)
 
+        # #############################################################################################################
+        # Tool Table Frame
+        # #############################################################################################################
         # ### Tools ## ##
-        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for painting.")
         )
+        self.tools_box.addWidget(self.tools_table_label)
+
+        tt_frame = FCFrame()
+        self.tools_box.addWidget(tt_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        tt_frame.setLayout(grid1)
 
         self.tools_table = FCTable(drag_drop=True)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-
-        grid0.addWidget(self.tools_table_label, 6, 0, 1, 2)
-        grid0.addWidget(self.tools_table, 7, 0, 1, 2)
+        grid1.addWidget(self.tools_table, 2, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Shape'), ''])
@@ -3026,6 +3031,7 @@ class PaintUI:
               "B = ball tip milling tool\n"
               "V = v-shape milling tool"))
 
+        # Tool Order
         self.order_label = FCLabel('<b>%s:</b>' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
@@ -3044,25 +3050,29 @@ class PaintUI:
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        grid0.addWidget(self.order_label, 9, 0)
-        grid0.addWidget(self.order_radio, 9, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 2)
+        grid1.addWidget(self.order_label, 4, 0)
+        grid1.addWidget(self.order_radio, 4, 1)
 
         # ##############################################################################
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
-        
-        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid3.setColumnStretch(0, 0)
-        self.grid3.setColumnStretch(1, 1)
-        self.tools_box.addLayout(self.grid3)
-        
+        self.add_tool_frame = QtWidgets.QFrame()
+        self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
+        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
+
+        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid.setColumnStretch(0, 0)
+        new_tool_grid.setColumnStretch(1, 1)
+        new_tool_grid.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(new_tool_grid)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        new_tool_grid.addWidget(separator_line, 0, 0, 1, 2)
+
         self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
-        self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
+        new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         # ### Tool Diameter ####
         self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
@@ -3076,8 +3086,8 @@ class PaintUI:
         self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName('p_tool_dia')
 
-        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
-        self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
+        new_tool_grid.addWidget(self.new_tooldia_lbl, 4, 0)
+        new_tool_grid.addWidget(self.new_tooldia_entry, 4, 1)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
@@ -3085,7 +3095,7 @@ class PaintUI:
         button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
-        self.grid3.addLayout(button_grid, 7, 0, 1, 2)
+        new_tool_grid.addLayout(button_grid, 6, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -3119,13 +3129,10 @@ class PaintUI:
         self.deltool_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
 
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
+
         # #############################################################################################################
-
-        self.add_tool_separator_line = QtWidgets.QFrame()
-        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(self.add_tool_separator_line, 11, 0, 1, 2)
-
+        # Paramters Frame
+        # #############################################################################################################
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
@@ -3134,12 +3141,15 @@ class PaintUI:
                 "Each tool store it's own set of such data."
             )
         )
-        self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
+        self.tools_box.addWidget(self.tool_data_label)
 
-        grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid4.setColumnStretch(0, 0)
-        grid4.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid4)
+        tt_frame = FCFrame()
+        self.tools_box.addWidget(tt_frame)
+
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_grid.setColumnStretch(0, 0)
+        par_grid.setColumnStretch(1, 1)
+        tt_frame.setLayout(par_grid)
 
         # Overlap
         ovlabel = FCLabel('%s:' % _('Overlap'))
@@ -3159,8 +3169,8 @@ class PaintUI:
         self.paintoverlap_entry.setSingleStep(0.1)
         self.paintoverlap_entry.setObjectName('p_overlap')
 
-        grid4.addWidget(ovlabel, 1, 0)
-        grid4.addWidget(self.paintoverlap_entry, 1, 1)
+        par_grid.addWidget(ovlabel, 0, 0)
+        par_grid.addWidget(self.paintoverlap_entry, 0, 1)
 
         # Offset
         self.offset_label = FCLabel('%s:' % _('Offset'))
@@ -3174,8 +3184,8 @@ class PaintUI:
         self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName('p_offset')
 
-        grid4.addWidget(self.offset_label, 2, 0)
-        grid4.addWidget(self.offset_entry, 2, 1)
+        par_grid.addWidget(self.offset_label, 2, 0)
+        par_grid.addWidget(self.offset_entry, 2, 1)
 
         # Method
         methodlabel = FCLabel('%s:' % _('Method'))
@@ -3199,8 +3209,8 @@ class PaintUI:
 
         self.paintmethod_combo.setObjectName('p_method')
 
-        grid4.addWidget(methodlabel, 7, 0)
-        grid4.addWidget(self.paintmethod_combo, 7, 1)
+        par_grid.addWidget(methodlabel, 4, 0)
+        par_grid.addWidget(self.paintmethod_combo, 4, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
@@ -3217,13 +3227,8 @@ class PaintUI:
               "to trim rough edges.")
         )
 
-        grid4.addWidget(self.pathconnect_cb, 10, 0)
-        grid4.addWidget(self.paintcontour_cb, 10, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid4.addWidget(separator_line, 11, 0, 1, 2)
+        par_grid.addWidget(self.pathconnect_cb, 6, 0)
+        par_grid.addWidget(self.paintcontour_cb, 6, 1)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
@@ -3231,19 +3236,23 @@ class PaintUI:
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        grid4.addWidget(self.apply_param_to_all, 12, 0, 1, 2)
+        self.tools_box.addWidget(self.apply_param_to_all)
 
-        self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid4.addWidget(self.all_param_separator_line2, 13, 0, 1, 2)
-
+        # #############################################################################################################
+        # General Parameters Frame
+        # #############################################################################################################
         # General Parameters
-        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
-        self.gen_param_label.setToolTip(
-            _("Parameters that are common for all tools.")
-        )
-        grid4.addWidget(self.gen_param_label, 15, 0, 1, 2)
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(_("Parameters that are common for all tools."))
+        self.tools_box.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        self.tools_box.addWidget(gp_frame)
+
+        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gen_grid.setColumnStretch(0, 0)
+        gen_grid.setColumnStretch(1, 1)
+        gp_frame.setLayout(gen_grid)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
         self.rest_cb.setObjectName('p_rest_machining')
@@ -3256,7 +3265,7 @@ class PaintUI:
               "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
-        grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
+        gen_grid.addWidget(self.rest_cb, 0, 0, 1, 2)
 
         # Rest Offset
         self.rest_offset_label = FCLabel('%s:' % _('Offset'))
@@ -3269,8 +3278,8 @@ class PaintUI:
         self.rest_offset_entry.set_precision(self.decimals)
         self.rest_offset_entry.set_range(-10000.0000, 10000.0000)
 
-        grid4.addWidget(self.rest_offset_label, 17, 0)
-        grid4.addWidget(self.rest_offset_entry, 17, 1)
+        gen_grid.addWidget(self.rest_offset_label, 2, 0)
+        gen_grid.addWidget(self.rest_offset_entry, 2, 1)
 
         # Polygon selection
         selectlabel = FCLabel('%s:' % _('Selection'))
@@ -3289,8 +3298,8 @@ class PaintUI:
         )
         self.selectmethod_combo.setObjectName('p_selection')
 
-        grid4.addWidget(selectlabel, 18, 0)
-        grid4.addWidget(self.selectmethod_combo, 18, 1)
+        gen_grid.addWidget(selectlabel, 4, 0)
+        gen_grid.addWidget(self.selectmethod_combo, 4, 1)
 
         # Type of Reference Object
         self.reference_type_label = FCLabel('%s:' % _("Type"))
@@ -3301,8 +3310,8 @@ class PaintUI:
         self.reference_type_combo = FCComboBox2()
         self.reference_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        grid4.addWidget(self.reference_type_label, 20, 0)
-        grid4.addWidget(self.reference_type_combo, 20, 1)
+        gen_grid.addWidget(self.reference_type_label, 6, 0)
+        gen_grid.addWidget(self.reference_type_combo, 6, 1)
 
         # Reference Object
         self.reference_combo = FCComboBox()
@@ -3310,7 +3319,7 @@ class PaintUI:
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        grid4.addWidget(self.reference_combo, 22, 0, 1, 2)
+        gen_grid.addWidget(self.reference_combo, 8, 0, 1, 2)
 
         self.reference_combo.hide()
         self.reference_type_combo.hide()
@@ -3325,13 +3334,15 @@ class PaintUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid4.addWidget(self.area_shape_label, 24, 0)
-        grid4.addWidget(self.area_shape_radio, 24, 1)
+        gen_grid.addWidget(self.area_shape_label, 10, 0)
+        gen_grid.addWidget(self.area_shape_radio, 10, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        # GO Button
+        # #############################################################################################################
+        # Generate Paint Geometry Button
+        # #############################################################################################################
         self.generate_paint_button = FCButton(_('Generate Geometry'))
         self.generate_paint_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_paint_button.setToolTip(

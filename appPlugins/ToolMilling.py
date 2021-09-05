@@ -3590,19 +3590,18 @@ class MillingUI:
         # #############################################################################################################
         # Tool Table Frame
         # #############################################################################################################
+        # ### Tools ####
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(
+            _("Tools in the object used for milling.")
+        )
+        self.tools_box.addWidget(self.tools_table_label)
 
         # Grid Layout
         grid_title_tool_table = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_title_tool_table.setColumnStretch(0, 0)
         grid_title_tool_table.setColumnStretch(1, 1)
         self.tools_box.addLayout(grid_title_tool_table)
-
-        # ### Tools ####
-        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
-        self.tools_table_label.setToolTip(
-            _("Tools in the object used for milling.")
-        )
-        grid_title_tool_table.addWidget(self.tools_table_label, 0, 0)
 
         # Plot CB
         self.plot_cb = FCCheckBox(_('Plot Object'))
