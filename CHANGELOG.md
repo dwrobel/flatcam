@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - in Paint Plugin updated the GUI
 - in NCC Plugin updated the GUI
 - in Subtraction Plugin updated the GUI
+- in Follow Plugin updated the GUI
 
 4.09.2021
 

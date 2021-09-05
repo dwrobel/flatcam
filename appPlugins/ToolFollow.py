@@ -8,7 +8,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout
+from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
 from appParsers.ParseGerber import Gerber
 
 from copy import deepcopy
@@ -183,11 +183,9 @@ class ToolFollow(AppTool, Gerber):
                                         }
                                         """)
 
-            # Add Tool section
-            self.ui.select_label.hide()
-            self.ui.selectmethod_radio.hide()
-            self.ui.param_title.hide()
-            self.ui.separator_line.hide()
+            # Parameters section
+            self.ui.gp_frame.hide()
+            self.ui.param_label.hide()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -197,11 +195,9 @@ class ToolFollow(AppTool, Gerber):
                                         }
                                         """)
 
-            # Add Tool section
-            self.ui.select_label.show()
-            self.ui.selectmethod_radio.show()
-            self.ui.param_title.show()
-            self.ui.separator_line.show()
+            # Parameters section
+            self.ui.gp_frame.show()
+            self.ui.param_label.show()
 
     def on_generate_geometry_click(self):
         obj_name = self.ui.object_combo.currentText()
@@ -713,37 +709,38 @@ class FollowUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("GERBER"))
-        self.obj_combo_label.setToolTip(
-            _("Source object for following geometry.")
-        )
-
-        self.tools_box.addWidget(self.obj_combo_label)
-
         # #############################################################################################################
         # ################################ The object to be followed ##################################################
         # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            _("A Gerber object to be followed.\n"
+              "Create a Geometry object with a path\n"
+              "following the Gerber traces.")
+        )
+        self.tools_box.addWidget(self.obj_combo_label)
+
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
         self.tools_box.addWidget(self.object_combo)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.tools_box.addWidget(separator_line)
+        # #############################################################################################################
+        # COMMON PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label.setToolTip(_("Parameters that are common for all tools."))
+        self.tools_box.addWidget(self.param_label)
+
+        self.gp_frame = FCFrame()
+        self.tools_box.addWidget(self.gp_frame)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
-
-        # Parameter Title
-        self.param_title = FCLabel("<b>%s:</b>" % _("Parameters"))
-        grid0.addWidget(self.param_title, 0, 0, 1, 2)
+        self.gp_frame.setLayout(grid0)
 
         # Polygon selection
         self.select_label = FCLabel('%s:' % _('Selection'))
@@ -756,8 +753,8 @@ class FollowUI:
         self.selectmethod_radio = RadioSet([{'label': _("All"), 'value': 'all'},
                                             {'label': _("Area Selection"), 'value': 'area'}])
 
-        grid0.addWidget(self.select_label, 2, 0)
-        grid0.addWidget(self.selectmethod_radio, 2, 1)
+        grid0.addWidget(self.select_label, 0, 0)
+        grid0.addWidget(self.selectmethod_radio, 0, 1)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -768,16 +765,11 @@ class FollowUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 4, 0)
-        grid0.addWidget(self.area_shape_radio, 4, 1)
+        grid0.addWidget(self.area_shape_label, 2, 0)
+        grid0.addWidget(self.area_shape_radio, 2, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
-
-        self.separator_line = QtWidgets.QFrame()
-        self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(self.separator_line, 6, 0, 1, 2)
 
         self.generate_geometry_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_geometry_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
@@ -792,7 +784,7 @@ class FollowUI:
                                                    "the middle of the trace."))
         self.tools_box.addWidget(self.generate_geometry_button)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
