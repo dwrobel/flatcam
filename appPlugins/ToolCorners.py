@@ -10,7 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 from shapely.geometry import MultiPolygon, LineString, Point
 from shapely.ops import unary_union
 
@@ -129,6 +129,7 @@ class ToolCorners(AppTool):
         self.ui.toggle_all_cb.toggled.connect(self.on_toggle_all)
         self.ui.drill_button.clicked.connect(self.on_create_drill_object)
         self.ui.check_button.clicked.connect(self.on_create_check_object)
+        self.ui.sel_radio.activated_custom.connect(self.on_selection_changed)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
@@ -144,6 +145,7 @@ class ToolCorners(AppTool):
         self.ui.toggle_all_cb.set_value(False)
         self.ui.type_radio.set_value(self.app.defaults["tools_corners_type"])
         self.ui.drill_dia_entry.set_value(self.app.defaults["tools_corners_drill_dia"])
+        self.ui.sel_radio.set_value("a")
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -180,12 +182,8 @@ class ToolCorners(AppTool):
                                         """)
 
             self.ui.drills_label.hide()
-            self.ui.drill_dia_label.hide()
-            self.ui.drill_dia_entry.hide()
+            self.ui.drill_frame.hide()
             self.ui.drill_button.hide()
-
-            self.ui.separator_line_2.hide()
-
             self.ui.check_label.hide()
             self.ui.check_button.hide()
         else:
@@ -198,12 +196,8 @@ class ToolCorners(AppTool):
                                         """)
 
             self.ui.drills_label.show()
-            self.ui.drill_dia_label.show()
-            self.ui.drill_dia_entry.show()
+            self.ui.drill_frame.show()
             self.ui.drill_button.show()
-
-            self.ui.separator_line_2.show()
-
             self.ui.check_label.show()
             self.ui.check_button.show()
 
@@ -213,7 +207,22 @@ class ToolCorners(AppTool):
         self.ui.tl_cb.set_value(val)
         self.ui.tr_cb.set_value(val)
 
+    def on_selection_changed(self, val):
+        if val == 'a':
+            self.ui.locs_label.setDisabled(False)
+            self.ui.loc_frame.setDisabled(False)
+        else:
+            self.ui.locs_label.setDisabled(True)
+            self.ui.loc_frame.setDisabled(True)
+
     def add_markers(self):
+        select_type = self.ui.sel_radio.get_value()
+        if select_type == 'a':
+            self.handle_automatic_placement()
+        else:
+            self.handle_manual_placement()
+
+    def handle_automatic_placement(self):
         self.app.call_source = "corners_tool"
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
@@ -427,6 +436,9 @@ class ToolCorners(AppTool):
         ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
 
         return ret
+
+    def handle_manual_placement(self):
+        self.app.inform.emit('[ERROR_NOTCL] %s' % "Not implemented yet.")
 
     def on_create_drill_object(self):
         self.app.call_source = "corners_tool"
@@ -697,76 +709,56 @@ class CornersUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.title_box)
+
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        # #############################################################################################################
+        # Gerber Source Object Frame
+        # #############################################################################################################
+
         # Gerber object #
-        self.object_label = FCLabel('<b>%s:</b>' % _("GERBER"))
-        self.object_label.setToolTip(
-            _("The Gerber object to which will be added corner markers.")
-        )
+        self.object_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.object_label.setToolTip(_("The Gerber object to which will be added corner markers."))
+
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.is_last = True
         self.object_combo.obj_type = "Gerber"
 
-        self.layout.addWidget(self.object_label)
-        self.layout.addWidget(self.object_combo)
+        self.tools_box.addWidget(self.object_label)
+        self.tools_box.addWidget(self.object_combo)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.layout.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.layout.addWidget(separator_line)
 
-        self.points_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Locations').upper())
-        self.points_label.setToolTip(
-            _("Locations where to place corner markers.")
-        )
-        self.layout.addWidget(self.points_label)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label.setToolTip(_("Parameters used for this tool."))
+        self.tools_box.addWidget(self.param_label)
 
-        # ## Grid Layout
-        grid_loc = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_loc)
-
-        # TOP LEFT
-        self.tl_cb = FCCheckBox(_("Top Left"))
-        grid_loc.addWidget(self.tl_cb, 0, 0)
-
-        # TOP RIGHT
-        self.tr_cb = FCCheckBox(_("Top Right"))
-        grid_loc.addWidget(self.tr_cb, 0, 1)
-
-        # BOTTOM LEFT
-        self.bl_cb = FCCheckBox(_("Bottom Left"))
-        grid_loc.addWidget(self.bl_cb, 1, 0)
-
-        # BOTTOM RIGHT
-        self.br_cb = FCCheckBox(_("Bottom Right"))
-        grid_loc.addWidget(self.br_cb, 1, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.layout.addWidget(separator_line)
-
-        # Toggle ALL
-        self.toggle_all_cb = FCCheckBox(_("Toggle ALL"))
-        self.layout.addWidget(self.toggle_all_cb)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.layout.addWidget(separator_line)
+        par_frame = FCFrame()
+        par_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        par_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(par_frame)
 
         # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
-        self.param_label.setToolTip(
-            _("Parameters used for this tool.")
-        )
-        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        par_frame.setLayout(grid_par)
 
         # Type of Marker
         self.type_label = FCLabel('%s:' % _("Type"))
@@ -779,8 +771,8 @@ class CornersUI:
             {"label": _("Cross"), "value": "c"},
         ])
 
-        grid_lay.addWidget(self.type_label, 2, 0)
-        grid_lay.addWidget(self.type_radio, 2, 1)
+        grid_par.addWidget(self.type_label, 2, 0)
+        grid_par.addWidget(self.type_radio, 2, 1)
 
         # Thickness #
         self.thick_label = FCLabel('%s:' % _("Thickness"))
@@ -793,8 +785,8 @@ class CornersUI:
         self.thick_entry.setWrapping(True)
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_lay.addWidget(self.thick_label, 4, 0)
-        grid_lay.addWidget(self.thick_entry, 4, 1)
+        grid_par.addWidget(self.thick_label, 4, 0)
+        grid_par.addWidget(self.thick_entry, 4, 1)
 
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
@@ -806,8 +798,8 @@ class CornersUI:
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_lay.addWidget(self.l_label, 6, 0)
-        grid_lay.addWidget(self.l_entry, 6, 1)
+        grid_par.addWidget(self.l_label, 6, 0)
+        grid_par.addWidget(self.l_entry, 6, 1)
 
         # Margin #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -819,15 +811,88 @@ class CornersUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.margin_label, 8, 0)
-        grid_lay.addWidget(self.margin_entry, 8, 1)
+        grid_par.addWidget(self.margin_label, 8, 0)
+        grid_par.addWidget(self.margin_entry, 8, 1)
 
-        # separator_line_2 = QtWidgets.QFrame()
-        # separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        # separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid_lay.addWidget(separator_line_2, 10, 0, 1, 2)
+        # #############################################################################################################
+        # Locations Frame
+        # #############################################################################################################
+        self.locs_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Locations'))
+        self.locs_label.setToolTip(_("Locations where to place corner markers."))
+        self.tools_box.addWidget(self.locs_label)
 
-        # ## Insert Corner Marker
+        self.loc_frame = FCFrame()
+        self.loc_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # self.loc_frame.setContentsMargins(0, 0, 0, 0)
+        self.loc_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(self.loc_frame)
+
+        # Grid Layout
+        grid_loc = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.loc_frame.setLayout(grid_loc)
+
+        # TOP LEFT
+        self.tl_cb = FCCheckBox(_("Top Left"))
+        grid_loc.addWidget(self.tl_cb, 0, 0)
+
+        # TOP RIGHT
+        self.tr_cb = FCCheckBox(_("Top Right"))
+        grid_loc.addWidget(self.tr_cb, 0, 1)
+
+        # BOTTOM LEFT
+        self.bl_cb = FCCheckBox(_("Bottom Left"))
+        grid_loc.addWidget(self.bl_cb, 2, 0)
+
+        # BOTTOM RIGHT
+        self.br_cb = FCCheckBox(_("Bottom Right"))
+        grid_loc.addWidget(self.br_cb, 2, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_loc.addWidget(separator_line, 4, 0, 1, 2)
+
+        # Toggle ALL
+        self.toggle_all_cb = FCCheckBox(_("Toggle ALL"))
+        grid_loc.addWidget(self.toggle_all_cb, 6, 0, 1, 2)
+
+        # #############################################################################################################
+        # Selection Frame
+        # #############################################################################################################
+        # Selection
+        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.tools_box.addWidget(self.sel_label)
+
+        self.s_frame = FCFrame()
+        self.s_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        self.s_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(self.s_frame)
+
+        # Grid Layout
+        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel.setColumnStretch(0, 0)
+        grid_sel.setColumnStretch(1, 1)
+        self.s_frame.setLayout(grid_sel)
+
+        # Type of placement of markers
+        self.sel_label = FCLabel('%s:' % _("Type"))
+        self.sel_label.setToolTip(
+            _("When the manual type is chosen, the markers\n"
+              "are manually placed on canvas.")
+        )
+
+        self.sel_radio = RadioSet([
+            {"label": _("Automatic"), "value": "a"},
+            {"label": _("Manual"), "value": "m"},
+        ])
+
+        grid_sel.addWidget(self.sel_label, 0, 0)
+        grid_sel.addWidget(self.sel_radio, 0, 1)
+
+        # #############################################################################################################
+        # ## Insert Corner Marker Button
+        # #############################################################################################################
         self.add_marker_button = FCButton(_("Add Marker"))
         self.add_marker_button.setIcon(QtGui.QIcon(self.app.resource_location + '/corners_32.png'))
         self.add_marker_button.setToolTip(
@@ -839,16 +904,26 @@ class CornersUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay.addWidget(self.add_marker_button, 12, 0, 1, 2)
+        self.tools_box.addWidget(self.add_marker_button,)
 
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line_2, 14, 0, 1, 2)
-
+        # #############################################################################################################
+        # Drill in Corners Frame
+        # #############################################################################################################
         # Drill is corners
-        self.drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Drills in Locations').upper())
-        grid_lay.addWidget(self.drills_label, 16, 0, 1, 2)
+        self.drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Drills in Locations'))
+        self.tools_box.addWidget(self.drills_label)
+
+        self.drill_frame = FCFrame()
+        self.drill_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # drill_frame.setContentsMargins(0, 0, 0, 0)
+        self.drill_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(self.drill_frame)
+
+        # Grid Layout
+        grid_drill = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_drill.setColumnStretch(0, 0)
+        grid_drill.setColumnStretch(1, 1)
+        self.drill_frame.setLayout(grid_drill)
 
         # Drill Tooldia #
         self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
@@ -860,8 +935,8 @@ class CornersUI:
         self.drill_dia_entry.set_precision(self.decimals)
         self.drill_dia_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.drill_dia_label, 18, 0)
-        grid_lay.addWidget(self.drill_dia_entry, 18, 1)
+        grid_drill.addWidget(self.drill_dia_label, 0, 0)
+        grid_drill.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Create an Excellon object
         self.drill_button = FCButton(_("Create Excellon Object"))
@@ -875,16 +950,14 @@ class CornersUI:
                                             font-weight: bold;
                                         }
                                         """)
-        grid_lay.addWidget(self.drill_button, 20, 0, 1, 2)
+        self.tools_box.addWidget(self.drill_button)
 
-        self.separator_line_2 = QtWidgets.QFrame()
-        self.separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(self.separator_line_2, 22, 0, 1, 2)
-
-        # Check is corners
-        self.check_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Check in Locations').upper())
-        grid_lay.addWidget(self.check_label, 24, 0, 1, 2)
+        # #############################################################################################################
+        # Check in Locations Frame
+        # #############################################################################################################
+        # Check in corners
+        self.check_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Check in Locations'))
+        self.tools_box.addWidget(self.check_label)
 
         # ## Create an Excellon object for checking the positioning
         self.check_button = FCButton(_("Create Excellon Object"))
@@ -901,9 +974,9 @@ class CornersUI:
                                             font-weight: bold;
                                         }
                                         """)
-        grid_lay.addWidget(self.check_button, 26, 0, 1, 2)
+        self.tools_box.addWidget(self.check_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
