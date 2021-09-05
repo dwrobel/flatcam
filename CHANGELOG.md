@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - in Corners Plugin remade the GUI
 - in Corners Markers Plugin added the beginning of the manual marker placement
 - in Alignment Plugin updated the GUI
+- remade the Gerber Object Properties UI
+- fixed a small typo when creating a new Gerber empty App Object
 
 4.09.2021
 

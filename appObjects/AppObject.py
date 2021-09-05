@@ -469,7 +469,7 @@ class AppObject(QtCore.QObject):
         :return:            None
         """
 
-        outname = 'new_geo' if new_name is None else new_name
+        outname = 'new_grb' if new_name is None else new_name
 
         def initialize(new_obj, app):
             new_obj.multitool = False

@@ -86,23 +86,30 @@ class ObjectUI(QtWidgets.QWidget):
         # ## Common to all objects ##
         # ###########################
         if common is True:
-            self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-            self.common_grid.setColumnStretch(0, 1)
-            self.common_grid.setColumnStretch(1, 0)
-            layout.addLayout(self.common_grid)
-
-            # self.common_grid.addWidget(FCLabel(''), 1, 0, 1, 2)
-            separator_line = QtWidgets.QFrame()
-            separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-            separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-            self.common_grid.addWidget(separator_line, 1, 0, 1, 2)
-
-            self.transform_label = FCLabel('<b>%s</b>' % _('Transformations'))
+            # #############################################################################################################
+            # Transformations Frame
+            # #############################################################################################################
+            self.transform_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Transformations'))
             self.transform_label.setToolTip(
                 _("Geometrical transformations of the current object.")
             )
 
-            self.common_grid.addWidget(self.transform_label, 2, 0, 1, 2)
+            layout.addWidget(self.transform_label)
+
+            trans_frame = FCFrame()
+            trans_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+            trans_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+            layout.addWidget(trans_frame)
+
+            self.common_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+            self.common_grid.setColumnStretch(0, 1)
+            self.common_grid.setColumnStretch(1, 0)
+            trans_frame.setLayout(self.common_grid)
+
+            # separator_line = QtWidgets.QFrame()
+            # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+            # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+            # self.common_grid.addWidget(separator_line, 0, 0, 1, 2)
 
             # ### Scale ####
             self.scale_entry = NumericalEvalEntry(border_color='#0069A9')
@@ -119,8 +126,8 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.scale_button.setMinimumWidth(70)
 
-            self.common_grid.addWidget(self.scale_entry, 3, 0)
-            self.common_grid.addWidget(self.scale_button, 3, 1)
+            self.common_grid.addWidget(self.scale_entry, 2, 0)
+            self.common_grid.addWidget(self.scale_button, 2, 1)
 
             # ### Offset ####
             self.offsetvector_entry = NumericalEvalTupleEntry(border_color='#0069A9')
@@ -144,7 +151,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.transformations_button.setToolTip(
                 _("Geometrical transformations of the current object.")
             )
-            self.common_grid.addWidget(self.transformations_button, 5, 0, 1, 2)
+            self.common_grid.addWidget(self.transformations_button, 6, 0, 1, 2)
 
         layout.addStretch(1)
     
@@ -177,12 +184,24 @@ class GerberObjectUI(ObjectUI):
 
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
+        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information's"))
+        self.general_label.setToolTip(_("General data about the object."))
+        self.custom_box.addWidget(self.general_label)
+
+        # #############################################################################################################
+        # General Frame
+        # #############################################################################################################
+        gen_frame = FCFrame()
+        gen_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        gen_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.custom_box.addWidget(gen_frame)
+
         # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.custom_box.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
+        gen_frame.setLayout(grid0)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
 
@@ -239,7 +258,7 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.editor_button, 4, 0, 1, 3)
+        self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
         self.info_button = FCButton('%s' % _("INFO"), checkable=True)
@@ -251,12 +270,13 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.info_button, 6, 0, 1, 3)
+        self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
         self.info_frame = QtWidgets.QFrame()
         self.info_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.custom_box.addWidget(self.info_frame)
+
         self.info_box = QtWidgets.QVBoxLayout()
         self.info_box.setContentsMargins(0, 0, 0, 0)
         self.info_frame.setLayout(self.info_box)
@@ -267,13 +287,32 @@ class GerberObjectUI(ObjectUI):
         self.info_box.addWidget(self.treeWidget)
         self.info_box.setStretch(0, 0)
 
+        # #############################################################################################################
+        # Gerber Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
+        self.custom_box.addWidget(self.tools_table_label)
+
+        self.tt_frame = FCFrame()
+        self.tt_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # self.tt_frame.setContentsMargins(0, 0, 0, 0)
+        self.tt_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.custom_box.addWidget(self.tt_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        self.tt_frame.setLayout(grid1)
+
         # ### Gerber Apertures ####
-        self.apertures_table_label = FCLabel('%s:' % _('Apertures'))
+        self.apertures_table_label = FCLabel('%s' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
 
-        grid0.addWidget(self.apertures_table_label, 8, 0)
+        grid1.addWidget(self.apertures_table_label, 0, 0)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox()
@@ -281,10 +320,10 @@ class GerberObjectUI(ObjectUI):
             _("Toggle the display of the Tools Table.")
         )
         # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        grid0.addWidget(self.aperture_table_visibility_cb, 8, 1)
+        grid1.addWidget(self.aperture_table_visibility_cb, 0, 1)
 
         hlay_plot = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay_plot, 8, 2)
+        grid1.addLayout(hlay_plot, 0, 2)
 
         # Aperture Mark all CB
         self.mark_all_cb = FCCheckBox(_('Mark All'))
@@ -300,7 +339,7 @@ class GerberObjectUI(ObjectUI):
 
         # Apertures Table
         self.apertures_table = FCTable()
-        grid0.addWidget(self.apertures_table, 10, 0, 1, 3)
+        grid1.addWidget(self.apertures_table, 2, 0, 1, 3)
 
         self.apertures_table.setColumnCount(6)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim'), 'M'])
@@ -333,15 +372,18 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid0.addWidget(self.create_buffer_button, 12, 0, 1, 3)
+        grid1.addWidget(self.create_buffer_button, 4, 0, 1, 3)
 
-        separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line1, 13, 0, 1, 3)
+        # separator_line1 = QtWidgets.QFrame()
+        # separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line1, 13, 0, 1, 3)
 
-        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
-        grid0.addWidget(self.tool_lbl, 14, 0, 1, 3)
+        # #############################################################################################################
+        # PLUGINS
+        # #############################################################################################################
+        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
+        self.custom_box.addWidget(self.tool_lbl)
 
         # Isolation Tool - will create isolation paths around the copper features
         self.iso_button = FCButton(_('Isolation Routing'))
@@ -356,22 +398,7 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.iso_button, 16, 0, 1, 3)
-
-        # ## Clear non-copper regions
-        self.generate_ncc_button = FCButton(_('NCC'))
-        self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
-        self.generate_ncc_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for non-copper routing.")
-        )
-        # self.generate_ncc_button.setStyleSheet("""
-        #                 QPushButton
-        #                 {
-        #                     font-weight: bold;
-        #                 }
-        #                 """)
-        grid0.addWidget(self.generate_ncc_button, 18, 0, 1, 3)
+        self.custom_box.addWidget(self.iso_button)
 
         # ## Board cutout
         self.generate_cutout_button = FCButton(_('Cutout'))
@@ -386,9 +413,38 @@ class GerberObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        grid0.addWidget(self.generate_cutout_button, 20, 0, 1, 3)
+        self.custom_box.addWidget(self.generate_cutout_button)
 
-        # Follow Tool
+        # ## Film Plugin
+        self.generate_film_button = FCButton(_("Film"))
+        self.generate_film_button.setIcon(QtGui.QIcon(self.app.resource_location + '/film32.png'))
+        self.generate_film_button.setToolTip(
+            _("Create a positive/negative film for UV exposure.")
+        )
+        # self.generate_film_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
+        self.custom_box.addWidget(self.generate_film_button)
+
+        # ## Clear non-copper regions
+        self.generate_ncc_button = FCButton(_('NCC'))
+        self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
+        self.generate_ncc_button.setToolTip(
+            _("Create the Geometry Object\n"
+              "for non-copper routing.")
+        )
+        # self.generate_ncc_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
+        self.custom_box.addWidget(self.generate_ncc_button)
+
+        # Follow Plugin
         self.generate_follow_button = FCButton(_('Follow'))
         self.generate_follow_button.setIcon(QtGui.QIcon(self.app.resource_location + '/follow32.png'))
         self.generate_follow_button.setToolTip(
@@ -397,12 +453,12 @@ class GerberObjectUI(ObjectUI):
               "the middle of the trace."))
         # self.generate_cutout_button.setStyleSheet("""
 
-        grid0.addWidget(self.generate_follow_button, 22, 0, 1, 3)
+        self.custom_box.addWidget(self.generate_follow_button)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 24, 0, 1, 3)
+        self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
@@ -414,22 +470,21 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.util_button, 26, 0, 1, 3)
+        self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
         self.util_frame = QtWidgets.QFrame()
         self.util_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.util_frame, 28, 0, 1, 3)
+        self.custom_box.addWidget(self.util_frame)
+
         self.util_box = QtWidgets.QVBoxLayout()
         self.util_box.setContentsMargins(0, 0, 0, 0)
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        util_grid.setColumnStretch(0, 0)
-        util_grid.setColumnStretch(1, 1)
-        self.util_box.addLayout(util_grid)
-
+        # #############################################################################################################
+        # Non-Copper Regions Frame
+        # #############################################################################################################
         # ## Non-copper regions
         self.noncopper_label = FCLabel("<b>%s</b>" % _("Non-copper regions"))
         self.noncopper_label.setToolTip(
@@ -439,8 +494,17 @@ class GerberObjectUI(ObjectUI):
               "object. Can be used to remove all\n"
               "copper from a specified region.")
         )
+        self.util_box.addWidget(self.noncopper_label)
 
-        util_grid.addWidget(self.noncopper_label, 0, 0, 1, 3)
+        ncc_frame = FCFrame()
+        ncc_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        ncc_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.util_box.addWidget(ncc_frame)
+
+        grid_ncc = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_ncc.setColumnStretch(0, 0)
+        grid_ncc.setColumnStretch(1, 1)
+        ncc_frame.setLayout(grid_ncc)
 
         # Margin
         bmlabel = FCLabel('%s:' % _('Boundary Margin'))
@@ -456,8 +520,8 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        util_grid.addWidget(bmlabel, 2, 0)
-        util_grid.addWidget(self.noncopper_margin_entry, 2, 1, 1, 2)
+        grid_ncc.addWidget(bmlabel, 2, 0)
+        grid_ncc.addWidget(self.noncopper_margin_entry, 2, 1, 1, 2)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded"))
@@ -467,14 +531,12 @@ class GerberObjectUI(ObjectUI):
 
         self.generate_noncopper_button = FCButton(_('Generate Geometry'))
         self.generate_noncopper_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
-        util_grid.addWidget(self.noncopper_rounded_cb, 4, 0)
-        util_grid.addWidget(self.generate_noncopper_button, 4, 1, 1, 2)
+        grid_ncc.addWidget(self.noncopper_rounded_cb, 4, 0)
+        grid_ncc.addWidget(self.generate_noncopper_button, 4, 1, 1, 2)
 
-        separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        util_grid.addWidget(separator_line1, 6, 0, 1, 3)
-
+        # #############################################################################################################
+        # Bounding Box Frame
+        # #############################################################################################################
         # ## Bounding box
         self.boundingbox_label = FCLabel('<b>%s</b>' % _('Bounding Box'))
         self.boundingbox_label.setToolTip(
@@ -482,7 +544,19 @@ class GerberObjectUI(ObjectUI):
               "Square shape.")
         )
 
-        util_grid.addWidget(self.boundingbox_label, 8, 0, 1, 3)
+        self.util_box.addWidget(self.boundingbox_label)
+
+        bb_frame = FCFrame()
+        bb_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # units_frame.setContentsMargins(0, 0, 0, 0)
+        bb_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.util_box.addWidget(bb_frame)
+
+        # Grid Layout
+        grid_bb = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_bb.setColumnStretch(0, 0)
+        grid_bb.setColumnStretch(1, 1)
+        bb_frame.setLayout(grid_bb)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -494,8 +568,8 @@ class GerberObjectUI(ObjectUI):
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
-        util_grid.addWidget(bbmargin, 10, 0)
-        util_grid.addWidget(self.bbmargin_entry, 10, 1, 1, 2)
+        grid_bb.addWidget(bbmargin, 0, 0)
+        grid_bb.addWidget(self.bbmargin_entry, 0, 1, 1, 2)
 
         self.bbrounded_cb = FCCheckBox(label=_("Rounded"))
         self.bbrounded_cb.setToolTip(
@@ -510,8 +584,8 @@ class GerberObjectUI(ObjectUI):
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        util_grid.addWidget(self.bbrounded_cb, 12, 0)
-        util_grid.addWidget(self.generate_bb_button, 12, 1, 1, 2)
+        grid_bb.addWidget(self.bbrounded_cb, 2, 0)
+        grid_bb.addWidget(self.generate_bb_button, 2, 1, 1, 2)
 
 
 class ExcellonObjectUI(ObjectUI):

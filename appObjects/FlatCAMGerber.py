@@ -161,8 +161,9 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # Tools
         self.ui.iso_button.clicked.connect(lambda: self.app.isolation_tool.run(toggle=True))
-        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=True))
         self.ui.generate_cutout_button.clicked.connect(lambda: self.app.cutout_tool.run(toggle=True))
+        self.ui.generate_film_button.clicked.connect(lambda: self.app.film_tool.run(toggle=True))
+        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=True))
         self.ui.generate_follow_button.clicked.connect(lambda: self.app.follow_tool.run(toggle=True))
 
         # Utilities
@@ -229,7 +230,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                 }
                                                 """)
 
-            self.ui.apertures_table_label.hide()
+            self.ui.tools_table_label.hide()
+            self.ui.tt_frame.hide()
             self.ui.aperture_table_visibility_cb.set_value(False)
             self.ui.aperture_table_visibility_cb.hide()
 
@@ -243,7 +245,8 @@ class GerberObject(FlatCAMObj, Gerber):
                                                 }
                                                 """)
 
-            self.ui.apertures_table_label.show()
+            self.ui.tools_table_label.show()
+            self.ui.tt_frame.show()
             self.ui.aperture_table_visibility_cb.show()
 
             self.ui.follow_cb.show()
