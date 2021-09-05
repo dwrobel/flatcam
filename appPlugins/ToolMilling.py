@@ -839,7 +839,7 @@ class ToolMilling(AppTool, Excellon):
             self.target_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as err:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            self.app.log("ToolMilling.build_ui() getting the object --> %s" % str(err))
+            self.app.log.error("ToolMilling.build_ui() getting the object --> %s" % str(err))
             self.ui_disconnect()
             self.ui_connect()
             return
@@ -852,7 +852,7 @@ class ToolMilling(AppTool, Excellon):
                 self.build_ui_exc()
         except Exception as err:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not build the Plugin UI"))
-            self.app.log("ToolMilling.build_ui() building the UI --> %s" % str(err))
+            self.app.log.error("ToolMilling.build_ui() building the UI --> %s" % str(err))
             self.ui_connect()
             return
 
