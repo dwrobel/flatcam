@@ -939,17 +939,27 @@ class GeometryObjectUI(ObjectUI):
             icon_file=self.resource_loc + '/geometry32.png', parent=parent,  app=self.app
         )
 
+        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label.setToolTip(_("General data about the object."))
+        self.custom_box.addWidget(self.general_label)
+
+        # #############################################################################################################
+        # General Frame
+        # #############################################################################################################
+        gen_frame = FCFrame()
+        self.custom_box.addWidget(gen_frame)
+
         # Plot options
-        grid_header = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_header.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.custom_box.addLayout(grid_header)
-        grid_header.setColumnStretch(0, 0)
-        grid_header.setColumnStretch(1, 1)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        gen_frame.setLayout(grid0)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
         self.plot_options_label.setMinimumWidth(90)
 
-        grid_header.addWidget(self.plot_options_label, 0, 0)
+        grid0.addWidget(self.plot_options_label, 0, 0)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
@@ -957,11 +967,11 @@ class GeometryObjectUI(ObjectUI):
             _("Draw polygons in different colors.")
         )
         self.multicolored_cb.setMinimumWidth(55)
-        grid_header.addWidget(self.multicolored_cb, 0, 2)
+        grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        grid_header.addLayout(self.name_hlay, 2, 0, 1, 3)
+        grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         name_label = FCLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
@@ -982,7 +992,7 @@ class GeometryObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid_header.addWidget(self.editor_button, 4, 0, 1, 3)
+        self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
         self.info_button = FCButton('%s' % _("INFO"), checkable=True)
@@ -994,12 +1004,13 @@ class GeometryObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid_header.addWidget(self.info_button, 6, 0, 1, 3)
+        self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
         self.info_frame = QtWidgets.QFrame()
         self.info_frame.setContentsMargins(0, 0, 0, 0)
-        grid_header.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.custom_box.addWidget(self.info_frame)
+
         self.info_box = QtWidgets.QVBoxLayout()
         self.info_box.setContentsMargins(0, 0, 0, 0)
         self.info_frame.setLayout(self.info_box)
@@ -1010,30 +1021,21 @@ class GeometryObjectUI(ObjectUI):
         self.info_box.addWidget(self.treeWidget)
         self.info_box.setStretch(0, 0)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Tools widgets
-        # this way I can hide/show the frame
-        self.geo_tools_frame = QtWidgets.QFrame()
-        self.geo_tools_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.geo_tools_frame)
+        # #############################################################################################################
+        # Gerber Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
+        self.custom_box.addWidget(self.tools_table_label)
 
-        self.geo_tools_box = QtWidgets.QVBoxLayout()
-        self.geo_tools_box.setContentsMargins(0, 0, 0, 0)
-        self.geo_tools_frame.setLayout(self.geo_tools_box)
+        self.tt_frame = FCFrame()
+        self.custom_box.addWidget(self.tt_frame)
 
-        # ************************************************************************
-        # ************** TABLE BOX FRAME *****************************************
-        # ************************************************************************
-        self.geo_table_frame = QtWidgets.QFrame()
-        self.geo_table_frame.setContentsMargins(0, 0, 0, 0)
-        self.geo_tools_box.addWidget(self.geo_table_frame)
-        self.geo_table_box = QtWidgets.QVBoxLayout()
-        self.geo_table_box.setContentsMargins(0, 0, 0, 0)
-        self.geo_table_frame.setLayout(self.geo_table_box)
-
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.geo_table_box.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        self.tt_frame.setLayout(grid1)
 
         # ### Tools ####
         self.tools_table_label = FCLabel('<b>%s:</b>' % _('Tools Table'))
@@ -1051,7 +1053,7 @@ class GeometryObjectUI(ObjectUI):
               "grayed out and Cut Z is automatically calculated from the newly \n"
               "showed UI form entries named V-Tip Dia and V-Tip Angle.")
         )
-        grid0.addWidget(self.tools_table_label, 0, 0)
+        grid1.addWidget(self.tools_table_label, 0, 0)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
@@ -1060,10 +1062,10 @@ class GeometryObjectUI(ObjectUI):
             _("Plot (show) this object.")
         )
         self.plot_cb.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
-        grid0.addWidget(self.plot_cb, 0, 1)
+        grid1.addWidget(self.plot_cb, 0, 1)
 
         self.geo_tools_table = FCTable(drag_drop=True)
-        grid0.addWidget(self.geo_tools_table, 1, 0, 1, 2)
+        grid1.addWidget(self.geo_tools_table, 1, 0, 1, 2)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
         self.geo_tools_table.setColumnCount(7)
@@ -1101,19 +1103,11 @@ class GeometryObjectUI(ObjectUI):
             _("Plot column. It is visible only for MultiGeo Geometry objects.\n"
               "Enable plot for the selected tool geometry."))
 
-        self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid4.setColumnStretch(0, 0)
-        self.grid4.setColumnStretch(1, 1)
-        self.geo_tools_box.addLayout(self.grid4)
-
         # #############################################################################################################
-        # ############################################ Tools ##########################################################
+        # PLUGINS shortcuts
         # #############################################################################################################
-        self.tools_label = FCLabel('<b>%s</b>' % _('Plugins'))
-        self.tools_label.setToolTip(
-            _("Launch Paint Tool in Tools Tab.")
-        )
-        self.grid4.addWidget(self.tools_label, 32, 0, 1, 2)
+        self.tools_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _('Plugins'))
+        self.custom_box.addWidget(self.tools_label)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = FCButton(_('Milling'))
@@ -1127,7 +1121,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.milling_button, 34, 0, 1, 2)
+        self.custom_box.addWidget(self.milling_button)
 
         # Paint Button
         self.paint_tool_button = FCButton(_('Paint'))
@@ -1137,7 +1131,7 @@ class GeometryObjectUI(ObjectUI):
               "whole area of a polygon.")
         )
 
-        self.grid4.addWidget(self.paint_tool_button, 36, 0, 1, 2)
+        self.custom_box.addWidget(self.paint_tool_button)
 
         # NCC Tool
         self.generate_ncc_button = FCButton(_('NCC'))
@@ -1152,12 +1146,12 @@ class GeometryObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.grid4.addWidget(self.generate_ncc_button, 38, 0, 1, 2)
+        self.custom_box.addWidget(self.generate_ncc_button)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid4.addWidget(separator_line, 40, 0, 1, 2)
+        self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
@@ -1169,29 +1163,35 @@ class GeometryObjectUI(ObjectUI):
                                             font-weight: bold;
                                         }
                                         """)
-        self.grid4.addWidget(self.util_button, 42, 0, 1, 2)
+        self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
         self.util_frame = QtWidgets.QFrame()
         self.util_frame.setContentsMargins(0, 0, 0, 0)
-        self.grid4.addWidget(self.util_frame, 44, 0, 1, 2)
+        self.custom_box.addWidget(self.util_frame)
 
         self.util_box = QtWidgets.QVBoxLayout()
         self.util_box.setContentsMargins(0, 0, 0, 0)
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        util_grid.setColumnStretch(0, 0)
-        util_grid.setColumnStretch(1, 1)
-        self.util_box.addLayout(util_grid)
-
+        # #############################################################################################################
+        # Simplification Frame
+        # #############################################################################################################
         # Simplification Title
         simplif_lbl = FCLabel('<b>%s</b>:' % _("Simplification"))
         simplif_lbl.setToolTip(
             _("Simplify a geometry by reducing its vertex points number.")
         )
-        util_grid.addWidget(simplif_lbl, 0, 0, 1, 3)
+        self.util_box.addWidget(simplif_lbl)
+
+        sim_frame = FCFrame()
+        self.util_box.addWidget(sim_frame)
+
+        grid_sim = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sim.setColumnStretch(0, 0)
+        grid_sim.setColumnStretch(1, 1)
+        sim_frame.setLayout(grid_sim)
 
         # Vertex Points
         vertexes_lbl = FCLabel('%s:' % _("Points"))
@@ -1200,8 +1200,8 @@ class GeometryObjectUI(ObjectUI):
         )
         self.vertex_points_entry = FCEntry()
 
-        util_grid.addWidget(vertexes_lbl, 2, 0)
-        util_grid.addWidget(self.vertex_points_entry, 2, 1)
+        grid_sim.addWidget(vertexes_lbl, 2, 0)
+        grid_sim.addWidget(self.vertex_points_entry, 2, 1)
 
         # Calculate vertexes button
         self.vertex_points_btn = FCButton(_("Calculate"))
@@ -1216,7 +1216,7 @@ class GeometryObjectUI(ObjectUI):
         #                                       }
         #                                       """)
 
-        util_grid.addWidget(self.vertex_points_btn, 2, 2)
+        grid_sim.addWidget(self.vertex_points_btn, 2, 2)
 
         # Simplification Tolerance
         simplification_tol_lbl = FCLabel('%s:' % _("Tolerance"))
@@ -1229,8 +1229,8 @@ class GeometryObjectUI(ObjectUI):
         self.geo_tol_entry.setSingleStep(10 ** -self.decimals)
         self.geo_tol_entry.set_range(0.0000, 10000.0000)
 
-        util_grid.addWidget(simplification_tol_lbl, 4, 0)
-        util_grid.addWidget(self.geo_tol_entry, 4, 1)
+        grid_sim.addWidget(simplification_tol_lbl, 4, 0)
+        grid_sim.addWidget(self.geo_tol_entry, 4, 1)
 
         # Simplification button
         self.simplification_btn = FCButton(_("Simplify"))
@@ -1245,7 +1245,7 @@ class GeometryObjectUI(ObjectUI):
         #                                       }
         #                                       """)
 
-        util_grid.addWidget(self.simplification_btn, 4, 2)
+        grid_sim.addWidget(self.simplification_btn, 4, 2)
 
 
 class CNCObjectUI(ObjectUI):
@@ -1273,13 +1273,12 @@ class CNCObjectUI(ObjectUI):
         else:
             self.resource_loc = 'assets/resources'
 
-        ObjectUI.__init__(
-            self, title=_('CNC Job Object'),
-            icon_file=self.resource_loc + '/cnc32.png', parent=parent,
-            app=self.app)
+        ObjectUI.__init__(self, title=_('CNC Job Object'),
+                          icon_file=self.resource_loc + '/cnc32.png', parent=parent,
+                          app=self.app, common=False)
 
-        for i in range(0, self.common_grid.count()):
-            self.common_grid.itemAt(i).widget().hide()
+        # for i in range(0, self.common_grid.count()):
+        #     self.common_grid.itemAt(i).widget().hide()
 
         f_lay = FCGridLayout(v_spacing=5, h_spacing=3)
         f_lay.setColumnStretch(0, 0)
