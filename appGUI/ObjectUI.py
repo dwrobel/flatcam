@@ -182,7 +182,7 @@ class GerberObjectUI(ObjectUI):
 
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
-        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information's"))
+        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
         self.general_label.setToolTip(_("General data about the object."))
         self.custom_box.addWidget(self.general_label)
 
@@ -373,7 +373,7 @@ class GerberObjectUI(ObjectUI):
         # grid0.addWidget(separator_line1, 13, 0, 1, 3)
 
         # #############################################################################################################
-        # PLUGINS
+        # PLUGINS shortcuts
         # #############################################################################################################
         self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
         self.custom_box.addWidget(self.tool_lbl)
@@ -602,14 +602,25 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
+        self.general_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("General Information"))
+        self.general_label.setToolTip(_("General data about the object."))
+        self.custom_box.addWidget(self.general_label)
+
+        # #############################################################################################################
+        # General Frame
+        # #############################################################################################################
+        gen_frame = FCFrame()
+        self.custom_box.addWidget(gen_frame)
+
+        # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
-        self.custom_box.addLayout(grid0)
+        gen_frame.setLayout(grid0)
 
         # Plot options
-        self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label = FCLabel("<b>%s: </b>" % _("Plot Options"))
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
@@ -630,7 +641,7 @@ class ExcellonObjectUI(ObjectUI):
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
 
-        name_label = FCLabel("<b>%s:</b>" % _("Name"))
+        name_label = FCLabel("<b>%s: </b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -651,7 +662,7 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.editor_button, 4, 0, 1, 3)
+        self.custom_box.addWidget(self.editor_button)
 
         # INFO CB
         self.info_button = FCButton('%s' % _("INFO"), checkable=True)
@@ -663,12 +674,13 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid0.addWidget(self.info_button, 6, 0, 1, 3)
+        self.custom_box.addWidget(self.info_button)
 
         # INFO Frame
         self.info_frame = QtWidgets.QFrame()
         self.info_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.info_frame, 7, 0, 1, 3)
+        self.custom_box.addWidget(self.info_frame)
+
         self.info_box = QtWidgets.QVBoxLayout()
         self.info_box.setContentsMargins(0, 0, 0, 0)
         self.info_frame.setLayout(self.info_box)
@@ -679,12 +691,18 @@ class ExcellonObjectUI(ObjectUI):
         self.info_box.addWidget(self.treeWidget)
         self.info_box.setStretch(0, 0)
 
-        # ### Tools Drills ####
-        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
-        self.tools_table_label.setToolTip(
-            _("Tools in this Excellon object\n"
-              "when are used for drilling.")
-        )
+        # #############################################################################################################
+        # Excellon Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s: </b></span>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(_("Tools/apertures in the loaded object."))
+        self.custom_box.addWidget(self.tools_table_label)
+
+        grid_tt = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_tt.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        grid_tt.setColumnStretch(0, 0)
+        grid_tt.setColumnStretch(1, 1)
+        self.custom_box.addLayout(grid_tt)
 
         # Table Visibility CB
         self.table_visibility_cb = FCCheckBox()
@@ -702,9 +720,9 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.plot_cb)
 
-        grid0.addWidget(self.tools_table_label, 8, 0)
-        grid0.addWidget(self.table_visibility_cb, 8, 1)
-        grid0.addLayout(hlay_plot, 8, 2)
+        grid_tt.addWidget(self.tools_table_label, 0, 0)
+        grid_tt.addWidget(self.table_visibility_cb, 0, 1)
+        grid_tt.addLayout(hlay_plot, 0, 2)
 
         # #############################################################################################################
         # #############################################################################################################
@@ -713,12 +731,10 @@ class ExcellonObjectUI(ObjectUI):
         # #############################################################################################################
         # #############################################################################################################
 
-        self.drills_frame = QtWidgets.QFrame()
-        self.drills_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.drills_frame, 10, 0, 1, 3)
+        self.drills_frame = FCFrame()
+        self.custom_box.addWidget(self.drills_frame)
 
         self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
 
         self.tools_table = FCTable()
@@ -727,8 +743,7 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), _('Slots'),
-                                                    "C", 'P'])
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), _('Slots'), "C", 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -764,22 +779,11 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.tools_box.addWidget(self.autoload_db_cb)
 
-        # #################################################################
-        # ########## TOOLS GRID ###########################################
-        # #################################################################
-
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
-        grid0.addLayout(grid2, 12, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid2.addWidget(separator_line, 0, 0, 1, 2)
-
-        self.tool_lbl = FCLabel('<b>%s</b>' % _("Plugins"))
-        grid2.addWidget(self.tool_lbl, 2, 0, 1, 2)
+        # #############################################################################################################
+        # ####################################### Plugins shortcuts ###################################################
+        # #############################################################################################################
+        self.tool_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Plugins"))
+        self.custom_box.addWidget(self.tool_lbl)
 
         # Drilling Tool - will create GCode for drill holes
         self.drill_button = FCButton(_('Drilling'))
@@ -793,7 +797,7 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid2.addWidget(self.drill_button, 4, 0, 1, 2)
+        self.custom_box.addWidget(self.drill_button)
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = FCButton(_('Milling'))
@@ -807,12 +811,12 @@ class ExcellonObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        grid2.addWidget(self.milling_button, 6, 0, 1, 2)
+        self.custom_box.addWidget(self.milling_button)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid2.addWidget(separator_line, 8, 0, 1, 2)
+        self.custom_box.addWidget(separator_line)
 
         # UTILITIES BUTTON
         self.util_button = FCButton('%s' % _("Utilities").upper(), checkable=True)
@@ -824,37 +828,43 @@ class ExcellonObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid2.addWidget(self.util_button, 10, 0, 1, 2)
+        self.custom_box.addWidget(self.util_button)
 
         # UTILITIES Frame
         self.util_frame = QtWidgets.QFrame()
         self.util_frame.setContentsMargins(0, 0, 0, 0)
-        grid2.addWidget(self.util_frame, 12, 0, 1, 2)
+        self.custom_box.addWidget(self.util_frame)
+
         self.util_box = QtWidgets.QVBoxLayout()
         self.util_box.setContentsMargins(0, 0, 0, 0)
         self.util_frame.setLayout(self.util_box)
         self.util_frame.hide()
 
-        util_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        util_grid.setColumnStretch(0, 0)
-        util_grid.setColumnStretch(1, 1)
-        self.util_box.addLayout(util_grid)
-
-        # ### Milling Holes Drills ####
+        # #############################################################################################################
+        # Milling Drill Holes Frame
+        # #############################################################################################################
         self.mill_hole_label = FCLabel('<b>%s</b>' % _('Milling Geometry'))
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.\n"
               "Select from the Tools Table above the hole dias to be\n"
               "milled. Use the # column to make the selection.")
         )
-        util_grid.addWidget(self.mill_hole_label, 0, 0, 1, 3)
+        self.util_box.addWidget(self.mill_hole_label)
+
+        mill_frame = FCFrame()
+        self.util_box.addWidget(mill_frame)
+
+        grid_mill = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_mill.setColumnStretch(0, 0)
+        grid_mill.setColumnStretch(1, 1)
+        mill_frame.setLayout(grid_mill)
 
         self.tdlabel = FCLabel('%s:' % _('Milling Diameter'))
         self.tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
 
-        util_grid.addWidget(self.tdlabel, 2, 0, 1, 3)
+        grid_mill.addWidget(self.tdlabel, 0, 0, 1, 3)
 
         self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tooldia_entry.set_precision(self.decimals)
@@ -873,8 +883,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        util_grid.addWidget(self.tooldia_entry, 4, 0, 1, 2)
-        util_grid.addWidget(self.generate_milling_button, 4, 2)
+        grid_mill.addWidget(self.tooldia_entry, 2, 0, 1, 2)
+        grid_mill.addWidget(self.generate_milling_button, 2, 2)
 
         self.slot_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.slot_tooldia_entry.set_precision(self.decimals)
@@ -893,8 +903,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        util_grid.addWidget(self.slot_tooldia_entry, 6, 0, 1, 2)
-        util_grid.addWidget(self.generate_milling_slots_button, 6, 2)
+        grid_mill.addWidget(self.slot_tooldia_entry, 4, 0, 1, 2)
+        grid_mill.addWidget(self.generate_milling_slots_button, 4, 2)
 
     def hide_drills(self, state=True):
         if state is True:

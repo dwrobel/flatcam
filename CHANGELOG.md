@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.09.2021
+
+- remade the Excellon Object Properties UI
+
 5.09.2021
 
 - in Punch Gerber Plugin remade the GUI
