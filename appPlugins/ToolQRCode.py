@@ -10,7 +10,7 @@ from PyQt6.QtCore import Qt
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog, \
-    VerticalScrollArea, FCGridLayout, FCLabel
+    VerticalScrollArea, FCGridLayout, FCLabel, FCFrame
 from appParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -135,7 +135,6 @@ class QRCode(AppTool):
     def connect_signals_at_init(self):
         self.ui.level.toggled.connect(self.on_level_changed)
         self.ui.qrcode_button.clicked.connect(self.execute)
-        self.ui.export_cb.stateChanged.connect(self.on_export_frame)
         self.ui.export_png_button.clicked.connect(self.export_png_file)
         self.ui.export_svg_button.clicked.connect(self.export_svg_file)
 
@@ -208,8 +207,11 @@ class QRCode(AppTool):
                                                 }
                                                 """)
 
-            self.ui.export_cb.hide()
+            self.ui.export_label.hide()
             self.ui.export_frame.hide()
+            self.ui.export_svg_button.hide()
+            self.ui.export_png_button.hide()
+            self.ui.qrcode_button.show()
         else:
             self.ui.level.setText('%s' % _('Advanced'))
             self.ui.level.setStyleSheet("""
@@ -219,13 +221,11 @@ class QRCode(AppTool):
                                                 }
                                                 """)
 
-            self.ui.export_cb.show()
-            if self.ui.export_cb.get_value():
-                self.ui.export_frame.show()
-
-    def on_export_frame(self, state):
-        self.ui.export_frame.setVisible(state)
-        self.ui.qrcode_button.setVisible(not state)
+            self.ui.export_label.show()
+            self.ui.export_frame.show()
+            self.ui.export_svg_button.show()
+            self.ui.export_png_button.show()
+            self.ui.qrcode_button.hide()
 
     def execute(self):
         text_data = self.ui.text_data.get_value()
@@ -735,6 +735,16 @@ class QRcodeUI:
         self.title_box = QtWidgets.QHBoxLayout()
         self.layout.addLayout(self.title_box)
 
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
         # ## Title
         title_label = FCLabel("%s" % self.pluginName)
         title_label.setStyleSheet("""
@@ -760,9 +770,9 @@ class QRcodeUI:
 
         # ## Grid Layout
         i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(i_grid_lay)
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
+        self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
@@ -770,7 +780,7 @@ class QRcodeUI:
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = FCLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )
@@ -778,39 +788,60 @@ class QRcodeUI:
         i_grid_lay.addWidget(self.grbobj_label, 0, 0)
         i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
-
+        # #############################################################################################################
+        # QrCode Text Frame
+        # #############################################################################################################
         # Text box
-        self.text_label = FCLabel('<b>%s</b>:' % _("QRCode Data"))
+        self.text_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("QRCode Data"))
         self.text_label.setToolTip(
             _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
         )
+        self.tools_box.addWidget(self.text_label)
+
+        tq_frame = FCFrame()
+        tq_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # tq_frame.setContentsMargins(0, 0, 0, 0)
+        tq_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(tq_frame)
+
+        # Grid Layout
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        tq_frame.setLayout(grid0)
+
         self.text_data = FCTextArea()
+        self.text_data.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         self.text_data.setPlaceholderText(
             _("Add here the text to be included in the QRCode...")
         )
-        i_grid_lay.addWidget(self.text_label, 5, 0)
-        i_grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
+        grid0.addWidget(self.text_data, 0, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        self.qrcode_label = FCLabel('<b>%s</b>' % _('Parameters'))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.qrcode_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.qrcode_label.setToolTip(
             _("The parameters used to shape the QRCode.")
         )
-        grid_lay.addWidget(self.qrcode_label, 0, 0, 1, 2)
+        self.tools_box.addWidget(self.qrcode_label)
+
+        p_frame = FCFrame()
+        p_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        # p_frame.setContentsMargins(0, 0, 0, 0)
+        p_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(p_frame)
+
+        # ## Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        p_frame.setLayout(grid1)
 
         # VERSION #
         self.version_label = FCLabel('%s:' % _("Version"))
@@ -822,8 +853,8 @@ class QRcodeUI:
         self.version_entry.set_range(1, 40)
         self.version_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.version_label, 2, 0)
-        grid_lay.addWidget(self.version_entry, 2, 1)
+        grid1.addWidget(self.version_label, 2, 0)
+        grid1.addWidget(self.version_entry, 2, 1)
 
         # ERROR CORRECTION #
         self.error_label = FCLabel('%s:' % _("Error correction"))
@@ -845,8 +876,8 @@ class QRcodeUI:
               "Q = maximum 25%% errors can be corrected\n"
               "H = maximum 30%% errors can be corrected.")
         )
-        grid_lay.addWidget(self.error_label, 4, 0)
-        grid_lay.addWidget(self.error_radio, 4, 1)
+        grid1.addWidget(self.error_label, 4, 0)
+        grid1.addWidget(self.error_radio, 4, 1)
 
         # BOX SIZE #
         self.bsize_label = FCLabel('%s:' % _("Box Size"))
@@ -858,8 +889,8 @@ class QRcodeUI:
         self.bsize_entry.set_range(1, 9999)
         self.bsize_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.bsize_label, 6, 0)
-        grid_lay.addWidget(self.bsize_entry, 6, 1)
+        grid1.addWidget(self.bsize_label, 6, 0)
+        grid1.addWidget(self.bsize_entry, 6, 1)
 
         # BORDER SIZE #
         self.border_size_label = FCLabel('%s:' % _("Border Size"))
@@ -871,8 +902,8 @@ class QRcodeUI:
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
 
-        grid_lay.addWidget(self.border_size_label, 8, 0)
-        grid_lay.addWidget(self.border_size_entry, 8, 1)
+        grid1.addWidget(self.border_size_label, 8, 0)
+        grid1.addWidget(self.border_size_entry, 8, 1)
 
         # POLARITY CHOICE #
         self.pol_label = FCLabel('%s:' % _("Polarity"))
@@ -889,8 +920,8 @@ class QRcodeUI:
               "be added as positive. If it is added to a Copper Gerber\n"
               "file then perhaps the QRCode can be added as negative.")
         )
-        grid_lay.addWidget(self.pol_label, 10, 0)
-        grid_lay.addWidget(self.pol_radio, 10, 1)
+        grid1.addWidget(self.pol_label, 10, 0)
+        grid1.addWidget(self.pol_radio, 10, 1)
 
         # BOUNDING BOX TYPE #
         self.bb_label = FCLabel('%s:' % _("Bounding Box"))
@@ -904,31 +935,30 @@ class QRcodeUI:
             _("The bounding box, meaning the empty space that surrounds\n"
               "the QRCode geometry, can have a rounded or a square shape.")
         )
-        grid_lay.addWidget(self.bb_label, 12, 0)
-        grid_lay.addWidget(self.bb_radio, 12, 1)
+        grid1.addWidget(self.bb_label, 12, 0)
+        grid1.addWidget(self.bb_radio, 12, 1)
 
-        self.separator_line_2 = QtWidgets.QFrame()
-        self.separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(self.separator_line_2, 14, 0, 1, 2)
-
+        # #############################################################################################################
+        # Export Frame
+        # #############################################################################################################
         # Export QRCode
-        self.export_cb = FCCheckBox(_("Export QRCode"))
-        self.export_cb.setToolTip(
+        self.export_label = FCLabel('<span style="color:darkgreen;"><b>%s</b></span>' % _("Export QRCode"))
+        self.export_label.setToolTip(
             _("Show a set of controls allowing to export the QRCode\n"
               "to a SVG file or an PNG file.")
         )
-        grid_lay.addWidget(self.export_cb, 16, 0, 1, 2)
+        self.tools_box.addWidget(self.export_label)
 
         # this way I can hide/show the frame
-        self.export_frame = QtWidgets.QFrame()
-        self.export_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.export_frame)
+        self.export_frame = FCFrame()
+        self.export_frame.setFrameStyle(QtWidgets.QFrame.Shape.StyledPanel | QtWidgets.QFrame.Shadow.Plain)
+        self.export_frame.setStyleSheet(".FCFrame{border: 1px solid gray; border-radius: 5px;}")
+        self.tools_box.addWidget(self.export_frame)
+
         self.export_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.export_lay.setContentsMargins(0, 0, 0, 0)
-        self.export_frame.setLayout(self.export_lay)
         self.export_lay.setColumnStretch(0, 0)
         self.export_lay.setColumnStretch(1, 1)
+        self.export_frame.setLayout(self.export_lay)
 
         # default is hidden
         self.export_frame.hide()
@@ -989,7 +1019,7 @@ class QRcodeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.export_lay.addWidget(self.export_svg_button, 3, 0, 1, 2)
+        self.tools_box.addWidget(self.export_svg_button)
 
         # ## Export QRCode as PNG image
         self.export_png_button = QtWidgets.QPushButton(_("Export QRCode PNG"))
@@ -1002,7 +1032,7 @@ class QRcodeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.export_lay.addWidget(self.export_png_button, 4, 0, 1, 2)
+        self.tools_box.addWidget(self.export_png_button)
 
         # ## Insert QRCode
         self.qrcode_button = QtWidgets.QPushButton(_("Insert QRCode"))
@@ -1016,7 +1046,7 @@ class QRcodeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.layout.addWidget(self.qrcode_button)
+        self.tools_box.addWidget(self.qrcode_button)
 
         self.layout.addStretch(1)
 

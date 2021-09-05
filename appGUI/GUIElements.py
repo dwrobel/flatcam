@@ -1602,6 +1602,48 @@ class FCCheckBox(QtWidgets.QCheckBox):
     def toggle(self):
         self.set_value(not self.get_value())
 
+    def set_text(self, text):
+        self.setText(text)
+
+    def set_color(self, color):
+        """
+        Set the Checbox text color
+
+        :param color:
+        :type color: QtCore.Qt.GlobalColor | QtGui.QColor
+        :return:
+        :rtype:
+        """
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.WindowText, color)
+        self.setPalette(palette)
+
+    def set_font(self, family=None, size=None, bold=False, italic=False):
+        """
+        Set the font properties for the checkbox
+
+        :param family:  Font Family
+        :type family:   str
+        :param size:    Font size
+        :type size:     float
+        :param bold:    If the font is bold
+        :type bold:     bool
+        :param italic:  If the font is italic
+        :type italic:   bool
+        :return:        None
+        :rtype:         None
+        """
+        font = QtGui.QFont()
+        if family:
+            font.setFamily(family)
+        if size:
+            font.setPointSizeF(size)
+        if bold:
+            font.setBold(bold)
+        if italic:
+            font.setItalic(italic)
+        self.setFont(font)
+
 
 class FCTextArea(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):

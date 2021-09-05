@@ -10,7 +10,9 @@ CHANGELOG for FlatCAM beta
 5.09.2021
 
 - in Punch Gerber Plugin remade the GUI
-- some minor fixes in some of the Plugins
+- some minor fixes in some Plugins
+- in QRCode Plugin remade the GUI
+- added some new properties to the FCCheckBox GUI element
 
 4.09.2021
 
