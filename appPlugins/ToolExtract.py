@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCLabel, FCTable, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 
 from shapely.geometry import Point, MultiPolygon, Polygon, box
 
@@ -132,7 +132,7 @@ class ToolExtract(AppTool):
 
     def connect_signals_at_init(self):
         # ## Signals
-        self.ui.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
+        self.ui.method_radio.activated_custom.connect(self.on_extract_drills_method_changed)
 
         self.ui.circular_cb.stateChanged.connect(
             lambda state:
@@ -184,7 +184,7 @@ class ToolExtract(AppTool):
 
         self.ui_disconnect()
         self.ui_connect()
-        self.ui.hole_size_radio.set_value(self.app.defaults["tools_extract_hole_type"])
+        self.ui.method_radio.set_value(self.app.defaults["tools_extract_hole_type"])
 
         self.ui.dia_entry.set_value(float(self.app.defaults["tools_extract_hole_fixed_dia"]))
 
@@ -398,7 +398,7 @@ class ToolExtract(AppTool):
 
         outname = fcobj.options['name'].rpartition('.')[0]
 
-        mode = self.ui.hole_size_radio.get_value()
+        mode = self.ui.method_radio.get_value()
 
         # selected codes in the apertures UI table
         sel_apid = []
@@ -820,37 +820,34 @@ class ToolExtract(AppTool):
                 log.error("Error on Extracted Cutout Gerber object creation: %s" % str(e))
                 return
 
-    def on_hole_size_toggle(self, val):
+    def on_extract_drills_method_changed(self, val):
         if val == "fixed":
-            self.ui.fixed_label.setVisible(True)
-            self.ui.dia_entry.setVisible(True)
-            self.ui.dia_label.setVisible(True)
+            self.ui.fixed_label.show()
+            self.ui.fix_frame.show()
 
-            self.ui.ring_frame.setVisible(False)
+            self.ui.ring_label.hide()
+            self.ui.ring_frame.hide()
 
-            self.ui.prop_label.setVisible(False)
-            self.ui.factor_label.setVisible(False)
-            self.ui.factor_entry.setVisible(False)
+            self.ui.prop_label.hide()
+            self.ui.prop_frame.hide()
         elif val == "ring":
-            self.ui.fixed_label.setVisible(False)
-            self.ui.dia_entry.setVisible(False)
-            self.ui.dia_label.setVisible(False)
+            self.ui.fixed_label.hide()
+            self.ui.fix_frame.hide()
 
-            self.ui.ring_frame.setVisible(True)
+            self.ui.ring_label.show()
+            self.ui.ring_frame.show()
 
-            self.ui.prop_label.setVisible(False)
-            self.ui.factor_label.setVisible(False)
-            self.ui.factor_entry.setVisible(False)
+            self.ui.prop_label.hide()
+            self.ui.prop_frame.hide()
         elif val == "prop":
-            self.ui.fixed_label.setVisible(False)
-            self.ui.dia_entry.setVisible(False)
-            self.ui.dia_label.setVisible(False)
+            self.ui.fixed_label.hide()
+            self.ui.fix_frame.hide()
 
-            self.ui.ring_frame.setVisible(False)
+            self.ui.ring_label.hide()
+            self.ui.ring_frame.hide()
 
-            self.ui.prop_label.setVisible(True)
-            self.ui.factor_label.setVisible(True)
-            self.ui.factor_entry.setVisible(True)
+            self.ui.prop_label.show()
+            self.ui.prop_frame.show()
 
     def on_mark_cb_click_table(self):
         """
@@ -913,11 +910,19 @@ class ExtractUI:
                                 """)
         self.layout.addWidget(title_label)
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 1)
-        grid_lay.setColumnStretch(1, 0)
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        # #############################################################################################################
+        # Source Object
+        # #############################################################################################################
+        self.grb_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.grb_label.setToolTip('%s.' % _("Gerber object from which to extract drill holes or soldermask."))
+        self.tools_box.addWidget(self.grb_label)
 
         # ## Gerber Object
         self.gerber_object_combo = FCComboBox()
@@ -926,21 +931,28 @@ class ExtractUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.grb_label = FCLabel("<b>%s:</b>" % _("GERBER"))
-        self.grb_label.setToolTip('%s.' % _("Gerber object from which to extract drill holes or soldermask."))
+        self.tools_box.addWidget(self.gerber_object_combo)
 
-        # grid_lay.addRow("Bottom Layer:", self.object_combo)
-        grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
-        grid_lay.addWidget(self.gerber_object_combo, 2, 0, 1, 2)
-
-        self.padt_label = FCLabel("<b>%s</b>" % _("Processed Pads Type"))
+        # #############################################################################################################
+        # Processed Pads Frame
+        # #############################################################################################################
+        self.padt_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
               "disable the Rectangular aperture.")
         )
 
-        grid_lay.addWidget(self.padt_label, 4, 0, 1, 2)
+        self.tools_box.addWidget(self.padt_label)
+
+        pads_frame = FCFrame()
+        self.tools_box.addWidget(pads_frame)
+
+        # ## Grid Layout
+        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_lay.setColumnStretch(0, 1)
+        grid_lay.setColumnStretch(1, 0)
+        pads_frame.setLayout(grid_lay)
 
         pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         pad_all_grid.setColumnStretch(0, 0)
@@ -1023,23 +1035,27 @@ class ExtractUI:
         self.apertures_table.setSizePolicy(sizePolicy)
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 20, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid_lay.addWidget(separator_line, 20, 0, 1, 2)
+
+        # #############################################################################################################
+        # Extract Drills Frame
+        # #############################################################################################################
+        self.extract_drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Extract Drills"))
+        self.extract_drills_label.setToolTip(
+            _("Extract an Excellon object from the Gerber pads."))
+        self.tools_box.addWidget(self.extract_drills_label)
+
+        ed_frame = FCFrame()
+        self.tools_box.addWidget(ed_frame)
 
         # ## Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
-
-        # grid1.addWidget(FCLabel(""), 0, 0, 1, 2)
-
-        self.extract_drills_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Extract Drills").upper())
-        self.extract_drills_label.setToolTip(
-            _("Extract an Excellon object from the Gerber pads."))
-        grid1.addWidget(self.extract_drills_label, 1, 0, 1, 2)
+        ed_frame.setLayout(grid1)
 
         self.method_label = FCLabel('%s:' % _("Method"))
         self.method_label.setToolTip(
@@ -1050,7 +1066,7 @@ class ExtractUI:
         grid1.addWidget(self.method_label, 2, 0, 1, 2)
 
         # ## Holes Size
-        self.hole_size_radio = RadioSet(
+        self.method_radio = RadioSet(
             [
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
                 {'label': _("Proportional"), 'value': 'prop'},
@@ -1059,28 +1075,30 @@ class ExtractUI:
             orientation='vertical',
             stretch=False)
 
-        grid1.addWidget(self.hole_size_radio, 3, 0, 1, 2)
-
-        # grid_lay1.addWidget(FCLabel(''))
+        grid1.addWidget(self.method_radio, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 5, 0, 1, 2)
+        grid1.addWidget(separator_line, 6, 0, 1, 2)
 
+        # #############################################################################################################
+        # Ring Frame
+        # #############################################################################################################
         self.ring_frame = QtWidgets.QFrame()
         self.ring_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.ring_frame)
+        grid1.addWidget(self.ring_frame, 8, 0, 1, 2)
 
         self.ring_box = QtWidgets.QVBoxLayout()
         self.ring_box.setContentsMargins(0, 0, 0, 0)
         self.ring_frame.setLayout(self.ring_box)
 
         # ## Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
-        self.ring_box.addLayout(grid2)
+        ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ring_grid.setColumnStretch(0, 0)
+        ring_grid.setColumnStretch(1, 1)
+        ring_grid.setContentsMargins(0, 0, 0, 0)
+        self.ring_box.addLayout(ring_grid)
 
         # Annular Ring value
         self.ring_label = FCLabel('<b>%s</b>' % _("Fixed Annular Ring"))
@@ -1089,7 +1107,7 @@ class ExtractUI:
               "The copper sliver between the hole exterior\n"
               "and the margin of the copper pad.")
         )
-        grid2.addWidget(self.ring_label, 0, 0, 1, 2)
+        ring_grid.addWidget(self.ring_label, 0, 0, 1, 2)
 
         # Circular Annular Ring Value
         self.circular_ring_label = FCLabel('%s:' % _("Circular"))
@@ -1101,8 +1119,8 @@ class ExtractUI:
         self.circular_ring_entry.set_precision(self.decimals)
         self.circular_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid2.addWidget(self.circular_ring_label, 1, 0)
-        grid2.addWidget(self.circular_ring_entry, 1, 1)
+        ring_grid.addWidget(self.circular_ring_label, 2, 0)
+        ring_grid.addWidget(self.circular_ring_entry, 2, 1)
 
         # Oblong Annular Ring Value
         self.oblong_ring_label = FCLabel('%s:' % _("Oblong"))
@@ -1114,8 +1132,8 @@ class ExtractUI:
         self.oblong_ring_entry.set_precision(self.decimals)
         self.oblong_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid2.addWidget(self.oblong_ring_label, 2, 0)
-        grid2.addWidget(self.oblong_ring_entry, 2, 1)
+        ring_grid.addWidget(self.oblong_ring_label, 4, 0)
+        ring_grid.addWidget(self.oblong_ring_entry, 4, 1)
 
         # Square Annular Ring Value
         self.square_ring_label = FCLabel('%s:' % _("Square"))
@@ -1127,8 +1145,8 @@ class ExtractUI:
         self.square_ring_entry.set_precision(self.decimals)
         self.square_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid2.addWidget(self.square_ring_label, 3, 0)
-        grid2.addWidget(self.square_ring_entry, 3, 1)
+        ring_grid.addWidget(self.square_ring_label, 6, 0)
+        ring_grid.addWidget(self.square_ring_entry, 6, 1)
 
         # Rectangular Annular Ring Value
         self.rectangular_ring_label = FCLabel('%s:' % _("Rectangular"))
@@ -1140,8 +1158,8 @@ class ExtractUI:
         self.rectangular_ring_entry.set_precision(self.decimals)
         self.rectangular_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid2.addWidget(self.rectangular_ring_label, 4, 0)
-        grid2.addWidget(self.rectangular_ring_entry, 4, 1)
+        ring_grid.addWidget(self.rectangular_ring_label, 8, 0)
+        ring_grid.addWidget(self.rectangular_ring_entry, 8, 1)
 
         # Others Annular Ring Value
         self.other_ring_label = FCLabel('%s:' % _("Others"))
@@ -1153,17 +1171,25 @@ class ExtractUI:
         self.other_ring_entry.set_precision(self.decimals)
         self.other_ring_entry.set_range(0.0000, 10000.0000)
 
-        grid2.addWidget(self.other_ring_label, 5, 0)
-        grid2.addWidget(self.other_ring_entry, 5, 1)
+        ring_grid.addWidget(self.other_ring_label, 10, 0)
+        ring_grid.addWidget(self.other_ring_entry, 10, 1)
 
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
+        # #############################################################################################################
+        # Fixed Frame
+        # #############################################################################################################
+        self.fix_frame = QtWidgets.QFrame()
+        self.fix_frame.setContentsMargins(0, 0, 0, 0)
+        grid1.addWidget(self.fix_frame, 10, 0, 1, 2)
+
+        fixed_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fixed_grid.setColumnStretch(0, 0)
+        fixed_grid.setColumnStretch(1, 1)
+        fixed_grid.setContentsMargins(0, 0, 0, 0)
+        self.fix_frame.setLayout(fixed_grid)
 
         # Fixed Diameter
         self.fixed_label = FCLabel('<b>%s</b>' % _("Fixed Diameter"))
-        grid3.addWidget(self.fixed_label, 2, 0, 1, 2)
+        fixed_grid.addWidget(self.fixed_label, 2, 0, 1, 2)
 
         # Diameter value
         self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1175,12 +1201,25 @@ class ExtractUI:
             _("Fixed hole diameter.")
         )
 
-        grid3.addWidget(self.dia_label, 4, 0)
-        grid3.addWidget(self.dia_entry, 4, 1)
+        fixed_grid.addWidget(self.dia_label, 4, 0)
+        fixed_grid.addWidget(self.dia_entry, 4, 1)
+
+        # #############################################################################################################
+        # Proportional Frame
+        # #############################################################################################################
+        self.prop_frame = QtWidgets.QFrame()
+        self.prop_frame.setContentsMargins(0, 0, 0, 0)
+        grid1.addWidget(self.prop_frame, 12, 0, 1, 2)
+
+        prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        prop_grid.setColumnStretch(0, 0)
+        prop_grid.setColumnStretch(1, 1)
+        prop_grid.setContentsMargins(0, 0, 0, 0)
+        self.prop_frame.setLayout(prop_grid)
 
         # Proportional Diameter
         self.prop_label = FCLabel('<b>%s</b>' % _("Proportional Diameter"))
-        grid3.addWidget(self.prop_label, 6, 0, 1, 2)
+        prop_grid.addWidget(self.prop_label, 0, 0, 1, 2)
 
         # Diameter value
         self.factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
@@ -1194,15 +1233,12 @@ class ExtractUI:
               "The hole diameter will be a fraction of the pad size.")
         )
 
-        grid3.addWidget(self.factor_label, 8, 0)
-        grid3.addWidget(self.factor_entry, 8, 1)
+        prop_grid.addWidget(self.factor_label, 2, 0)
+        prop_grid.addWidget(self.factor_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid3.addWidget(separator_line, 10, 0, 1, 2)
-
-        # Extract drills from Gerber apertures flashes (pads)
+        # #############################################################################################################
+        # Extract drills from Gerber apertures flashes (pads) BUTTON
+        # #############################################################################################################
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
         self.e_drills_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill16.png'))
         self.e_drills_button.setToolTip(
@@ -1214,21 +1250,25 @@ class ExtractUI:
                                             font-weight: bold;
                                         }
                                         """)
-        grid3.addWidget(self.e_drills_button, 12, 0, 1, 2)
+        self.tools_box.addWidget(self.e_drills_button)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid3.addWidget(separator_line, 14, 0, 1, 2)
-
-        # grid3.addWidget(FCLabel(""), 16, 0, 1, 2)
-
+        # #############################################################################################################
+        # Extract SolderMask Frame
+        # #############################################################################################################
         # EXTRACT SOLDERMASK
-        self.extract_sm_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _("Extract Soldermask").upper())
+        self.extract_sm_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % _("Extract Soldermask"))
         self.extract_sm_label.setToolTip(
             _("Extract soldermask from a given Gerber file."))
-        grid3.addWidget(self.extract_sm_label, 18, 0, 1, 2)
-        
+        self.tools_box.addWidget(self.extract_sm_label)
+
+        self.es_frame = FCFrame()
+        self.tools_box.addWidget(self.es_frame)
+
+        es_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        es_grid.setColumnStretch(0, 0)
+        es_grid.setColumnStretch(1, 1)
+        self.es_frame.setLayout(es_grid)
+
         # CLEARANCE
         self.clearance_label = FCLabel('%s:' % _("Clearance"))
         self.clearance_label.setToolTip(
@@ -1240,15 +1280,12 @@ class ExtractUI:
         self.clearance_entry.set_precision(self.decimals)
         self.clearance_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.clearance_label, 20, 0)
-        grid3.addWidget(self.clearance_entry, 20, 1)
+        es_grid.addWidget(self.clearance_label, 0, 0)
+        es_grid.addWidget(self.clearance_entry, 0, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid3.addWidget(separator_line, 22, 0, 1, 2)
-
-        # Extract solderemask from Gerber apertures flashes (pads)
+        # #############################################################################################################
+        # Extract solderemask from Gerber apertures flashes (pads) BUTTON
+        # #############################################################################################################
         self.e_sm_button = QtWidgets.QPushButton(_("Extract Soldermask"))
         self.e_sm_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_sm_button.setToolTip(
@@ -1260,18 +1297,24 @@ class ExtractUI:
                                             font-weight: bold;
                                         }
                                         """)
-        grid3.addWidget(self.e_sm_button, 24, 0, 1, 2)
+        self.tools_box.addWidget(self.e_sm_button)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid3.addWidget(separator_line, 25, 0, 1, 2)
-
+        # #############################################################################################################
+        # Extract CutOut Frame
+        # #############################################################################################################
         # EXTRACT CUTOUT
-        self.extract_cut_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Extract Cutout").upper())
+        self.extract_cut_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Extract Cutout"))
         self.extract_cut_label.setToolTip(
             _("Extract a cutout from a given Gerber file."))
-        grid3.addWidget(self.extract_cut_label, 26, 0, 1, 2)
+        self.tools_box.addWidget(self.extract_cut_label)
+
+        self.ec_frame = FCFrame()
+        self.tools_box.addWidget(self.ec_frame)
+
+        ec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ec_grid.setColumnStretch(0, 0)
+        ec_grid.setColumnStretch(1, 1)
+        self.ec_frame.setLayout(ec_grid)
 
         # Margin
         self.margin_cut_label = FCLabel('%s:' % _("Margin"))
@@ -1285,8 +1328,8 @@ class ExtractUI:
         self.margin_cut_entry.set_precision(self.decimals)
         self.margin_cut_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.margin_cut_label, 28, 0)
-        grid3.addWidget(self.margin_cut_entry, 28, 1)
+        ec_grid.addWidget(self.margin_cut_label, 0, 0)
+        ec_grid.addWidget(self.margin_cut_entry, 0, 1)
 
         # Thickness
         self.thick_cut_label = FCLabel('%s:' % _("Thickness"))
@@ -1298,15 +1341,12 @@ class ExtractUI:
         self.thick_cut_entry.set_precision(self.decimals)
         self.thick_cut_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.thick_cut_label, 30, 0)
-        grid3.addWidget(self.thick_cut_entry, 30, 1)
+        ec_grid.addWidget(self.thick_cut_label, 2, 0)
+        ec_grid.addWidget(self.thick_cut_entry, 2, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid3.addWidget(separator_line, 32, 0, 1, 2)
-
-        # Extract cutout from Gerber apertures flashes (pads)
+        # #############################################################################################################
+        # Extract cutout from Gerber apertures flashes (pads) BUTTON
+        # #############################################################################################################
         self.e_cut_button = QtWidgets.QPushButton(_("Extract Cutout"))
         self.e_cut_button.setIcon(QtGui.QIcon(self.app.resource_location + '/extract32.png'))
         self.e_cut_button.setToolTip(
@@ -1318,9 +1358,9 @@ class ExtractUI:
                                                    font-weight: bold;
                                                }
                                                """)
-        grid3.addWidget(self.e_cut_button, 34, 0, 1, 2)
+        self.tools_box.addWidget(self.e_cut_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
@@ -1336,18 +1376,9 @@ class ExtractUI:
                                 """)
         self.layout.addWidget(self.reset_button)
 
-        self.circular_ring_entry.setEnabled(False)
-        self.oblong_ring_entry.setEnabled(False)
-        self.square_ring_entry.setEnabled(False)
-        self.rectangular_ring_entry.setEnabled(False)
-        self.other_ring_entry.setEnabled(False)
-
-        self.dia_entry.setVisible(False)
-        self.dia_label.setVisible(False)
-        self.factor_label.setVisible(False)
-        self.factor_entry.setVisible(False)
-
-        self.ring_frame.setVisible(False)
+        self.ring_frame.hide()
+        self.fix_frame.hide()
+        self.prop_frame.hide()
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
 

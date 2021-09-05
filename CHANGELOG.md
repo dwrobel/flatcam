@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - remade the Gerber Object Properties UI
 - fixed a small typo when creating a new Gerber empty App Object
 - in Copper Thieving Plugin updated the GUI
+- in Extract Drills Plugin updated the GUI
 
 4.09.2021
 
