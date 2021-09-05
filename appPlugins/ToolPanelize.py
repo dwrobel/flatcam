@@ -1409,7 +1409,7 @@ class PanelizeUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(self.reset_button)
+        self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

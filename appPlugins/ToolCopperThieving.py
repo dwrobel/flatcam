@@ -1633,7 +1633,7 @@ class ThievingUI:
         # ## Robber Bar Parameters
         # #############################################################################################################
         self.robber_bar_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' %
-                                        _('Robber Bar Parameters').upper())
+                                        _('Robber Bar Parameters'))
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")

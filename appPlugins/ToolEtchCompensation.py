@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry, FCEntry, \
-    VerticalScrollArea, FCGridLayout, FCLabel
+    VerticalScrollArea, FCGridLayout, FCLabel, FCFrame
 
 from shapely.ops import unary_union
 
@@ -327,13 +327,14 @@ class EtchUI:
                                 """)
         self.tools_box.addWidget(title_label)
 
-        # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
-
-        grid0.addWidget(FCLabel(''), 0, 0, 1, 2)
+        # #############################################################################################################
+        # Source Object Frame
+        # #############################################################################################################
+        self.gerber_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.gerber_label.setToolTip(
+            _("Gerber object that will be compensated.")
+        )
+        self.tools_box.addWidget(self.gerber_label)
 
         # Target Gerber Object
         self.gerber_combo = FCComboBox()
@@ -342,23 +343,23 @@ class EtchUI:
         self.gerber_combo.is_last = True
         self.gerber_combo.obj_type = "Gerber"
 
-        self.gerber_label = FCLabel('<b>%s:</b>' % _("GERBER"))
-        self.gerber_label.setToolTip(
-            _("Gerber object that will be inverted.")
-        )
+        self.tools_box.addWidget(self.gerber_combo)
 
-        grid0.addWidget(self.gerber_label, 1, 0, 1, 2)
-        grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 3, 0, 1, 2)
-
-        self.util_label = FCLabel("<b>%s:</b>" % _("Utilities"))
+        # #############################################################################################################
+        # Utilities
+        # #############################################################################################################
+        self.util_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Utilities"))
         self.util_label.setToolTip('%s.' % _("Conversion utilities"))
+        self.tools_box.addWidget(self.util_label)
 
-        grid0.addWidget(self.util_label, 4, 0, 1, 2)
+        util_frame = FCFrame()
+        self.tools_box.addWidget(util_frame)
+
+        # Grid Layout
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        util_frame.setLayout(grid0)
 
         # Oz to um conversion
         self.oz_um_label = FCLabel('%s:' % _('Oz to Microns'))
@@ -367,7 +368,7 @@ class EtchUI:
               "Can use formulas with operators: /, *, +, -, %, .\n"
               "The real numbers use the dot decimals separator.")
         )
-        grid0.addWidget(self.oz_um_label, 5, 0, 1, 2)
+        grid0.addWidget(self.oz_um_label, 0, 0, 1, 2)
 
         hlay_1 = QtWidgets.QHBoxLayout()
 
@@ -378,8 +379,9 @@ class EtchUI:
         self.oz_to_um_entry.setReadOnly(True)
 
         hlay_1.addWidget(self.oz_entry)
+        hlay_1.addWidget(FCLabel(" "))
         hlay_1.addWidget(self.oz_to_um_entry)
-        grid0.addLayout(hlay_1, 6, 0, 1, 2)
+        grid0.addLayout(hlay_1, 2, 0, 1, 2)
 
         # Mils to um conversion
         self.mils_um_label = FCLabel('%s:' % _('Mils to Microns'))
@@ -388,7 +390,7 @@ class EtchUI:
               "Can use formulas with operators: /, *, +, -, %, .\n"
               "The real numbers use the dot decimals separator.")
         )
-        grid0.addWidget(self.mils_um_label, 7, 0, 1, 2)
+        grid0.addWidget(self.mils_um_label, 4, 0, 1, 2)
 
         hlay_2 = QtWidgets.QHBoxLayout()
 
@@ -399,18 +401,24 @@ class EtchUI:
         self.mils_to_um_entry.setReadOnly(True)
 
         hlay_2.addWidget(self.mils_entry)
+        hlay_2.addWidget(FCLabel(" "))
         hlay_2.addWidget(self.mils_to_um_entry)
-        grid0.addLayout(hlay_2, 8, 0, 1, 2)
+        grid0.addLayout(hlay_2, 6, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        # #############################################################################################################
+        # COMMON PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.param_label.setToolTip(_("Parameters used for this tool."))
+        self.tools_box.addWidget(self.param_label)
 
-        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
-        self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
+        self.gp_frame = FCFrame()
+        self.tools_box.addWidget(self.gp_frame)
 
-        grid0.addWidget(self.param_label, 10, 0, 1, 2)
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        self.gp_frame.setLayout(grid1)
 
         # Thickness
         self.thick_label = FCLabel('%s:' % _('Copper Thickness'))
@@ -422,8 +430,8 @@ class EtchUI:
         self.thick_entry.set_precision(self.decimals)
         self.thick_entry.set_range(0.0000, 10000.0000)
 
-        grid0.addWidget(self.thick_label, 12, 0)
-        grid0.addWidget(self.thick_entry, 12, 1)
+        grid1.addWidget(self.thick_label, 0, 0)
+        grid1.addWidget(self.thick_entry, 0, 1)
 
         self.ratio_label = FCLabel('%s:' % _("Ratio"))
         self.ratio_label.setToolTip(
@@ -438,8 +446,13 @@ class EtchUI:
             {'label': _('Manual offset'), 'value': 'manual'}
         ], orientation='vertical', stretch=False)
 
-        grid0.addWidget(self.ratio_label, 14, 0, 1, 2)
-        grid0.addWidget(self.ratio_radio, 16, 0, 1, 2)
+        grid1.addWidget(self.ratio_label, 2, 0, 1, 2)
+        grid1.addWidget(self.ratio_radio, 4, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid1.addWidget(separator_line, 6, 0, 1, 2)
 
         # Etchants
         self.etchants_label = FCLabel('%s:' % _('Etchants'))
@@ -449,8 +462,8 @@ class EtchUI:
         self.etchants_combo = FCComboBox(callback=self.confirmation_message)
         self.etchants_combo.addItems(["CuCl2", "Fe3Cl", _("Alkaline baths")])
 
-        grid0.addWidget(self.etchants_label, 18, 0)
-        grid0.addWidget(self.etchants_combo, 18, 1)
+        grid1.addWidget(self.etchants_label, 8, 0)
+        grid1.addWidget(self.etchants_combo, 8, 1)
 
         # Etch Factor
         self.factor_label = FCLabel('%s:' % _('Etch Factor'))
@@ -461,8 +474,8 @@ class EtchUI:
         self.factor_entry = NumericalEvalEntry(border_color='#0069A9')
         self.factor_entry.setPlaceholderText(_("Real number or formula"))
 
-        grid0.addWidget(self.factor_label, 19, 0)
-        grid0.addWidget(self.factor_entry, 19, 1)
+        grid1.addWidget(self.factor_label, 10, 0)
+        grid1.addWidget(self.factor_entry, 10, 1)
 
         # Manual Offset
         self.offset_label = FCLabel('%s:' % _('Offset'))
@@ -474,8 +487,8 @@ class EtchUI:
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(self.offset_label, 20, 0)
-        grid0.addWidget(self.offset_entry, 20, 1)
+        grid1.addWidget(self.offset_label, 12, 0)
+        grid1.addWidget(self.offset_entry, 12, 1)
 
         # Hide the Etchants and Etch factor
         self.etchants_label.hide()
@@ -485,11 +498,9 @@ class EtchUI:
         self.offset_label.hide()
         self.offset_entry.hide()
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 2)
-
+        # #############################################################################################################
+        # Generate Etch Compensation Button
+        # #############################################################################################################
         self.compensate_btn = FCButton(_('Compensate'))
         self.compensate_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/etch_32.png'))
         self.compensate_btn.setToolTip(
@@ -501,9 +512,9 @@ class EtchUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.compensate_btn, 24, 0, 1, 2)
+        self.tools_box.addWidget(self.compensate_btn)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
@@ -517,7 +528,7 @@ class EtchUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(self.reset_button)
+        self.layout.addWidget(self.reset_button)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
