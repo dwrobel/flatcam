@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - remade the CNC Job Object Properties UI
 - in Etch Compensation Plugin updated the GUI
 - small UI updates in other Plugins
+- in Align Plugin treated a possible exception DivideByZero
 
 5.09.2021
 

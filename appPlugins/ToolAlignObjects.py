@@ -346,10 +346,13 @@ class AlignObjects(AppTool):
                               (abs(new_start[1] - new_dest[1]) <= (10 ** -self.decimals))
         if rotation_not_needed is False:
             # calculate rotation angle
-            angle_dest = math.degrees(math.atan(dyd / dxd))
-            angle_start = math.degrees(math.atan(dys / dxs))
-            angle = angle_dest - angle_start
-            self.aligned_obj.rotate(angle=angle, point=origin_pt)
+            try:
+                angle_dest = math.degrees(math.atan(dyd / dxd))
+                angle_start = math.degrees(math.atan(dys / dxs))
+                angle = angle_dest - angle_start
+                self.aligned_obj.rotate(angle=angle, point=origin_pt)
+            except Exception:
+                pass
 
     def disconnect_cal_events(self):
         # restore the Grid snapping if it was active before
