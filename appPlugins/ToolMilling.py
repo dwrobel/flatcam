@@ -3590,7 +3590,6 @@ class MillingUI:
         # #############################################################################################################
         # Tool Table Frame
         # #############################################################################################################
-        # ### Tools ####
 
         # Grid Layout
         grid_title_tool_table = FCGridLayout(v_spacing=5, h_spacing=3)
@@ -3775,7 +3774,9 @@ class MillingUI:
         self.order_label.hide()
         self.order_radio.hide()
 
+        # #############################################################################################################
         # ADD TOOLS FOR GEOMETRY OBJECT
+        # #############################################################################################################
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
@@ -3849,7 +3850,6 @@ class MillingUI:
         # #############################################################################################################
         # ALL Parameters Frame
         # #############################################################################################################
-
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
@@ -4294,7 +4294,9 @@ class MillingUI:
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
+        # ##############################################################################################################
         # Apply to All Parameters Button
+        # ##############################################################################################################
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
@@ -4548,6 +4550,9 @@ class MillingUI:
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
 
+        # #############################################################################################################
+        # Generate CNC Job object
+        # #############################################################################################################
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip(

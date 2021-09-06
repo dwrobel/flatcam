@@ -10,7 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
     FCComboBox, OptionalInputSection, FCSpinner, FCLabel, FCInputDialogSpinnerButton, FCComboBox2, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame
 from appParsers.ParseGerber import Gerber
 from camlib import grace
 
@@ -454,14 +454,7 @@ class ToolIsolation(AppTool, Gerber):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.hide()
-            self.ui.new_tooldia_lbl.hide()
-            self.ui.new_tooldia_entry.hide()
-            self.ui.find_optimal_button.hide()
-            self.ui.search_and_add_btn.hide()
-            self.ui.addtool_from_db_btn.hide()
-            self.ui.deltool_btn.hide()
-            self.ui.add_tool_separator_line.hide()
+            self.ui.add_tool_frame.hide()
 
             # Tool parameters section
             if self.iso_tools:
@@ -478,7 +471,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.iso_type_radio.hide()
 
             # All param section
-            self.ui.all_param_separator_line2.hide()
             self.ui.apply_param_to_all.hide()
 
             # Common Parameters
@@ -495,6 +487,18 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.select_label.hide()
             self.ui.select_combo.hide()
 
+            # make sure that on hide is selected an option that does not display child widgets
+            self.ui.select_combo.set_value(0)
+
+            self.ui.reference_combo_type_label.hide()
+            self.ui.reference_combo_type.hide()
+            self.ui.reference_combo.hide()
+            self.ui.poly_int_cb.hide()
+            self.ui.sel_all_btn.hide()
+            self.ui.clear_all_btn.hide()
+            self.ui.area_shape_label.hide()
+            self.ui.area_shape_radio.hide()
+
             # Context Menu section
             self.ui.tools_table.removeContextMenu()
         else:
@@ -507,14 +511,7 @@ class ToolIsolation(AppTool, Gerber):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.show()
-            self.ui.new_tooldia_lbl.show()
-            self.ui.new_tooldia_entry.show()
-            self.ui.find_optimal_button.show()
-            self.ui.search_and_add_btn.show()
-            self.ui.addtool_from_db_btn.show()
-            self.ui.deltool_btn.show()
-            self.ui.add_tool_separator_line.show()
+            self.ui.add_tool_frame.show()
 
             # Tool parameters section
             app_defaults = self.app.defaults
@@ -533,7 +530,6 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.iso_type_radio.show()
 
             # All param section
-            self.ui.all_param_separator_line2.show()
             self.ui.apply_param_to_all.show()
 
             # Common Parameters
@@ -3160,11 +3156,11 @@ class IsoUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("GERBER"))
-        self.obj_combo_label.setToolTip(
-            _("Gerber object for isolation routing.")
-        )
-
+        # #############################################################################################################
+        # Source Object for Isolation
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(_("Gerber object for isolation routing."))
         self.tools_box.addWidget(self.obj_combo_label)
 
         # #############################################################################################################
@@ -3178,21 +3174,32 @@ class IsoUI:
 
         self.tools_box.addWidget(self.object_combo)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.tools_box.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.tools_box.addWidget(separator_line)
 
-        # ### Tools ## ##
-        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
+        # #############################################################################################################
+        # Tool Table Frame
+        # #############################################################################################################
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for copper clearing.")
         )
         self.tools_box.addWidget(self.tools_table_label)
 
+        tt_frame = FCFrame()
+        self.tools_box.addWidget(tt_frame)
+
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        tt_frame.setLayout(grid1)
+
         self.tools_table = FCTable(drag_drop=True)
-        self.tools_box.addWidget(self.tools_table)
+        grid1.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID
@@ -3214,11 +3221,6 @@ class IsoUI:
             _("Tool Diameter. Its value\n"
               "is the cut width into the material."))
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid1)
-
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
@@ -3232,41 +3234,45 @@ class IsoUI:
                                      {'label': _('Forward'), 'value': 'fwd'},
                                      {'label': _('Reverse'), 'value': 'rev'}])
 
-        grid1.addWidget(self.order_label, 1, 0)
-        grid1.addWidget(self.order_radio, 1, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 2, 0, 1, 2)
+        grid1.addWidget(self.order_label, 2, 0)
+        grid1.addWidget(self.order_radio, 2, 1)
 
         # #############################################################
         # ############### Tool adding #################################
         # #############################################################
+        self.add_tool_frame = QtWidgets.QFrame()
+        self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
+        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid3.setColumnStretch(0, 0)
-        self.grid3.setColumnStretch(1, 1)
-        self.tools_box.addLayout(self.grid3)
+        grid_add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_add_tool.setColumnStretch(0, 0)
+        grid_add_tool.setColumnStretch(1, 1)
+        grid_add_tool.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(grid_add_tool)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_add_tool.addWidget(separator_line, 0, 0, 1, 2)
 
         self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
-        self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
+        grid_add_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         # ### Tool Diameter ####
-        self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
+        self.new_tooldia_lbl = FCLabel('%s: ' % _('Tool Dia'))
         self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool")
         )
-        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
+        grid_add_tool.addWidget(self.new_tooldia_lbl, 4, 0)
 
         new_tool_lay = QtWidgets.QHBoxLayout()
+        grid_add_tool.addLayout(new_tool_lay, 4, 1)
 
+        # Tool diameter entry
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
         self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName("i_new_tooldia")
-
-        new_tool_lay.addWidget(self.new_tooldia_entry)
 
         # Find Optimal Tooldia
         self.find_optimal_button = QtWidgets.QToolButton()
@@ -3278,9 +3284,8 @@ class IsoUI:
               "to do a complete isolation.")
         )
 
+        new_tool_lay.addWidget(self.new_tooldia_entry)
         new_tool_lay.addWidget(self.find_optimal_button)
-
-        self.grid3.addLayout(new_tool_lay, 2, 1)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
@@ -3288,7 +3293,7 @@ class IsoUI:
         button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
-        self.grid3.addLayout(button_grid, 7, 0, 1, 2)
+        grid_add_tool.addLayout(button_grid, 6, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -3324,11 +3329,9 @@ class IsoUI:
         button_grid.addWidget(self.deltool_btn, 0, 1, 2, 1)
         # #############################################################################################################
 
-        self.add_tool_separator_line = QtWidgets.QFrame()
-        self.add_tool_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.add_tool_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(self.add_tool_separator_line, 9, 0, 1, 2)
-
+        # #############################################################################################################
+        # ALL Parameters Frame
+        # #############################################################################################################
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
@@ -3337,7 +3340,28 @@ class IsoUI:
                 "Each tool store it's own set of such data."
             )
         )
-        self.grid3.addWidget(self.tool_data_label, 11, 0, 1, 2)
+        self.tools_box.addWidget(self.tool_data_label)
+
+        self.param_frame = QtWidgets.QFrame()
+        self.param_frame.setContentsMargins(0, 0, 0, 0)
+        self.tools_box.addWidget(self.param_frame)
+
+        self.tool_params_box = QtWidgets.QVBoxLayout()
+        self.tool_params_box.setContentsMargins(0, 0, 0, 0)
+        self.param_frame.setLayout(self.tool_params_box)
+
+        # #############################################################################################################
+        # Tool Parameters Frame
+        # #############################################################################################################
+
+        tp_frame = FCFrame()
+        self.tool_params_box.addWidget(tp_frame)
+
+        # Grid Layout
+        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+        tp_frame.setLayout(grid2)
 
         # Tool Type
         self.tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -3360,8 +3384,8 @@ class IsoUI:
         else:
             self.tool_shape_combo.setCurrentIndex(idx)
 
-        self.grid3.addWidget(self.tool_shape_label, 13, 0)
-        self.grid3.addWidget(self.tool_shape_combo, 13, 1)
+        grid2.addWidget(self.tool_shape_label, 0, 0)
+        grid2.addWidget(self.tool_shape_combo, 0, 1)
 
         # Passes
         passlabel = FCLabel('%s:' % _('Passes'))
@@ -3373,8 +3397,8 @@ class IsoUI:
         self.passes_entry.set_range(1, 999)
         self.passes_entry.setObjectName("i_passes")
 
-        self.grid3.addWidget(passlabel, 15, 0)
-        self.grid3.addWidget(self.passes_entry, 15, 1)
+        grid2.addWidget(passlabel, 2, 0)
+        grid2.addWidget(self.passes_entry, 2, 1)
 
         # Pad Passes
         padpasslabel = FCLabel('%s:' % _('Pad Passes'))
@@ -3386,8 +3410,8 @@ class IsoUI:
         self.pad_passes_entry.set_range(0, 999)
         self.pad_passes_entry.setObjectName("i_pad_passes")
 
-        self.grid3.addWidget(padpasslabel, 16, 0)
-        self.grid3.addWidget(self.pad_passes_entry, 16, 1, 1, 2)
+        grid2.addWidget(padpasslabel, 4, 0)
+        grid2.addWidget(self.pad_passes_entry, 4, 1, 1, 2)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -3401,8 +3425,8 @@ class IsoUI:
         self.iso_overlap_entry.setSingleStep(0.1)
         self.iso_overlap_entry.setObjectName("i_overlap")
 
-        self.grid3.addWidget(overlabel, 17, 0)
-        self.grid3.addWidget(self.iso_overlap_entry, 17, 1)
+        grid2.addWidget(overlabel, 6, 0)
+        grid2.addWidget(self.iso_overlap_entry, 6, 1)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -3421,8 +3445,8 @@ class IsoUI:
         )
         self.milling_type_radio.setObjectName("i_milling_type")
 
-        self.grid3.addWidget(self.milling_type_label, 19, 0)
-        self.grid3.addWidget(self.milling_type_radio, 19, 1)
+        grid2.addWidget(self.milling_type_label, 8, 0)
+        grid2.addWidget(self.milling_type_radio, 8, 1)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
@@ -3441,33 +3465,37 @@ class IsoUI:
                                         {'label': _('Int'), 'value': 'int'}])
         self.iso_type_radio.setObjectName("i_iso_type")
 
-        self.grid3.addWidget(self.iso_type_label, 21, 0)
-        self.grid3.addWidget(self.iso_type_radio, 21, 1)
+        grid2.addWidget(self.iso_type_label, 10, 0)
+        grid2.addWidget(self.iso_type_radio, 10, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(separator_line, 23, 0, 1, 2)
-
+        # ##############################################################################################################
+        # Apply to All Parameters Button
+        # ##############################################################################################################
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        self.grid3.addWidget(self.apply_param_to_all, 25, 0, 1, 2)
+        self.tool_params_box.addWidget(self.apply_param_to_all)
 
-        self.all_param_separator_line2 = QtWidgets.QFrame()
-        self.all_param_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.all_param_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(self.all_param_separator_line2, 27, 0, 1, 2)
-
+        # #############################################################################################################
+        # COMMON PARAMETERS
+        # #############################################################################################################
         # General Parameters
-        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
-        self.grid3.addWidget(self.gen_param_label, 29, 0, 1, 2)
+        self.tool_params_box.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        self.tool_params_box.addWidget(gp_frame)
+
+        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
+        gp_frame.setLayout(grid3)
 
         # Rest Machining
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
@@ -3482,7 +3510,7 @@ class IsoUI:
               "If not checked, use the standard algorithm.")
         )
 
-        self.grid3.addWidget(self.rest_cb, 31, 0)
+        grid3.addWidget(self.rest_cb, 0, 0)
 
         # Force isolation even if the interiors are not isolated
         self.forced_rest_iso_cb = FCCheckBox(_("Forced Rest"))
@@ -3492,7 +3520,7 @@ class IsoUI:
               "Works when 'rest machining' is used.")
         )
 
-        self.grid3.addWidget(self.forced_rest_iso_cb, 31, 1)
+        grid3.addWidget(self.forced_rest_iso_cb, 0, 1)
 
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
@@ -3501,7 +3529,7 @@ class IsoUI:
         )
         self.combine_passes_cb.setObjectName("i_combine")
 
-        self.grid3.addWidget(self.combine_passes_cb, 33, 0, 1, 2)
+        grid3.addWidget(self.combine_passes_cb, 2, 0, 1, 2)
 
         # Check Tool validity
         self.valid_cb = FCCheckBox(label=_('Check validity'))
@@ -3511,7 +3539,7 @@ class IsoUI:
         )
         self.valid_cb.setObjectName("i_check")
 
-        self.grid3.addWidget(self.valid_cb, 35, 0, 1, 2)
+        grid3.addWidget(self.valid_cb, 4, 0, 1, 2)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
@@ -3519,7 +3547,7 @@ class IsoUI:
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        self.grid3.addWidget(self.except_cb, 37, 0)
+        grid3.addWidget(self.except_cb, 6, 0)
 
         # Type of object to be excepted
         self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
@@ -3531,7 +3559,7 @@ class IsoUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        self.grid3.addWidget(self.type_excobj_radio, 37, 1)
+        grid3.addWidget(self.type_excobj_radio, 6, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -3543,7 +3571,7 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        self.grid3.addWidget(self.exc_obj_combo, 39, 0, 1, 2)
+        grid3.addWidget(self.exc_obj_combo, 8, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
@@ -3566,8 +3594,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        self.grid3.addWidget(self.select_label, 41, 0)
-        self.grid3.addWidget(self.select_combo, 41, 1)
+        grid3.addWidget(self.select_label, 10, 0)
+        grid3.addWidget(self.select_combo, 10, 1)
 
         # Reference Type
         self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
@@ -3575,15 +3603,15 @@ class IsoUI:
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.grid3.addWidget(self.reference_combo_type_label, 43, 0)
-        self.grid3.addWidget(self.reference_combo_type, 43, 1)
+        grid3.addWidget(self.reference_combo_type_label, 12, 0)
+        grid3.addWidget(self.reference_combo_type, 12, 1)
 
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo, 45, 0, 1, 2)
+        grid3.addWidget(self.reference_combo, 14, 0, 1, 2)
 
         self.reference_combo.hide()
         self.reference_combo_type.hide()
@@ -3596,7 +3624,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        self.grid3.addWidget(self.poly_int_cb, 47, 0)
+        grid3.addWidget(self.poly_int_cb, 16, 0)
 
         self.poly_int_cb.hide()
 
@@ -3620,7 +3648,7 @@ class IsoUI:
 
         sel_hlay.addWidget(self.sel_all_btn)
         sel_hlay.addWidget(self.clear_all_btn)
-        self.grid3.addLayout(sel_hlay, 49, 0, 1, 2)
+        grid3.addLayout(sel_hlay, 18, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -3631,17 +3659,15 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 51, 0)
-        self.grid3.addWidget(self.area_shape_radio, 51, 1)
+        grid3.addWidget(self.area_shape_label, 20, 0)
+        grid3.addWidget(self.area_shape_radio, 20, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid3.addWidget(separator_line, 53, 0, 1, 2)
-
+        # #############################################################################################################
+        # Generate Geometry object
+        # #############################################################################################################
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_iso_button.setStyleSheet("""
@@ -3672,7 +3698,7 @@ class IsoUI:
         )
         self.tools_box.addWidget(self.create_buffer_button)
 
-        self.tools_box.addStretch()
+        self.tools_box.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

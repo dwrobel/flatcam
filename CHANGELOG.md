@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in Etch Compensation Plugin updated the GUI
 - small UI updates in other Plugins
 - in Align Plugin treated a possible exception DivideByZero
+- in Isolation Plugin updated the GUI
 
 5.09.2021
 

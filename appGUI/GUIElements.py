@@ -1364,8 +1364,9 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
         # between 0.00 and 99.00 (2 decimals)
-        self.lineEdit().setValidator(
-            QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+        validator = QtGui.QRegularExpressionValidator(
+            QtCore.QRegularExpression("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self)
+        self.lineEdit().setValidator(validator)
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
@@ -1383,7 +1384,8 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.menu = None
 
         if policy:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
     def on_edit_finished(self):
