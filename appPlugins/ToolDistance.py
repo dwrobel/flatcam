@@ -592,19 +592,32 @@ class DistUI:
         grid0.addWidget(self.units_label, 0, 0)
         grid0.addWidget(self.units_value, 0, 1)
 
+        grid0.addWidget(FCLabel(""), 2, 0, 1, 2)
+
         self.snap_center_cb = FCCheckBox(_("Snap to center"))
         self.snap_center_cb.setToolTip(
             _("Mouse cursor will snap to the center of the pad/drill\n"
               "when it is hovering over the geometry of the pad/drill.")
         )
-        grid0.addWidget(self.snap_center_cb, 1, 0, 1, 2)
+        grid0.addWidget(self.snap_center_cb, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
 
-        self.start_label = FCLabel("%s:" % _('Start Coords'))
+        # #############################################################################################################
+        # Coordinates
+        # #############################################################################################################
+        coords_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
+        grid0.addWidget(coords_label, 4, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
+
+        self.start_label = FCLabel("%s:" % _('Start point'))
         self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
         self.start_entry = FCEntry()
@@ -612,10 +625,10 @@ class DistUI:
         self.start_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
 
-        grid0.addWidget(self.start_label, 3, 0)
-        grid0.addWidget(self.start_entry, 3, 1)
+        grid0.addWidget(self.start_label, 8, 0)
+        grid0.addWidget(self.start_entry, 8, 1)
 
-        self.stop_label = FCLabel("%s:" % _('Stop Coords'))
+        self.stop_label = FCLabel("%s:" % _('End point'))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
         self.stop_entry = FCEntry()
@@ -623,8 +636,13 @@ class DistUI:
         self.stop_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
 
-        grid0.addWidget(self.stop_label, 4, 0)
-        grid0.addWidget(self.stop_entry, 4, 1)
+        grid0.addWidget(self.stop_label, 10, 0)
+        grid0.addWidget(self.stop_entry, 10, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid0.addWidget(separator_line, 12, 0, 1, 2)
 
         self.distance_x_label = FCLabel('%s:' % _("Dx"))
         self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
@@ -634,8 +652,8 @@ class DistUI:
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
-        grid0.addWidget(self.distance_x_label, 5, 0)
-        grid0.addWidget(self.distance_x_entry, 5, 1)
+        grid0.addWidget(self.distance_x_label, 14, 0)
+        grid0.addWidget(self.distance_x_entry, 14, 1)
 
         self.distance_y_label = FCLabel('%s:' % _("Dy"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
@@ -645,8 +663,8 @@ class DistUI:
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
-        grid0.addWidget(self.distance_y_label, 6, 0)
-        grid0.addWidget(self.distance_y_entry, 6, 1)
+        grid0.addWidget(self.distance_y_label, 16, 0)
+        grid0.addWidget(self.distance_y_entry, 16, 1)
 
         self.angle_label = FCLabel('%s:' % _("Angle"))
         self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
@@ -656,8 +674,16 @@ class DistUI:
         self.angle_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
-        grid0.addWidget(self.angle_label, 7, 0)
-        grid0.addWidget(self.angle_entry, 7, 1)
+        grid0.addWidget(self.angle_label, 18, 0)
+        grid0.addWidget(self.angle_entry, 18, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid0.addWidget(separator_line, 20, 0, 1, 2)
+
+        res_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Results'))
+        grid0.addWidget(res_label, 22, 0, 1, 2)
 
         self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
@@ -667,14 +693,14 @@ class DistUI:
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
-        grid0.addWidget(self.total_distance_label, 8, 0)
-        grid0.addWidget(self.total_distance_entry, 8, 1)
+        grid0.addWidget(self.total_distance_label, 24, 0)
+        grid0.addWidget(self.total_distance_entry, 24, 1)
 
         self.measure_btn = FCButton(_("Measure"))
         # self.measure_btn.setFixedWidth(70)
         self.layout.addWidget(self.measure_btn)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################

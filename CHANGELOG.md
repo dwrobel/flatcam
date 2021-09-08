@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - Film Plugin: now the Skew and Scale transformation have their own reference
 - updated the language strings to the current strings in the app
 - in Minimum Distance Plugin updated the GUI
+- in Distance Plugin updated the GUI
 
 6.09.2021
 
