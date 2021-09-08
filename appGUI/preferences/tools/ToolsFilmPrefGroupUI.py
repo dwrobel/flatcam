@@ -151,10 +151,10 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_mirror_axis_label, 20, 0)
         grid0.addWidget(self.film_mirror_axis, 20, 1)
 
-        separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.layout.addWidget(separator_line3)
+        # separator_line3 = QtWidgets.QFrame()
+        # separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.layout.addWidget(separator_line3)
 
         # #############################################################################################################
         # Parameters Frame
