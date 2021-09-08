@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.09.2021
+
+- in Calculator Plugin, in Units Calculator added more units conversions
+
 6.09.2021
 
 - remade the Excellon Object Properties UI

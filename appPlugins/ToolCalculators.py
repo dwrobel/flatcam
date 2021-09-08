@@ -96,6 +96,11 @@ class ToolCalculator(AppTool):
         # ## Signals
         self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
         self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
+        self.ui.g_entry.editingFinished.connect(self.on_calculate_oz_units)
+        self.ui.oz_entry.editingFinished.connect(self.on_calculate_gram_units)
+        self.ui.ml_entry.editingFinished.connect(self.on_calculate_floz_units)
+        self.ui.fl_oz_entry.editingFinished.connect(self.on_calculate_ml_units)
+
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
         self.ui.area_sel_radio.activated_custom.connect(self.on_area_calculation_radio)
         self.ui.calculate_tin_button.clicked.connect(lambda: self.on_tin_solution_calculation())
@@ -114,9 +119,15 @@ class ToolCalculator(AppTool):
         self.connect_signals_at_init()
 
         # ## Initialize form
+        # Units Calculator
         self.ui.mm_entry.set_value('%.*f' % (self.decimals, 0))
         self.ui.inch_entry.set_value('%.*f' % (self.decimals, 0))
+        self.ui.g_entry.set_value('%.*f' % (self.decimals, 0))
+        self.ui.oz_entry.set_value('%.*f' % (self.decimals, 0))
+        self.ui.ml_entry.set_value('%.*f' % (self.decimals, 0))
+        self.ui.fl_oz_entry.set_value('%.*f' % (self.decimals, 0))
 
+        # Electroplating Calculator
         length = self.app.defaults["tools_calc_electro_length"]
         width = self.app.defaults["tools_calc_electro_width"]
         density = self.app.defaults["tools_calc_electro_cdensity"]
@@ -130,6 +141,7 @@ class ToolCalculator(AppTool):
         self.ui.cvalue_entry.set_value(0.00)
         self.ui.time_entry.set_value(0.0)
 
+        # V-Shape tool Calculator
         tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
         tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
         cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
@@ -228,12 +240,34 @@ class ToolCalculator(AppTool):
         self.ui_connect()
 
     def on_calculate_inch_units(self):
+        # Length units
         mm_val = float(self.ui.mm_entry.get_value())
         self.ui.inch_entry.set_value('%.*f' % (self.decimals, (mm_val / 25.4)))
 
     def on_calculate_mm_units(self):
+        # Length units
         inch_val = float(self.ui.inch_entry.get_value())
         self.ui.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
+
+    def on_calculate_oz_units(self):
+        # Weight units
+        gram_val = float(self.ui.g_entry.get_value())
+        self.ui.oz_entry.set_value('%.*f' % (self.decimals, (gram_val / 28.3495)))
+
+    def on_calculate_gram_units(self):
+        # Weight units
+        oz_val = float(self.ui.oz_entry.get_value())
+        self.ui.g_entry.set_value('%.*f' % (self.decimals, (oz_val * 28.3495)))
+
+    def on_calculate_floz_units(self):
+        # Liquid weight units
+        ml_val = float(self.ui.ml_entry.get_value())
+        self.ui.fl_oz_entry.set_value('%.*f' % (self.decimals, (ml_val / 29.5735296875)))
+
+    def on_calculate_ml_units(self):
+        # Liquid weight units
+        floz_val = float(self.ui.fl_oz_entry.get_value())
+        self.ui.ml_entry.set_value('%.*f' % (self.decimals, (floz_val * 29.5735296875)))
 
     def on_calculate_current(self):
         """
@@ -503,28 +537,57 @@ class CalcUI:
         units_frame = FCFrame()
         self.layout.addWidget(units_frame)
 
+        # #############################################################################################################
+        # Units Calculators
+        # #############################################################################################################
         # Grid Layout
         grid_units_layout = FCGridLayout(v_spacing=5, h_spacing=3)
         units_frame.setLayout(grid_units_layout)
 
-        inch_label = FCLabel(_("INCH"))
-        mm_label = FCLabel(_("MM"))
+        # Length conversion
+        inch_label = FCLabel(_("inch"))
+        mm_label = FCLabel(_("mm"))
         grid_units_layout.addWidget(mm_label, 0, 0)
         grid_units_layout.addWidget(inch_label, 0, 1)
 
         self.inch_entry = NumericalEvalEntry(border_color='#0069A9')
-
-        # self.inch_entry.setFixedWidth(70)
-        # self.inch_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.inch_entry.setToolTip(_("Here you enter the value to be converted from INCH to MM"))
+        self.inch_entry.setToolTip(_("Here you enter the value to be converted from imperial to metric"))
 
         self.mm_entry = NumericalEvalEntry(border_color='#0069A9')
-        # self.mm_entry.setFixedWidth(130)
-        # self.mm_entry.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        self.mm_entry.setToolTip(_("Here you enter the value to be converted from MM to INCH"))
+        self.mm_entry.setToolTip(_("Here you enter the value to be converted from metric to imperial"))
 
-        grid_units_layout.addWidget(self.mm_entry, 1, 0)
-        grid_units_layout.addWidget(self.inch_entry, 1, 1)
+        grid_units_layout.addWidget(self.mm_entry, 2, 0)
+        grid_units_layout.addWidget(self.inch_entry, 2, 1)
+
+        # Weight conversion
+        oz_label = FCLabel(_("oz"))
+        gram_label = FCLabel(_("gram"))
+        grid_units_layout.addWidget(gram_label, 4, 0)
+        grid_units_layout.addWidget(oz_label, 4, 1)
+
+        self.oz_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.oz_entry.setToolTip(_("Here you enter the value to be converted from imperial to metric"))
+
+        self.g_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.g_entry.setToolTip(_("Here you enter the value to be converted from metric to imperial"))
+
+        grid_units_layout.addWidget(self.g_entry, 6, 0)
+        grid_units_layout.addWidget(self.oz_entry, 6, 1)
+
+        # Liquid weight conversion
+        fl_oz_label = FCLabel(_("fl oz"))
+        ml_label = FCLabel(_("mL"))
+        grid_units_layout.addWidget(ml_label, 8, 0)
+        grid_units_layout.addWidget(fl_oz_label, 8, 1)
+
+        self.fl_oz_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.fl_oz_entry.setToolTip(_("Here you enter the value to be converted from imperial to metric"))
+
+        self.ml_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.ml_entry.setToolTip(_("Here you enter the value to be converted from metric to imperial"))
+
+        grid_units_layout.addWidget(self.ml_entry, 10, 0)
+        grid_units_layout.addWidget(self.fl_oz_entry, 10, 1)
 
         # #############################################################################################################
         # ################################ V-shape Tool Calculator ####################################################
