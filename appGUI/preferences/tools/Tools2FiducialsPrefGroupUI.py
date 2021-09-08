@@ -120,7 +120,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Selection Frame
         # #############################################################################################################
-        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.sel_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Selection"))
         self.layout.addWidget(self.sel_label)
 
         s_frame = FCFrame()

@@ -25,7 +25,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Adjustments Frame
         # #############################################################################################################
-        self.film_adj_label = FCLabel('<b>%s</b>' % _("Adjustments"))
+        self.film_adj_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("Adjustments"))
         self.film_adj_label.setToolTip(
             _("Compensate print distortions.")
         )
@@ -53,6 +53,15 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
+        # SCALE FRAME
+        scale_frame = FCFrame()
+        grid0.addWidget(scale_frame, 4, 0, 1, 2)
+
+        grid_scale = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_scale.setColumnStretch(0, 0)
+        grid_scale.setColumnStretch(1, 1)
+        scale_frame.setLayout(grid_scale)
+
         # Scale X factor
         self.film_scalex_label = FCLabel('%s:' % _("X factor"))
         self.film_scalex_entry = FCDoubleSpinner()
@@ -60,8 +69,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_scalex_label, 4, 0)
-        grid0.addWidget(self.film_scalex_entry, 4, 1)
+        grid_scale.addWidget(self.film_scalex_label, 0, 0)
+        grid_scale.addWidget(self.film_scalex_entry, 0, 1)
 
         # Scale Y factor
         self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
@@ -70,8 +79,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_scaley_label, 6, 0)
-        grid0.addWidget(self.film_scaley_entry, 6, 1)
+        grid_scale.addWidget(self.film_scaley_label, 2, 0)
+        grid_scale.addWidget(self.film_scaley_entry, 2, 1)
 
         # Scale reference
         self.scale_ref_label = FCLabel('%s:' % _("Reference"))
@@ -83,8 +92,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_scale_ref_combo.addItems(
             [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
 
-        grid0.addWidget(self.scale_ref_label, 8, 0)
-        grid0.addWidget(self.film_scale_ref_combo, 8, 1)
+        grid_scale.addWidget(self.scale_ref_label, 4, 0)
+        grid_scale.addWidget(self.film_scale_ref_combo, 4, 1)
 
         # Skew Geometry
         self.film_skew_cb = FCCheckBox('%s' % _("Skew"))
@@ -97,7 +106,16 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_skew_cb, 10, 0, 1, 2)
+        grid0.addWidget(self.film_skew_cb, 6, 0, 1, 2)
+
+        # SKEW FRAME
+        skew_frame = FCFrame()
+        grid0.addWidget(skew_frame, 8, 0, 1, 2)
+
+        grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_skew.setColumnStretch(0, 0)
+        grid_skew.setColumnStretch(1, 1)
+        skew_frame.setLayout(grid_skew)
 
         self.film_skewx_label = FCLabel('%s:' % _("X angle"))
         self.film_skewx_entry = FCDoubleSpinner()
@@ -105,8 +123,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_skewx_label, 12, 0)
-        grid0.addWidget(self.film_skewx_entry, 12, 1)
+        grid_skew.addWidget(self.film_skewx_label, 0, 0)
+        grid_skew.addWidget(self.film_skewx_entry, 0, 1)
 
         self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
         self.film_skewy_entry = FCDoubleSpinner()
@@ -114,8 +132,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_skewy_label, 14, 0)
-        grid0.addWidget(self.film_skewy_entry, 14, 1)
+        grid_skew.addWidget(self.film_skewy_label, 2, 0)
+        grid_skew.addWidget(self.film_skewy_entry, 2, 1)
 
         # Skew Reference
         self.skew_ref_label = FCLabel('%s:' % _("Reference"))
@@ -127,8 +145,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_skew_ref_combo.addItems(
             [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
 
-        grid0.addWidget(self.skew_ref_label, 16, 0)
-        grid0.addWidget(self.film_skew_ref_combo, 16, 1)
+        grid_skew.addWidget(self.skew_ref_label, 4, 0)
+        grid_skew.addWidget(self.film_skew_ref_combo, 4, 1)
 
         # Mirror Geometry
         self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
@@ -140,7 +158,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_mirror_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.film_mirror_cb, 10, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
@@ -148,8 +166,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                          stretch=False)
         self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
-        grid0.addWidget(self.film_mirror_axis_label, 20, 0)
-        grid0.addWidget(self.film_mirror_axis, 20, 1)
+        grid0.addWidget(self.film_mirror_axis_label, 12, 0)
+        grid0.addWidget(self.film_mirror_axis, 12, 1)
 
         # separator_line3 = QtWidgets.QFrame()
         # separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -159,7 +177,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Parameters Frame
         # #############################################################################################################
-        self.film_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.film_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.film_label.setToolTip(
             _("Create a PCB film from a Gerber or Geometry object.\n"
               "The file is saved in SVG format.")
