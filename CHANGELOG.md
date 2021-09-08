@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.09.2021
+
+- in Fiducials Plugin updated the GUI to the new style
+- Fiducials Plugin: replaced a Radio button with a Combobox2 and optimized the UI
+- The Combobox2 GUI element no longer issue an exception if it is tried to set a string value, it will set automatically the index 0
+
 8.09.2021
 
 - in Calculator Plugin, in Units Calculator added more units conversions

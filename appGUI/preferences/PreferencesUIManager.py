@@ -634,7 +634,7 @@ class PreferencesUIManager:
             "tools_fiducials_margin": self.ui.plugin2_pref_form.tools2_fiducials_group.margin_entry,
             "tools_fiducials_mode": self.ui.plugin2_pref_form.tools2_fiducials_group.mode_radio,
             "tools_fiducials_second_pos": self.ui.plugin2_pref_form.tools2_fiducials_group.pos_radio,
-            "tools_fiducials_type": self.ui.plugin2_pref_form.tools2_fiducials_group.fid_type_radio,
+            "tools_fiducials_type": self.ui.plugin2_pref_form.tools2_fiducials_group.fid_type_combo,
             "tools_fiducials_line_thickness": self.ui.plugin2_pref_form.tools2_fiducials_group.line_thickness_entry,
 
             # Calibration Tool

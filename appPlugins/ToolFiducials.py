@@ -9,7 +9,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox, FCButton, FCLabel, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 from appCommon.Common import LoudDict
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
@@ -149,7 +149,7 @@ class ToolFiducials(AppTool):
         self.ui.add_cfid_button.clicked.connect(self.add_fiducials)
         self.ui.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
 
-        self.ui.fid_type_radio.activated_custom.connect(self.on_fiducial_type)
+        self.ui.fid_type_combo.currentIndexChanged.connect(self.on_fiducial_type)
         self.ui.pos_radio.activated_custom.connect(self.on_second_point)
         self.ui.mode_radio.activated_custom.connect(self.on_method_change)
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -166,7 +166,9 @@ class ToolFiducials(AppTool):
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
         self.ui.mode_radio.set_value(self.app.defaults["tools_fiducials_mode"])
         self.ui.pos_radio.set_value(self.app.defaults["tools_fiducials_second_pos"])
-        self.ui.fid_type_radio.set_value(self.app.defaults["tools_fiducials_type"])
+        self.ui.fid_type_combo.set_value(self.app.defaults["tools_fiducials_type"])
+        # needed so the visibility of some objects will be updated
+        self.on_fiducial_type(val=self.ui.fid_type_combo.get_value())
         self.ui.line_thickness_entry.set_value(float(self.app.defaults["tools_fiducials_line_thickness"]))
 
         self.click_points = []
@@ -213,7 +215,7 @@ class ToolFiducials(AppTool):
 
             self.ui.separator_line.hide()
             self.ui.fid_type_label.hide()
-            self.ui.fid_type_radio.hide()
+            self.ui.fid_type_combo.hide()
             self.ui.line_thickness_label.hide()
             self.ui.line_thickness_entry.hide()
 
@@ -228,7 +230,7 @@ class ToolFiducials(AppTool):
 
             self.ui.separator_line.show()
             self.ui.fid_type_label.show()
-            self.ui.fid_type_radio.show()
+            self.ui.fid_type_combo.show()
             self.ui.line_thickness_label.show()
             self.ui.line_thickness_entry.show()
 
@@ -258,7 +260,7 @@ class ToolFiducials(AppTool):
                 pass
 
     def on_fiducial_type(self, val):
-        if val == 'cross':
+        if val == 2:    # 'cross'
             self.ui.line_thickness_label.setDisabled(False)
             self.ui.line_thickness_entry.setDisabled(False)
         else:
@@ -271,7 +273,7 @@ class ToolFiducials(AppTool):
         self.mode_method = self.ui.mode_radio.get_value()
         self.margin_val = self.ui.margin_entry.get_value()
         self.sec_position = self.ui.pos_radio.get_value()
-        fid_type = self.ui.fid_type_radio.get_value()
+        fid_type = self.ui.fid_type_combo.get_value()
 
         self.click_points = []
 
@@ -349,22 +351,23 @@ class ToolFiducials(AppTool):
     def add_fiducials_geo(self, points_list, g_obj, fid_size=None, fid_type=None, line_size=None):
         """
         Add geometry to the solid_geometry of the copper Gerber object
-        :param points_list: list of coordinates for the fiducials
-        :param g_obj: the Gerber object where to add the geometry
-        :param fid_size: the overall size of the fiducial or fiducial opening depending on the g_obj type
-        :param fid_type: the type of fiducial: circular or cross
-        :param line_size: the line thickenss when the fiducial type is cross
+
+        :param points_list:     list of coordinates for the fiducials
+        :param g_obj:           the Gerber object where to add the geometry
+        :param fid_size:        the overall size of the fiducial or fiducial opening depending on the g_obj type
+        :param fid_type:        the type of fiducial: circular, cross, chess
+        :param line_size:       the line thickenss when the fiducial type is cross
         :return:
         """
         fid_size = self.ui.fid_size_entry.get_value() if fid_size is None else fid_size
-        fid_type = 'circular' if fid_type is None else fid_type
+        fid_type = 0 if fid_type is None else fid_type  # default is 'circular' <=> 0
         line_thickness = self.ui.line_thickness_entry.get_value() if line_size is None else line_size
 
         radius = fid_size / 2.0
 
         new_apertures = deepcopy(g_obj.tools)
 
-        if fid_type == 'circular':
+        if fid_type == 0:   # 'circular'
             geo_list = [Point(pt).buffer(radius, self.grb_steps_per_circle) for pt in points_list]
 
             aperture_found = None
@@ -403,7 +406,7 @@ class ToolFiducials(AppTool):
                     s_list.append(g_obj.solid_geometry)
 
             s_list += geo_list
-        elif fid_type == 'cross':
+        elif fid_type == 1:  # 'cross'
             geo_list = []
 
             for pt in points_list:
@@ -472,7 +475,7 @@ class ToolFiducials(AppTool):
             for poly in geo_buff_list:
                 s_list.append(poly)
         else:
-            # chess pattern fiducial type
+            # value 3 meaning 'chess' pattern fiducial type
             geo_list = []
 
             def make_square_poly(center_pt, side_size):
@@ -567,8 +570,8 @@ class ToolFiducials(AppTool):
         sm_opening_dia = self.ui.fid_size_entry.get_value() * 2.0
 
         # get the Gerber object on which the Fiducial will be inserted
-        selection_index = self.ui.sm_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.ui.sm_object_combo.rootModelIndex())
+        selection_index = self.ui.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.grb_object_combo.rootModelIndex())
 
         try:
             self.sm_object = model_index.internalPointer().obj
@@ -612,7 +615,7 @@ class ToolFiducials(AppTool):
             self.check_points()
 
     def check_points(self):
-        fid_type = self.ui.fid_type_radio.get_value()
+        fid_type = self.ui.fid_type_combo.get_value()
 
         if len(self.click_points) == 1:
             self.ui.bottom_left_coords_entry.set_value(self.click_points[0])
@@ -801,16 +804,47 @@ class FidoUI:
         )
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
-        
-        self.points_label = FCLabel('<b>%s:</b>' % _('Fiducials Coordinates'))
+
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
+        # #############################################################################################################
+        # Gerber Source Object
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            _("Gerber object for adding fiducials and soldermask openings.")
+        )
+
+        self.grb_object_combo = FCComboBox()
+        self.grb_object_combo.setModel(self.app.collection)
+        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = "Gerber"
+
+        self.tools_box.addWidget(self.obj_combo_label)
+        self.tools_box.addWidget(self.grb_object_combo)
+
+        # #############################################################################################################
+        # Coordinates Table Frame
+        # #############################################################################################################
+        self.points_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Coordinates'))
         self.points_label.setToolTip(
             _("A table with the fiducial points coordinates,\n"
               "in the format (x, y).")
         )
-        self.layout.addWidget(self.points_label)
+        self.tools_box.addWidget(self.points_label)
 
         self.points_table = FCTable()
         self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tools_box.addWidget(self.points_table)
 
         self.points_table.setColumnCount(3)
         self.points_table.setHorizontalHeaderLabels(
@@ -885,24 +919,28 @@ class FidoUI:
         for row in range(self.points_table.rowCount()):
             self.points_table.cellWidget(row, 2).setFrame(False)
 
-        self.layout.addWidget(self.points_table)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.layout.addWidget(separator_line)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.layout.addWidget(separator_line)
-
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
-        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+        self.tools_box.addWidget(self.param_label)
+
+        par_frame = FCFrame()
+        self.tools_box.addWidget(par_frame)
+
+        # ## Grid Layout
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        par_frame.setLayout(grid_par)
 
         # DIAMETER #
         self.size_label = FCLabel('%s:' % _("Size"))
@@ -917,8 +955,8 @@ class FidoUI:
         self.fid_size_entry.setWrapping(True)
         self.fid_size_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.size_label, 1, 0)
-        grid_lay.addWidget(self.fid_size_entry, 1, 1)
+        grid_par.addWidget(self.size_label, 2, 0)
+        grid_par.addWidget(self.fid_size_entry, 2, 1)
 
         # MARGIN #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -930,21 +968,8 @@ class FidoUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.margin_label, 2, 0)
-        grid_lay.addWidget(self.margin_entry, 2, 1)
-
-        # Mode #
-        self.mode_radio = RadioSet([
-            {'label': _('Auto'), 'value': 'auto'},
-            {"label": _("Manual"), "value": "manual"}
-        ], stretch=False)
-        self.mode_label = FCLabel(_("Mode:"))
-        self.mode_label.setToolTip(
-            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
-              "- 'Manual' - manual placement of fiducials.")
-        )
-        grid_lay.addWidget(self.mode_label, 3, 0)
-        grid_lay.addWidget(self.mode_radio, 3, 1)
+        grid_par.addWidget(self.margin_label, 4, 0)
+        grid_par.addWidget(self.margin_entry, 4, 1)
 
         # Position for second fiducial #
         self.pos_radio = RadioSet([
@@ -959,20 +984,15 @@ class FidoUI:
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
-        grid_lay.addWidget(self.pos_label, 4, 0)
-        grid_lay.addWidget(self.pos_radio, 4, 1)
+        grid_par.addWidget(self.pos_label, 6, 0)
+        grid_par.addWidget(self.pos_radio, 6, 1)
 
         self.separator_line = QtWidgets.QFrame()
         self.separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(self.separator_line, 5, 0, 1, 2)
+        grid_par.addWidget(self.separator_line, 8, 0, 1, 2)
 
         # Fiducial type #
-        self.fid_type_radio = RadioSet([
-            {'label': _('Circular'), 'value': 'circular'},
-            {"label": _("Cross"), "value": "cross"},
-            {"label": _("Chess"), "value": "chess"}
-        ], stretch=False)
         self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
@@ -980,8 +1000,12 @@ class FidoUI:
               "- 'Cross' - cross lines fiducial.\n"
               "- 'Chess' - chess pattern fiducial.")
         )
-        grid_lay.addWidget(self.fid_type_label, 6, 0)
-        grid_lay.addWidget(self.fid_type_radio, 6, 1)
+
+        self.fid_type_combo = FCComboBox2()
+        self.fid_type_combo.addItems([_('Circular'), _("Cross"), _("Chess")])
+
+        grid_par.addWidget(self.fid_type_label, 10, 0)
+        grid_par.addWidget(self.fid_type_combo, 10, 1)
 
         # Line Thickness #
         self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
@@ -993,28 +1017,41 @@ class FidoUI:
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.line_thickness_label, 7, 0)
-        grid_lay.addWidget(self.line_thickness_entry, 7, 1)
+        grid_par.addWidget(self.line_thickness_label, 12, 0)
+        grid_par.addWidget(self.line_thickness_entry, 12, 1)
 
-        separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line_1, 8, 0, 1, 2)
+        # separator_line_1 = QtWidgets.QFrame()
+        # separator_line_1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line_1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid_par.addWidget(separator_line_1, 14, 0, 1, 2)
 
-        # Copper Gerber object
-        self.grb_object_combo = FCComboBox()
-        self.grb_object_combo.setModel(self.app.collection)
-        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.is_last = True
-        self.grb_object_combo.obj_type = "Gerber"
+        # #############################################################################################################
+        # Selection Frame
+        # #############################################################################################################
+        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.tools_box.addWidget(self.sel_label)
 
-        self.grbobj_label = FCLabel("<b>%s:</b>" % _("GERBER"))
-        self.grbobj_label.setToolTip(
-            _("Gerber Object to which will be added a copper thieving.")
+        self.s_frame = FCFrame()
+        self.tools_box.addWidget(self.s_frame)
+
+        # Grid Layout
+        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel.setColumnStretch(0, 0)
+        grid_sel.setColumnStretch(1, 1)
+        self.s_frame.setLayout(grid_sel)
+
+        # Mode #
+        self.mode_radio = RadioSet([
+            {'label': _('Auto'), 'value': 'auto'},
+            {"label": _("Manual"), "value": "manual"}
+        ], stretch=False)
+        self.mode_label = FCLabel(_("Mode:"))
+        self.mode_label.setToolTip(
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
+              "- 'Manual' - manual placement of fiducials.")
         )
-
-        grid_lay.addWidget(self.grbobj_label, 9, 0, 1, 2)
-        grid_lay.addWidget(self.grb_object_combo, 10, 0, 1, 2)
+        grid_sel.addWidget(self.mode_label, 0, 0)
+        grid_sel.addWidget(self.mode_radio, 0, 1)
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = FCButton(_("Add Fiducial"))
@@ -1028,26 +1065,7 @@ class FidoUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay.addWidget(self.add_cfid_button, 11, 0, 1, 2)
-
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line_2, 12, 0, 1, 2)
-
-        # Soldermask Gerber object #
-        self.sm_object_label = FCLabel('<b>%s:</b>' % _("Soldermask Gerber"))
-        self.sm_object_label.setToolTip(
-            _("The Soldermask Gerber object.")
-        )
-        self.sm_object_combo = FCComboBox()
-        self.sm_object_combo.setModel(self.app.collection)
-        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.is_last = True
-        self.sm_object_combo.obj_type = "Gerber"
-
-        grid_lay.addWidget(self.sm_object_label, 13, 0, 1, 2)
-        grid_lay.addWidget(self.sm_object_combo, 14, 0, 1, 2)
+        self.tools_box.addWidget(self.add_cfid_button)
 
         # ## Insert Soldermask opening for Fiducial
         self.add_sm_opening_button = FCButton(_("Add Soldermask Opening"))
@@ -1063,9 +1081,9 @@ class FidoUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid_lay.addWidget(self.add_sm_opening_button, 15, 0, 1, 2)
+        self.tools_box.addWidget(self.add_sm_opening_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))

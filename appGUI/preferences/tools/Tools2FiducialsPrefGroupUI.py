@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCComboBox2, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,17 +21,23 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
-        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+        self.layout.addWidget(self.param_label)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        # ## Grid Layout
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        par_frame.setLayout(grid_par)
 
         # DIAMETER #
         self.dia_label = FCLabel('%s:' % _("Size"))
@@ -46,8 +52,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.dia_entry.setWrapping(True)
         self.dia_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.dia_label, 1, 0)
-        grid_lay.addWidget(self.dia_entry, 1, 1)
+        grid_par.addWidget(self.dia_label, 2, 0)
+        grid_par.addWidget(self.dia_entry, 2, 1)
 
         # MARGIN #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -59,21 +65,8 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.margin_label, 2, 0)
-        grid_lay.addWidget(self.margin_entry, 2, 1)
-
-        # Mode #
-        self.mode_radio = RadioSet([
-            {'label': _('Auto'), 'value': 'auto'},
-            {"label": _("Manual"), "value": "manual"}
-        ], stretch=False)
-        self.mode_label = FCLabel('%s:' % _("Mode"))
-        self.mode_label.setToolTip(
-            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
-              "- 'Manual' - manual placement of fiducials.")
-        )
-        grid_lay.addWidget(self.mode_label, 3, 0)
-        grid_lay.addWidget(self.mode_radio, 3, 1)
+        grid_par.addWidget(self.margin_label, 4, 0)
+        grid_par.addWidget(self.margin_entry, 4, 1)
 
         # Position for second fiducial #
         self.pos_radio = RadioSet([
@@ -88,21 +81,15 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
-        grid_lay.addWidget(self.pos_label, 4, 0)
-        grid_lay.addWidget(self.pos_radio, 4, 1)
+        grid_par.addWidget(self.pos_label, 6, 0)
+        grid_par.addWidget(self.pos_radio, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 5, 0, 1, 2)
+        grid_par.addWidget(separator_line, 8, 0, 1, 2)
 
         # Fiducial type #
-        self.fid_type_radio = RadioSet([
-            {'label': _('Circular'), 'value': 'circular'},
-            {"label": _("Cross"), "value": "cross"},
-            {"label": _("Chess"), "value": "chess"}
-        ], stretch=False)
-
         self.fid_type_label = FCLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
@@ -110,8 +97,12 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
               "- 'Cross' - cross lines fiducial.\n"
               "- 'Chess' - chess pattern fiducial.")
         )
-        grid_lay.addWidget(self.fid_type_label, 6, 0)
-        grid_lay.addWidget(self.fid_type_radio, 6, 1)
+
+        self.fid_type_combo = FCComboBox2()
+        self.fid_type_combo.addItems([_('Circular'), _("Cross"), _("Chess")])
+
+        grid_par.addWidget(self.fid_type_label, 10, 0)
+        grid_par.addWidget(self.fid_type_combo, 10, 1)
 
         # Line Thickness #
         self.line_thickness_label = FCLabel('%s:' % _("Line thickness"))
@@ -123,7 +114,35 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.line_thickness_label, 7, 0)
-        grid_lay.addWidget(self.line_thickness_entry, 7, 1)
+        grid_par.addWidget(self.line_thickness_label, 12, 0)
+        grid_par.addWidget(self.line_thickness_entry, 12, 1)
 
-        self.layout.addStretch()
+        # #############################################################################################################
+        # Selection Frame
+        # #############################################################################################################
+        self.sel_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Selection"))
+        self.layout.addWidget(self.sel_label)
+
+        s_frame = FCFrame()
+        self.layout.addWidget(s_frame)
+
+        # Grid Layout
+        grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_sel.setColumnStretch(0, 0)
+        grid_sel.setColumnStretch(1, 1)
+        s_frame.setLayout(grid_sel)
+
+        # Mode #
+        self.mode_radio = RadioSet([
+            {'label': _('Auto'), 'value': 'auto'},
+            {"label": _("Manual"), "value": "manual"}
+        ], stretch=False)
+        self.mode_label = FCLabel('%s:' % _("Mode"))
+        self.mode_label.setToolTip(
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
+              "- 'Manual' - manual placement of fiducials.")
+        )
+        grid_sel.addWidget(self.mode_label, 0, 0)
+        grid_sel.addWidget(self.mode_radio, 0, 1)
+
+        self.layout.addStretch(1)

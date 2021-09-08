@@ -774,7 +774,7 @@ class Film(AppTool):
                 try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
+                    renderPM.drawToFile(drawing, filename, fmt='PNG')
 
                     # if new_png_dpi == default_dpi:
                     #     renderPM.drawToFile(drawing, filename, 'PNG')

@@ -867,14 +867,14 @@ class CornersUI:
         self.s_frame.setLayout(grid_sel)
 
         # Type of placement of markers
-        self.sel_label = FCLabel('%s:' % _("Type"))
+        self.sel_label = FCLabel('%s: ' % _("Mode"))
         self.sel_label.setToolTip(
             _("When the manual type is chosen, the markers\n"
               "are manually placed on canvas.")
         )
 
         self.sel_radio = RadioSet([
-            {"label": _("Automatic"), "value": "a"},
+            {"label": _("Auto"), "value": "a"},
             {"label": _("Manual"), "value": "m"},
         ])
 

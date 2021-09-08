@@ -2352,7 +2352,10 @@ class FCComboBox2(FCComboBox):
         return int(self.currentIndex())
 
     def set_value(self, val):
-        self.setCurrentIndex(val)
+        try:
+            self.setCurrentIndex(val)
+        except TypeError:
+            self.setCurrentIndex(0)
 
 
 class FCInputDialog(QtWidgets.QInputDialog):
