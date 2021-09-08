@@ -636,8 +636,7 @@ class CalcUI:
 
         # Cut Z
         self.cutDepth_label = FCLabel('%s:' % _("Cut Z"))
-        self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
-                                         "In the CNCJob is the CutZ parameter."))
+        self.cutDepth_label.setToolTip(_("This is the depth to cut into the material."))
 
         self.cutDepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutDepth_entry.set_range(-10000.0000, 10000.0000)
@@ -648,9 +647,8 @@ class CalcUI:
 
         # Tool Diameter
         self.effectiveToolDia_label = FCLabel('%s:' % _("Tool Diameter"))
-        self.effectiveToolDia_label.setToolTip(_("This is the tool diameter to be entered into\n"
-                                                 "FlatCAM Gerber section.\n"
-                                                 "In the CNCJob section it is called >Tool dia<."))
+        self.effectiveToolDia_label.setToolTip(_("This is the actual tool diameter\n"
+                                                 "at the desired depth of cut."))
         self.effectiveToolDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.effectiveToolDia_entry.set_precision(self.decimals)
 
@@ -662,8 +660,7 @@ class CalcUI:
         self.calculate_vshape_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
 
         self.calculate_vshape_button.setToolTip(
-            _("Calculate either the Cut Z or the effective tool diameter,\n  "
-              "depending on which is desired and which is known. ")
+            _("Calculate either the depth of cut or the effective tool diameter.")
         )
 
         grid_vshape.addWidget(self.calculate_vshape_button, 12, 0, 1, 2)
@@ -693,7 +690,7 @@ class CalcUI:
         # Area Calculation
         self.area_sel_label = FCLabel('%s:' % _("Area Calculation"))
         self.area_sel_label.setToolTip(
-            _("Choose how to calculate the board area.")
+            _("Determine the board area.")
         )
         self.area_sel_radio = RadioSet([
             {'label': _('Dimensions'), 'value': 'd'},
@@ -705,7 +702,7 @@ class CalcUI:
 
         # BOARD LENGTH
         self.pcblengthlabel = FCLabel('%s:' % _("Board Length"))
-        self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
+        self.pcblengthlabel.setToolTip(_('Board Length.'))
         self.pcblength_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pcblength_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcblength_entry.set_precision(self.decimals)
@@ -723,7 +720,7 @@ class CalcUI:
 
         # BOARD WIDTH
         self.pcbwidthlabel = FCLabel('%s:' % _("Board Width"))
-        self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
+        self.pcbwidthlabel.setToolTip(_('Board Width'))
         self.pcbwidth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pcbwidth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcbwidth_entry.set_precision(self.decimals)
@@ -741,7 +738,7 @@ class CalcUI:
 
         # AREA
         self.area_label = FCLabel('%s:' % _("Area"))
-        self.area_label.setToolTip(_('This is the board area.'))
+        self.area_label.setToolTip(_('Board area.'))
         self.area_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.area_entry.set_precision(self.decimals)
@@ -764,8 +761,8 @@ class CalcUI:
 
         # DENSITY
         self.cdensity_label = FCLabel('%s:' % _("Current Density"))
-        self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
-                                         "In Amps per Square Feet ASF."))
+        self.cdensity_label.setToolTip(_("Current density applied to the board. \n"
+                                         "In Amperes per Square Feet ASF."))
         self.cdensity_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cdensity_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.cdensity_entry.set_precision(self.decimals)
@@ -784,8 +781,7 @@ class CalcUI:
 
         # COPPER GROWTH
         self.growth_label = FCLabel('%s:' % _("Copper Growth"))
-        self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
-                                       "In microns."))
+        self.growth_label.setToolTip(_("Thickness of the deposited copper."))
         self.growth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.growth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.growth_entry.set_precision(self.decimals)
@@ -805,7 +801,7 @@ class CalcUI:
         # CURRENT
         self.cvaluelabel = FCLabel('%s:' % _("Current Value"))
         self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
-                                      'to be set on the Power Supply. In Amps.'))
+                                      'to be set on the Power Supply.'))
         self.cvalue_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cvalue_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.cvalue_entry.set_precision(self.decimals)
@@ -825,8 +821,7 @@ class CalcUI:
 
         # TIME
         self.timelabel = FCLabel('%s:' % _("Time"))
-        self.timelabel.setToolTip(_('This is the calculated time required for the procedure.\n'
-                                    'In minutes.'))
+        self.timelabel.setToolTip(_('The time calculated to deposit copper.'))
         self.time_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.time_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.time_entry.set_precision(self.decimals)
@@ -848,8 +843,7 @@ class CalcUI:
         self.calculate_plate_button = FCButton(_("Calculate"))
         self.calculate_plate_button.setIcon(QtGui.QIcon(self.app.resource_location + '/calculator16.png'))
         self.calculate_plate_button.setToolTip(
-            _("Calculate the current intensity value and the procedure time,\n"
-              "depending on the parameters above")
+            _("Calculate the current intensity value and the procedure time.")
         )
         grid_electro.addWidget(self.calculate_plate_button, 24, 0, 1, 2)
 

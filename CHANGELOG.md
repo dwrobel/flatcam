@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 8.09.2021
 
 - in Calculator Plugin, in Units Calculator added more units conversions
+- changes to the strings in the Calculator Plugin
 
 6.09.2021
 
