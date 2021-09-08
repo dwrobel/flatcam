@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry, FCLabel, FCSpinner, \
-    FCGridLayout
+    FCGridLayout, FCComboBox2, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,7 +22,143 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Parameters
+        # #############################################################################################################
+        # Adjustments Frame
+        # #############################################################################################################
+        self.film_adj_label = FCLabel('<b>%s</b>' % _("Adjustments"))
+        self.film_adj_label.setToolTip(
+            _("Compensate print distortions.")
+        )
+
+        self.layout.addWidget(self.film_adj_label)
+
+        adj_frame = FCFrame()
+        self.layout.addWidget(adj_frame)
+
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        adj_frame.setLayout(grid0)
+
+        # Scale Geometry
+        self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
+        self.film_scale_cb.setToolTip(
+            _("A value greater than 1 will stretch the film\n"
+              "while a value less than 1 will jolt it.")
+        )
+        self.film_scale_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_scale_cb, 2, 0, 1, 2)
+
+        # Scale X factor
+        self.film_scalex_label = FCLabel('%s:' % _("X factor"))
+        self.film_scalex_entry = FCDoubleSpinner()
+        self.film_scalex_entry.set_range(-999.9999, 999.9999)
+        self.film_scalex_entry.set_precision(self.decimals)
+        self.film_scalex_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scalex_label, 4, 0)
+        grid0.addWidget(self.film_scalex_entry, 4, 1)
+
+        # Scale Y factor
+        self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
+        self.film_scaley_entry = FCDoubleSpinner()
+        self.film_scaley_entry.set_range(-999.9999, 999.9999)
+        self.film_scaley_entry.set_precision(self.decimals)
+        self.film_scaley_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scaley_label, 6, 0)
+        grid0.addWidget(self.film_scaley_entry, 6, 1)
+
+        # Scale reference
+        self.scale_ref_label = FCLabel('%s:' % _("Reference"))
+        self.scale_ref_label.setToolTip(
+            _("The reference point to be used as origin for the adjustment.")
+        )
+
+        self.film_scale_ref_combo = FCComboBox2()
+        self.film_scale_ref_combo.addItems(
+            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+
+        grid0.addWidget(self.scale_ref_label, 8, 0)
+        grid0.addWidget(self.film_scale_ref_combo, 8, 1)
+
+        # Skew Geometry
+        self.film_skew_cb = FCCheckBox('%s' % _("Skew"))
+        self.film_skew_cb.setToolTip(
+            _("Positive values will skew to the right\n"
+              "while negative values will skew to the left.")
+        )
+        self.film_skew_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_skew_cb, 10, 0, 1, 2)
+
+        self.film_skewx_label = FCLabel('%s:' % _("X angle"))
+        self.film_skewx_entry = FCDoubleSpinner()
+        self.film_skewx_entry.set_range(-999.9999, 999.9999)
+        self.film_skewx_entry.set_precision(self.decimals)
+        self.film_skewx_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewx_label, 12, 0)
+        grid0.addWidget(self.film_skewx_entry, 12, 1)
+
+        self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
+        self.film_skewy_entry = FCDoubleSpinner()
+        self.film_skewy_entry.set_range(-999.9999, 999.9999)
+        self.film_skewy_entry.set_precision(self.decimals)
+        self.film_skewy_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewy_label, 14, 0)
+        grid0.addWidget(self.film_skewy_entry, 14, 1)
+
+        # Skew Reference
+        self.skew_ref_label = FCLabel('%s:' % _("Reference"))
+        self.skew_ref_label.setToolTip(
+            _("The reference point to be used as origin for the adjustment.")
+        )
+
+        self.film_skew_ref_combo = FCComboBox2()
+        self.film_skew_ref_combo.addItems(
+            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+
+        grid0.addWidget(self.skew_ref_label, 16, 0)
+        grid0.addWidget(self.film_skew_ref_combo, 16, 1)
+
+        # Mirror Geometry
+        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
+        self.film_mirror_cb.setToolTip(
+            _("Mirror the film geometry on the selected axis or on both.")
+        )
+        self.film_mirror_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_mirror_cb, 18, 0, 1, 2)
+
+        self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
+                                          {'label': _('Y'), 'value': 'y'},
+                                          {'label': _('Both'), 'value': 'both'}],
+                                         stretch=False)
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
+
+        grid0.addWidget(self.film_mirror_axis_label, 20, 0)
+        grid0.addWidget(self.film_mirror_axis, 20, 1)
+
+        separator_line3 = QtWidgets.QFrame()
+        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.layout.addWidget(separator_line3)
+
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
         self.film_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.film_label.setToolTip(
             _("Create a PCB film from a Gerber or Geometry object.\n"
@@ -30,22 +166,22 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.film_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        grid_par = FCGridLayout()
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        par_frame.setLayout(grid_par)
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
                                          {'label': 'Neg', 'value': 'neg'}])
-        ftypelbl = FCLabel('%s:' % _('Film Type'))
+        ftypelbl = FCLabel('%s:' % _('Polarity'))
         ftypelbl.setToolTip(
-            _("Generate a Positive black film or a Negative film.\n"
-              "Positive means that it will print the features\n"
-              "with black on a white canvas.\n"
-              "Negative means that it will print the features\n"
-              "with white on a black canvas.\n"
-              "The Film format is SVG.")
+            _("Generate a Positive black film or a Negative film.")
         )
-        grid0.addWidget(ftypelbl, 0, 0)
-        grid0.addWidget(self.film_type_radio, 0, 1)
+        grid_par.addWidget(ftypelbl, 0, 0)
+        grid_par.addWidget(self.film_type_radio, 0, 1)
 
         # Film Color
         self.film_color_label = FCLabel('%s:' % _('Film Color'))
@@ -54,8 +190,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.film_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.film_color_label, 1, 0)
-        grid0.addWidget(self.film_color_entry, 1, 1)
+        grid_par.addWidget(self.film_color_label, 2, 0)
+        grid_par.addWidget(self.film_color_entry, 2, 1)
 
         # Film Border
         self.film_boundary_entry = FCDoubleSpinner()
@@ -74,8 +210,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid0.addWidget(self.film_boundary_label, 2, 0)
-        grid0.addWidget(self.film_boundary_entry, 2, 1)
+        grid_par.addWidget(self.film_boundary_label, 4, 0)
+        grid_par.addWidget(self.film_boundary_entry, 4, 1)
 
         self.film_scale_stroke_entry = FCDoubleSpinner()
         self.film_scale_stroke_entry.set_precision(self.decimals)
@@ -88,121 +224,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid0.addWidget(self.film_scale_stroke_label, 3, 0)
-        grid0.addWidget(self.film_scale_stroke_entry, 3, 1)
-
-        self.film_adj_label = FCLabel('<b>%s</b>' % _("Film Adjustments"))
-        self.film_adj_label.setToolTip(
-            _("Sometime the printers will distort the print shape, especially the Laser types.\n"
-              "This section provide the tools to compensate for the print distortions.")
-        )
-
-        grid0.addWidget(self.film_adj_label, 4, 0, 1, 2)
-
-        # Scale Geometry
-        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film geometry"))
-        self.film_scale_cb.setToolTip(
-            _("A value greater than 1 will stretch the film\n"
-              "while a value less than 1 will jolt it.")
-        )
-        self.film_scale_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
-        grid0.addWidget(self.film_scale_cb, 5, 0, 1, 2)
-
-        self.film_scalex_label = FCLabel('%s:' % _("X factor"))
-        self.film_scalex_entry = FCDoubleSpinner()
-        self.film_scalex_entry.set_range(-999.9999, 999.9999)
-        self.film_scalex_entry.set_precision(self.decimals)
-        self.film_scalex_entry.setSingleStep(0.01)
-
-        grid0.addWidget(self.film_scalex_label, 6, 0)
-        grid0.addWidget(self.film_scalex_entry, 6, 1)
-
-        self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
-        self.film_scaley_entry = FCDoubleSpinner()
-        self.film_scaley_entry.set_range(-999.9999, 999.9999)
-        self.film_scaley_entry.set_precision(self.decimals)
-        self.film_scaley_entry.setSingleStep(0.01)
-
-        grid0.addWidget(self.film_scaley_label, 7, 0)
-        grid0.addWidget(self.film_scaley_entry, 7, 1)
-
-        # Skew Geometry
-        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film geometry"))
-        self.film_skew_cb.setToolTip(
-            _("Positive values will skew to the right\n"
-              "while negative values will skew to the left.")
-        )
-        self.film_skew_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
-        grid0.addWidget(self.film_skew_cb, 8, 0, 1, 2)
-
-        self.film_skewx_label = FCLabel('%s:' % _("X angle"))
-        self.film_skewx_entry = FCDoubleSpinner()
-        self.film_skewx_entry.set_range(-999.9999, 999.9999)
-        self.film_skewx_entry.set_precision(self.decimals)
-        self.film_skewx_entry.setSingleStep(0.01)
-
-        grid0.addWidget(self.film_skewx_label, 9, 0)
-        grid0.addWidget(self.film_skewx_entry, 9, 1)
-
-        self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
-        self.film_skewy_entry = FCDoubleSpinner()
-        self.film_skewy_entry.set_range(-999.9999, 999.9999)
-        self.film_skewy_entry.set_precision(self.decimals)
-        self.film_skewy_entry.setSingleStep(0.01)
-
-        grid0.addWidget(self.film_skewy_label, 10, 0)
-        grid0.addWidget(self.film_skewy_entry, 10, 1)
-
-        self.film_ref_label = FCLabel('%s:' % _("Reference"))
-        self.film_ref_label.setToolTip(
-            _("The reference point to be used as origin for the adjustment.\n"
-              "It can be one of the four points of the geometry bounding box.")
-        )
-        self.film_reference = RadioSet([{'label': _('Center'), 'value': 'center'},
-                                        {'label': _('Bottom Left'), 'value': 'bottomleft'},
-                                        {'label': _('Top Left'), 'value': 'topleft'},
-                                        {'label': _('Bottom Right'), 'value': 'bottomright'},
-                                        {'label': _('Top right'), 'value': 'topright'}],
-                                       orientation='vertical',
-                                       stretch=False)
-
-        grid0.addWidget(self.film_ref_label, 11, 0)
-        grid0.addWidget(self.film_reference, 11, 1)
-
-        # Mirror Geometry
-        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film geometry"))
-        self.film_mirror_cb.setToolTip(
-            _("Mirror the film geometry on the selected axis or on both.")
-        )
-        self.film_mirror_cb.setStyleSheet(
-            """
-            QCheckBox {font-weight: bold; color: black}
-            """
-        )
-        grid0.addWidget(self.film_mirror_cb, 12, 0, 1, 2)
-
-        self.film_mirror_axis = RadioSet([{'label': _('None'), 'value': 'none'},
-                                          {'label': _('X'), 'value': 'x'},
-                                          {'label': _('Y'), 'value': 'y'},
-                                          {'label': _('Both'), 'value': 'both'}],
-                                         stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
-
-        grid0.addWidget(self.film_mirror_axis_label, 13, 0)
-        grid0.addWidget(self.film_mirror_axis, 13, 1)
-
-        separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line3, 14, 0, 1, 2)
+        grid_par.addWidget(self.film_scale_stroke_label, 6, 0)
+        grid_par.addWidget(self.film_scale_stroke_entry, 6, 1)
 
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
                                          {'label': _('PNG'), 'value': 'png'},
@@ -216,8 +239,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "- 'PNG' -> raster image\n"
               "- 'PDF' -> portable document format")
         )
-        grid0.addWidget(self.file_type_label, 15, 0)
-        grid0.addWidget(self.file_type_radio, 15, 1)
+        grid_par.addWidget(self.file_type_label, 8, 0)
+        grid_par.addWidget(self.file_type_radio, 8, 1)
 
         # Page orientation
         self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
@@ -229,8 +252,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                            {'label': _('Landscape'), 'value': 'l'},
                                            ], stretch=False)
 
-        grid0.addWidget(self.orientation_label, 16, 0)
-        grid0.addWidget(self.orientation_radio, 16, 1)
+        grid_par.addWidget(self.orientation_label, 10, 0)
+        grid_par.addWidget(self.orientation_radio, 10, 1)
 
         # Page Size
         self.pagesize_label = FCLabel('%s:' % _("Page Size"))
@@ -295,8 +318,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)
 
-        grid0.addWidget(self.pagesize_label, 17, 0)
-        grid0.addWidget(self.pagesize_combo, 17, 1)
+        grid_par.addWidget(self.pagesize_label, 12, 0)
+        grid_par.addWidget(self.pagesize_combo, 12, 1)
 
         # PNG DPI
         self.png_dpi_label = FCLabel('%s:' % "PNG DPI")
@@ -306,10 +329,10 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.png_dpi_spinner = FCSpinner()
         self.png_dpi_spinner.set_range(0, 100000)
 
-        grid0.addWidget(self.png_dpi_label, 19, 0)
-        grid0.addWidget(self.png_dpi_spinner, 19, 1)
+        grid_par.addWidget(self.png_dpi_label, 14, 0)
+        grid_par.addWidget(self.png_dpi_spinner, 14, 1)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # Film Tool
         self.film_color_entry.editingFinished.connect(self.on_film_color_entry)

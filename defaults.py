@@ -542,19 +542,23 @@ class FlatCAMDefaults:
         "tools_2sided_allign_axis": "X",
 
         # Film Tool
-        "tools_film_type": 'neg',
+        "tools_film_polarity": 'neg',
         "tools_film_boundary": 1.0,
         "tools_film_scale_stroke": 0,
         "tools_film_color": '#000000',
-        "tools_film_ref_radio": 'bottomleft',
+
         "tools_film_scale_cb": False,
         "tools_film_scale_x_entry": 1.0,
         "tools_film_scale_y_entry": 1.0,
+        "tools_film_scale_ref": 0,  # "center
+
         "tools_film_skew_cb": False,
         "tools_film_skew_x_entry": 0.0,
         "tools_film_skew_y_entry": 0.0,
+        "tools_film_skew_ref": 0,  # "center
+
         "tools_film_mirror_cb": False,
-        "tools_film_mirror_axis_radio": 'none',
+        "tools_film_mirror_axis_radio": 'x',
         "tools_film_file_type_radio": 'svg',
         "tools_film_orientation": 'p',
         "tools_film_pagesize": 'A4',

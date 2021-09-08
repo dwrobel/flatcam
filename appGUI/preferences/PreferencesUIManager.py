@@ -473,17 +473,21 @@ class PreferencesUIManager:
             "tools_2sided_allign_axis": self.ui.plugin_eng_pref_form.tools_2sided_group.align_axis_radio,
 
             # Film Tool
-            "tools_film_type": self.ui.plugin_pref_form.tools_film_group.film_type_radio,
+            "tools_film_polarity": self.ui.plugin_pref_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.plugin_pref_form.tools_film_group.film_boundary_entry,
             "tools_film_scale_stroke": self.ui.plugin_pref_form.tools_film_group.film_scale_stroke_entry,
             "tools_film_color": self.ui.plugin_pref_form.tools_film_group.film_color_entry,
+
             "tools_film_scale_cb": self.ui.plugin_pref_form.tools_film_group.film_scale_cb,
             "tools_film_scale_x_entry": self.ui.plugin_pref_form.tools_film_group.film_scalex_entry,
             "tools_film_scale_y_entry": self.ui.plugin_pref_form.tools_film_group.film_scaley_entry,
+            "tools_film_scale_ref": self.ui.plugin_pref_form.tools_film_group.film_scale_ref_combo,
+
             "tools_film_skew_cb": self.ui.plugin_pref_form.tools_film_group.film_skew_cb,
             "tools_film_skew_x_entry": self.ui.plugin_pref_form.tools_film_group.film_skewx_entry,
             "tools_film_skew_y_entry": self.ui.plugin_pref_form.tools_film_group.film_skewy_entry,
-            "tools_film_ref_radio": self.ui.plugin_pref_form.tools_film_group.film_reference,
+            "tools_film_skew_ref": self.ui.plugin_pref_form.tools_film_group.film_skew_ref_combo,
+
             "tools_film_mirror_cb": self.ui.plugin_pref_form.tools_film_group.film_mirror_cb,
             "tools_film_mirror_axis_radio": self.ui.plugin_pref_form.tools_film_group.film_mirror_axis,
             "tools_film_file_type_radio": self.ui.plugin_pref_form.tools_film_group.file_type_radio,

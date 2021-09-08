@@ -11,6 +11,10 @@ CHANGELOG for FlatCAM beta
 
 - in Calculator Plugin, in Units Calculator added more units conversions
 - changes to the strings in the Calculator Plugin
+- in Film Plugin updated the GUI
+- in Film Plugin some changes in the data storage; require to delete de current preferences files
+- Film Plugin: now the Skew and Scale transformation have their own reference
+- updated the language strings to the current strings in the app
 
 6.09.2021
 

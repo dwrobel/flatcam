@@ -1170,7 +1170,7 @@ class PanelizeUI:
         # Reference Object Frame
         # #############################################################################################################
         # Type of box Panel object
-        self.box_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Panelization Reference"))
+        self.box_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"

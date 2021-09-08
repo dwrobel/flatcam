@@ -3557,7 +3557,7 @@ class MillingUI:
         grid0.setColumnStretch(1, 1)
         obj_frame.setLayout(grid0)
 
-        self.target_label = FCLabel('<b>%s</b>:' % _("Target"))
+        self.target_label = FCLabel('%s:' % _("Type"))
         self.target_label.setToolTip(
             _("Object for milling operation.")
         )

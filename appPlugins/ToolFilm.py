@@ -10,7 +10,7 @@ from PyQt6 import QtCore, QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
     OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel, FCSpinner, \
-    VerticalScrollArea, FCGridLayout
+    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 
 from copy import deepcopy
 import logging
@@ -28,7 +28,6 @@ from svglib.svglib import svg2rlg
 from xml.dom.minidom import parseString as parse_xml_string
 from lxml import etree as ET
 from io import StringIO
-import re
 
 import gettext
 import appTranslation as fcTranslate
@@ -180,7 +179,7 @@ class Film(AppTool):
 
         self.reset_fields()
 
-        f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
+        f_type = self.app.defaults["tools_film_polarity"] if self.app.defaults["tools_film_polarity"] else 'neg'
         self.ui.film_type.set_value(str(f_type))
         self.ui.on_film_type(val=f_type)
 
@@ -194,14 +193,16 @@ class Film(AppTool):
         self.ui.punch_cb.set_value(False)
         self.ui.source_punch.set_value('exc')
 
-        self.ui.film_reference.set_value(self.app.defaults["tools_film_ref_radio"])
-
         self.ui.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
         self.ui.film_scalex_entry.set_value(float(self.app.defaults["tools_film_scale_x_entry"]))
         self.ui.film_scaley_entry.set_value(float(self.app.defaults["tools_film_scale_y_entry"]))
+        self.ui.scale_ref_combo.set_value(self.app.defaults["tools_film_scale_ref"])
+
         self.ui.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
         self.ui.film_skewx_entry.set_value(float(self.app.defaults["tools_film_skew_x_entry"]))
         self.ui.film_skewy_entry.set_value(float(self.app.defaults["tools_film_skew_y_entry"]))
+        self.ui.skew_ref_combo.set_value(self.app.defaults["tools_film_skew_ref"])
+
         self.ui.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
         self.ui.film_mirror_axis.set_value(self.app.defaults["tools_film_mirror_axis_radio"])
         self.ui.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
@@ -268,16 +269,7 @@ class Film(AppTool):
                                         """)
 
             self.ui.film_adj_label.hide()
-            self.ui.film_ref_label.hide()
-            self.ui.film_reference.hide()
-            self.ui.film_scale_cb.hide()
-            self.ui.scale_separator_line.hide()
-            self.ui.film_skew_cb.hide()
-            self.ui.skew_separator_line1.hide()
-            self.ui.film_mirror_cb.hide()
-            self.ui.mirror_separator_line2.hide()
-            self.ui.film_scale_stroke_label.hide()
-            self.ui.film_scale_stroke_entry.hide()
+            self.ui.adj_frame.hide()
 
             self.ui.film_scale_cb.set_value(False)
             self.ui.film_skew_cb.set_value(False)
@@ -294,16 +286,7 @@ class Film(AppTool):
                                         """)
 
             self.ui.film_adj_label.show()
-            self.ui.film_ref_label.show()
-            self.ui.film_reference.show()
-            self.ui.film_scale_cb.show()
-            self.ui.scale_separator_line.show()
-            self.ui.film_skew_cb.show()
-            self.ui.skew_separator_line1.show()
-            self.ui.film_mirror_cb.show()
-            self.ui.mirror_separator_line2.show()
-            self.ui.film_scale_stroke_label.show()
-            self.ui.film_scale_stroke_entry.show()
+            self.ui.adj_frame.show()
 
             self.ui.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
             self.ui.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
@@ -362,16 +345,17 @@ class Film(AppTool):
         skew_factor_y = None
         mirror = None
 
-        try:
-            reference_point = self.ui.film_reference.get_value()
-        except Exception:
-            reference_point = 'center'
+        reference_list = ['center', 'bottomleft', 'topleft', 'bottomright', 'topright']
+
+        scale_reference = reference_list[int(self.ui.scale_ref_combo.get_value())]
+        skew_reference = reference_list[int(self.ui.skew_ref_combo.get_value())]
 
         if self.ui.film_scale_cb.get_value():
             if self.ui.film_scalex_entry.get_value() != 1.0:
                 scale_factor_x = self.ui.film_scalex_entry.get_value()
             if self.ui.film_scaley_entry.get_value() != 1.0:
                 scale_factor_y = self.ui.film_scaley_entry.get_value()
+
         if self.ui.film_skew_cb.get_value():
             if self.ui.film_skewx_entry.get_value() != 0.0:
                 skew_factor_x = self.ui.film_skewx_entry.get_value()
@@ -379,8 +363,7 @@ class Film(AppTool):
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
 
         if self.ui.film_mirror_cb.get_value():
-            if self.ui.film_mirror_axis.get_value() != 'none':
-                mirror = self.ui.film_mirror_axis.get_value()
+            mirror = self.ui.film_mirror_axis.get_value()
 
         if ftype == 'svg':
             filter_ext = "SVG Files (*.SVG);;"\
@@ -408,8 +391,9 @@ class Film(AppTool):
             self.export_positive(name, boxname, filename,
                                  scale_stroke_factor=factor,
                                  scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                 scale_reference=scale_reference,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 reference_point=reference_point,
+                                 skew_reference=skew_reference,
                                  mirror=mirror,
                                  opacity_val=1.0,
                                  ftype=ftype
@@ -505,16 +489,17 @@ class Film(AppTool):
         skew_factor_y = None
         mirror = None
 
-        try:
-            reference_point = self.ui.film_reference.get_value()
-        except Exception:
-            reference_point = 'center'
+        reference_list = ['center', 'bottomleft', 'topleft', 'bottomright', 'topright']
+
+        scale_reference = reference_list[int(self.ui.scale_ref_combo.get_value())]
+        skew_reference = reference_list[int(self.ui.skew_ref_combo.get_value())]
 
         if self.ui.film_scale_cb.get_value():
             if self.ui.film_scalex_entry.get_value() != 1.0:
                 scale_factor_x = self.ui.film_scalex_entry.get_value()
             if self.ui.film_scaley_entry.get_value() != 1.0:
                 scale_factor_y = self.ui.film_scaley_entry.get_value()
+
         if self.ui.film_skew_cb.get_value():
             if self.ui.film_skewx_entry.get_value() != 0.0:
                 skew_factor_x = self.ui.film_skewx_entry.get_value()
@@ -522,8 +507,7 @@ class Film(AppTool):
                 skew_factor_y = self.ui.film_skewy_entry.get_value()
 
         if self.ui.film_mirror_cb.get_value():
-            if self.ui.film_mirror_axis.get_value() != 'none':
-                mirror = self.ui.film_mirror_axis.get_value()
+            mirror = self.ui.film_mirror_axis.get_value()
 
         border = self.ui.boundary_entry.get_value()
 
@@ -559,15 +543,16 @@ class Film(AppTool):
             self.export_negative(name, boxname, filename, border,
                                  scale_stroke_factor=factor,
                                  scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                 scale_reference=scale_reference,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 reference_point=reference_point,
+                                 skew_reference=skew_reference,
                                  mirror=mirror, ftype=ftype
                                  )
 
     def export_negative(self, obj_name, box_name, filename, boundary,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=1, scale_factor_y=1,
-                        skew_factor_x=None, skew_factor_y=None, reference_point='center',
+                        scale_factor_x=1, scale_factor_y=1, scale_reference='center',
+                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None, opacity_val=1.0,
                         use_thread=True, ftype='svg'):
         """
@@ -581,15 +566,16 @@ class Film(AppTool):
         :param scale_stroke_factor: factor by which to change/scale the thickness of the features
         :param scale_factor_x:      factor to scale the svg geometry on the X axis
         :param scale_factor_y:      factor to scale the svg geometry on the Y axis
+        :param scale_reference:     reference to use for transformation.
+                                    Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
         :param skew_factor_x:       factor to skew the svg geometry on the X axis
         :param skew_factor_y:       factor to skew the svg geometry on the Y axis
-        :param reference_point:     reference to use for transformation. Can be 'bottomleft', 'bottomright', 'topleft',
-                                    'topright', 'center' and those are the 5 points of the bounding box of the
-                                    geometry to be altered.
-        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+        :param skew_reference:      reference to use for transformation.
+                                    Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
+        :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param opacity_val:
-        :param use_thread: if to be run in a separate thread; boolean
-        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
+        :param use_thread:          if to be run in a separate thread; boolean
+        :param ftype:               the type of file for saving the film: 'svg', 'png' or 'pdf'
         :return:
         """
         self.app.defaults.report_usage("export_negative()")
@@ -662,33 +648,44 @@ class Film(AppTool):
                 box_geo = unary_union(box.flatten())
 
             xmin, ymin, xmax, ymax = box_geo.bounds
-            ref_val = 'center'
-            if reference_point == 'topleft':
-                ref_val = (xmin, ymax)
-            elif reference_point == 'bottomleft':
-                ref_val = (xmin, ymin)
-            elif reference_point == 'topright':
-                ref_val = (xmax, ymax)
-            elif reference_point == 'bottomright':
-                ref_val = (xmax, ymin)
+            ref_scale_val = 'center'
+            if scale_reference == 'topleft':
+                ref_scale_val = (xmin, ymax)
+            elif scale_reference == 'bottomleft':
+                ref_scale_val = (xmin, ymin)
+            elif scale_reference == 'topright':
+                ref_scale_val = (xmax, ymax)
+            elif scale_reference == 'bottomright':
+                ref_scale_val = (xmax, ymin)
+
+            ref_skew_val = 'center'
+            if skew_reference == 'topleft':
+                ref_skew_val = (xmin, ymax)
+            elif skew_reference == 'bottomleft':
+                ref_skew_val = (xmin, ymin)
+            elif skew_reference == 'topright':
+                ref_skew_val = (xmax, ymax)
+            elif skew_reference == 'bottomright':
+                ref_skew_val = (xmax, ymin)
 
             # Transform the box object geometry
             transformed_box_geo = box_geo
 
             if scale_factor_x and not scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_val)
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_scale_val)
             elif not scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_scale_val)
             elif scale_factor_x and scale_factor_y:
                 transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
-                                                     origin=ref_val)
+                                                     origin=ref_scale_val)
 
             if skew_factor_x and not skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_skew_val)
             elif not skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_skew_val)
             elif skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y,
+                                                    origin=ref_skew_val)
 
             if mirror:
                 if mirror == 'x':
@@ -705,7 +702,7 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=reference_point, skew_reference=reference_point,
+                                          scale_reference=scale_reference, skew_reference=skew_reference,
                                           mirror_reference='center'
                                           )
 
@@ -862,8 +859,8 @@ class Film(AppTool):
 
     def export_positive(self, obj_name, box_name, filename,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=1, scale_factor_y=1,
-                        skew_factor_x=None, skew_factor_y=None, reference_point='center',
+                        scale_factor_x=1, scale_factor_y=1, scale_reference='center',
+                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None, opacity_val=1.0,
                         use_thread=True, ftype='svg'):
 
@@ -876,11 +873,12 @@ class Film(AppTool):
         :param scale_stroke_factor: factor by which to change/scale the thickness of the features
         :param scale_factor_x:      factor to scale the geometry on the X axis
         :param scale_factor_y:      factor to scale the geometry on the Y axis
+        :param scale_reference:     reference to use for transformation.
+                                    Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
         :param skew_factor_x:       factor to skew the geometry on the X axis
         :param skew_factor_y:       factor to skew the geometry on the Y axis
-        :param reference_point:     reference to use for transformation. Can be 'bottomleft', 'bottomright', 'topleft',
-                                    'topright' and those are the 4 points of the bounding box of the geometry
-                                    to be altered.
+        :param skew_reference:      reference to use for transformation.
+                                    Values: 'center', 'bottomleft', 'topleft', 'bottomright', 'topright'
         :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param opacity_val:
         :param use_thread:          if to be run in a separate thread; boolean
@@ -941,32 +939,43 @@ class Film(AppTool):
                 box_geo = unary_union(box.flatten())
 
             xmin, ymin, xmax, ymax = box_geo.bounds
-            ref_val = 'center'
-            if reference_point == 'topleft':
-                ref_val = (xmin, ymax)
-            elif reference_point == 'bottomleft':
-                ref_val = (xmin, ymin)
-            elif reference_point == 'topright':
-                ref_val = (xmax, ymax)
-            elif reference_point == 'bottomright':
-                ref_val = (xmax, ymin)
+            ref_scale_val = 'center'
+            if scale_reference == 'topleft':
+                ref_scale_val = (xmin, ymax)
+            elif scale_reference == 'bottomleft':
+                ref_scale_val = (xmin, ymin)
+            elif scale_reference == 'topright':
+                ref_scale_val = (xmax, ymax)
+            elif scale_reference == 'bottomright':
+                ref_scale_val = (xmax, ymin)
+
+            ref_skew_val = 'center'
+            if skew_reference == 'topleft':
+                ref_skew_val = (xmin, ymax)
+            elif skew_reference == 'bottomleft':
+                ref_skew_val = (xmin, ymin)
+            elif skew_reference == 'topright':
+                ref_skew_val = (xmax, ymax)
+            elif skew_reference == 'bottomright':
+                ref_skew_val = (xmax, ymin)
 
             transformed_box_geo = box_geo
 
             if scale_factor_x and not scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_val)
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0, origin=ref_scale_val)
             elif not scale_factor_x and scale_factor_y:
-                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y, origin=ref_scale_val)
             elif scale_factor_x and scale_factor_y:
                 transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
-                                                     origin=ref_val)
+                                                     origin=ref_scale_val)
 
             if skew_factor_x and not skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=ref_skew_val)
             elif not skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=ref_skew_val)
             elif skew_factor_x and skew_factor_y:
-                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=ref_val)
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y,
+                                                    origin=ref_skew_val)
 
             if mirror:
                 if mirror == 'x':
@@ -983,7 +992,7 @@ class Film(AppTool):
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                           mirror=mirror,
-                                          scale_reference=reference_point, skew_reference=reference_point,
+                                          scale_reference=scale_reference, skew_reference=skew_reference,
                                           mirror_reference='center'
                                           )
 
@@ -1174,12 +1183,23 @@ class FilmUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
+        # #############################################################################################################
+        # Source Object Frame
+        # #############################################################################################################
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
+        self.obj_combo_label.setToolTip(
+            _("Excellon object for drilling/milling operation.")
+        )
+        self.tools_box.addWidget(self.obj_combo_label)
+
+        obj_frame = FCFrame()
+        self.tools_box.addWidget(obj_frame)
+
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tools_box.addLayout(grid0)
-
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
+        obj_frame.setLayout(grid0)
 
         # Type of object for which to create the film
         self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
@@ -1225,42 +1245,33 @@ class FilmUI:
         self.tf_box_combo.is_last = True
 
         grid0.addWidget(self.tf_box_combo, 6, 0, 1, 2)
+        #
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 8, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 2)
-
-        self.film_adj_label = FCLabel('<b>%s</b>' % _("Film Adjustments"))
+        # #############################################################################################################
+        # Adjustments Frame
+        # #############################################################################################################
+        self.film_adj_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Adjustments"))
         self.film_adj_label.setToolTip(
-            _("Sometime the printers will distort the print shape, especially the Laser types.\n"
-              "This section provide the tools to compensate for the print distortions.")
+            _("Compensate print distortions.")
         )
 
-        grid0.addWidget(self.film_adj_label, 10, 0, 1, 2)
+        self.tools_box.addWidget(self.film_adj_label)
 
-        self.film_ref_label = FCLabel('%s:' % _("Reference"))
-        self.film_ref_label.setToolTip(
-            _("The reference point to be used as origin for the adjustment.\n"
-              "It can be one of the five points of the geometry bounding box.")
-        )
-        self.film_reference = RadioSet([{'label': _('Center'), 'value': 'center'},
-                                        {'label': _('Bottom Left'), 'value': 'bottomleft'},
-                                        {'label': _('Top Left'), 'value': 'topleft'},
-                                        {'label': _('Bottom Right'), 'value': 'bottomright'},
-                                        {'label': _('Top right'), 'value': 'topright'}],
-                                       orientation='vertical',
-                                       stretch=False)
+        self.adj_frame = FCFrame()
+        self.tools_box.addWidget(self.adj_frame)
 
-        grid0.addWidget(self.film_ref_label, 12, 0)
-        grid0.addWidget(self.film_reference, 12, 1)
-
-        # #############################################################################################################
-        # ############################    Transformations    ##########################################################
-        # #############################################################################################################
+        # Grid Layout
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+        self.adj_frame.setLayout(grid1)
 
         # Scale Geometry
-        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film"))
+        self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
         self.film_scale_cb.setToolTip(
             _("A value greater than 1 will stretch the film\n"
               "while a value less than 1 will jolt it.")
@@ -1270,41 +1281,58 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_scale_cb, 14, 0, 1, 2)
+        grid1.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
+        # Scale X
         self.film_scalex_label = FCLabel('%s:' % _("X factor"))
         self.film_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scalex_entry.set_range(-999.9999, 999.9999)
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_scalex_label, 16, 0)
-        grid0.addWidget(self.film_scalex_entry, 16, 1)
+        grid1.addWidget(self.film_scalex_label, 4, 0)
+        grid1.addWidget(self.film_scalex_entry, 4, 1)
 
+        # Scale Y
         self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
         self.film_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scaley_entry.set_range(-999.9999, 999.9999)
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_scaley_label, 18, 0)
-        grid0.addWidget(self.film_scaley_entry, 18, 1)
+        grid1.addWidget(self.film_scaley_label, 6, 0)
+        grid1.addWidget(self.film_scaley_entry, 6, 1)
+
+        # Scale reference
+        self.scale_ref_label = FCLabel('%s:' % _("Reference"))
+        self.scale_ref_label.setToolTip(
+            _("The reference point to be used as origin for the adjustment.")
+        )
+
+        self.scale_ref_combo = FCComboBox2()
+        self.scale_ref_combo.addItems(
+            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+
+        grid1.addWidget(self.scale_ref_label, 8, 0)
+        grid1.addWidget(self.scale_ref_combo, 8, 1)
 
         self.ois_scale = OptionalHideInputSection(self.film_scale_cb,
                                                   [
                                                       self.film_scalex_label,
                                                       self.film_scalex_entry,
                                                       self.film_scaley_label,
-                                                      self.film_scaley_entry
+                                                      self.film_scaley_entry,
+                                                      self.scale_ref_label,
+                                                      self.scale_ref_combo
                                                   ])
 
         self.scale_separator_line = QtWidgets.QFrame()
         self.scale_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.scale_separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(self.scale_separator_line, 20, 0, 1, 2)
+        grid1.addWidget(self.scale_separator_line, 10, 0, 1, 2)
 
         # Skew Geometry
-        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film"))
+        self.film_skew_cb = FCCheckBox('%s' % _("Skew"))
         self.film_skew_cb.setToolTip(
             _("Positive values will skew to the right\n"
               "while negative values will skew to the left.")
@@ -1314,41 +1342,58 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_skew_cb, 22, 0, 1, 2)
+        grid1.addWidget(self.film_skew_cb, 12, 0, 1, 2)
 
+        # Skew X
         self.film_skewx_label = FCLabel('%s:' % _("X angle"))
         self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_skewx_label, 24, 0)
-        grid0.addWidget(self.film_skewx_entry, 24, 1)
+        grid1.addWidget(self.film_skewx_label, 14, 0)
+        grid1.addWidget(self.film_skewx_entry, 14, 1)
 
+        # Skew Y
         self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
         self.film_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
 
-        grid0.addWidget(self.film_skewy_label, 26, 0)
-        grid0.addWidget(self.film_skewy_entry, 26, 1)
+        grid1.addWidget(self.film_skewy_label, 16, 0)
+        grid1.addWidget(self.film_skewy_entry, 16, 1)
+
+        # Skew Reference
+        self.skew_ref_label = FCLabel('%s:' % _("Reference"))
+        self.skew_ref_label.setToolTip(
+            _("The reference point to be used as origin for the adjustment.")
+        )
+
+        self.skew_ref_combo = FCComboBox2()
+        self.skew_ref_combo.addItems(
+            [_('Center'), _('Bottom Left'), _('Top Left'), _('Bottom Right'), _('Top right')])
+
+        grid1.addWidget(self.skew_ref_label, 18, 0)
+        grid1.addWidget(self.skew_ref_combo, 18, 1)
 
         self.ois_skew = OptionalHideInputSection(self.film_skew_cb,
                                                  [
                                                      self.film_skewx_label,
                                                      self.film_skewx_entry,
                                                      self.film_skewy_label,
-                                                     self.film_skewy_entry
+                                                     self.film_skewy_entry,
+                                                     self.skew_ref_label,
+                                                     self.skew_ref_combo
                                                  ])
 
         self.skew_separator_line1 = QtWidgets.QFrame()
         self.skew_separator_line1.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.skew_separator_line1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(self.skew_separator_line1, 28, 0, 1, 2)
+        grid1.addWidget(self.skew_separator_line1, 20, 0, 1, 2)
 
         # Mirror Geometry
-        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film"))
+        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror"))
         self.film_mirror_cb.setToolTip(
             _("Mirror the film geometry on the selected axis or on both.")
         )
@@ -1357,17 +1402,19 @@ class FilmUI:
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_mirror_cb, 30, 0, 1, 2)
+        grid1.addWidget(self.film_mirror_cb, 22, 0, 1, 2)
 
-        self.film_mirror_axis = RadioSet([{'label': _('None'), 'value': 'none'},
-                                          {'label': _('X'), 'value': 'x'},
+        self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Axis"))
+        self.film_mirror_axis_label.setToolTip(
+            _("Mirror the film geometry on the selected axis or on both.")
+        )
 
-        grid0.addWidget(self.film_mirror_axis_label, 32, 0)
-        grid0.addWidget(self.film_mirror_axis, 32, 1)
+        grid1.addWidget(self.film_mirror_axis_label, 24, 0)
+        grid1.addWidget(self.film_mirror_axis, 24, 1)
 
         self.ois_mirror = OptionalHideInputSection(self.film_mirror_cb,
                                                    [
@@ -1375,14 +1422,20 @@ class FilmUI:
                                                        self.film_mirror_axis
                                                    ])
 
-        self.mirror_separator_line2 = QtWidgets.QFrame()
-        self.mirror_separator_line2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.mirror_separator_line2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(self.mirror_separator_line2, 34, 0, 1, 2)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.film_param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.tools_box.addWidget(self.film_param_label)
 
-        self.film_param_label = FCLabel('<b>%s</b>' % _("Film Parameters"))
+        par_frame = FCFrame()
+        self.tools_box.addWidget(par_frame)
 
-        grid0.addWidget(self.film_param_label, 36, 0, 1, 2)
+        # Grid Layout
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_par.setColumnStretch(0, 0)
+        grid_par.setColumnStretch(1, 1)
+        par_frame.setLayout(grid_par)
 
         # Scale Stroke size
         self.film_scale_stroke_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1396,24 +1449,19 @@ class FilmUI:
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid0.addWidget(self.film_scale_stroke_label, 38, 0)
-        grid0.addWidget(self.film_scale_stroke_entry, 38, 1)
+        grid_par.addWidget(self.film_scale_stroke_label, 0, 0)
+        grid_par.addWidget(self.film_scale_stroke_entry, 0, 1)
 
         # Film Type
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
                                   stretch=False)
-        self.film_type_label = FCLabel('%s:' % _("Film Type"))
+        self.film_type_label = FCLabel('%s:' % _("Polarity"))
         self.film_type_label.setToolTip(
-            _("Generate a Positive black film or a Negative film.\n"
-              "Positive means that it will print the features\n"
-              "with black on a white canvas.\n"
-              "Negative means that it will print the features\n"
-              "with white on a black canvas.\n"
-              "The Film format is SVG.")
+            _("Generate a Positive black film or a Negative film.")
         )
-        grid0.addWidget(self.film_type_label, 40, 0)
-        grid0.addWidget(self.film_type, 40, 1)
+        grid_par.addWidget(self.film_type_label, 2, 0)
+        grid_par.addWidget(self.film_type, 2, 1)
 
         # Boundary for negative film generation
         self.boundary_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1432,8 +1480,8 @@ class FilmUI:
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid0.addWidget(self.boundary_label, 42, 0)
-        grid0.addWidget(self.boundary_entry, 42, 1)
+        grid_par.addWidget(self.boundary_label, 4, 0)
+        grid_par.addWidget(self.boundary_entry, 4, 1)
 
         self.boundary_label.hide()
         self.boundary_entry.hide()
@@ -1443,18 +1491,18 @@ class FilmUI:
         self.punch_cb.setToolTip(_("When checked the generated film will have holes in pads when\n"
                                    "the generated film is positive. This is done to help drilling,\n"
                                    "when done manually."))
-        grid0.addWidget(self.punch_cb, 44, 0, 1, 2)
+        grid_par.addWidget(self.punch_cb, 6, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.punch_frame = QtWidgets.QFrame()
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.punch_frame)
-        punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        punch_grid.setContentsMargins(0, 0, 0, 0)
-        self.punch_frame.setLayout(punch_grid)
+        grid_par.addWidget(self.punch_frame, 8, 0, 1, 2)
 
+        punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         punch_grid.setColumnStretch(0, 0)
         punch_grid.setColumnStretch(1, 1)
+        punch_grid.setContentsMargins(0, 0, 0, 0)
+        self.punch_frame.setLayout(punch_grid)
 
         self.ois_p = OptionalHideInputSection(self.punch_cb, [self.punch_frame])
 
@@ -1480,8 +1528,8 @@ class FilmUI:
         self.exc_combo.is_last = True
         self.exc_combo.obj_type = "Excellon"
 
-        punch_grid.addWidget(self.exc_label, 1, 0)
-        punch_grid.addWidget(self.exc_combo, 1, 1)
+        punch_grid.addWidget(self.exc_label, 2, 0)
+        punch_grid.addWidget(self.exc_combo, 2, 1)
 
         self.exc_label.hide()
         self.exc_combo.hide()
@@ -1493,27 +1541,26 @@ class FilmUI:
         self.punch_size_spinner.setSingleStep(0.1)
         self.punch_size_spinner.set_precision(self.decimals)
 
-        punch_grid.addWidget(self.punch_size_label, 2, 0)
-        punch_grid.addWidget(self.punch_size_spinner, 2, 1)
+        punch_grid.addWidget(self.punch_size_label, 4, 0)
+        punch_grid.addWidget(self.punch_size_spinner, 4, 1)
 
         self.punch_size_label.hide()
         self.punch_size_spinner.hide()
 
-        self.grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(self.grid1)
-        self.grid1.setColumnStretch(0, 0)
-        self.grid1.setColumnStretch(1, 1)
+        # #############################################################################################################
+        # Export Frame
+        # #############################################################################################################
+        self.export_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Export'))
+        self.tools_box.addWidget(self.export_label)
 
-        separator_line3 = QtWidgets.QFrame()
-        separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.grid1.addWidget(separator_line3, 0, 0, 1, 2)
+        exp_frame = FCFrame()
+        self.tools_box.addWidget(exp_frame)
 
-        # File type
-        self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
-                                         {'label': _('PNG'), 'value': 'png'},
-                                         {'label': _('PDF'), 'value': 'pdf'}
-                                         ], stretch=False)
+        # Grid Layout
+        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
+        exp_frame.setLayout(grid3)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
@@ -1522,8 +1569,15 @@ class FilmUI:
               "- 'PNG' -> raster image\n"
               "- 'PDF' -> portable document format")
         )
-        self.grid1.addWidget(self.file_type_label, 1, 0)
-        self.grid1.addWidget(self.file_type_radio, 1, 1)
+
+        # File type
+        self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
+                                         {'label': _('PNG'), 'value': 'png'},
+                                         {'label': _('PDF'), 'value': 'pdf'}
+                                         ], stretch=False)
+
+        grid3.addWidget(self.file_type_label, 0, 0)
+        grid3.addWidget(self.file_type_radio, 0, 1)
 
         # Page orientation
         self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
@@ -1539,8 +1593,8 @@ class FilmUI:
         # ################################  New Grid ##################################################################
         # #############################################################################################################
 
-        self.grid1.addWidget(self.orientation_label, 2, 0)
-        self.grid1.addWidget(self.orientation_radio, 2, 1)
+        grid3.addWidget(self.orientation_label, 2, 0)
+        grid3.addWidget(self.orientation_radio, 2, 1)
 
         # Page Size
         self.pagesize_label = FCLabel('%s:' % _("Page Size"))
@@ -1602,8 +1656,8 @@ class FilmUI:
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)
 
-        self.grid1.addWidget(self.pagesize_label, 3, 0)
-        self.grid1.addWidget(self.pagesize_combo, 3, 1)
+        grid3.addWidget(self.pagesize_label, 4, 0)
+        grid3.addWidget(self.pagesize_combo, 4, 1)
 
         self.on_film_type(val='hide')
 
@@ -1615,8 +1669,8 @@ class FilmUI:
         self.png_dpi_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.png_dpi_spinner.set_range(0, 100000)
 
-        self.grid1.addWidget(self.png_dpi_label, 4, 0)
-        self.grid1.addWidget(self.png_dpi_spinner, 4, 1)
+        grid3.addWidget(self.png_dpi_label, 6, 0)
+        grid3.addWidget(self.png_dpi_spinner, 6, 1)
 
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
@@ -1636,9 +1690,9 @@ class FilmUI:
                                    font-weight: bold;
                                }
                                """)
-        self.grid1.addWidget(self.film_object_button, 6, 0, 1, 2)
+        self.tools_box.addWidget(self.film_object_button)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
