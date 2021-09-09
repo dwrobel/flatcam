@@ -531,6 +531,8 @@ class AlignUI:
         grid2.addWidget(self.a_type_lbl, 0, 0, 1, 2)
         grid2.addWidget(self.a_type_radio, 2, 0, 1, 2)
 
+        # FCGridLayout.set_common_column_size([grid0, grid1, grid2], 0, FCLabel)
+
         # Buttons
         self.align_object_button = FCButton(_("Align Object"))
         self.align_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/align16.png'))

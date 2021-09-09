@@ -19,6 +19,8 @@ CHANGELOG for FlatCAM beta
 - updated the language strings
 - on Coppper Thieving Plugin some UI updates
 - updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
+- in Copper Thieving Plugin more UI changes
+- in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to d oto take care of the situation when widgets are spanning multiple cells
 
 8.09.2021
 

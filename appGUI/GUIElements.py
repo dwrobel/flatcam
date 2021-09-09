@@ -10,6 +10,7 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
 # ##########################################################
+import typing
 
 from PyQt6 import QtGui, QtCore, QtWidgets
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
@@ -979,7 +980,8 @@ class FCSpinner(QtWidgets.QSpinBox):
         self.menu = None
 
         if policy:
-            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                               QtWidgets.QSizePolicy.Policy.Preferred)
             self.setSizePolicy(sizePolicy)
 
     def eventFilter(self, object, event):
@@ -1244,7 +1246,8 @@ class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_step(step)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
@@ -1309,7 +1312,8 @@ class FCButtonWithDoubleSpinner(QtWidgets.QFrame):
         self.spinner.set_precision(decimals)
         self.spinner.setMinimumWidth(70)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.spinner.setSizePolicy(sizePolicy)
 
         self.layout = QtWidgets.QHBoxLayout()
@@ -4899,7 +4903,7 @@ class FCZeroAxes(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # Zero the axes
-        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0,0])
+        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
         # grbl_zero_grid.setRowStretch(4, 1)
         self.setLayout(grbl_zero_grid)
@@ -5268,9 +5272,6 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
 
 class FCGridLayout(QtWidgets.QGridLayout):
-    """
-    This class create the Sys Tray icon for the app
-    """
 
     def __init__(self, *args, v_spacing=None, h_spacing=None, c_stretch=None, margins=None, parent=None):
         """
@@ -5307,6 +5308,46 @@ class FCGridLayout(QtWidgets.QGridLayout):
                 self.setColumnStretch(idx, val)
 
         self.blockSignals(False)
+
+    @classmethod
+    def set_common_column_size(cls, grid_layout_list, column, only_wdg=None):
+        """
+
+        :param grid_layout_list:    list of FCGridLayout
+        :type grid_layout_list      list
+        :param column:              the column for which to make the size the same in all grid_grid_layout_list; int
+        :param only_wdg:            use only Widgets of this kind
+        :type only_wdg:
+        :return:
+        """
+
+        def get_max_cell_width(layout, column_no, only_this_widget=None):
+            width_list = []
+            for row in range(layout.rowCount()):
+                item = layout.itemAtPosition(row, column_no)
+                if item:
+                    item_width = item.sizeHint().width()
+
+                    if not only_this_widget:
+                        width_list.append(item_width)
+                    elif isinstance(item.widget(), only_this_widget):
+                        width_list.append(item_width)
+
+            return max(width_list) if width_list else None
+
+        # find the maximum width for all grid layouts on the specified column
+        all_col_size_list = []
+        for grid_lay in grid_layout_list:
+            lay_m_size = get_max_cell_width(grid_lay, column_no=column, only_this_widget=only_wdg)
+            if lay_m_size:
+                all_col_size_list.append(lay_m_size)
+
+        max_size = max(all_col_size_list)
+
+        if max_size:
+            # now set the found maximum size to all grid layouts on the specified column
+            for grid_lay in grid_layout_list:
+                grid_lay.setColumnMinimumWidth(column, max_size)
 
 
 def message_dialog(title, message, kind="info", parent=None):

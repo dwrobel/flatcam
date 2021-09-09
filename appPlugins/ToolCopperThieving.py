@@ -519,7 +519,7 @@ class ToolCopperThieving(AppTool):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.defaults["units"].lower()
+        # units = self.app.defaults["units"].lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -756,7 +756,7 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             tool_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
 
-            if fill_type == 1 or fill_type == 2: # 'dot' or 'square'
+            if fill_type == 1 or fill_type == 2:  # 'dot' or 'square'
                 # build the MultiPolygon of dots/squares that will fill the entire bounding box
                 thieving_list = []
 
@@ -1368,7 +1368,8 @@ class ThievingUI:
         self.area_entry.set_range(0.0, 10000.0000)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.setSingleStep(0.1)
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                      QtWidgets.QSizePolicy.Policy.Preferred)
 
         if self.units.upper() == 'MM':
             units_area_label = FCLabel('%s<sup>2</sup>' % _("mm"))
@@ -1766,9 +1767,12 @@ class ThievingUI:
         #     {"label": _("None"), "value": "n"}
         # ], orientation='vertical', stretch=False)
         self.ppm_choice_combo = FCComboBox2()
-        self.ppm_choice_combo.addItems([_("Both"),_('Thieving'), _("Robber bar"), _("None")])
+        self.ppm_choice_combo.addItems([_("Both"), _('Thieving'), _("Robber bar"), _("None")])
         grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)
         grid_lay_2.addWidget(self.ppm_choice_combo, 6, 1, 1, 2)
+
+        # FCGridLayout.set_common_column_size(
+        #     [i_grid_lay, grid_lay, grid_lay_1, grid_lay_2, dots_grid, squares_grid, lines_grid], 0, FCLabel)
 
         # #############################################################################################################
         # ## Pattern Plating Mask Button
