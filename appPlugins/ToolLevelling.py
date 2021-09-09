@@ -310,14 +310,13 @@ class ToolLevelling(AppTool, CNCjob):
         self.ui.al_method_radio.setDisabled(True)
         self.ui.al_method_radio.set_value('v')
 
-        target_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        if target_obj and target_obj.is_segmented_gcode is True:
+        if loaded_obj and loaded_obj.is_segmented_gcode is True and loaded_obj.options["type"] == 'Geometry':
             self.ui.al_frame.setDisabled(False)
-            self.ui.al_mode_radio.set_value(target_obj.options['tools_al_mode'])
+            self.ui.al_mode_radio.set_value(loaded_obj.options['tools_al_mode'])
             self.on_controller_change()
 
-            self.on_mode_radio(val=target_obj.options['tools_al_mode'])
-            self.on_method_radio(val=target_obj.options['tools_al_method'])
+            self.on_mode_radio(val=loaded_obj.options['tools_al_mode'])
+            self.on_method_radio(val=loaded_obj.options['tools_al_method'])
         else:
             self.ui.al_frame.setDisabled(True)
 
@@ -345,9 +344,9 @@ class ToolLevelling(AppTool, CNCjob):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
             return
 
-        if target_obj is None or target_obj.is_segmented_gcode is False:
-            self.ui.al_frame.setDisabled(True)
-        else:
+        if target_obj is not None and target_obj.is_segmented_gcode is True and \
+                target_obj.options["type"] == 'Geometry':
+
             self.ui.al_frame.setDisabled(False)
 
             # Shapes container for the Voronoi cells in Autolevelling
@@ -355,6 +354,9 @@ class ToolLevelling(AppTool, CNCjob):
                 self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
             else:
                 self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=obj_name + "_probing_shapes")
+            return
+
+        self.ui.al_frame.setDisabled(True)
 
     def on_object_selection_changed(self, current, previous):
         try:

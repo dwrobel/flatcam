@@ -490,6 +490,8 @@ class ToolMilling(AppTool, Excellon):
             "tools_mill_z_pdepth": self.ui.pdepth_entry,
             "tools_mill_feedrate_probe": self.ui.feedrate_probe_entry,
             "tools_mill_ppname_g": self.ui.pp_geo_name_cb,
+            "segx":    self.ui.segx_entry,
+            "segy":    self.ui.segy_entry,
 
             # "gcode_type": self.ui.excellon_gcode_type_radio,
             "tools_mill_area_exclusion": self.ui.exclusion_cb,
@@ -542,6 +544,8 @@ class ToolMilling(AppTool, Excellon):
             "mill_depth_probe": "tools_mill_z_pdepth",
             "mill_fr_probe": "tools_mill_feedrate_probe",
             "mill_ppname_g": "tools_mill_ppname_g",
+            "mill_segx":    "segx",
+            "mill_segy":    "segy",
 
             "mill_exclusion": "tools_mill_area_exclusion",
             "mill_area_shape": "tools_mill_area_shape",
@@ -2729,8 +2733,16 @@ class ToolMilling(AppTool, Excellon):
         outname = "%s_%s" % (self.target_obj.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
-        segx = segx if segx is not None else float(self.target_obj.options['segx'])
-        segy = segy if segy is not None else float(self.target_obj.options['segy'])
+        if not self.target_obj.tools:
+            segx = segx if segx is not None else float(self.target_obj.options['segx'])
+            segy = segy if segy is not None else float(self.target_obj.options['segy'])
+        else:
+            tools_list = list(self.target_obj.tools.keys())
+            # the segx and segy values are the same for all tools os we just take the values from the first tool
+            sel_tool = tools_list[0]
+            data_dict = self.target_obj.tools[sel_tool]['data']
+            segx = data_dict['segx']
+            segy = data_dict['segy']
 
         try:
             xmin = self.target_obj.options['xmin']
@@ -4443,6 +4455,52 @@ class MillingUI:
         grid3.addWidget(pp_geo_label, 12, 0)
         grid3.addWidget(self.pp_geo_name_cb, 12, 1)
 
+        # Allow Levelling
+        self.allow_level_cb = FCCheckBox('%s' % _("Allow levelling"))
+        self.allow_level_cb.setToolTip(
+            _("Allow levelling by having segments size more than zero.")
+        )
+        self.allow_level_cb.setObjectName("mill_allow_level")
+
+        grid3.addWidget(self.allow_level_cb, 14, 0, 1, 2)
+
+        # Size of trace segment on X axis
+        segx_label = FCLabel('%s:' % _("Segment X size"))
+        segx_label.setToolTip(
+            _("The size of the trace segment on the X axis.\n"
+              "Useful for auto-leveling.\n"
+              "A value of 0 means no segmentation on the X axis.")
+        )
+        self.segx_entry = FCDoubleSpinner()
+        self.segx_entry.set_range(0, 99999)
+        self.segx_entry.set_precision(self.decimals)
+        self.segx_entry.setSingleStep(0.1)
+        self.segx_entry.setWrapping(True)
+        self.segx_entry.setObjectName("mill_segx")
+
+        grid3.addWidget(segx_label, 16, 0)
+        grid3.addWidget(self.segx_entry, 16, 1)
+
+        # Size of trace segment on Y axis
+        segy_label = FCLabel('%s:' % _("Segment Y size"))
+        segy_label.setToolTip(
+            _("The size of the trace segment on the Y axis.\n"
+              "Useful for auto-leveling.\n"
+              "A value of 0 means no segmentation on the Y axis.")
+        )
+        self.segy_entry = FCDoubleSpinner()
+        self.segy_entry.set_range(0, 99999)
+        self.segy_entry.set_precision(self.decimals)
+        self.segy_entry.setSingleStep(0.1)
+        self.segy_entry.setWrapping(True)
+        self.segy_entry.setObjectName("mill_segy")
+
+        grid3.addWidget(segy_label, 18, 0)
+        grid3.addWidget(self.segy_entry, 18, 1)
+
+        self.oih = OptionalHideInputSection(self.allow_level_cb,
+                                            [segx_label, self.segx_entry, segy_label, self.segy_entry])
+
         # ------------------------------------------------------------------------------------------------------------
         # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
@@ -4458,11 +4516,11 @@ class MillingUI:
         )
         self.exclusion_cb.setObjectName("mill_exclusion")
 
-        grid3.addWidget(self.exclusion_cb, 14, 0, 1, 2)
+        grid3.addWidget(self.exclusion_cb, 20, 0, 1, 2)
 
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
-        grid3.addWidget(self.exclusion_frame, 16, 0, 1, 2)
+        grid3.addWidget(self.exclusion_frame, 22, 0, 1, 2)
 
         self.exclusion_box = QtWidgets.QVBoxLayout()
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)

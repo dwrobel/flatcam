@@ -2785,8 +2785,11 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = dwelltime
 
+        # For Autolevelling
         self.segx = float(segx) if segx is not None else 0.0
         self.segy = float(segy) if segy is not None else 0.0
+        # tells if the generated Gcode is segmented for autolevelling
+        self.is_segmented_gcode = False
 
         self.input_geometry_bounds = None
 
@@ -2813,9 +2816,6 @@ class CNCjob(Geometry):
 
         # search for toolchange code: M6
         self.re_toolchange = re.compile(r'^\s*(M6)$')
-
-        # tells if the generated Gcode is segmented for autolevelling
-        self.is_segmented_gcode = False
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents

@@ -13,7 +13,9 @@ CHANGELOG for FlatCAM beta
 - Fiducials Plugin: replaced a Radio button with a Combobox2 and optimized the UI
 - The Combobox2 GUI element no longer issue an exception if it is tried to set a string value, it will set automatically the index 0
 - some changes in the Preferences UI for Film and Fiducial Plugins
-
+- in Milling Plugin added a property that allows to segment the resulting GCode threfore allowing autolevelling
+- in Levelling Plugin added a check that allow levelling only for CNC Job objects resulted from Geometry
+- some minor changes
 
 8.09.2021
 
