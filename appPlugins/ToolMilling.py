@@ -430,14 +430,17 @@ class ToolMilling(AppTool, Excellon):
 
             if not selected_obj:
                 self.ui.target_radio.set_value('geo')
-
-            if selected_obj.kind == 'excellon':
-                self.ui.target_radio.set_value('exc')
-                self.ui.object_combo.set_value(selected_obj.options['name'])
-
-            if selected_obj.kind == 'geometry':
-                self.ui.target_radio.set_value('geo')
-                self.ui.object_combo.set_value(selected_obj.options['name'])
+                self.ui.object_combo.setCurrentIndex(0)
+            else:
+                if selected_obj.kind == 'excellon':
+                    self.ui.target_radio.set_value('exc')
+                    self.ui.object_combo.set_value(selected_obj.options['name'])
+                elif selected_obj.kind == 'geometry':
+                    self.ui.target_radio.set_value('geo')
+                    self.ui.object_combo.set_value(selected_obj.options['name'])
+                else:
+                    self.ui.target_radio.set_value('geo')
+                    self.ui.object_combo.setCurrentIndex(0)
 
         except Exception as err:
             self.app.log.error("ToolMilling.set_tool_ui() --> %s" % str(err))

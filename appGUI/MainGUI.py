@@ -4222,6 +4222,31 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key.Key_J:
                     self.app.on_jump_to()
+        elif self.app.call_source == 'corners_tool':
+            # CTRL + ALT
+            if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier | QtCore.Qt.KeyboardModifier.AltModifier:
+                if key == QtCore.Qt.Key.Key_X:
+                    self.app.abort_all_tasks()
+                    return
+            elif modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.KeyboardModifier.AltModifier:
+                pass
+            # NO MODIFIER
+            elif modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+                # Escape = Deselect All
+                if key == QtCore.Qt.Key.Key_Escape or key == 'Escape':
+                    self.app.corners_tool.on_exit(cancelled=True)
+
+                # Grid toggle
+                if key == QtCore.Qt.Key.Key_G:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                # Jump to coords
+                if key == QtCore.Qt.Key.Key_J:
+                    self.app.on_jump_to()
 
     def eventFilter(self, obj, event):
         """

@@ -55,10 +55,14 @@ class ToolCorners(AppTool):
         # store the flattened geometry here:
         self.flat_geometry = []
 
+        self.mr = None
+
         # Tool properties
         self.fid_dia = None
 
         self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
+
+        self.handlers_connected = False
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -153,6 +157,9 @@ class ToolCorners(AppTool):
             obj_name = obj.options['name']
             self.ui.object_combo.set_value(obj_name)
 
+        if obj is None:
+            self.ui.object_combo.setCurrentIndex(0)
+
         # Show/Hide Advanced Options
         app_mode = self.app.defaults["global_app_level"]
         self.change_level(app_mode)
@@ -211,19 +218,34 @@ class ToolCorners(AppTool):
         if val == 'a':
             self.ui.locs_label.setDisabled(False)
             self.ui.loc_frame.setDisabled(False)
+
+            self.ui.type_label.setDisabled(False)
+            self.ui.type_radio.setDisabled(False)
+            self.ui.margin_label.setDisabled(False)
+            self.ui.margin_entry.setDisabled(False)
         else:
             self.ui.locs_label.setDisabled(True)
             self.ui.loc_frame.setDisabled(True)
 
+            self.ui.type_label.setDisabled(True)
+            self.ui.type_radio.setDisabled(True)
+            self.ui.margin_label.setDisabled(True)
+            self.ui.margin_entry.setDisabled(True)
+            self.ui.type_radio.set_value('c')
+
     def add_markers(self):
+        self.app.call_source = "corners_tool"
         select_type = self.ui.sel_radio.get_value()
         if select_type == 'a':
             self.handle_automatic_placement()
         else:
-            self.handle_manual_placement()
+            self.app.inform.emit('%s' % _("Click to add next marker or right click to finish."))
+            # it works only with cross markers
+            self.ui.type_radio.set_value('c')
+            self.app.ui.notebook.setDisabled(True)
+            self.connect_event_handlers()
 
     def handle_automatic_placement(self):
-        self.app.call_source = "corners_tool"
         tl_state = self.ui.tl_cb.get_value()
         tr_state = self.ui.tr_cb.get_value()
         bl_state = self.ui.bl_cb.get_value()
@@ -260,6 +282,28 @@ class ToolCorners(AppTool):
             return
 
         self.on_exit(ret_val)
+
+    def handle_manual_placement(self):
+        # self.app.inform.emit('[ERROR_NOTCL] %s' % "Not implemented yet.")
+
+        # get the Gerber object on which the corner marker will be inserted
+        selection_index = self.ui.object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
+
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.error("ToolCorners.add_markers() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.on_exit()
+            return
+
+        ret_val = self.add_corners_geo(self.points, g_obj=self.grb_object)
+        if ret_val == 'fail':
+            self.on_exit(ok=False)
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
+        self.on_exit()
 
     def add_corners_geo(self, points_storage, g_obj):
         """
@@ -362,6 +406,22 @@ class ToolCorners(AppTool):
                     ])
                 geo_list.append(line_geo_hor)
                 geo_list.append(line_geo_vert)
+            if key == 'manual':
+                if points_storage['manual']:
+                    for man_pt in points_storage['manual']:
+                        x = man_pt[0] - line_thickness / 2.0
+                        y = man_pt[1] + line_thickness / 2.0
+                        line_geo_hor = LineString([
+                            (x - line_length, y), (x + line_length, y)
+                        ])
+                        line_geo_vert = LineString([
+                            (x, y + line_length), (x, y - line_length)
+                        ])
+                        geo_list.append(line_geo_hor)
+                        geo_list.append(line_geo_vert)
+                else:
+                    self.app.log.warning("Not enough points.")
+                    return "fail"
 
         new_apertures = deepcopy(g_obj.tools)
 
@@ -436,9 +496,6 @@ class ToolCorners(AppTool):
         ret = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
 
         return ret
-
-    def handle_manual_placement(self):
-        self.app.inform.emit('[ERROR_NOTCL] %s' % "Not implemented yet.")
 
     def on_create_drill_object(self):
         self.app.call_source = "corners_tool"
@@ -649,7 +706,7 @@ class ToolCorners(AppTool):
         else:
             worker_task()
 
-    def on_exit(self, corner_gerber_obj=None):
+    def on_exit(self, corner_gerber_obj=None, cancelled=None, ok=True):
         # plot the object
         if corner_gerber_obj:
             try:
@@ -671,7 +728,76 @@ class ToolCorners(AppTool):
             log.error("ToolCorners.on_exit() copper_obj bounds error --> %s" % str(e))
 
         self.app.call_source = "app"
-        self.app.inform.emit('[success] %s' % _("A Gerber object with corner markers was created."))
+        self.app.ui.notebook.setDisabled(False)
+        self.disconnect_event_handlers()
+
+        if cancelled is True:
+            self.app.delete_selection_shape()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
+            return
+
+        if ok:
+            self.app.inform.emit('[success] %s' % _("A Gerber object with corner markers was created."))
+
+    def connect_event_handlers(self):
+        if self.handlers_connected is False:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+
+            self.handlers_connected = True
+
+    def disconnect_event_handlers(self):
+        if self.handlers_connected is True:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.handlers_connected = False
+            self.app.ui.notebook.setDisabled(False)
+
+    def on_mouse_move(self, event):
+        pass
+
+    def on_mouse_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+            self.app.event_is_dragging = self.app.event_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
+
+        if event.button == 1:
+            pos_canvas = self.canvas.translate_coords(event_pos)
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+
+            if 'manual' not in self.points:
+                self.points['manual'] = []
+            self.points['manual'].append(pos)
+
+            self.app.inform.emit(
+                '%s: %d. %s' %
+                (_("Added marker"), len(self.points['manual']),
+                 _("Click to add next marker or right click to finish.")))
+
+        elif event.button == right_button and self.app.event_is_dragging is False:
+            self.handle_manual_placement()
 
 
 class CornersUI:

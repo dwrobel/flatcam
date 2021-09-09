@@ -189,6 +189,9 @@ class ToolFiducials(AppTool):
             obj_name = obj.options['name']
             self.ui.grb_object_combo.set_value(obj_name)
 
+        if obj is None:
+            self.ui.grb_object_combo.setCurrentIndex(0)
+
     def change_level(self, level):
         """
 
@@ -598,12 +601,16 @@ class ToolFiducials(AppTool):
         self.on_exit()
 
     def on_mouse_release(self, event):
-        if event.button == 1:
-            if self.app.is_legacy is False:
-                event_pos = event.pos
-            else:
-                event_pos = (event.xdata, event.ydata)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+            self.app.event_is_dragging = self.app.event_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
 
+        if event.button == 1:
             pos_canvas = self.canvas.translate_coords(event_pos)
             if self.app.grid_status():
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -619,7 +626,7 @@ class ToolFiducials(AppTool):
             )
             self.check_points()
 
-        if event.button == 2:
+        elif event.button == right_button and self.app.event_is_dragging is False:
             self.on_exit(cancelled=True)
 
     def check_points(self):

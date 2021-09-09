@@ -22,7 +22,11 @@ CHANGELOG for FlatCAM beta
 - in Copper Thieving Plugin more UI changes
 - in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to d oto take care of the situation when widgets are spanning multiple cells
 - in Fiducials Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
-
+- in Fiducials Plugin addressed the situation when no object is selected but there are available
+- in Fiducials Plugin when adding manual fiducials now panning is allowed without cancelling the process of adding
+- in Corners Plugin implemented the manual adding of markers
+- in Corners Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
+- 
 8.09.2021
 
 - in Calculator Plugin, in Units Calculator added more units conversions
