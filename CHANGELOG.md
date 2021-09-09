@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - in Milling Plugin added a property that allows to segment the resulting GCode threfore allowing autolevelling
 - in Levelling Plugin added a check that allow levelling only for CNC Job objects resulted from Geometry
 - some minor changes
+- updated the language strings
 
 8.09.2021
 
