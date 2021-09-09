@@ -600,8 +600,6 @@ class CalcUI:
         self.layout.addWidget(v_frame)
 
         grid_vshape = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_vshape.setColumnStretch(0, 0)
-        grid_vshape.setColumnStretch(1, 1)
         v_frame.setLayout(grid_vshape)
 
         # self.v_shape_spacer_label = FCLabel(" ")
@@ -680,9 +678,6 @@ class CalcUI:
         self.layout.addWidget(ep_frame)
 
         grid_electro = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_electro.setColumnStretch(0, 0)
-        grid_electro.setColumnStretch(1, 1)
-
         ep_frame.setLayout(grid_electro)
 
         # grid_electro.addWidget(FCLabel(""), 0, 0, 1, 2)
@@ -862,9 +857,6 @@ class CalcUI:
         self.layout.addWidget(tin_frame)
 
         grid_tin = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_tin.setColumnStretch(0, 0)
-        grid_tin.setColumnStretch(1, 1)
-
         tin_frame.setLayout(grid_tin)
 
         # Solution

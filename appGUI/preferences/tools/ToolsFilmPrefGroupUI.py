@@ -36,8 +36,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(adj_frame)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         adj_frame.setLayout(grid0)
 
         # Scale Geometry
@@ -58,8 +56,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(scale_frame, 4, 0, 1, 2)
 
         grid_scale = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_scale.setColumnStretch(0, 0)
-        grid_scale.setColumnStretch(1, 1)
         scale_frame.setLayout(grid_scale)
 
         # Scale X factor
@@ -113,8 +109,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(skew_frame, 8, 0, 1, 2)
 
         grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_skew.setColumnStretch(0, 0)
-        grid_skew.setColumnStretch(1, 1)
         skew_frame.setLayout(grid_skew)
 
         self.film_skewx_label = FCLabel('%s:' % _("X angle"))
@@ -188,8 +182,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(par_frame)
 
         grid_par = FCGridLayout()
-        grid_par.setColumnStretch(0, 0)
-        grid_par.setColumnStretch(1, 1)
         par_frame.setLayout(grid_par)
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},

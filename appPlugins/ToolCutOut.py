@@ -2333,8 +2333,6 @@ class CutoutUI:
 
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         obj_frame.setLayout(grid0)
 
         # Object kind
@@ -2388,8 +2386,6 @@ class CutoutUI:
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         tool_frame.setLayout(grid1)
 
         # Tool Diameter
@@ -2448,8 +2444,6 @@ class CutoutUI:
 
         # Grid Layout
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
         tool_par_frame.setLayout(grid2)
 
         # Convex Shape
@@ -2762,8 +2756,6 @@ class CutoutUI:
 
         # Grid Layout
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
         self.drill_cut_frame.setLayout(grid3)
 
         # Drilling Geo Object Label

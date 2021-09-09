@@ -10,7 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from camlib import grace
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+    VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 from appCommon.Common import LoudDict
 
 import shapely.geometry.base as base
@@ -150,8 +150,8 @@ class ToolCopperThieving(AppTool):
     def connect_signals_at_init(self):
         # SIGNALS
         self.ui.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
-        self.ui.reference_radio.group_toggle_fn = self.on_toggle_reference
-        self.ui.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+        self.ui.reference_combo.currentIndexChanged.connect(self.on_toggle_reference)
+        self.ui.fill_type_combo.currentIndexChanged.connect(self.on_thieving_type)
 
         self.ui.fill_button.clicked.connect(self.on_add_copper_thieving_click)
         self.ui.rb_button.clicked.connect(self.on_add_robber_bar_click)
@@ -171,9 +171,9 @@ class ToolCopperThieving(AppTool):
 
         self.ui.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
         self.ui.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
-        self.ui.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
+        self.ui.reference_combo.set_value(self.app.defaults["tools_copper_thieving_reference"])
         self.ui.bbox_type_radio.set_value(self.app.defaults["tools_copper_thieving_box_type"])
-        self.ui.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
+        self.ui.fill_type_combo.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
 
         self.ui.area_entry.set_value(self.app.defaults["tools_copper_thieving_area"])
         self.ui.dot_dia_entry.set_value(self.app.defaults["tools_copper_thieving_dots_dia"])
@@ -187,7 +187,7 @@ class ToolCopperThieving(AppTool):
         self.ui.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
         self.ui.only_pads_cb.set_value(self.app.defaults["tools_copper_thieving_only_apds"])
         self.ui.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
-        self.ui.ppm_choice_radio.set_value(self.app.defaults["tools_copper_thieving_geo_choice"])
+        self.ui.ppm_choice_combo.set_value(self.app.defaults["tools_copper_thieving_geo_choice"])
 
         # INIT SECTION
         self.handlers_connected = False
@@ -210,48 +210,49 @@ class ToolCopperThieving(AppTool):
         }[self.ui.ref_combo_type.get_value()]
 
     def on_toggle_reference(self):
-        if self.ui.reference_radio.get_value() == "itself" or self.ui.reference_radio.get_value() == "area":
+        ref_val = self.ui.reference_combo.get_value()
+        # if in ["itself", "area"]
+        if ref_val == 0 or ref_val == 1:
             self.ui.ref_combo.hide()
-            self.ui.ref_combo_label.hide()
             self.ui.ref_combo_type.hide()
             self.ui.ref_combo_type_label.hide()
         else:
             self.ui.ref_combo.show()
-            self.ui.ref_combo_label.show()
             self.ui.ref_combo_type.show()
             self.ui.ref_combo_type_label.show()
 
-        if self.ui.reference_radio.get_value() == "itself":
+        if ref_val == 0:    # "itself"
             self.ui.bbox_type_label.show()
             self.ui.bbox_type_radio.show()
         else:
-            if self.ui.fill_type_radio.get_value() == 'line':
-                self.ui.reference_radio.set_value('itself')
+            if self.ui.fill_type_combo.get_value() == 3:    # 'line'
+                self.ui.reference_combo.set_value(0)    # 'itself'
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
                 return
 
             self.ui.bbox_type_label.hide()
             self.ui.bbox_type_radio.hide()
 
-    def on_thieving_type(self, choice):
-        if choice == 'solid':
+    def on_thieving_type(self, new_index):
+        if new_index == 0:     # "solid"
             self.ui.dots_frame.hide()
             self.ui.squares_frame.hide()
             self.ui.lines_frame.hide()
             self.app.inform.emit(_("Solid fill selected."))
-        elif choice == 'dot':
+        elif new_index == 1:   # 'dot'
             self.ui.dots_frame.show()
             self.ui.squares_frame.hide()
             self.ui.lines_frame.hide()
             self.app.inform.emit(_("Dots grid fill selected."))
-        elif choice == 'square':
+        elif new_index == 2:   # 'square'
             self.ui.dots_frame.hide()
             self.ui.squares_frame.show()
             self.ui.lines_frame.hide()
             self.app.inform.emit(_("Squares grid fill selected."))
-        else:
-            if self.ui.reference_radio.get_value() != 'itself':
-                self.ui.reference_radio.set_value('itself')
+        else:   # 'lines'
+            ref_val = self.ui.reference_combo.get_value()
+            if ref_val != 0:    # 'itself'
+                self.ui.reference_combo.set_value(0)    # 'itself'
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
 
             self.ui.dots_frame.hide()
@@ -358,7 +359,7 @@ class ToolCopperThieving(AppTool):
 
         self.clearance_val = self.ui.clearance_entry.get_value()
         self.margin_val = self.ui.margin_entry.get_value()
-        reference_method = self.ui.reference_radio.get_value()
+        reference_method = self.ui.reference_combo.get_value()
 
         # get the Gerber object on which the Copper thieving will be inserted
         selection_index = self.ui.grb_object_combo.currentIndex()
@@ -371,7 +372,7 @@ class ToolCopperThieving(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if reference_method == 'itself':
+        if reference_method == 0:   # 'itself'
             bound_obj_name = self.ui.grb_object_combo.currentText()
 
             # Get reference object.
@@ -387,11 +388,11 @@ class ToolCopperThieving(AppTool):
                 margin=self.margin_val
             )
 
-        elif reference_method == 'area':
+        elif reference_method == 1:     # 'area'
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
             self.connect_event_handlers()
 
-        elif reference_method == 'box':
+        elif reference_method == 2:     # 'box'
             bound_obj_name = self.ui.ref_combo.currentText()
 
             # Get reference object.
@@ -555,14 +556,14 @@ class ToolCopperThieving(AppTool):
         log.debug("Copper Thieving Tool started. Reading parameters.")
         self.app.inform.emit(_("Copper Thieving Tool started. Reading parameters."))
 
-        ref_selected = self.ui.reference_radio.get_value()
+        ref_selected = self.ui.reference_combo.get_value()
         if c_val is None:
             c_val = float(self.app.defaults["tools_copper_thieving_clearance"])
         if margin is None:
             margin = float(self.app.defaults["tools_copper_thieving_margin"])
         min_area = self.ui.area_entry.get_value()
 
-        fill_type = self.ui.fill_type_radio.get_value()
+        fill_type = self.ui.fill_type_combo.get_value()
         dot_dia = self.ui.dot_dia_entry.get_value()
         dot_spacing = self.ui.dot_spacing_entry.get_value()
         square_size = self.ui.square_size_entry.get_value()
@@ -628,7 +629,7 @@ class ToolCopperThieving(AppTool):
             tool_obj.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
 
             try:
-                if ref_obj is None or ref_obj == 'itself':
+                if ref_obj is None or ref_selected == 0:    # 'itself'
                     working_obj = thieving_obj
                 else:
                     working_obj = ref_obj
@@ -641,7 +642,7 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             # generate the bounding box geometry
             # #########################################################################################################
-            if ref_selected == 'itself':
+            if ref_selected == 0:   # 'itself'
                 geo_n = deepcopy(working_obj.solid_geometry)
 
                 try:
@@ -677,7 +678,7 @@ class ToolCopperThieving(AppTool):
                     log.error("ToolCopperFIll.copper_thieving()  'itself'  --> %s" % str(e))
                     tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                     return 'fail'
-            elif ref_selected == 'area':
+            elif ref_selected == 1:     # 'area'
                 geo_buff_list = []
                 try:
                     for poly in working_obj:
@@ -755,11 +756,11 @@ class ToolCopperThieving(AppTool):
             # #########################################################################################################
             tool_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
 
-            if fill_type == 'dot' or fill_type == 'square':
+            if fill_type == 1 or fill_type == 2: # 'dot' or 'square'
                 # build the MultiPolygon of dots/squares that will fill the entire bounding box
                 thieving_list = []
 
-                if fill_type == 'dot':
+                if fill_type == 1:  # 'dot'
                     radius = dot_dia / 2.0
                     new_x = x0 + radius
                     new_y = y0 + radius
@@ -770,7 +771,7 @@ class ToolCopperThieving(AppTool):
                             new_y += dot_dia + dot_spacing
                         new_x += dot_dia + dot_spacing
                         new_y = y0 + radius
-                else:
+                else:   # 'square'
                     h_size = square_size / 2.0
                     new_x = x0 + h_size
                     new_y = y0 + h_size
@@ -802,7 +803,7 @@ class ToolCopperThieving(AppTool):
 
                 tool_obj.thief_solid_geometry = thieving_geo
 
-            if fill_type == 'line':
+            if fill_type == 3:  # 'line'
                 half_thick_line = line_size / 2.0
 
                 # create a thick polygon-line that surrounds the copper features
@@ -978,7 +979,7 @@ class ToolCopperThieving(AppTool):
 
     def on_new_pattern_plating_object(self):
         ppm_clearance = self.ui.clearance_ppm_entry.get_value()
-        geo_choice = self.ui.ppm_choice_radio.get_value()
+        geo_choice = self.ui.ppm_choice_combo.get_value()
         rb_thickness = self.ui.rb_thickness_entry.get_value()
         only_pads = self.ui.only_pads_cb.get_value()
 
@@ -1051,7 +1052,7 @@ class ToolCopperThieving(AppTool):
         new_follow_geo = deepcopy(self.sm_object.follow_geometry)
 
         # if we have copper thieving geometry, add it
-        if thieving_solid_geo and geo_choice in ['b', 't']:
+        if thieving_solid_geo and geo_choice in [0, 1]:     # ['b', 't']
             # add to the total the thieving geometry area, if chosen
             for geo in thieving_solid_geo:
                 plated_area += geo.area
@@ -1089,7 +1090,7 @@ class ToolCopperThieving(AppTool):
                 new_apertures[0]['geometry'].append(deepcopy(geo_elem))
 
         # if we have robber bar geometry, add it
-        if robber_solid_geo and geo_choice in ['b', 'r']:
+        if robber_solid_geo and geo_choice in [0, 2]:   # 'b', 'r'
             # add to the total the robber bar geometry are, if chose
             plated_area += robber_solid_geo.area
 
@@ -1304,8 +1305,6 @@ class ThievingUI:
 
         # ## Grid Layout
         i_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        i_grid_lay.setColumnStretch(0, 0)
-        i_grid_lay.setColumnStretch(1, 1)
         self.tools_box.addLayout(i_grid_lay)
 
         self.grb_object_combo = FCComboBox()
@@ -1329,8 +1328,6 @@ class ThievingUI:
 
         # ## Grid Layout
         grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
         tp_frame.setLayout(grid_lay)
 
         # CLEARANCE #
@@ -1385,21 +1382,19 @@ class ThievingUI:
         grid_lay.addLayout(area_hlay, 6, 1)
 
         # Reference #
-        self.reference_radio = RadioSet([
-            {'label': _('Itself'), 'value': 'itself'},
-            {"label": _("Area Selection"), "value": "area"},
-            {'label': _("Reference Object"), 'value': 'box'}
-        ], orientation='vertical', stretch=False)
         self.reference_label = FCLabel(_("Reference:"))
         self.reference_label.setToolTip(
             _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
-        grid_lay.addWidget(self.reference_label, 8, 0)
-        grid_lay.addWidget(self.reference_radio, 8, 1)
+        self.reference_combo = FCComboBox2()
+        self.reference_combo.addItems([_('Itself'), _("Area Selection"), _("Reference Object")])
 
-        self.ref_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
+        grid_lay.addWidget(self.reference_label, 8, 0)
+        grid_lay.addWidget(self.reference_combo, 8, 1)
+
+        self.ref_combo_type_label = FCLabel('%s:' % _("Type"))
         self.ref_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as copper thieving reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -1410,10 +1405,7 @@ class ThievingUI:
         grid_lay.addWidget(self.ref_combo_type_label, 10, 0)
         grid_lay.addWidget(self.ref_combo_type, 10, 1)
 
-        self.ref_combo_label = FCLabel('%s:' % _("Ref. Object"))
-        self.ref_combo_label.setToolTip(
-            _("The Application object to be used as non copper clearing reference.")
-        )
+        # Object Reference
         self.ref_combo = FCComboBox()
         self.ref_combo.setModel(self.app.collection)
         self.ref_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1422,11 +1414,9 @@ class ThievingUI:
             _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
         }[self.ref_combo_type.get_value()]
 
-        grid_lay.addWidget(self.ref_combo_label, 12, 0)
-        grid_lay.addWidget(self.ref_combo, 12, 1)
+        grid_lay.addWidget(self.ref_combo, 12, 0, 1, 2)
 
         self.ref_combo.hide()
-        self.ref_combo_label.hide()
         self.ref_combo_type.hide()
         self.ref_combo_type_label.hide()
 
@@ -1452,21 +1442,18 @@ class ThievingUI:
         grid_lay.addWidget(separator_line, 16, 0, 1, 2)
 
         # Fill Type
-        self.fill_type_radio = RadioSet([
-            {'label': _('Solid'), 'value': 'solid'},
-            {"label": _("Dots Grid"), "value": "dot"},
-            {"label": _("Squares Grid"), "value": "square"},
-            {"label": _("Lines Grid"), "value": "line"}
-        ], orientation='vertical', stretch=False)
-        self.fill_type_label = FCLabel(_("Fill Type:"))
+        self.fill_type_label = FCLabel('%s:' % _("Fill"))
         self.fill_type_label.setToolTip(
             _("- 'Solid' - copper thieving will be a solid polygon.\n"
               "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
               "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
               "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
         )
+
+        self.fill_type_combo = FCComboBox2()
+        self.fill_type_combo.addItems([_('Solid'), _("Dots Grid"), _("Squares Grid"), _("Lines Grid")])
         grid_lay.addWidget(self.fill_type_label, 18, 0)
-        grid_lay.addWidget(self.fill_type_radio, 18, 1)
+        grid_lay.addWidget(self.fill_type_combo, 18, 1)
 
         # #############################################################################################################
         # DOTS FRAME
@@ -1476,8 +1463,6 @@ class ThievingUI:
         grid_lay.addWidget(self.dots_frame, 20, 0, 1, 2)
 
         dots_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        dots_grid.setColumnStretch(0, 0)
-        dots_grid.setColumnStretch(1, 1)
         dots_grid.setContentsMargins(0, 0, 0, 0)
         self.dots_frame.setLayout(dots_grid)
         self.dots_frame.hide()
@@ -1524,8 +1509,6 @@ class ThievingUI:
         grid_lay.addWidget(self.squares_frame, 22, 0, 1, 2)
 
         squares_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        squares_grid.setColumnStretch(0, 0)
-        squares_grid.setColumnStretch(1, 1)
         squares_grid.setContentsMargins(0, 0, 0, 0)
         self.squares_frame.setLayout(squares_grid)
         self.squares_frame.hide()
@@ -1572,8 +1555,6 @@ class ThievingUI:
         grid_lay.addWidget(self.lines_frame, 24, 0, 1, 2)
 
         lines_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        lines_grid.setColumnStretch(0, 0)
-        lines_grid.setColumnStretch(1, 1)
         lines_grid.setContentsMargins(0, 0, 0, 0)
         self.lines_frame.setLayout(lines_grid)
         self.lines_frame.hide()
@@ -1644,10 +1625,7 @@ class ThievingUI:
         self.tools_box.addWidget(rob_frame)
 
         # ## Grid Layout
-        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_lay_1.setColumnStretch(0, 0)
-        grid_lay_1.setColumnStretch(1, 1)
-        grid_lay_1.setColumnStretch(2, 0)
+        grid_lay_1 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         rob_frame.setLayout(grid_lay_1)
 
         # separator_line_1 = QtWidgets.QFrame()
@@ -1730,10 +1708,7 @@ class ThievingUI:
         self.tools_box.addWidget(pp_frame)
 
         # ## Grid Layout
-        grid_lay_2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_lay_2.setColumnStretch(0, 0)
-        grid_lay_2.setColumnStretch(1, 1)
-        grid_lay_2.setColumnStretch(2, 0)
+        grid_lay_2 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         pp_frame.setLayout(grid_lay_2)
 
         # Only Pads
@@ -1784,14 +1759,16 @@ class ThievingUI:
         self.ppm_choice_label.setToolTip(
             _("Choose which additional geometry to include, if available.")
         )
-        self.ppm_choice_radio = RadioSet([
-            {"label": _("Both"), "value": "b"},
-            {'label': _('Thieving'), 'value': 't'},
-            {"label": _("Robber bar"), "value": "r"},
-            {"label": _("None"), "value": "n"}
-        ], orientation='vertical', stretch=False)
+        # self.ppm_choice_combo = RadioSet([
+        #     {"label": _("Both"), "value": "b"},
+        #     {'label': _('Thieving'), 'value': 't'},
+        #     {"label": _("Robber bar"), "value": "r"},
+        #     {"label": _("None"), "value": "n"}
+        # ], orientation='vertical', stretch=False)
+        self.ppm_choice_combo = FCComboBox2()
+        self.ppm_choice_combo.addItems([_("Both"),_('Thieving'), _("Robber bar"), _("None")])
         grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)
-        grid_lay_2.addWidget(self.ppm_choice_radio, 6, 1, 1, 2)
+        grid_lay_2.addWidget(self.ppm_choice_combo, 6, 1, 1, 2)
 
         # #############################################################################################################
         # ## Pattern Plating Mask Button

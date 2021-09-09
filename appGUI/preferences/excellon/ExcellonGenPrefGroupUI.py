@@ -58,8 +58,6 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
 
         # Excellon format
         self.excellon_format_label = FCLabel("<b>%s:</b>" % _("Excellon Format"))

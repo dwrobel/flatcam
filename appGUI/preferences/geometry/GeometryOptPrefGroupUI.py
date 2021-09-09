@@ -36,8 +36,6 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
 
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
 
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))

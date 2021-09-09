@@ -827,9 +827,7 @@ class AppGCodeEditorUI:
         self.snippet_frame.setContentsMargins(0, 0, 0, 0)
         self.edit_box.addWidget(self.snippet_frame)
 
-        self.snippet_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        # self.snippet_grid.setColumnStretch(0, 0)
-        # self.snippet_grid.setColumnStretch(1, 1)
+        self.snippet_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
         self.snippet_grid.setContentsMargins(0, 0, 0, 0)
         self.snippet_frame.setLayout(self.snippet_grid)
 

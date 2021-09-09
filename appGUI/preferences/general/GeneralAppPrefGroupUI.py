@@ -27,8 +27,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Create a form layout for the Application general settings
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
 
         # Units for FlatCAM
         self.unitslabel = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))

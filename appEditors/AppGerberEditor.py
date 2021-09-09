@@ -6094,8 +6094,6 @@ class AppGerberEditorUI:
         # #############################################################################################################
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.apertures_box.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
 
         # Title
         apadd_del_lbl = FCLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
@@ -6194,8 +6192,6 @@ class AppGerberEditorUI:
         self.custom_box.addWidget(self.shape_frame)
 
         self.shape_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.shape_grid.setColumnStretch(0, 0)
-        self.shape_grid.setColumnStretch(1, 1)
         self.shape_grid.setContentsMargins(0, 0, 0, 0)
         self.shape_frame.setLayout(self.shape_grid)
 
@@ -6215,12 +6211,7 @@ class AppGerberEditorUI:
         )
         self.shape_grid.addWidget(param_title, 4, 0, 1, 3)
 
-        p_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        p_grid.setColumnStretch(0, 0)
-        p_grid.setColumnStretch(1, 0)
-        p_grid.setColumnStretch(2, 0)
-        p_grid.setColumnStretch(3, 1)
-        p_grid.setColumnStretch(4, 0)
+        p_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 0, 1, 0])
 
         # Is Valid
         valid_lbl = FCLabel('<b>%s</b>:' % _("Valid"))
@@ -6333,8 +6324,6 @@ class AppGerberEditorUI:
 
         # Grid Layout
         buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        buff_grid.setColumnStretch(0, 0)
-        buff_grid.setColumnStretch(1, 1)
         self.buffer_tools_box.addLayout(buff_grid)
 
         # Buffer distance
@@ -6393,8 +6382,6 @@ class AppGerberEditorUI:
 
         # Grid Layout
         scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        scale_grid.setColumnStretch(0, 0)
-        scale_grid.setColumnStretch(1, 1)
         self.scale_tools_box.addLayout(scale_grid)
 
         self.scale_factor_lbl = FCLabel('%s:' % _("Scale factor"))
@@ -6444,8 +6431,6 @@ class AppGerberEditorUI:
 
         # Form Layout
         mark_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        mark_grid.setColumnStretch(0, 0)
-        mark_grid.setColumnStretch(1, 1)
         self.ma_tools_box.addLayout(mark_grid)
 
         # Upper Threshold
@@ -6515,8 +6500,6 @@ class AppGerberEditorUI:
         self.array_box.addWidget(separator_line)
 
         array_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        array_grid.setColumnStretch(0, 0)
-        array_grid.setColumnStretch(1, 1)
         self.array_box.addLayout(array_grid)
 
         # Title
@@ -6691,11 +6674,8 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        grid0.setColumnStretch(2, 0)
 
         grid0.addWidget(FCLabel(''))
 

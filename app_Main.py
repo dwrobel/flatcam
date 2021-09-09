@@ -3425,10 +3425,8 @@ class App(QtCore.QObject):
                     },
                 ]
 
-                self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
+                self.prog_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1])
                 self.prog_grid_lay.setHorizontalSpacing(20)
-                self.prog_grid_lay.setColumnStretch(0, 0)
-                self.prog_grid_lay.setColumnStretch(2, 1)
 
                 prog_widget = QtWidgets.QWidget()
                 prog_widget.setLayout(self.prog_grid_lay)
@@ -3468,11 +3466,7 @@ class App(QtCore.QObject):
                         self.prog_grid_lay.addWidget(FCLabel(''), line, 0)
                         line += 1
 
-                self.translator_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-                self.translator_grid_lay.setColumnStretch(0, 0)
-                self.translator_grid_lay.setColumnStretch(1, 0)
-                self.translator_grid_lay.setColumnStretch(2, 1)
-                self.translator_grid_lay.setColumnStretch(3, 0)
+                self.translator_grid_lay = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0, 1, 0])
 
                 # trans_widget = QtWidgets.QWidget()
                 # trans_widget.setLayout(self.translator_grid_lay)
@@ -3679,10 +3673,8 @@ class App(QtCore.QObject):
                 self.intro_tab_layout.setContentsMargins(2, 2, 2, 2)
                 tab_widget.addTab(self.intro_tab, _("Contribute"))
 
-                self.grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-                self.grid_lay.setHorizontalSpacing(20)
-                self.grid_lay.setColumnStretch(0, 0)
-                self.grid_lay.setColumnStretch(1, 1)
+                self.grid_lay = FCGridLayout(v_spacing=5, h_spacing=20)
+                # self.grid_lay.setHorizontalSpacing(20)
 
                 intro_wdg = QtWidgets.QWidget()
                 intro_wdg.setLayout(self.grid_lay)

@@ -3990,8 +3990,6 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.setWindowTitle(str(title))
 
         grid0 = FCGridLayout(parent=self, h_spacing=5, v_spacing=5)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
 
         self.ref_label = FCLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
@@ -4901,10 +4899,8 @@ class FCZeroAxes(QtWidgets.QFrame):
         self.setLineWidth(1)
 
         # Zero the axes
-        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grbl_zero_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0,0])
         grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
-        grbl_zero_grid.setColumnStretch(0, 0)
-        grbl_zero_grid.setColumnStretch(1, 0)
         # grbl_zero_grid.setRowStretch(4, 1)
         self.setLayout(grbl_zero_grid)
 
@@ -5276,10 +5272,19 @@ class FCGridLayout(QtWidgets.QGridLayout):
     This class create the Sys Tray icon for the app
     """
 
-    def __init__(self, v_spacing=None, h_spacing=None, margins=None, *args, parent=None):
+    def __init__(self, *args, v_spacing=None, h_spacing=None, c_stretch=None, margins=None, parent=None):
         """
         Class that makes a custom grid layout
 
+        :param args:
+        :param v_spacing:   vertical spacing
+        :type v_spacing:    int
+        :param h_spacing:   horizontal spacing
+        :type h_spacing:    int
+        :param c_stretch:   columns stretching
+        :type c_stretch:    list
+        :param margins:     content margins
+        :type margins:      list
         :param parent:
         """
 
@@ -5293,6 +5298,14 @@ class FCGridLayout(QtWidgets.QGridLayout):
             self.setVerticalSpacing(v_spacing)
         if margins is not None:
             self.setContentsMargins(margins[0], margins[1], margins[2], margins[3])
+
+        if c_stretch is None:
+            self.setColumnStretch(0, 0)
+            self.setColumnStretch(1, 1)
+        elif c_stretch and isinstance(c_stretch, (tuple, list)):
+            for idx, val in enumerate(c_stretch):
+                self.setColumnStretch(idx, val)
+
         self.blockSignals(False)
 
 

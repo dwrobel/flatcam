@@ -612,10 +612,10 @@ class PreferencesUIManager:
             "tools_copper_thieving_clearance": self.ui.plugin2_pref_form.tools2_cfill_group.clearance_entry,
             "tools_copper_thieving_margin": self.ui.plugin2_pref_form.tools2_cfill_group.margin_entry,
             "tools_copper_thieving_area": self.ui.plugin2_pref_form.tools2_cfill_group.area_entry,
-            "tools_copper_thieving_reference": self.ui.plugin2_pref_form.tools2_cfill_group.reference_radio,
+            "tools_copper_thieving_reference": self.ui.plugin2_pref_form.tools2_cfill_group.reference_combo,
             "tools_copper_thieving_box_type": self.ui.plugin2_pref_form.tools2_cfill_group.bbox_type_radio,
             "tools_copper_thieving_circle_steps": self.ui.plugin2_pref_form.tools2_cfill_group.circlesteps_entry,
-            "tools_copper_thieving_fill_type": self.ui.plugin2_pref_form.tools2_cfill_group.fill_type_radio,
+            "tools_copper_thieving_fill_type": self.ui.plugin2_pref_form.tools2_cfill_group.fill_type_combo,
             "tools_copper_thieving_dots_dia": self.ui.plugin2_pref_form.tools2_cfill_group.dot_dia_entry,
             "tools_copper_thieving_dots_spacing": self.ui.plugin2_pref_form.tools2_cfill_group.dot_spacing_entry,
             "tools_copper_thieving_squares_size": self.ui.plugin2_pref_form.tools2_cfill_group.square_size_entry,
@@ -627,7 +627,7 @@ class PreferencesUIManager:
             "tools_copper_thieving_rb_thickness": self.ui.plugin2_pref_form.tools2_cfill_group.rb_thickness_entry,
             "tools_copper_thieving_only_apds": self.ui.plugin2_pref_form.tools2_cfill_group.only_pads_cb,
             "tools_copper_thieving_mask_clearance": self.ui.plugin2_pref_form.tools2_cfill_group.clearance_ppm_entry,
-            "tools_copper_thieving_geo_choice": self.ui.plugin2_pref_form.tools2_cfill_group.ppm_choice_radio,
+            "tools_copper_thieving_geo_choice": self.ui.plugin2_pref_form.tools2_cfill_group.ppm_choice_combo,
 
             # Fiducials Tool
             "tools_fiducials_dia": self.ui.plugin2_pref_form.tools2_fiducials_group.dia_entry,

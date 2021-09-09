@@ -31,8 +31,6 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
 
         self.precision_sp = FCSpinner()
         self.precision_sp.set_range(2, 10)

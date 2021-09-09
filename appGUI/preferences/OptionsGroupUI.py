@@ -50,8 +50,6 @@ class OptionsGroupUI2(OptionsGroupUI):
 
         self.grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(self.grid)
-        self.grid.setColumnStretch(0, 0)
-        self.grid.setColumnStretch(1, 1)
 
         self.options = self.build_options()
 

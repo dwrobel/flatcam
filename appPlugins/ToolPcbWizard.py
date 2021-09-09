@@ -417,8 +417,6 @@ class WizardUI:
 
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
         self.excellon_label = FCLabel('%s:' % _("Excellon file"))
@@ -457,8 +455,6 @@ class WizardUI:
 
         # Grid Layout
         grid01 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid01.setColumnStretch(0, 0)
-        grid01.setColumnStretch(1, 1)
         self.layout.addLayout(grid01)
 
         # Integral part of the coordinates

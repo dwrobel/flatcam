@@ -1193,8 +1193,6 @@ class SolderUI:
 
         # ## Form Layout
         obj_form_layout = FCGridLayout(v_spacing=5, h_spacing=3)
-        obj_form_layout.setColumnStretch(0, 0)
-        obj_form_layout.setColumnStretch(1, 1)
         self.layout.addLayout(obj_form_layout)
 
         # ## Gerber Object to be used for solderpaste dispensing
@@ -1245,8 +1243,6 @@ class SolderUI:
 
         # ### Add a new Tool ## ##
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
         self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Tool'))
@@ -1504,8 +1500,6 @@ class SolderUI:
 
         # Buttons Grid
         self.button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.button_grid.setColumnStretch(0, 0)
-        self.button_grid.setColumnStretch(1, 1)
         self.tool_box.addLayout(self.button_grid)
 
         # Generate Geometry

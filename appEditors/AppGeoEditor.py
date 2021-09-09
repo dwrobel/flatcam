@@ -84,8 +84,6 @@ class BufferSelectionTool(AppTool):
 
         # Grid Layout
         grid_buffer = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_buffer.setColumnStretch(0, 0)
-        grid_buffer.setColumnStretch(1, 1)
         self.buffer_tools_box.addLayout(grid_buffer)
 
         # Buffer distance
@@ -268,8 +266,6 @@ class TextInputTool(AppTool):
 
         # Grid Layout
         self.grid_text = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid_text.setColumnStretch(0, 0)
-        self.grid_text.setColumnStretch(1, 1)
         self.text_tools_box.addLayout(self.grid_text)
 
         # Font type
@@ -507,8 +503,6 @@ class PaintOptionsTool(AppTool):
 
         grid = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid)
-        grid.setColumnStretch(0, 0)
-        grid.setColumnStretch(1, 1)
 
         # Tool dia
         ptdlabel = FCLabel('%s:' % _('Tool Dia'))
@@ -735,11 +729,8 @@ class TransformEditorTool(AppTool):
         self.layout.addWidget(FCLabel(''))
 
         # ## Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        grid0.setColumnStretch(2, 0)
 
         grid0.addWidget(FCLabel(''))
 
@@ -3458,8 +3449,6 @@ class AppGeoEditor(QtCore.QObject):
         self.title_box.addWidget(self.level)
 
         self.grid_d = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid_d.setColumnStretch(0, 0)
-        self.grid_d.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid_d)
 
         # Tool diameter
@@ -3502,8 +3491,6 @@ class AppGeoEditor(QtCore.QObject):
         self.tools_box.addWidget(self.adv_frame)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         grid0.setContentsMargins(0, 0, 0, 0)
         self.adv_frame.setLayout(grid0)
 

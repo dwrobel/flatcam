@@ -17,6 +17,8 @@ CHANGELOG for FlatCAM beta
 - in Levelling Plugin added a check that allow levelling only for CNC Job objects resulted from Geometry
 - some minor changes
 - updated the language strings
+- on Coppper Thieving Plugin some UI updates
+- updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
 
 8.09.2021
 

@@ -34,8 +34,6 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.exc_label)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
         # Table Visibility CB

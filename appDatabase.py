@@ -195,8 +195,6 @@ class ToolsDB2UI:
         # ###########################################################################
         self.grid_tool = FCGridLayout(v_spacing=5, h_spacing=3)
         self.description_vlay.addLayout(self.grid_tool)
-        self.grid_tool.setColumnStretch(0, 0)
-        self.grid_tool.setColumnStretch(1, 1)
         self.description_vlay.addStretch()
 
         # Tool Name
@@ -279,8 +277,6 @@ class ToolsDB2UI:
         # ###########################################################################
         self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.milling_vlay.addLayout(self.grid0)
-        self.grid0.setColumnStretch(0, 0)
-        self.grid0.setColumnStretch(1, 1)
         self.milling_vlay.addStretch()
 
         # Tool Shape
@@ -578,8 +574,6 @@ class ToolsDB2UI:
 
         self.grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.ncc_vlay.addLayout(self.grid2)
-        self.grid2.setColumnStretch(0, 0)
-        self.grid2.setColumnStretch(1, 1)
         self.ncc_vlay.addStretch()
 
         # Operation
@@ -724,8 +718,6 @@ class ToolsDB2UI:
 
         self.grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.paint_vlay.addLayout(self.grid3)
-        self.grid3.setColumnStretch(0, 0)
-        self.grid3.setColumnStretch(1, 1)
         self.paint_vlay.addStretch()
 
         # Overlap
@@ -813,8 +805,6 @@ class ToolsDB2UI:
 
         self.grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.iso_vlay.addLayout(self.grid4)
-        self.grid4.setColumnStretch(0, 0)
-        self.grid4.setColumnStretch(1, 1)
         self.iso_vlay.addStretch()
 
         # Passes
@@ -890,8 +880,6 @@ class ToolsDB2UI:
         # ###########################################################################
         self.grid5 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.drill_vlay.addLayout(self.grid5)
-        self.grid5.setColumnStretch(0, 0)
-        self.grid5.setColumnStretch(1, 1)
         self.drill_vlay.addStretch()
 
         # Cut Z
@@ -1115,8 +1103,6 @@ class ToolsDB2UI:
         # ###########################################################################
         self.grid6 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.cutout_vlay.addLayout(self.grid6)
-        self.grid6.setColumnStretch(0, 0)
-        self.grid6.setColumnStretch(1, 1)
         self.cutout_vlay.addStretch()
 
         # Margin
@@ -1400,8 +1386,6 @@ class ToolsDB2(QtWidgets.QWidget):
         # ##############################################################################
         # ##############################################################################
         layout = FCGridLayout(v_spacing=5, h_spacing=3)
-        layout.setColumnStretch(0, 0)
-        layout.setColumnStretch(1, 1)
         self.setLayout(layout)
         self.ui = ToolsDB2UI(app=self.app, grid_layout=layout)
 

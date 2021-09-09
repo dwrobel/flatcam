@@ -25,8 +25,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Create a grid layout for the Application general settings
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
 
         # Theme selection
         self.theme_label = FCLabel('%s:' % _('Theme'))

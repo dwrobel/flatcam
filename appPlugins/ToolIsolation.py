@@ -3194,8 +3194,6 @@ class IsoUI:
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         tt_frame.setLayout(grid1)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3245,8 +3243,6 @@ class IsoUI:
         grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
         grid_add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_add_tool.setColumnStretch(0, 0)
-        grid_add_tool.setColumnStretch(1, 1)
         grid_add_tool.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(grid_add_tool)
 
@@ -3359,8 +3355,6 @@ class IsoUI:
 
         # Grid Layout
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
         tp_frame.setLayout(grid2)
 
         # Tool Type
@@ -3493,8 +3487,6 @@ class IsoUI:
         self.tool_params_box.addWidget(gp_frame)
 
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
         gp_frame.setLayout(grid3)
 
         # Rest Machining

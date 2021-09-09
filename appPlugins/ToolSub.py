@@ -819,8 +819,6 @@ class SubUI:
         self.tools_box.addWidget(self.gp_frame)
 
         param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        param_grid.setColumnStretch(0, 0)
-        param_grid.setColumnStretch(1, 1)
         self.gp_frame.setLayout(param_grid)
 
         self.delete_sources_cb = FCCheckBox(_("Delete source"))
@@ -840,8 +838,6 @@ class SubUI:
         self.tools_box.addWidget(grb_frame)
 
         grb_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        grb_grid.setColumnStretch(0, 0)
-        grb_grid.setColumnStretch(1, 1)
         grb_frame.setLayout(grb_grid)
 
         # Target Gerber Object
@@ -907,9 +903,8 @@ class SubUI:
         self.tools_box.addWidget(geo_frame)
 
         geo_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        geo_grid.setColumnStretch(0, 0)
-        geo_grid.setColumnStretch(1, 1)
         geo_frame.setLayout(geo_grid)
+
         self.geo_title = FCLabel("<b>%s</b>" % _("GEOMETRY"))
         self.tools_box.addWidget(self.geo_title)
 

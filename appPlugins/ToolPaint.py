@@ -2945,8 +2945,6 @@ class PaintUI:
 
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         obj_frame.setLayout(grid0)
 
         # #############################################################################################################
@@ -2998,8 +2996,6 @@ class PaintUI:
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         tt_frame.setLayout(grid1)
 
         self.tools_table = FCTable(drag_drop=True)
@@ -3061,8 +3057,6 @@ class PaintUI:
         grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
         new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        new_tool_grid.setColumnStretch(0, 0)
-        new_tool_grid.setColumnStretch(1, 1)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
         self.add_tool_frame.setLayout(new_tool_grid)
 
@@ -3147,8 +3141,6 @@ class PaintUI:
         self.tools_box.addWidget(tt_frame)
 
         par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        par_grid.setColumnStretch(0, 0)
-        par_grid.setColumnStretch(1, 1)
         tt_frame.setLayout(par_grid)
 
         # Overlap
@@ -3253,8 +3245,6 @@ class PaintUI:
         self.tools_box.addWidget(gp_frame)
 
         gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        gen_grid.setColumnStretch(0, 0)
-        gen_grid.setColumnStretch(1, 1)
         gp_frame.setLayout(gen_grid)
 
         # Rest machining

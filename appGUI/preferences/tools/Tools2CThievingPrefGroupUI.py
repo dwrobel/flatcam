@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox, FCGridLayout
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCLabel, FCCheckBox, FCGridLayout, FCFrame, \
+    FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,19 +22,22 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Grid Layout
-        grid_lay = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        # ## Parameters
-        self.cflabel = FCLabel('<b>%s</b>' % _('Parameters'))
-        self.cflabel.setToolTip(
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
+        self.param_label.setToolTip(
             _("A tool to generate a Copper Thieving that can be added\n"
               "to a selected Gerber file.")
         )
-        grid_lay.addWidget(self.cflabel, 0, 0, 1, 2)
+        self.layout.addWidget(self.param_label)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        # ## Grid Layout
+        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(grid_par)
 
         # CIRCLE STEPS - to be used when buffering
         self.circle_steps_lbl = FCLabel('%s:' % _("Circle Steps"))
@@ -44,8 +48,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.circlesteps_entry = FCSpinner()
         self.circlesteps_entry.set_range(1, 10000)
 
-        grid_lay.addWidget(self.circle_steps_lbl, 2, 0)
-        grid_lay.addWidget(self.circlesteps_entry, 2, 1)
+        grid_par.addWidget(self.circle_steps_lbl, 2, 0)
+        grid_par.addWidget(self.circlesteps_entry, 2, 1)
 
         # CLEARANCE #
         self.clearance_label = FCLabel('%s:' % _("Clearance"))
@@ -59,8 +63,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.clearance_entry.set_precision(self.decimals)
         self.clearance_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.clearance_label, 4, 0)
-        grid_lay.addWidget(self.clearance_entry, 4, 1)
+        grid_par.addWidget(self.clearance_label, 4, 0)
+        grid_par.addWidget(self.clearance_entry, 4, 1)
 
         # MARGIN #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -72,8 +76,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.margin_label, 6, 0)
-        grid_lay.addWidget(self.margin_entry, 6, 1)
+        grid_par.addWidget(self.margin_label, 6, 0)
+        grid_par.addWidget(self.margin_entry, 6, 1)
 
         # Area #
         self.area_label = FCLabel('%s:' % _("Area"))
@@ -85,23 +89,22 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.area_entry.set_precision(self.decimals)
         self.area_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.area_label, 8, 0)
-        grid_lay.addWidget(self.area_entry, 8, 1)
+        grid_par.addWidget(self.area_label, 8, 0)
+        grid_par.addWidget(self.area_entry, 8, 1)
         
         # Reference #
-        self.reference_radio = RadioSet([
-            {'label': _('Itself'), 'value': 'itself'},
-            {"label": _("Area Selection"), "value": "area"},
-            {'label': _("Reference Object"), 'value': 'box'}
-        ], orientation='vertical', stretch=False)
+        # Reference #
         self.reference_label = FCLabel(_("Reference:"))
         self.reference_label.setToolTip(
             _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
-        grid_lay.addWidget(self.reference_label, 10, 0)
-        grid_lay.addWidget(self.reference_radio, 10, 1)
+        self.reference_combo = FCComboBox2()
+        self.reference_combo.addItems([_('Itself'), _("Area Selection"), _("Reference Object")])
+
+        grid_par.addWidget(self.reference_label, 10, 0)
+        grid_par.addWidget(self.reference_combo, 10, 1)
 
         # Bounding Box Type #
         self.bbox_type_radio = RadioSet([
@@ -113,33 +116,41 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
             _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")
         )
-        grid_lay.addWidget(self.bbox_type_label, 12, 0)
-        grid_lay.addWidget(self.bbox_type_radio, 12, 1)
+        grid_par.addWidget(self.bbox_type_label, 12, 0)
+        grid_par.addWidget(self.bbox_type_radio, 12, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_lay.addWidget(separator_line, 14, 0, 1, 2)
+        grid_par.addWidget(separator_line, 14, 0, 1, 2)
 
         # Fill Type
-        self.fill_type_radio = RadioSet([
-            {'label': _('Solid'), 'value': 'solid'},
-            {"label": _("Dots Grid"), "value": "dot"},
-            {"label": _("Squares Grid"), "value": "square"},
-            {"label": _("Lines Grid"), "value": "line"}
-        ], orientation='vertical', stretch=False)
-        self.fill_type_label = FCLabel(_("Fill Type:"))
+        self.fill_type_label = FCLabel('%s:' % _("Fill"))
         self.fill_type_label.setToolTip(
             _("- 'Solid' - copper thieving will be a solid polygon.\n"
               "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
               "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
               "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
         )
-        grid_lay.addWidget(self.fill_type_label, 16, 0)
-        grid_lay.addWidget(self.fill_type_radio, 16, 1)
 
+        self.fill_type_combo = FCComboBox2()
+        self.fill_type_combo.addItems([_('Solid'), _("Dots Grid"), _("Squares Grid"), _("Lines Grid")])
+
+        grid_par.addWidget(self.fill_type_label, 16, 0)
+        grid_par.addWidget(self.fill_type_combo, 16, 1)
+
+        # #############################################################################################################
+        # DOTS Grid Parameters Frame
+        # #############################################################################################################
         self.dots_label = FCLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
-        grid_lay.addWidget(self.dots_label, 18, 0, 1, 2)
+        self.layout.addWidget(self.dots_label)
+
+        dots_frame = FCFrame()
+        self.layout.addWidget(dots_frame)
+
+        # ## Grid Layout
+        grid_dots = FCGridLayout(v_spacing=5, h_spacing=3)
+        dots_frame.setLayout(grid_dots)
 
         # Dot diameter #
         self.dotdia_label = FCLabel('%s:' % _("Dia"))
@@ -151,8 +162,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.dot_dia_entry.set_precision(self.decimals)
         self.dot_dia_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.dotdia_label, 20, 0)
-        grid_lay.addWidget(self.dot_dia_entry, 20, 1)
+        grid_dots.addWidget(self.dotdia_label, 0, 0)
+        grid_dots.addWidget(self.dot_dia_entry, 0, 1)
 
         # Dot spacing #
         self.dotspacing_label = FCLabel('%s:' % _("Spacing"))
@@ -164,11 +175,21 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.dot_spacing_entry.set_precision(self.decimals)
         self.dot_spacing_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.dotspacing_label, 22, 0)
-        grid_lay.addWidget(self.dot_spacing_entry, 22, 1)
+        grid_dots.addWidget(self.dotspacing_label, 2, 0)
+        grid_dots.addWidget(self.dot_spacing_entry, 2, 1)
 
+        # #############################################################################################################
+        # Squares Grid Parameters Frame
+        # #############################################################################################################
         self.squares_label = FCLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
-        grid_lay.addWidget(self.squares_label, 24, 0, 1, 2)
+        self.layout.addWidget(self.squares_label)
+
+        square_frame = FCFrame()
+        self.layout.addWidget(square_frame)
+
+        # ## Grid Layout
+        grid_square = FCGridLayout(v_spacing=5, h_spacing=3)
+        square_frame.setLayout(grid_square)
 
         # Square Size #
         self.square_size_label = FCLabel('%s:' % _("Size"))
@@ -180,8 +201,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.square_size_entry.set_precision(self.decimals)
         self.square_size_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.square_size_label, 26, 0)
-        grid_lay.addWidget(self.square_size_entry, 26, 1)
+        grid_square.addWidget(self.square_size_label, 0, 0)
+        grid_square.addWidget(self.square_size_entry, 0, 1)
 
         # Squares spacing #
         self.squares_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -193,13 +214,23 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.squares_spacing_entry.set_precision(self.decimals)
         self.squares_spacing_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.squares_spacing_label, 28, 0)
-        grid_lay.addWidget(self.squares_spacing_entry, 28, 1)
+        grid_square.addWidget(self.squares_spacing_label, 2, 0)
+        grid_square.addWidget(self.squares_spacing_entry, 2, 1)
 
+        # #############################################################################################################
+        # Lines Grid Parameters Frame
+        # #############################################################################################################
         self.lines_label = FCLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
-        grid_lay.addWidget(self.lines_label, 30, 0, 1, 2)
+        self.layout.addWidget(self.lines_label)
 
-        # Square Size #
+        line_frame = FCFrame()
+        self.layout.addWidget(line_frame)
+
+        # ## Grid Layout
+        grid_line = FCGridLayout(v_spacing=5, h_spacing=3)
+        line_frame.setLayout(grid_line)
+
+        # Line Size #
         self.line_size_label = FCLabel('%s:' % _("Size"))
         self.line_size_label.setToolTip(
             _("Line thickness size in Lines Grid.")
@@ -209,8 +240,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.line_size_entry.set_precision(self.decimals)
         self.line_size_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.line_size_label, 32, 0)
-        grid_lay.addWidget(self.line_size_entry, 32, 1)
+        grid_line.addWidget(self.line_size_label, 0, 0)
+        grid_line.addWidget(self.line_size_entry, 0, 1)
 
         # Lines spacing #
         self.lines_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -222,15 +253,25 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.lines_spacing_entry.set_precision(self.decimals)
         self.lines_spacing_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.lines_spacing_label, 34, 0)
-        grid_lay.addWidget(self.lines_spacing_entry, 34, 1)
+        grid_line.addWidget(self.lines_spacing_label, 2, 0)
+        grid_line.addWidget(self.lines_spacing_entry, 2, 1)
 
+        # #############################################################################################################
+        # Robber Bar Parameters Frame
+        # #############################################################################################################
         self.robber_bar_label = FCLabel('<b>%s</b>' % _('Robber Bar Parameters'))
         self.robber_bar_label.setToolTip(
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
         )
-        grid_lay.addWidget(self.robber_bar_label, 36, 0, 1, 2)
+        self.layout.addWidget(self.robber_bar_label)
+
+        rob_frame = FCFrame()
+        self.layout.addWidget(rob_frame)
+
+        # ## Grid Layout
+        grid_robber = FCGridLayout(v_spacing=5, h_spacing=3)
+        rob_frame.setLayout(grid_robber)
 
         # ROBBER BAR MARGIN #
         self.rb_margin_label = FCLabel('%s:' % _("Margin"))
@@ -242,8 +283,8 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.rb_margin_entry.set_precision(self.decimals)
         self.rb_margin_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.rb_margin_label, 38, 0)
-        grid_lay.addWidget(self.rb_margin_entry, 38, 1)
+        grid_robber.addWidget(self.rb_margin_label, 0, 0)
+        grid_robber.addWidget(self.rb_margin_entry, 0, 1)
 
         # THICKNESS #
         self.rb_thickness_label = FCLabel('%s:' % _("Thickness"))
@@ -255,22 +296,31 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.rb_thickness_entry.set_precision(self.decimals)
         self.rb_thickness_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.rb_thickness_label, 40, 0)
-        grid_lay.addWidget(self.rb_thickness_entry, 40, 1)
+        grid_robber.addWidget(self.rb_thickness_label, 2, 0)
+        grid_robber.addWidget(self.rb_thickness_entry, 2, 1)
 
-        # Pattern Plating Mask Title
+        # #############################################################################################################
+        # RPattern Plating Mask Parameters Frame
+        # #############################################################################################################
         self.patern_mask_label = FCLabel('<b>%s</b>' % _('Pattern Plating Mask'))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
-        grid_lay.addWidget(self.patern_mask_label, 42, 0, 1, 2)
+        self.layout.addWidget(self.patern_mask_label)
+
+        ppm_frame = FCFrame()
+        self.layout.addWidget(ppm_frame)
+
+        # ## Grid Layout
+        grid_ppm = FCGridLayout(v_spacing=5, h_spacing=3)
+        ppm_frame.setLayout(grid_ppm)
 
         # Use Only Pads
         self.only_pads_cb = FCCheckBox(_("Only Pads"))
         self.only_pads_cb.setToolTip(
             _("Select only pads in case the selected object is a copper Gerber.")
         )
-        grid_lay.addWidget(self.only_pads_cb, 43, 0, 1, 2)
+        grid_ppm.addWidget(self.only_pads_cb, 0, 0, 1, 2)
 
         # Openings CLEARANCE #
         self.clearance_ppm_label = FCLabel('%s:' % _("Clearance"))
@@ -283,21 +333,17 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.clearance_ppm_entry.set_precision(self.decimals)
         self.clearance_ppm_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.clearance_ppm_label, 44, 0)
-        grid_lay.addWidget(self.clearance_ppm_entry, 44, 1)
+        grid_ppm.addWidget(self.clearance_ppm_label, 2, 0)
+        grid_ppm.addWidget(self.clearance_ppm_entry, 2, 1)
 
         # Include geometry
         self.ppm_choice_label = FCLabel('%s:' % _("Add"))
         self.ppm_choice_label.setToolTip(
             _("Choose which additional geometry to include, if available.")
         )
-        self.ppm_choice_radio = RadioSet([
-            {"label": _("Both"), "value": "b"},
-            {'label': _('Thieving'), 'value': 't'},
-            {"label": _("Robber bar"), "value": "r"},
-            {"label": _("None"), "value": "n"}
-        ], orientation='vertical', stretch=False)
-        grid_lay.addWidget(self.ppm_choice_label, 46, 0)
-        grid_lay.addWidget(self.ppm_choice_radio, 46, 1)
+        self.ppm_choice_combo = FCComboBox2()
+        self.ppm_choice_combo.addItems([_("Both"), _('Thieving'), _("Robber bar"), _("None")])
+        grid_ppm.addWidget(self.ppm_choice_label, 4, 0)
+        grid_ppm.addWidget(self.ppm_choice_combo, 4, 1)
 
         self.layout.addStretch()

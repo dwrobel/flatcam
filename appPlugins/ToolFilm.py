@@ -1197,8 +1197,6 @@ class FilmUI:
 
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         obj_frame.setLayout(grid0)
 
         # Type of object for which to create the film
@@ -1266,8 +1264,6 @@ class FilmUI:
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         self.adj_frame.setLayout(grid1)
 
         # Scale Geometry
@@ -1433,8 +1429,6 @@ class FilmUI:
 
         # Grid Layout
         grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_par.setColumnStretch(0, 0)
-        grid_par.setColumnStretch(1, 1)
         par_frame.setLayout(grid_par)
 
         # Scale Stroke size
@@ -1499,8 +1493,6 @@ class FilmUI:
         grid_par.addWidget(self.punch_frame, 8, 0, 1, 2)
 
         punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        punch_grid.setColumnStretch(0, 0)
-        punch_grid.setColumnStretch(1, 1)
         punch_grid.setContentsMargins(0, 0, 0, 0)
         self.punch_frame.setLayout(punch_grid)
 
@@ -1558,8 +1550,6 @@ class FilmUI:
 
         # Grid Layout
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
         exp_frame.setLayout(grid3)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))

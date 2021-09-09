@@ -1193,12 +1193,8 @@ class RulesUI:
         self.layout.addWidget(title_label)
 
         # Form Layout
-        self.grid_layout = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.grid_layout = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 3, 0])
         self.layout.addLayout(self.grid_layout)
-
-        self.grid_layout.setColumnStretch(0, 0)
-        self.grid_layout.setColumnStretch(1, 3)
-        self.grid_layout.setColumnStretch(2, 0)
 
         self.gerber_title_lbl = FCLabel('<b>%s</b>:' % _("GERBER"))
         self.gerber_title_lbl.setToolTip(
@@ -1399,8 +1395,6 @@ class RulesUI:
 
         # Form Layout
         self.grid_lay1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid_lay1.setColumnStretch(0, 0)
-        self.grid_lay1.setColumnStretch(1, 1)
         self.layout.addLayout(self.grid_lay1)
 
         self.grid_lay1.addWidget(FCLabel(""), 0, 0, 1, 2)

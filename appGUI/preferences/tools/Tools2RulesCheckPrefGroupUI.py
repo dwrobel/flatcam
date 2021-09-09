@@ -30,8 +30,6 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
         # Form Layout
         self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid0.setColumnStretch(0, 0)
-        self.grid0.setColumnStretch(1, 1)
         self.layout.addLayout(self.grid0)
 
         # Trace size

@@ -195,8 +195,6 @@ class GerberObjectUI(ObjectUI):
         # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         gen_frame.setLayout(grid0)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
@@ -295,8 +293,6 @@ class GerberObjectUI(ObjectUI):
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         self.tt_frame.setLayout(grid1)
 
         # ### Gerber Apertures ####
@@ -493,8 +489,6 @@ class GerberObjectUI(ObjectUI):
         self.util_box.addWidget(ncc_frame)
 
         grid_ncc = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_ncc.setColumnStretch(0, 0)
-        grid_ncc.setColumnStretch(1, 1)
         ncc_frame.setLayout(grid_ncc)
 
         # Margin
@@ -542,8 +536,6 @@ class GerberObjectUI(ObjectUI):
 
         # Grid Layout
         grid_bb = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_bb.setColumnStretch(0, 0)
-        grid_bb.setColumnStretch(1, 1)
         bb_frame.setLayout(grid_bb)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
@@ -615,8 +607,6 @@ class ExcellonObjectUI(ObjectUI):
         # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         gen_frame.setLayout(grid0)
 
         # Plot options
@@ -700,8 +690,6 @@ class ExcellonObjectUI(ObjectUI):
 
         grid_tt = FCGridLayout(v_spacing=5, h_spacing=3)
         grid_tt.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        grid_tt.setColumnStretch(0, 0)
-        grid_tt.setColumnStretch(1, 1)
         self.custom_box.addLayout(grid_tt)
 
         # Table Visibility CB
@@ -855,8 +843,6 @@ class ExcellonObjectUI(ObjectUI):
         self.util_box.addWidget(mill_frame)
 
         grid_mill = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_mill.setColumnStretch(0, 0)
-        grid_mill.setColumnStretch(1, 1)
         mill_frame.setLayout(grid_mill)
 
         self.tdlabel = FCLabel('%s:' % _('Milling Diameter'))
@@ -952,8 +938,6 @@ class GeometryObjectUI(ObjectUI):
         # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         gen_frame.setLayout(grid0)
 
         self.plot_options_label = FCLabel("<b>%s:</b>" % _("Plot Options"))
@@ -1033,8 +1017,6 @@ class GeometryObjectUI(ObjectUI):
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         self.tt_frame.setLayout(grid1)
 
         # ### Tools ####
@@ -1189,8 +1171,6 @@ class GeometryObjectUI(ObjectUI):
         self.util_box.addWidget(sim_frame)
 
         grid_sim = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_sim.setColumnStretch(0, 0)
-        grid_sim.setColumnStretch(1, 1)
         sim_frame.setLayout(grid_sim)
 
         # Vertex Points
@@ -1292,8 +1272,6 @@ class CNCObjectUI(ObjectUI):
         # Plot options
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
         grid0.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         gen_frame.setLayout(grid0)
 
         # Plot Options
@@ -1377,8 +1355,6 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.gp_frame)
 
         grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_par.setColumnStretch(0, 0)
-        grid_par.setColumnStretch(1, 1)
         self.gp_frame.setLayout(grid_par)
 
         # Travelled Distance
@@ -1446,8 +1422,6 @@ class CNCObjectUI(ObjectUI):
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         self.tt_frame.setLayout(grid1)
 
         hlay = QtWidgets.QHBoxLayout()
@@ -1699,10 +1673,7 @@ class DocumentObjectUI(ObjectUI):
         # ############ Grid LAYOUT #####################################
         # ##############################################################
 
-        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.grid0.setColumnStretch(0, 0)
-        self.grid0.setColumnStretch(1, 1)
-        self.grid0.setColumnStretch(2, 0)
+        self.grid0 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.custom_box.addLayout(self.grid0)
 
         # Font

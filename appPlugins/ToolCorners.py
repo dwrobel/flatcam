@@ -753,8 +753,6 @@ class CornersUI:
 
         # ## Grid Layout
         grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_par.setColumnStretch(0, 0)
-        grid_par.setColumnStretch(1, 1)
         par_frame.setLayout(grid_par)
 
         # Type of Marker
@@ -862,8 +860,6 @@ class CornersUI:
 
         # Grid Layout
         grid_sel = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_sel.setColumnStretch(0, 0)
-        grid_sel.setColumnStretch(1, 1)
         self.s_frame.setLayout(grid_sel)
 
         # Type of placement of markers
@@ -909,8 +905,6 @@ class CornersUI:
 
         # Grid Layout
         grid_drill = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_drill.setColumnStretch(0, 0)
-        grid_drill.setColumnStretch(1, 1)
         self.drill_frame.setLayout(grid_drill)
 
         # Drill Tooldia #

@@ -733,8 +733,6 @@ class DsidedUI:
         self.tools_box.addWidget(self.bounds_frame)
 
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         self.bounds_frame.setLayout(grid1)
 
         # Xmin value
@@ -833,8 +831,6 @@ class DsidedUI:
         self.tools_box.addWidget(mirror_frame)
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
         mirror_frame.setLayout(grid2)
 
         # ## Axis
@@ -926,8 +922,6 @@ class DsidedUI:
 
         # ## Grid Layout
         grid_lay3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_lay3.setColumnStretch(0, 0)
-        grid_lay3.setColumnStretch(1, 1)
         grid2.addLayout(grid_lay3, 14, 0, 1, 3)
 
         # Type of object used as BOX reference
@@ -984,8 +978,6 @@ class DsidedUI:
         self.tools_box.addWidget(align_frame)
 
         grid4 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid4.setColumnStretch(0, 0)
-        grid4.setColumnStretch(1, 1)
         align_frame.setLayout(grid4)
 
         # ## Drill diameter for alignment holes

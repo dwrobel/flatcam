@@ -955,12 +955,9 @@ class ExtractUI:
         pads_frame.setLayout(grid_lay)
 
         pad_all_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        pad_all_grid.setColumnStretch(0, 0)
-        pad_all_grid.setColumnStretch(1, 1)
         grid_lay.addLayout(pad_all_grid, 5, 0, 1, 2)
 
-        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        pad_grid.setColumnStretch(0, 0)
+        pad_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0])
         pad_all_grid.addLayout(pad_grid, 0, 0)
 
         # All Aperture Selection
@@ -1053,8 +1050,6 @@ class ExtractUI:
 
         # ## Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         ed_frame.setLayout(grid1)
 
         self.method_label = FCLabel('%s:' % _("Method"))
@@ -1095,8 +1090,6 @@ class ExtractUI:
 
         # ## Grid Layout
         ring_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        ring_grid.setColumnStretch(0, 0)
-        ring_grid.setColumnStretch(1, 1)
         ring_grid.setContentsMargins(0, 0, 0, 0)
         self.ring_box.addLayout(ring_grid)
 
@@ -1182,8 +1175,6 @@ class ExtractUI:
         grid1.addWidget(self.fix_frame, 10, 0, 1, 2)
 
         fixed_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        fixed_grid.setColumnStretch(0, 0)
-        fixed_grid.setColumnStretch(1, 1)
         fixed_grid.setContentsMargins(0, 0, 0, 0)
         self.fix_frame.setLayout(fixed_grid)
 
@@ -1212,8 +1203,6 @@ class ExtractUI:
         grid1.addWidget(self.prop_frame, 12, 0, 1, 2)
 
         prop_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        prop_grid.setColumnStretch(0, 0)
-        prop_grid.setColumnStretch(1, 1)
         prop_grid.setContentsMargins(0, 0, 0, 0)
         self.prop_frame.setLayout(prop_grid)
 
@@ -1265,8 +1254,6 @@ class ExtractUI:
         self.tools_box.addWidget(self.es_frame)
 
         es_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        es_grid.setColumnStretch(0, 0)
-        es_grid.setColumnStretch(1, 1)
         self.es_frame.setLayout(es_grid)
 
         # CLEARANCE
@@ -1312,8 +1299,6 @@ class ExtractUI:
         self.tools_box.addWidget(self.ec_frame)
 
         ec_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        ec_grid.setColumnStretch(0, 0)
-        ec_grid.setColumnStretch(1, 1)
         self.ec_frame.setLayout(ec_grid)
 
         # Margin

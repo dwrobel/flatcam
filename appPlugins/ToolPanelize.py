@@ -1137,8 +1137,6 @@ class PanelizeUI:
 
         # Grid Layout
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         obj_frame.setLayout(grid0)
 
         # Type of object to be panelized
@@ -1188,8 +1186,6 @@ class PanelizeUI:
 
         # Grid Layout
         grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
         pr_frame.setLayout(grid1)
 
         self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
@@ -1245,8 +1241,6 @@ class PanelizeUI:
         self.tools_box.addWidget(pd_frame)
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
         pd_frame.setLayout(grid2)
 
         # Spacing Columns
@@ -1308,8 +1302,6 @@ class PanelizeUI:
         self.tools_box.addWidget(self.gp_frame)
 
         grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
         self.gp_frame.setLayout(grid3)
 
         # Type of resulting Panel object

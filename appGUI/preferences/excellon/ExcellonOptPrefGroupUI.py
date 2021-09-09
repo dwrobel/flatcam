@@ -31,8 +31,6 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
         self.layout.addLayout(grid2)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
 
         # ### Milling Holes ## ##
         self.mill_hole_label = FCLabel('<b>%s</b>' % _('Mill Holes'))

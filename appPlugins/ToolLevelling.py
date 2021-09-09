@@ -1799,8 +1799,6 @@ class LevelUI:
         self.al_frame.setLayout(self.al_box)
 
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
         self.al_box.addLayout(grid0)
 
         self.al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
@@ -2025,10 +2023,7 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONNECT
         # #############################################################################################################
-        grbl_conn_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        grbl_conn_grid.setColumnStretch(0, 0)
-        grbl_conn_grid.setColumnStretch(1, 1)
-        grbl_conn_grid.setColumnStretch(2, 0)
+        grbl_conn_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.gr_conn_tab_layout.addLayout(grbl_conn_grid)
 
         # COM list
@@ -2106,15 +2101,10 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONTROL
         # #############################################################################################################
-        grbl_ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        grbl_ctrl_grid.setColumnStretch(0, 0)
-        grbl_ctrl_grid.setColumnStretch(1, 1)
-        grbl_ctrl_grid.setColumnStretch(2, 0)
+        grbl_ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
 
         grbl_ctrl2_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        grbl_ctrl2_grid.setColumnStretch(0, 0)
-        grbl_ctrl2_grid.setColumnStretch(1, 1)
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl2_grid)
 
         self.gr_ctrl_tab_layout.addStretch(1)
