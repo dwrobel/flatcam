@@ -7238,21 +7238,17 @@ class App(QtCore.QObject):
                 self.dx = pos[0] - float(self.rel_point1[0])
                 self.dy = pos[1] - float(self.rel_point1[1])
 
-                # self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                #                                "<b>Y</b>: %.4f&nbsp;" % (pos[0], pos[1]))
-                # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
                 self.ui.update_location_labels(self.dx, self.dy, pos[0], pos[1])
-
-                units = self.defaults["units"].lower()
-                # self.plotcanvas.text_hud.text = \
-                #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                #         self.dx, units, self.dy, units, pos[0], units, pos[1], units)
                 self.plotcanvas.on_update_text_hud(self.dx, self.dy, pos[0], pos[1])
 
                 self.mouse = [pos[0], pos[1]]
 
                 if self.defaults['global_selection_shape'] is False:
+                    self.selection_type = None
+                    return
+
+                # the object selection on canvas does not work for App Tools or for Editors
+                if self.call_source != 'app':
                     self.selection_type = None
                     return
 

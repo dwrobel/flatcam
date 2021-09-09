@@ -13,7 +13,7 @@ CHANGELOG for FlatCAM beta
 - Fiducials Plugin: replaced a Radio button with a Combobox2 and optimized the UI
 - The Combobox2 GUI element no longer issue an exception if it is tried to set a string value, it will set automatically the index 0
 - some changes in the Preferences UI for Film and Fiducial Plugins
-- in Milling Plugin added a property that allows to segment the resulting GCode threfore allowing autolevelling
+- in Milling Plugin added a property that allows to segment the resulting GCode therefore allowing autolevelling
 - in Levelling Plugin added a check that allow levelling only for CNC Job objects resulted from Geometry
 - some minor changes
 - updated the language strings
@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
 - in Copper Thieving Plugin more UI changes
 - in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to d oto take care of the situation when widgets are spanning multiple cells
+- in Fiducials Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
 
 8.09.2021
 

@@ -269,6 +269,7 @@ class ToolFiducials(AppTool):
 
     def add_fiducials(self):
         self.app.call_source = "fiducials_tool"
+        self.app.ui.notebook.setDisabled(True)
 
         self.mode_method = self.ui.mode_radio.get_value()
         self.margin_val = self.ui.margin_entry.get_value()
@@ -286,6 +287,8 @@ class ToolFiducials(AppTool):
         except Exception as e:
             log.error("ToolFiducials.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            self.app.ui.notebook.setDisabled(False)
+            self.app.call_source = "app"
             return
 
         self.copper_obj_set.add(self.grb_object.options['name'])
@@ -333,6 +336,7 @@ class ToolFiducials(AppTool):
             self.app.call_source = "app"
             if ret_val == 'fail':
                 self.app.call_source = "app"
+                self.app.ui.notebook.setDisabled(False)
                 self.disconnect_event_handlers()
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                 return
@@ -586,6 +590,7 @@ class ToolFiducials(AppTool):
         self.app.call_source = "app"
         if ret_val == 'fail':
             self.app.call_source = "app"
+            self.app.ui.notebook.setDisabled(False)
             self.disconnect_event_handlers()
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
@@ -614,6 +619,9 @@ class ToolFiducials(AppTool):
             )
             self.check_points()
 
+        if event.button == 2:
+            self.on_exit(cancelled=True)
+
     def check_points(self):
         fid_type = self.ui.fid_type_combo.get_value()
 
@@ -634,6 +642,7 @@ class ToolFiducials(AppTool):
 
                 if ret_val == 'fail':
                     self.app.call_source = "app"
+                    self.app.ui.notebook.setDisabled(False)
                     self.disconnect_event_handlers()
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
@@ -648,6 +657,7 @@ class ToolFiducials(AppTool):
 
                 if ret_val == 'fail':
                     self.app.call_source = "app"
+                    self.app.ui.notebook.setDisabled(False)
                     self.disconnect_event_handlers()
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return
@@ -667,7 +677,7 @@ class ToolFiducials(AppTool):
         else:
             worker_task()
 
-    def on_exit(self):
+    def on_exit(self, cancelled=None):
         # plot the object
         for ob_name in self.copper_obj_set:
             try:
@@ -707,7 +717,7 @@ class ToolFiducials(AppTool):
                 sm_obj.options['xmax'] = c
                 sm_obj.options['ymax'] = d
             except Exception as e:
-                log.error("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
+                self.app.log.error("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
 
         # Events ID
         self.mr = None
@@ -720,6 +730,14 @@ class ToolFiducials(AppTool):
         self.disconnect_event_handlers()
 
         self.app.call_source = "app"
+        self.app.ui.notebook.setDisabled(False)
+
+        if cancelled is True:
+            self.app.delete_selection_shape()
+            self.disconnect_event_handlers()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
+            return
+
         self.app.inform.emit('[success] %s' % _("Fiducials Tool exit."))
 
     def connect_event_handlers(self):
