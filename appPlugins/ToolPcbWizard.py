@@ -110,7 +110,7 @@ class PcbWizard(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("PCBWizard Import"))
+        self.app.ui.notebook.setTabText(2, _("PcbWizard Import"))
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, **kwargs)

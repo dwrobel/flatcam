@@ -26,7 +26,10 @@ CHANGELOG for FlatCAM beta
 - in Fiducials Plugin when adding manual fiducials now panning is allowed without cancelling the process of adding
 - in Corners Plugin implemented the manual adding of markers
 - in Corners Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
-- 
+- added updated Italian translation by Massimiliano Golfetto
+- added updated Romanian translation
+- updated the language strings
+
 8.09.2021
 
 - in Calculator Plugin, in Units Calculator added more units conversions

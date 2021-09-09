@@ -894,7 +894,7 @@ class CalcUI:
 
         # Thiourea
         self.th_label = FCLabel('%s:' % _("Thiourea"))
-        self.th_label.setToolTip(_('Thiourea.'))
+        self.th_label.setToolTip('%s.' % _('Thiourea'))
         self.th_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.th_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                     QtWidgets.QSizePolicy.Policy.Preferred)
