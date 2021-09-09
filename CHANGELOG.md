@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 10.09.2021
 
 - minor changes in Film Plugin
+- fixed the FCGridLayout (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
 
 9.09.2021
 
@@ -24,7 +25,7 @@ CHANGELOG for FlatCAM beta
 - on Coppper Thieving Plugin some UI updates
 - updated the GCGridLayout GUi element to automatically stretch the first column but offered also configuration; updated the use throughout the app
 - in Copper Thieving Plugin more UI changes
-- in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to d oto take care of the situation when widgets are spanning multiple cells
+- in GUI Elements the FCGridLayout has now a class method that allow adjusting column size in multiple grid layouts to the highest on that column; still work to do to take care of the situation when widgets are spanning multiple cells
 - in Fiducials Plugin added the support for ESCAPE key from manual mode and also exit by right clicking
 - in Fiducials Plugin addressed the situation when no object is selected but there are available
 - in Fiducials Plugin when adding manual fiducials now panning is allowed without cancelling the process of adding

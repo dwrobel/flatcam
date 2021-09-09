@@ -5309,36 +5309,34 @@ class FCGridLayout(QtWidgets.QGridLayout):
 
         self.blockSignals(False)
 
-    @classmethod
-    def set_common_column_size(cls, grid_layout_list, column, only_wdg=None):
+    @staticmethod
+    def set_common_column_size(grid_layout_list, column):
         """
 
         :param grid_layout_list:    list of FCGridLayout
         :type grid_layout_list      list
         :param column:              the column for which to make the size the same in all grid_grid_layout_list; int
-        :param only_wdg:            use only Widgets of this kind
-        :type only_wdg:
+
         :return:
         """
 
-        def get_max_cell_width(layout, column_no, only_this_widget=None):
+        def get_max_cell_width(layout, column_no):
             width_list = []
             for row in range(layout.rowCount()):
                 item = layout.itemAtPosition(row, column_no)
                 if item:
-                    item_width = item.sizeHint().width()
-
-                    if not only_this_widget:
-                        width_list.append(item_width)
-                    elif isinstance(item.widget(), only_this_widget):
-                        width_list.append(item_width)
+                    index = layout.indexOf(item.widget())
+                    # getItemPosition will return a tuple: (row, col, rosSpan, colSpan)
+                    col_span = layout.getItemPosition(index)[3]
+                    if col_span == 1:
+                        width_list.append(item.sizeHint().width())
 
             return max(width_list) if width_list else None
 
         # find the maximum width for all grid layouts on the specified column
         all_col_size_list = []
         for grid_lay in grid_layout_list:
-            lay_m_size = get_max_cell_width(grid_lay, column_no=column, only_this_widget=only_wdg)
+            lay_m_size = get_max_cell_width(grid_lay, column_no=column)
             if lay_m_size:
                 all_col_size_list.append(lay_m_size)
 

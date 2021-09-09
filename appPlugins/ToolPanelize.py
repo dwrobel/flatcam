@@ -1369,7 +1369,7 @@ class PanelizeUI:
         self.separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         grid3.addWidget(self.separator_line, 10, 0, 1, 2)
 
-        # FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3], 0, FCLabel)
+        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3], 0)
 
         # #############################################################################################################
         # Generate Panel Button

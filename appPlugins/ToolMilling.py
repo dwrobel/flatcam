@@ -563,7 +563,8 @@ class ToolMilling(AppTool, Excellon):
             self.ui.pp_geo_name_cb.addItem(name)
         # and add ToolTips (useful when names are too long)
         for it in range(self.ui.pp_geo_name_cb.count()):
-            self.ui.pp_geo_name_cb.setItemData(it, self.ui.pp_geo_name_cb.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
+            self.ui.pp_geo_name_cb.setItemData(it, self.ui.pp_geo_name_cb.itemText(it),
+                                               QtCore.Qt.ItemDataRole.ToolTipRole)
 
         # Fill form fields
         self.to_form()
@@ -670,12 +671,7 @@ class ToolMilling(AppTool, Excellon):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.hide()
-            self.ui.addtool_entry_lbl.hide()
-            self.ui.addtool_entry.hide()
-            self.ui.search_and_add_btn.hide()
-            self.ui.addtool_from_db_btn.hide()
-            self.ui.deltool_btn.hide()
+            self.ui.add_tool_frame.hide()
 
             # Tool parameters section
             if self.ui.target_radio.get_value() == 'geo':
@@ -685,7 +681,7 @@ class ToolMilling(AppTool, Excellon):
 
                         tool_data['tools_mill_offset_type'] = 0  # 'Path'
                         tool_data['tools_mill_offset_value'] = 0.0
-                        tool_data['tools_mill_job_type'] = 0    #_('Roughing')
+                        tool_data['tools_mill_job_type'] = 0    # _('Roughing')
 
                         tool_data['tools_mill_multidepth'] = False
                         tool_data['tools_mill_extracut'] = False
@@ -733,12 +729,7 @@ class ToolMilling(AppTool, Excellon):
                                         """)
 
             # Add Tool section
-            self.ui.tool_sel_label.show()
-            self.ui.addtool_entry_lbl.show()
-            self.ui.addtool_entry.show()
-            self.ui.search_and_add_btn.show()
-            self.ui.addtool_from_db_btn.show()
-            self.ui.deltool_btn.show()
+            self.ui.add_tool_frame.show()
 
             # Tool parameters section
             if self.ui.target_radio.get_value() == 'geo':
@@ -3790,12 +3781,17 @@ class MillingUI:
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
         grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
-        grid__add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid__add_tool.setContentsMargins(0, 0, 0, 0)
-        self.add_tool_frame.setLayout(grid__add_tool)
+        grid_add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_add_tool.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(grid_add_tool)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_add_tool.addWidget(separator_line, 0, 0, 1, 2)
 
         self.tool_sel_label = FCLabel('<b>%s</b>' % _("Add from DB"))
-        grid__add_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
+        grid_add_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
         self.addtool_entry_lbl = FCLabel('%s:' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
@@ -3807,8 +3803,8 @@ class MillingUI:
         self.addtool_entry.setSingleStep(0.1)
         self.addtool_entry.setObjectName("mill_cnctooldia")
 
-        grid__add_tool.addWidget(self.addtool_entry_lbl, 3, 0)
-        grid__add_tool.addWidget(self.addtool_entry, 3, 1)
+        grid_add_tool.addWidget(self.addtool_entry_lbl, 3, 0)
+        grid_add_tool.addWidget(self.addtool_entry, 3, 1)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
@@ -3816,7 +3812,7 @@ class MillingUI:
         button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
-        grid__add_tool.addLayout(button_grid, 5, 0, 1, 2)
+        grid_add_tool.addLayout(button_grid, 5, 0, 1, 2)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -4596,6 +4592,9 @@ class MillingUI:
         self.ois_exclusion_exc = OptionalHideInputSection(self.exclusion_cb, [self.exclusion_frame])
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
+
+        FCGridLayout.set_common_column_size(
+            [grid0, grid_title_tool_table, grid1, grid_add_tool, button_grid, grid2, grid3, grid_a1], 0)
 
         # #############################################################################################################
         # Generate CNC Job object

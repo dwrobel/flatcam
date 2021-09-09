@@ -2879,6 +2879,8 @@ class DrillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid3.addWidget(separator_line, 25, 0, 1, 2)
 
+        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3, grid_a1], 0)
+
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip(
