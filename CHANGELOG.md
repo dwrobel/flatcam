@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.09.2021
+
+- minor changes in Film Plugin
+
 9.09.2021
 
 - in Fiducials Plugin updated the GUI to the new style

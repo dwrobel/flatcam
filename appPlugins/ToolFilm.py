@@ -789,19 +789,19 @@ class Film(AppTool):
                     self.app.log.error("FilmTool.export_negative() --> PNG output --> %s" % str(e))
                     return 'fail'
             else:   # PDF
+                if self.units == 'IN':
+                    unit = inch
+                else:
+                    unit = mm
+
+                if p_size == 'Bounds':
+                    page_size = None
+                elif orientation == 'p':
+                    page_size = portrait(self.ui.pagesize[p_size])
+                else:
+                    page_size = landscape(self.ui.pagesize[p_size])
+
                 try:
-                    if self.units == 'IN':
-                        unit = inch
-                    else:
-                        unit = mm
-
-                    if p_size == 'Bounds':
-                        page_size = None
-                    elif orientation == 'p':
-                        page_size = portrait(self.ui.pagesize[p_size])
-                    else:
-                        page_size = landscape(self.ui.pagesize[p_size])
-
                     xmin, ymin, xmax, ymax = obj.bounds()
                     if page_size:
                         page_xmax, page_ymax = (
@@ -818,7 +818,11 @@ class Film(AppTool):
                                      "For 'Bounds' page size, it needs to be in the first quadrant."))
                         self.app.inform.emit(err_msg)
                         return 'fail'
+                except Exception as e:
+                    self.app.log.error("FilmTool.export_negative() --> PDF output 1 --> %s" % str(e))
+                    return 'fail'
 
+                try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
 
@@ -835,7 +839,7 @@ class Film(AppTool):
                                            "Most likely another app is holding the file open and not accessible."))
                     return 'fail'
                 except Exception as e:
-                    self.app.log.error("FilmTool.export_negative() --> PDF output --> %s" % str(e))
+                    self.app.log.error("FilmTool.export_negative() --> PDF output Reportlab section --> %s" % str(e))
                     return 'fail'
 
             if self.app.defaults["global_open_style"] is False:
