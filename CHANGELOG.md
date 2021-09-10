@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - minor changes in Film Plugin
 - fixed the FCGridLayout (in GUI elements) method that synchronize the column width for multiple grid layouts when the item on column is spanning multiple columns
+- updated the Turkish translation by Mehmet Kaya
 
 9.09.2021
 

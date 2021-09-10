@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-09-10 00:03+0300\n"
-"PO-Revision-Date: 2021-09-10 00:03+0300\n"
+"PO-Revision-Date: 2021-09-10 14:49+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -206,15 +206,16 @@ msgstr "Bir sonraki noktayı tıklayın veya tamamlamak için sağ tıklayın ..
 #: appCommon/Common.py:501
 msgid "Exclusion areas added. Checking overlap with the object geometry ..."
 msgstr ""
-"Dışlama alanları eklendi. Geometri nesneleriyle çakışma kontrol ediliyor ..."
+"Hariç tutma alanları eklendi. Geometri nesneleriyle çakışma kontrol "
+"ediliyor ..."
 
 #: appCommon/Common.py:507
 msgid "Failed. Exclusion areas intersects the object geometry ..."
-msgstr "Başarısız oldu. Dışlama alanları şekil nesneleriyle kesişiyor ..."
+msgstr "Başarısız oldu. Hariç tutma alanları şekil nesneleriyle kesişiyor ..."
 
 #: appCommon/Common.py:510
 msgid "Exclusion areas added."
-msgstr "Dışlama alanları eklendi."
+msgstr "Hariç tutma alanları eklendi."
 
 #: appCommon/Common.py:519 appCommon/Common.py:654 appCommon/Common.py:716
 msgid "Generate the CNC Job object."
@@ -222,7 +223,7 @@ msgstr "CNC İş nesnesi oluşturun."
 
 #: appCommon/Common.py:519
 msgid "With Exclusion areas."
-msgstr "Dışlama alanları ile."
+msgstr "Hariç tutma alanları ile."
 
 #: appCommon/Common.py:554
 msgid "Cancelled. Area exclusion drawing was interrupted."
@@ -230,11 +231,11 @@ msgstr "İptal edildi. Hariç tutma alanı çizimi kesintiye uğradı."
 
 #: appCommon/Common.py:664 appCommon/Common.py:719
 msgid "All exclusion zones deleted."
-msgstr "Tüm dışlama alanları silindi."
+msgstr "Tüm hariç tutma alanları silindi."
 
 #: appCommon/Common.py:705
 msgid "Selected exclusion zones deleted."
-msgstr "Seçilen dışlama alanları silindi."
+msgstr "Seçilen hariç tutma alanları silindi."
 
 #: appDatabase.py:28 appGUI/MainGUI.py:1699 appPlugins/ToolMilling.py:3941
 msgid "Path"
@@ -246,7 +247,7 @@ msgstr "İç"
 
 #: appDatabase.py:28 appPlugins/ToolMilling.py:3941
 msgid "Out"
-msgstr "Out"
+msgstr "Dış"
 
 #: appDatabase.py:28 appGUI/MainGUI.py:876 appPlugins/ToolMilling.py:3941
 #: appPlugins/ToolMilling.py:3949 app_Main.py:8758
@@ -1821,7 +1822,7 @@ msgstr "Toplam Yuva"
 #: appPlugins/ToolPanelize.py:277 appPlugins/ToolPunchGerber.py:391
 #: appPlugins/ToolQRCode.py:202 appPlugins/ToolSub.py:232
 msgid "Beginner"
-msgstr "Acemi Modu"
+msgstr "Basit Seviye"
 
 #: appEditors/AppExcEditor.py:2264 appEditors/AppGeoEditor.py:4098
 #: appEditors/AppGerberEditor.py:4217 appEditors/appGCodeEditor.py:614
@@ -1838,7 +1839,7 @@ msgstr "Acemi Modu"
 #: appPlugins/ToolPanelize.py:289 appPlugins/ToolPunchGerber.py:403
 #: appPlugins/ToolQRCode.py:216 appPlugins/ToolSub.py:243
 msgid "Advanced"
-msgstr "Gelişmiş"
+msgstr "Gelişmiş Seviye"
 
 #: appEditors/AppExcEditor.py:2287 appObjects/FlatCAMGeometry.py:684
 #: appObjects/FlatCAMGeometry.py:1328 appPlugins/ToolDrilling.py:1745
@@ -1925,8 +1926,8 @@ msgid ""
 "Advanced Mode - full control.\n"
 "Permanent change is done in 'Preferences' menu."
 msgstr ""
-"Acemi Modu - Birçok özellik gizlidir.\n"
-"Gelişmiş Mod - Uygulamanın bütün özellikleri kullanılabilir.\n"
+"Basit Seviye - Birçok özellik gizlidir.\n"
+"Gelişmiş Seviye - Uygulamanın bütün özellikleri kullanılabilir.\n"
 "Uygulama seviyesi seçimi Düzenle/Ayarlar menüsünden yapılır."
 
 #: appEditors/AppExcEditor.py:4011 appEditors/AppGerberEditor.py:6035
@@ -5886,16 +5887,12 @@ msgid "Clear GUI Settings"
 msgstr "Arayüz Ayarlarını Sıfırla"
 
 #: appGUI/MainGUI.py:1619
-#, fuzzy
-#| msgid ""
-#| "Clear the GUI settings for FlatCAM,\n"
-#| "such as: layout, gui state, style, hdpi support etc."
 msgid ""
 "Clear the GUI settings for FlatCAM,\n"
 "such as: layout, gui state, style etc."
 msgstr ""
-"Düzeni, arayüz ayarlarını, stili, hdpi desteğini vb. gibi\n"
-"FlatCAM arayüz ayarlarını sıfırlayın."
+"FlatCAM için Arayüz ayarlarını temizleyin, \n"
+"örneğin: düzen, arayüz durumu, stil vb."
 
 #: appGUI/MainGUI.py:1635
 msgid "Apply the current preferences without saving to a file."
@@ -6696,17 +6693,13 @@ msgstr "Gerber Nesnesi"
 
 #: appGUI/ObjectUI.py:185 appGUI/ObjectUI.py:597 appGUI/ObjectUI.py:928
 #: appGUI/ObjectUI.py:1262
-#, fuzzy
-#| msgid "Transformations"
 msgid "General Information"
-msgstr "Döndürmeler"
+msgstr "Genel Bilgi"
 
 #: appGUI/ObjectUI.py:186 appGUI/ObjectUI.py:598 appGUI/ObjectUI.py:929
 #: appGUI/ObjectUI.py:1263
-#, fuzzy
-#| msgid "Generate the CNC Job object."
 msgid "General data about the object."
-msgstr "CNC İş nesnesi oluşturun."
+msgstr "Nesne hakkında genel veriler."
 
 #: appGUI/ObjectUI.py:200 appGUI/ObjectUI.py:613 appGUI/ObjectUI.py:943
 #: appGUI/ObjectUI.py:1278 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:25
@@ -6782,10 +6775,8 @@ msgstr "Nesne Özelliklerini Göster."
 
 #: appGUI/ObjectUI.py:288 appGUI/ObjectUI.py:688 appGUI/ObjectUI.py:1012
 #: appGUI/ObjectUI.py:1417
-#, fuzzy
-#| msgid "No tool in the Geometry object."
 msgid "Tools/apertures in the loaded object."
-msgstr "Şekil nesnesinde araç yok."
+msgstr "Yüklenen nesnedeki araçlar/şekiller."
 
 #: appGUI/ObjectUI.py:309 appGUI/ObjectUI.py:698
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:42
@@ -7983,15 +7974,15 @@ msgid ""
 "If DRILLED(G85) the slots will be exported\n"
 "using the Drilled slot command (G85)."
 msgstr ""
-"Bu, yuvaların nasıl dışa aktarılacağını ayarlar.\n"
-"YÖNLENDİRİLMİŞ ise, yuvalar M15/M16 komutları \n"
-"kullanılarak yönlendirilecektir.\n"
+"Bu, yuvaların nasıl dışa aktarılacağını belirler.\n"
+"ÇİZİLMİŞ ise, yuvalar M15/M16 komutları \n"
+"kullanılarak çizilecektir.\n"
 "DELİKLİ (G85) ise, yuvalar Delinmiş yuva \n"
-"komutu (G85) kullanılarak dışa aktarılır."
+"komutu (G85) kullanılarak dışa aktarılacaktır."
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:145
 msgid "Routed"
-msgstr "Yönlendirilmiş"
+msgstr "Çizilmiş"
 
 #: appGUI/preferences/excellon/ExcellonExpPrefGroupUI.py:146
 msgid "Drilled(G85)"
@@ -8079,7 +8070,7 @@ msgid ""
 "This is used when there is no information\n"
 "stored in the Excellon file."
 msgstr ""
-"Bu, Excellon sıfırlarının türünü ayarlar.\n"
+"Bu, Excellon sıfırlarının tipini belirler.\n"
 "LZ ise, baştaki sıfırlar korunur ve sondaki \n"
 "sıfırlar kaldırılır.\n"
 "TZ işaretlenirse, sondaki sıfırlar korunur ve \n"
@@ -8137,16 +8128,16 @@ msgid ""
 "\n"
 "Some options are disabled when the application works in 32bit mode."
 msgstr ""
-"Bu, Excellon delme yolu için iyileştirme türünü ayarlar.\n"
-"<<MetaHeuristic>> işaretliyle, MetaHeuristic yönlendirilmiş bölgesel \n"
-"yol içeren Google OR-Tools algoritması kullanılır. Varsayılan arama\n"
-" süresi 3 saniyedir.\n"
-"<<Basit>> onay kutusu seçilirse, Google OR Araçları Temel algoritması "
+"Bu, Excellon matkap yolu için iyileştirme tipini ayarlar.\n"
+"<<MetaHeuristic>> onay kutusu işaretlenirse, MetaHeuristic Kılavuzlu Yerel "
+"Yollu Google OR-Tools algoritması kullanılır. Varsayılan arama süresi "
+"3saniyedir.\n"
+"<<Basit>> onay kutusu işaretlenirse Google OR-Tools Basic algoritması "
 "kullanılır.\n"
-"<<TSA>>onay kutusu seçilirse, matkap yolu iyileştirmesi için \n"
-"Travelling Salesman algoritması kullanılır.\n"
+"<<TSA>> onay kutusu işaretlenirse, matkap yolu iyileştirmesi için Travelling "
+"Salesman algoritması kullanılır.\n"
 "\n"
-"FlatCAM 32bit modunda çalışırken bazı seçenekler devre dışı bırakılır."
+"Uygulama, 32bit modunda çalışırken bazı seçenekler devre dışı bırakılır."
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:217
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:302
@@ -8661,11 +8652,12 @@ msgid ""
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
 "FlatCAM için varsayılan kullanım seviyesini seçin.\n"
-"BASİT Seviye -> Azaltılmış işlevsellik, yeni başlayanlar için en iyisi.\n"
-"GELİŞMİŞ Seviye -> Tam işlevsellik.\n"
+"BASİT Seviye -> İşlevler azaltılmıştır. Yeni başlayanlar için daha "
+"uygundur.\n"
+"GELİŞMİŞ Seviye -> Bütün işlevler aktiftir.\n"
 "\n"
-"Buradaki seçim, her türlü FlatCAM nesneleri için Seçili\n"
-"Sekmedeki parametreleri etkileyecektir."
+"Buradaki seçim, her türdeki FlatCAM nesnesi için Seçili sekmesindeki "
+"parametreleri etkileyecektir."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:108
 msgid "Portable app"
@@ -11374,7 +11366,7 @@ msgid ""
 "In those areas the travel of the tools\n"
 "is forbidden."
 msgstr ""
-"Dışlama alanlarını ekleyin.\n"
+"Hariç tutma alanlarını ekleyin.\n"
 "Bu alanlarda uçların dolaşımı yasaktır."
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:406
@@ -11404,12 +11396,12 @@ msgid ""
 "- Over -> when encountering the area, the tool will go to a set height\n"
 "- Around -> will avoid the exclusion area by going around the area"
 msgstr ""
-"Bir hariç tutma alanı ile karşılaşıldığında izlenecek yötemler şunlar "
+"Bir hariç tutma alanı ile karşılaşıldığında izlenecek yöntemler şunlar "
 "olabilir:\n"
 "\n"
 "- Yukarı -> Hariç tutma alanıyla karşılaşıldığında, uç ayarlanan bir "
 "yüksekliğe kalkar.\n"
-"- Etrafından -> Uç, hariç tutma alanının çevresini dolaşarak dışlama "
+"- Etrafından -> Uç, hariç tutma alanının çevresini dolaşarak hariç tutma "
 "alanından kaçınır"
 
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:421
@@ -11440,7 +11432,7 @@ msgid ""
 "The height Z to which the tool will rise in order to avoid\n"
 "an interdiction area."
 msgstr ""
-"Bir dışlama bölgesinden kaçınmak için \n"
+"Bir hariç tutma bölgesinden kaçınmak için \n"
 "ucun yukarı kalkacağı Z yüksekliği."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:21
@@ -11449,17 +11441,13 @@ msgstr "Film Eklentisi"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:28
 #: appPlugins/ToolFilm.py:1255
-#, fuzzy
-#| msgid "Film Adjustments"
 msgid "Adjustments"
-msgstr "Film Ayarları"
+msgstr "Ayarlar"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:30
 #: appPlugins/ToolFilm.py:1257
-#, fuzzy
-#| msgid "Center point coordinates"
 msgid "Compensate print distortions."
-msgstr "Merkez noktası koordinatları"
+msgstr "Baskı bozulmalarını telafi edin."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:44
 #: appPlugins/ToolFilm.py:1272
@@ -11473,14 +11461,8 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:84
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:135
 #: appPlugins/ToolFilm.py:1305 appPlugins/ToolFilm.py:1366
-#, fuzzy
-#| msgid ""
-#| "The reference point to be used as origin for the adjustment.\n"
-#| "It can be one of the four points of the geometry bounding box."
 msgid "The reference point to be used as origin for the adjustment."
-msgstr ""
-"Ayarlama için başlangıç noktası olarak kullanılacak referans noktası.\n"
-"Şekil sınırlama kutusunun beş noktasından biri olabilir."
+msgstr "Ayarlama için başlangıç noktası olarak kullanılacak referans noktası."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
@@ -11531,7 +11513,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:191
 #: appPlugins/ToolFilm.py:1455
 msgid "Generate a Positive black film or a Negative film."
-msgstr ""
+msgstr "Bir Pozitif siyah film veya bir Negatif film oluşturun."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:197
 msgid "Film Color"
@@ -13328,63 +13310,51 @@ msgid "Cut depth (Cut Z) calculated."
 msgstr "Kesme derinliği (Z Derinliği) hesaplandı."
 
 #: appPlugins/ToolCalculators.py:507
-#, fuzzy
-#| msgid "V-Shape"
 msgid "V-Shape Tool"
-msgstr "V-Shape"
+msgstr "V-Şekilli Uç"
 
 #: appPlugins/ToolCalculators.py:508
-#, fuzzy
-#| msgid "Conversion"
 msgid "Units Conversion"
-msgstr "Dönüştür"
+msgstr "Birimleri Dönüştürme"
 
 #: appPlugins/ToolCalculators.py:509
-#, fuzzy
-#| msgid "ElectroPlating Calculator"
 msgid "ElectroPlating"
-msgstr "Elektronik Kaplama Hesaplayıcı"
+msgstr "Elektronik Kaplama"
 
 #: appPlugins/ToolCalculators.py:510
 msgid "Tinning"
-msgstr ""
+msgstr "Kalaylama"
 
 #: appPlugins/ToolCalculators.py:548
 msgid "inch"
-msgstr ""
+msgstr "inç"
 
 #: appPlugins/ToolCalculators.py:554 appPlugins/ToolCalculators.py:569
 #: appPlugins/ToolCalculators.py:584
-#, fuzzy
-#| msgid "Here you enter the value to be converted from INCH to MM"
 msgid "Here you enter the value to be converted from imperial to metric"
-msgstr "Burada İNÇ'ten MM'ye dönüştürülecek değeri girersiniz"
+msgstr "Buraya İngiliz ölçü biriminden metriğe dönüştürülecek değeri girin"
 
 #: appPlugins/ToolCalculators.py:557 appPlugins/ToolCalculators.py:572
 #: appPlugins/ToolCalculators.py:587
-#, fuzzy
-#| msgid "Here you enter the value to be converted from INCH to MM"
 msgid "Here you enter the value to be converted from metric to imperial"
-msgstr "Burada İNÇ'ten MM'ye dönüştürülecek değeri girersiniz"
+msgstr "Buraya metrikten İngiliz ölçü birimine dönüştürülecek değeri girin"
 
 #: appPlugins/ToolCalculators.py:563
 msgid "oz"
-msgstr ""
+msgstr "oz"
 
 #: appPlugins/ToolCalculators.py:564
 msgid "gram"
-msgstr ""
+msgstr "gram"
 
 #: appPlugins/ToolCalculators.py:578
 msgid "fl oz"
-msgstr ""
+msgstr "fl oz"
 
 #: appPlugins/ToolCalculators.py:579 appPlugins/ToolCalculators.py:945
 #: appPlugins/ToolCalculators.py:965 appPlugins/ToolCalculators.py:1020
-#, fuzzy
-#| msgid "L"
 msgid "mL"
-msgstr "L"
+msgstr "mL"
 
 #: appPlugins/ToolCalculators.py:625
 msgid ""
@@ -13395,52 +13365,30 @@ msgstr ""
 "Üretici tarafından belirtilmiştir."
 
 #: appPlugins/ToolCalculators.py:637
-#, fuzzy
-#| msgid ""
-#| "This is the depth to cut into the material.\n"
-#| "In the CNCJob is the CutZ parameter."
 msgid "This is the depth to cut into the material."
-msgstr ""
-"Bu, malzemeyi kesme derinliğidir.\n"
-"CNC işleminde bu Z Derinliği değeridir."
+msgstr "Bu, malzemeyi kesecek derinliktir."
 
 #: appPlugins/ToolCalculators.py:648
-#, fuzzy
-#| msgid ""
-#| "This is the tool tip diameter.\n"
-#| "It is specified by manufacturer."
 msgid ""
 "This is the actual tool diameter\n"
 "at the desired depth of cut."
-msgstr ""
-"Bu, ucun kalınlığıdır.\n"
-"Üretici tarafından belirtilmiştir."
+msgstr "Bu, istenen kesme derinliğindeki mevcut uç kalınlığıdır."
 
 #: appPlugins/ToolCalculators.py:661
-#, fuzzy
-#| msgid ""
-#| "Calculate either the Cut Z or the effective tool diameter,\n"
-#| "  depending on which is desired and which is known. "
 msgid "Calculate either the depth of cut or the effective tool diameter."
-msgstr ""
-"İstenen ve bilinen yöntemlere bağlı olarak kesme \n"
-"derinliğini veya etkili uç kalınlığını hesaplar. "
+msgstr "Kesme derinliğini veya uygun uç kalınlığını hesaplayın."
 
 #: appPlugins/ToolCalculators.py:686
 msgid "Area Calculation"
 msgstr "Alan Hesaplama"
 
 #: appPlugins/ToolCalculators.py:688
-#, fuzzy
-#| msgid "This is the board area."
 msgid "Determine the board area."
-msgstr "Burası plaketin alanıdır."
+msgstr "Plaket alanını belirleyin."
 
 #: appPlugins/ToolCalculators.py:700
-#, fuzzy
-#| msgid "Board Length"
 msgid "Board Length."
-msgstr "Plaket Uzunluğu"
+msgstr "Plaket Uzunluğu."
 
 #: appPlugins/ToolCalculators.py:706 appPlugins/ToolCalculators.py:724
 #: appPlugins/ToolCalculators.py:742 appPlugins/ToolCopperThieving.py:1750
@@ -13448,28 +13396,20 @@ msgid "cm"
 msgstr "cm"
 
 #: appPlugins/ToolCalculators.py:736
-#, fuzzy
-#| msgid "Plated area"
 msgid "Board area."
-msgstr "Kaplama Alanı"
+msgstr "Plaket Alanı."
 
 #: appPlugins/ToolCalculators.py:759
-#, fuzzy
-#| msgid ""
-#| "Current density to pass through the board. \n"
-#| "In Amps per Square Feet ASF."
 msgid ""
 "Current density applied to the board. \n"
 "In Amperes per Square Feet ASF."
 msgstr ""
-"Plaketten geçecek akım yoğunluğu.\n"
-"Fitkare başına amper."
+"Plakete uygulanan akım yoğunluğu.\n"
+"Fitkare ASF Başına Amper Olarak."
 
 #: appPlugins/ToolCalculators.py:779
-#, fuzzy
-#| msgid "The thickness of the line that makes the corner marker."
 msgid "Thickness of the deposited copper."
-msgstr "Köşe işaretinin çizgi kalınlığı."
+msgstr "Kaplanan bakır kalınlığı."
 
 #: appPlugins/ToolCalculators.py:786
 msgid "um"
@@ -13480,87 +13420,72 @@ msgid "Current Value"
 msgstr "Mevcut Değer"
 
 #: appPlugins/ToolCalculators.py:798
-#, fuzzy
-#| msgid ""
-#| "This is the current intensity value\n"
-#| "to be set on the Power Supply. In Amps."
 msgid ""
 "This is the current intensity value\n"
 "to be set on the Power Supply."
 msgstr ""
-"Bu, Güç Kaynağında ayarlanacak geçerli\n"
-"yoğunluk değeridir. Amper cinsinden."
+"Bu, Güç Kaynağında ayarlanacak\n"
+"akım yoğunluğu değeridir."
 
 #: appPlugins/ToolCalculators.py:818
 msgid "Time"
 msgstr "Zaman"
 
 #: appPlugins/ToolCalculators.py:819
-#, fuzzy
-#| msgid "Object to be cleared of excess copper."
 msgid "The time calculated to deposit copper."
-msgstr "Bakır temizliği yapılacak nesne."
+msgstr "Bakır kaplamak için hesaplanan süre."
 
 #: appPlugins/ToolCalculators.py:841
-#, fuzzy
-#| msgid ""
-#| "Calculate the current intensity value and the procedure time,\n"
-#| "depending on the parameters above"
 msgid "Calculate the current intensity value and the procedure time."
-msgstr ""
-"Yukarıdaki değerlere bağlı olarak mevcut \n"
-"yoğunluk değerini ve işlem süresini hesaplayın"
+msgstr "Geçerli yoğunluk değerini ve işlem süresini hesaplayın."
 
 #: appPlugins/ToolCalculators.py:851
 msgid ""
 "Calculator for chemical quantities\n"
 "required for tinning PCB's."
 msgstr ""
+"PCB'lerin kalaylanması için gerekli kimyasal miktarların hesaplayıcısı."
 
 #: appPlugins/ToolCalculators.py:863
-#, fuzzy
-#| msgid "Isolation"
 msgid "Solution"
-msgstr "Yalıtım"
+msgstr "Çözelti"
 
 #: appPlugins/ToolCalculators.py:865
 msgid "Choose one solution for tinning."
-msgstr ""
+msgstr "Kalaylama için bir çözelti seçin."
 
 #: appPlugins/ToolCalculators.py:877
 msgid "Stannous Chloride."
-msgstr ""
+msgstr "Kalay Klorür."
 
 #: appPlugins/ToolCalculators.py:885 appPlugins/ToolCalculators.py:905
 #: appPlugins/ToolCalculators.py:925 appPlugins/ToolCalculators.py:996
 msgid "g"
-msgstr ""
+msgstr "g"
 
 #: appPlugins/ToolCalculators.py:896 appPlugins/ToolCalculators.py:897
 msgid "Thiourea"
-msgstr ""
+msgstr "Tiyoüre"
 
 #: appPlugins/ToolCalculators.py:917
 msgid "Sulfamic Acid."
-msgstr ""
+msgstr "Sülfamik Asit."
 
 #: appPlugins/ToolCalculators.py:937
 msgid "Distilled Water."
-msgstr ""
+msgstr "Saf Su."
 
 #: appPlugins/ToolCalculators.py:956
 msgid "Soap"
-msgstr ""
+msgstr "Sabun"
 
 #: appPlugins/ToolCalculators.py:957
 msgid "Liquid soap."
-msgstr ""
+msgstr "Sıvı Sabun."
 
 #: appPlugins/ToolCalculators.py:980
-#, fuzzy
-#| msgid "Options"
 msgid "Optional"
-msgstr "Seçenekler"
+msgstr "İsteğe Bağlı"
 
 #: appPlugins/ToolCalculators.py:986
 msgid ""
@@ -13568,21 +13493,23 @@ msgid ""
 "Optional, for solution stability.\n"
 "Warning: List 1 chemical in USA."
 msgstr ""
+"Sodyum hipofosfit.\n"
+"Çözelti dengesi için isteğe bağlı olarak kullanılır.\n"
+"Uyarı: ABD için liste 1 kimyasalıdır."
 
 #: appPlugins/ToolCalculators.py:1012
-#, fuzzy
-#| msgid "Columns"
 msgid "Volume"
-msgstr "Sütunlar"
+msgstr "Yoğunluk"
 
 #: appPlugins/ToolCalculators.py:1013
 msgid "Desired volume of tinning solution."
-msgstr ""
+msgstr "İstenilen yoğunlukta kalaylama çözeltisi."
 
 #: appPlugins/ToolCalculators.py:1034
 msgid ""
 "Calculate the chemical quantities for the desired volume of tinning solution."
 msgstr ""
+"İstenilen kalaylama çözeltisi yoğunluğu için kimyasal miktarları hesaplayın."
 
 #: appPlugins/ToolCalibration.py:126 appPlugins/ToolCalibration.py:765
 msgid "Calibration"
@@ -14125,10 +14052,9 @@ msgid "Corners"
 msgstr "Köşe İşaretleyici"
 
 #: appPlugins/ToolCorners.py:242 appPlugins/ToolCorners.py:797
-#, fuzzy
-#| msgid "Click to add next pad or right click to start."
 msgid "Click to add next marker or right click to finish."
-msgstr "Sonraki pedi eklemek için tıklayın veya başlatmak için sağ tıklayın."
+msgstr ""
+"Sonraki işareti eklemek için tıklayın veya sonlandırmak için sağ tıklayın."
 
 #: appPlugins/ToolCorners.py:325 appPlugins/ToolCorners.py:529
 #: appPlugins/ToolCorners.py:624
@@ -14148,10 +14074,8 @@ msgid "A Gerber object with corner markers was created."
 msgstr "Köşe işaretleri olan bir Gerber nesnesi oluşturuldu."
 
 #: appPlugins/ToolCorners.py:796
-#, fuzzy
-#| msgid "Add Marker"
 msgid "Added marker"
-msgstr "Köşe İşareti Ekle"
+msgstr "İşaret eklendi"
 
 #: appPlugins/ToolCorners.py:854
 msgid "The Gerber object to which will be added corner markers."
@@ -14179,6 +14103,7 @@ msgid ""
 "When the manual type is chosen, the markers\n"
 "are manually placed on canvas."
 msgstr ""
+"Elle seçildiğinde, işaretçiler çalışma alanı üzerine el ile yerleştirilir."
 
 #: appPlugins/ToolCorners.py:1009
 msgid "Add Marker"
@@ -14900,20 +14825,16 @@ msgstr ""
 "geldiğinde pedin/deliğin merkezine tutturacaktır."
 
 #: appPlugins/ToolDistance.py:618 appPlugins/ToolDistanceMin.py:282
-#, fuzzy
-#| msgid "Start Z"
 msgid "Start point"
-msgstr "Z Başlangıç"
+msgstr "Başlangıç Noktası"
 
 #: appPlugins/ToolDistance.py:619 appPlugins/ToolDistance.py:624
 msgid "This is measuring Start point coordinates."
 msgstr "Bu, ölçümün başlangıç ​​noktasının koordinatlarıdır."
 
 #: appPlugins/ToolDistance.py:629 appPlugins/ToolDistanceMin.py:297
-#, fuzzy
-#| msgid "Second point"
 msgid "End point"
-msgstr "İkinci Nokta"
+msgstr "Bitiş Noktası"
 
 #: appPlugins/ToolDistance.py:630 appPlugins/ToolDistance.py:635
 msgid "This is the measuring Stop point coordinates."
@@ -14943,10 +14864,8 @@ msgid "This is orientation angle of the measuring line."
 msgstr "Bu, ölçüm hattının yönlendirme açısıdır."
 
 #: appPlugins/ToolDistance.py:683 appPlugins/ToolDistanceMin.py:356
-#, fuzzy
-#| msgid "Result"
 msgid "Results"
-msgstr "Sonuç"
+msgstr "Sonuçlar"
 
 #: appPlugins/ToolDistance.py:686 appPlugins/ToolDistanceMin.py:360
 msgid "DISTANCE"
@@ -15092,7 +15011,7 @@ msgstr "Delinecek noktalar listesi oluşturuluyor ..."
 
 #: appPlugins/ToolDrilling.py:1968 camlib.py:4061
 msgid "Failed. Drill points inside the exclusion zones."
-msgstr "Hata. Dışlama alanlarında delikler var."
+msgstr "Hata. Hariç tutma alanlarında delikler var."
 
 #: appPlugins/ToolDrilling.py:1984 camlib.py:4104 camlib.py:5495 camlib.py:5904
 msgid "Starting G-Code"
@@ -15115,10 +15034,8 @@ msgid "Excellon object for drilling/milling operation."
 msgstr "Delme/frezeleme işlemi için Excellon nesnesi."
 
 #: appPlugins/ToolDrilling.py:2327
-#, fuzzy
-#| msgid "Tools in the object used for milling."
 msgid "Tools in the object used for drilling."
-msgstr "Frezeleme için kullanılan nesnedeki delikler/yuvalar."
+msgstr "Delme için kullanılan nesnedeki araçlar."
 
 #: appPlugins/ToolDrilling.py:2377
 msgid "Search DB"
@@ -15190,7 +15107,7 @@ msgstr ""
 
 #: appPlugins/ToolDrilling.py:2778 appPlugins/ToolMilling.py:4500
 msgid "Add exclusion areas"
-msgstr "Dışlama Alanları Ekle"
+msgstr "Hariç Tutma Alanları Ekle"
 
 #: appPlugins/ToolDrilling.py:2805 appPlugins/ToolMilling.py:4528
 msgid "This is the Area ID."
@@ -15198,7 +15115,7 @@ msgstr "Bu bölge tanımlayıcısıdır."
 
 #: appPlugins/ToolDrilling.py:2807 appPlugins/ToolMilling.py:4530
 msgid "Type of the object where the exclusion area was added."
-msgstr "Dışlama alanının eklendiği nesnenin türü."
+msgstr "Hariç tutma alanının eklendiği nesnenin türü."
 
 #: appPlugins/ToolDrilling.py:2809 appPlugins/ToolMilling.py:4532
 msgid ""
@@ -15213,8 +15130,8 @@ msgid ""
 "If the strategy is to go over the area then this is the height at which the "
 "tool will go to avoid the exclusion area."
 msgstr ""
-"Yöntem \"Yukarı\" olarak seçilmişse bu, ucun dışlama alanından kaçınmak için "
-"gideceği yüksekliktir."
+"Yöntem \"Yukarı\" olarak seçilmişse bu, ucun hariç tutma alanından kaçınmak "
+"için gideceği yüksekliktir."
 
 #: appPlugins/ToolDrilling.py:2845 appPlugins/ToolMilling.py:4568
 msgid "Add Area:"
@@ -15226,7 +15143,7 @@ msgstr "Bir hariç tutma alanı ekleyin."
 
 #: appPlugins/ToolDrilling.py:2864 appPlugins/ToolMilling.py:4587
 msgid "Delete all exclusion areas."
-msgstr "Dışlama alanlarının tümünü silin."
+msgstr "Hariç tutma alanlarının tümünü silin."
 
 #: appPlugins/ToolDrilling.py:2867 appPlugins/ToolMilling.py:4590
 msgid "Delete Selected"
@@ -15234,7 +15151,7 @@ msgstr "Seçilenleri Sil"
 
 #: appPlugins/ToolDrilling.py:2868 appPlugins/ToolMilling.py:4591
 msgid "Delete all exclusion areas that are selected in the table."
-msgstr "Tabloda seçilen dışlama alanlarını siler."
+msgstr "Tabloda seçilen hariç tutma alanlarını siler."
 
 #: appPlugins/ToolDrilling.py:2882 appPlugins/ToolMilling.py:4603
 #: appPlugins/ToolSolderPaste.py:1542
@@ -15265,10 +15182,8 @@ msgid "Missing parameter value."
 msgstr "Seçeneklerden bazı değerler belirlenmemiş."
 
 #: appPlugins/ToolEtchCompensation.py:335
-#, fuzzy
-#| msgid "Gerber object that will be inverted."
 msgid "Gerber object that will be compensated."
-msgstr "Polarize edilecek Gerber nesnesi."
+msgstr "Telafi edilecek Gerber nesnesi."
 
 #: appPlugins/ToolEtchCompensation.py:352
 msgid "Conversion utilities"
@@ -15452,10 +15367,10 @@ msgid "Fiducials Tool exit."
 msgstr "Referans işareti aracından çık."
 
 #: appPlugins/ToolFiducials.py:848
-#, fuzzy
-#| msgid "Gerber object for isolation routing."
 msgid "Gerber object for adding fiducials and soldermask openings."
-msgstr "Yalıtım oluşturmak için Gerber nesnesi."
+msgstr ""
+"Referans işaretleri ve lehim maskesi \n"
+"açıklıkları eklemek için Gerber nesnesi."
 
 #: appPlugins/ToolFiducials.py:865
 msgid ""
@@ -15671,6 +15586,9 @@ msgid ""
 "Create a Geometry object with a path\n"
 "following the Gerber traces."
 msgstr ""
+"İzlenecek bir Gerber nesnesi.\n"
+"Gerber izlerini takip eden bir yola sahip\n"
+"bir Şekil nesnesi oluşturun."
 
 #: appPlugins/ToolFollow.py:746
 msgid ""
@@ -16385,10 +16303,8 @@ msgstr ""
 "uygulayın, böylece otomatik dengeleme yapın."
 
 #: appPlugins/ToolMilling.py:861
-#, fuzzy
-#| msgid "Could not load the file."
 msgid "Could not build the Plugin UI"
-msgstr "Dosya yüklenemedi."
+msgstr "Eklenti Kullanıcı Arayüzü oluşturulamadı"
 
 #: appPlugins/ToolMilling.py:1289
 msgid "Milling Tool"
@@ -16470,10 +16386,8 @@ msgstr "Şekil tamamen çizilemedi"
 
 #: appPlugins/ToolMilling.py:3562 appPlugins/ToolNCC.py:4136
 #: appPlugins/ToolPaint.py:2939
-#, fuzzy
-#| msgid "Object for milling operation."
 msgid "Source object for milling operation."
-msgstr "Frezeleme işlemi için kullanılacak nesne."
+msgstr "Frezeleme işlemi için kullanılacak kaynak nesne."
 
 #: appPlugins/ToolMilling.py:3575
 msgid "Object for milling operation."
@@ -16569,14 +16483,14 @@ msgstr ""
 "çıktısını belirleyen önişlemci JSON dosyası."
 
 #: appPlugins/ToolMilling.py:4450
-#, fuzzy
-#| msgid "Levelling"
 msgid "Allow levelling"
-msgstr "Dengeleme"
+msgstr "Dengelemeye İzin Ver"
 
 #: appPlugins/ToolMilling.py:4452
 msgid "Allow levelling by having segments size more than zero."
 msgstr ""
+"Bölümlerin boyutunun sıfırdan büyük olmasını sağlayarak dengelemeye izin "
+"verin."
 
 #: appPlugins/ToolMove.py:102
 msgid "MOVE: Click on the Start point ..."
