@@ -571,7 +571,7 @@ class ToolMilling(AppTool, Excellon):
 
         self.ui.tools_frame.show()
 
-        self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
+        self.ui.order_combo.set_value(self.app.defaults["tools_drill_tool_order"])
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_mill_milling_type"])
 
         # init the working variables
@@ -1061,6 +1061,29 @@ class ToolMilling(AppTool, Excellon):
         if self.target_obj:
             self.ui.param_frame.setDisabled(False)
 
+            # order the tools by tool diameter if it's the case
+            sorted_tools = []
+            for k, v in self.obj_tools.items():
+                sorted_tools.append(self.app.dec_format(float(v['tooldia'])))
+
+            order = self.ui.order_combo.get_value()
+            if order == 1:  # 'fwd'
+                sorted_tools.sort(reverse=False)
+            elif order == 2:  # 'rev'
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
+
+            # remake the excellon_tools dict in the order above
+            new_id = 1
+            new_tools = {}
+            for tooldia in sorted_tools:
+                for old_tool in self.obj_tools:
+                    if self.app.dec_format(float(self.obj_tools[old_tool]['tooldia'])) == tooldia:
+                        new_tools[new_id] = deepcopy(self.obj_tools[old_tool])
+                        new_id += 1
+
+            self.obj_tools = new_tools
             tools = [k for k in self.obj_tools]
 
         else:
@@ -1212,7 +1235,7 @@ class ToolMilling(AppTool, Excellon):
         if val == 'exc':
             self.ui.tools_table.show()
             self.ui.order_label.show()
-            self.ui.order_radio.show()
+            self.ui.order_combo.show()
 
             self.ui.geo_tools_table.hide()
 
@@ -1238,7 +1261,7 @@ class ToolMilling(AppTool, Excellon):
         else:
             self.ui.tools_table.hide()
             self.ui.order_label.hide()
-            self.ui.order_radio.hide()
+            self.ui.order_combo.hide()
 
             self.ui.geo_tools_table.show()
 
@@ -1425,7 +1448,7 @@ class ToolMilling(AppTool, Excellon):
             elif isinstance(current_widget, FCComboBox2):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.order_combo.currentIndexChanged.connect(self.on_order_changed)
 
         # Exclusion Table widgets connect
         for row in range(self.ui.exclusion_table.rowCount()):
@@ -1534,7 +1557,7 @@ class ToolMilling(AppTool, Excellon):
                     pass
 
         try:
-            self.ui.order_radio.activated_custom[str].disconnect()
+            self.ui.order_combo.currentIndexChanged.disconnect()
         except (TypeError, ValueError):
             pass
 
@@ -1936,7 +1959,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui_connect()
 
     def on_order_changed(self, order):
-        if order != 'no':
+        if order != 0:  # "default"
             self.build_ui()
 
     def on_tool_add(self, clicked_state, dia=None, new_geo=None):
@@ -3719,18 +3742,17 @@ class MillingUI:
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
-                                      "'Forward' --> means that the tools will be ordered from small to big\n"
-                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                      "'Default' --> the order from the Excellon file\n"
+                                      "'Forward' --> tools will be ordered from small to big\n"
+                                      "'Reverse' --> tools will ordered from big to small\n\n"
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.order_combo = FCComboBox2()
+        self.order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
         grid1.addWidget(self.order_label, 2, 0)
-        grid1.addWidget(self.order_radio, 2, 1)
+        grid1.addWidget(self.order_combo, 2, 1)
 
         # ************************************************************************
         # ************** Geometry Tool Table *************************************
@@ -3772,7 +3794,7 @@ class MillingUI:
         self.tools_table.hide()
         self.geo_tools_table.hide()
         self.order_label.hide()
-        self.order_radio.hide()
+        self.order_combo.hide()
 
         # #############################################################################################################
         # ADD TOOLS FOR GEOMETRY OBJECT
@@ -3900,7 +3922,7 @@ class MillingUI:
         self.milling_type_radio.setObjectName("milling_type")
 
         grid2.addWidget(self.mill_type_label, 0, 0)
-        grid2.addWidget(self.milling_type_radio, 0, 1)
+        grid2.addWidget(self.milling_type_radio, 1, 0, 1, 2)
 
         # Milling Diameter
         self.mill_dia_label = FCLabel('%s:' % _('Milling Diameter'))
@@ -4594,7 +4616,7 @@ class MillingUI:
         # ------------------------------------------------------------------------------------------------------------
 
         FCGridLayout.set_common_column_size(
-            [grid0, grid_title_tool_table, grid1, grid_add_tool, button_grid, grid2, grid3, grid_a1], 0)
+            [grid0, grid_title_tool_table, grid1, grid_add_tool, button_grid, grid2, grid3], 0)
 
         # #############################################################################################################
         # Generate CNC Job object

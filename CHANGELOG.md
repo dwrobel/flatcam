@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.09.2021
+
+- some UI changes in the Milling and Drilling Plugins
+- working on the Excellon side from Milling Plugin
+
 10.09.2021
 
 - minor changes in Film Plugin

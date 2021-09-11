@@ -369,7 +369,7 @@ class PreferencesUIManager:
             "tools_al_grbl_travelz":     self.ui.plugin_eng_pref_form.tools_level_group.jog_travelz_entry,
 
             # Drilling Tool
-            "tools_drill_tool_order":   self.ui.plugin_pref_form.tools_drill_group.order_radio,
+            "tools_drill_tool_order":   self.ui.plugin_pref_form.tools_drill_group.order_combo,
             "tools_drill_cutz":         self.ui.plugin_pref_form.tools_drill_group.cutz_entry,
             "tools_drill_multidepth":   self.ui.plugin_pref_form.tools_drill_group.mpass_cb,
             "tools_drill_depthperpass": self.ui.plugin_pref_form.tools_drill_group.maxdepth_entry,

@@ -442,7 +442,7 @@ class ToolDrilling(AppTool, Excellon):
         for it in range(self.ui.pp_excellon_name_cb.count()):
             self.ui.pp_excellon_name_cb.setItemData(it, self.ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
 
-        self.ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
+        self.ui.order_combo.set_value(self.app.defaults["tools_drill_tool_order"])
 
         if loaded_obj:
             outname = loaded_obj.options['name']
@@ -673,10 +673,10 @@ class ToolDrilling(AppTool, Excellon):
         for k, v in self.excellon_tools.items():
             sorted_tools.append(self.dec_format(float(v['tooldia'])))
 
-        order = self.ui.order_radio.get_value()
-        if order == 'fwd':
+        order = self.ui.order_combo.get_value()
+        if order == 1:  # 'fwd'
             sorted_tools.sort(reverse=False)
-        elif order == 'rev':
+        elif order == 2:    # 'rev'
             sorted_tools.sort(reverse=True)
         else:
             pass
@@ -1024,7 +1024,7 @@ class ToolDrilling(AppTool, Excellon):
             elif isinstance(current_widget2, NumericalEvalTupleEntry):
                 current_widget2.editingFinished.connect(self.form_to_storage)
 
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.order_combo.currentIndexChanged.connect(self.on_order_changed)
 
         # Exclusion Table widgets connect
         for row in range(self.ui.exclusion_table.rowCount()):
@@ -1116,7 +1116,7 @@ class ToolDrilling(AppTool, Excellon):
                 except (TypeError, ValueError):
                     pass
         try:
-            self.ui.order_radio.activated_custom[str].disconnect()
+            self.ui.order_combo.currentIndexChanged.disconnect()
         except (TypeError, ValueError):
             pass
 
@@ -1457,7 +1457,7 @@ class ToolDrilling(AppTool, Excellon):
         self.blockSignals(False)
 
     def on_order_changed(self, order):
-        if order != 'no':
+        if order != 0:  # 'default'
             self.build_tool_ui()
 
     def on_tooltable_cellwidget_change(self):
@@ -1940,7 +1940,7 @@ class ToolDrilling(AppTool, Excellon):
         for tool_as_key, v in list(self.excellon_tools.items()):
             all_tools.append((int(tool_as_key), float(v['tooldia'])))
 
-        order = self.ui.order_radio.get_value()
+        order = self.ui.order_combo.get_value()
         if order == 'fwd':
             sorted_tools = sorted(all_tools, key=lambda t1: t1[1])
         elif order == 'rev':
@@ -2360,18 +2360,17 @@ class DrillingUI:
         # Tool order
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
-                                      "'Forward' --> means that the tools will be ordered from small to big\n"
-                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                      "'Default' --> the order from the Excellon file\n"
+                                      "'Forward' --> tools will be ordered from small to big\n"
+                                      "'Reverse' --> tools will ordered from big to small\n\n"
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.order_combo = FCComboBox2()
+        self.order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
         grid1.addWidget(self.order_label, 2, 0)
-        grid1.addWidget(self.order_radio, 2, 1)
+        grid1.addWidget(self.order_combo, 2, 1)
 
         # Manual Load of Tools from DB
         self.search_load_db_btn = FCButton(_("Search DB"))
@@ -2879,7 +2878,7 @@ class DrillingUI:
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         # grid3.addWidget(separator_line, 25, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3, grid_a1], 0)
+        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3], 0)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))

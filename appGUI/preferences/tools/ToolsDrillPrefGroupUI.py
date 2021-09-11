@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel, FCGridLayout
+    OptionalInputSection, NumericalEvalEntry, FCLabel, FCGridLayout, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -35,18 +35,17 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         # Tool order Radio Button
         self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
-                                      "'Forward' --> means that the tools will be ordered from small to big\n"
-                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                      "'Default' --> the order from the Excellon file\n"
+                                      "'Forward' --> tools will be ordered from small to big\n"
+                                      "'Reverse' --> tools will ordered from big to small\n\n"
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.order_combo = FCComboBox2()
+        self.order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
         grid0.addWidget(self.order_label, 1, 0)
-        grid0.addWidget(self.order_radio, 1, 1, 1, 2)
+        grid0.addWidget(self.order_combo, 1, 1, 1, 2)
 
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
