@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - some UI changes in the Milling and Drilling Plugins
 - working on the Excellon side from Milling Plugin
+- modified the UI in Excellon Object Properties UI in the milling section
 
 10.09.2021
 

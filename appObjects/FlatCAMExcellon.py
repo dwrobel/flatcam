@@ -565,8 +565,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.slot_tooldia_entry.setDisabled(False)
             self.ui.generate_milling_slots_button.setDisabled(False)
 
-            has_drills = True
-            has_slots = True
+            has_drills = None
+            has_slots = None
             for row in sel_rows:
                 row_dia = self.app.dec_format(float(self.ui.tools_table.item(row, 1).text()), self.decimals)
 
@@ -574,12 +574,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     tool_dia = self.app.dec_format(float(self.tools[tt]['tooldia']), self.decimals)
                     if tool_dia == row_dia:
                         # find if we have drills:
-                        if 'drills' not in self.tools[tt] or not self.tools[tt]['drills']:
-                            has_drills = None
+                        if 'drills' in self.tools[tt] and self.tools[tt]['drills']:
+                            has_drills = True
 
                         # find if we have slots
-                        if 'slots' not in self.tools[tt] or not self.tools[tt]['slots']:
-                            has_slots = None
+                        if 'slots' in self.tools[tt] and self.tools[tt]['slots']:
+                            has_slots = True
 
             if has_drills is None:
                 self.ui.tooldia_entry.setDisabled(True)
@@ -970,6 +970,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     else:
                         geo_obj.solid_geometry.append(drill.buffer(buffer_value).exterior)
 
+            if not geo_obj.solid_geometry:
+                return "fail"
+
         if use_thread:
             def geo_thread(a_obj):
                 a_obj.app_obj.new_object("geometry", outname, geo_init, plot=plot)
@@ -1078,6 +1081,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                         lines_string = LineString([start, stop])
                         poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
+            if not geo_obj.solid_geometry:
+                return "fail"
 
         if use_thread:
             def geo_thread(a_obj):
