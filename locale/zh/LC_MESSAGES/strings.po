@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-09-10 00:03+0300\n"
-"PO-Revision-Date: 2021-09-10 00:03+0300\n"
+"PO-Revision-Date: 2021-09-15 09:44+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -6552,17 +6552,13 @@ msgstr "Gerber对象"
 
 #: appGUI/ObjectUI.py:185 appGUI/ObjectUI.py:597 appGUI/ObjectUI.py:928
 #: appGUI/ObjectUI.py:1262
-#, fuzzy
-#| msgid "Transformations"
 msgid "General Information"
-msgstr "变换操作"
+msgstr "一般信息"
 
 #: appGUI/ObjectUI.py:186 appGUI/ObjectUI.py:598 appGUI/ObjectUI.py:929
 #: appGUI/ObjectUI.py:1263
-#, fuzzy
-#| msgid "Generate the CNC Job object."
 msgid "General data about the object."
-msgstr "生成CNC任务。"
+msgstr "关于对象的一般数据。"
 
 #: appGUI/ObjectUI.py:200 appGUI/ObjectUI.py:613 appGUI/ObjectUI.py:943
 #: appGUI/ObjectUI.py:1278 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:25
@@ -6638,10 +6634,8 @@ msgstr "显示对象属性。"
 
 #: appGUI/ObjectUI.py:288 appGUI/ObjectUI.py:688 appGUI/ObjectUI.py:1012
 #: appGUI/ObjectUI.py:1417
-#, fuzzy
-#| msgid "No tool in the Geometry object."
 msgid "Tools/apertures in the loaded object."
-msgstr "Geometry对象中没有刀具。"
+msgstr "加载对象中的刀具/孔。"
 
 #: appGUI/ObjectUI.py:309 appGUI/ObjectUI.py:698
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:42
@@ -11042,17 +11036,13 @@ msgstr "胶片插件"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:28
 #: appPlugins/ToolFilm.py:1255
-#, fuzzy
-#| msgid "Film Adjustments"
 msgid "Adjustments"
-msgstr "胶片调整"
+msgstr "调整"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:30
 #: appPlugins/ToolFilm.py:1257
-#, fuzzy
-#| msgid "Center point coordinates"
 msgid "Compensate print distortions."
-msgstr "中心点坐标"
+msgstr "补偿打印失真。"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:44
 #: appPlugins/ToolFilm.py:1272
@@ -11064,14 +11054,8 @@ msgstr "大于1的值将拉伸胶片，而小于1的值将使胶片抖动。"
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:84
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:135
 #: appPlugins/ToolFilm.py:1305 appPlugins/ToolFilm.py:1366
-#, fuzzy
-#| msgid ""
-#| "The reference point to be used as origin for the adjustment.\n"
-#| "It can be one of the four points of the geometry bounding box."
 msgid "The reference point to be used as origin for the adjustment."
-msgstr ""
-"用作调整原点的参考点。\n"
-"它可以是几何边界框的四个点之一。"
+msgstr "用作调整原点的参考点。"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:89
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:140
@@ -11120,7 +11104,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:191
 #: appPlugins/ToolFilm.py:1455
 msgid "Generate a Positive black film or a Negative film."
-msgstr ""
+msgstr "生成正片黑色胶片或负片。"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:197
 msgid "Film Color"
@@ -12861,63 +12845,51 @@ msgid "Cut depth (Cut Z) calculated."
 msgstr "计算出的切割深度（切割Z）。"
 
 #: appPlugins/ToolCalculators.py:507
-#, fuzzy
-#| msgid "Scale Tool"
 msgid "V-Shape Tool"
-msgstr "缩放工具"
+msgstr "V形刀具"
 
 #: appPlugins/ToolCalculators.py:508
-#, fuzzy
-#| msgid "Conversion"
 msgid "Units Conversion"
-msgstr "转化"
+msgstr "单位转化"
 
 #: appPlugins/ToolCalculators.py:509
-#, fuzzy
-#| msgid "ElectroPlating Calculator"
 msgid "ElectroPlating"
-msgstr "电镀计算器"
+msgstr "电镀"
 
 #: appPlugins/ToolCalculators.py:510
 msgid "Tinning"
-msgstr ""
+msgstr "镀锡"
 
 #: appPlugins/ToolCalculators.py:548
 msgid "inch"
-msgstr ""
+msgstr "英寸"
 
 #: appPlugins/ToolCalculators.py:554 appPlugins/ToolCalculators.py:569
 #: appPlugins/ToolCalculators.py:584
-#, fuzzy
-#| msgid "Here you enter the value to be converted from INCH to MM"
 msgid "Here you enter the value to be converted from imperial to metric"
-msgstr "在此输入要从英寸转换为毫米的值"
+msgstr "在此输入要从英制转换为公制的值"
 
 #: appPlugins/ToolCalculators.py:557 appPlugins/ToolCalculators.py:572
 #: appPlugins/ToolCalculators.py:587
-#, fuzzy
-#| msgid "Here you enter the value to be converted from INCH to MM"
 msgid "Here you enter the value to be converted from metric to imperial"
-msgstr "在此输入要从英寸转换为毫米的值"
+msgstr "在此输入要从公制转换为英制的值"
 
 #: appPlugins/ToolCalculators.py:563
 msgid "oz"
-msgstr ""
+msgstr "盎司"
 
 #: appPlugins/ToolCalculators.py:564
 msgid "gram"
-msgstr ""
+msgstr "克"
 
 #: appPlugins/ToolCalculators.py:578
 msgid "fl oz"
-msgstr ""
+msgstr "液量盎司"
 
 #: appPlugins/ToolCalculators.py:579 appPlugins/ToolCalculators.py:945
 #: appPlugins/ToolCalculators.py:965 appPlugins/ToolCalculators.py:1020
-#, fuzzy
-#| msgid "L"
 msgid "mL"
-msgstr "L"
+msgstr "mL"
 
 #: appPlugins/ToolCalculators.py:625
 msgid ""
@@ -12928,52 +12900,30 @@ msgstr ""
 "由制造商指定。"
 
 #: appPlugins/ToolCalculators.py:637
-#, fuzzy
-#| msgid ""
-#| "This is the depth to cut into the material.\n"
-#| "In the CNCJob is the CutZ parameter."
 msgid "This is the depth to cut into the material."
-msgstr ""
-"这是切入材料的深度。\n"
-"在CNC任务对象中，它是CutZ参数。"
+msgstr "这是切入材料的深度。"
 
 #: appPlugins/ToolCalculators.py:648
-#, fuzzy
-#| msgid ""
-#| "This is the tool tip diameter.\n"
-#| "It is specified by manufacturer."
 msgid ""
 "This is the actual tool diameter\n"
 "at the desired depth of cut."
-msgstr ""
-"这是刀尖直径。\n"
-"由制造商指定。"
+msgstr "这是在所需切削深度处的实际刀具直径。"
 
 #: appPlugins/ToolCalculators.py:661
-#, fuzzy
-#| msgid ""
-#| "Calculate either the Cut Z or the effective tool diameter,\n"
-#| "  depending on which is desired and which is known. "
 msgid "Calculate either the depth of cut or the effective tool diameter."
-msgstr ""
-"计算切削Z或有效刀具直径，\n"
-" 取决于所需的和已知的。 "
+msgstr "计算切割深度或有效工具直径。"
 
 #: appPlugins/ToolCalculators.py:686
 msgid "Area Calculation"
 msgstr "面积计算"
 
 #: appPlugins/ToolCalculators.py:688
-#, fuzzy
-#| msgid "This is the board area."
 msgid "Determine the board area."
-msgstr "这是板子的区域。"
+msgstr "确定板面积。"
 
 #: appPlugins/ToolCalculators.py:700
-#, fuzzy
-#| msgid "Board Length"
 msgid "Board Length."
-msgstr "板长"
+msgstr "板长。"
 
 #: appPlugins/ToolCalculators.py:706 appPlugins/ToolCalculators.py:724
 #: appPlugins/ToolCalculators.py:742 appPlugins/ToolCopperThieving.py:1750
@@ -12981,28 +12931,18 @@ msgid "cm"
 msgstr "厘米"
 
 #: appPlugins/ToolCalculators.py:736
-#, fuzzy
-#| msgid "Plated area"
 msgid "Board area."
-msgstr "电镀区域"
+msgstr "板区。"
 
 #: appPlugins/ToolCalculators.py:759
-#, fuzzy
-#| msgid ""
-#| "Current density to pass through the board. \n"
-#| "In Amps per Square Feet ASF."
 msgid ""
 "Current density applied to the board. \n"
 "In Amperes per Square Feet ASF."
-msgstr ""
-"通过电路板的电流密度。\n"
-"以每平方英尺ASF的安培数为单位。"
+msgstr "施加到电路板上的电流密度。以每平方英尺ASF的安培数为单位。"
 
 #: appPlugins/ToolCalculators.py:779
-#, fuzzy
-#| msgid "The thickness of the line that makes the corner marker."
 msgid "Thickness of the deposited copper."
-msgstr "构成标记角的线的厚度。"
+msgstr "沉积铜的厚度。"
 
 #: appPlugins/ToolCalculators.py:786
 msgid "um"
@@ -13013,107 +12953,89 @@ msgid "Current Value"
 msgstr "当前值"
 
 #: appPlugins/ToolCalculators.py:798
-#, fuzzy
-#| msgid ""
-#| "This is the current intensity value\n"
-#| "to be set on the Power Supply. In Amps."
 msgid ""
 "This is the current intensity value\n"
 "to be set on the Power Supply."
-msgstr "这是要在电源上设置的电流强度值。以安培为单位。"
+msgstr "这是要在电源上设置的电流强度值。"
 
 #: appPlugins/ToolCalculators.py:818
 msgid "Time"
 msgstr "时间"
 
 #: appPlugins/ToolCalculators.py:819
-#, fuzzy
-#| msgid "Object to be cleared of excess copper."
 msgid "The time calculated to deposit copper."
-msgstr "要清除多余铜的对象。"
+msgstr "计算沉积铜的时间。"
 
 #: appPlugins/ToolCalculators.py:841
-#, fuzzy
-#| msgid ""
-#| "Calculate the current intensity value and the procedure time,\n"
-#| "depending on the parameters above"
 msgid "Calculate the current intensity value and the procedure time."
-msgstr ""
-"计算电流强度值和程序时间，\n"
-"取决于上述参数"
+msgstr "计算当前强度值和过程时间。"
 
 #: appPlugins/ToolCalculators.py:851
 msgid ""
 "Calculator for chemical quantities\n"
 "required for tinning PCB's."
-msgstr ""
+msgstr "PCB 镀锡所需化学量的计算器。"
 
 #: appPlugins/ToolCalculators.py:863
-#, fuzzy
-#| msgid "Isolation"
 msgid "Solution"
-msgstr "隔离"
+msgstr "解决方案"
 
 #: appPlugins/ToolCalculators.py:865
 msgid "Choose one solution for tinning."
-msgstr ""
+msgstr "选择一种镀锡解决方案。"
 
 #: appPlugins/ToolCalculators.py:877
 msgid "Stannous Chloride."
-msgstr ""
+msgstr "氯化亚锡。"
 
 #: appPlugins/ToolCalculators.py:885 appPlugins/ToolCalculators.py:905
 #: appPlugins/ToolCalculators.py:925 appPlugins/ToolCalculators.py:996
 msgid "g"
-msgstr ""
+msgstr "g"
 
 #: appPlugins/ToolCalculators.py:896 appPlugins/ToolCalculators.py:897
 msgid "Thiourea"
-msgstr ""
+msgstr "硫脲"
 
 #: appPlugins/ToolCalculators.py:917
 msgid "Sulfamic Acid."
-msgstr ""
+msgstr "氨基磺酸。"
 
 #: appPlugins/ToolCalculators.py:937
 msgid "Distilled Water."
-msgstr ""
+msgstr "蒸馏水。"
 
 #: appPlugins/ToolCalculators.py:956
 msgid "Soap"
-msgstr ""
+msgstr "肥皂"
 
 #: appPlugins/ToolCalculators.py:957
 msgid "Liquid soap."
-msgstr ""
+msgstr "肥皂液。"
 
 #: appPlugins/ToolCalculators.py:980
-#, fuzzy
-#| msgid "Options"
 msgid "Optional"
-msgstr "选项"
+msgstr "可选的"
 
 #: appPlugins/ToolCalculators.py:986
 msgid ""
 "Sodium hypophosphite.\n"
 "Optional, for solution stability.\n"
 "Warning: List 1 chemical in USA."
-msgstr ""
+msgstr "次磷酸钠。可选，用于解决方案稳定性。警告：在美国列出 1 种化学品。"
 
 #: appPlugins/ToolCalculators.py:1012
-#, fuzzy
-#| msgid "Columns"
 msgid "Volume"
-msgstr "列"
+msgstr "体积"
 
 #: appPlugins/ToolCalculators.py:1013
 msgid "Desired volume of tinning solution."
-msgstr ""
+msgstr "所需的镀锡溶液量。"
 
 #: appPlugins/ToolCalculators.py:1034
 msgid ""
 "Calculate the chemical quantities for the desired volume of tinning solution."
-msgstr ""
+msgstr "计算所需体积的镀锡溶液的化学量。"
 
 #: appPlugins/ToolCalibration.py:126 appPlugins/ToolCalibration.py:765
 msgid "Calibration"
@@ -13633,10 +13555,8 @@ msgid "Corners"
 msgstr "拐角"
 
 #: appPlugins/ToolCorners.py:242 appPlugins/ToolCorners.py:797
-#, fuzzy
-#| msgid "Click to add next pad or right click to start."
 msgid "Click to add next marker or right click to finish."
-msgstr "单击以添加下一个焊盘或右键单击以开始。"
+msgstr "单击以添加下一个标记或右键单击以完成。"
 
 #: appPlugins/ToolCorners.py:325 appPlugins/ToolCorners.py:529
 #: appPlugins/ToolCorners.py:624
@@ -13656,8 +13576,6 @@ msgid "A Gerber object with corner markers was created."
 msgstr "创建了带有角点标记的Gerber对象。"
 
 #: appPlugins/ToolCorners.py:796
-#, fuzzy
-#| msgid "Add Marker"
 msgid "Added marker"
 msgstr "添加标记"
 
@@ -13686,7 +13604,7 @@ msgstr "全部切换"
 msgid ""
 "When the manual type is chosen, the markers\n"
 "are manually placed on canvas."
-msgstr ""
+msgstr "选择手动类型后，标记将手动放置在画布上。"
 
 #: appPlugins/ToolCorners.py:1009
 msgid "Add Marker"
@@ -14359,20 +14277,16 @@ msgid ""
 msgstr "鼠标光标悬停在焊盘/钻孔的几何图形上时，将捕捉到焊盘/钻孔的中心。"
 
 #: appPlugins/ToolDistance.py:618 appPlugins/ToolDistanceMin.py:282
-#, fuzzy
-#| msgid "Start Z"
 msgid "Start point"
-msgstr "起点Z"
+msgstr "起点"
 
 #: appPlugins/ToolDistance.py:619 appPlugins/ToolDistance.py:624
 msgid "This is measuring Start point coordinates."
 msgstr "这是测量起点坐标。"
 
 #: appPlugins/ToolDistance.py:629 appPlugins/ToolDistanceMin.py:297
-#, fuzzy
-#| msgid "Second point"
 msgid "End point"
-msgstr "第二点"
+msgstr "终点"
 
 #: appPlugins/ToolDistance.py:630 appPlugins/ToolDistance.py:635
 msgid "This is the measuring Stop point coordinates."
@@ -14402,8 +14316,6 @@ msgid "This is orientation angle of the measuring line."
 msgstr "这是测量线的方位角。"
 
 #: appPlugins/ToolDistance.py:683 appPlugins/ToolDistanceMin.py:356
-#, fuzzy
-#| msgid "Result"
 msgid "Results"
 msgstr "结果"
 
@@ -14572,10 +14484,8 @@ msgid "Excellon object for drilling/milling operation."
 msgstr "用于钻孔/铣削操作的Excellon对象。"
 
 #: appPlugins/ToolDrilling.py:2327
-#, fuzzy
-#| msgid "Tools in the object used for milling."
 msgid "Tools in the object used for drilling."
-msgstr "对象中用于铣削的刀具。"
+msgstr "对象中用于钻孔的刀具。"
 
 #: appPlugins/ToolDrilling.py:2377
 msgid "Search DB"
@@ -14716,10 +14626,8 @@ msgid "Missing parameter value."
 msgstr "缺少参数值。"
 
 #: appPlugins/ToolEtchCompensation.py:335
-#, fuzzy
-#| msgid "Gerber object that will be inverted."
 msgid "Gerber object that will be compensated."
-msgstr "要反转的Gerber对象。"
+msgstr "Gerber 对象将得到补偿。"
 
 #: appPlugins/ToolEtchCompensation.py:352
 msgid "Conversion utilities"
@@ -14727,7 +14635,7 @@ msgstr "转换工具"
 
 #: appPlugins/ToolEtchCompensation.py:363
 msgid "Oz to Microns"
-msgstr "Oz转为微米"
+msgstr "盎司转为微米"
 
 #: appPlugins/ToolEtchCompensation.py:365
 msgid ""
@@ -14735,13 +14643,13 @@ msgid ""
 "Can use formulas with operators: /, *, +, -, %, .\n"
 "The real numbers use the dot decimals separator."
 msgstr ""
-"将从oz厚度转换为微米[um]。\n"
-"可以将公式与运算符：/、*、+、-、%一起使用。\n"
+"将从盎司厚度转换为微米 [um]。\n"
+"可以使用带有运算符的公式：/、*、+、-、%、.\n"
 "实数使用点小数分隔符。"
 
 #: appPlugins/ToolEtchCompensation.py:374
 msgid "Oz value"
-msgstr "Oz值"
+msgstr "盎司值"
 
 #: appPlugins/ToolEtchCompensation.py:376
 #: appPlugins/ToolEtchCompensation.py:398
@@ -14897,10 +14805,8 @@ msgid "Fiducials Tool exit."
 msgstr "基准点工具退出。"
 
 #: appPlugins/ToolFiducials.py:848
-#, fuzzy
-#| msgid "Gerber object for isolation routing."
 msgid "Gerber object for adding fiducials and soldermask openings."
-msgstr "用于隔离线路的 Gerber 对象。"
+msgstr "用于添加基准点和阻焊层开口的 Gerber 对象。"
 
 #: appPlugins/ToolFiducials.py:865
 msgid ""
@@ -15100,7 +15006,7 @@ msgid ""
 "A Gerber object to be followed.\n"
 "Create a Geometry object with a path\n"
 "following the Gerber traces."
-msgstr ""
+msgstr "要跟踪的 Gerber 对象。创建一个 Geometry 对象，其路径遵循 Gerber 轨迹。"
 
 #: appPlugins/ToolFollow.py:746
 msgid ""
@@ -15794,10 +15700,8 @@ msgstr ""
 "调平。"
 
 #: appPlugins/ToolMilling.py:861
-#, fuzzy
-#| msgid "Could not load the file."
 msgid "Could not build the Plugin UI"
-msgstr "无法打开文件。"
+msgstr "无法构建插件 UI"
 
 #: appPlugins/ToolMilling.py:1289
 msgid "Milling Tool"
@@ -15874,10 +15778,8 @@ msgstr "无法完全绘制Geometry"
 
 #: appPlugins/ToolMilling.py:3562 appPlugins/ToolNCC.py:4136
 #: appPlugins/ToolPaint.py:2939
-#, fuzzy
-#| msgid "Object for milling operation."
 msgid "Source object for milling operation."
-msgstr "用于铣削操作的对象。"
+msgstr "铣削操作的源对象。"
 
 #: appPlugins/ToolMilling.py:3575
 msgid "Object for milling operation."
@@ -15964,14 +15866,12 @@ msgid ""
 msgstr "为Geometry（铣削）对象指定G代码输出的预处理器JSON文件。"
 
 #: appPlugins/ToolMilling.py:4450
-#, fuzzy
-#| msgid "Levelling"
 msgid "Allow levelling"
-msgstr "调平中"
+msgstr "允许平放"
 
 #: appPlugins/ToolMilling.py:4452
 msgid "Allow levelling by having segments size more than zero."
-msgstr ""
+msgstr "通过使段大小大于零来允许调平。"
 
 #: appPlugins/ToolMove.py:102
 msgid "MOVE: Click on the Start point ..."

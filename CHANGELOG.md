@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.09.2021
+
+- updated the Chinese translation by 俊霄 余
+
 12.09.2021
 
 - some UI changes in the Milling and Drilling Plugins
