@@ -1595,7 +1595,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # find tools that have the same tool_type and group them by tool_type
             for k, v in new_tools.items():
-                same_tool_type[v['tool_type']].append(k)
+                same_tool_type[v['data']['tools_mill_tool_shape']].append(k)
 
             # find the intersections in the above groups
             intersect_list = []

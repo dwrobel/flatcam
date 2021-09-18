@@ -528,8 +528,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %
                             str(e))
                     # obj.build_ui()
-                    self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
-                                                                                                      new=new_name))
+                    msg = "%s: <b>%s</b> %s: <b>%s</b>" % (_("Object renamed from"), old_name, _("to"), new_name)
+                    self.app.inform.emit(msg)
 
             self.dataChanged.emit(index, index)
             return True

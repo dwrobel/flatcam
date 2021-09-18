@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 18.09.2021
 
 - some code reformatting in Extract Plugin
+- fixed the Geometry object merge functionality
+- fixed a message when renaming an object
 
 15.09.2021
 
