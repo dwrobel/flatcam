@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.09.2021
+
+- some code reformatting in Extract Plugin
+
 15.09.2021
 
 - updated the Chinese translation by 俊霄 余

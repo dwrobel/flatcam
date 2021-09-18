@@ -376,17 +376,6 @@ class ToolExtract(AppTool):
             self.ui.other_cb.setChecked(False)
 
     def on_extract_drills_click(self):
-        drill_dia = self.ui.dia_entry.get_value()
-        circ_r_val = self.ui.circular_ring_entry.get_value()
-        oblong_r_val = self.ui.oblong_ring_entry.get_value()
-        square_r_val = self.ui.square_ring_entry.get_value()
-        rect_r_val = self.ui.rectangular_ring_entry.get_value()
-        other_r_val = self.ui.other_ring_entry.get_value()
-
-        prop_factor = self.ui.factor_entry.get_value() / 100.0
-
-        tools = {}
-
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
 
@@ -395,230 +384,22 @@ class ToolExtract(AppTool):
         except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
-
-        outname = fcobj.options['name'].rpartition('.')[0]
-
-        mode = self.ui.method_radio.get_value()
+        outname = "%s_%s" % (fcobj.options['name'].rpartition('.')[0], _("extracted"))
 
         # selected codes in the apertures UI table
-        sel_apid = []
-        for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(int(it.text()))
+        sel_g_tools = [int(it.text()) for it in self.ui.apertures_table.selectedItems()]
 
+        mode = self.ui.method_radio.get_value()
         if mode == 'fixed':
-            tools = {
-                1: {
-                    "tooldia": drill_dia,
-                    "drills": [],
-                    "slots": []
-                }
-            }
-
-            for apid, apid_value in fcobj.tools.items():
-                if apid in sel_apid:
-                    ap_type = apid_value['type']
-
-                    if ap_type == 'C' and self.ui.circular_cb.get_value() is False:
-                        continue
-                    elif ap_type == 'O' and self.ui.oblong_cb.get_value() is False:
-                        continue
-                    elif ap_type == 'R':
-                        width = float(apid_value['width'])
-                        height = float(apid_value['height'])
-
-                        # if the height == width (float numbers so the reason for the following)
-                        if round(width, self.decimals) == round(height, self.decimals):
-                            if self.ui.square_cb.get_value() is False:
-                                continue
-                        elif self.ui.rectangular_cb.get_value() is False:
-                            continue
-                    elif ap_type not in ['C', 'R', 'O'] and self.ui.other_cb.get_value() is False:
-                        continue
-
-                    for geo_el in apid_value['geometry']:
-                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                            tools[1]["drills"].append(geo_el['follow'])
-                            if 'solid_geometry' not in tools[1]:
-                                tools[1]['solid_geometry'] = [geo_el['follow']]
-                            else:
-                                tools[1]['solid_geometry'].append(geo_el['follow'])
-            if 'solid_geometry' not in tools[1] or not tools[1]['solid_geometry']:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
-                return
+            tools = self.fixed_dia_mode(gerber_tools=fcobj.tools, sel_tools=sel_g_tools)
         elif mode == 'ring':
-            drills_found = set()
-            for apid, apid_value in fcobj.tools.items():
-                if apid in sel_apid:
-                    ap_type = apid_value['type']
+            tools = self.ring_mode(gerber_tools=fcobj.tools, sel_tools=sel_g_tools)
+        else:   # proportional
+            tools = self.proportional_mode(gerber_tools=fcobj.tools, sel_tools=sel_g_tools)
 
-                    dia = None
-                    if ap_type == 'C' and self.ui.circular_cb.get_value():
-                        dia = float(apid_value['size']) - (2 * circ_r_val)
-                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
-                        width = float(apid_value['width'])
-                        height = float(apid_value['height'])
-                        if width > height:
-                            dia = float(apid_value['height']) - (2 * oblong_r_val)
-                        else:
-                            dia = float(apid_value['width']) - (2 * oblong_r_val)
-                    elif ap_type == 'R':
-                        width = float(apid_value['width'])
-                        height = float(apid_value['height'])
-
-                        # if the height == width (float numbers so the reason for the following)
-                        if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
-                                (10 ** -self.decimals):
-                            if self.ui.square_cb.get_value():
-                                dia = float(apid_value['height']) - (2 * square_r_val)
-                        elif self.ui.rectangular_cb.get_value():
-                            if width > height:
-                                dia = float(apid_value['height']) - (2 * rect_r_val)
-                            else:
-                                dia = float(apid_value['width']) - (2 * rect_r_val)
-                    elif self.ui.other_cb.get_value():
-                        try:
-                            dia = float(apid_value['size']) - (2 * other_r_val)
-                        except KeyError:
-                            if ap_type == 'AM':
-                                pol = apid_value['geometry'][0]['solid']
-                                x0, y0, x1, y1 = pol.bounds
-                                dx = x1 - x0
-                                dy = y1 - y0
-                                if dx <= dy:
-                                    dia = dx - (2 * other_r_val)
-                                else:
-                                    dia = dy - (2 * other_r_val)
-
-                    # if dia is None then none of the above applied so we skip the following
-                    if dia is None:
-                        continue
-
-                    tool_in_drills = False
-                    for tool, tool_val in tools.items():
-                        if abs(float('%.*f' % (
-                                self.decimals,
-                                tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
-                            tool_in_drills = tool
-
-                    if tool_in_drills is False:
-                        if tools:
-                            new_tool = max([int(t) for t in tools]) + 1
-                            tool_in_drills = new_tool
-                        else:
-                            tool_in_drills = 1
-
-                    for geo_el in apid_value['geometry']:
-                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                            if tool_in_drills not in tools:
-                                tools[tool_in_drills] = {
-                                    "tooldia": dia,
-                                    "drills": [],
-                                    "slots": []
-                                }
-
-                            tools[tool_in_drills]['drills'].append(geo_el['follow'])
-
-                            if 'solid_geometry' not in tools[tool_in_drills]:
-                                tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
-                            else:
-                                tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
-
-                    if tool_in_drills in tools:
-                        if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
-                            drills_found.add(False)
-                        else:
-                            drills_found.add(True)
-
-            if True not in drills_found:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
-                return
-        else:
-            drills_found = set()
-            for apid, apid_value in fcobj.tools.items():
-                if apid in sel_apid:
-                    ap_type = apid_value['type']
-
-                    dia = None
-                    if ap_type == 'C' and self.ui.circular_cb.get_value():
-                        dia = float(apid_value['size']) * prop_factor
-                    elif ap_type == 'O' and self.ui.oblong_cb.get_value():
-                        width = float(apid_value['width'])
-                        height = float(apid_value['height'])
-                        if width > height:
-                            dia = float(apid_value['height']) * prop_factor
-                        else:
-                            dia = float(apid_value['width']) * prop_factor
-                    elif ap_type == 'R':
-                        width = float(apid_value['width'])
-                        height = float(apid_value['height'])
-
-                        # if the height == width (float numbers so the reason for the following)
-                        if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
-                                (10 ** -self.decimals):
-                            if self.ui.square_cb.get_value():
-                                dia = float(apid_value['height']) * prop_factor
-                        elif self.ui.rectangular_cb.get_value():
-                            if width > height:
-                                dia = float(apid_value['height']) * prop_factor
-                            else:
-                                dia = float(apid_value['width']) * prop_factor
-                    elif self.ui.other_cb.get_value():
-                        try:
-                            dia = float(apid_value['size']) * prop_factor
-                        except KeyError:
-                            if ap_type == 'AM':
-                                pol = apid_value['geometry'][0]['solid']
-                                x0, y0, x1, y1 = pol.bounds
-                                dx = x1 - x0
-                                dy = y1 - y0
-                                if dx <= dy:
-                                    dia = dx * prop_factor
-                                else:
-                                    dia = dy * prop_factor
-
-                    # if dia is None then none of the above applied so we skip the following
-                    if dia is None:
-                        continue
-
-                    tool_in_drills = False
-                    for tool, tool_val in tools.items():
-                        if abs(float('%.*f' % (
-                                self.decimals,
-                                tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
-                            tool_in_drills = tool
-
-                    if tool_in_drills is False:
-                        if tools:
-                            new_tool = max([int(t) for t in tools]) + 1
-                            tool_in_drills = new_tool
-                        else:
-                            tool_in_drills = 1
-
-                    for geo_el in apid_value['geometry']:
-                        if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                            if tool_in_drills not in tools:
-                                tools[tool_in_drills] = {
-                                    "tooldia": dia,
-                                    "drills": [],
-                                    "slots": []
-                                }
-
-                            tools[tool_in_drills]['drills'].append(geo_el['follow'])
-
-                            if 'solid_geometry' not in tools[tool_in_drills]:
-                                tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
-                            else:
-                                tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
-
-                    if tool_in_drills in tools:
-                        if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
-                            drills_found.add(False)
-                        else:
-                            drills_found.add(True)
-
-            if True not in drills_found:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
-                return
+        if not tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+            return
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = deepcopy(tools)
@@ -631,11 +412,264 @@ class ToolExtract(AppTool):
             try:
                 self.app.app_obj.new_object("excellon", outname, obj_init)
             except Exception as e:
-                log.error("Error on Extracted Excellon object creation: %s" % str(e))
+                self.app.log.error("Error on Extracted Excellon object creation: %s" % str(e))
                 return
 
-    def on_extract_soldermask_click(self):
+    def fixed_dia_mode(self, gerber_tools, sel_tools):
+        drill_dia = self.ui.dia_entry.get_value()
 
+        allow_circular = self.ui.circular_cb.get_value()
+        allow_oblong = self.ui.oblong_cb.get_value()
+        allow_rectangular = self.ui.rectangular_cb.get_value()
+        allow_other_type = self.ui.other_cb.get_value()
+
+        tools = {
+            1: {
+                "tooldia":  drill_dia,
+                "drills":   [],
+                "slots":    []
+            }
+        }
+
+        for apid, apid_value in gerber_tools.items():
+            if apid in sel_tools:
+                ap_type = apid_value['type']
+
+                if ap_type == 'C' and allow_circular is False:
+                    continue
+                elif ap_type == 'O' and allow_oblong is False:
+                    continue
+                elif ap_type == 'R':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+
+                    # if the height == width (float numbers so the reason for the following)
+                    if round(width, self.decimals) == round(height, self.decimals):
+                        if self.ui.square_cb.get_value() is False:
+                            continue
+                    elif allow_rectangular is False:
+                        continue
+                elif ap_type not in ['C', 'R', 'O'] and allow_other_type is False:
+                    continue
+
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                        tools[1]["drills"].append(geo_el['follow'])
+                        if 'solid_geometry' not in tools[1]:
+                            tools[1]['solid_geometry'] = [geo_el['follow']]
+                        else:
+                            tools[1]['solid_geometry'].append(geo_el['follow'])
+        if 'solid_geometry' not in tools[1] or not tools[1]['solid_geometry']:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
+            return
+
+        return tools
+
+    def ring_mode(self, gerber_tools, sel_tools):
+        circ_r_val = self.ui.circular_ring_entry.get_value()
+        oblong_r_val = self.ui.oblong_ring_entry.get_value()
+        square_r_val = self.ui.square_ring_entry.get_value()
+        rect_r_val = self.ui.rectangular_ring_entry.get_value()
+        other_r_val = self.ui.other_ring_entry.get_value()
+
+        allow_circular = self.ui.circular_cb.get_value()
+        allow_oblong = self.ui.oblong_cb.get_value()
+        allow_rectangular = self.ui.rectangular_cb.get_value()
+        allow_square = self.ui.square_cb.get_value()
+        allow_others_type = self.ui.other_cb.get_value()
+
+        drills_found = set()
+        tools = {}
+
+        for apid, apid_value in gerber_tools.items():
+            if apid in sel_tools:
+                ap_type = apid_value['type']
+
+                dia = None
+                if ap_type == 'C' and allow_circular:
+                    dia = float(apid_value['size']) - (2 * circ_r_val)
+                elif ap_type == 'O' and allow_oblong:
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+                    if width > height:
+                        dia = float(apid_value['height']) - (2 * oblong_r_val)
+                    else:
+                        dia = float(apid_value['width']) - (2 * oblong_r_val)
+                elif ap_type == 'R':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+
+                    # if the height == width (float numbers so the reason for the following)
+                    formatted_width = self.app.dec_format(width, self.decimals)
+                    formatted_height = self.app.dec_format(height, self.decimals)
+                    if abs(formatted_width - formatted_height) < (10 ** -self.decimals):
+                        if allow_square:
+                            dia = float(apid_value['height']) - (2 * square_r_val)
+                    elif allow_rectangular:
+                        if width > height:
+                            dia = float(apid_value['height']) - (2 * rect_r_val)
+                        else:
+                            dia = float(apid_value['width']) - (2 * rect_r_val)
+                elif allow_others_type:
+                    try:
+                        dia = float(apid_value['size']) - (2 * other_r_val)
+                    except KeyError:
+                        if ap_type == 'AM':
+                            pol = apid_value['geometry'][0]['solid']
+                            x0, y0, x1, y1 = pol.bounds
+                            dx = x1 - x0
+                            dy = y1 - y0
+                            if dx <= dy:
+                                dia = dx - (2 * other_r_val)
+                            else:
+                                dia = dy - (2 * other_r_val)
+
+                # if dia is None then none of the above applied so we skip the following
+                if dia is None:
+                    continue
+
+                tool_in_drills = False
+                for tool, tool_val in tools.items():
+                    formatted_tooldia = self.app.dec_format(tool_val["tooldia"])
+                    formatted_dia = self.app.dec_format(dia, self.decimals)
+                    if abs(formatted_tooldia - formatted_dia) < (10 ** -self.decimals):
+                        tool_in_drills = tool
+
+                if tool_in_drills is False:
+                    if tools:
+                        new_tool = max([int(t) for t in tools]) + 1
+                        tool_in_drills = new_tool
+                    else:
+                        tool_in_drills = 1
+
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                        if tool_in_drills not in tools:
+                            tools[tool_in_drills] = {
+                                "tooldia":  dia,
+                                "drills":   [],
+                                "slots":    []
+                            }
+
+                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
+
+                        if 'solid_geometry' not in tools[tool_in_drills]:
+                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                        else:
+                            tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+
+                if tool_in_drills in tools:
+                    if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
+                        drills_found.add(False)
+                    else:
+                        drills_found.add(True)
+
+        if True not in drills_found:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
+            return
+
+        return tools
+
+    def proportional_mode(self, gerber_tools, sel_tools):
+        prop_factor = self.ui.factor_entry.get_value() / 100.0
+
+        allow_circular = self.ui.circular_cb.get_value()
+        allow_oblong = self.ui.oblong_cb.get_value()
+        allow_rectangular = self.ui.rectangular_cb.get_value()
+        allow_square = self.ui.square_cb.get_value()
+        allow_others_type = self.ui.other_cb.get_value()
+
+        tools = {}
+        drills_found = set()
+        for apid, apid_value in gerber_tools.items():
+            if apid in sel_tools:
+                ap_type = apid_value['type']
+
+                dia = None
+                if ap_type == 'C' and allow_circular:
+                    dia = float(apid_value['size']) * prop_factor
+                elif ap_type == 'O' and allow_oblong:
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+                    if width > height:
+                        dia = float(apid_value['height']) * prop_factor
+                    else:
+                        dia = float(apid_value['width']) * prop_factor
+                elif ap_type == 'R':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+
+                    # if the height == width (float numbers so the reason for the following)
+                    formatted_width = self.app.dec_format(width, self.decimals)
+                    formatted_height = self.app.dec_format(height, self.decimals)
+                    if abs(formatted_width - formatted_height) < (10 ** -self.decimals):
+                        if allow_square:
+                            dia = float(apid_value['height']) * prop_factor
+                    elif allow_rectangular:
+                        if width > height:
+                            dia = float(apid_value['height']) * prop_factor
+                        else:
+                            dia = float(apid_value['width']) * prop_factor
+                elif allow_others_type:
+                    try:
+                        dia = float(apid_value['size']) * prop_factor
+                    except KeyError:
+                        if ap_type == 'AM':
+                            pol = apid_value['geometry'][0]['solid']
+                            x0, y0, x1, y1 = pol.bounds
+                            dx = x1 - x0
+                            dy = y1 - y0
+                            if dx <= dy:
+                                dia = dx * prop_factor
+                            else:
+                                dia = dy * prop_factor
+
+                # if dia is None then none of the above applied so we skip the following
+                if dia is None:
+                    continue
+
+                tool_in_drills = False
+                for tool, tool_val in tools.items():
+                    formatted_tooldia = self.app.dec_format(tool_val["tooldia"])
+                    formatted_dia = self.app.dec_format(dia, self.decimals)
+                    if abs(formatted_tooldia - formatted_dia) < (10 ** -self.decimals):
+                        tool_in_drills = tool
+
+                if tool_in_drills is False:
+                    if tools:
+                        new_tool = max([int(t) for t in tools]) + 1
+                        tool_in_drills = new_tool
+                    else:
+                        tool_in_drills = 1
+
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                        if tool_in_drills not in tools:
+                            tools[tool_in_drills] = {
+                                "tooldia":  dia,
+                                "drills":   [],
+                                "slots":    []
+                            }
+
+                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
+
+                        if 'solid_geometry' not in tools[tool_in_drills]:
+                            tools[tool_in_drills]['solid_geometry'] = [geo_el['follow']]
+                        else:
+                            tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+
+                if tool_in_drills in tools:
+                    if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
+                        drills_found.add(False)
+                    else:
+                        drills_found.add(True)
+
+        if True not in drills_found:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
+            return
+        return tools
+
+    def on_extract_soldermask_click(self):
         clearance = self.ui.clearance_entry.get_value()
 
         circ = self.ui.circular_cb.get_value()
@@ -662,7 +696,6 @@ class ToolExtract(AppTool):
         except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
-
         outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
 
         new_apertures = deepcopy(obj.tools)
@@ -670,12 +703,12 @@ class ToolExtract(AppTool):
         new_follow_geometry = []
 
         # selected codes in the apertures UI table
-        sel_apid = []
+        sel_g_tool = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_apid.append(int(it.text()))
+            sel_g_tool.append(int(it.text()))
 
         for apid, apid_value in obj.tools.items():
-            if apid in sel_apid:
+            if apid in sel_g_tool:
                 ap_type = apid_value['type']
 
                 if ap_type not in allowed_apertures:
@@ -721,7 +754,7 @@ class ToolExtract(AppTool):
                     new_apertures.pop(apid, None)
 
         if not has_geometry:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No soldermask extracted.")))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No soldermask extracted.")))
             return
 
         def obj_init(new_obj, app_obj):
@@ -770,7 +803,7 @@ class ToolExtract(AppTool):
             x0, y0, x1, y1 = cut_solid_geometry.bounds
             object_geo = box(x0, y0, x1, y1)
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
             return
 
         try:
@@ -778,18 +811,18 @@ class ToolExtract(AppTool):
             new_geo_follow = geo_buf.exterior
             new_geo_solid = new_geo_follow.buffer(buff_radius)
         except Exception as e:
-            log.error("ToolExtrct.on_extrct_cutout_click() -> %s" % str(e))
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            self.app.log.error("ToolExtrct.on_extrct_cutout_click() -> %s" % str(e))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
             return
 
         if not new_geo_solid.is_valid or new_geo_solid.is_empty:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
+            self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), _("No cutout extracted.")))
             return
 
         new_apertures = {
             10: {
-                'type': 'C',
-                'size': thickness,
+                'type':     'C',
+                'size':     thickness,
                 'geometry': [
                     {
                         'solid': deepcopy(new_geo_solid),
