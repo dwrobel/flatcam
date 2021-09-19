@@ -1347,7 +1347,7 @@ class GerberObject(FlatCAMObj, Gerber):
         for apid in self.tools:
             if apid == 0:
                 continue
-            elif self.tools[apid]['type'] == 'AM':
+            elif self.tools[apid]['type'] in ['AM', 'P']:
                 if 'geometry' in self.tools[apid]:
                     for geo_elem in self.tools[apid]['geometry']:
                         if 'solid' in geo_elem:

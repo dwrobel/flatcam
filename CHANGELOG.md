@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - In Plugins: Calculators, Copper Thieving, Corners, Extract, Fiducials and Film activated the harmonizing first column width in the Plugin UI
 - DblSided Plugin - remade the UI
 - fixed some issues in AppTextEditor due of Qt6 conversion
+- In Extract Plugin fixed issue with not extracting soldermask for pads made with "P" type Gerber aperture
+- in the method that exports the Gerber fixed issue with not exporting the geometry associated with the apertures of type "P"
 
 18.09.2021
 

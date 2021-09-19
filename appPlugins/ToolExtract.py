@@ -687,6 +687,7 @@ class ToolExtract(AppTool):
             allowed_apertures.append('R')
         if other:
             allowed_apertures.append('AM')
+            allowed_apertures.append('P')
 
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
@@ -698,14 +699,18 @@ class ToolExtract(AppTool):
             return
         outname = '%s_esm' % obj.options['name'].rpartition('.')[0]
 
-        new_apertures = deepcopy(obj.tools)
+        # new_apertures = deepcopy(obj.tools)
+        new_apertures = {}
+
         new_solid_geometry = []
         new_follow_geometry = []
 
         # selected codes in the apertures UI table
         sel_g_tool = []
         for it in self.ui.apertures_table.selectedItems():
-            sel_g_tool.append(int(it.text()))
+            table_aperture = int(it.text())
+            sel_g_tool.append(table_aperture)
+            new_apertures[table_aperture] = deepcopy(obj.tools[table_aperture])
 
         for apid, apid_value in obj.tools.items():
             if apid in sel_g_tool:
