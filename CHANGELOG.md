@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - In Plugins: Panelize, Cutout, Extract, Copper Thieving disabled the autoload of the last created APP object
 - In Plugins: Calculators, Copper Thieving, Corners, Extract, Fiducials and Film activated the harmonizing first column width in the Plugin UI
 - DblSided Plugin - remade the UI
+- fixed some issues in AppTextEditor due of Qt6 conversion
 
 18.09.2021
 

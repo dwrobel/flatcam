@@ -329,7 +329,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
     def handleFindGCode(self):
 
-        flags = QtGui.QTextDocument.FindCaseSensitively
+        flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
         text_to_be_found = self.entryFind.get_value()
 
         r = self.code_editor.find(str(text_to_be_found), flags)
@@ -346,7 +346,7 @@ class AppTextEditor(QtWidgets.QWidget):
             while True:
                 cursor = self.code_editor.textCursor()
                 cursor.beginEditBlock()
-                flags = QtGui.QTextDocument.FindCaseSensitively
+                flags = QtGui.QTextDocument.FindFlag.FindCaseSensitively
                 # self.ui.editor is the QPlainTextEdit
                 r = self.code_editor.find(str(old), flags)
                 if r:
