@@ -1082,11 +1082,11 @@ class CutOut(AppTool):
 
                 try:
                     if self.ui.gaptype_radio.get_value() == 'mb':
-                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init, autoselected=False)
                         if ret == 'fail':
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
 
-                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init)
+                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
                     if ret == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return
@@ -1460,11 +1460,11 @@ class CutOut(AppTool):
 
                 try:
                     if self.ui.gaptype_radio.get_value() == 'mb':
-                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init, autoselected=False)
                         if ret == 'fail':
                             app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
 
-                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init)
+                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init, autoselected=False)
                     if ret == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                         return
@@ -2371,7 +2371,7 @@ class CutoutUI:
         self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.is_last = True
+        self.obj_combo.is_last = False
 
         grid0.addWidget(self.obj_combo, 6, 0, 1, 2)
 

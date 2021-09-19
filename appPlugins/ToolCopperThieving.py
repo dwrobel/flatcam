@@ -716,7 +716,7 @@ class ToolCopperThieving(AppTool):
                     tool_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                     return 'fail'
 
-            log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
+            self.app.log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
 
             tool_obj.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
 
@@ -947,7 +947,7 @@ class ToolCopperThieving(AppTool):
                                                                        local_use=grb_obj,
                                                                        use_thread=False)
 
-            ret_val = self.app.app_obj.new_object('gerber', outname, initialize, plot=True)
+            ret_val = self.app.app_obj.new_object('gerber', outname, initialize, plot=True, autoselected=False)
             tool_obj.app.proc_container.update_view_text(' %s' % '')
             if ret_val == 'fail':
                 self.app.call_source = "app"
@@ -1310,7 +1310,7 @@ class ThievingUI:
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.is_last = True
+        self.grb_object_combo.is_last = False
         self.grb_object_combo.obj_type = 'Gerber'
 
         i_grid_lay.addWidget(self.grb_object_combo, 0, 0, 1, 2)

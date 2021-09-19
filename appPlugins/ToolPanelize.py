@@ -133,6 +133,7 @@ class Panelize(AppTool):
         self.reset_fields()
 
         self.ui.reference_radio.set_value('bbox')
+        self.on_reference_radio_changed(current_val=self.ui.reference_radio.get_value())
 
         # SELECT THE CURRENT OBJECT
         obj = self.app.collection.get_active()
@@ -1044,14 +1045,14 @@ class Panelize(AppTool):
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
                 if panel_source_obj.kind == 'excellon':
                     self.app.app_obj.new_object(
-                        "excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
+                        "excellon", self.outname, job_init_excellon, plot=True, autoselected=False)
                 else:
                     if panel_type == 'geometry':
                         self.app.app_obj.new_object(
-                            'geometry', self.outname, job_init_geometry, plot=True, autoselected=True)
+                            'geometry', self.outname, job_init_geometry, plot=True, autoselected=False)
                     if panel_type == 'gerber':
                         self.app.app_obj.new_object(
-                            'gerber', self.outname, job_init_gerber, plot=True, autoselected=True)
+                            'gerber', self.outname, job_init_gerber, plot=True, autoselected=False)
 
         if self.constrain_flag is False:
             self.app.inform.emit('[success] %s' % _("Done."))
@@ -1067,7 +1068,7 @@ class Panelize(AppTool):
                     panelize_worker()
                     app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
                 except Exception as ee:
-                    log.error(str(ee))
+                    self.app.log.error(str(ee))
                     return
 
         self.app.collection.promise(self.outname)
@@ -1155,7 +1156,7 @@ class PanelizeUI:
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.is_last = True
+        self.object_combo.is_last = False
 
         self.object_combo.setToolTip(
             _("Object to be panelized. This means that it will\n"
