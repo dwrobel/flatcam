@@ -1771,8 +1771,8 @@ class ThievingUI:
         grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)
         grid_lay_2.addWidget(self.ppm_choice_combo, 6, 1, 1, 2)
 
-        # FCGridLayout.set_common_column_size(
-        #     [i_grid_lay, grid_lay, grid_lay_1, grid_lay_2, dots_grid, squares_grid, lines_grid], 0, FCLabel)
+        FCGridLayout.set_common_column_size(
+            [i_grid_lay, grid_lay, grid_lay_1, grid_lay_2, dots_grid, squares_grid, lines_grid], 0)
 
         # #############################################################################################################
         # ## Pattern Plating Mask Button

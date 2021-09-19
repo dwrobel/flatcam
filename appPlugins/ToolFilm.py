@@ -1514,20 +1514,17 @@ class FilmUI:
         punch_grid.addWidget(self.source_label, 0, 0)
         punch_grid.addWidget(self.source_punch, 0, 1)
 
-        self.exc_label = FCLabel('%s:' % _("Excellon Obj"))
-        self.exc_label.setToolTip(
+        self.exc_combo = FCComboBox()
+        self.exc_combo.setToolTip(
             _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
-        self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.exc_combo.is_last = True
         self.exc_combo.obj_type = "Excellon"
 
-        punch_grid.addWidget(self.exc_label, 2, 0)
-        punch_grid.addWidget(self.exc_combo, 2, 1)
+        punch_grid.addWidget(self.exc_combo, 2, 0, 1, 2)
 
-        self.exc_label.hide()
         self.exc_combo.hide()
 
         self.punch_size_label = FCLabel('%s:' % _("Punch Size"))
@@ -1669,6 +1666,8 @@ class FilmUI:
         self.png_dpi_label.hide()
         self.png_dpi_spinner.hide()
 
+        FCGridLayout.set_common_column_size([grid1, grid_par, grid0, grid3, punch_grid], 0)
+
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))
         self.film_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
@@ -1745,12 +1744,10 @@ class FilmUI:
         if val == 'pad' and self.punch_cb.get_value():
             self.punch_size_label.show()
             self.punch_size_spinner.show()
-            self.exc_label.hide()
             self.exc_combo.hide()
         else:
             self.punch_size_label.hide()
             self.punch_size_spinner.hide()
-            self.exc_label.show()
             self.exc_combo.show()
 
         if val == 'pad' and self.tf_type_obj_combo.get_value() == 'geo':

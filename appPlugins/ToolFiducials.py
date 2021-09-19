@@ -1074,6 +1074,8 @@ class FidoUI:
         grid_sel.addWidget(self.mode_label, 0, 0)
         grid_sel.addWidget(self.mode_radio, 0, 1)
 
+        FCGridLayout.set_common_column_size([grid_sel, grid_par, grid_par], 0)
+
         # ## Insert Copper Fiducial
         self.add_cfid_button = FCButton(_("Add Fiducial"))
         self.add_cfid_button.setIcon(QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'))

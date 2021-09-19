@@ -1365,6 +1365,9 @@ class ExtractUI:
         ec_grid.addWidget(self.thick_cut_label, 2, 0)
         ec_grid.addWidget(self.thick_cut_entry, 2, 1)
 
+        FCGridLayout.set_common_column_size(
+            [grid1, grid_lay, ring_grid, ec_grid, prop_grid, fixed_grid, ring_grid, es_grid, pad_all_grid, pad_grid], 0)
+
         # #############################################################################################################
         # Extract cutout from Gerber apertures flashes (pads) BUTTON
         # #############################################################################################################

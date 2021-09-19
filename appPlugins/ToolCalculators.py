@@ -531,7 +531,7 @@ class CalcUI:
         # #####################
 
         # ## Title of the Units Calculator
-        units_label = FCLabel('<span style="color:blue;"><b>%s</b></span>'  % self.unitsName)
+        units_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % self.unitsName)
         self.layout.addWidget(units_label)
 
         units_frame = FCFrame()
@@ -593,7 +593,7 @@ class CalcUI:
         # ################################ V-shape Tool Calculator ####################################################
         # #############################################################################################################
         # ## Title of the V-shape Tools Calculator
-        v_shape_title_label = FCLabel('<span style="color:green;"><b>%s</b></span>'  % self.v_shapeName)
+        v_shape_title_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % self.v_shapeName)
         self.layout.addWidget(v_shape_title_label)
 
         v_frame = FCFrame()
@@ -667,7 +667,7 @@ class CalcUI:
         # ############################## ElectroPlating Tool Calculator ###############################################
         # #############################################################################################################
         # ## Title of the ElectroPlating Tools Calculator
-        tin_title_label = FCLabel('<span style="color:purple;"><b>%s</b></span>'  % self.eplateName)
+        tin_title_label = FCLabel('<span style="color:purple;"><b>%s</b></span>' % self.eplateName)
         tin_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
@@ -699,7 +699,8 @@ class CalcUI:
         self.pcblengthlabel = FCLabel('%s:' % _("Board Length"))
         self.pcblengthlabel.setToolTip(_('Board Length.'))
         self.pcblength_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.pcblength_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pcblength_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcblength_entry.set_precision(self.decimals)
         self.pcblength_entry.set_range(0.0, 10000.0000)
 
@@ -717,7 +718,8 @@ class CalcUI:
         self.pcbwidthlabel = FCLabel('%s:' % _("Board Width"))
         self.pcbwidthlabel.setToolTip(_('Board Width'))
         self.pcbwidth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.pcbwidth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.pcbwidth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                          QtWidgets.QSizePolicy.Policy.Preferred)
         self.pcbwidth_entry.set_precision(self.decimals)
         self.pcbwidth_entry.set_range(0.0, 10000.0000)
 
@@ -735,7 +737,8 @@ class CalcUI:
         self.area_label = FCLabel('%s:' % _("Area"))
         self.area_label.setToolTip(_('Board area.'))
         self.area_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.area_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                      QtWidgets.QSizePolicy.Policy.Preferred)
         self.area_entry.set_precision(self.decimals)
         self.area_entry.set_range(0.0, 10000.0000)
 
@@ -759,7 +762,8 @@ class CalcUI:
         self.cdensity_label.setToolTip(_("Current density applied to the board. \n"
                                          "In Amperes per Square Feet ASF."))
         self.cdensity_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cdensity_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.cdensity_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                          QtWidgets.QSizePolicy.Policy.Preferred)
         self.cdensity_entry.set_precision(self.decimals)
         self.cdensity_entry.set_range(0.0, 10000.0000)
         self.cdensity_entry.setSingleStep(0.1)
@@ -778,7 +782,8 @@ class CalcUI:
         self.growth_label = FCLabel('%s:' % _("Copper Growth"))
         self.growth_label.setToolTip(_("Thickness of the deposited copper."))
         self.growth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.growth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.growth_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                        QtWidgets.QSizePolicy.Policy.Preferred)
         self.growth_entry.set_precision(self.decimals)
         self.growth_entry.set_range(0.0, 10000.0000)
         self.growth_entry.setSingleStep(0.01)
@@ -798,7 +803,8 @@ class CalcUI:
         self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
                                       'to be set on the Power Supply.'))
         self.cvalue_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cvalue_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.cvalue_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                        QtWidgets.QSizePolicy.Policy.Preferred)
         self.cvalue_entry.set_precision(self.decimals)
         self.cvalue_entry.set_range(0.0, 10000.0000)
         self.cvalue_entry.setSingleStep(0.1)
@@ -818,7 +824,8 @@ class CalcUI:
         self.timelabel = FCLabel('%s:' % _("Time"))
         self.timelabel.setToolTip(_('The time calculated to deposit copper.'))
         self.time_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.time_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.time_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                      QtWidgets.QSizePolicy.Policy.Preferred)
         self.time_entry.set_precision(self.decimals)
         self.time_entry.set_range(0.0, 10000.0000)
         self.time_entry.setSingleStep(0.1)
@@ -937,7 +944,7 @@ class CalcUI:
         self.h2o_label.setToolTip(_('Distilled Water.'))
         self.h2o_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.h2o_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
-                                    QtWidgets.QSizePolicy.Policy.Preferred)
+                                     QtWidgets.QSizePolicy.Policy.Preferred)
         self.h2o_entry.lineEdit().setReadOnly(True)
         self.h2o_entry.set_precision(self.decimals)
         self.h2o_entry.set_range(0.0, 10000.0000)
@@ -957,7 +964,7 @@ class CalcUI:
         self.soap_label.setToolTip(_('Liquid soap.'))
         self.soap_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.soap_entry.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
-                                     QtWidgets.QSizePolicy.Policy.Preferred)
+                                      QtWidgets.QSizePolicy.Policy.Preferred)
         self.soap_entry.lineEdit().setReadOnly(True)
         self.soap_entry.set_precision(self.decimals)
         self.soap_entry.set_range(0.0, 10000.0000)
@@ -1034,6 +1041,8 @@ class CalcUI:
             _("Calculate the chemical quantities for the desired volume of tinning solution.")
         )
         grid_tin.addWidget(self.calculate_tin_button, 30, 0, 1, 2)
+
+        FCGridLayout.set_common_column_size([grid_units_layout, grid_electro, grid_vshape, grid_tin], 0)
 
         self.layout.addStretch(1)
 

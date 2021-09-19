@@ -1046,6 +1046,8 @@ class CornersUI:
         grid_drill.addWidget(self.drill_dia_label, 0, 0)
         grid_drill.addWidget(self.drill_dia_entry, 0, 1)
 
+        FCGridLayout.set_common_column_size([grid_sel, grid_par, grid_loc, grid_drill], 0)
+
         # ## Create an Excellon object
         self.drill_button = FCButton(_("Create Excellon Object"))
         self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drill32.png'))
