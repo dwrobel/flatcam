@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed Extract Plugin not extracting soldermask for aperture macros
 - fixed INFO in Gerber Object UI to show correctly the type of geometric element in Follow geometry
+- in INFO functionality for Gerber Object made the difference if the Follow geometry is not a Point or a LineString
 
 18.09.2021
 

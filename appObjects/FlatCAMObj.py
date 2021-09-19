@@ -660,6 +660,7 @@ class FlatCAMObj(QtCore.QObject):
                 solid_nr = 0
                 follow_nr_points = 0
                 follow_nr_lines = 0
+                follow_nr = 0
                 clear_nr = 0
 
                 if 'geometry' in obj.tools[ap]:
@@ -671,8 +672,10 @@ class FlatCAMObj(QtCore.QObject):
                             if 'follow' in el:
                                 if isinstance(el['follow'], Point):
                                     follow_nr_points += 1
-                                else:
+                                elif isinstance(el['follow'], LineString):
                                     follow_nr_lines += 1
+                                else:
+                                    follow_nr += 1
                             if 'clear' in el:
                                 clear_nr += 1
                 else:
@@ -684,7 +687,8 @@ class FlatCAMObj(QtCore.QObject):
                 elif follow_nr_lines == 0 and follow_nr_points > 0:
                     temp_ap['Follow_Geo'] = '%s %s' % (str(follow_nr_points), _("Points"))
                 else:
-                    temp_ap['Follow_Geo'] = '%s %s' % (str(follow_nr_lines + follow_nr_points), _("Elements"))
+                    temp_ap['Follow_Geo'] = '%s %s' % \
+                                            (str(follow_nr_lines + follow_nr_points + follow_nr), _("Elements"))
                 temp_ap['Clear_Geo'] = '%s %s' % (str(clear_nr), _("Polygons"))
 
                 apid = self.treeWidget.addParent(
