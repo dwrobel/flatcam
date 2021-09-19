@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in INFO functionality for Gerber Object made the difference if the Follow geometry is not a Point or a LineString
 - In Plugins: Panelize, Cutout, Extract, Copper Thieving disabled the autoload of the last created APP object
 - In Plugins: Calculators, Copper Thieving, Corners, Extract, Fiducials and Film activated the harmonizing first column width in the Plugin UI
+- DblSided Plugin - remade the UI
 
 18.09.2021
 

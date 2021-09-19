@@ -3,7 +3,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry, FCLabel, \
-    VerticalScrollArea, FCGridLayout, FCFrame
+    VerticalScrollArea, FCGridLayout, FCComboBox2, FCFrame
 
 from numpy import Inf
 from copy import deepcopy
@@ -115,14 +115,14 @@ class DblSidedTool(AppTool):
         # #############################################################################
         self.ui.level.toggled.connect(self.on_level_changed)
 
-        self.ui.object_type_radio.activated_custom.connect(self.on_object_type)
+        self.ui.object_type_combo.currentIndexChanged.connect(self.on_object_type)
 
         self.ui.add_point_button.clicked.connect(self.on_point_add)
         self.ui.add_drill_point_button.clicked.connect(self.on_drill_add)
         self.ui.delete_drill_point_button.clicked.connect(self.on_drill_delete_last)
         self.ui.box_type_radio.activated_custom.connect(self.on_combo_box_type)
 
-        self.ui.axis_location.group_toggle_fn = self.on_toggle_pointbox
+        self.ui.axis_location.activated_custom.connect(self.on_toggle_pointbox)
 
         self.ui.point_entry.textChanged.connect(lambda val: self.ui.align_ref_label_val.set_value(val))
         self.ui.pick_hole_button.clicked.connect(self.on_pick_hole)
@@ -157,6 +157,8 @@ class DblSidedTool(AppTool):
 
         self.ui.mirror_axis.set_value(self.app.defaults["tools_2sided_mirror_axis"])
         self.ui.axis_location.set_value(self.app.defaults["tools_2sided_axis_loc"])
+        self.on_toggle_pointbox(self.ui.axis_location.get_value())
+
         self.ui.drill_dia.set_value(self.app.defaults["tools_2sided_drilldia"])
         self.ui.align_axis_radio.set_value(self.app.defaults["tools_2sided_allign_axis"])
 
@@ -174,27 +176,27 @@ class DblSidedTool(AppTool):
             obj_name = obj.options['name']
             if obj.kind == 'gerber':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
-                self.ui.object_type_radio.set_value('grb')
-                self.on_object_type('grb')
+                self.ui.object_type_combo.set_value(0)
+                self.on_object_type(0)  # Gerber
                 self.ui.box_type_radio.set_value('grb')
                 self.on_combo_box_type('grb')
             elif obj.kind == 'excellon':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
-                self.ui.object_type_radio.set_value('exc')
-                self.on_object_type('exc')
+                self.ui.object_type_combo.set_value(1)
+                self.on_object_type(1)  # Excellon
                 self.ui.box_type_radio.set_value('exc')
                 self.on_combo_box_type('exc')
             elif obj.kind == 'geometry':
                 # run once to make sure that the obj_type attribute is updated in the FCComboBox
-                self.ui.object_type_radio.set_value('geo')
-                self.on_object_type('geo')
+                self.ui.object_type_combo.set_value(2)
+                self.on_object_type(2)  # Geometry
                 self.ui.box_type_radio.set_value('geo')
                 self.on_combo_box_type('geo')
 
             self.ui.object_combo.set_value(obj_name)
         else:
-            self.ui.object_type_radio.set_value('grb')
-            self.on_object_type('grb')
+            self.ui.object_type_combo.set_value(0)
+            self.on_object_type(0)  # Gerber
 
         if self.local_connected is True:
             self.disconnect_events()
@@ -252,11 +254,18 @@ class DblSidedTool(AppTool):
             self.ui.calculate_bb_button.show()
 
     def on_object_type(self, val):
-        obj_type = {'grb': 0, 'exc': 1, 'geo': 2}[val]
-        self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        """
+        Will select the actual type of objects: Gerber, Excellon, Geometry
+
+        :param val:     Index in the combobox where 0 = Gerber, 1 = Excellon and 2 = Geometry
+        :type val:      int
+        :return:        None
+        :rtype:         None
+        """
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(val, 0, QtCore.QModelIndex()))
         self.ui.object_combo.setCurrentIndex(0)
         self.ui.object_combo.obj_type = {
-            "grb": "Gerber", "exc": "Excellon", "geo": "Geometry"}[val]
+            0: "Gerber", 1: "Excellon", 2: "Geometry"}[val]
 
     def on_combo_box_type(self, val):
         obj_type = {'grb': 0, 'exc': 1, 'geo': 2}[val]
@@ -271,13 +280,15 @@ class DblSidedTool(AppTool):
             kind = current.indexes()[0].internalPointer().obj.kind
 
             if kind in ['gerber', 'excellon', 'geometry']:
+                index = {'gerber': 0, 'excellon': 1, 'geometry': 2}[kind]
+                self.ui.object_type_combo.set_value(index)
+
                 obj_type = {'gerber': 'grb', 'excellon': 'exc', 'geometry': 'geo'}[kind]
-                self.ui.object_type_radio.set_value(obj_type)
                 self.ui.box_type_radio.set_value(obj_type)
 
                 self.ui.object_combo.set_value(name)
-        except Exception:
-            pass
+        except Exception as err:
+            self.app.log.error("DblSidedTool.on_object_selection_changed() --> %s" % str(err))
 
     def on_create_alignment_holes(self):
         axis = self.ui.align_axis_radio.get_value()
@@ -495,41 +506,49 @@ class DblSidedTool(AppTool):
         self.drill_values = drill_values_without_last_tupple
         self.ui.alignment_holes.set_value(self.drill_values)
 
-    def on_toggle_pointbox(self):
-        val = self.ui.axis_location.get_value()
+    def on_toggle_pointbox(self, val):
         if val == "point":
-            self.ui.point_entry.show()
-            self.ui.add_point_button.show()
-            self.ui.box_type_radio.hide()
-            self.ui.box_combo.hide()
-
-            self.ui.exc_hole_lbl.hide()
-            self.ui.exc_combo.hide()
-            self.ui.pick_hole_button.hide()
+            # self.ui.point_entry.show()
+            # self.ui.add_point_button.show()
+            # self.ui.box_type_radio.hide()
+            # self.ui.box_combo.hide()
+            #
+            # self.ui.exc_hole_lbl.hide()
+            # self.ui.exc_combo.hide()
+            # self.ui.pick_hole_button.hide()
+            self.ui.pr_frame.show()
+            self.ui.br_frame.hide()
+            self.ui.sr_frame.hide()
 
             self.ui.align_ref_label_val.set_value(self.ui.point_entry.get_value())
         elif val == 'box':
-            self.ui.point_entry.hide()
-            self.ui.add_point_button.hide()
-
-            self.ui.box_type_radio.show()
-            self.ui.box_combo.show()
-
-            self.ui.exc_hole_lbl.hide()
-            self.ui.exc_combo.hide()
-            self.ui.pick_hole_button.hide()
+            # self.ui.point_entry.hide()
+            # self.ui.add_point_button.hide()
+            #
+            # self.ui.box_type_radio.show()
+            # self.ui.box_combo.show()
+            #
+            # self.ui.exc_hole_lbl.hide()
+            # self.ui.exc_combo.hide()
+            # self.ui.pick_hole_button.hide()
+            self.ui.pr_frame.hide()
+            self.ui.br_frame.show()
+            self.ui.sr_frame.hide()
 
             self.ui.align_ref_label_val.set_value("Box centroid")
         elif val == 'hole':
-            self.ui.point_entry.show()
-            self.ui.add_point_button.hide()
-
-            self.ui.box_type_radio.hide()
-            self.ui.box_combo.hide()
-
-            self.ui.exc_hole_lbl.show()
-            self.ui.exc_combo.show()
-            self.ui.pick_hole_button.show()
+            # self.ui.point_entry.show()
+            # self.ui.add_point_button.hide()
+            #
+            # self.ui.box_type_radio.hide()
+            # self.ui.box_combo.hide()
+            #
+            # self.ui.exc_hole_lbl.show()
+            # self.ui.exc_combo.show()
+            # self.ui.pick_hole_button.show()
+            self.ui.pr_frame.hide()
+            self.ui.br_frame.hide()
+            self.ui.sr_frame.show()
 
     def on_bbox_coordinates(self):
 
@@ -684,25 +703,19 @@ class DsidedUI:
         self.tools_box.addWidget(source_frame)
 
         # ## Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid0.setColumnStretch(0, 1)
-        grid0.setColumnStretch(1, 0)
-        source_frame.setLayout(grid0)
+        grid_obj = FCGridLayout(v_spacing=5, h_spacing=3)
+        source_frame.setLayout(grid_obj)
 
         # Type of object to be cutout
-        self.type_obj_combo_label = FCLabel('%s:' % _("Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Target"))
         self.type_obj_combo_label.setToolTip(
             _("Select the type of application object to be processed in this tool.")
         )
 
-        self.object_type_radio = RadioSet([
-            {"label": _("Gerber"), "value": "grb"},
-            {"label": _("Excellon"), "value": "exc"},
-            {"label": _("Geometry"), "value": "geo"}
-        ])
-
-        grid0.addWidget(self.type_obj_combo_label, 0, 0)
-        grid0.addWidget(self.object_type_radio, 0, 1)
+        self.object_type_combo = FCComboBox2()
+        self.object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
+        grid_obj.addWidget(self.type_obj_combo_label, 0, 0)
+        grid_obj.addWidget(self.object_type_combo, 0, 1)
 
         # ## Gerber Object to mirror
         self.object_combo = FCComboBox()
@@ -710,12 +723,7 @@ class DsidedUI:
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.is_last = True
 
-        grid0.addWidget(self.object_combo, 2, 0, 1, 2)
-
-        # separator_line = QtWidgets.QFrame()
-        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line, 7, 0, 1, 2)
+        grid_obj.addWidget(self.object_combo, 2, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
@@ -732,8 +740,8 @@ class DsidedUI:
         self.bounds_frame = FCFrame()
         self.tools_box.addWidget(self.bounds_frame)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.bounds_frame.setLayout(grid1)
+        grid_bounds = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.bounds_frame.setLayout(grid_bounds)
 
         # Xmin value
         self.xmin_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -746,8 +754,8 @@ class DsidedUI:
         )
         self.xmin_entry.setReadOnly(True)
 
-        grid1.addWidget(self.xmin_btn, 0, 0)
-        grid1.addWidget(self.xmin_entry, 0, 1)
+        grid_bounds.addWidget(self.xmin_btn, 0, 0)
+        grid_bounds.addWidget(self.xmin_entry, 0, 1)
 
         # Ymin value
         self.ymin_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -760,8 +768,8 @@ class DsidedUI:
         )
         self.ymin_entry.setReadOnly(True)
 
-        grid1.addWidget(self.ymin_btn, 2, 0)
-        grid1.addWidget(self.ymin_entry, 2, 1)
+        grid_bounds.addWidget(self.ymin_btn, 2, 0)
+        grid_bounds.addWidget(self.ymin_entry, 2, 1)
 
         # Xmax value
         self.xmax_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -774,8 +782,8 @@ class DsidedUI:
         )
         self.xmax_entry.setReadOnly(True)
 
-        grid1.addWidget(self.xmax_btn, 4, 0)
-        grid1.addWidget(self.xmax_entry, 4, 1)
+        grid_bounds.addWidget(self.xmax_btn, 4, 0)
+        grid_bounds.addWidget(self.xmax_entry, 4, 1)
 
         # Ymax value
         self.ymax_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -788,8 +796,8 @@ class DsidedUI:
         )
         self.ymax_entry.setReadOnly(True)
 
-        grid1.addWidget(self.ymax_btn, 6, 0)
-        grid1.addWidget(self.ymax_entry, 6, 1)
+        grid_bounds.addWidget(self.ymax_btn, 6, 0)
+        grid_bounds.addWidget(self.ymax_entry, 6, 1)
 
         # Center point value
         self.center_entry = NumericalEvalTupleEntry(border_color='#0069A9')
@@ -802,8 +810,8 @@ class DsidedUI:
         )
         self.center_entry.setReadOnly(True)
 
-        grid1.addWidget(self.center_btn, 8, 0)
-        grid1.addWidget(self.center_entry, 8, 1)
+        grid_bounds.addWidget(self.center_btn, 8, 0)
+        grid_bounds.addWidget(self.center_entry, 8, 1)
 
         # Calculate Bounding box
         self.calculate_bb_button = FCButton(_("Calculate Bounds Values"))
@@ -830,8 +838,8 @@ class DsidedUI:
         mirror_frame = FCFrame()
         self.tools_box.addWidget(mirror_frame)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        mirror_frame.setLayout(grid2)
+        grid_mirror = FCGridLayout(v_spacing=5, h_spacing=3)
+        mirror_frame.setLayout(grid_mirror)
 
         # ## Axis
         self.mirax_label = FCLabel('%s:' % _("Axis"))
@@ -841,41 +849,63 @@ class DsidedUI:
                 {'label': 'X', 'value': 'X'},
                 {'label': 'Y', 'value': 'Y'}
             ],
-            orientation='vertical',
-            stretch=False
+            stretch=True
         )
 
-        grid2.addWidget(self.mirax_label, 2, 0)
-        grid2.addWidget(self.mirror_axis, 2, 1, 1, 2)
+        grid_mirror.addWidget(self.mirax_label, 2, 0)
+        grid_mirror.addWidget(self.mirror_axis, 2, 1, 1, 2)
 
-        # ## Axis Location
-        self.axloc_label = FCLabel('%s:' % _("Reference"))
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_mirror.addWidget(separator_line, 3, 0, 1, 3)
+
+        # ## Reference
+        self.axloc_label = FCLabel('<b>%s</b>:' % _("Reference"))
         self.axloc_label.setToolTip(
             _("The coordinates used as reference for the mirror operation.\n"
               "Can be:\n"
               "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
               "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
               "bounding box of another object selected below\n"
-              "- Hole Snap -> a point defined by the center of a drill hole in a Excellon object")
+              "- Snap -> a point defined by the center of a drill hole in a Excellon object")
         )
         self.axis_location = RadioSet(
             [
                 {'label': _('Point'), 'value': 'point'},
                 {'label': _('Box'), 'value': 'box'},
-                {'label': _('Hole Snap'), 'value': 'hole'},
-            ]
+                {'label': _('Snap'), 'value': 'hole'},
+            ],
+            stretch=True
         )
 
-        grid2.addWidget(self.axloc_label, 4, 0)
-        grid2.addWidget(self.axis_location, 4, 1, 1, 2)
+        grid_mirror.addWidget(self.axloc_label, 4, 0)
+        grid_mirror.addWidget(self.axis_location, 4, 1, 1, 2)
 
-        # ## Point/Box
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        grid_mirror.addWidget(separator_line, 7, 0, 1, 3)
+
+        # #############################################################################################################
+        # ## Point Reference
+        # #############################################################################################################
+        self.pr_frame = QtWidgets.QFrame()
+        self.pr_frame.setContentsMargins(0, 0, 0, 0)
+        grid_mirror.addWidget(self.pr_frame, 9, 0, 1, 3)
+
         self.point_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.point_entry.setPlaceholderText(_("Point coordinates"))
 
+        pr_hlay = QtWidgets.QHBoxLayout()
+        pr_hlay.setContentsMargins(0, 0, 0, 0)
+        self.pr_frame.setLayout(pr_hlay)
+
         # Add a reference
-        self.add_point_button = FCButton(_("Add"))
+        self.add_point_button = QtWidgets.QToolButton()
+        self.add_point_button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.add_point_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_point_button.setText(_("Add"))
         self.add_point_button.setToolTip(
             _("Add the coordinates in format <b>(x, y)</b> through which the mirroring axis\n "
               "selected in 'MIRROR AXIS' pass.\n"
@@ -888,41 +918,21 @@ class DsidedUI:
         #                                     font-weight: bold;
         #                                 }
         #                                 """)
-        self.add_point_button.setMinimumWidth(60)
+        # self.add_point_button.setMinimumWidth(60)
 
-        grid2.addWidget(self.point_entry, 7, 0, 1, 2)
-        grid2.addWidget(self.add_point_button, 7, 2)
+        pr_hlay.addWidget(self.point_entry, stretch=1)
+        pr_hlay.addWidget(self.add_point_button)
 
-        self.exc_hole_lbl = FCLabel('%s:' % _("Excellon"))
-        self.exc_hole_lbl.setToolTip(
-            _("Object that holds holes that can be picked as reference for mirroring.")
-        )
+        # #############################################################################################################
+        # Box Reference
+        # #############################################################################################################
+        self.br_frame = QtWidgets.QFrame()
+        self.br_frame.setContentsMargins(0, 0, 0, 0)
+        grid_mirror.addWidget(self.br_frame, 11, 0, 1, 3)
 
-        # Excellon Object that holds the holes
-        self.exc_combo = FCComboBox()
-        self.exc_combo.setModel(self.app.collection)
-        self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.is_last = True
-
-        self.exc_hole_lbl.hide()
-        self.exc_combo.hide()
-
-        grid2.addWidget(self.exc_hole_lbl, 10, 0)
-        grid2.addWidget(self.exc_combo, 10, 1, 1, 2)
-
-        self.pick_hole_button = FCButton(_("Pick hole"))
-        self.pick_hole_button.setToolTip(
-            _("Click inside a drill hole that belong to the selected Excellon object,\n"
-              "and the hole center coordinates will be copied to the Point field.")
-        )
-
-        self.pick_hole_button.hide()
-
-        grid2.addWidget(self.pick_hole_button, 12, 0, 1, 3)
-
-        # ## Grid Layout
-        grid_lay3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid2.addLayout(grid_lay3, 14, 0, 1, 3)
+        grid_box_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_box_ref.setContentsMargins(0, 0, 0, 0)
+        self.br_frame.setLayout(grid_box_ref)
 
         # Type of object used as BOX reference
         self.box_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
@@ -933,8 +943,7 @@ class DsidedUI:
               "The coordinates of the center of the bounding box are used\n"
               "as reference for mirror operation.")
         )
-        self.box_type_radio.hide()
-        grid_lay3.addWidget(self.box_type_radio, 1, 0, 1, 2)
+        grid_box_ref.addWidget(self.box_type_radio, 0, 0, 1, 2)
 
         # Object used as BOX reference
         self.box_combo = FCComboBox()
@@ -942,11 +951,44 @@ class DsidedUI:
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.is_last = True
 
-        self.box_combo.hide()
+        grid_box_ref.addWidget(self.box_combo, 2, 0, 1, 2)
 
-        grid_lay3.addWidget(self.box_combo, 3, 0, 1, 2)
+        # #############################################################################################################
+        # Snap Hole Reference
+        # #############################################################################################################
+        self.sr_frame = QtWidgets.QFrame()
+        self.sr_frame.setContentsMargins(0, 0, 0, 0)
+        grid_mirror.addWidget(self.sr_frame, 13, 0, 1, 3)
 
+        grid_snap_ref = FCGridLayout(v_spacing=5, h_spacing=3)
+        grid_snap_ref.setContentsMargins(0, 0, 0, 0)
+        self.sr_frame.setLayout(grid_snap_ref)
+
+        self.exc_hole_lbl = FCLabel('<b>%s</b>:' % _("Excellon"))
+        self.exc_hole_lbl.setToolTip(
+            _("Object that holds holes that can be picked as reference for mirroring.")
+        )
+
+        # Excellon Object that holds the holes
+        self.exc_combo = FCComboBox()
+        self.exc_combo.setModel(self.app.collection)
+        self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.exc_combo.is_last = True
+
+        grid_snap_ref.addWidget(self.exc_hole_lbl, 0, 0, 1, 2)
+        grid_snap_ref.addWidget(self.exc_combo, 2, 0, 1, 2)
+
+        self.pick_hole_button = FCButton(_("Pick hole"))
+        self.pick_hole_button.setToolTip(
+            _("Click inside a drill hole that belong to the selected Excellon object,\n"
+              "and the hole center coordinates will be copied to the Point field.")
+        )
+
+        grid_snap_ref.addWidget(self.pick_hole_button, 4, 0, 1, 2)
+
+        # #############################################################################################################
         # Mirror Button
+        # #############################################################################################################
         self.mirror_button = FCButton(_("Mirror"))
         self.mirror_button.setIcon(QtGui.QIcon(self.app.resource_location + '/doubleside16.png'))
         self.mirror_button.setToolTip(
@@ -1006,8 +1048,7 @@ class DsidedUI:
                 {'label': 'X', 'value': 'X'},
                 {'label': 'Y', 'value': 'Y'}
             ],
-            orientation='vertical',
-            stretch=False
+            stretch=True
         )
 
         grid4.addWidget(self.align_ax_label, 4, 0)
@@ -1077,6 +1118,8 @@ class DsidedUI:
         drill_hlay.addWidget(self.delete_drill_point_button)
 
         grid4.addLayout(drill_hlay, 10, 0, 1, 2)
+
+        FCGridLayout.set_common_column_size([grid_obj, grid_bounds, grid_mirror, grid_box_ref, grid4], 0)
 
         # ## Buttons
         self.create_excellon_button = FCButton(_("Create Excellon Object"))
