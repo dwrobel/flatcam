@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 19.09.2021
 
 - fixed Extract Plugin not extracting soldermask for aperture macros
+- fixed INFO in Gerber Object UI to show correctly the type of geometric element in Follow geometry
 
 18.09.2021
 

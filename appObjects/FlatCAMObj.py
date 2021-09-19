@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-# import inspect  # TODO: For debugging only.
+# import inspect
 
 from appGUI.ObjectUI import *
 
@@ -19,7 +19,7 @@ from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.VisPyVisuals import ShapeCollection
 
 from shapely.ops import unary_union
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, Point, LineString
 
 from copy import deepcopy
 import sys
@@ -658,7 +658,8 @@ class FlatCAMObj(QtCore.QObject):
                 temp_ap.pop('geometry', None)
 
                 solid_nr = 0
-                follow_nr = 0
+                follow_nr_points = 0
+                follow_nr_lines = 0
                 clear_nr = 0
 
                 if 'geometry' in obj.tools[ap]:
@@ -668,14 +669,23 @@ class FlatCAMObj(QtCore.QObject):
                             if 'solid' in el:
                                 solid_nr += 1
                             if 'follow' in el:
-                                follow_nr += 1
+                                if isinstance(el['follow'], Point):
+                                    follow_nr_points += 1
+                                else:
+                                    follow_nr_lines += 1
                             if 'clear' in el:
                                 clear_nr += 1
                 else:
                     font.setBold(False)
-                temp_ap['Solid_Geo'] = '%s Polygons' % str(solid_nr)
-                temp_ap['Follow_Geo'] = '%s LineStrings' % str(follow_nr)
-                temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
+
+                temp_ap['Solid_Geo'] = '%s %s' % (str(solid_nr), _("Polygons"))
+                if follow_nr_lines > 0 and follow_nr_points == 0:
+                    temp_ap['Follow_Geo'] = '%s %s' % (str(follow_nr_lines), _("LineStrings"))
+                elif follow_nr_lines == 0 and follow_nr_points > 0:
+                    temp_ap['Follow_Geo'] = '%s %s' % (str(follow_nr_points), _("Points"))
+                else:
+                    temp_ap['Follow_Geo'] = '%s %s' % (str(follow_nr_lines + follow_nr_points), _("Elements"))
+                temp_ap['Clear_Geo'] = '%s %s' % (str(clear_nr), _("Polygons"))
 
                 apid = self.treeWidget.addParent(
                     apertures, str(ap), expanded=False, color=p_color, font=font)
