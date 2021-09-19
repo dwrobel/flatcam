@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed some issues in AppTextEditor due of Qt6 conversion
 - In Extract Plugin fixed issue with not extracting soldermask for pads made with "P" type Gerber aperture
 - in the method that exports the Gerber fixed issue with not exporting the geometry associated with the apertures of type "P"
+- pattern highlighting: added the Dx and %LPC%, %LPD% expressions
 
 18.09.2021
 

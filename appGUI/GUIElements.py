@@ -4552,6 +4552,31 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                         rule = (pattern, keyword3)
                         self.highlightingRules.append(rule)
 
+                    keyword4 = QtGui.QTextCharFormat()
+                    # keyword 4
+                    brush = QtGui.QBrush(QtGui.QColor("green"), Qt.BrushStyle.SolidPattern)
+                    keyword4.setForeground(brush)
+                    keyword4.setFontWeight(QtGui.QFont.Weight.Bold)
+                    keywords = ["LPC", "LPD"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\%" + "\\b" + word + "\*\%")
+                        rule = (pattern, keyword4)
+                        self.highlightingRules.append(rule)
+
+                    # keyword 5
+                    keyword5 = QtGui.QTextCharFormat()
+                    # SVG colors: https://doc.qt.io/qt-5/qml-color.html#svg-color-reference
+                    brush = QtGui.QBrush(QtGui.QColor("red"), Qt.BrushStyle.SolidPattern)
+                    keyword5.setForeground(brush)
+                    keyword5.setFontWeight(QtGui.QFont.Weight.Bold)
+                    keywords = ["D"]
+                    for word in keywords:
+                        # pattern = QtCore.QRegularExpression("\\b" + word + "\\b")
+                        pattern = QtCore.QRegularExpression("\\b" + word + "\d+\s?")
+                        rule = (pattern, keyword5)
+                        self.highlightingRules.append(rule)
+
                     # reservedClasses
                     reservedClasses.setForeground(brush)
                     reservedClasses.setFontWeight(QtGui.QFont.Weight.Bold)
