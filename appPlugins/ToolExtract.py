@@ -410,7 +410,7 @@ class ToolExtract(AppTool):
 
         with self.app.proc_container.new('%s...' % _("Working")):
             try:
-                self.app.app_obj.new_object("excellon", outname, obj_init)
+                self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
             except Exception as e:
                 self.app.log.error("Error on Extracted Excellon object creation: %s" % str(e))
                 return
@@ -686,7 +686,7 @@ class ToolExtract(AppTool):
         if square or rect:
             allowed_apertures.append('R')
         if other:
-            allowed_apertures.append('ELSE')
+            allowed_apertures.append('AM')
 
         selection_index = self.ui.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
@@ -715,6 +715,8 @@ class ToolExtract(AppTool):
                     new_apertures.pop(apid, None)
                     continue
 
+                # both the square and rectangular apertures share the same type: "R"
+                # through the below we distinguish between them
                 if ap_type == 'R':
                     width = float(apid_value['width'])
                     height = float(apid_value['height'])
@@ -736,13 +738,14 @@ class ToolExtract(AppTool):
                                 new_follow_geometry.append(geo_el['follow'])
                                 if 'solid' in geo_el:
                                     buffered_solid = geo_el['solid'].buffer(clearance)
-                                    new_solid_geometry.append(buffered_solid)
-
                                     new_geo_el = {
                                         'solid': buffered_solid,
                                         'follow': geo_el['follow']
                                     }
                                     new_aper_geo.append(deepcopy(new_geo_el))
+
+                                    new_solid_geometry.append(buffered_solid)
+
                     new_apertures[apid]['geometry'] = deepcopy(new_aper_geo)
 
         has_geometry = False
@@ -773,7 +776,7 @@ class ToolExtract(AppTool):
 
         with self.app.proc_container.new('%s...' % _("Working")):
             try:
-                self.app.app_obj.new_object("gerber", outname, obj_init)
+                self.app.app_obj.new_object("gerber", outname, obj_init, autoselected=False)
             except Exception as e:
                 log.error("Error on Extracted Soldermask Gerber object creation: %s" % str(e))
                 return

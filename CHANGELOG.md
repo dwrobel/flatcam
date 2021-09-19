@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.09.2021
+
+- fixed Extract Plugin not extracting soldermask for aperture macros
+
 18.09.2021
 
 - some code reformatting in Extract Plugin
