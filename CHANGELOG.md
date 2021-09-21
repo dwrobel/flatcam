@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - made sure that the Gerber Object geometry is always flattened
 - in Legacy2D graphic engine fixed setting the Opacity functionality
 - fixed a recent issue where Gerber files made out of single polygons were not processed
+- more Shapely deprecations fixes
 
 19.09.2021
 

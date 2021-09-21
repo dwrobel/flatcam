@@ -1641,9 +1641,11 @@ class Gerber(Geometry):
             except TypeError:
                 buff_length = 1
 
-            try:
+            if isinstance(self.solid_geometry, MultiPolygon):
+                sol_geo_length = len(self.solid_geometry.geoms)
+            elif isinstance(self.solid_geometry, list):
                 sol_geo_length = len(self.solid_geometry)
-            except TypeError:
+            else:
                 sol_geo_length = 1
 
             try:

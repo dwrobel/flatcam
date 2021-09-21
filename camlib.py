@@ -8104,8 +8104,9 @@ def flatten_shapely_geometry(geometry):
         if isinstance(geometry, (MultiLineString, MultiPolygon, MultiPoint)):
             for geo in geometry.geoms:
                 flat_list.append(geo)
-        for geo_el in geometry:
-            flat_list += flatten_shapely_geometry(geo_el)
+        else:
+            for geo_el in geometry:
+                flat_list += flatten_shapely_geometry(geo_el)
     except TypeError:
         flat_list.append(geometry)
 
