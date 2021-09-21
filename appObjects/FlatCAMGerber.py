@@ -11,7 +11,8 @@
 # ##########################################################
 
 
-from shapely.geometry import Point, MultiLineString, LineString, LinearRing
+from shapely.geometry import MultiLineString, LinearRing
+from camlib import flatten_shapely_geometry
 
 from appParsers.ParseGerber import Gerber
 from appObjects.FlatCAMObj import *
@@ -911,12 +912,6 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             geometry = self.solid_geometry
 
-        # Make sure geometry is iterable.
-        try:
-            __ = iter(geometry)
-        except TypeError:
-            geometry = [geometry]
-
         if self.app.is_legacy is False:
             def random_color():
                 r_color = np.random.rand(4)
@@ -940,34 +935,16 @@ class GerberObject(FlatCAMObj, Gerber):
 
         try:
             if self.options["solid"]:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=color,
-                                       face_color=random_color() if self.options['multicolored']
-                                       else face_color, visible=visible)
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        try:
-                            for el in g:
-                                self.add_shape(shape=el, color=color,
-                                               face_color=random_color() if self.options['multicolored']
-                                               else face_color, visible=visible)
-                        except TypeError:
-                            self.add_shape(shape=g, color=color,
-                                           face_color=random_color() if self.options['multicolored']
-                                           else face_color, visible=visible)
+                used_color = color
+                used_face_color = random_color() if self.options['multicolored'] else face_color
             else:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
-                                       visible=visible)
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        for el in g:
-                            self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
-                                           visible=visible)
+                used_color = random_color() if self.options['multicolored'] else 'black'
+                used_face_color = None
+
+            for g in geometry:
+                if isinstance(g, (Polygon, LineString)):
+                    self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
+
             self.shapes.redraw(
                 # update_colors=(self.fill_color, self.outline_color),
                 # indexes=self.app.plotcanvas.shape_collection.data.keys()
@@ -976,6 +953,45 @@ class GerberObject(FlatCAMObj, Gerber):
             self.shapes.clear(update=True)
         except Exception as e:
             self.app.log.error("GerberObject.plot() --> %s" % str(e))
+
+        # try:
+        #     if self.options["solid"]:
+        #         for g in geometry:
+        #             if type(g) == Polygon or type(g) == LineString:
+        #                 self.add_shape(shape=g, color=color,
+        #                                face_color=random_color() if self.options['multicolored']
+        #                                else face_color, visible=visible)
+        #             elif type(g) == Point:
+        #                 pass
+        #             else:
+        #                 try:
+        #                     for el in g:
+        #                         self.add_shape(shape=el, color=color,
+        #                                        face_color=random_color() if self.options['multicolored']
+        #                                        else face_color, visible=visible)
+        #                 except TypeError:
+        #                     self.add_shape(shape=g, color=color,
+        #                                    face_color=random_color() if self.options['multicolored']
+        #                                    else face_color, visible=visible)
+        #     else:
+        #         for g in geometry:
+        #             if type(g) == Polygon or type(g) == LineString:
+        #                 self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
+        #                                visible=visible)
+        #             elif type(g) == Point:
+        #                 pass
+        #             else:
+        #                 for el in g:
+        #                     self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
+        #                                    visible=visible)
+        #     self.shapes.redraw(
+        #         # update_colors=(self.fill_color, self.outline_color),
+        #         # indexes=self.app.plotcanvas.shape_collection.data.keys()
+        #     )
+        # except (ObjectDeleted, AttributeError):
+        #     self.shapes.clear(update=True)
+        # except Exception as e:
+        #     self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """

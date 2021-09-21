@@ -13,6 +13,7 @@ from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
 from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
+from camlib import flatten_shapely_geometry
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -937,11 +938,7 @@ class CutOut(AppTool):
                     if gap_type == 'bt' and thin_entry != 0:
                         gaps_solid_geo = rest_geo
                 else:
-                    try:
-                        __ = iter(object_geo)
-                    except TypeError:
-                        object_geo = [object_geo]
-
+                    object_geo = flatten_shapely_geometry(object_geo)
                     for geom_struct in object_geo:
                         if cutout_obj.kind == 'gerber':
                             if margin >= 0:
@@ -991,11 +988,7 @@ class CutOut(AppTool):
                         __, rest_geo = cutout_handler(geom=mb_geo, gapsize=gapsize)
                         mouse_bites_geo = rest_geo
                     else:
-                        try:
-                            __ = iter(mb_object_geo)
-                        except TypeError:
-                            mb_object_geo = [mb_object_geo]
-
+                        mb_object_geo = flatten_shapely_geometry(mb_object_geo)
                         for mb_geom_struct in mb_object_geo:
                             if cutout_obj.kind == 'gerber':
                                 if margin >= 0:
@@ -1269,11 +1262,7 @@ class CutOut(AppTool):
                         gaps_solid_geo = self.subtract_geo(geo, deepcopy(solid_geo))
                 else:
                     if cutout_obj.kind == 'geometry':
-                        try:
-                            __ = iter(object_geo)
-                        except TypeError:
-                            object_geo = [object_geo]
-
+                        object_geo = flatten_shapely_geometry(object_geo)
                         for geom_struct in object_geo:
                             geom_struct = unary_union(geom_struct)
                             xmin, ymin, xmax, ymax = geom_struct.bounds
@@ -1287,11 +1276,7 @@ class CutOut(AppTool):
                                 except TypeError:
                                     gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
                     elif cutout_obj.kind == 'gerber' and margin >= 0:
-                        try:
-                            __ = iter(object_geo)
-                        except TypeError:
-                            object_geo = [object_geo]
-
+                        object_geo = flatten_shapely_geometry(object_geo)
                         for geom_struct in object_geo:
                             geom_struct = unary_union(geom_struct)
                             xmin, ymin, xmax, ymax = geom_struct.bounds
@@ -1347,11 +1332,7 @@ class CutOut(AppTool):
                         mouse_bites_geo = self.subtract_geo(mb_geo, mb_solid_geo)
                     else:
                         if cutout_obj.kind == 'geometry':
-                            try:
-                                __ = iter(mb_object_geo)
-                            except TypeError:
-                                mb_object_geo = [mb_object_geo]
-
+                            mb_object_geo = flatten_shapely_geometry(mb_object_geo)
                             for mb_geom_struct in mb_object_geo:
                                 mb_geom_struct = unary_union(mb_geom_struct)
                                 xmin, ymin, xmax, ymax = mb_geom_struct.bounds
@@ -1365,11 +1346,7 @@ class CutOut(AppTool):
                                 except TypeError:
                                     mouse_bites_geo.append(self.subtract_geo(mb_geom_struct, c_geo))
                         elif cutout_obj.kind == 'gerber' and margin >= 0:
-                            try:
-                                __ = iter(mb_object_geo)
-                            except TypeError:
-                                mb_object_geo = [mb_object_geo]
-
+                            mb_object_geo = flatten_shapely_geometry(mb_object_geo)
                             for mb_geom_struct in mb_object_geo:
                                 mb_geom_struct = unary_union(mb_geom_struct)
                                 xmin, ymin, xmax, ymax = mb_geom_struct.bounds
@@ -2259,11 +2236,7 @@ class CutOut(AppTool):
         """
 
         results = []
-        try:
-            __ = iter(target_geo)
-        except TypeError:
-            target_geo = [target_geo]
-
+        target_geo = flatten_shapely_geometry(target_geo)
         for geo in target_geo:
             if second_geo.intersects(geo):
                 results.append(second_geo.intersection(geo))

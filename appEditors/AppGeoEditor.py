@@ -16,7 +16,7 @@ from PyQt6.QtCore import Qt
 
 # import inspect
 
-from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
+from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage, flatten_shapely_geometry
 from appTool import AppTool
 from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCLabel, FCComboBox, FCTextAreaRich, \
     FCDoubleSpinner, FCButton, FCInputDoubleSpinner, FCTree, NumericalEvalTupleEntry, FCEntry, FCTextEdit, \
@@ -5349,10 +5349,7 @@ class AppGeoEditor(QtCore.QObject):
                 # ####################################################################################################
                 # remove the invalid geometry and also the Points as those are not relevant for the Editor
                 # ####################################################################################################
-                try:
-                    __ = iter(geo_to_edit)
-                except TypeError:
-                    geo_to_edit = [geo_to_edit]
+                geo_to_edit = flatten_shapely_geometry(geo_to_edit)
                 cleaned_geo = [g for g in geo_to_edit if g and not g.is_empty and g.is_valid and g.geom_type != 'Point']
 
                 for shape in cleaned_geo:

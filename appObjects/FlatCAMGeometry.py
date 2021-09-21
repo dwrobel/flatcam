@@ -13,7 +13,7 @@
 from shapely.geometry import MultiLineString, LineString, LinearRing, box
 import shapely.affinity as affinity
 
-from camlib import Geometry, grace
+from camlib import Geometry, flatten_shapely_geometry
 
 from appObjects.FlatCAMObj import *
 
@@ -1529,11 +1529,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         if geo_final.solid_geometry is None:
             geo_final.solid_geometry = []
 
-        try:
-            __ = iter(geo_final.solid_geometry)
-        except TypeError:
-            geo_final.solid_geometry = [geo_final.solid_geometry]
-
+        geo_final.solid_geometry = flatten_shapely_geometry(geo_final.solid_geometry)
         new_solid_geometry = []
         new_options = {}
         new_tools = {}

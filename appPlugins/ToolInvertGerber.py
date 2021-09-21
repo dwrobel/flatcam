@@ -10,6 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, FCLabel, \
     VerticalScrollArea, FCGridLayout, FCFrame
+from camlib import flatten_shapely_geometry
 
 from shapely.geometry import box
 
@@ -151,21 +152,12 @@ class ToolInvertGerber(AppTool):
         xmin, ymin, xmax, ymax = grb_obj.bounds()
 
         grb_box = box(xmin, ymin, xmax, ymax).buffer(margin, resolution=grb_circle_steps, join_style=join_style)
-
-        try:
-            __ = iter(grb_obj.solid_geometry)
-        except TypeError:
-            grb_obj.solid_geometry = list(grb_obj.solid_geometry)
-
         new_solid_geometry = deepcopy(grb_box)
 
+        grb_obj.solid_geometry = flatten_shapely_geometry(grb_obj.solid_geometry)
         for poly in grb_obj.solid_geometry:
             new_solid_geometry = new_solid_geometry.difference(poly)
-
-        try:
-            __ = iter(new_solid_geometry)
-        except TypeError:
-            new_solid_geometry = [new_solid_geometry]
+        new_solid_geometry = flatten_shapely_geometry(new_solid_geometry)
 
         new_options = {}
         for opt in grb_obj.options:
@@ -175,8 +167,8 @@ class ToolInvertGerber(AppTool):
 
         if 0 not in new_apertures:
             new_apertures[0] = {
-                'type': 'REG',
-                'size': 0.0,
+                'type':     'REG',
+                'size':     0.0,
                 'geometry': []
             }
 

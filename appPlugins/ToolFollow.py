@@ -10,6 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, VerticalScrollArea, FCGridLayout, FCFrame
 from appParsers.ParseGerber import Gerber
+from camlib import flatten_shapely_geometry
 
 from copy import deepcopy
 
@@ -304,11 +305,7 @@ class ToolFollow(AppTool, Gerber):
                 if opt_key.find('tools_') == 0:
                     new_data[opt_key] = app_obj.options[opt_key]
 
-            try:
-                __ = iter(followed_obj.follow_geometry)
-            except TypeError:
-                followed_obj.follow_geometry = [followed_obj.follow_geometry]
-
+            followed_obj.follow_geometry = flatten_shapely_geometry(followed_obj.follow_geometry)
             follow_geo = [
                 g for g in followed_obj.follow_geometry if g and not g.is_empty and g.is_valid and
                                                            g.geom_type != 'Point'
@@ -384,11 +381,7 @@ class ToolFollow(AppTool, Gerber):
             self.sel_rect[:] = []
             self.points = []
 
-            try:
-                __ = iter(area_follow)
-            except TypeError:
-                area_follow = [area_follow]
-
+            area_follow = flatten_shapely_geometry(area_follow)
             cleaned_area_follow = [g for g in area_follow if not g.is_empty and g.is_valid and g.geom_type != 'Point']
 
             new_obj.solid_geometry = deepcopy(cleaned_area_follow)

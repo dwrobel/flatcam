@@ -208,11 +208,10 @@ class ToolOptimal(AppTool):
                 total_geo = MultiPolygon(total_geo)
                 total_geo = total_geo.buffer(0)
 
-                try:
-                    __ = iter(total_geo)
-                    geo_len = len(total_geo)
+                if isinstance(total_geo, MultiPolygon):
+                    geo_len = len(total_geo.geoms)
                     geo_len = (geo_len * (geo_len - 1)) / 2
-                except TypeError:
+                else:
                     app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                         _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))

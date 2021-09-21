@@ -1,5 +1,5 @@
 """Paths and patches"""
-
+import numpy as np
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
 from numpy import asarray, concatenate, ones
@@ -45,7 +45,10 @@ def PolygonPath(polygon):
         vals[0] = Path.MOVETO
         return vals
 
-    vertices = concatenate([asarray(this.exterior)] + [asarray(r) for r in this.interiors])
+    # vertices = concatenate([asarray(this.exterior)] + [asarray(r) for r in this.interiors])
+    # codes = concatenate([coding(this.exterior)] + [coding(r) for r in this.interiors])
+
+    vertices = concatenate([np.array(this.exterior.coords)] + [np.array(r.coords) for r in this.interiors])
     codes = concatenate([coding(this.exterior)] + [coding(r) for r in this.interiors])
     return Path(vertices, codes)
 

@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.09.2021
+
+- fixed an error due of missing attribute of PlotCanvasLegacy when using Legacy2D graphic engine
+- solving deprecation warnings issued by Shapely
+- made sure that the Gerber Object geometry is always flattened
+
 19.09.2021
 
 - fixed Extract Plugin not extracting soldermask for aperture macros

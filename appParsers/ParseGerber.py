@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets
-from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
+from camlib import Geometry, arc, arc_angle, ApertureMacro, grace, flatten_shapely_geometry
 
 import numpy as np
 import traceback
@@ -417,8 +417,6 @@ class Gerber(Geometry):
         # Current coordinates
         current_x = 0
         current_y = 0
-        previous_x = 0
-        previous_y = 0
 
         current_d = None
 
@@ -1630,9 +1628,12 @@ class Gerber(Geometry):
                         self.tools[last_path_aperture]['geometry'] = []
                     self.tools[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
+            # ##########################################################################################################
+            #   Creating the FINAL GEOMETRY
+            # ##########################################################################################################
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
-            self.follow_geometry = follow_buffer
+            self.follow_geometry = flatten_shapely_geometry(follow_buffer)
 
             # this treats the case when we are storing geometry as solids
             try:
@@ -1705,17 +1706,11 @@ class Gerber(Geometry):
                         candidate_geo.append(self.solid_geometry.buffer(-0.0000001))
                     self.solid_geometry = candidate_geo
 
-                # try:
-                #     self.solid_geometry = self.solid_geometry.union(new_poly)
-                # except Exception as e:
-                #     # in case in the new_poly are some self intersections try to avoid making union with them
-                #     for poly in new_poly:
-                #         try:
-                #             self.solid_geometry = self.solid_geometry.union(poly)
-                #         except Exception:
-                #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
+
+            # flatten the solid geometry
+            self.solid_geometry = flatten_shapely_geometry(self.solid_geometry)
 
             if self.app.defaults['gerber_clean_apertures']:
                 # clean the Gerber file of apertures with no geometry
@@ -1995,13 +1990,7 @@ class Gerber(Geometry):
                 self.solid_geometry = [self.solid_geometry, geos]
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
-        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-
-        try:
-            __ = iter(self.solid_geometry)
-        except TypeError:
-            self.solid_geometry = [self.solid_geometry]
-
+        self.solid_geometry = flatten_shapely_geometry(self.solid_geometry)
         if 0 not in self.tools:
             self.tools[0] = {
                 'type': 'REG',
@@ -2530,12 +2519,7 @@ class Gerber(Geometry):
                     except AttributeError:
                         return obj
 
-            res = buffer_geom(self.solid_geometry)
-            try:
-                __ = iter(res)
-                self.solid_geometry = res
-            except TypeError:
-                self.solid_geometry = [res]
+            self.solid_geometry = flatten_shapely_geometry(buffer_geom(self.solid_geometry))
 
             # we need to buffer the geometry stored in the Gerber apertures, too
             try:

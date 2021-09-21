@@ -1026,10 +1026,7 @@ class ToolIsolation(AppTool, Gerber):
         total_geo = MultiPolygon(total_geo)
         total_geo = total_geo.buffer(0)
 
-        try:
-            __ = iter(total_geo)
-            geo_len = len(total_geo)
-        except TypeError:
+        if isinstance(total_geo, Polygon):
             msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))
 
@@ -1165,11 +1162,10 @@ class ToolIsolation(AppTool, Gerber):
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
 
-                    try:
-                        __ = iter(total_geo)
-                        geo_len = len(total_geo)
+                    if isinstance(total_geo, MultiPolygon):
+                        geo_len = len(total_geo.geoms)
                         geo_len = (geo_len * (geo_len - 1)) / 2
-                    except TypeError:
+                    elif isinstance(total_geo, Polygon):
                         msg = _("The Gerber object has one Polygon as geometry.\n"
                                 "There are no distances between geometry elements to be found.")
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % msg)

@@ -17,7 +17,7 @@ from vispy.geometry import Rect
 from copy import copy, deepcopy
 import logging
 
-from camlib import distance, arc, three_point_circle
+from camlib import distance, arc, three_point_circle, flatten_shapely_geometry
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, EvalEntry2, \
     FCInputDoubleSpinner, FCButton, OptionalInputSection, FCCheckBox, NumericalEvalTupleEntry, FCLabel, FCTextEdit, \
     VerticalScrollArea, FCGridLayout
@@ -4886,13 +4886,9 @@ class AppGerberEditor(QtCore.QObject):
             new_poly = MultiPolygon(poly_buffer)
             new_poly = new_poly.buffer(0.00000001)
             new_poly = new_poly.buffer(-0.00000001)
-
-            try:
-                __ = iter(new_poly)
-            except TypeError:
-                new_poly = [new_poly]
-
+            new_poly = flatten_shapely_geometry(new_poly)
             grb_obj.solid_geometry = deepcopy(new_poly)
+
             grb_obj.follow_geometry = deepcopy(follow_buffer)
 
             for k, v in self.gerber_obj_options.items():

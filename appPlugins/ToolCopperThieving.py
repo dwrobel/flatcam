@@ -7,7 +7,7 @@
 
 from PyQt6 import QtWidgets, QtCore, QtGui
 
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox, FCLabel, FCCheckBox, \
     VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
@@ -694,11 +694,7 @@ class ToolCopperThieving(AppTool):
                 geo_n = working_obj.solid_geometry
 
                 if working_obj.kind == 'geometry':
-                    try:
-                        __ = iter(geo_n)
-                    except Exception as e:
-                        log.error("ToolCopperFIll.copper_thieving() 'box' --> %s" % str(e))
-                        geo_n = [geo_n]
+                    geo_n = flatten_shapely_geometry(geo_n)
 
                     geo_buff_list = []
                     for poly in geo_n:
@@ -789,11 +785,7 @@ class ToolCopperThieving(AppTool):
                 dy = bounding_box.centroid.y - thieving_box_geo.centroid.y
 
                 thieving_box_geo = affinity.translate(thieving_box_geo, xoff=dx, yoff=dy)
-
-                try:
-                    _it = iter(thieving_box_geo)
-                except TypeError:
-                    thieving_box_geo = [thieving_box_geo]
+                thieving_box_geo = flatten_shapely_geometry(thieving_box_geo)
 
                 thieving_geo = []
                 for dot_geo in thieving_box_geo:

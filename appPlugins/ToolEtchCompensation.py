@@ -10,6 +10,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry, FCEntry, \
     VerticalScrollArea, FCGridLayout, FCLabel, FCFrame
+from camlib import flatten_shapely_geometry
 
 from shapely.ops import unary_union
 
@@ -225,11 +226,7 @@ class ToolEtchCompensation(AppTool):
             # no need to do anything for zero value offset isn't it? compensating with zero is the same as the original
             return
 
-        try:
-            __ = iter(grb_obj.solid_geometry)
-        except TypeError:
-            grb_obj.solid_geometry = [grb_obj.solid_geometry]
-
+        grb_obj.solid_geometry = flatten_shapely_geometry(grb_obj.solid_geometry)
         new_solid_geometry = []
 
         for poly in grb_obj.solid_geometry:

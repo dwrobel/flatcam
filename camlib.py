@@ -22,7 +22,7 @@ from rtree import index as rtindex
 from lxml import etree as ET
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, Point, LinearRing
+from shapely.geometry import Polygon, Point, LinearRing, MultiPoint
 
 from shapely.geometry import box as shply_box
 from shapely.ops import unary_union, substring, linemerge
@@ -2642,11 +2642,7 @@ class Geometry(object):
                     self.el_count = 0
 
                     res = buffer_geom(self.tools[tool]['solid_geometry'])
-                    try:
-                        __ = iter(res)
-                        self.tools[tool]['solid_geometry'] = res
-                    except TypeError:
-                        self.tools[tool]['solid_geometry'] = [res]
+                    self.tools[tool]['solid_geometry'] = flatten_shapely_geometry(res)
 
             # variables to display the percentage of work done
             self.geo_len = 0
@@ -8093,6 +8089,28 @@ class CNCjob(Geometry):
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
+
+
+def flatten_shapely_geometry(geometry):
+    """
+
+    :param geometry:
+    :type geometry:
+    :return:
+    :rtype:
+    """
+    flat_list = []
+    try:
+        if isinstance(geometry, (MultiLineString, MultiPolygon, MultiPoint)):
+            for geo in geometry.geoms:
+                flat_list.append(geo)
+        elif isinstance(geometry, list):
+            for geo_el in geometry:
+                flat_list += flatten_shapely_geometry(geo_el)
+    except TypeError:
+        flat_list.append(geometry)
+
+    return flat_list
 
 
 def get_bounds(geometry_list):

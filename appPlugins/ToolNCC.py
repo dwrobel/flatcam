@@ -13,7 +13,7 @@ from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, F
     VerticalScrollArea, FCGridLayout, FCFrame
 from appParsers.ParseGerber import Gerber
 
-from camlib import grace
+from camlib import grace, flatten_shapely_geometry
 
 from copy import deepcopy
 
@@ -1010,10 +1010,7 @@ class NonCopperClear(AppTool, Gerber):
         total_geo = MultiPolygon(total_geo)
         total_geo = total_geo.buffer(0)
 
-        try:
-            __ = iter(total_geo)
-            geo_len = len(total_geo)
-        except TypeError:
+        if isinstance(total_geo, Polygon):
             msg = ('[ERROR_NOTCL] %s' % _("The Gerber object has one Polygon as geometry.\n"
                                           "There are no distances between geometry elements to be found."))
 
@@ -1153,11 +1150,10 @@ class NonCopperClear(AppTool, Gerber):
                     total_geo = MultiPolygon(total_geo)
                     total_geo = total_geo.buffer(0)
 
-                    try:
-                        __ = iter(total_geo)
-                        geo_len = len(total_geo)
+                    if isinstance(total_geo, MultiPolygon):
+                        geo_len = len(total_geo.geoms)
                         geo_len = (geo_len * (geo_len - 1)) / 2
-                    except TypeError:
+                    elif isinstance(total_geo, Polygon):
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("The Gerber object has one Polygon as geometry.\n"
                                               "There are no distances between geometry elements to be found."))
@@ -1949,26 +1945,19 @@ class NonCopperClear(AppTool, Gerber):
                 return None
         elif ncc_select == 1:   # _("Area Selection")
             env_obj = unary_union(self.sel_rect)
-            try:
-                __ = iter(env_obj)
-            except Exception:
-                env_obj = [env_obj]
+            env_obj = flatten_shapely_geometry(env_obj)
         elif ncc_select == 2:   # _("Reference Object")
             if box_obj is None:
                 return None, None
 
             box_geo = box_obj.solid_geometry
             if box_kind == 'geometry':
-                try:
-                    __ = iter(box_geo)
-                    env_obj = box_geo
-                except Exception:
-                    env_obj = [box_geo]
-
+                box_geo = flatten_shapely_geometry(box_geo)
             elif box_kind == 'gerber':
                 box_geo = unary_union(box_obj.solid_geometry).convex_hull
                 ncc_geo = unary_union(ncc_obj.solid_geometry).convex_hull
                 env_obj = ncc_geo.intersection(box_geo)
+                env_obj = flatten_shapely_geometry(env_obj)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
@@ -3001,11 +2990,7 @@ class NonCopperClear(AppTool, Gerber):
 
         elif ncc_select == 1:   # area
             geo_n = unary_union(self.sel_rect)
-            try:
-                __ = iter(geo_n)
-            except Exception as e:
-                self.app.log.error("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
-                geo_n = [geo_n]
+            geo_n = flatten_shapely_geometry(geo_n)
 
             geo_buff_list = []
             for poly in geo_n:
@@ -3019,13 +3004,8 @@ class NonCopperClear(AppTool, Gerber):
         elif ncc_select == 2:   # Reference Object
             geo_n = ncc_sel_obj.solid_geometry
             if ncc_sel_obj.kind == 'geometry':
-                try:
-                    __ = iter(geo_n)
-                except Exception as e:
-                    self.app.log.error("NonCopperClear.clear_copper() 'Reference Object' --> %s" % str(e))
-                    geo_n = [geo_n]
-
                 geo_buff_list = []
+                geo_n = flatten_shapely_geometry(geo_n)
                 for poly in geo_n:
                     if self.app.abort_flag:
                         # graceful abort requested by the user

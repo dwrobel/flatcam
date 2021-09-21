@@ -434,6 +434,9 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.canvas.draw()
 
+    def on_update_text_hud(self, dx=None, dy=None, x=None, y=None):
+        self.text_hud.on_update_text_hud(dx=dx, dy=dy, x=x, y=y)
+
     class Thud(QtCore.QObject):
         text_changed = QtCore.pyqtSignal(str)
 
