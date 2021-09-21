@@ -29,6 +29,7 @@ MATPLOTLIB_AVAILABLE = True
 try:
     # Prevent conflict with Qt5 and above.
     from matplotlib import use as mpl_use
+
     mpl_use("Qt5Agg")
     from matplotlib.figure import Figure
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -37,6 +38,7 @@ except ImportError:
 
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import AnchoredText
+
 # from matplotlib.widgets import Cursor
 
 fcTranslate.apply_language('strings')
@@ -211,16 +213,16 @@ class PlotCanvasLegacy(QtCore.QObject):
                 'C10': (28, 40),
 
                 # American paper sizes
-                'LETTER': (8.5*25.4, 11*25.4),
-                'LEGAL': (8.5*25.4, 14*25.4),
-                'ELEVENSEVENTEEN': (11*25.4, 17*25.4),
+                'LETTER': (8.5 * 25.4, 11 * 25.4),
+                'LEGAL': (8.5 * 25.4, 14 * 25.4),
+                'ELEVENSEVENTEEN': (11 * 25.4, 17 * 25.4),
 
                 # From https://en.wikipedia.org/wiki/Paper_size
-                'JUNIOR_LEGAL': (5*25.4, 8*25.4),
-                'HALF_LETTER': (5.5*25.4, 8*25.4),
-                'GOV_LETTER': (8*25.4, 10.5*25.4),
-                'GOV_LEGAL': (8.5*25.4, 13*25.4),
-                'LEDGER': (17*25.4, 11*25.4),
+                'JUNIOR_LEGAL': (5 * 25.4, 8 * 25.4),
+                'HALF_LETTER': (5.5 * 25.4, 8 * 25.4),
+                'GOV_LETTER': (8 * 25.4, 10.5 * 25.4),
+                'GOV_LEGAL': (8.5 * 25.4, 13 * 25.4),
+                'LEDGER': (17 * 25.4, 11 * 25.4),
             }
         )
 
@@ -348,7 +350,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                     """)
 
         # Attach to parent
-        self.native = self.canvas   # for API compatibility with 3D plotcanvas
+        self.native = self.canvas  # for API compatibility with 3D plotcanvas
         # self.container.attach(self.canvas, 0, 0, 600, 400)
         # self.container.addWidget(self.canvas)  # Qt
 
@@ -554,7 +556,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             if self.app.defaults['units'].upper() == 'MM':
                 dims = self.pagesize_dict[workspace_size]
             else:
-                dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
+                dims = (self.pagesize_dict[workspace_size][0] / 25.4, self.pagesize_dict[workspace_size][1] / 25.4)
         except Exception as e:
             log.error("PlotCanvasLegacy.draw_workspace() --> %s" % str(e))
             return
@@ -1123,7 +1125,8 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.draw_cursor(x_pos=x, y_pos=y)
         # self.canvas.blit(self.axes.bbox)
 
-    def translate_coords(self, position):
+    @staticmethod
+    def translate_coords(position):
         """
         This does not do much. It's just for code compatibility
 
@@ -1254,6 +1257,7 @@ class ShapeCollectionLegacy:
     hold the collection of shapes into a dict self._shapes.
     This handles the shapes redraw on canvas.
     """
+
     def __init__(self, obj, app, name=None, annotation_job=None, linewidth=1):
         """
 
@@ -1301,19 +1305,19 @@ class ShapeCollectionLegacy:
         """
         This function will add shapes to the shape collection
 
-        :param shape: the Shapely shape to be added to the shape collection
-        :param color: edge color of the shape, hex value
-        :param face_color: the body color of the shape, hex value
-        :param alpha: level of transparency of the shape [0.0 ... 1.0]; Float
-        :param visible: if True will allow the shapes to be added
-        :param update: not used; just for compatibility with VIsPy canvas
-        :param layer: just for compatibility with VIsPy canvas
-        :param tolerance: just for compatibility with VIsPy canvas
-        :param obj: not used
-        :param gcode_parsed: not used; just for compatibility with VIsPy canvas
-        :param tool_tolerance: just for compatibility with VIsPy canvas
-        :param tooldia:
-        :param linewidth: the width of the line
+        :param shape:           the Shapely shape to be added to the shape collection
+        :param color:           edge color of the shape, hex value
+        :param face_color:      the body color of the shape, hex value
+        :param alpha:           level of transparency of the shape [0.0 ... 1.0]; Float
+        :param visible:         if True will allow the shapes to be added
+        :param update:          not used; just for compatibility with VIsPy canvas
+        :param layer:           just for compatibility with VIsPy canvas
+        :param tolerance:       just for compatibility with VIsPy canvas
+        :param obj:             not used
+        :param gcode_parsed:    not used; just for compatibility with VIsPy canvas
+        :param tool_tolerance:  just for compatibility with VIsPy canvas
+        :param tooldia:         tool diameter
+        :param linewidth:       the width of the line
         :return:
         """
         self._color = color if color is not None else "#006E20"
@@ -1428,7 +1432,6 @@ class ShapeCollectionLegacy:
         # if obj_type == 'utility':
         #     self.axes.patches.clear()
         self.axes.patches.clear()
-
         for element in local_shapes:
             if local_shapes[element]['visible'] is True:
                 if obj_type == 'excellon':
@@ -1492,15 +1495,17 @@ class ShapeCollectionLegacy:
                         if update_colors:
                             gerber_fill_color = update_colors[0]
                             gerber_outline_color = update_colors[1]
+                            gerber_alpha = int(gerber_fill_color[-2:], 16) / 255
                         else:
                             gerber_fill_color = local_shapes[element]['face_color']
                             gerber_outline_color = local_shapes[element]['color']
+                            gerber_alpha = local_shapes[element]['alpha']
 
                         try:
                             patch = PolygonPatch(local_shapes[element]['shape'],
                                                  facecolor=gerber_fill_color,
                                                  edgecolor=gerber_outline_color,
-                                                 alpha=local_shapes[element]['alpha'],
+                                                 alpha=gerber_alpha,
                                                  zorder=2,
                                                  linewidth=local_shapes[element]['linewidth'])
                             self.axes.add_patch(patch)

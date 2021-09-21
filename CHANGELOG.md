@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - fixed an error due of missing attribute of PlotCanvasLegacy when using Legacy2D graphic engine
 - solving deprecation warnings issued by Shapely
 - made sure that the Gerber Object geometry is always flattened
+- in Legacy2D graphic engine fixed setting the Opacity functionality
+- fixed a recent issue where Gerber files made out of single polygons were not processed
 
 19.09.2021
 
