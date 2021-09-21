@@ -178,19 +178,20 @@ def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
         log.error("ParseSVG.path2shapely() MString --> %s" % str(e))
         return None
 
-    if len(rings) > 0:
-        if len(rings) == 1 and not isinstance(rings, MultiLineString):
+    rings_len = len(rings.geoms)
+    if rings_len > 0:
+        if rings_len == 1 and not isinstance(rings, MultiLineString):
             # Polygons are closed and require more than 2 points
-            if Point(rings[0][0]).almost_equals(Point(rings[0][-1])) and len(rings[0]) > 2:
-                geo_element = Polygon(rings[0])
+            if Point(rings.geoms[0][0]).almost_equals(Point(rings.geoms[0][-1])) and len(rings.geoms[0]) > 2:
+                geo_element = Polygon(rings.geoms[0])
             else:
-                geo_element = LineString(rings[0])
+                geo_element = LineString(rings.geoms[0])
         else:
             try:
-                geo_element = Polygon(rings[0], rings[1:])
+                geo_element = Polygon(rings.geoms[0], rings.geoms[1:])
             except Exception:
                 coords = []
-                for line in rings:
+                for line in rings.geoms:
                     coords.append(line.coords[0])
                     coords.append(line.coords[1])
                 try:

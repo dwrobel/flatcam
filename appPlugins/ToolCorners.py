@@ -11,6 +11,8 @@ from appTool import AppTool
 from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton, RadioSet, FCLabel, \
     VerticalScrollArea, FCGridLayout, FCFrame
+from camlib import flatten_shapely_geometry
+
 from shapely.geometry import MultiPolygon, LineString, Point
 from shapely.ops import unary_union
 
@@ -469,6 +471,8 @@ class ToolCorners(AppTool):
 
         geo_buff_list = MultiPolygon(geo_buff_list)
         geo_buff_list = geo_buff_list.buffer(0)
+        geo_buff_list = flatten_shapely_geometry(geo_buff_list)
+
         try:
             for poly in geo_buff_list:
                 s_list.append(poly)
@@ -487,8 +491,8 @@ class ToolCorners(AppTool):
             grb_obj.multigeo = False
             grb_obj.follow = deepcopy(g_obj.follow)
             grb_obj.tools = new_apertures
-            grb_obj.solid_geometry = unary_union(s_list)
-            grb_obj.follow_geometry = deepcopy(g_obj.follow_geometry) + geo_list
+            grb_obj.solid_geometry = flatten_shapely_geometry(unary_union(s_list))
+            grb_obj.follow_geometry = flatten_shapely_geometry(g_obj.follow_geometry + geo_list)
 
             grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=outname, filename=None, local_use=grb_obj,
                                                                    use_thread=False)

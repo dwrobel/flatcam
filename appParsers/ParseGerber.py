@@ -1995,13 +1995,13 @@ class Gerber(Geometry):
         self.solid_geometry = flatten_shapely_geometry(self.solid_geometry)
         if 0 not in self.tools:
             self.tools[0] = {
-                'type': 'REG',
-                'size': 0.0,
-                'geometry': []
+                'type':         'REG',
+                'size':         0.0,
+                'geometry':     []
             }
 
         for pol in self.solid_geometry:
-            new_el = {'solid': pol, 'follow': pol.exterior}
+            new_el = {'solid': pol, 'follow': LineString(pol.exterior.coords)}
             self.tools[0]['geometry'].append(new_el)
 
     def import_dxf_as_gerber(self, filename, units='MM'):

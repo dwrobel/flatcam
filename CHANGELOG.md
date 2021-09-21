@@ -15,6 +15,10 @@ CHANGELOG for FlatCAM beta
 - in Legacy2D graphic engine fixed setting the Opacity functionality
 - fixed a recent issue where Gerber files made out of single polygons were not processed
 - more Shapely deprecations fixes
+- fixed some leftovers from Qt6 port
+- some code optimizations in the Gerber Editor
+- Corners Plugin now generate Gerber objects with the solid geometry flattened
+- fixed issue where Gerber objects created from importing SVG geometries could not be edited
 
 19.09.2021
 

@@ -2741,6 +2741,8 @@ class ImportEditorGrb(QtCore.QObject, DrawTool):
         self.storage = self.draw_app.storage_dict
         # self.selected = self.draw_app.selected
 
+        self.event_is_dragging = False
+
         # here we store all shapes that were selected; each item in the list is a dict
         '''
         {
@@ -4141,6 +4143,7 @@ class AppGerberEditor(QtCore.QObject):
                 rect = Rect(xmin, ymin, xmax, ymax)
                 rect.left, rect.right = xmin, xmax
                 rect.bottom, rect.top = ymin, ymax
+
                 # Lock updates in other threads
                 self.shapes.lock_updates()
 
@@ -4553,23 +4556,25 @@ class AppGerberEditor(QtCore.QObject):
             self.app.log.error("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
 
         # apply the conversion factor on the obj.tools
-        conv_apertures = deepcopy(self.gerber_obj.tools)
         for apcode in self.gerber_obj.tools:
-            for key in self.gerber_obj.tools[apcode]:
-                if key == 'width':
-                    conv_apertures[apcode]['width'] = self.gerber_obj.tools[apcode]['width'] * \
-                                                      self.conversion_factor
-                elif key == 'height':
-                    conv_apertures[apcode]['height'] = self.gerber_obj.tools[apcode]['height'] * \
-                                                       self.conversion_factor
-                elif key == 'diam':
-                    conv_apertures[apcode]['diam'] = self.gerber_obj.tools[apcode]['diam'] * self.conversion_factor
-                elif key == 'size':
-                    conv_apertures[apcode]['size'] = self.gerber_obj.tools[apcode]['size'] * self.conversion_factor
-                else:
-                    conv_apertures[apcode][key] = self.gerber_obj.tools[apcode][key]
+            object_keys = list(self.gerber_obj.tools[apcode].keys())
 
-        self.gerber_obj.tools = conv_apertures
+            for key in object_keys:
+                if key == 'width':
+                    self.gerber_obj.tools[apcode]['width'] = self.gerber_obj.tools[apcode]['width'] * \
+                                                             self.conversion_factor
+                elif key == 'height':
+                    self.gerber_obj.tools[apcode]['height'] = self.gerber_obj.tools[apcode]['height'] * \
+                                                              self.conversion_factor
+                elif key == 'diam':
+                    self.gerber_obj.tools[apcode]['diam'] = self.gerber_obj.tools[apcode]['diam'] * \
+                                                            self.conversion_factor
+                elif key == 'size':
+                    self.gerber_obj.tools[apcode]['size'] = self.gerber_obj.tools[apcode]['size'] * \
+                                                            self.conversion_factor
+                else:
+                    self.gerber_obj.tools[apcode][key] = self.gerber_obj.tools[apcode][key]
+
         self.gerber_obj.units = app_units
 
         # # and then add it to the storage elements (each storage elements is a member of a list
@@ -4648,7 +4653,7 @@ class AppGerberEditor(QtCore.QObject):
                             for elem in app_obj.gerber_obj.tools[aper_id]['geometry']:
                                 if 'clear' in elem:
                                     global_clear_geo.append(elem['clear'])
-                    self.app.log.warning("Found %d clear polygons." % len(global_clear_geo))
+                    app_obj.app.log.warning("Found %d clear polygons." % len(global_clear_geo))
 
                     if global_clear_geo:
                         global_clear_geo = unary_union(global_clear_geo)
@@ -4707,13 +4712,16 @@ class AppGerberEditor(QtCore.QObject):
                                     new_elem['clear'] = elem['clear']
                                 if 'follow' in elem:
                                     new_elem['follow'] = elem['follow']
-                                temp_solid_geometry.append(deepcopy(new_elem))
+                                temp_solid_geometry.append(new_elem)
 
-                            app_obj.gerber_obj.tools[ap_code]['geometry'] = deepcopy(temp_solid_geometry)
+                            app_obj.gerber_obj.tools[ap_code]['geometry'] = temp_solid_geometry
 
-                    self.app.log.warning(
+                    app_obj.app.log.warning(
                         "Polygon difference done for %d apertures." % len(app_obj.gerber_obj.tools))
 
+                    # #################################################################################################
+                    # Multi-Processing
+                    # #################################################################################################
                     try:
                         # Loading the Geometry into Editor Storage
                         for ap_code, ap_dict in app_obj.gerber_obj.tools.items():
@@ -4721,18 +4729,23 @@ class AppGerberEditor(QtCore.QObject):
                                 app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_code, ap_dict))
                             )
                     except Exception as ee:
-                        self.app.log.error(
+                        app_obj.app.log.error(
                             "AppGerberEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
                         traceback.print_exc()
 
                     output = []
-                    for p in app_obj.results:
-                        output.append(p.get())
+                    try:
+                        for p in app_obj.results:
+                            output.append(p.get())
+                    except Exception as err:
+                        app_obj.app.log.error(
+                            "AppGerberEditor.edit_fcgerber.Exxecute_Edit.worker_job(). "
+                            "Multiprocessing error. %s" % str(err))
 
                     for elem in output:
                         app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
-
                     app_obj.mp_finished.emit(output)
+                    # #################################################################################################
 
             def run(self):
                 self.worker_job(self.app)
@@ -4789,7 +4802,7 @@ class AppGerberEditor(QtCore.QObject):
         try:
             self.plot_thread.stop()
         except Exception as e:
-            self.app.log.error("AppGerberEditor.update_fcgerber() --> %s" % str(e))
+            self.app.log.warning("AppGerberEditor.update_fcgerber() Timer malfunctioned --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -4883,13 +4896,15 @@ class AppGerberEditor(QtCore.QObject):
 
             grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
 
+            follow_buffer = flatten_shapely_geometry(follow_buffer)
+
             new_poly = MultiPolygon(poly_buffer)
             new_poly = new_poly.buffer(0.00000001)
             new_poly = new_poly.buffer(-0.00000001)
             new_poly = flatten_shapely_geometry(new_poly)
             grb_obj.solid_geometry = deepcopy(new_poly)
 
-            grb_obj.follow_geometry = deepcopy(follow_buffer)
+            grb_obj.follow_geometry = follow_buffer
 
             for k, v in self.gerber_obj_options.items():
                 if k == 'name':

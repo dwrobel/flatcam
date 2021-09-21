@@ -1814,7 +1814,7 @@ class App(QtCore.QObject):
             "global_grid_lines", "global_grid_snap", "global_axis", "global_workspace", "global_workspaceT",
             "global_workspace_orientation", "global_hud"
         ]:
-            self.on_properties_tab_click(index=None)
+            self.on_properties_tab_click()
 
         # TODO handle changing the units in the Preferences
         # if key_changed == "units":
@@ -1962,7 +1962,8 @@ class App(QtCore.QObject):
         self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menu_plugins)
 
         self.corners_tool = ToolCorners(self)
-        self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'), pos=self.ui.menu_plugins)
+        self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'),
+                                  pos=self.ui.menu_plugins)
 
         self.etch_tool = ToolEtchCompensation(self)
         self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etch_32.png'), pos=self.ui.menu_plugins)
@@ -2031,8 +2032,8 @@ class App(QtCore.QObject):
         self.remove_tools()
 
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
-        self.ui.menu_plugins_shell = self.ui.menu_plugins.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
-                                                           '&Command Line\tS')
+        self.ui.menu_plugins_shell = self.ui.menu_plugins.addAction(
+            QtGui.QIcon(self.resource_location + '/shell16.png'), '&Command Line\tS')
         self.ui.menu_plugins_shell.triggered.connect(self.ui.toggle_shell_ui)
 
         # third install all of them
@@ -2358,44 +2359,44 @@ class App(QtCore.QObject):
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
             self.ui.toolbarfile.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+            self.ui.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.ui.toolbarfile)
 
             self.ui.toolbaredit = QtWidgets.QToolBar('Edit Toolbar')
             self.ui.toolbaredit.setObjectName('Edit_TB')
             self.ui.toolbaredit.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbaredit)
+            self.ui.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.ui.toolbaredit)
 
             self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
             self.ui.toolbarshell.setObjectName('Shell_TB')
             self.ui.toolbarshell.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
+            self.ui.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.ui.toolbarshell)
 
             self.ui.toolbarplugins = QtWidgets.QToolBar('Plugin Toolbar')
             self.ui.toolbarplugins.setObjectName('Plugins_TB')
             self.ui.toolbarplugins.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarplugins)
+            self.ui.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.ui.toolbarplugins)
 
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.geo_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+            self.ui.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.ui.geo_edit_toolbar)
 
             self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
             self.ui.toolbarview.setObjectName('View_TB')
             self.ui.toolbarview.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
+            self.ui.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.ui.toolbarview)
 
-            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
+            self.ui.addToolBarBreak(area=Qt.ToolBarArea.RightToolBarArea)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
             self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.ui.grb_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
+            self.ui.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.ui.grb_edit_toolbar)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
             self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
             self.ui.exc_edit_toolbar.setStyleSheet("QToolBar{spacing:0px;}")
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.exc_edit_toolbar)
+            self.ui.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.ui.exc_edit_toolbar)
         else:
             # ## TOOLBAR INSTALLATION # ##
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
@@ -5455,8 +5456,8 @@ class App(QtCore.QObject):
                     location = (x1, y1)
                 else:
                     # center
-                    cx = x0 + abs((x1 - x0 ) / 2)
-                    cy = y0 + abs((y1 - y0 ) / 2)
+                    cx = x0 + abs((x1 - x0) / 2)
+                    cy = y0 + abs((y1 - y0) / 2)
                     location = (cx, cy)
 
                 for obj in obj_list:
@@ -8215,7 +8216,7 @@ class App(QtCore.QObject):
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action_proj = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
-                                              (_("Clear Recent projects")), self)
+                                          (_("Clear Recent projects")), self)
         clear_action_proj.triggered.connect(reset_recent_projects)
         self.ui.recent_projects.addSeparator()
         self.ui.recent_projects.addAction(clear_action_proj)
@@ -8239,7 +8240,7 @@ class App(QtCore.QObject):
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action = QtGui.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
-                                         (_("Clear Recent files")), self)
+                                     (_("Clear Recent files")), self)
         clear_action.triggered.connect(reset_recent_files)
         self.ui.recent.addSeparator()
         self.ui.recent.addAction(clear_action)
@@ -8251,7 +8252,7 @@ class App(QtCore.QObject):
 
         self.log.debug("Recent items list has been populated.")
 
-    def on_properties_tab_click(self, index):
+    def on_properties_tab_click(self):
         if self.ui.properties_scroll_area.widget().objectName() == 'default_properties':
             self.setup_default_properties_tab()
 
@@ -8428,10 +8429,10 @@ class App(QtCore.QObject):
         :param container:   QT Widget where to install the canvas
         :return:            None
         """
-        if container:
-            plot_container = container
-        else:
-            plot_container = self.ui.right_layout
+        # if container:
+        #     plot_container = container
+        # else:
+        #     plot_container = self.ui.right_layout
 
         modifier = QtWidgets.QApplication.queryKeyboardModifiers()
         if modifier == QtCore.Qt.KeyboardModifier.ControlModifier:
@@ -8487,7 +8488,8 @@ class App(QtCore.QObject):
 
         return plotcanvas
 
-    def on_plotcanvas_add(self, plotcanvas_obj, container):
+    @staticmethod
+    def on_plotcanvas_add(plotcanvas_obj, container):
         """
 
         :param plotcanvas_obj:  the class that setup the canvas
