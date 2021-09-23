@@ -1,4 +1,4 @@
-FlatCAM BETA (c) 2019 - by Marius Stanciu
+latCAM BETA (c) 2019 - by Marius Stanciu
 Based on FlatCAM: 
 2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
 =================================================
@@ -6,6 +6,10 @@ Based on FlatCAM:
 CHANGELOG for FlatCAM beta
 
 =================================================
+
+24.09.2021
+
+- in Extract Plugin some minor UI changes
 
 21.09.2021
 

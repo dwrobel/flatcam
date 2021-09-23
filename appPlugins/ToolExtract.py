@@ -877,6 +877,11 @@ class ToolExtract(AppTool):
 
             self.ui.ring_label.show()
             self.ui.ring_frame.show()
+            self.ui.circular_ring_entry.setEnabled(self.ui.circular_cb.get_value())
+            self.ui.oblong_ring_entry.setEnabled(self.ui.oblong_cb.get_value())
+            self.ui.square_ring_entry.setEnabled(self.ui.square_cb.get_value())
+            self.ui.rectangular_ring_entry.setEnabled(self.ui.rectangular_cb.get_value())
+            self.ui.other_ring_entry.setEnabled(self.ui.other_cb.get_value())
 
             self.ui.prop_label.hide()
             self.ui.prop_frame.hide()
