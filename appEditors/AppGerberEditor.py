@@ -917,7 +917,7 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
                     except KeyError:
                         self.draw_app.on_aperture_add(apcode=0)
                         current_storage = self.draw_app.storage_dict[0]['geometry']
-                new_el = {'solid': geo, 'follow': geo.exterior}
+                new_el = {'solid': geo, 'follow': LineString(geo.exterior)}
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
         else:
             # clean-up the geo
@@ -930,7 +930,7 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
                     self.draw_app.on_aperture_add(apcode=0)
                     current_storage = self.draw_app.storage_dict[0]['geometry']
 
-            new_el = {'solid': fused_geo, 'follow': fused_geo.exterior}
+            new_el = {'solid': fused_geo, 'follow': LineString(fused_geo.exterior)}
             self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
 
         self.draw_app.delete_selected()
@@ -3847,7 +3847,7 @@ class AppGerberEditor(QtCore.QObject):
                 deleted_apcode_list = []
                 for index in self.ui.apertures_table.selectionModel().selectedRows():
                     row = index.row()
-                    deleted_apcode_list.append(self.ui.apertures_table.item(row, 1).text())
+                    deleted_apcode_list.append(int(self.ui.apertures_table.item(row, 1).text()))
         except Exception as exc:
             self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Select an aperture in Aperture Table -->"), str(exc)))
             return
@@ -3863,7 +3863,10 @@ class AppGerberEditor(QtCore.QObject):
                         self.tid2apcode.pop(deleted_tool, None)
 
                 self.oldapcode_newapcode.pop(deleted_aperture, None)
-                self.app.inform.emit('[success] %s: %s' % (_("Deleted aperture with code"), str(deleted_aperture)))
+                if deleted_aperture not in self.storage_dict:
+                    self.app.inform.emit('[success] %s: %s' % (_("Deleted aperture with code"), str(deleted_aperture)))
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed."), str(deleted_aperture)))
 
         self.plot_all()
         self.build_ui()
