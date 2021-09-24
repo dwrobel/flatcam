@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 24.09.2021
 
 - in Extract Plugin some minor UI changes
+- in Film Plugin added new parameters and improvements: now the negative film can have a box that is convex and it is no longer limited to square shapes. Also, if the box object has only one geometric element (an outline) then that one will be the final shape of the negative
 
 21.09.2021
 

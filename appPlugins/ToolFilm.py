@@ -14,7 +14,7 @@ from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
 
 from copy import deepcopy
 import logging
-from shapely.geometry import Polygon, MultiPolygon, Point
+from shapely.geometry import Polygon, MultiPolygon, Point, LineString, LinearRing
 import shapely.affinity as affinity
 from shapely.ops import unary_union
 
@@ -210,6 +210,9 @@ class Film(AppTool):
         self.ui.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
 
         self.ui.png_dpi_spinner.set_value(self.app.defaults["tools_film_png_dpi"])
+
+        self.ui.convex_box_cb.set_value(self.app.defaults["tools_film_shape"])
+        self.ui.rounded_cb.set_value(self.app.defaults["tools_film_rounded"])
 
         obj = self.app.collection.get_active()
         if obj:
@@ -483,6 +486,9 @@ class Film(AppTool):
     def generate_negative_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_negative_film() started ...")
 
+        use_convex_hull = self.ui.convex_box_cb.get_value()
+        rounded_box = self.ui.rounded_cb.get_value()
+
         scale_factor_x = 1
         scale_factor_y = 1
         skew_factor_x = None
@@ -546,7 +552,9 @@ class Film(AppTool):
                                  scale_reference=scale_reference,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                  skew_reference=skew_reference,
-                                 mirror=mirror, ftype=ftype
+                                 mirror=mirror, ftype=ftype,
+                                 use_convex_hull=use_convex_hull,
+                                 rounded_box=rounded_box
                                  )
 
     def export_negative(self, obj_name, box_name, filename, boundary,
@@ -554,7 +562,7 @@ class Film(AppTool):
                         scale_factor_x=1, scale_factor_y=1, scale_reference='center',
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None, opacity_val=1.0,
-                        use_thread=True, ftype='svg'):
+                        use_thread=True, ftype='svg', use_convex_hull=False, rounded_box=False):
         """
         Exports a Geometry Object to an SVG file in negative.
 
@@ -576,6 +584,9 @@ class Film(AppTool):
         :param opacity_val:
         :param use_thread:          if to be run in a separate thread; boolean
         :param ftype:               the type of file for saving the film: 'svg', 'png' or 'pdf'
+        :param use_convex_hull:     Bool; if True it will make the negative box to minimize the black coverage
+        :param rounded_box:         Bool; if True the negative bounded box will have rounded corners
+                                    Works only in case the object used as box has multiple geometries
         :return:
         """
         self.app.defaults.report_usage("export_negative()")
@@ -602,16 +613,16 @@ class Film(AppTool):
         scale_factor_x = scale_factor_x
         scale_factor_y = scale_factor_y
 
-        def get_complementary(color):
+        def get_complementary(color_param):
             # strip the # from the beginning
-            color = color[1:]
+            our_color = color_param[1:]
 
             # convert the string into hex
-            color = int(color, 16)
+            our_color = int(our_color, 16)
 
             # invert the three bytes
             # as good as substracting each of RGB component by 255(FF)
-            comp_color = 0xFFFFFF ^ color
+            comp_color = 0xFFFFFF ^ our_color
 
             # convert the color back to hex by prefixing a #
             comp_color = "#%06X" % comp_color
@@ -624,7 +635,7 @@ class Film(AppTool):
         color = obj.options['tools_film_color']
         transparency_level = opacity_val
 
-        def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y):
+        def make_negative_film(color, transparency_level, scale_factor_x, scale_factor_y, use_convex_hull, rounded_box):
             log.debug("FilmTool.export_negative().make_negative_film()")
 
             self.screen_dpi = self.app.qapp.screens()[0].logicalDotsPerInch()
@@ -636,6 +647,8 @@ class Film(AppTool):
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
 
+            # ########################################################################################################
+            # the case when the BOX object is a Geometry Object
             if box.kind.lower() == 'geometry':
                 flat_geo = []
                 if box.multigeo:
@@ -713,7 +726,7 @@ class Film(AppTool):
             svgheight = str(size[1] + (2 * boundary))
             minx = str(bounds[0] - boundary)
             miny = str(bounds[1] + boundary + size[1])
-            miny_rect = str(bounds[1] - boundary)
+            # miny_rect = str(bounds[1] - boundary)
 
             # Add a SVG Header and footer to the svg output from shapely
             # The transform flips the Y Axis so that everything renders
@@ -741,12 +754,46 @@ class Film(AppTool):
             # first_svg_elem += 'width="' + svgwidth + '" ' + 'height="' + svgheight + '" '
             # first_svg_elem += 'fill="#000000" opacity="1.0" stroke-width="0.0"'
 
-            first_svg_elem_tag = 'rect'
+            # first_svg_elem_tag = 'rect'
+            # first_svg_elem_attribs = {
+            #     'x': minx,
+            #     'y': miny_rect,
+            #     'width': svgwidth,
+            #     'height': svgheight,
+            #     'id': 'neg_rect',
+            #     'style': 'fill:%s;opacity:1.0;stroke-width:0.0' % str(color)
+            # }
+
+            # decide if to round the bounding box for the negative
+            join_s = 1 if rounded_box else 2
+
+            if isinstance(transformed_box_geo, (LineString, LinearRing)):
+                b_geo = Polygon(transformed_box_geo).buffer(boundary, join_style=join_s)
+                coords_list = list(b_geo.exterior.coords)
+            elif isinstance(transformed_box_geo, list) and len(transformed_box_geo) == 1 and \
+                    isinstance(transformed_box_geo[0], (LineString, LinearRing)):
+                b_geo = Polygon(transformed_box_geo[0]).buffer(boundary, join_style=join_s)
+                coords_list = list(b_geo.exterior.coords)
+            elif isinstance(transformed_box_geo, Polygon):
+                coords_list = list(transformed_box_geo.exterior.coords)
+            elif isinstance(transformed_box_geo, list) and len(transformed_box_geo) == 1 and \
+                    isinstance(transformed_box_geo[0], Polygon):
+                coords_list = list(transformed_box_geo[0].exterior.coords)
+            else:
+                if use_convex_hull:
+                    buff_box = transformed_box_geo.convex_hull.buffer(boundary, join_style=join_s)
+                else:
+                    buff_box = transformed_box_geo.envelope.buffer(boundary, join_style=join_s)
+                box_buff_outline = buff_box.exterior
+                coords_list = list(box_buff_outline.coords)
+
+            points_container = ''
+            for coord_tuple in coords_list:
+                points_container += '%s, %s ' % (str(coord_tuple[0]), str(coord_tuple[1]))
+
+            first_svg_elem_tag = 'polygon'
             first_svg_elem_attribs = {
-                'x': minx,
-                'y': miny_rect,
-                'width': svgwidth,
-                'height': svgheight,
+                'points': points_container,
                 'id': 'neg_rect',
                 'style': 'fill:%s;opacity:1.0;stroke-width:0.0' % str(color)
             }
@@ -852,14 +899,16 @@ class Film(AppTool):
                 with self.app.proc_container.new(_("Working...")):
                     try:
                         make_negative_film(color=color, transparency_level=transparency_level,
-                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                           use_convex_hull=use_convex_hull, rounded_box=rounded_box)
                     except Exception as e:
                         log.error("export_negative() process -> %s" % str(e))
                         return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
-            make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+            make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                               use_convex_hull=use_convex_hull, rounded_box=rounded_box)
 
     def export_positive(self, obj_name, box_name, filename,
                         scale_stroke_factor=0.00,
@@ -1435,6 +1484,29 @@ class FilmUI:
         grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
         par_frame.setLayout(grid_par)
 
+        # Convex Shape
+        # Surrounding convex box shape
+        self.convex_box_label = FCLabel('%s:' % _("Convex Shape"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "If not checked the shape is rectangular.")
+        )
+        self.convex_box_cb = FCCheckBox()
+
+        grid_par.addWidget(self.convex_box_label, 0, 0)
+        grid_par.addWidget(self.convex_box_cb, 0, 1)
+
+        # Rounded corners
+        self.rounded_label = FCLabel('%s:' % _("Rounded"))
+        self.rounded_label.setToolTip(
+            _("Resulting geometry will have rounded corners.")
+        )
+
+        self.rounded_cb = FCCheckBox()
+
+        grid_par.addWidget(self.rounded_label, 2, 0)
+        grid_par.addWidget(self.rounded_cb, 2, 1)
+
         # Scale Stroke size
         self.film_scale_stroke_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scale_stroke_entry.set_range(-999.9999, 999.9999)
@@ -1447,10 +1519,10 @@ class FilmUI:
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid_par.addWidget(self.film_scale_stroke_label, 0, 0)
-        grid_par.addWidget(self.film_scale_stroke_entry, 0, 1)
+        grid_par.addWidget(self.film_scale_stroke_label, 4, 0)
+        grid_par.addWidget(self.film_scale_stroke_entry, 4, 1)
 
-        # Film Type
+        # Polarity
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
                                   stretch=False)
@@ -1458,10 +1530,10 @@ class FilmUI:
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.")
         )
-        grid_par.addWidget(self.film_type_label, 2, 0)
-        grid_par.addWidget(self.film_type, 2, 1)
+        grid_par.addWidget(self.film_type_label, 6, 0)
+        grid_par.addWidget(self.film_type, 6, 1)
 
-        # Boundary for negative film generation
+        # Border for negative film generation
         self.boundary_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.boundary_entry.set_range(-999.9999, 999.9999)
         self.boundary_entry.setSingleStep(0.01)
@@ -1478,8 +1550,8 @@ class FilmUI:
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid_par.addWidget(self.boundary_label, 4, 0)
-        grid_par.addWidget(self.boundary_entry, 4, 1)
+        grid_par.addWidget(self.boundary_label, 8, 0)
+        grid_par.addWidget(self.boundary_entry, 8, 1)
 
         self.boundary_label.hide()
         self.boundary_entry.hide()
@@ -1489,12 +1561,12 @@ class FilmUI:
         self.punch_cb.setToolTip(_("When checked the generated film will have holes in pads when\n"
                                    "the generated film is positive. This is done to help drilling,\n"
                                    "when done manually."))
-        grid_par.addWidget(self.punch_cb, 6, 0, 1, 2)
+        grid_par.addWidget(self.punch_cb, 10, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.punch_frame = QtWidgets.QFrame()
         self.punch_frame.setContentsMargins(0, 0, 0, 0)
-        grid_par.addWidget(self.punch_frame, 8, 0, 1, 2)
+        grid_par.addWidget(self.punch_frame, 12, 0, 1, 2)
 
         punch_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         punch_grid.setContentsMargins(0, 0, 0, 0)

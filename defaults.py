@@ -542,6 +542,8 @@ class FlatCAMDefaults:
         "tools_2sided_allign_axis": "X",
 
         # Film Tool
+        "tools_film_shape": False,
+        "tools_film_rounded": False,
         "tools_film_polarity": 'neg',
         "tools_film_boundary": 1.0,
         "tools_film_scale_stroke": 0,

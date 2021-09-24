@@ -473,6 +473,8 @@ class PreferencesUIManager:
             "tools_2sided_allign_axis": self.ui.plugin_eng_pref_form.tools_2sided_group.align_axis_radio,
 
             # Film Tool
+            "tools_film_shape": self.ui.plugin_pref_form.tools_film_group.convex_box_cb,
+            "tools_film_rounded": self.ui.plugin_pref_form.tools_film_group.rounded_cb,
             "tools_film_polarity": self.ui.plugin_pref_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.plugin_pref_form.tools_film_group.film_boundary_entry,
             "tools_film_scale_stroke": self.ui.plugin_pref_form.tools_film_group.film_scale_stroke_entry,

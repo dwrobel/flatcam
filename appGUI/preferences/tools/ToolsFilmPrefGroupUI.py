@@ -184,14 +184,38 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_par = FCGridLayout()
         par_frame.setLayout(grid_par)
 
+        # Convex Shape
+        # Surrounding convex box shape
+        self.convex_box_label = FCLabel('%s:' % _("Convex Shape"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "If not checked the shape is rectangular.")
+        )
+        self.convex_box_cb = FCCheckBox()
+
+        grid_par.addWidget(self.convex_box_label, 0, 0)
+        grid_par.addWidget(self.convex_box_cb, 0, 1)
+
+        # Rounded corners
+        self.rounded_label = FCLabel('%s:' % _("Rounded"))
+        self.rounded_label.setToolTip(
+            _("Resulting geometry will have rounded corners.")
+        )
+
+        self.rounded_cb = FCCheckBox()
+
+        grid_par.addWidget(self.rounded_label, 2, 0)
+        grid_par.addWidget(self.rounded_cb, 2, 1)
+
+        # Polarity
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
                                          {'label': 'Neg', 'value': 'neg'}])
         ftypelbl = FCLabel('%s:' % _('Polarity'))
         ftypelbl.setToolTip(
             _("Generate a Positive black film or a Negative film.")
         )
-        grid_par.addWidget(ftypelbl, 0, 0)
-        grid_par.addWidget(self.film_type_radio, 0, 1)
+        grid_par.addWidget(ftypelbl, 4, 0)
+        grid_par.addWidget(self.film_type_radio, 4, 1)
 
         # Film Color
         self.film_color_label = FCLabel('%s:' % _('Film Color'))
@@ -200,8 +224,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         self.film_color_entry = FCColorEntry()
 
-        grid_par.addWidget(self.film_color_label, 2, 0)
-        grid_par.addWidget(self.film_color_entry, 2, 1)
+        grid_par.addWidget(self.film_color_label, 6, 0)
+        grid_par.addWidget(self.film_color_entry, 6, 1)
 
         # Film Border
         self.film_boundary_entry = FCDoubleSpinner()
@@ -220,9 +244,10 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid_par.addWidget(self.film_boundary_label, 4, 0)
-        grid_par.addWidget(self.film_boundary_entry, 4, 1)
+        grid_par.addWidget(self.film_boundary_label, 8, 0)
+        grid_par.addWidget(self.film_boundary_entry, 8, 1)
 
+        # Scale Stroke
         self.film_scale_stroke_entry = FCDoubleSpinner()
         self.film_scale_stroke_entry.set_precision(self.decimals)
         self.film_scale_stroke_entry.set_range(0, 10000.0000)
@@ -234,8 +259,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid_par.addWidget(self.film_scale_stroke_label, 6, 0)
-        grid_par.addWidget(self.film_scale_stroke_entry, 6, 1)
+        grid_par.addWidget(self.film_scale_stroke_label, 10, 0)
+        grid_par.addWidget(self.film_scale_stroke_entry, 10, 1)
 
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
                                          {'label': _('PNG'), 'value': 'png'},
@@ -249,8 +274,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
               "- 'PNG' -> raster image\n"
               "- 'PDF' -> portable document format")
         )
-        grid_par.addWidget(self.file_type_label, 8, 0)
-        grid_par.addWidget(self.file_type_radio, 8, 1)
+        grid_par.addWidget(self.file_type_label, 12, 0)
+        grid_par.addWidget(self.file_type_radio, 12, 1)
 
         # Page orientation
         self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
@@ -262,8 +287,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                            {'label': _('Landscape'), 'value': 'l'},
                                            ], stretch=False)
 
-        grid_par.addWidget(self.orientation_label, 10, 0)
-        grid_par.addWidget(self.orientation_radio, 10, 1)
+        grid_par.addWidget(self.orientation_label, 14, 0)
+        grid_par.addWidget(self.orientation_radio, 14, 1)
 
         # Page Size
         self.pagesize_label = FCLabel('%s:' % _("Page Size"))
@@ -328,8 +353,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         page_size_list = list(self.pagesize.keys())
         self.pagesize_combo.addItems(page_size_list)
 
-        grid_par.addWidget(self.pagesize_label, 12, 0)
-        grid_par.addWidget(self.pagesize_combo, 12, 1)
+        grid_par.addWidget(self.pagesize_label, 16, 0)
+        grid_par.addWidget(self.pagesize_combo, 16, 1)
 
         # PNG DPI
         self.png_dpi_label = FCLabel('%s:' % "PNG DPI")
@@ -339,8 +364,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.png_dpi_spinner = FCSpinner()
         self.png_dpi_spinner.set_range(0, 100000)
 
-        grid_par.addWidget(self.png_dpi_label, 14, 0)
-        grid_par.addWidget(self.png_dpi_spinner, 14, 1)
+        grid_par.addWidget(self.png_dpi_label, 18, 0)
+        grid_par.addWidget(self.png_dpi_spinner, 18, 1)
 
         self.layout.addStretch(1)
 
