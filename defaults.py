@@ -510,7 +510,7 @@ class FlatCAMDefaults:
         "tools_cutout_gaps_ff": "4",
         "tools_cutout_convexshape": False,
         "tools_cutout_big_cursor": True,
-        "tools_cutout_gap_type": 'b',
+        "tools_cutout_gap_type": 0,     # "Basic Gap"
         "tools_cutout_gap_depth": -1.0,
         "tools_cutout_mb_dia": 0.6,
         "tools_cutout_mb_spacing": 0.3,

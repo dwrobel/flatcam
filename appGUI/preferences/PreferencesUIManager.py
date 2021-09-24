@@ -439,7 +439,7 @@ class PreferencesUIManager:
             "tools_cutout_convexshape":     self.ui.plugin_pref_form.tools_cutout_group.convex_box,
             "tools_cutout_big_cursor":      self.ui.plugin_pref_form.tools_cutout_group.big_cursor_cb,
 
-            "tools_cutout_gap_type":        self.ui.plugin_pref_form.tools_cutout_group.gaptype_radio,
+            "tools_cutout_gap_type":        self.ui.plugin_pref_form.tools_cutout_group.gaptype_combo,
             "tools_cutout_gap_depth":       self.ui.plugin_pref_form.tools_cutout_group.thin_depth_entry,
             "tools_cutout_mb_dia":          self.ui.plugin_pref_form.tools_cutout_group.mb_dia_entry,
             "tools_cutout_mb_spacing":      self.ui.plugin_pref_form.tools_cutout_group.mb_spacing_entry,

@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, FCLabel, OptionalInputSection, \
-    FCGridLayout
+    FCGridLayout, FCFrame, FCComboBox2
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -23,7 +23,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.defaults = defaults
 
         # ## Board cutout
-        self.board_cutout_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.board_cutout_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.board_cutout_label.setToolTip(
             _("Create toolpaths to cut around\n"
               "the PCB and separate it from\n"
@@ -31,10 +31,17 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.board_cutout_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Tool Params Frame
+        # #############################################################################################################
+        tool_par_frame = FCFrame()
+        self.layout.addWidget(tool_par_frame)
 
-        tdclabel = FCLabel('%s:' % _('Tool Diameter'))
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tool_par_frame.setLayout(param_grid)
+
+        # Tool Diameter
+        tdclabel = FCLabel('%s:' % _('Tool Dia'))
         tdclabel.setToolTip(
             _("Diameter of the tool used to cutout\n"
               "the PCB shape out of the surrounding material.")
@@ -45,8 +52,16 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_tooldia_entry.set_precision(self.decimals)
         self.cutout_tooldia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(tdclabel, 0, 0)
-        grid0.addWidget(self.cutout_tooldia_entry, 0, 1)
+        param_grid.addWidget(tdclabel, 0, 0)
+        param_grid.addWidget(self.cutout_tooldia_entry, 0, 1)
+
+        # Convex box shape
+        self.convex_box = FCCheckBox('%s' % _("Convex Shape"))
+        self.convex_box.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "Used only if the source object type is Gerber.")
+        )
+        param_grid.addWidget(self.convex_box, 2, 0, 1, 2)
 
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -62,8 +77,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid0.addWidget(cutzlabel, 1, 0)
-        grid0.addWidget(self.cutz_entry, 1, 1)
+        param_grid.addWidget(cutzlabel, 4, 0)
+        param_grid.addWidget(self.cutz_entry, 4, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -83,8 +98,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
 
-        grid0.addWidget(self.mpass_cb, 2, 0)
-        grid0.addWidget(self.maxdepth_entry, 2, 1)
+        param_grid.addWidget(self.mpass_cb, 6, 0)
+        param_grid.addWidget(self.maxdepth_entry, 6, 1)
 
         self.ois_md = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
@@ -101,8 +116,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             {"label": _("Single"), "value": "single"},
             {"label": _("Panel"), "value": "panel"},
         ])
-        grid0.addWidget(kindlabel, 3, 0)
-        grid0.addWidget(self.obj_kind_combo, 3, 1)
+        param_grid.addWidget(kindlabel, 8, 0)
+        param_grid.addWidget(self.obj_kind_combo, 8, 1)
 
         marginlabel = FCLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
@@ -116,11 +131,23 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_margin_entry.set_precision(self.decimals)
         self.cutout_margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(marginlabel, 4, 0)
-        grid0.addWidget(self.cutout_margin_entry, 4, 1)
-        
+        param_grid.addWidget(marginlabel, 10, 0)
+        param_grid.addWidget(self.cutout_margin_entry, 10, 1)
+
+        self.gaps_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Gaps"))
+        self.layout.addWidget(self.gaps_label)
+        # #############################################################################################################
+        # Gaps Frame
+        # #############################################################################################################
+        gaps_frame = FCFrame()
+        self.layout.addWidget(gaps_frame)
+
+        # Grid Layout
+        gaps_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gaps_frame.setLayout(gaps_grid)
+
         # Gap Size
-        gaplabel = FCLabel('%s:' % _('Gap size'))
+        gaplabel = FCLabel('%s:' % _('Size'))
         gaplabel.setToolTip(
             _("The size of the bridge gaps in the cutout\n"
               "used to keep the board connected to\n"
@@ -133,11 +160,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_gap_entry.set_precision(self.decimals)
         self.cutout_gap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(gaplabel, 5, 0)
-        grid0.addWidget(self.cutout_gap_entry, 5, 1)
+        gaps_grid.addWidget(gaplabel, 0, 0)
+        gaps_grid.addWidget(self.cutout_gap_entry, 0, 1)
         
         # Gap Type
-        self.gaptype_label = FCLabel('%s:' % _("Gap type"))
+        self.gaptype_label = FCLabel('%s:' % _("Type"))
         self.gaptype_label.setToolTip(
             _("The type of gap:\n"
               "- Bridge -> the cutout will be interrupted by bridges\n"
@@ -145,17 +172,16 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes")
         )
 
-        self.gaptype_radio = RadioSet(
-            [
-                {'label': _('Bridge'),      'value': 'b'},
-                {'label': _('Thin'),        'value': 'bt'},
-                {'label': "M-Bites",        'value': 'mb'}
-            ],
-            stretch=True
-        )
+        self.gaptype_combo = FCComboBox2()
+        self.gaptype_combo.addItems([_('Bridge'), _('Thin'), _("Mouse Bytes")])
 
-        grid0.addWidget(self.gaptype_label, 7, 0)
-        grid0.addWidget(self.gaptype_radio, 7, 1)
+        gaps_grid.addWidget(self.gaptype_label, 2, 0)
+        gaps_grid.addWidget(self.gaptype_combo, 2, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        gaps_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # Thin gaps Depth
         self.thin_depth_label = FCLabel('%s:' % _("Depth"))
@@ -168,8 +194,13 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.thin_depth_entry.setRange(-10000.0000, 10000.0000)
         self.thin_depth_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.thin_depth_label, 9, 0)
-        grid0.addWidget(self.thin_depth_entry, 9, 1)
+        gaps_grid.addWidget(self.thin_depth_label, 6, 0)
+        gaps_grid.addWidget(self.thin_depth_entry, 6, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        gaps_grid.addWidget(separator_line, 8, 0, 1, 2)
 
         # Mouse Bites Tool Diameter
         self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
@@ -180,8 +211,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.mb_dia_entry.set_precision(self.decimals)
         self.mb_dia_entry.setRange(0, 100.0000)
 
-        grid0.addWidget(self.mb_dia_label, 11, 0)
-        grid0.addWidget(self.mb_dia_entry, 11, 1)
+        gaps_grid.addWidget(self.mb_dia_label, 10, 0)
+        gaps_grid.addWidget(self.mb_dia_entry, 10, 1)
 
         # Mouse Bites Holes Spacing
         self.mb_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -192,9 +223,14 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.mb_spacing_entry.set_precision(self.decimals)
         self.mb_spacing_entry.setRange(0, 100.0000)
 
-        grid0.addWidget(self.mb_spacing_label, 13, 0)
-        grid0.addWidget(self.mb_spacing_entry, 13, 1)
-        
+        gaps_grid.addWidget(self.mb_spacing_label, 12, 0)
+        gaps_grid.addWidget(self.mb_spacing_entry, 12, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        gaps_grid.addWidget(separator_line, 14, 0, 1, 2)
+
         gaps_label = FCLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
             _("Number of gaps used for the cutout.\n"
@@ -210,28 +246,34 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
 
         self.gaps_combo = FCComboBox()
-        grid0.addWidget(gaps_label, 15, 0)
-        grid0.addWidget(self.gaps_combo, 15, 1)
+        gaps_grid.addWidget(gaps_label, 16, 0)
+        gaps_grid.addWidget(self.gaps_combo, 16, 1)
 
         gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
             self.gaps_combo.addItem(it)
             # self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
 
-        # Surrounding convex box shape
-        self.convex_box = FCCheckBox('%s' % _("Convex Shape"))
-        self.convex_box.setToolTip(
-            _("Create a convex shape surrounding the entire PCB.\n"
-              "Used only if the source object type is Gerber.")
-        )
-        grid0.addWidget(self.convex_box, 17, 0, 1, 2)
-
         self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
         self.big_cursor_cb.setToolTip(
             _("Use a big cursor when adding manual gaps."))
-        grid0.addWidget(self.big_cursor_cb, 19, 0, 1, 2)
+        gaps_grid.addWidget(self.big_cursor_cb, 18, 0, 1, 2)
 
-        # Drill Cut
+        # Cut by Drilling Title
+        self.title_drillcut_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Cut by Drilling'))
+        self.title_drillcut_label.setToolTip(_("Create a series of drill holes following a geometry line."))
+        self.layout.addWidget(self.title_drillcut_label)
+
+        # #############################################################################################################
+        # Cut by Drilling Frame
+        # #############################################################################################################
+        self.drill_cut_frame = FCFrame()
+        self.layout.addWidget(self.drill_cut_frame)
+
+        # Grid Layout
+        drill_cut_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.drill_cut_frame.setLayout(drill_cut_grid)
+
         # Drill Tool Diameter
         self.drill_dia_entry = FCDoubleSpinner()
         self.drill_dia_entry.set_precision(self.decimals)
@@ -242,8 +284,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             _("Diameter of the tool used to cutout\n"
               "the PCB by drilling.")
         )
-        grid0.addWidget(self.drill_dia_label, 21, 0)
-        grid0.addWidget(self.drill_dia_entry, 21, 1)
+        drill_cut_grid.addWidget(self.drill_dia_label, 0, 0)
+        drill_cut_grid.addWidget(self.drill_dia_entry, 0, 1)
 
         # Drill Tool Pitch
         self.drill_pitch_entry = FCDoubleSpinner()
@@ -255,8 +297,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             _("Distance between the center of\n"
               "two neighboring drill holes.")
         )
-        grid0.addWidget(self.drill_pitch_label, 23, 0)
-        grid0.addWidget(self.drill_pitch_entry, 23, 1)
+        drill_cut_grid.addWidget(self.drill_pitch_label, 2, 0)
+        drill_cut_grid.addWidget(self.drill_pitch_entry, 2, 1)
 
         # Drill Tool Margin
         self.drill_margin_entry = FCDoubleSpinner()
@@ -269,7 +311,10 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "will make the cutout of the PCB further from\n"
               "the actual PCB border")
         )
-        grid0.addWidget(self.drill_margin_label, 25, 0)
-        grid0.addWidget(self.drill_margin_entry, 25, 1)
+        drill_cut_grid.addWidget(self.drill_margin_label, 4, 0)
+        drill_cut_grid.addWidget(self.drill_margin_entry, 4, 1)
 
-        self.layout.addStretch()
+        FCGridLayout.set_common_column_size([param_grid, drill_cut_grid, gaps_grid], 0)
+
+
+        # self.layout.addStretch()

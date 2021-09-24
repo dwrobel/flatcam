@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Film Plugin added new parameters and improvements: now the negative film can have a box that is convex and it is no longer limited to square shapes. Also, if the box object has only one geometric element (an outline) then that one will be the final shape of the negative
 - in Gerber Editor fixed not being able to delete an aperture
 - in Gerber Editor fixed the edge case where the user selects apertures in the Tools Table and then uses the Poligonize Tool and not by selecting shapes on canvas
+- in Cutout Plugin remade the UI and fixed different issues
 
 21.09.2021
 

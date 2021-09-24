@@ -35,8 +35,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         adj_frame = FCFrame()
         self.layout.addWidget(adj_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        adj_frame.setLayout(grid0)
+        adj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adj_frame.setLayout(adj_grid)
 
         # Scale Geometry
         self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
@@ -49,11 +49,11 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_scale_cb, 2, 0, 1, 2)
+        adj_grid.addWidget(self.film_scale_cb, 2, 0, 1, 2)
 
         # SCALE FRAME
         scale_frame = FCFrame()
-        grid0.addWidget(scale_frame, 4, 0, 1, 2)
+        adj_grid.addWidget(scale_frame, 4, 0, 1, 2)
 
         grid_scale = FCGridLayout(v_spacing=5, h_spacing=3)
         scale_frame.setLayout(grid_scale)
@@ -102,11 +102,11 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_skew_cb, 6, 0, 1, 2)
+        adj_grid.addWidget(self.film_skew_cb, 6, 0, 1, 2)
 
         # SKEW FRAME
         skew_frame = FCFrame()
-        grid0.addWidget(skew_frame, 8, 0, 1, 2)
+        adj_grid.addWidget(skew_frame, 8, 0, 1, 2)
 
         grid_skew = FCGridLayout(v_spacing=5, h_spacing=3)
         skew_frame.setLayout(grid_skew)
@@ -152,7 +152,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
             QCheckBox {font-weight: bold; color: black}
             """
         )
-        grid0.addWidget(self.film_mirror_cb, 10, 0, 1, 2)
+        adj_grid.addWidget(self.film_mirror_cb, 10, 0, 1, 2)
 
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
@@ -160,8 +160,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
                                          stretch=False)
         self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
-        grid0.addWidget(self.film_mirror_axis_label, 12, 0)
-        grid0.addWidget(self.film_mirror_axis, 12, 1)
+        adj_grid.addWidget(self.film_mirror_axis_label, 12, 0)
+        adj_grid.addWidget(self.film_mirror_axis, 12, 1)
 
         # separator_line3 = QtWidgets.QFrame()
         # separator_line3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
@@ -367,7 +367,9 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid_par.addWidget(self.png_dpi_label, 18, 0)
         grid_par.addWidget(self.png_dpi_spinner, 18, 1)
 
-        self.layout.addStretch(1)
+        # self.layout.addStretch(1)
+
+        FCGridLayout.set_common_column_size([adj_grid, grid_par, grid_skew, grid_scale], 0)
 
         # Film Tool
         self.film_color_entry.editingFinished.connect(self.on_film_color_entry)

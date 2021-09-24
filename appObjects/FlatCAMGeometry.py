@@ -1365,9 +1365,12 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         visible = visible if visible else self.options['plot']
         try:
-            for sub_el in element:
-                self.plot_element(sub_el, color=color)
-
+            if isinstance(element, (MultiPolygon, MultiLineString)):
+                for sub_el in element.geoms:
+                    self.plot_element(sub_el, color=color)
+            else:
+                for sub_el in element:
+                    self.plot_element(sub_el, color=color)
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
