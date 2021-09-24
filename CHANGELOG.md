@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in Gerber Editor fixed not being able to delete an aperture
 - in Gerber Editor fixed the edge case where the user selects apertures in the Tools Table and then uses the Poligonize Tool and not by selecting shapes on canvas
 - in Cutout Plugin remade the UI and fixed different issues
+- in Gerber Editor fixed the issue where some shapes that belong to a deleted aperture were still stored inside the selection storage after this deletion
 
 21.09.2021
 

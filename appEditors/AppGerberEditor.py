@@ -3863,6 +3863,9 @@ class AppGerberEditor(QtCore.QObject):
                         self.tid2apcode.pop(deleted_tool, None)
 
                 self.oldapcode_newapcode.pop(deleted_aperture, None)
+                # delete any shape that was left in the selected storage from the deleted aperture
+                # that is required since to delete an aperture we need to first select it
+                self.selected[:] = []
                 if deleted_aperture not in self.storage_dict:
                     self.app.inform.emit('[success] %s: %s' % (_("Deleted aperture with code"), str(deleted_aperture)))
                 else:
