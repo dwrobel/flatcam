@@ -907,7 +907,7 @@ class PoligonizeEditorGrb(ShapeToolEditorGrb):
 
         current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         if isinstance(fused_geo, MultiPolygon):
-            for geo in fused_geo:
+            for geo in fused_geo.geoms:
                 # clean-up the geo
                 geo = geo.buffer(0)
 
@@ -3727,7 +3727,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def on_aperture_add(self, apcode=None):
         self.is_modified = True
-        if apcode:
+        if apcode is not None:
             ap_code = apcode
         else:
             try:
@@ -3736,7 +3736,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
-            if ap_code == '':
+            if ap_code == '' or ap_code is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
@@ -3879,7 +3879,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.on_aperture_add(10)
                 self.last_aperture_selected = 10
             else:
-                self.last_aperture_selected = self.ui.apertures_table.item(0, 1).text()
+                self.last_aperture_selected = int(self.ui.apertures_table.item(0, 1).text())
 
     def on_tool_edit(self):
         if self.ui.apertures_table.currentItem() is None:
@@ -4238,7 +4238,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def on_aptype_changed(self, current_index):
         # 'O' is letter O not zero.
-        print(current_index)
+        # print(current_index)
         if current_index == 1 or current_index == 2:    # 1 == 'R' and 2 == 'O'
             self.ui.apdim_lbl.setDisabled(False)
             self.ui.apdim_entry.setDisabled(False)
