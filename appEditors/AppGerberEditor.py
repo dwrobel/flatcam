@@ -974,22 +974,28 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
         self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
 
-        try:
-            size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
-        except KeyError:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("You need to preselect a aperture in the Aperture Table that has a size."))
-            try:
-                QtGui.QGuiApplication.restoreOverrideCursor()
-            except Exception:
-                pass
-            self.dont_execute = True
-            self.draw_app.in_action = False
-            self.complete = True
-            self.draw_app.select_tool('select')
-            return
+        # try:
+        #     size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        # except KeyError:
+        #     msg = '[ERROR_NOTCL] %s' % _("You need to preselect a aperture in the Aperture Table that has a size.")
+        #     self.draw_app.app.inform.emit(msg)
+        #     try:
+        #         QtGui.QGuiApplication.restoreOverrideCursor()
+        #     except Exception:
+        #         pass
+        #     self.dont_execute = True
+        #     self.draw_app.in_action = False
+        #     self.complete = True
+        #     self.draw_app.select_tool('select')
+        #     return
 
-        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+        # regions are added always in the 0 aperture
+        if 0 not in self.draw_app.storage_dict:
+            self.draw_app.on_aperture_add(apcode=0)
+        else:
+            self.draw_app.last_aperture_selected = 0
+
+        self.buf_val = 0.0000001    # so we can see something on the screen
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
@@ -1232,12 +1238,6 @@ class RegionEditorGrb(ShapeToolEditorGrb):
     def make(self):
         # self.geometry = LinearRing(self.points)
         if len(self.points) > 2:
-
-            # regions are added always in the 0 aperture
-            if 0 not in self.draw_app.storage_dict:
-                self.draw_app.on_aperture_add(apcode=0)
-            else:
-                self.draw_app.last_aperture_selected = 0
 
             new_geo_el = {
                 'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=2),
@@ -4960,11 +4960,11 @@ class AppGerberEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_aperture_selected is None and current_tool not in ['select', 'disc', 'semidisc']:
+        if self.last_aperture_selected is None and current_tool not in ['select', 'disc', 'semidisc', 'region']:
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No aperture is selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Cancelled."), _("No aperture is selected.")))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_gerber:
