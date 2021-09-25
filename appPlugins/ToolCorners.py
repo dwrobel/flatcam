@@ -882,8 +882,8 @@ class CornersUI:
         self.tools_box.addWidget(par_frame)
 
         # ## Grid Layout
-        grid_par = FCGridLayout(v_spacing=5, h_spacing=3)
-        par_frame.setLayout(grid_par)
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
 
         # Type of Marker
         self.type_label = FCLabel('%s:' % _("Type"))
@@ -896,8 +896,8 @@ class CornersUI:
             {"label": _("Cross"), "value": "c"},
         ])
 
-        grid_par.addWidget(self.type_label, 2, 0)
-        grid_par.addWidget(self.type_radio, 2, 1)
+        par_grid.addWidget(self.type_label, 2, 0)
+        par_grid.addWidget(self.type_radio, 2, 1)
 
         # Thickness #
         self.thick_label = FCLabel('%s:' % _("Thickness"))
@@ -910,8 +910,8 @@ class CornersUI:
         self.thick_entry.setWrapping(True)
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_par.addWidget(self.thick_label, 4, 0)
-        grid_par.addWidget(self.thick_entry, 4, 1)
+        par_grid.addWidget(self.thick_label, 4, 0)
+        par_grid.addWidget(self.thick_entry, 4, 1)
 
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
@@ -923,8 +923,8 @@ class CornersUI:
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
-        grid_par.addWidget(self.l_label, 6, 0)
-        grid_par.addWidget(self.l_entry, 6, 1)
+        par_grid.addWidget(self.l_label, 6, 0)
+        par_grid.addWidget(self.l_entry, 6, 1)
 
         # Margin #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -936,8 +936,8 @@ class CornersUI:
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid_par.addWidget(self.margin_label, 8, 0)
-        grid_par.addWidget(self.margin_entry, 8, 1)
+        par_grid.addWidget(self.margin_label, 8, 0)
+        par_grid.addWidget(self.margin_entry, 8, 1)
 
         # #############################################################################################################
         # Locations Frame
@@ -1050,7 +1050,7 @@ class CornersUI:
         grid_drill.addWidget(self.drill_dia_label, 0, 0)
         grid_drill.addWidget(self.drill_dia_entry, 0, 1)
 
-        FCGridLayout.set_common_column_size([grid_sel, grid_par, grid_loc, grid_drill], 0)
+        FCGridLayout.set_common_column_size([grid_sel, par_grid, grid_loc, grid_drill], 0)
 
         # ## Create an Excellon object
         self.drill_button = FCButton(_("Create Excellon Object"))

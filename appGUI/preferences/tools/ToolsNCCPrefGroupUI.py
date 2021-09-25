@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox2, FCLabel, \
-    FCGridLayout
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -23,34 +23,49 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.defaults = defaults
 
         # ## Clear non-copper regions
-        self.clearcopper_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.clearcopper_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
 
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
+
+        # Tools Diameters
         ncctdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ncctdlabel.setToolTip(
             _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
-        grid0.addWidget(ncctdlabel, 0, 0)
         self.ncc_tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.ncc_tool_dia_entry.setPlaceholderText(_("Comma separated values"))
-        grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
-        # Tool Type Radio Button
-        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
+        par_grid.addWidget(ncctdlabel, 0, 0)
+        par_grid.addWidget(self.ncc_tool_dia_entry, 0, 1)
+
+        # Tool order
+        self.ncc_order_label = FCLabel('%s:' % _('Tool order'))
+        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                          "'No' --> means that the used order is the one in the tool table\n"
+                                          "'Forward' --> means that the tools will be ordered from small to big\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                          "WARNING: using rest machining will automatically set the order\n"
+                                          "in reverse and disable this control."))
+
+        self.ncc_order_combo = FCComboBox2()
+        self.ncc_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
+
+        par_grid.addWidget(self.ncc_order_label, 2, 0)
+        par_grid.addWidget(self.ncc_order_combo, 2, 1)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -61,8 +76,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.tipdia_entry.set_range(0, 1000)
         self.tipdia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.tipdialabel, 2, 0)
-        grid0.addWidget(self.tipdia_entry, 2, 1)
+        par_grid.addWidget(self.tipdialabel, 4, 0)
+        par_grid.addWidget(self.tipdia_entry, 4, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -75,8 +90,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.tipangle_entry.setSingleStep(5)
         self.tipangle_entry.setWrapping(True)
 
-        grid0.addWidget(self.tipanglelabel, 3, 0)
-        grid0.addWidget(self.tipangle_entry, 3, 1)
+        par_grid.addWidget(self.tipanglelabel, 6, 0)
+        par_grid.addWidget(self.tipangle_entry, 6, 1)
 
         # Cut Z entry
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -94,8 +109,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
              "In application units.")
         )
 
-        grid0.addWidget(cutzlabel, 4, 0)
-        grid0.addWidget(self.cutz_entry, 4, 1)
+        par_grid.addWidget(cutzlabel, 8, 0)
+        par_grid.addWidget(self.cutz_entry, 8, 1)
 
         # New Diameter
         self.newdialabel = FCLabel('%s:' % _('New Dia'))
@@ -109,13 +124,13 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.newdialabel, 5, 0)
-        grid0.addWidget(self.newdia_entry, 5, 1)
+        par_grid.addWidget(self.newdialabel, 10, 0)
+        par_grid.addWidget(self.newdia_entry, 10, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 2)
+        par_grid.addWidget(separator_line, 12, 0, 1, 2)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -133,34 +148,21 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
 
-        grid0.addWidget(self.milling_type_label, 7, 0)
-        grid0.addWidget(self.milling_type_radio, 7, 1)
+        par_grid.addWidget(self.milling_type_label, 14, 0)
+        par_grid.addWidget(self.milling_type_radio, 14, 1)
 
-        # Tool order Radio Button
-        self.ncc_order_label = FCLabel('%s:' % _('Tool order'))
-        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                          "'No' --> means that the used order is the one in the tool table\n"
-                                          "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                          "WARNING: using rest machining will automatically set the order\n"
-                                          "in reverse and disable this control."))
+        # #############################################################################################################
+        # Tool Frame
+        # #############################################################################################################
+        # ### Tools ## ##
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.layout.addWidget(self.tools_table_label)
 
-        self.ncc_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                         {'label': _('Forward'), 'value': 'fwd'},
-                                         {'label': _('Reverse'), 'value': 'rev'}])
-        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                          "'No' --> means that the used order is the one in the tool table\n"
-                                          "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                          "WARNING: using rest machining will automatically set the order\n"
-                                          "in reverse and disable this control."))
-        grid0.addWidget(self.ncc_order_label, 8, 0)
-        grid0.addWidget(self.ncc_order_radio, 8, 1)
+        tt_frame = FCFrame()
+        self.layout.addWidget(tt_frame)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
         # Overlap Entry
         nccoverlabel = FCLabel('%s:' % _('Overlap'))
@@ -179,8 +181,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_overlap_entry.setRange(0.0000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(nccoverlabel, 10, 0)
-        grid0.addWidget(self.ncc_overlap_entry, 10, 1)
+        tool_grid.addWidget(nccoverlabel, 0, 0)
+        tool_grid.addWidget(self.ncc_overlap_entry, 0, 1)
 
         # Margin entry
         nccmarginlabel = FCLabel('%s:' % _('Margin'))
@@ -192,8 +194,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_margin_entry.set_range(-10000, 10000)
         self.ncc_margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(nccmarginlabel, 11, 0)
-        grid0.addWidget(self.ncc_margin_entry, 11, 1)
+        tool_grid.addWidget(nccmarginlabel, 2, 0)
+        tool_grid.addWidget(self.ncc_margin_entry, 2, 1)
 
         # Method
         methodlabel = FCLabel('%s:' % _('Method'))
@@ -214,8 +216,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
 
-        grid0.addWidget(methodlabel, 12, 0)
-        grid0.addWidget(self.ncc_method_combo, 12, 1)
+        tool_grid.addWidget(methodlabel, 4, 0)
+        tool_grid.addWidget(self.ncc_method_combo, 4, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
@@ -224,7 +226,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "segments to minimize tool lifts.")
         )
 
-        grid0.addWidget(self.ncc_connect_cb, 13, 0)
+        tool_grid.addWidget(self.ncc_connect_cb, 6, 0)
 
         # Contour Checkbox
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -233,7 +235,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
              "to trim rough edges.")
         )
 
-        grid0.addWidget(self.ncc_contour_cb, 13, 1)
+        tool_grid.addWidget(self.ncc_contour_cb, 6, 1)
 
         # ## NCC Offset choice
         self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
@@ -243,7 +245,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "from the copper features.")
         )
 
-        grid0.addWidget(self.ncc_choice_offset_cb, 14, 0, 1, 2)
+        tool_grid.addWidget(self.ncc_choice_offset_cb, 8, 0, 1, 2)
 
         # ## NCC Offset value
         self.ncc_offset_label = FCLabel('%s:' % _("Offset value"))
@@ -258,13 +260,28 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setSingleStep(0.1)
 
-        grid0.addWidget(self.ncc_offset_label, 15, 0)
-        grid0.addWidget(self.ncc_offset_spinner, 15, 1)
+        tool_grid.addWidget(self.ncc_offset_label, 10, 0)
+        tool_grid.addWidget(self.ncc_offset_spinner, 10, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # par_grid.addWidget(separator_line, 16, 0, 1, 2)
+
+        # #############################################################################################################
+        # General Parameters Frame
+        # #############################################################################################################
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        self.layout.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        self.layout.addWidget(gp_frame)
+
+        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gp_frame.setLayout(gen_grid)
 
         # Rest machining CheckBox
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest"))
@@ -278,7 +295,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "If not checked, use the standard algorithm.")
         )
 
-        grid0.addWidget(self.ncc_rest_cb, 17, 0, 1, 2)
+        gen_grid.addWidget(self.ncc_rest_cb, 0, 0, 1, 2)
 
         # ## Reference
         # self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
@@ -298,8 +315,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- 'Reference Object' - will process the area specified by another object.")
         )
 
-        grid0.addWidget(select_label, 18, 0)
-        grid0.addWidget(self.select_combo, 18, 1)
+        gen_grid.addWidget(select_label, 2, 0)
+        gen_grid.addWidget(self.select_combo, 2, 1)
 
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
@@ -309,13 +326,13 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 19, 0)
-        grid0.addWidget(self.area_shape_radio, 19, 1)
+        gen_grid.addWidget(self.area_shape_label, 4, 0)
+        gen_grid.addWidget(self.area_shape_radio, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 20, 0, 1, 2)
+        gen_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -325,8 +342,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        grid0.addWidget(plotting_label, 21, 0)
-        grid0.addWidget(self.plotting_radio, 21, 1)
+        gen_grid.addWidget(plotting_label, 8, 0)
+        gen_grid.addWidget(self.plotting_radio, 8, 1)
 
         # Check Tool validity
         self.valid_cb = FCCheckBox(label=_('Check validity'))
@@ -336,6 +353,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.valid_cb.setObjectName("n_check")
 
-        grid0.addWidget(self.valid_cb, 23, 0, 1, 2)
+        gen_grid.addWidget(self.valid_cb, 10, 0, 1, 2)
 
-        self.layout.addStretch()
+        FCGridLayout.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
+
+        # self.layout.addStretch()

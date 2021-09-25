@@ -1071,7 +1071,10 @@ class Geometry(object):
             working_geo = self.solid_geometry
 
         try:
-            geo_len = len(working_geo)
+            if isinstance(working_geo, (MultiPolygon, MultiLineString)):
+                geo_len = len(working_geo.geoms)
+            else:
+                geo_len = len(working_geo)
         except TypeError:
             geo_len = 1
 
@@ -1079,7 +1082,11 @@ class Geometry(object):
         pol_nr = 0
         # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
         try:
-            for pol in working_geo:
+            if isinstance(working_geo, (MultiPolygon, MultiLineString)):
+                working_geo_shp = working_geo.geoms
+            else:
+                working_geo_shp = working_geo
+            for pol in working_geo_shp:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
@@ -1118,7 +1125,7 @@ class Geometry(object):
         # end of replaced block
 
         if iso_type == 2:
-            ret_geo = geo_iso
+            ret_geo = flatten_shapely_geometry(geo_iso)
         elif iso_type == 0:
             self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))
             ret_geo = self.get_exteriors(geo_iso)
@@ -1573,8 +1580,8 @@ class Geometry(object):
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
 
-        geoms = FlatCAMRTreeStorage()
-        geoms.get_points = get_pts
+        geom_elems = FlatCAMRTreeStorage()
+        geom_elems.get_points = get_pts
 
         # Path margin
         path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
@@ -1603,16 +1610,16 @@ class Geometry(object):
             if path.is_empty:
                 break
             else:
-                # geoms.append(path)
-                # geoms.insert(path)
+                # geom_elems.append(path)
+                # geom_elems.insert(path)
                 # path can be a collection of paths.
                 try:
                     for p in path:
-                        geoms.insert(p)
+                        geom_elems.insert(p)
                         if prog_plot:
                             self.plot_temp_shapes(p)
                 except TypeError:
-                    geoms.insert(path)
+                    geom_elems.insert(path)
                     if prog_plot:
                         self.plot_temp_shapes(path)
 
@@ -1631,10 +1638,10 @@ class Geometry(object):
             for x in buffered_poly:
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
-            # geoms += outer_edges + inner_edges
+            # geom_elems += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
                 if g and not g.is_empty:
-                    geoms.insert(g)
+                    geom_elems.insert(g)
                     if prog_plot:
                         self.plot_temp_shapes(g)
 
@@ -1643,16 +1650,16 @@ class Geometry(object):
 
         # Optimization connect touching paths
         # log.debug("Connecting paths...")
-        # geoms = Geometry.path_connect(geoms)
+        # geom_elems = Geometry.path_connect(geom_elems)
 
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms_conn = Geometry.paint_connect(geoms, polygon_to_clear, tooldia, steps_per_circle)
+            geoms_conn = Geometry.paint_connect(geom_elems, polygon_to_clear, tooldia, steps_per_circle)
             if geoms_conn:
                 return geoms_conn
 
-        return geoms
+        return geom_elems
 
     def clear_polygon3(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
                        prog_plot=False):
@@ -8578,6 +8585,8 @@ def dict2obj(d):
 
 def autolist(obj):
     try:
+        if isinstance(obj, (MultiPoint, MultiPolygon, MultiLineString)):
+            return obj.geoms
         __ = iter(obj)
         return obj
     except TypeError:

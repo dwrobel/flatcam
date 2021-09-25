@@ -351,7 +351,7 @@ class FlatCAMDefaults:
 
         # Isolation Routing Plugin
         "tools_iso_tooldia": "0.1",
-        "tools_iso_order": 'rev',
+        "tools_iso_order": 2,   # Reverse
         "tools_iso_tool_cutz": -0.05,
         "tools_iso_newdia": 0.1,
 
@@ -479,7 +479,7 @@ class FlatCAMDefaults:
 
         # NCC Plugin
         "tools_ncc_tools": "0.5",
-        "tools_ncc_order": 'rev',
+        "tools_ncc_order": 2,   # "Reverse"
         "tools_ncc_operation": 'clear',
         "tools_ncc_overlap": 40,
         "tools_ncc_margin": 1.0,

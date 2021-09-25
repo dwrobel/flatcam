@@ -254,7 +254,7 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.select_combo.currentIndexChanged.connect(self.ui.on_toggle_reference)
 
         self.ui.ncc_rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
-        self.ui.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.ncc_order_combo.currentIndexChanged.connect(self.on_order_changed)
 
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_index_changed)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
@@ -326,7 +326,7 @@ class NonCopperClear(AppTool, Gerber):
             self.on_reference_combo_changed()
 
         self.ui.op_radio.set_value(self.app.defaults["tools_ncc_operation"])
-        self.ui.ncc_order_radio.set_value(self.app.defaults["tools_ncc_order"])
+        self.ui.ncc_order_combo.set_value(self.app.defaults["tools_ncc_order"])
         self.ui.ncc_overlap_entry.set_value(self.app.defaults["tools_ncc_overlap"])
         self.ui.ncc_margin_entry.set_value(self.app.defaults["tools_ncc_margin"])
         self.ui.ncc_method_combo.set_value(self.app.defaults["tools_ncc_method"])
@@ -803,10 +803,10 @@ class NonCopperClear(AppTool, Gerber):
             else:
                 sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
-        order = self.ui.ncc_order_radio.get_value()
-        if order == 'fwd':
+        order = self.ui.ncc_order_combo.get_value()
+        if order == 1:  # "Forward"
             sorted_tools.sort(reverse=False)
-        elif order == 'rev':
+        elif order == 2:    # "Reverse"
             sorted_tools.sort(reverse=True)
         else:
             pass
@@ -903,7 +903,7 @@ class NonCopperClear(AppTool, Gerber):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.ui.ncc_rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
-        self.ui.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.ncc_order_combo.currentIndexChanged.connect(self.on_order_changed)
 
     def ui_disconnect(self):
 
@@ -948,7 +948,7 @@ class NonCopperClear(AppTool, Gerber):
         except (TypeError, ValueError):
             pass
         try:
-            self.ui.ncc_order_radio.activated_custom[str].disconnect(self.on_order_changed)
+            self.ui.ncc_order_combo.currentIndexChanged.disconnect(self.on_order_changed)
         except (TypeError, ValueError):
             pass
 
@@ -969,7 +969,7 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.reference_combo.obj_type = {0: "Gerber", 1: "Excellon", 2: "Geometry"}[obj_type]
 
     def on_order_changed(self, order):
-        if order != 'no':
+        if order != 0:  # "Default"
             self.build_ui()
 
     def on_tooltable_cellwidget_change(self):
@@ -1016,8 +1016,8 @@ class NonCopperClear(AppTool, Gerber):
 
         min_dict = {}
         idx = 1
-        for geo in total_geo:
-            for s_geo in total_geo[idx:]:
+        for geo in total_geo.geoms:
+            for s_geo in total_geo.geoms[idx:]:
                 # minimize the number of distances by not taking into considerations
                 # those that are too small
                 dist = geo.distance(s_geo)
@@ -1161,8 +1161,8 @@ class NonCopperClear(AppTool, Gerber):
 
                     min_dict = {}
                     idx = 1
-                    for geo in total_geo:
-                        for s_geo in total_geo[idx:]:
+                    for geo in total_geo.geoms:
+                        for s_geo in total_geo.geoms[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
@@ -2330,7 +2330,7 @@ class NonCopperClear(AppTool, Gerber):
         # ######################################################################################################
 
         units = self.app.defaults['units']
-        order = order if order else self.ui.ncc_order_radio.get_value()
+        order = order if order else self.ui.ncc_order_combo.get_value()
         ncc_select = self.ui.select_combo.get_value()
         rest_machining_choice = self.ui.ncc_rest_cb.get_value()
 
@@ -2368,9 +2368,9 @@ class NonCopperClear(AppTool, Gerber):
 
             tool = None
 
-            if order == 'fwd':
+            if order == 1:  # "Forward"
                 sorted_clear_tools.sort(reverse=False)
-            elif order == 'rev':
+            elif order == 2:    # "Reverse"
                 sorted_clear_tools.sort(reverse=True)
             else:
                 pass
@@ -2845,9 +2845,9 @@ class NonCopperClear(AppTool, Gerber):
         def job_thread(a_obj):
             try:
                 if rest_machining_choice is True:
-                    a_obj.app_obj.new_object("geometry", name, gen_clear_area_rest)
+                    a_obj.app_obj.new_object("geometry", name, gen_clear_area_rest, autoselected=False)
                 else:
-                    a_obj.app_obj.new_object("geometry", name, gen_clear_area)
+                    a_obj.app_obj.new_object("geometry", name, gen_clear_area, autoselected=False)
             except grace:
                 if run_threaded:
                     proc.done()
@@ -2864,7 +2864,7 @@ class NonCopperClear(AppTool, Gerber):
                 a_obj.proc_container.view.set_idle()
 
             # focus on Properties Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
+            # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         if run_threaded:
             # Promise object with the new name
@@ -3050,9 +3050,9 @@ class NonCopperClear(AppTool, Gerber):
             # will store the number of tools for which the isolation is broken
             warning_flag = 0
 
-            if order == 'fwd':
+            if order == 1:  # "Forward"
                 sorted_tools.sort(reverse=False)
-            elif order == 'rev':
+            elif order == 2:    # "Reverse"
                 sorted_tools.sort(reverse=True)
             else:
                 pass
@@ -4121,8 +4121,8 @@ class NccUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        obj_frame.setLayout(grid0)
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
         # Type of object to be painted
@@ -4139,8 +4139,8 @@ class NccUI:
         self.type_obj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
                                         {'label': _("Gerber"), 'value': 'gerber'}])
 
-        grid0.addWidget(self.type_obj_combo_label, 0, 0)
-        grid0.addWidget(self.type_obj_radio, 0, 1)
+        obj_grid.addWidget(self.type_obj_combo_label, 0, 0)
+        obj_grid.addWidget(self.type_obj_radio, 0, 1)
 
         # #############################################################################################################
         # The object to be copper cleared
@@ -4150,12 +4150,12 @@ class NccUI:
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.is_last = True
 
-        grid0.addWidget(self.object_combo, 2, 0, 1, 2)
+        obj_grid.addWidget(self.object_combo, 2, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line, 4, 0, 1, 2)
+        # obj_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # #############################################################################################################
         # Tool Table Frame
@@ -4171,13 +4171,13 @@ class NccUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        tt_frame.setLayout(grid1)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
+        # Tools Table
         self.tools_table = FCTable(drag_drop=True)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        grid1.addWidget(self.tools_table, 2, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID
@@ -4214,25 +4214,21 @@ class NccUI:
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
 
-        self.ncc_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                         {'label': _('Forward'), 'value': 'fwd'},
-                                         {'label': _('Reverse'), 'value': 'rev'}])
-        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                          "'No' --> means that the used order is the one in the tool table\n"
-                                          "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                          "WARNING: using rest machining will automatically set the order\n"
-                                          "in reverse and disable this control."))
+        # self.ncc_order_combo = RadioSet([{'label': _('No'), 'value': 'no'},
+        #                              {'label': _('Forward'), 'value': 'fwd'},
+        #                              {'label': _('Reverse'), 'value': 'rev'}])
+        self.ncc_order_combo = FCComboBox2()
+        self.ncc_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
-        grid1.addWidget(self.ncc_order_label, 4, 0)
-        grid1.addWidget(self.ncc_order_radio, 4, 1)
+        tool_grid.addWidget(self.ncc_order_label, 4, 0)
+        tool_grid.addWidget(self.ncc_order_combo, 4, 1)
         
         # ##############################################################################
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
-        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
+        tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
         new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
@@ -4241,13 +4237,13 @@ class NccUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        new_tool_grid.addWidget(separator_line, 0, 0, 1, 2)
+        new_tool_grid.addWidget(separator_line, 0, 0, 1, 3)
 
         # #############################################################
         # ############### Tool selection ##############################
         # #############################################################
         self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
-        new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 2)
+        new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 3)
 
         # ### Tool Diameter ####
         self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
@@ -4256,14 +4252,16 @@ class NccUI:
         )
         new_tool_grid.addWidget(self.new_tooldia_lbl, 4, 0)
 
-        new_tool_lay = QtWidgets.QHBoxLayout()
+        # nt_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        # nt_grid.setContentsMargins(0, 0, 0, 0)
+        # new_tool_grid.addLayout(nt_grid, 4, 1)
 
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
         self.new_tooldia_entry.set_range(-10000.0000, 10000.0000)
         self.new_tooldia_entry.setObjectName(_("Tool Dia"))
 
-        new_tool_lay.addWidget(self.new_tooldia_entry)
+        new_tool_grid.addWidget(self.new_tooldia_entry, 4, 1)
 
         # Find Optimal Tooldia
         self.find_optimal_button = QtWidgets.QToolButton()
@@ -4274,9 +4272,7 @@ class NccUI:
             _("Find a tool diameter that is guaranteed\n"
               "to do a complete isolation.")
         )
-        new_tool_lay.addWidget(self.find_optimal_button)
-
-        new_tool_grid.addLayout(new_tool_lay, 4, 1)
+        new_tool_grid.addWidget(self.find_optimal_button, 4, 2)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
@@ -4284,7 +4280,7 @@ class NccUI:
         button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 0)
-        new_tool_grid.addLayout(button_grid, 6, 0, 1, 2)
+        new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -4325,10 +4321,8 @@ class NccUI:
         self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
-            _(
-                "The data used for creating GCode.\n"
-                "Each tool store it's own set of such data."
-            )
+            _("The data used for creating GCode.\n"
+              "Each tool store it's own set of such data.")
         )
         self.tools_box.addWidget(self.tool_data_label)
 
@@ -4595,9 +4589,10 @@ class NccUI:
               "- 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
-        gen_grid.addWidget(self.select_label, 8, 0, )
+        gen_grid.addWidget(self.select_label, 8, 0)
         gen_grid.addWidget(self.select_combo, 8, 1)
 
+        # Reference Type
         self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
         self.reference_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
@@ -4606,7 +4601,7 @@ class NccUI:
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        gen_grid.addWidget(self.reference_combo_type_label, 10, 0, )
+        gen_grid.addWidget(self.reference_combo_type_label, 10, 0)
         gen_grid.addWidget(self.reference_combo_type, 10, 1)
 
         self.reference_combo = FCComboBox()
@@ -4644,6 +4639,8 @@ class NccUI:
         self.valid_cb.setObjectName("n_check")
 
         gen_grid.addWidget(self.valid_cb, 16, 0, 1, 2)
+
+        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, par_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate NCC Geometry Button
@@ -4744,9 +4741,9 @@ class NccUI:
 
     def on_rest_machining_check(self, state):
         if state:
-            self.ncc_order_radio.set_value('rev')
+            self.ncc_order_combo.set_value(2)   # "Reverse"
             self.ncc_order_label.setDisabled(True)
-            self.ncc_order_radio.setDisabled(True)
+            self.ncc_order_combo.setDisabled(True)
 
             self.nccmarginlabel.hide()
             self.ncc_margin_entry.hide()
@@ -4764,7 +4761,7 @@ class NccUI:
 
         else:
             self.ncc_order_label.setDisabled(False)
-            self.ncc_order_radio.setDisabled(False)
+            self.ncc_order_combo.setDisabled(False)
 
             self.nccmarginlabel.show()
             self.ncc_margin_entry.show()

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.09.2021
+
+- solved more Shapely 2.0 deprecation warnings 
+- in Isolation Plugin and NCC Plugin changed the UI and the Preferences for those Plugins
+
 24.09.2021
 
 - in Extract Plugin some minor UI changes

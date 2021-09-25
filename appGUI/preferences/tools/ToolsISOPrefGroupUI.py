@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    FCLabel, FCGridLayout
+    FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,15 +22,21 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.defaults = defaults
 
         # ## Clear non-copper regions
-        self.iso_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.iso_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.iso_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
         )
         self.layout.addWidget(self.iso_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
 
         # Tool Dias
         isotdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
@@ -42,24 +48,49 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.tool_dia_entry.setPlaceholderText(_("Comma separated values"))
 
-        grid0.addWidget(isotdlabel, 0, 0)
-        grid0.addWidget(self.tool_dia_entry, 0, 1, 1, 2)
+        par_grid.addWidget(isotdlabel, 0, 0)
+        par_grid.addWidget(self.tool_dia_entry, 0, 1, 1, 2)
 
-        # Tool order Radio Button
-        self.order_label = FCLabel('%s:' % _('Tool order'))
-        self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
-                                      "'Forward' --> means that the tools will be ordered from small to big\n"
-                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                      "WARNING: using rest machining will automatically set the order\n"
-                                      "in reverse and disable this control."))
+        # Tool order
+        self.iso_order_label = FCLabel('%s:' % _('Tool order'))
+        self.iso_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                          "'No' --> means that the used order is the one in the tool table\n"
+                                          "'Forward' --> means that the tools will be ordered from small to big\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                          "WARNING: using rest machining will automatically set the order\n"
+                                          "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.iso_order_combo = FCComboBox2()
+        self.iso_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
-        grid0.addWidget(self.order_label, 2, 0)
-        grid0.addWidget(self.order_radio, 2, 1, 1, 2)
+        par_grid.addWidget(self.iso_order_label, 2, 0)
+        par_grid.addWidget(self.iso_order_combo, 2, 1, 1, 2)
+
+        # Tip Dia
+        self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _("The tip diameter for V-Shape Tool"))
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0, 1000)
+        self.tipdia_entry.setSingleStep(0.1)
+
+        par_grid.addWidget(self.tipdialabel, 4, 0)
+        par_grid.addWidget(self.tipdia_entry, 4, 1, 1, 2)
+
+        # Tip Angle
+        self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _("The tip angle for V-Shape Tool.\n"
+              "In degree."))
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(1, 180)
+        self.tipangle_entry.setSingleStep(5)
+        self.tipangle_entry.setWrapping(True)
+
+        par_grid.addWidget(self.tipanglelabel, 6, 0)
+        par_grid.addWidget(self.tipangle_entry, 6, 1, 1, 2)
 
         # Cut Z entry
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -77,8 +108,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
              "In application units.")
         )
 
-        grid0.addWidget(cutzlabel, 6, 0)
-        grid0.addWidget(self.cutz_entry, 6, 1, 1, 2)
+        par_grid.addWidget(cutzlabel, 8, 0)
+        par_grid.addWidget(self.cutz_entry, 8, 1, 1, 2)
 
         # New Diameter
         self.newdialabel = FCLabel('%s:' % _('New Dia'))
@@ -92,13 +123,26 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.newdia_entry.set_range(0.0001, 10000.0000)
         self.newdia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.newdialabel, 8, 0)
-        grid0.addWidget(self.newdia_entry, 8, 1, 1, 2)
+        par_grid.addWidget(self.newdialabel, 10, 0)
+        par_grid.addWidget(self.newdia_entry, 10, 1, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 3)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # par_grid.addWidget(separator_line, 10, 0, 1, 3)
+
+        # #############################################################################################################
+        # Tool Frame
+        # #############################################################################################################
+        # ### Tools ## ##
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.layout.addWidget(self.tools_table_label)
+
+        tt_frame = FCFrame()
+        self.layout.addWidget(tt_frame)
+
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
         # Shape
         tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -113,8 +157,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.tool_shape_combo = FCComboBox2(policy=False)
         self.tool_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
 
-        grid0.addWidget(tool_shape_label, 12, 0)
-        grid0.addWidget(self.tool_shape_combo, 12, 1, 1, 2)
+        tool_grid.addWidget(tool_shape_label, 0, 0)
+        tool_grid.addWidget(self.tool_shape_combo, 0, 1, 1, 2)
 
         # Passes
         passlabel = FCLabel('%s:' % _('Passes'))
@@ -125,8 +169,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.passes_entry = FCSpinner()
         self.passes_entry.set_range(1, 999)
 
-        grid0.addWidget(passlabel, 14, 0)
-        grid0.addWidget(self.passes_entry, 14, 1, 1, 2)
+        tool_grid.addWidget(passlabel, 2, 0)
+        tool_grid.addWidget(self.passes_entry, 2, 1, 1, 2)
 
         # Pad Passes
         padpasslabel = FCLabel('%s:' % _('Pad Passes'))
@@ -137,8 +181,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.pad_passes_entry = FCSpinner()
         self.pad_passes_entry.set_range(0, 999)
 
-        grid0.addWidget(padpasslabel, 16, 0)
-        grid0.addWidget(self.pad_passes_entry, 16, 1, 1, 2)
+        tool_grid.addWidget(padpasslabel, 4, 0)
+        tool_grid.addWidget(self.pad_passes_entry, 4, 1, 1, 2)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -151,8 +195,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.overlap_entry.set_range(0.0000, 99.9999)
         self.overlap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(overlabel, 20, 0)
-        grid0.addWidget(self.overlap_entry, 20, 1, 1, 2)
+        tool_grid.addWidget(overlabel, 6, 0)
+        tool_grid.addWidget(self.overlap_entry, 6, 1, 1, 2)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -170,8 +214,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
 
-        grid0.addWidget(self.milling_type_label, 22, 0)
-        grid0.addWidget(self.milling_type_radio, 22, 1, 1, 2)
+        tool_grid.addWidget(self.milling_type_label, 8, 0)
+        tool_grid.addWidget(self.milling_type_radio, 8, 1, 1, 2)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
@@ -189,13 +233,28 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                         {'label': _('Ext'), 'value': 'ext'},
                                         {'label': _('Int'), 'value': 'int'}])
 
-        grid0.addWidget(self.iso_type_label, 24, 0)
-        grid0.addWidget(self.iso_type_radio, 24, 1, 1, 2)
+        tool_grid.addWidget(self.iso_type_label, 10, 0)
+        tool_grid.addWidget(self.iso_type_radio, 10, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 26, 0, 1, 3)
+        tool_grid.addWidget(separator_line, 12, 0, 1, 3)
+
+        # #############################################################################################################
+        # General Parameters Frame
+        # #############################################################################################################
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        self.layout.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        self.layout.addWidget(gp_frame)
+
+        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gp_frame.setLayout(gen_grid)
 
         # Rest machining CheckBox
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
@@ -209,7 +268,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "If not checked, use the standard algorithm.")
         )
 
-        grid0.addWidget(self.rest_cb, 28, 0)
+        gen_grid.addWidget(self.rest_cb, 0, 0)
 
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
@@ -217,14 +276,14 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("Combine all passes into one object")
         )
 
-        grid0.addWidget(self.combine_passes_cb, 28, 1)
+        gen_grid.addWidget(self.combine_passes_cb, 0, 1)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
-        grid0.addWidget(self.except_cb, 28, 2)
+        gen_grid.addWidget(self.except_cb, 0, 2)
 
         # Check Tool validity
         self.valid_cb = FCCheckBox(label=_('Check validity'))
@@ -233,7 +292,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "if they will provide a complete isolation.")
         )
 
-        grid0.addWidget(self.valid_cb, 30, 0, 1, 3)
+        gen_grid.addWidget(self.valid_cb, 2, 0, 1, 3)
 
         # Isolation Scope
         self.select_label = FCLabel('%s:' % _("Selection"))
@@ -249,8 +308,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
 
-        grid0.addWidget(self.select_label, 32, 0)
-        grid0.addWidget(self.select_combo, 32, 1, 1, 2)
+        gen_grid.addWidget(self.select_label, 4, 0)
+        gen_grid.addWidget(self.select_combo, 4, 1, 1, 2)
 
         # Area Shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -261,8 +320,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 34, 0)
-        grid0.addWidget(self.area_shape_radio, 34, 1, 1, 2)
+        gen_grid.addWidget(self.area_shape_label, 6, 0)
+        gen_grid.addWidget(self.area_shape_radio, 6, 1, 1, 2)
 
         # Polygon interiors selection
         self.poly_int_cb = FCCheckBox(_("Interiors"))
@@ -278,13 +337,13 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "interiors of a polygon (holes in the polygon) could not be isolated.\n"
               "Works when 'rest machining' is used.")
         )
-        grid0.addWidget(self.poly_int_cb, 36, 0)
-        grid0.addWidget(self.force_iso_cb, 36, 1)
+        gen_grid.addWidget(self.poly_int_cb, 8, 0)
+        gen_grid.addWidget(self.force_iso_cb, 8, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 38, 0, 1, 3)
+        gen_grid.addWidget(separator_line, 10, 0, 1, 3)
 
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -294,7 +353,9 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        grid0.addWidget(plotting_label, 40, 0)
-        grid0.addWidget(self.plotting_radio, 40, 1, 1, 2)
+        gen_grid.addWidget(plotting_label, 12, 0)
+        gen_grid.addWidget(self.plotting_radio, 12, 1, 1, 2)
 
-        self.layout.addStretch()
+        FCGridLayout.set_common_column_size([par_grid, tool_grid, gen_grid], 0)
+
+        # self.layout.addStretch()

@@ -2301,8 +2301,8 @@ class DrillingUI:
         self.tools_box.addWidget(self.obj_combo_label)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.tools_box.addLayout(grid0)
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.tools_box.addLayout(obj_grid)
 
         # ################################################
         # ##### The object to be drilled #################
@@ -2313,12 +2313,12 @@ class DrillingUI:
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
-        grid0.addWidget(self.object_combo, 0, 0, 1, 2)
+        obj_grid.addWidget(self.object_combo, 0, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line, 2, 0, 1, 2)
+        # obj_grid.addWidget(separator_line, 2, 0, 1, 2)
 
         # #############################################################################################################
         # Excellon Tool Table Frame
@@ -2331,11 +2331,12 @@ class DrillingUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
-        tt_frame.setLayout(grid1)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tt_frame.setLayout(tool_grid)
 
+        # Tools Table
         self.tools_table = FCTable(drag_drop=True)
-        grid1.addWidget(self.tools_table, 0, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(5)
         self.tools_table.setColumnHidden(3, True)
@@ -2369,8 +2370,8 @@ class DrillingUI:
         self.order_combo = FCComboBox2()
         self.order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
-        grid1.addWidget(self.order_label, 2, 0)
-        grid1.addWidget(self.order_combo, 2, 1)
+        tool_grid.addWidget(self.order_label, 2, 0)
+        tool_grid.addWidget(self.order_combo, 2, 1)
 
         # Manual Load of Tools from DB
         self.search_load_db_btn = FCButton(_("Search DB"))
@@ -2380,7 +2381,7 @@ class DrillingUI:
               "with tools from DB that have a close diameter value.")
         )
 
-        grid1.addWidget(self.search_load_db_btn, 4, 0, 1, 2)
+        tool_grid.addWidget(self.search_load_db_btn, 4, 0, 1, 2)
 
         # #############################################################################################################
         # ALL Parameters Frame
@@ -2410,8 +2411,8 @@ class DrillingUI:
         self.exc_tools_box.addWidget(tp_frame)
 
         # Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        tp_frame.setLayout(grid2)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tp_frame.setLayout(param_grid)
 
         # Cut Z
         self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -2427,8 +2428,8 @@ class DrillingUI:
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setObjectName("e_cutz")
 
-        grid2.addWidget(self.cutzlabel, 4, 0)
-        grid2.addWidget(self.cutz_entry, 4, 1)
+        param_grid.addWidget(self.cutzlabel, 4, 0)
+        param_grid.addWidget(self.cutz_entry, 4, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -2452,8 +2453,8 @@ class DrillingUI:
 
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        grid2.addWidget(self.mpass_cb, 5, 0)
-        grid2.addWidget(self.maxdepth_entry, 5, 1)
+        param_grid.addWidget(self.mpass_cb, 5, 0)
+        param_grid.addWidget(self.maxdepth_entry, 5, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -2469,8 +2470,8 @@ class DrillingUI:
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setObjectName("e_travelz")
 
-        grid2.addWidget(self.travelzlabel, 6, 0)
-        grid2.addWidget(self.travelz_entry, 6, 1)
+        param_grid.addWidget(self.travelzlabel, 6, 0)
+        param_grid.addWidget(self.travelz_entry, 6, 1)
 
         # Excellon Feedrate Z
         self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
@@ -2486,8 +2487,8 @@ class DrillingUI:
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setObjectName("e_feedratez")
 
-        grid2.addWidget(self.frzlabel, 14, 0)
-        grid2.addWidget(self.feedrate_z_entry, 14, 1)
+        param_grid.addWidget(self.frzlabel, 14, 0)
+        param_grid.addWidget(self.feedrate_z_entry, 14, 1)
 
         # Excellon Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -2504,8 +2505,8 @@ class DrillingUI:
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setObjectName("e_fr_rapid")
 
-        grid2.addWidget(self.feedrate_rapid_label, 16, 0)
-        grid2.addWidget(self.feedrate_rapid_entry, 16, 1)
+        param_grid.addWidget(self.feedrate_rapid_label, 16, 0)
+        param_grid.addWidget(self.feedrate_rapid_entry, 16, 1)
 
         # default values is to hide
         self.feedrate_rapid_label.hide()
@@ -2523,8 +2524,8 @@ class DrillingUI:
         self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("e_spindlespeed")
 
-        grid2.addWidget(self.spindle_label, 19, 0)
-        grid2.addWidget(self.spindlespeed_entry, 19, 1)
+        param_grid.addWidget(self.spindle_label, 19, 0)
+        param_grid.addWidget(self.spindlespeed_entry, 19, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -2545,8 +2546,8 @@ class DrillingUI:
         )
         self.dwelltime_entry.setObjectName("e_dwelltime")
 
-        grid2.addWidget(self.dwell_cb, 20, 0)
-        grid2.addWidget(self.dwelltime_entry, 20, 1)
+        param_grid.addWidget(self.dwell_cb, 20, 0)
+        param_grid.addWidget(self.dwelltime_entry, 20, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -2563,8 +2564,8 @@ class DrillingUI:
         self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName("e_offset")
 
-        grid2.addWidget(self.tool_offset_label, 25, 0)
-        grid2.addWidget(self.offset_entry, 25, 1)
+        param_grid.addWidget(self.tool_offset_label, 25, 0)
+        param_grid.addWidget(self.offset_entry, 25, 1)
 
         # Drill slots
         self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
@@ -2572,7 +2573,7 @@ class DrillingUI:
             _("If the selected tool has slots then they will be drilled.")
         )
         self.drill_slots_cb.setObjectName("e_drill_slots")
-        grid2.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
+        param_grid.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
 
         # Drill Overlap
         self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
@@ -2587,8 +2588,8 @@ class DrillingUI:
 
         self.drill_overlap_entry.setObjectName("e_drill_slots_overlap")
 
-        grid2.addWidget(self.drill_overlap_label, 28, 0)
-        grid2.addWidget(self.drill_overlap_entry, 28, 1)
+        param_grid.addWidget(self.drill_overlap_label, 28, 0)
+        param_grid.addWidget(self.drill_overlap_entry, 28, 1)
 
         # Last drill in slot
         self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
@@ -2597,7 +2598,7 @@ class DrillingUI:
               "add a drill hole on the slot end point.")
         )
         self.last_drill_cb.setObjectName("e_drill_last_drill")
-        grid2.addWidget(self.last_drill_cb, 30, 0, 1, 2)
+        param_grid.addWidget(self.last_drill_cb, 30, 0, 1, 2)
 
         self.drill_overlap_label.hide()
         self.drill_overlap_entry.hide()
@@ -2633,8 +2634,8 @@ class DrillingUI:
         gp_frame = FCFrame()
         self.exc_tools_box.addWidget(gp_frame)
 
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        gp_frame.setLayout(grid3)
+        all_par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gp_frame.setLayout(all_par_grid)
 
         # Tool change
         self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
@@ -2656,8 +2657,8 @@ class DrillingUI:
 
         self.toolchangez_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.toolchange_cb, 0, 0)
-        grid3.addWidget(self.toolchangez_entry, 0, 1)
+        all_par_grid.addWidget(self.toolchange_cb, 0, 0)
+        all_par_grid.addWidget(self.toolchangez_entry, 0, 1)
 
         # Tool change X-Y
         self.toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
@@ -2667,8 +2668,8 @@ class DrillingUI:
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.toolchangexy_entry.setObjectName("e_toolchangexy")
 
-        grid3.addWidget(self.toolchange_xy_label, 2, 0)
-        grid3.addWidget(self.toolchangexy_entry, 2, 1)
+        all_par_grid.addWidget(self.toolchange_xy_label, 2, 0)
+        all_par_grid.addWidget(self.toolchangexy_entry, 2, 1)
 
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb,
                                               [
@@ -2686,8 +2687,8 @@ class DrillingUI:
         self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
         self.estartz_entry.setObjectName("e_startz")
 
-        grid3.addWidget(self.estartz_label, 4, 0)
-        grid3.addWidget(self.estartz_entry, 4, 1)
+        all_par_grid.addWidget(self.estartz_label, 4, 0)
+        all_par_grid.addWidget(self.estartz_entry, 4, 1)
 
         # End move Z:
         self.endz_label = FCLabel('%s:' % _("End move Z"))
@@ -2702,8 +2703,8 @@ class DrillingUI:
 
         self.endz_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.endz_label, 6, 0)
-        grid3.addWidget(self.endz_entry, 6, 1)
+        all_par_grid.addWidget(self.endz_label, 6, 0)
+        all_par_grid.addWidget(self.endz_entry, 6, 1)
 
         # End Move X,Y
         self.endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
@@ -2716,8 +2717,8 @@ class DrillingUI:
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.endxy_entry.setObjectName("e_endxy")
 
-        grid3.addWidget(self.endmove_xy_label, 8, 0)
-        grid3.addWidget(self.endxy_entry, 8, 1)
+        all_par_grid.addWidget(self.endmove_xy_label, 8, 0)
+        all_par_grid.addWidget(self.endxy_entry, 8, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -2732,8 +2733,8 @@ class DrillingUI:
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setObjectName("e_depth_probe")
 
-        grid3.addWidget(self.pdepth_label, 10, 0)
-        grid3.addWidget(self.pdepth_entry, 10, 1)
+        all_par_grid.addWidget(self.pdepth_label, 10, 0)
+        all_par_grid.addWidget(self.pdepth_entry, 10, 1)
 
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
@@ -2750,8 +2751,8 @@ class DrillingUI:
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setObjectName("e_fr_probe")
 
-        grid3.addWidget(self.feedrate_probe_label, 12, 0)
-        grid3.addWidget(self.feedrate_probe_entry, 12, 1)
+        all_par_grid.addWidget(self.feedrate_probe_label, 12, 0)
+        all_par_grid.addWidget(self.feedrate_probe_entry, 12, 1)
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
@@ -2766,8 +2767,8 @@ class DrillingUI:
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.pp_excellon_name_cb.setObjectName("e_pp")
 
-        grid3.addWidget(pp_excellon_label, 14, 0)
-        grid3.addWidget(self.pp_excellon_name_cb, 14, 1)
+        all_par_grid.addWidget(pp_excellon_label, 14, 0)
+        all_par_grid.addWidget(self.pp_excellon_name_cb, 14, 1)
 
         # ------------------------------------------------------------------------------------------------------------
         # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
@@ -2783,11 +2784,11 @@ class DrillingUI:
             ))
         self.exclusion_cb.setObjectName("e_area_exclusion")
 
-        grid3.addWidget(self.exclusion_cb, 16, 0, 1, 2)
+        all_par_grid.addWidget(self.exclusion_cb, 16, 0, 1, 2)
 
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
-        grid3.addWidget(self.exclusion_frame, 18, 0, 1, 2)
+        all_par_grid.addWidget(self.exclusion_frame, 18, 0, 1, 2)
 
         self.exclusion_box = QtWidgets.QVBoxLayout()
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)
@@ -2812,8 +2813,8 @@ class DrillingUI:
 
         self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
 
-        grid_a1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.exclusion_box.addLayout(grid_a1)
+        exclud_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.exclusion_box.addLayout(exclud_grid)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -2825,8 +2826,8 @@ class DrillingUI:
                                         {'label': _('Around'), 'value': 'around'}])
         self.strategy_radio.setObjectName("e_area_strategy")
 
-        grid_a1.addWidget(self.strategy_label, 1, 0)
-        grid_a1.addWidget(self.strategy_radio, 1, 1)
+        exclud_grid.addWidget(self.strategy_label, 1, 0)
+        exclud_grid.addWidget(self.strategy_radio, 1, 1)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))
@@ -2837,8 +2838,8 @@ class DrillingUI:
         self.over_z_entry.set_precision(self.decimals)
         self.over_z_entry.setObjectName("e_area_overz")
 
-        grid_a1.addWidget(self.over_z_label, 2, 0)
-        grid_a1.addWidget(self.over_z_entry, 2, 1)
+        exclud_grid.addWidget(self.over_z_label, 2, 0)
+        exclud_grid.addWidget(self.over_z_entry, 2, 1)
 
         # Button Add Area
         self.add_area_button = QtWidgets.QPushButton(_('Add Area:'))
@@ -2852,8 +2853,8 @@ class DrillingUI:
         )
         self.area_shape_radio.setObjectName("e_area_shape")
 
-        grid_a1.addWidget(self.add_area_button, 4, 0)
-        grid_a1.addWidget(self.area_shape_radio, 4, 1)
+        exclud_grid.addWidget(self.add_area_button, 4, 0)
+        exclud_grid.addWidget(self.area_shape_radio, 4, 1)
 
         h_lay_1 = QtWidgets.QHBoxLayout()
         self.exclusion_box.addLayout(h_lay_1)
@@ -2876,9 +2877,9 @@ class DrillingUI:
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid3.addWidget(separator_line, 25, 0, 1, 2)
+        # all_par_grid.addWidget(separator_line, 25, 0, 1, 2)
 
-        FCGridLayout.set_common_column_size([grid0, grid1, grid2, grid3], 0)
+        FCGridLayout.set_common_column_size([obj_grid, tool_grid, param_grid, all_par_grid], 0)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))

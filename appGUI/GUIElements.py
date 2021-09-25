@@ -1356,6 +1356,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         :param alignment:   the value is aligned to left or right
         :param parent:
         :param callback:    called when the entered value is outside limits; the min and max value will be passed to it
+        :param policy:      by default the widget will not stretch as much as possible on horizontal
         """
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True

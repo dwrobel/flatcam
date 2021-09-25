@@ -324,7 +324,7 @@ class ToolIsolation(AppTool, Gerber):
         self.on_type_excobj_index_changed(val="gerber")
         self.on_reference_combo_changed()
 
-        self.ui.order_radio.set_value(self.app.defaults["tools_iso_order"])
+        self.ui.iso_order_combo.set_value(self.app.defaults["tools_iso_order"])
         self.ui.tool_shape_combo.set_value(self.app.defaults["tools_iso_tool_shape"])
         self.ui.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
         self.ui.pad_passes_entry.set_value(self.app.defaults["tools_iso_pad_passes"])
@@ -661,7 +661,7 @@ class ToolIsolation(AppTool, Gerber):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.ui.rest_cb.stateChanged.connect(self.on_rest_machining_check)
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.iso_order_combo.currentIndexChanged.connect(self.on_order_changed)
 
     def ui_disconnect(self):
 
@@ -710,20 +710,20 @@ class ToolIsolation(AppTool, Gerber):
         except (TypeError, ValueError):
             pass
         try:
-            self.ui.order_radio.activated_custom[str].disconnect()
+            self.ui.iso_order_combo.currentIndexChanged.disconnect()
         except (TypeError, ValueError):
             pass
 
     def sort_iso_tools(self):
-        order = self.ui.order_radio.get_value()
-        if order == 'no':
+        order = self.ui.iso_order_combo.get_value()
+        if order == 0:  # "Default"
             return
 
         # sort the tools dictionary having the 'tooldia' as sorting key
         new_tools_list = []
-        if order == 'fwd':
+        if order == 1:  # "Forward"
             new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=False))
-        elif order == 'rev':
+        elif order == 2:    # "Reverse"
             new_tools_list = deepcopy(sorted(self.iso_tools.items(), key=lambda x: x[1]['tooldia'], reverse=True))
 
         # clear the tools dictionary
@@ -991,9 +991,9 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_rest_machining_check(self, state):
         if state:
-            self.ui.order_radio.set_value('rev')
+            self.ui.iso_order_combo.set_value(2)    # "Reverse"
             self.ui.order_label.setDisabled(True)
-            self.ui.order_radio.setDisabled(True)
+            self.ui.iso_order_combo.setDisabled(True)
 
             self.old_combine_state = self.ui.combine_passes_cb.get_value()
             self.ui.combine_passes_cb.set_value(True)
@@ -1002,7 +1002,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui.forced_rest_iso_cb.setDisabled(False)
         else:
             self.ui.order_label.setDisabled(False)
-            self.ui.order_radio.setDisabled(False)
+            self.ui.iso_order_combo.setDisabled(False)
 
             self.ui.combine_passes_cb.set_value(self.old_combine_state)
             self.ui.combine_passes_cb.setDisabled(False)
@@ -1854,10 +1854,10 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
-        order = self.ui.order_radio.get_value()
-        if order == 'fwd':
+        order = self.ui.iso_order_combo.get_value()
+        if order == 1:  # "Forward"
             sorted_tools.sort(reverse=False)
-        elif order == 'rev':
+        elif order == 2:    # "Reverse"
             sorted_tools.sort(reverse=True)
         else:
             pass
@@ -2087,10 +2087,11 @@ class ToolIsolation(AppTool, Gerber):
                 if iso_geo == 'fail':
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     continue
-                try:
-                    for geo in iso_geo:
+
+                if isinstance(iso_geo, (MultiLineString, MultiPolygon)):
+                    for geo in iso_geo.geoms:
                         solid_geo.append(geo)
-                except TypeError:
+                else:
                     solid_geo.append(iso_geo)
 
             # ############################################################
@@ -2893,11 +2894,16 @@ class ToolIsolation(AppTool, Gerber):
         """
 
         try:
-            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
-                                                   passes=nr_passes, prog_plot=prog_plot)
+            geom_shp = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
+                                                       passes=nr_passes, prog_plot=prog_plot)
         except Exception as e:
             log.error('ToolIsolation.generate_envelope() --> %s' % str(e))
             return 'fail'
+
+        if isinstance(geom_shp, (MultiPolygon, MultiLineString)):
+            geom = geom_shp.geoms
+        else:
+            geom = geom_shp
 
         if invert:
             try:
@@ -3025,21 +3031,22 @@ class ToolIsolation(AppTool, Gerber):
             else:
                 not_isolated_geo.append(geo)
 
+        work_geo_shp = work_geo.geoms if isinstance(work_geo, MultiPolygon) else work_geo
         if invert:
             try:
                 pl = []
-                for p in work_geo:
+                for p in work_geo_shp:
                     if p is not None:
                         if isinstance(p, Polygon):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
                         elif isinstance(p, LinearRing):
                             pl.append(Polygon(p.coords[::-1]))
-                work_geo = MultiPolygon(pl)
+                work_geo_shp = MultiPolygon(pl)
             except TypeError:
-                if isinstance(work_geo, Polygon) and work_geo is not None:
-                    work_geo = [Polygon(work_geo.exterior.coords[::-1], work_geo.interiors)]
-                elif isinstance(work_geo, LinearRing) and work_geo is not None:
-                    work_geo = [Polygon(work_geo.coords[::-1])]
+                if isinstance(work_geo_shp, Polygon) and work_geo_shp is not None:
+                    work_geo_shp = [Polygon(work_geo_shp.exterior.coords[::-1], work_geo_shp.interiors)]
+                elif isinstance(work_geo_shp, LinearRing) and work_geo_shp is not None:
+                    work_geo_shp = [Polygon(work_geo_shp.coords[::-1])]
                 else:
                     log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
                               type(work_geo))
@@ -3047,14 +3054,15 @@ class ToolIsolation(AppTool, Gerber):
                 log.error("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
                 return 'fail', 'fail'
 
+        actual_geo = work_geo_shp.geoms if isinstance(work_geo, MultiPolygon) else work_geo_shp
         if env_iso_type == 0:  # exterior
-            for geo in work_geo:
+            for geo in actual_geo:
                 isolated_geo.append(geo.exterior)
         elif env_iso_type == 1:  # interiors
-            for geo in work_geo:
+            for geo in actual_geo:
                 isolated_geo += [interior for interior in geo.interiors]
         else:  # exterior + interiors
-            for geo in work_geo:
+            for geo in actual_geo:
                 isolated_geo += [geo.exterior] + [interior for interior in geo.interiors]
 
         return isolated_geo, not_isolated_geo
@@ -3189,11 +3197,11 @@ class IsoUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        tt_frame.setLayout(grid1)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
-        grid1.addWidget(self.tools_table, 0, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table, 0, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID
@@ -3224,41 +3232,37 @@ class IsoUI:
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.iso_order_combo = FCComboBox2()
+        self.iso_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
-        grid1.addWidget(self.order_label, 2, 0)
-        grid1.addWidget(self.order_radio, 2, 1)
+        tool_grid.addWidget(self.order_label, 2, 0)
+        tool_grid.addWidget(self.iso_order_combo, 2, 1)
 
         # #############################################################
         # ############### Tool adding #################################
         # #############################################################
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
-        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
+        tool_grid.addWidget(self.add_tool_frame, 4, 0, 1, 2)
 
-        grid_add_tool = FCGridLayout(v_spacing=5, h_spacing=3)
-        grid_add_tool.setContentsMargins(0, 0, 0, 0)
-        self.add_tool_frame.setLayout(grid_add_tool)
+        new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        new_tool_grid.setContentsMargins(0, 0, 0, 0)
+        self.add_tool_frame.setLayout(new_tool_grid)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid_add_tool.addWidget(separator_line, 0, 0, 1, 2)
+        new_tool_grid.addWidget(separator_line, 0, 0, 1, 3)
 
         self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
-        grid_add_tool.addWidget(self.tool_sel_label, 2, 0, 1, 2)
+        new_tool_grid.addWidget(self.tool_sel_label, 2, 0, 1, 3)
 
         # ### Tool Diameter ####
         self.new_tooldia_lbl = FCLabel('%s: ' % _('Tool Dia'))
         self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool")
         )
-        grid_add_tool.addWidget(self.new_tooldia_lbl, 4, 0)
-
-        new_tool_lay = QtWidgets.QHBoxLayout()
-        grid_add_tool.addLayout(new_tool_lay, 4, 1)
+        new_tool_grid.addWidget(self.new_tooldia_lbl, 4, 0)
 
         # Tool diameter entry
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -3276,16 +3280,14 @@ class IsoUI:
               "to do a complete isolation.")
         )
 
-        new_tool_lay.addWidget(self.new_tooldia_entry)
-        new_tool_lay.addWidget(self.find_optimal_button)
+        new_tool_grid.addWidget(self.new_tooldia_entry, 4, 1)
+        new_tool_grid.addWidget(self.find_optimal_button, 4, 2)
 
         # #############################################################################################################
         # ################################    Button Grid   ###########################################################
         # #############################################################################################################
-        button_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        button_grid.setColumnStretch(0, 1)
-        button_grid.setColumnStretch(1, 0)
-        grid_add_tool.addLayout(button_grid, 6, 0, 1, 2)
+        button_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        new_tool_grid.addLayout(button_grid, 6, 0, 1, 3)
 
         self.search_and_add_btn = FCButton(_('Search and Add'))
         self.search_and_add_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
@@ -3350,8 +3352,8 @@ class IsoUI:
         self.tool_params_box.addWidget(tp_frame)
 
         # Grid Layout
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        tp_frame.setLayout(grid2)
+        tool_param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tp_frame.setLayout(tool_param_grid)
 
         # Tool Type
         self.tool_shape_label = FCLabel('%s:' % _('Shape'))
@@ -3374,8 +3376,8 @@ class IsoUI:
         else:
             self.tool_shape_combo.setCurrentIndex(idx)
 
-        grid2.addWidget(self.tool_shape_label, 0, 0)
-        grid2.addWidget(self.tool_shape_combo, 0, 1)
+        tool_param_grid.addWidget(self.tool_shape_label, 0, 0)
+        tool_param_grid.addWidget(self.tool_shape_combo, 0, 1)
 
         # Passes
         passlabel = FCLabel('%s:' % _('Passes'))
@@ -3387,8 +3389,8 @@ class IsoUI:
         self.passes_entry.set_range(1, 999)
         self.passes_entry.setObjectName("i_passes")
 
-        grid2.addWidget(passlabel, 2, 0)
-        grid2.addWidget(self.passes_entry, 2, 1)
+        tool_param_grid.addWidget(passlabel, 2, 0)
+        tool_param_grid.addWidget(self.passes_entry, 2, 1)
 
         # Pad Passes
         padpasslabel = FCLabel('%s:' % _('Pad Passes'))
@@ -3400,8 +3402,8 @@ class IsoUI:
         self.pad_passes_entry.set_range(0, 999)
         self.pad_passes_entry.setObjectName("i_pad_passes")
 
-        grid2.addWidget(padpasslabel, 4, 0)
-        grid2.addWidget(self.pad_passes_entry, 4, 1, 1, 2)
+        tool_param_grid.addWidget(padpasslabel, 4, 0)
+        tool_param_grid.addWidget(self.pad_passes_entry, 4, 1)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -3415,8 +3417,8 @@ class IsoUI:
         self.iso_overlap_entry.setSingleStep(0.1)
         self.iso_overlap_entry.setObjectName("i_overlap")
 
-        grid2.addWidget(overlabel, 6, 0)
-        grid2.addWidget(self.iso_overlap_entry, 6, 1)
+        tool_param_grid.addWidget(overlabel, 6, 0)
+        tool_param_grid.addWidget(self.iso_overlap_entry, 6, 1)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -3435,8 +3437,8 @@ class IsoUI:
         )
         self.milling_type_radio.setObjectName("i_milling_type")
 
-        grid2.addWidget(self.milling_type_label, 8, 0)
-        grid2.addWidget(self.milling_type_radio, 8, 1)
+        tool_param_grid.addWidget(self.milling_type_label, 8, 0)
+        tool_param_grid.addWidget(self.milling_type_radio, 8, 1)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
@@ -3455,8 +3457,8 @@ class IsoUI:
                                         {'label': _('Int'), 'value': 'int'}])
         self.iso_type_radio.setObjectName("i_iso_type")
 
-        grid2.addWidget(self.iso_type_label, 10, 0)
-        grid2.addWidget(self.iso_type_radio, 10, 1)
+        tool_param_grid.addWidget(self.iso_type_label, 10, 0)
+        tool_param_grid.addWidget(self.iso_type_radio, 10, 1)
 
         # ##############################################################################################################
         # Apply to All Parameters Button
@@ -3482,8 +3484,8 @@ class IsoUI:
         gp_frame = FCFrame()
         self.tool_params_box.addWidget(gp_frame)
 
-        grid3 = FCGridLayout(v_spacing=5, h_spacing=3)
-        gp_frame.setLayout(grid3)
+        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gp_frame.setLayout(gen_grid)
 
         # Rest Machining
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
@@ -3498,7 +3500,7 @@ class IsoUI:
               "If not checked, use the standard algorithm.")
         )
 
-        grid3.addWidget(self.rest_cb, 0, 0)
+        gen_grid.addWidget(self.rest_cb, 0, 0)
 
         # Force isolation even if the interiors are not isolated
         self.forced_rest_iso_cb = FCCheckBox(_("Forced Rest"))
@@ -3508,7 +3510,7 @@ class IsoUI:
               "Works when 'rest machining' is used.")
         )
 
-        grid3.addWidget(self.forced_rest_iso_cb, 0, 1)
+        gen_grid.addWidget(self.forced_rest_iso_cb, 0, 1)
 
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
@@ -3517,7 +3519,7 @@ class IsoUI:
         )
         self.combine_passes_cb.setObjectName("i_combine")
 
-        grid3.addWidget(self.combine_passes_cb, 2, 0, 1, 2)
+        gen_grid.addWidget(self.combine_passes_cb, 2, 0, 1, 2)
 
         # Check Tool validity
         self.valid_cb = FCCheckBox(label=_('Check validity'))
@@ -3527,7 +3529,7 @@ class IsoUI:
         )
         self.valid_cb.setObjectName("i_check")
 
-        grid3.addWidget(self.valid_cb, 4, 0, 1, 2)
+        gen_grid.addWidget(self.valid_cb, 4, 0, 1, 2)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
@@ -3535,7 +3537,7 @@ class IsoUI:
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        grid3.addWidget(self.except_cb, 6, 0)
+        gen_grid.addWidget(self.except_cb, 6, 0)
 
         # Type of object to be excepted
         self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
@@ -3547,7 +3549,7 @@ class IsoUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        grid3.addWidget(self.type_excobj_radio, 6, 1)
+        gen_grid.addWidget(self.type_excobj_radio, 6, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -3559,7 +3561,7 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        grid3.addWidget(self.exc_obj_combo, 8, 0, 1, 2)
+        gen_grid.addWidget(self.exc_obj_combo, 8, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
@@ -3582,8 +3584,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        grid3.addWidget(self.select_label, 10, 0)
-        grid3.addWidget(self.select_combo, 10, 1)
+        gen_grid.addWidget(self.select_label, 10, 0)
+        gen_grid.addWidget(self.select_combo, 10, 1)
 
         # Reference Type
         self.reference_combo_type_label = FCLabel('%s:' % _("Type"))
@@ -3591,15 +3593,15 @@ class IsoUI:
         self.reference_combo_type = FCComboBox2()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        grid3.addWidget(self.reference_combo_type_label, 12, 0)
-        grid3.addWidget(self.reference_combo_type, 12, 1)
+        gen_grid.addWidget(self.reference_combo_type_label, 12, 0)
+        gen_grid.addWidget(self.reference_combo_type, 12, 1)
 
         self.reference_combo = FCComboBox()
         self.reference_combo.setModel(self.app.collection)
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        grid3.addWidget(self.reference_combo, 14, 0, 1, 2)
+        gen_grid.addWidget(self.reference_combo, 14, 0, 1, 2)
 
         self.reference_combo.hide()
         self.reference_combo_type.hide()
@@ -3612,7 +3614,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        grid3.addWidget(self.poly_int_cb, 16, 0)
+        gen_grid.addWidget(self.poly_int_cb, 16, 0)
 
         self.poly_int_cb.hide()
 
@@ -3636,7 +3638,7 @@ class IsoUI:
 
         sel_hlay.addWidget(self.sel_all_btn)
         sel_hlay.addWidget(self.clear_all_btn)
-        grid3.addLayout(sel_hlay, 18, 0, 1, 2)
+        gen_grid.addLayout(sel_hlay, 18, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -3647,11 +3649,13 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid3.addWidget(self.area_shape_label, 20, 0)
-        grid3.addWidget(self.area_shape_radio, 20, 1)
+        gen_grid.addWidget(self.area_shape_label, 20, 0)
+        gen_grid.addWidget(self.area_shape_radio, 20, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
+
+        FCGridLayout.set_common_column_size([tool_grid, new_tool_grid, tool_param_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Geometry object

@@ -280,7 +280,7 @@ class PreferencesUIManager:
 
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.plugin_eng_pref_form.tools_iso_group.tool_dia_entry,
-            "tools_iso_order":          self.ui.plugin_eng_pref_form.tools_iso_group.order_radio,
+            "tools_iso_order":          self.ui.plugin_eng_pref_form.tools_iso_group.iso_order_combo,
             "tools_iso_tool_cutz":      self.ui.plugin_eng_pref_form.tools_iso_group.cutz_entry,
             "tools_iso_newdia":         self.ui.plugin_eng_pref_form.tools_iso_group.newdia_entry,
 
@@ -408,7 +408,7 @@ class PreferencesUIManager:
 
             # NCC Tool
             "tools_ncc_tools":           self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_ncc_order":           self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_order_radio,
+            "tools_ncc_order":           self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_order_combo,
             "tools_ncc_overlap":         self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_overlap_entry,
             "tools_ncc_margin":          self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_margin_entry,
             "tools_ncc_method":          self.ui.plugin_eng_pref_form.tools_ncc_group.ncc_method_combo,
