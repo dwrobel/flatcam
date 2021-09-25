@@ -40,7 +40,7 @@ EDIT_SIZE_HINT = 70
 class RadioSet(QtWidgets.QWidget):
     activated_custom = QtCore.pyqtSignal(str)
 
-    def __init__(self, choices, orientation='horizontal', parent=None, stretch=None):
+    def __init__(self, choices, orientation='horizontal', parent=None, compact=False):
         """
         The choices are specified as a list of dictionaries containing:
 
@@ -70,7 +70,7 @@ class RadioSet(QtWidgets.QWidget):
 
         layout.setContentsMargins(0, 0, 0, 0)
 
-        if stretch is False or stretch is None:
+        if compact is False or compact is None:
             pass
         else:
             layout.addStretch()
@@ -115,7 +115,7 @@ class RadioSet(QtWidgets.QWidget):
 
 class RadioSetDefaults(RadioSet):
 
-    def __init__(self, choices, dictionary=None, key_spec=None, orientation='horizontal', stretch=None, parent=None):
+    def __init__(self, choices, dictionary=None, key_spec=None, orientation='horizontal', compact=None, parent=None):
         """
         When a choice is made then the selected value is set in the key key_spec from the dictionary 'dictionary'
         The choices are specified as a list of dictionaries containing:
@@ -133,7 +133,7 @@ class RadioSetDefaults(RadioSet):
         :type key_spec:      'str'
         """
 
-        super(RadioSetDefaults, self).__init__(choices=choices, orientation=orientation, stretch=stretch, parent=parent)
+        super(RadioSetDefaults, self).__init__(choices=choices, orientation=orientation, compact=compact, parent=parent)
         self.dictionary = dictionary
         self.key_spec = key_spec
 
@@ -888,7 +888,8 @@ class FCColorEntry(QtWidgets.QFrame):
         current_color = QtGui.QColor(self._extract_color(value))
 
         color_dialog = QtWidgets.QColorDialog()
-        selected_color = color_dialog.getColor(initial=current_color, options=QtWidgets.QColorDialog.ShowAlphaChannel)
+        selected_color = color_dialog.getColor(initial=current_color,
+                                               options=QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
 
         if selected_color.isValid() is False:
             return
@@ -1356,7 +1357,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         :param alignment:   the value is aligned to left or right
         :param parent:
         :param callback:    called when the entered value is outside limits; the min and max value will be passed to it
-        :param policy:      by default the widget will not stretch as much as possible on horizontal
+        :param policy:      by default the widget will not compact as much as possible on horizontal
         """
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
@@ -4005,7 +4006,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
         self.ref_radio = RadioSet([
             {"label": _("Abs"), "value": "abs"},
             {"label": _("Relative"), "value": "rel"}
-        ], orientation='horizontal', stretch=False)
+        ], orientation='horizontal', compact=True)
         self.ref_radio.set_value(reference)
         grid0.addWidget(self.ref_label, 0, 0)
         grid0.addWidget(self.ref_radio, 0, 1)

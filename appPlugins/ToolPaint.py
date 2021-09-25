@@ -342,7 +342,7 @@ class ToolPaint(AppTool, Gerber):
         # })
 
         # ## Init the GUI interface
-        self.ui.order_radio.set_value(self.app.defaults["tools_paint_order"])
+        self.ui.paint_order_combo.set_value(self.app.defaults["tools_paint_order"])
         self.ui.offset_entry.set_value(self.app.defaults["tools_paint_offset"])
         self.ui.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
         self.ui.selectmethod_combo.set_value(self.app.defaults["tools_paint_selectmethod"])
@@ -700,7 +700,7 @@ class ToolPaint(AppTool, Gerber):
             })
 
     def on_order_changed(self, order):
-        if order != 'no':
+        if order != 0:  # Default order
             self.build_ui()
 
     def rebuild_ui(self):
@@ -732,10 +732,10 @@ class ToolPaint(AppTool, Gerber):
         for k, v in self.paint_tools.items():
             sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
-        order = self.ui.order_radio.get_value()
-        if order == 'fwd':
+        order = self.ui.paint_order_combo.get_value()
+        if order == 1:  # "Forward"
             sorted_tools.sort(reverse=False)
-        elif order == 'rev':
+        elif order == 2:    # "Reverse"
             sorted_tools.sort(reverse=True)
         else:
             pass
@@ -1863,7 +1863,7 @@ class ToolPaint(AppTool, Gerber):
         prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
 
         name = outname if outname is not None else self.obj_name + "_paint"
-        order = order if order is not None else self.ui.order_radio.get_value()
+        order = order if order is not None else self.ui.paint_order_combo.get_value()
         tools_storage = self.paint_tools if tools_storage is None else tools_storage
         use_rest_strategy = rest if rest is not None else self.ui.rest_cb.get_value()
 
@@ -1902,9 +1902,9 @@ class ToolPaint(AppTool, Gerber):
             old_disp_number = 0
 
             # sort the tools if we have an order selected in the UI
-            if order == 'fwd':
+            if order == 1:  # Forward
                 sorted_tools.sort(reverse=False)
-            elif order == 'rev':
+            elif order == 2:    # Reverse
                 sorted_tools.sort(reverse=True)
             else:
                 pass
@@ -2674,7 +2674,7 @@ class ToolPaint(AppTool, Gerber):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.ui.rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.ui.paint_order_combo.currentIndexChanged.connect(self.on_order_changed)
 
     def ui_disconnect(self):
         try:
@@ -2733,7 +2733,7 @@ class ToolPaint(AppTool, Gerber):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.order_radio.activated_custom[str].disconnect()
+            self.ui.paint_order_combo.currentIndexChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -2944,8 +2944,8 @@ class PaintUI:
         self.tools_box.addWidget(obj_frame)
 
         # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        obj_frame.setLayout(grid0)
+        obj_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        obj_frame.setLayout(obj_grid)
 
         # #############################################################################################################
         # Type of object to be painted
@@ -2960,10 +2960,10 @@ class PaintUI:
         self.type_obj_combo_label.setMinimumWidth(60)
 
         self.type_obj_radio = RadioSet([{'label': "Geometry", 'value': 'geometry'},
-                                        {'label': "Gerber", 'value': 'gerber'}])
+                                        {'label': "Gerber", 'value': 'gerber'}], compact=True)
 
-        grid0.addWidget(self.type_obj_combo_label, 0, 0)
-        grid0.addWidget(self.type_obj_radio, 0, 1)
+        obj_grid.addWidget(self.type_obj_combo_label, 0, 0)
+        obj_grid.addWidget(self.type_obj_radio, 0, 1)
 
         # #############################################################################################################
         # The object to be painted
@@ -2973,12 +2973,12 @@ class PaintUI:
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
 
-        grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
+        obj_grid.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         # separator_line = QtWidgets.QFrame()
         # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        # grid0.addWidget(separator_line, 5, 0, 1, 2)
+        # obj_grid.addWidget(separator_line, 5, 0, 1, 2)
 
         # #############################################################################################################
         # Tool Table Frame
@@ -2995,12 +2995,12 @@ class PaintUI:
         self.tools_box.addWidget(tt_frame)
 
         # Grid Layout
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        tt_frame.setLayout(grid1)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
         self.tools_table = FCTable(drag_drop=True)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        grid1.addWidget(self.tools_table, 2, 0, 1, 2)
+        tool_grid.addWidget(self.tools_table, 2, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Shape'), ''])
@@ -3036,25 +3036,18 @@ class PaintUI:
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
 
-        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                     {'label': _('Forward'), 'value': 'fwd'},
-                                     {'label': _('Reverse'), 'value': 'rev'}])
-        self.order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                      "'No' --> means that the used order is the one in the tool table\n"
-                                      "'Forward' --> means that the tools will be ordered from small to big\n"
-                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                      "WARNING: using rest machining will automatically set the order\n"
-                                      "in reverse and disable this control."))
+        self.paint_order_combo = FCComboBox2()
+        self.paint_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
 
-        grid1.addWidget(self.order_label, 4, 0)
-        grid1.addWidget(self.order_radio, 4, 1)
+        tool_grid.addWidget(self.order_label, 4, 0)
+        tool_grid.addWidget(self.paint_order_combo, 4, 1)
 
         # ##############################################################################
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
         self.add_tool_frame = QtWidgets.QFrame()
         self.add_tool_frame.setContentsMargins(0, 0, 0, 0)
-        grid1.addWidget(self.add_tool_frame, 6, 0, 1, 2)
+        tool_grid.addWidget(self.add_tool_frame, 6, 0, 1, 2)
 
         new_tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         new_tool_grid.setContentsMargins(0, 0, 0, 0)
@@ -3140,8 +3133,8 @@ class PaintUI:
         tt_frame = FCFrame()
         self.tools_box.addWidget(tt_frame)
 
-        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        tt_frame.setLayout(par_grid)
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(param_grid)
 
         # Overlap
         ovlabel = FCLabel('%s:' % _('Overlap'))
@@ -3161,8 +3154,8 @@ class PaintUI:
         self.paintoverlap_entry.setSingleStep(0.1)
         self.paintoverlap_entry.setObjectName('p_overlap')
 
-        par_grid.addWidget(ovlabel, 0, 0)
-        par_grid.addWidget(self.paintoverlap_entry, 0, 1)
+        param_grid.addWidget(ovlabel, 0, 0)
+        param_grid.addWidget(self.paintoverlap_entry, 0, 1)
 
         # Offset
         self.offset_label = FCLabel('%s:' % _('Offset'))
@@ -3176,8 +3169,8 @@ class PaintUI:
         self.offset_entry.set_range(-10000.0000, 10000.0000)
         self.offset_entry.setObjectName('p_offset')
 
-        par_grid.addWidget(self.offset_label, 2, 0)
-        par_grid.addWidget(self.offset_entry, 2, 1)
+        param_grid.addWidget(self.offset_label, 2, 0)
+        param_grid.addWidget(self.offset_entry, 2, 1)
 
         # Method
         methodlabel = FCLabel('%s:' % _('Method'))
@@ -3201,8 +3194,8 @@ class PaintUI:
 
         self.paintmethod_combo.setObjectName('p_method')
 
-        par_grid.addWidget(methodlabel, 4, 0)
-        par_grid.addWidget(self.paintmethod_combo, 4, 1)
+        param_grid.addWidget(methodlabel, 4, 0)
+        param_grid.addWidget(self.paintmethod_combo, 4, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
@@ -3219,8 +3212,8 @@ class PaintUI:
               "to trim rough edges.")
         )
 
-        par_grid.addWidget(self.pathconnect_cb, 6, 0)
-        par_grid.addWidget(self.paintcontour_cb, 6, 1)
+        param_grid.addWidget(self.pathconnect_cb, 6, 0)
+        param_grid.addWidget(self.paintcontour_cb, 6, 1)
 
         # #############################################################################################################
         # Apply All Parameters Button
@@ -3326,13 +3319,15 @@ class PaintUI:
         )
 
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
+                                          {'label': _("Polygon"), 'value': 'polygon'}], compact=True)
 
         gen_grid.addWidget(self.area_shape_label, 10, 0)
         gen_grid.addWidget(self.area_shape_radio, 10, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
+
+        FCGridLayout.set_common_column_size([obj_grid, tool_grid, new_tool_grid, param_grid, gen_grid], 0)
 
         # #############################################################################################################
         # Generate Paint Geometry Button
@@ -3371,9 +3366,9 @@ class PaintUI:
     
     def on_rest_machining_check(self, state):
         if state:
-            self.order_radio.set_value('rev')
+            self.paint_order_combo.set_value(2)     # Reverse
             self.order_label.setDisabled(True)
-            self.order_radio.setDisabled(True)
+            self.paint_order_combo.setDisabled(True)
 
             self.offset_label.hide()
             self.offset_entry.hide()
@@ -3381,7 +3376,7 @@ class PaintUI:
             self.rest_offset_entry.show()
         else:
             self.order_label.setDisabled(False)
-            self.order_radio.setDisabled(False)
+            self.paint_order_combo.setDisabled(False)
 
             self.offset_label.show()
             self.offset_entry.show()

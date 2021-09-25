@@ -562,7 +562,7 @@ class PaintOptionsTool(AppTool):
         #     {"label": _("Standard"), "value": "standard"},
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
-        # ], orientation='vertical', stretch=False)
+        # ], orientation='vertical', compact=True)
         self.paintmethod_combo = FCComboBox()
         self.paintmethod_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines")]

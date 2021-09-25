@@ -2437,7 +2437,7 @@ class CutoutUI:
         #         {'label': _('Thin'), 'value': 'bt'},
         #         {'label': "M-Bites", 'value': 'mb'}
         #     ],
-        #     stretch=True
+        #     compact=True
         # )
         self.gaptype_combo = FCComboBox2()
         self.gaptype_combo.addItems([_('Bridge'), _('Thin'), _("Mouse Bytes")])

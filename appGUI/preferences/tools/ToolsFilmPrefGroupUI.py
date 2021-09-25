@@ -41,7 +41,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # Scale Geometry
         self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
         self.film_scale_cb.setToolTip(
-            _("A value greater than 1 will stretch the film\n"
+            _("A value greater than 1 will compact the film\n"
               "while a value less than 1 will jolt it.")
         )
         self.film_scale_cb.setStyleSheet(
@@ -157,7 +157,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
-                                         stretch=False)
+                                         compact=True)
         self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror Axis"))
 
         adj_grid.addWidget(self.film_mirror_axis_label, 12, 0)
@@ -209,7 +209,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         # Polarity
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
-                                         {'label': 'Neg', 'value': 'neg'}])
+                                         {'label': 'Neg', 'value': 'neg'}], compact=True)
         ftypelbl = FCLabel('%s:' % _('Polarity'))
         ftypelbl.setToolTip(
             _("Generate a Positive black film or a Negative film.")
@@ -265,7 +265,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
                                          {'label': _('PNG'), 'value': 'png'},
                                          {'label': _('PDF'), 'value': 'pdf'}
-                                         ], stretch=False)
+                                         ], compact=True)
 
         self.file_type_label = FCLabel('%s:' % _("Film Type"))
         self.file_type_label.setToolTip(
@@ -285,7 +285,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
                                            {'label': _('Landscape'), 'value': 'l'},
-                                           ], stretch=False)
+                                           ], compact=True)
 
         grid_par.addWidget(self.orientation_label, 14, 0)
         grid_par.addWidget(self.orientation_radio, 14, 1)

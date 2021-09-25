@@ -905,7 +905,7 @@ class CalibrationUI:
                                          "- Free -> click freely on canvas to acquire the calibration points"))
         self.cal_source_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
                                           {'label': _('Free'), 'value': 'free'}],
-                                         stretch=False)
+                                         compact=True)
 
         grid_lay.addWidget(self.cal_source_lbl, 11, 0)
         grid_lay.addWidget(self.cal_source_radio, 11, 1, 1, 2)

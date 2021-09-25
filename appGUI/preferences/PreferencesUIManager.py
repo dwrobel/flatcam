@@ -450,7 +450,7 @@ class PreferencesUIManager:
 
             # Paint Area Tool
             "tools_paint_tooldia":       self.ui.plugin_eng_pref_form.tools_paint_group.painttooldia_entry,
-            "tools_paint_order":         self.ui.plugin_eng_pref_form.tools_paint_group.paint_order_radio,
+            "tools_paint_order":         self.ui.plugin_eng_pref_form.tools_paint_group.paint_order_combo,
             "tools_paint_overlap":       self.ui.plugin_eng_pref_form.tools_paint_group.paintoverlap_entry,
             "tools_paint_offset":        self.ui.plugin_eng_pref_form.tools_paint_group.paintmargin_entry,
             "tools_paint_method":        self.ui.plugin_eng_pref_form.tools_paint_group.paintmethod_combo,

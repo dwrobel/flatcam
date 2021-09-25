@@ -520,7 +520,7 @@ class FlatCAMDefaults:
 
         # Paint Tool
         "tools_paint_tooldia": 0.3,
-        "tools_paint_order": 'rev',
+        "tools_paint_order": 2,     # "Reverse"
         "tools_paint_overlap": 20,
         "tools_paint_offset": 0.0,
         "tools_paint_method": 0,

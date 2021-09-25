@@ -85,7 +85,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
                 {'label': _('MetaHeuristic'), 'value': 'M'},
                 {'label': _('Basic'), 'value': 'B'},
                 {'label': _('TSA'), 'value': 'T'}
-            ], orientation='vertical', stretch=False)
+            ], orientation='vertical', compact=True)
 
         grid0.addWidget(self.opt_algorithm_label, 12, 0)
         grid0.addWidget(self.opt_algorithm_radio, 12, 1)

@@ -86,7 +86,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
 
         self.textbox_font_size_field = self.option_dict()["textbox_font_size"].get_field()
         if qsettings.contains("textbox_font_size"):
-            self.textbox_font_size_field.set_value(settings.value('textbox_font_size', type=int))
+            self.textbox_font_size_field.set_value(qsettings.value('textbox_font_size', type=int))
         else:
             self.textbox_font_size_field.set_value(10)
 
@@ -120,7 +120,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
 
     def build_options(self) -> [OptionUI]:
         return [
-            HeadingOptionUI(label_text="Grid Settings", label_tooltip=None),
+            HeadingOptionUI(label_text="Grid Settings", color="brown", label_tooltip=None),
             DoubleSpinnerOptionUI(
                 option="global_gridx",
                 label_text="X value",

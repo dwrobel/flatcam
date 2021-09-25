@@ -54,7 +54,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
             {"label": _("All"), "value": "all"},
             {"label": _("Travel"), "value": "travel"},
             {"label": _("Cut"), "value": "cut"}
-        ], orientation='vertical', stretch=False)
+        ], orientation='vertical', compact=True)
 
         grid0.addWidget(self.cncplot_method_label, 1, 0)
         grid0.addWidget(self.cncplot_method_radio, 1, 1)

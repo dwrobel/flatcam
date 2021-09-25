@@ -1289,7 +1289,7 @@ class CNCObjectUI(ObjectUI):
             {"label": _("All"), "value": "all"},
             {"label": _("Travel"), "value": "travel"},
             {"label": _("Cut"), "value": "cut"}
-        ], stretch=False)
+        ], compact=True)
 
         grid0.addWidget(self.cncplot_method_label, 0, 0)
         grid0.addWidget(self.cncplot_method_combo, 0, 1, 1, 2)

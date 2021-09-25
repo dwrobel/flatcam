@@ -1114,7 +1114,7 @@ class ExtractUI:
                 {'label': _("Fixed Annular Ring"), 'value': 'ring'}
             ],
             orientation='vertical',
-            stretch=False)
+            compact=True)
 
         grid1.addWidget(self.method_radio, 4, 0, 1, 2)
 

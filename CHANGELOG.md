@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - solved more Shapely 2.0 deprecation warnings 
 - in Isolation Plugin and NCC Plugin changed the UI and the Preferences for those Plugins
 - in Gerber Editor, the Region Tool now will draw only for the '0' aperture therefore the utility geometry will be a very thin line
+- multiple UI changes in Preferences
+- UI changes in the Paint Plugin
 
 24.09.2021
 

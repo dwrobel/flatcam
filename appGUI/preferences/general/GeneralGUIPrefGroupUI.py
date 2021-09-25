@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry, FCLabel, \
-    FCGridLayout
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,9 +22,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Create a grid layout for the Application general settings
+        self.param_lbl = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
+        self.layout.addWidget(self.param_lbl)
+
+        # #############################################################################################################
+        # Grid0 Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
         grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        par_frame.setLayout(grid0)
 
         # Theme selection
         self.theme_label = FCLabel('%s:' % _('Theme'))
@@ -36,7 +44,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.theme_radio = RadioSet([
             {"label": _("Light"), "value": "white"},
             {"label": _("Dark"), "value": "black"}
-        ], orientation='vertical')
+        ], compact=True)
 
         grid0.addWidget(self.theme_label, 0, 0)
         grid0.addWidget(self.theme_radio, 0, 1)
@@ -48,7 +56,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "a lighter (gray) color. To be used when a\n"
               "full dark theme is applied.")
         )
-        grid0.addWidget(self.gray_icons_cb, 1, 0, 1, 3)
+        grid0.addWidget(self.gray_icons_cb, 2, 0, 1, 3)
 
         # self.theme_button = FCButton(_("Apply Theme"))
         # self.theme_button.setToolTip(
@@ -61,7 +69,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 3, 0, 1, 2)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Layout selection
         self.layout_label = FCLabel('%s:' % _('Layout'))
@@ -75,8 +83,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.layout_combo.addItem("compact")
         self.layout_combo.addItem("minimal")
 
-        grid0.addWidget(self.layout_label, 4, 0)
-        grid0.addWidget(self.layout_combo, 4, 1)
+        grid0.addWidget(self.layout_label, 6, 0)
+        grid0.addWidget(self.layout_combo, 6, 1)
 
         # Set the current index for layout_combo
         qsettings = QSettings("Open Source", "FlatCAM")
@@ -99,8 +107,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.style_combo.setCurrentIndex(index)
         self.style_combo.activated.connect(self.handle_style)
 
-        grid0.addWidget(self.style_label, 5, 0)
-        grid0.addWidget(self.style_combo, 5, 1)
+        grid0.addWidget(self.style_label, 8, 0)
+        grid0.addWidget(self.style_combo, 8, 1)
 
         # Enable Hover box
         self.hover_cb = FCCheckBox('%s' % _('Hover Shape'))
@@ -109,7 +117,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "It is displayed whenever the mouse cursor is hovering\n"
               "over any kind of not-selected object.")
         )
-        grid0.addWidget(self.hover_cb, 8, 0, 1, 3)
+        grid0.addWidget(self.hover_cb, 10, 0, 1, 3)
 
         # Enable Selection box
         self.selection_cb = FCCheckBox('%s' % _('Selection Shape'))
@@ -119,16 +127,23 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "either by clicking or dragging mouse from left to right or\n"
               "right to left.")
         )
-        grid0.addWidget(self.selection_cb, 9, 0, 1, 3)
+        grid0.addWidget(self.selection_cb, 12, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 2)
+        # #############################################################################################################
+        # Grid1 Frame
+        # #############################################################################################################
+        self.color_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Colors"))
+        self.layout.addWidget(self.color_lbl)
+
+        color_frame = FCFrame()
+        self.layout.addWidget(color_frame)
+
+        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
+        color_frame.setLayout(grid1)
 
         # Plot Selection (left - right) Color
         self.sel_lr_label = FCLabel('<b>%s</b>' % _('Left-Right Selection Color'))
-        grid0.addWidget(self.sel_lr_label, 15, 0, 1, 2)
+        grid1.addWidget(self.sel_lr_label, 0, 0, 1, 2)
 
         self.sl_color_label = FCLabel('%s:' % _('Outline'))
         self.sl_color_label.setToolTip(
@@ -136,8 +151,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.sl_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.sl_color_label, 16, 0)
-        grid0.addWidget(self.sl_color_entry, 16, 1)
+        grid1.addWidget(self.sl_color_label, 2, 0)
+        grid1.addWidget(self.sl_color_entry, 2, 1)
 
         self.sf_color_label = FCLabel('%s:' % _('Fill'))
         self.sf_color_label.setToolTip(
@@ -148,8 +163,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.sf_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.sf_color_label, 17, 0)
-        grid0.addWidget(self.sf_color_entry, 17, 1)
+        grid1.addWidget(self.sf_color_label, 4, 0)
+        grid1.addWidget(self.sf_color_entry, 4, 1)
 
         # Plot Selection (left - right) Fill Transparency Level
         self.left_right_alpha_label = FCLabel('%s:' % _('Alpha'))
@@ -158,17 +173,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.left_right_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid0.addWidget(self.left_right_alpha_label, 18, 0)
-        grid0.addWidget(self.left_right_alpha_entry, 18, 1)
+        grid1.addWidget(self.left_right_alpha_label, 6, 0)
+        grid1.addWidget(self.left_right_alpha_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 19, 0, 1, 2)
+        grid1.addWidget(separator_line, 8, 0, 1, 2)
 
         # Plot Selection (left - right) Color
         self.sel_rl_label = FCLabel('<b>%s</b>' % _('Right-Left Selection Color'))
-        grid0.addWidget(self.sel_rl_label, 20, 0, 1, 2)
+        grid1.addWidget(self.sel_rl_label, 10, 0, 1, 2)
 
         # Plot Selection (right - left) Line Color
         self.alt_sl_color_label = FCLabel('%s:' % _('Outline'))
@@ -177,8 +192,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.alt_sl_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.alt_sl_color_label, 21, 0)
-        grid0.addWidget(self.alt_sl_color_entry, 21, 1)
+        grid1.addWidget(self.alt_sl_color_label, 12, 0)
+        grid1.addWidget(self.alt_sl_color_entry, 12, 1)
 
         # Plot Selection (right - left) Fill Color
         self.alt_sf_color_label = FCLabel('%s:' % _('Fill'))
@@ -190,8 +205,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.alt_sf_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.alt_sf_color_label, 22, 0)
-        grid0.addWidget(self.alt_sf_color_entry, 22, 1)
+        grid1.addWidget(self.alt_sf_color_label, 14, 0)
+        grid1.addWidget(self.alt_sf_color_entry, 14, 1)
 
         # Plot Selection (right - left) Fill Transparency Level
         self.right_left_alpha_label = FCLabel('%s:' % _('Alpha'))
@@ -200,20 +215,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.right_left_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid0.addWidget(self.right_left_alpha_label, 23, 0)
-        grid0.addWidget(self.right_left_alpha_entry, 23, 1)
+        grid1.addWidget(self.right_left_alpha_label, 16, 0)
+        grid1.addWidget(self.right_left_alpha_entry, 16, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 24, 0, 1, 2)
+        grid1.addWidget(separator_line, 18, 0, 1, 2)
 
         # ------------------------------------------------------------------
         # ----------------------- Editor Color -----------------------------
         # ------------------------------------------------------------------
 
         self.editor_color_label = FCLabel('<b>%s</b>' % _('Editor Color'))
-        grid0.addWidget(self.editor_color_label, 25, 0, 1, 2)
+        grid1.addWidget(self.editor_color_label, 20, 0, 1, 2)
 
         # Editor Draw Color
         self.draw_color_label = FCLabel('%s:' % _('Drawing'))
@@ -222,8 +237,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.draw_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.draw_color_label, 26, 0)
-        grid0.addWidget(self.draw_color_entry, 26, 1)
+        grid1.addWidget(self.draw_color_label, 22, 0)
+        grid1.addWidget(self.draw_color_entry, 22, 1)
 
         # Editor Draw Selection Color
         self.sel_draw_color_label = FCLabel('%s:' % _('Selection'))
@@ -232,20 +247,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.sel_draw_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.sel_draw_color_label, 27, 0)
-        grid0.addWidget(self.sel_draw_color_entry, 27, 1)
+        grid1.addWidget(self.sel_draw_color_label, 24, 0)
+        grid1.addWidget(self.sel_draw_color_entry, 24, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 28, 0, 1, 2)
+        grid1.addWidget(separator_line, 26, 0, 1, 2)
 
         # ------------------------------------------------------------------
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------
 
         self.proj_settings_label = FCLabel('<b>%s</b>' % _('Project Items Color'))
-        grid0.addWidget(self.proj_settings_label, 29, 0, 1, 2)
+        grid1.addWidget(self.proj_settings_label, 28, 0, 1, 2)
 
         # Project Tab items color
         self.proj_color_label = FCLabel('%s:' % _('Enabled'))
@@ -254,8 +269,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.proj_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.proj_color_label, 30, 0)
-        grid0.addWidget(self.proj_color_entry, 30, 1)
+        grid1.addWidget(self.proj_color_label, 30, 0)
+        grid1.addWidget(self.proj_color_entry, 30, 1)
 
         self.proj_color_dis_label = FCLabel('%s:' % _('Disabled'))
         self.proj_color_dis_label.setToolTip(
@@ -264,8 +279,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         self.proj_color_dis_entry = FCColorEntry()
 
-        grid0.addWidget(self.proj_color_dis_label, 31, 0)
-        grid0.addWidget(self.proj_color_dis_entry, 31, 1)
+        grid1.addWidget(self.proj_color_dis_label, 32, 0)
+        grid1.addWidget(self.proj_color_dis_entry, 32, 1)
+
+        FCGridLayout.set_common_column_size([grid0, grid1], 0)
 
         # Project autohide CB
         self.project_autohide_cb = FCCheckBox(label=_('Project AutoHide'))
@@ -275,10 +292,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "to show whenever a new object is created.")
         )
 
-        grid0.addWidget(self.project_autohide_cb, 32, 0, 1, 2)
-
-        # Just to add empty rows
-        grid0.addWidget(FCLabel(''), 33, 0, 1, 2)
+        self.layout.addWidget(self.project_autohide_cb)
 
         self.layout.addStretch()
 

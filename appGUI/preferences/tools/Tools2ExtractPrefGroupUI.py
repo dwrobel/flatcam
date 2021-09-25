@@ -93,7 +93,7 @@ class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
                 {'label': _("Proportional"), 'value': 'prop'}
             ],
             orientation='vertical',
-            stretch=False)
+            compact=True)
         self.method_label = FCLabel('<b>%s:</b>' % _("Method"))
         self.method_label.setToolTip(
             _("The method for processing pads. Can be:\n"

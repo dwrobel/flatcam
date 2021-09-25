@@ -94,7 +94,7 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
                 {'label': _("Proportional"), 'value': 'prop'}
             ],
             orientation='vertical',
-            stretch=False)
+            compact=True)
         self.hole_size_label = FCLabel('<b>%s:</b>' % _("Method"))
         self.hole_size_label.setToolTip(
             _("The punch hole source can be:\n"

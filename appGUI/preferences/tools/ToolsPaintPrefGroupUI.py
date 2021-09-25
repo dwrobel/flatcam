@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox2, FCCheckBox, NumericalEvalTupleEntry, FCLabel, \
-    FCGridLayout
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -25,15 +25,21 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         # ## Paint area
         # ------------------------------
-        self.paint_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        self.paint_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.paint_label.setToolTip(
             _("Creates tool paths to cover the\n"
               "whole area of a polygon.")
         )
         self.layout.addWidget(self.paint_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # Tool dia
         ptdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
@@ -42,20 +48,26 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
-        grid0.addWidget(ptdlabel, 0, 0)
+        param_grid.addWidget(ptdlabel, 0, 0)
 
         self.painttooldia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.painttooldia_entry.setPlaceholderText(_("Comma separated values"))
 
-        grid0.addWidget(self.painttooldia_entry, 0, 1)
+        param_grid.addWidget(self.painttooldia_entry, 0, 1)
 
-        # Tool Type Radio Button
-        self.tool_type_label = FCLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
+        self.paint_order_label = FCLabel('%s:' % _('Tool order'))
+        self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                            "'No' --> means that the used order is the one in the tool table\n"
+                                            "'Forward' --> means that the tools will be ordered from small to big\n"
+                                            "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                            "WARNING: using rest machining will automatically set the order\n"
+                                            "in reverse and disable this control."))
+
+        self.paint_order_combo = FCComboBox2()
+        self.paint_order_combo.addItems([_('Default'), _('Forward'), _('Reverse')])
+
+        param_grid.addWidget(self.paint_order_label, 2, 0)
+        param_grid.addWidget(self.paint_order_combo, 2, 1)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -67,8 +79,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.tipdia_entry.setSingleStep(0.1)
         self.tipdia_entry.setObjectName(_("V-Tip Dia"))
 
-        grid0.addWidget(self.tipdialabel, 2, 0)
-        grid0.addWidget(self.tipdia_entry, 2, 1)
+        param_grid.addWidget(self.tipdialabel, 4, 0)
+        param_grid.addWidget(self.tipdia_entry, 4, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -81,8 +93,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.tipangle_entry.setSingleStep(5)
         self.tipangle_entry.setObjectName(_("V-Tip Angle"))
 
-        grid0.addWidget(self.tipanglelabel, 3, 0)
-        grid0.addWidget(self.tipangle_entry, 3, 1)
+        param_grid.addWidget(self.tipanglelabel, 6, 0)
+        param_grid.addWidget(self.tipangle_entry, 6, 1)
 
         # Cut Z entry
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -99,8 +111,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Depth of cut into material. Negative value.\n"
               "In application units.")
         )
-        grid0.addWidget(cutzlabel, 4, 0)
-        grid0.addWidget(self.cutz_entry, 4, 1)
+        param_grid.addWidget(cutzlabel, 8, 0)
+        param_grid.addWidget(self.cutz_entry, 8, 1)
 
         # ### Tool Diameter ####
         self.newdialabel = FCLabel('%s:' % _('New Dia'))
@@ -114,33 +126,26 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.newdia_entry.set_range(-10000.000, 10000.0000)
         self.newdia_entry.setObjectName(_("Tool Dia"))
 
-        grid0.addWidget(self.newdialabel, 5, 0)
-        grid0.addWidget(self.newdia_entry, 5, 1)
+        param_grid.addWidget(self.newdialabel, 10, 0)
+        param_grid.addWidget(self.newdia_entry, 10, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 6, 0, 1, 2)
 
-        self.paint_order_label = FCLabel('%s:' % _('Tool order'))
-        self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                            "'No' --> means that the used order is the one in the tool table\n"
-                                            "'Forward' --> means that the tools will be ordered from small to big\n"
-                                            "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                            "WARNING: using rest machining will automatically set the order\n"
-                                            "in reverse and disable this control."))
+        # #############################################################################################################
+        # Tool Frame
+        # #############################################################################################################
+        # ### Tools ## ##
+        self.tools_table_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Tool Parameters"))
+        self.layout.addWidget(self.tools_table_label)
 
-        self.paint_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
-                                           {'label': _('Forward'), 'value': 'fwd'},
-                                           {'label': _('Reverse'), 'value': 'rev'}])
+        tt_frame = FCFrame()
+        self.layout.addWidget(tt_frame)
 
-        grid0.addWidget(self.paint_order_label, 7, 0)
-        grid0.addWidget(self.paint_order_radio, 7, 1)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 2)
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tt_frame.setLayout(tool_grid)
 
         # Overlap
         ovlabel = FCLabel('%s:' % _('Overlap'))
@@ -159,8 +164,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(ovlabel, 9, 0)
-        grid0.addWidget(self.paintoverlap_entry, 9, 1)
+        tool_grid.addWidget(ovlabel, 0, 0)
+        tool_grid.addWidget(self.paintoverlap_entry, 0, 1)
 
         # Margin
         marginlabel = FCLabel('%s:' % _('Margin'))
@@ -174,8 +179,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(marginlabel, 10, 0)
-        grid0.addWidget(self.paintmargin_entry, 10, 1)
+        tool_grid.addWidget(marginlabel, 2, 0)
+        tool_grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
         methodlabel = FCLabel('%s:' % _('Method'))
@@ -194,14 +199,14 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Standard"), "value": "standard"},
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
-        # ], orientation='vertical', stretch=False)
+        # ], orientation='vertical', compact=True)
         self.paintmethod_combo = FCComboBox2()
         self.paintmethod_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
 
-        grid0.addWidget(methodlabel, 11, 0)
-        grid0.addWidget(self.paintmethod_combo, 11, 1)
+        tool_grid.addWidget(methodlabel, 4, 0)
+        tool_grid.addWidget(self.paintmethod_combo, 4, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
@@ -209,7 +214,6 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid0.addWidget(self.pathconnect_cb, 12, 0)
 
         # Paint contour
         self.contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -217,12 +221,24 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid0.addWidget(self.contour_cb, 12, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 13, 0, 1, 2)
+        tool_grid.addWidget(self.pathconnect_cb, 6, 0)
+        tool_grid.addWidget(self.contour_cb, 6, 1)
+
+        # #############################################################################################################
+        # General Parameters Frame
+        # #############################################################################################################
+        self.gen_param_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        self.layout.addWidget(self.gen_param_label)
+
+        gp_frame = FCFrame()
+        self.layout.addWidget(gp_frame)
+
+        gen_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        gp_frame.setLayout(gen_grid)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest"))
         self.rest_cb.setObjectName(_("Rest"))
@@ -235,7 +251,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "nothing left to process or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
-        grid0.addWidget(self.rest_cb, 14, 0, 1, 2)
+        gen_grid.addWidget(self.rest_cb, 0, 0, 1, 2)
 
         # Polygon selection
         selectlabel = FCLabel('%s:' % _('Selection'))
@@ -256,15 +272,15 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         #         {"label": _("Reference Object"), "value": "ref"}
         #     ],
         #     orientation='vertical',
-        #     stretch=None
+        #     compact=None
         # )
         self.selectmethod_combo = FCComboBox2()
         self.selectmethod_combo.addItems(
             [_("All"), _("Polygon Selection"), _("Area Selection"), _("Reference Object")]
         )
 
-        grid0.addWidget(selectlabel, 15, 0)
-        grid0.addWidget(self.selectmethod_combo, 15, 1)
+        gen_grid.addWidget(selectlabel, 2, 0)
+        gen_grid.addWidget(self.selectmethod_combo, 2, 1)
 
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
@@ -272,25 +288,28 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
 
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
+                                          {'label': _("Polygon"), 'value': 'polygon'}], compact=True)
 
-        grid0.addWidget(self.area_shape_label, 18, 0)
-        grid0.addWidget(self.area_shape_radio, 18, 1)
+        gen_grid.addWidget(self.area_shape_label, 4, 0)
+        gen_grid.addWidget(self.area_shape_radio, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 19, 0, 1, 2)
+        gen_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                              {"label": _("Progressive"), "value": "progressive"}])
+                                              {"label": _("Progressive"), "value": "progressive"}],
+                                             compact=True)
         plotting_label = FCLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' - normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        grid0.addWidget(plotting_label, 20, 0)
-        grid0.addWidget(self.paint_plotting_radio, 20, 1)
+        gen_grid.addWidget(plotting_label, 8, 0)
+        gen_grid.addWidget(self.paint_plotting_radio, 8, 1)
 
-        self.layout.addStretch()
+        FCGridLayout.set_common_column_size([tool_grid, param_grid, gen_grid], 0)
+
+        self.layout.addStretch(1)

@@ -59,7 +59,7 @@ class Tools2InvertPrefGroupUI(OptionsGroupUI):
             {'label': _('Rounded'), 'value': 'r'},
             {'label': _('Square'), 'value': 's'},
             {'label': _('Bevel'), 'value': 'b'}
-        ], orientation='vertical', stretch=False)
+        ], orientation='vertical', compact=True)
 
         grid0.addWidget(self.join_label, 5, 0, 1, 2)
         grid0.addWidget(self.join_radio, 7, 0, 1, 2)

@@ -4137,7 +4137,7 @@ class NccUI:
         self.type_obj_combo_label.setMinimumWidth(60)
 
         self.type_obj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
-                                        {'label': _("Gerber"), 'value': 'gerber'}])
+                                        {'label': _("Gerber"), 'value': 'gerber'}], compact=True)
 
         obj_grid.addWidget(self.type_obj_combo_label, 0, 0)
         obj_grid.addWidget(self.type_obj_radio, 0, 1)
@@ -4344,7 +4344,7 @@ class NccUI:
         self.op_radio = RadioSet([
             {"label": _("Clear"), "value": "clear"},
             {"label": _("Isolation"), "value": "iso"}
-        ], orientation='horizontal', stretch=False)
+        ], orientation='horizontal', compact=True)
         self.op_radio.setObjectName("n_operation")
 
         par_grid.addWidget(self.op_label, 0, 0)
@@ -4359,7 +4359,7 @@ class NccUI:
         )
 
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}], compact=True)
         self.milling_type_radio.setToolTip(
             _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -4406,7 +4406,7 @@ class NccUI:
         #     {"label": _("Standard"), "value": "standard"},
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
-        # ], orientation='vertical', stretch=False)
+        # ], orientation='vertical', compact=True)
 
         self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
@@ -4622,7 +4622,7 @@ class NccUI:
         )
 
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
+                                          {'label': _("Polygon"), 'value': 'polygon'}], compact=True)
 
         gen_grid.addWidget(self.area_shape_label, 14, 0)
         gen_grid.addWidget(self.area_shape_radio, 14, 1)

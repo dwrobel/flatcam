@@ -110,7 +110,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         self.bbox_type_radio = RadioSet([
             {'label': _('Rectangular'), 'value': 'rect'},
             {"label": _("Minimal"), "value": "min"}
-        ], stretch=False)
+        ], compact=True)
         self.bbox_type_label = FCLabel('%s:' % _("Box Type"))
         self.bbox_type_label.setToolTip(
             _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"

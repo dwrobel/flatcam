@@ -217,7 +217,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'},
                                                      {'label': _('TSA'), 'value': 'T'}],
-                                                    orientation='vertical', stretch=False)
+                                                    orientation='vertical', compact=True)
 
         grid2.addWidget(self.excellon_optimization_label, 9, 0)
         grid2.addWidget(self.excellon_optimization_radio, 9, 1)

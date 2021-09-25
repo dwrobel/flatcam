@@ -141,7 +141,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
 
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}], compact=True)
         self.milling_type_radio.setToolTip(
             _("Milling type:\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -210,7 +210,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #     {"label": _("Standard"), "value": "standard"},
         #     {"label": _("Seed-based"), "value": "seed"},
         #     {"label": _("Straight lines"), "value": "lines"}
-        # ], orientation='vertical', stretch=False)
+        # ], orientation='vertical', compact=True)
         self.ncc_method_combo = FCComboBox2()
         self.ncc_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
@@ -302,7 +302,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         #                                  {"label": _("Area Selection"), "value": "area"},
         #                                  {'label': _('Reference Object'), 'value': 'box'}],
         #                                 orientation='vertical',
-        #                                 stretch=None)
+        #                                 compact=None)
         self.select_combo = FCComboBox2()
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
@@ -324,7 +324,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
 
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
+                                          {'label': _("Polygon"), 'value': 'polygon'}], compact=True)
 
         gen_grid.addWidget(self.area_shape_label, 4, 0)
         gen_grid.addWidget(self.area_shape_radio, 4, 1)
@@ -336,7 +336,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                        {"label": _("Progressive"), "value": "progressive"}])
+                                        {"label": _("Progressive"), "value": "progressive"}], compact=True)
         plotting_label = FCLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' - normal plotting, done at the end of the job\n"

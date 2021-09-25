@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import QSettings
 
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
-    FCColorEntry, FCLabel, FCGridLayout
+    FCColorEntry, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -33,13 +33,19 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.resource_loc = 'assets/resources'
 
-        # Create a grid layout for the Application general settings
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
-
+        # #############################################################################################################
+        # Grid Settings Frame
+        # #############################################################################################################
         # GRID Settings
-        self.grid_label = FCLabel('<b>%s</b>' % _('Grid Settings'))
-        grid0.addWidget(self.grid_label, 0, 0, 1, 2)
+        self.grid_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Grid Settings'))
+        self.layout.addWidget(self.grid_label)
+
+        grids_frame = FCFrame()
+        self.layout.addWidget(grids_frame)
+
+        # Create a grid layout for the Application general settings
+        grids_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        grids_frame.setLayout(grids_grid)
 
         # Grid X Entry
         self.gridx_label = FCLabel('%s:' % _('X value'))
@@ -50,8 +56,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.gridx_entry.set_precision(self.decimals)
         self.gridx_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.gridx_label, 2, 0)
-        grid0.addWidget(self.gridx_entry, 2, 1)
+        grids_grid.addWidget(self.gridx_label, 2, 0)
+        grids_grid.addWidget(self.gridx_entry, 2, 1)
 
         # Grid Y Entry
         self.gridy_label = FCLabel('%s:' % _('Y value'))
@@ -62,8 +68,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.gridy_entry.set_precision(self.decimals)
         self.gridy_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.gridy_label, 4, 0)
-        grid0.addWidget(self.gridy_entry, 4, 1)
+        grids_grid.addWidget(self.gridy_label, 4, 0)
+        grids_grid.addWidget(self.gridy_entry, 4, 1)
 
         # Snap Max Entry
         self.snap_max_label = FCLabel('%s:' % _('Snap Max'))
@@ -72,17 +78,26 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.snap_max_dist_entry.set_precision(self.decimals)
         self.snap_max_dist_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.snap_max_label, 6, 0)
-        grid0.addWidget(self.snap_max_dist_entry, 6, 1)
+        grids_grid.addWidget(self.snap_max_label, 6, 0)
+        grids_grid.addWidget(self.snap_max_dist_entry, 6, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 8, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grids_grid.addWidget(separator_line, 8, 0, 1, 2)
 
+        # #############################################################################################################
+        # Workspace Frame
+        # #############################################################################################################
         # Workspace
-        self.workspace_label = FCLabel('<b>%s</b>' % _('Workspace Settings'))
-        grid0.addWidget(self.workspace_label, 10, 0, 1, 2)
+        self.workspace_label = FCLabel('<span style="color:darkorchid;"><b>%s</b></span>' % _('Workspace Settings'))
+        self.layout.addWidget(self.workspace_label)
+
+        wk_frame = FCFrame()
+        self.layout.addWidget(wk_frame)
+
+        wk_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        wk_frame.setLayout(wk_grid)
 
         self.workspace_cb = FCCheckBox('%s' % _('Active'))
         self.workspace_cb.setToolTip(
@@ -90,7 +105,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
              "The purpose is to illustrate the limits for our work.")
         )
 
-        grid0.addWidget(self.workspace_cb, 12, 0, 1, 2)
+        wk_grid.addWidget(self.workspace_cb, 0, 0, 1, 2)
 
         self.workspace_type_lbl = FCLabel('%s:' % _('Size'))
         self.workspace_type_lbl.setToolTip(
@@ -99,8 +114,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         self.wk_cb = FCComboBox()
 
-        grid0.addWidget(self.workspace_type_lbl, 14, 0)
-        grid0.addWidget(self.wk_cb, 14, 1)
+        wk_grid.addWidget(self.workspace_type_lbl, 2, 0)
+        wk_grid.addWidget(self.wk_cb, 2, 1)
 
         self.pagesize = {}
         self.pagesize.update(
@@ -167,19 +182,23 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         self.wk_orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
                                               {'label': _('Landscape'), 'value': 'l'},
-                                              ], stretch=False)
+                                              ], compact=True)
 
-        grid0.addWidget(self.wk_orientation_label, 16, 0)
-        grid0.addWidget(self.wk_orientation_radio, 16, 1)
+        wk_grid.addWidget(self.wk_orientation_label, 4, 0)
+        wk_grid.addWidget(self.wk_orientation_radio, 4, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 18, 0, 1, 2)
-
+        # #############################################################################################################
+        # Font Frame
+        # #############################################################################################################
         # Font Size
-        self.font_size_label = FCLabel('<b>%s</b>' % _('Font Size'))
-        grid0.addWidget(self.font_size_label, 20, 0, 1, 2)
+        self.font_size_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Font Size'))
+        self.layout.addWidget(self.font_size_label)
+
+        fnt_frame = FCFrame()
+        self.layout.addWidget(fnt_frame)
+
+        fnt_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        fnt_frame.setLayout(fnt_grid)
 
         # Notebook Font Size
         self.notebook_font_size_label = FCLabel('%s:' % _('Notebook'))
@@ -199,8 +218,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
-        grid0.addWidget(self.notebook_font_size_label, 22, 0)
-        grid0.addWidget(self.notebook_font_size_spinner, 22, 1)
+        fnt_grid.addWidget(self.notebook_font_size_label, 0, 0)
+        fnt_grid.addWidget(self.notebook_font_size_spinner, 0, 1)
 
         # Axis Font Size
         self.axis_font_size_label = FCLabel('%s:' % _('Axis'))
@@ -218,8 +237,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.axis_font_size_spinner.set_value(8)
 
-        grid0.addWidget(self.axis_font_size_label, 24, 0)
-        grid0.addWidget(self.axis_font_size_spinner, 24, 1)
+        fnt_grid.addWidget(self.axis_font_size_label, 2, 0)
+        fnt_grid.addWidget(self.axis_font_size_spinner, 2, 1)
 
         # TextBox Font Size
         self.textbox_font_size_label = FCLabel('%s:' % _('Textbox'))
@@ -238,8 +257,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.textbox_font_size_spinner.set_value(10)
 
-        grid0.addWidget(self.textbox_font_size_label, 26, 0)
-        grid0.addWidget(self.textbox_font_size_spinner, 26, 1)
+        fnt_grid.addWidget(self.textbox_font_size_label, 4, 0)
+        fnt_grid.addWidget(self.textbox_font_size_spinner, 4, 1)
 
         # HUD Font Size
         self.hud_font_size_label = FCLabel('%s:' % _('HUD'))
@@ -257,13 +276,21 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         else:
             self.hud_font_size_spinner.set_value(8)
 
-        grid0.addWidget(self.hud_font_size_label, 28, 0)
-        grid0.addWidget(self.hud_font_size_spinner, 28, 1)
+        fnt_grid.addWidget(self.hud_font_size_label, 6, 0)
+        fnt_grid.addWidget(self.hud_font_size_spinner, 6, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 30, 0, 1, 2)
+        # #############################################################################################################
+        # Axis Frame
+        # #############################################################################################################
+        # Axis Size
+        self.axis_label = FCLabel('<span style="color:DarkOrchid;"><b>%s</b></span>' % _('Axis'))
+        self.layout.addWidget(self.axis_label)
+
+        ax_frame = FCFrame()
+        self.layout.addWidget(ax_frame)
+
+        ax_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ax_frame.setLayout(ax_grid)
 
         # Axis Color
         self.axis_color_label = FCLabel('%s:' % _('Axis Color'))
@@ -272,20 +299,20 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         self.axis_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.axis_color_label, 32, 0)
-        grid0.addWidget(self.axis_color_entry, 32, 1)
+        ax_grid.addWidget(self.axis_color_label, 0, 0)
+        ax_grid.addWidget(self.axis_color_entry, 0, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 34, 0, 1, 2)
+        # #############################################################################################################
+        # Mouse Frame
+        # #############################################################################################################
+        self.mouse_lbl = FCLabel('<span style="color:LightSeaGreen;"><b>%s</b></span>' % _('Mouse Settings'))
+        self.layout.addWidget(self.mouse_lbl)
 
-        # -----------------------------------------------------------
-        # -------------- MOUSE SETTINGS -----------------------------
-        # -----------------------------------------------------------
+        m_frame = FCFrame()
+        self.layout.addWidget(m_frame)
 
-        self.mouse_lbl = FCLabel('<b>%s</b>' % _('Mouse Settings'))
-        grid0.addWidget(self.mouse_lbl, 36, 0, 1, 2)
+        m_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        m_frame.setLayout(m_grid)
 
         # Mouse Cursor Shape
         self.cursor_lbl = FCLabel('%s:' % _('Cursor Shape'))
@@ -298,10 +325,10 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.cursor_radio = RadioSet([
             {"label": _("Small"), "value": "small"},
             {"label": _("Big"), "value": "big"}
-        ], orientation='horizontal', stretch=False)
+        ], orientation='horizontal', compact=True)
 
-        grid0.addWidget(self.cursor_lbl, 38, 0)
-        grid0.addWidget(self.cursor_radio, 38, 1)
+        m_grid.addWidget(self.cursor_lbl, 0, 0)
+        m_grid.addWidget(self.cursor_radio, 0, 1)
 
         # Mouse Cursor Size
         self.cursor_size_lbl = FCLabel('%s:' % _('Cursor Size'))
@@ -313,8 +340,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.cursor_size_entry.set_range(10, 70)
         self.cursor_size_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_size_lbl, 40, 0)
-        grid0.addWidget(self.cursor_size_entry, 40, 1)
+        m_grid.addWidget(self.cursor_size_lbl, 2, 0)
+        m_grid.addWidget(self.cursor_size_entry, 2, 1)
 
         # Cursor Width
         self.cursor_width_lbl = FCLabel('%s:' % _('Cursor Width'))
@@ -326,15 +353,15 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.cursor_width_entry.set_range(1, 10)
         self.cursor_width_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_width_lbl, 42, 0)
-        grid0.addWidget(self.cursor_width_entry, 42, 1)
+        m_grid.addWidget(self.cursor_width_lbl, 4, 0)
+        m_grid.addWidget(self.cursor_width_entry, 4, 1)
 
         # Cursor Color Enable
         self.mouse_cursor_color_cb = FCCheckBox(label='%s' % _('Cursor Color'))
         self.mouse_cursor_color_cb.setToolTip(
             _("Check this box to color mouse cursor.")
         )
-        grid0.addWidget(self.mouse_cursor_color_cb, 44, 0, 1, 2)
+        m_grid.addWidget(self.mouse_cursor_color_cb, 6, 0, 1, 2)
 
         # Cursor Color
         self.mouse_color_label = FCLabel('%s:' % _('Cursor Color'))
@@ -343,8 +370,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         self.mouse_cursor_entry = FCColorEntry()
 
-        grid0.addWidget(self.mouse_color_label, 46, 0)
-        grid0.addWidget(self.mouse_cursor_entry, 46, 1)
+        m_grid.addWidget(self.mouse_color_label, 8, 0)
+        m_grid.addWidget(self.mouse_cursor_entry, 8, 1)
 
         self.mois = OptionalInputSection(
             self.mouse_cursor_color_cb,
@@ -362,26 +389,33 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "- RMB --> Right Mouse Button")
         )
         self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
-                                          {'label': _('RMB'), 'value': '2'}])
+                                          {'label': _('RMB'), 'value': '2'}], compact=True)
 
-        grid0.addWidget(self.panbuttonlabel, 48, 0)
-        grid0.addWidget(self.pan_button_radio, 48, 1)
+        m_grid.addWidget(self.panbuttonlabel, 10, 0)
+        m_grid.addWidget(self.pan_button_radio, 10, 1)
 
         # Multiple Selection Modifier Key
-        self.mselectlabel = FCLabel('%s:' % _('Multiple Selection'))
+        self.mselectlabel = FCLabel('%s:' % _('Multi-Selection'))
         self.mselectlabel.setToolTip(
             _("Select the key used for multiple selection.")
         )
         self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
-                                       {'label': _('SHIFT'), 'value': 'Shift'}])
+                                       {'label': _('SHIFT'), 'value': 'Shift'}], compact=True)
 
-        grid0.addWidget(self.mselectlabel, 50, 0)
-        grid0.addWidget(self.mselect_radio, 50, 1)
+        m_grid.addWidget(self.mselectlabel, 50, 0)
+        m_grid.addWidget(self.mselect_radio, 50, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 52, 0, 1, 2)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        self.par_label = FCLabel('<b><font color="blue">%s:</font></b>' % _('Parameters'))
+        self.layout.addWidget(self.par_label)
+
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
 
         # Delete confirmation
         self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
@@ -390,14 +424,14 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "whenever the Delete object(s) event is triggered, either by\n"
               "menu shortcut or key shortcut.")
         )
-        grid0.addWidget(self.delete_conf_cb, 54, 0, 1, 2)
+        par_grid.addWidget(self.delete_conf_cb, 0, 0, 1, 2)
 
         self.allow_edit_cb = FCCheckBox(_("Allow Edit"))
         self.allow_edit_cb.setToolTip(
             _("When checked, the user can edit the object names in the Project Tab\n"
               "by clicking on the object name. Active after restart.")
         )
-        grid0.addWidget(self.allow_edit_cb, 56, 0, 1, 2)
+        par_grid.addWidget(self.allow_edit_cb, 2, 0, 1, 2)
 
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
@@ -408,7 +442,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "path for saving files or the path for opening files.")
         )
 
-        grid0.addWidget(self.open_style_cb, 58, 0, 1, 2)
+        par_grid.addWidget(self.open_style_cb, 4, 0, 1, 2)
 
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_cb = FCCheckBox(label=_('Enable ToolTips'))
@@ -417,7 +451,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "when hovering with mouse over items throughout the App.")
         )
 
-        grid0.addWidget(self.toggle_tooltips_cb, 60, 0, 1, 2)
+        par_grid.addWidget(self.toggle_tooltips_cb, 6, 0, 1, 2)
 
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
@@ -429,8 +463,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "but the menu will hold only so much.")
         )
 
-        grid0.addWidget(self.bm_limit_label, 62, 0)
-        grid0.addWidget(self.bm_limit_spinner, 62, 1)
+        par_grid.addWidget(self.bm_limit_label, 8, 0)
+        par_grid.addWidget(self.bm_limit_spinner, 8, 1)
 
         # Activity monitor icon
         self.activity_label = FCLabel('%s:' % _("Activity Icon"))
@@ -440,8 +474,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.activity_combo = FCComboBox()
         self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
 
-        grid0.addWidget(self.activity_label, 64, 0)
-        grid0.addWidget(self.activity_combo, 64, 1)
+        par_grid.addWidget(self.activity_label, 10, 0)
+        par_grid.addWidget(self.activity_combo, 10, 1)
 
         self.layout.addStretch()
 

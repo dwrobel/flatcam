@@ -588,7 +588,7 @@ class ToolsDB2UI:
         self.ncc_op_radio = RadioSet([
             {"label": _("Clear"), "value": "clear"},
             {"label": _("Isolation"), "value": "iso"}
-        ], orientation='horizontal', stretch=False)
+        ], orientation='horizontal', compact=True)
         self.ncc_op_radio.setObjectName("gdb_n_operation")
 
         self.grid2.addWidget(op_label, 13, 0)
@@ -1151,7 +1151,7 @@ class ToolsDB2UI:
                 {'label': _('Thin'), 'value': 'bt'},
                 {'label': "M-Bites", 'value': 'mb'}
             ],
-            stretch=True
+            compact=True
         )
         self.cutout_gaptype_radio.setObjectName('gdb_ct_gap_type')
 

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCLabel, FCComboBox, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,15 +22,20 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.defaults = defaults
 
         # ## Board cuttout
-        self.levelling_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.levelling_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.levelling_label.setToolTip(
             _("Generate CNC Code with auto-levelled paths.")
         )
         self.layout.addWidget(self.levelling_label)
 
-        # Grid Layout
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        par_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(par_grid)
 
         # Probe points mode
         al_mode_lbl = FCLabel('%s:' % _("Mode"))
@@ -43,8 +48,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        grid0.addWidget(al_mode_lbl, 8, 0)
-        grid0.addWidget(self.al_mode_radio, 8, 1)
+        par_grid.addWidget(al_mode_lbl, 8, 0)
+        par_grid.addWidget(self.al_mode_radio, 8, 1)
 
         # AUTOLEVELL METHOD
         self.al_method_lbl = FCLabel('%s:' % _("Method"))
@@ -57,8 +62,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
                 {'label': _('Voronoi'), 'value': 'v'},
                 {'label': _('Bilinear'), 'value': 'b'}
             ])
-        grid0.addWidget(self.al_method_lbl, 9, 0)
-        grid0.addWidget(self.al_method_radio, 9, 1)
+        par_grid.addWidget(self.al_method_lbl, 9, 0)
+        par_grid.addWidget(self.al_method_radio, 9, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -67,8 +72,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
-        grid0.addWidget(self.al_columns_label, 10, 0)
-        grid0.addWidget(self.al_columns_entry, 10, 1)
+        par_grid.addWidget(self.al_columns_label, 10, 0)
+        par_grid.addWidget(self.al_columns_entry, 10, 1)
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
@@ -77,8 +82,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.al_rows_label.setToolTip(
             _("The number of grid rows.")
         )
-        grid0.addWidget(self.al_rows_label, 12, 0)
-        grid0.addWidget(self.al_rows_entry, 12, 1)
+        par_grid.addWidget(self.al_rows_label, 12, 0)
+        par_grid.addWidget(self.al_rows_entry, 12, 1)
 
         # Travel Z Probe
         self.ptravelz_label = FCLabel('%s:' % _("Probe Z travel"))
@@ -89,8 +94,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.ptravelz_entry.set_precision(self.decimals)
         self.ptravelz_entry.set_range(0.0000, 10000.0000)
 
-        grid0.addWidget(self.ptravelz_label, 14, 0)
-        grid0.addWidget(self.ptravelz_entry, 14, 1)
+        par_grid.addWidget(self.ptravelz_label, 14, 0)
+        par_grid.addWidget(self.ptravelz_entry, 14, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -102,8 +107,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
-        grid0.addWidget(self.pdepth_label, 16, 0)
-        grid0.addWidget(self.pdepth_entry, 16, 1)
+        par_grid.addWidget(self.pdepth_label, 16, 0)
+        par_grid.addWidget(self.pdepth_entry, 16, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Probe Feedrate"))
@@ -114,13 +119,13 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.feedrate_probe_label, 18, 0)
-        grid0.addWidget(self.feedrate_probe_entry, 18, 1)
+        par_grid.addWidget(self.feedrate_probe_label, 18, 0)
+        par_grid.addWidget(self.feedrate_probe_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 20, 0, 1, 2)
+        par_grid.addWidget(separator_line, 20, 0, 1, 2)
 
         self.al_controller_label = FCLabel('%s:' % _("Controller"))
         self.al_controller_label.setToolTip(
@@ -130,8 +135,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
 
         self.al_controller_combo = FCComboBox()
         self.al_controller_combo.addItems(["MACH3", "MACH4", "LinuxCNC", "GRBL"])
-        grid0.addWidget(self.al_controller_label, 22, 0)
-        grid0.addWidget(self.al_controller_combo, 22, 1)
+        par_grid.addWidget(self.al_controller_label, 22, 0)
+        par_grid.addWidget(self.al_controller_combo, 22, 1)
 
         # JOG Step
         self.jog_step_label = FCLabel('%s:' % _("Step"))
@@ -143,8 +148,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.jog_step_entry.set_precision(self.decimals)
         self.jog_step_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.jog_step_label, 24, 0)
-        grid0.addWidget(self.jog_step_entry, 24, 1)
+        par_grid.addWidget(self.jog_step_label, 24, 0)
+        par_grid.addWidget(self.jog_step_entry, 24, 1)
 
         # JOG Feedrate
         self.jog_fr_label = FCLabel('%s:' % _("Feedrate"))
@@ -156,8 +161,8 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.jog_fr_entry.set_precision(self.decimals)
         self.jog_fr_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.jog_fr_label, 26, 0)
-        grid0.addWidget(self.jog_fr_entry, 26, 1)
+        par_grid.addWidget(self.jog_fr_label, 26, 0)
+        par_grid.addWidget(self.jog_fr_entry, 26, 1)
 
         # JOG Travel Z
         self.jog_travelz_label = FCLabel('%s:' % _("Travel Z"))
@@ -169,7 +174,7 @@ class ToolsLevelPrefGroupUI(OptionsGroupUI):
         self.jog_travelz_entry.set_precision(self.decimals)
         self.jog_travelz_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.jog_travelz_label, 28, 0)
-        grid0.addWidget(self.jog_travelz_entry, 28, 1)
+        par_grid.addWidget(self.jog_travelz_label, 28, 0)
+        par_grid.addWidget(self.jog_travelz_entry, 28, 1)
 
         self.layout.addStretch(1)

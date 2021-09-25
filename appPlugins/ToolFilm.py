@@ -1322,7 +1322,7 @@ class FilmUI:
         # Scale Geometry
         self.film_scale_cb = FCCheckBox('%s' % _("Scale"))
         self.film_scale_cb.setToolTip(
-            _("A value greater than 1 will stretch the film\n"
+            _("A value greater than 1 will compact the film\n"
               "while a value less than 1 will jolt it.")
         )
         self.film_scale_cb.setStyleSheet(
@@ -1456,7 +1456,7 @@ class FilmUI:
         self.film_mirror_axis = RadioSet([{'label': _('X'), 'value': 'x'},
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
-                                         stretch=False)
+                                         compact=True)
         self.film_mirror_axis_label = FCLabel('%s:' % _("Axis"))
         self.film_mirror_axis_label.setToolTip(
             _("Mirror the film geometry on the selected axis or on both.")
@@ -1525,7 +1525,7 @@ class FilmUI:
         # Polarity
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
-                                  stretch=False)
+                                  compact=True)
         self.film_type_label = FCLabel('%s:' % _("Polarity"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.")
@@ -1582,7 +1582,7 @@ class FilmUI:
         )
         self.source_punch = RadioSet([{'label': _('Excellon'), 'value': 'exc'},
                                       {'label': _('Pad center'), 'value': 'pad'}],
-                                     stretch=False)
+                                     compact=True)
         punch_grid.addWidget(self.source_label, 0, 0)
         punch_grid.addWidget(self.source_punch, 0, 1)
 
@@ -1637,7 +1637,7 @@ class FilmUI:
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
                                          {'label': _('PNG'), 'value': 'png'},
                                          {'label': _('PDF'), 'value': 'pdf'}
-                                         ], stretch=False)
+                                         ], compact=True)
 
         grid3.addWidget(self.file_type_label, 0, 0)
         grid3.addWidget(self.file_type_radio, 0, 1)
@@ -1650,7 +1650,7 @@ class FilmUI:
 
         self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
                                            {'label': _('Landscape'), 'value': 'l'},
-                                           ], stretch=False)
+                                           ], compact=True)
 
         # #############################################################################################################
         # ################################  New Grid ##################################################################

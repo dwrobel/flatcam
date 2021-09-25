@@ -437,7 +437,7 @@ class EtchUI:
             {'label': _('Etch Factor'), 'value': 'factor'},
             {'label': _('Etchants list'), 'value': 'etch_list'},
             {'label': _('Manual offset'), 'value': 'manual'}
-        ], orientation='vertical', stretch=False)
+        ], orientation='vertical', compact=True)
 
         grid1.addWidget(self.ratio_label, 2, 0, 1, 2)
         grid1.addWidget(self.ratio_radio, 4, 0, 1, 2)

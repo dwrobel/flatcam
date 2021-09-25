@@ -3120,7 +3120,7 @@ class App(QtCore.QObject):
                 self.resize(600, 200)
                 # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
                 # self.setStyleSheet(
-                #     "border-image: url(share/flatcam_icon256.png) 0 0 0 0 stretch stretch; "
+                #     "border-image: url(share/flatcam_icon256.png) 0 0 0 0 compact compact; "
                 #     "background-attachment: fixed"
                 # )
 
@@ -5394,7 +5394,7 @@ class App(QtCore.QObject):
                     {"label": _("Quadrant 3"), "value": "tr"},
                     {"label": _("Quadrant 4"), "value": "tl"},
                     {"label": _("Center"), "value": "c"}
-                ], orientation='vertical', stretch=False)
+                ], orientation='vertical', compact=True)
                 self.ref_radio.set_value(choice)
                 grid0.addWidget(self.ref_radio, 0, 0)
 
@@ -5667,7 +5667,7 @@ class App(QtCore.QObject):
                     {"label": _("Bottom Right"), "value": "br"},
                     {"label": _("Top Right"), "value": "tr"},
                     {"label": _("Center"), "value": "c"}
-                ], orientation='vertical', stretch=False)
+                ], orientation='vertical', compact=True)
                 self.ref_radio.set_value(choice)
                 grid0.addWidget(self.ref_radio, 0, 0)
 

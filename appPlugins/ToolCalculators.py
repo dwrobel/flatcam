@@ -690,7 +690,7 @@ class CalcUI:
         self.area_sel_radio = RadioSet([
             {'label': _('Dimensions'), 'value': 'd'},
             {"label": _("Area"), "value": "a"}
-        ], stretch=False)
+        ], compact=True)
 
         grid_electro.addWidget(self.area_sel_label, 4, 0)
         grid_electro.addWidget(self.area_sel_radio, 6, 0, 1, 2)
@@ -874,7 +874,7 @@ class CalcUI:
         self.sol_radio = RadioSet([
             {'label': '1', 'value': 'sol1'},
             {"label": '2', "value": "sol2"}
-        ], stretch=False)
+        ], compact=True)
 
         grid_tin.addWidget(self.solution_lbl, 4, 0)
         grid_tin.addWidget(self.sol_radio, 4, 1)

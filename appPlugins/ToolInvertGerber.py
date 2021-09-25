@@ -291,7 +291,7 @@ class InvertUI:
             {'label': _('Rounded'), 'value': 'r'},
             {'label': _('Square'), 'value': 's'},
             {'label': _('Bevel'), 'value': 'b'}
-        ], orientation='vertical', stretch=False)
+        ], orientation='vertical', compact=True)
 
         grid0.addWidget(self.join_label, 2, 0)
         grid0.addWidget(self.join_radio, 2, 1)

@@ -1422,7 +1422,7 @@ class ThievingUI:
         self.bbox_type_radio = RadioSet([
             {'label': _('Rectangular'), 'value': 'rect'},
             {"label": _("Minimal"), "value": "min"}
-        ], stretch=False)
+        ], compact=True)
 
         grid_lay.addWidget(self.bbox_type_label, 14, 0)
         grid_lay.addWidget(self.bbox_type_radio, 14, 1)
@@ -1757,7 +1757,7 @@ class ThievingUI:
         #     {'label': _('Thieving'), 'value': 't'},
         #     {"label": _("Robber bar"), "value": "r"},
         #     {"label": _("None"), "value": "n"}
-        # ], orientation='vertical', stretch=False)
+        # ], orientation='vertical', compact=True)
         self.ppm_choice_combo = FCComboBox2()
         self.ppm_choice_combo.addItems([_("Both"), _('Thieving'), _("Robber bar"), _("None")])
         grid_lay_2.addWidget(self.ppm_choice_label, 6, 0)

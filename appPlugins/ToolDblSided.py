@@ -849,7 +849,7 @@ class DsidedUI:
                 {'label': 'X', 'value': 'X'},
                 {'label': 'Y', 'value': 'Y'}
             ],
-            stretch=True
+            compact=True
         )
 
         grid_mirror.addWidget(self.mirax_label, 2, 0)
@@ -876,7 +876,7 @@ class DsidedUI:
                 {'label': _('Box'), 'value': 'box'},
                 {'label': _('Snap'), 'value': 'hole'},
             ],
-            stretch=True
+            compact=True
         )
 
         grid_mirror.addWidget(self.axloc_label, 4, 0)
@@ -1048,7 +1048,7 @@ class DsidedUI:
                 {'label': 'X', 'value': 'X'},
                 {'label': 'Y', 'value': 'Y'}
             ],
-            stretch=True
+            compact=True
         )
 
         grid4.addWidget(self.align_ax_label, 4, 0)

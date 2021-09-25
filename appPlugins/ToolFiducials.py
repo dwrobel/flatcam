@@ -999,7 +999,7 @@ class FidoUI:
             {'label': _('Up'), 'value': 'up'},
             {"label": _("Down"), "value": "down"},
             {"label": _("None"), "value": "no"}
-        ], stretch=False)
+        ], compact=True)
         self.pos_label = FCLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
@@ -1065,7 +1065,7 @@ class FidoUI:
         self.mode_radio = RadioSet([
             {'label': _('Auto'), 'value': 'auto'},
             {"label": _("Manual"), "value": "manual"}
-        ], stretch=False)
+        ], compact=True)
         self.mode_label = FCLabel(_("Mode:"))
         self.mode_label.setToolTip(
             _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"

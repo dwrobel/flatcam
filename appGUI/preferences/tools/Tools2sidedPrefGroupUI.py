@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,15 +22,21 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.defaults = defaults
 
         # ## Board cuttout
-        self.dblsided_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        self.dblsided_label = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("PCB Alignment"))
         self.dblsided_label.setToolTip(
             _("A tool to help in creating a double sided\n"
               "PCB using alignment holes.")
         )
         self.layout.addWidget(self.dblsided_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # #############################################################################################################
+        # Parameters Frame
+        # #############################################################################################################
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # ## Drill diameter for alignment holes
         self.drill_dia_entry = FCDoubleSpinner()
@@ -43,8 +49,8 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
             _("Diameter of the drill for the "
               "alignment holes.")
         )
-        grid0.addWidget(self.dd_label, 0, 0)
-        grid0.addWidget(self.drill_dia_entry, 0, 1)
+        param_grid.addWidget(self.dd_label, 0, 0)
+        param_grid.addWidget(self.drill_dia_entry, 0, 1)
 
         # ## Alignment Axis
         self.align_ax_label = FCLabel('%s:' % _("Align Axis"))
@@ -52,26 +58,39 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
             _("Mirror vertically (X) or horizontally (Y).")
         )
         self.align_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'}])
+                                          {'label': 'Y', 'value': 'Y'}], compact=True)
 
-        grid0.addWidget(self.align_ax_label, 1, 0)
-        grid0.addWidget(self.align_axis_radio, 1, 1)
+        param_grid.addWidget(self.align_ax_label, 1, 0)
+        param_grid.addWidget(self.align_axis_radio, 1, 1)
 
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                           {'label': 'Y', 'value': 'Y'}])
+                                           {'label': 'Y', 'value': 'Y'}], compact=True)
         self.mirax_label = FCLabel('%s:' % _("Mirror Axis"))
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 2, 0, 1, 2)
 
-        grid0.addWidget(self.mirax_label, 3, 0)
-        grid0.addWidget(self.mirror_axis_radio, 3, 1)
+        # #############################################################################################################
+        # Mirror Frame
+        # #############################################################################################################
+        # ### Tools ## ##
+        self.mirror_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Mirror Operation"))
+        self.layout.addWidget(self.mirror_label)
+
+        mirror_frame = FCFrame()
+        self.layout.addWidget(mirror_frame)
+
+        mirror_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        mirror_frame.setLayout(mirror_grid)
+
+        mirror_grid.addWidget(self.mirax_label, 0, 0)
+        mirror_grid.addWidget(self.mirror_axis_radio, 0, 1)
 
         # ## Axis Location
         self.axis_location_radio = RadioSet(
@@ -79,7 +98,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
                 {'label': _('Point'), 'value': 'point'},
                 {'label': _('Box'), 'value': 'box'},
                 {'label': _('Snap'), 'value': 'hole'},
-            ]
+            ], compact=True
         )
         self.axloc_label = FCLabel('%s:' % _("Axis Ref"))
         self.axloc_label.setToolTip(
@@ -91,7 +110,9 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
               "- Snap-> a point defined by the center of a drill hone in a Excellon object")
         )
 
-        grid0.addWidget(self.axloc_label, 4, 0)
-        grid0.addWidget(self.axis_location_radio, 4, 1)
+        mirror_grid.addWidget(self.axloc_label, 2, 0)
+        mirror_grid.addWidget(self.axis_location_radio, 2, 1)
 
-        self.layout.addStretch()
+        FCGridLayout.set_common_column_size([param_grid, mirror_grid], 0)
+
+        # self.layout.addStretch(1)

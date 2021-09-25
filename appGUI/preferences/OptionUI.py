@@ -268,13 +268,14 @@ class DoubleSpinnerOptionUI(BasicOptionUI):
 
 
 class HeadingOptionUI(OptionUI):
-    def __init__(self, label_text: str, label_tooltip: Union[str, None] = None):
+    def __init__(self, label_text: str, color: Union[str, None] = None, label_tooltip: Union[str, None] = None):
         super().__init__(option="__heading")
         self.label_text = label_text
         self.label_tooltip = label_tooltip
+        self.color = color if color else ""
 
     def build_heading_widget(self):
-        heading = FCLabel('<b>%s</b>' % _(self.label_text))
+        heading = FCLabel('<span style="color:%s;"><b>%s</b></span>' % (str(self.color), _(self.label_text)))
         heading.setToolTip(_(self.label_tooltip))
         return heading
 
