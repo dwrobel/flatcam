@@ -4,7 +4,7 @@ import traceback
 from datetime import datetime
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QSettings, Qt, QTimer
+from PyQt6.QtCore import QSettings, QTimer, Qt
 from app_Main import App
 from appGUI import VisPyPatches
 
@@ -119,6 +119,26 @@ if __name__ == '__main__':
             except IOError:
                 with open(log_file_path, 'w') as f:
                     f.write(msg)
+
+            # show the message
+            try:
+                msgbox = QtWidgets.QMessageBox()
+                displayed_msg = "The application encountered a critical error and it will close.\n"\
+                                "Please report this error to the developers.\n" \
+                                "**************************************************************\n\n"
+                displayed_msg += msg
+                msgbox.setInformativeText(displayed_msg)
+
+                msgbox.setWindowTitle("Critical Error")
+                msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+
+                bt_yes = msgbox.addButton("Quit", QtWidgets.QMessageBox.ButtonRole.YesRole)
+
+                msgbox.setDefaultButton(bt_yes)
+                # msgbox.setTextFormat(Qt.TextFormat.RichText)
+                msgbox.exec()
+            except Exception:
+                pass
         QtWidgets.QApplication.quit()
         # or QtWidgets.QApplication.exit(0)
 

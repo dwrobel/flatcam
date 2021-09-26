@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.09.2021
+
+- besides reporting the error into the log file now any application crash is reported also in a MessageBox after which the application will close
+
 25.09.2021
 
 - solved more Shapely 2.0 deprecation warnings 
