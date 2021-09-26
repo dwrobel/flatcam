@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 26.09.2021
 
 - besides reporting the error into the log file now any application crash is reported also in a MessageBox after which the application will close
+- solved a Shapely 2.0 deprecation warning
+- more Qt6 port bugs fixed
+- in Autolevelling Plugin modified the UI; work in progress - the frame disable is not working
 
 25.09.2021
 

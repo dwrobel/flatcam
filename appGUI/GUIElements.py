@@ -4988,7 +4988,7 @@ class RotatedToolButton(QtWidgets.QToolButton):
         if self.orientation == "west":
             painter.rotate(90)
             painter.translate(0, -1 * self.width())
-        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+        painter.drawControl(QtWidgets.QStyle.ControlElement.CE_PushButton, self.getSyleOptions())
 
     def minimumSizeHint(self):
         size = super(RotatedToolButton, self).minimumSizeHint()
@@ -5016,11 +5016,11 @@ class RotatedToolButton(QtWidgets.QToolButton):
         # if self.isDefault():
         #     options.features |= QtWidgets.QStyleOptionButton.DefaultButton
         if self.isDown() or (self.menu() and self.menu().isVisible()):
-            options.state |= QtWidgets.QStyle.State_Sunken
+            options.state |= QtWidgets.QStyle.StateFlag.State_Sunken
         if self.isChecked():
-            options.state |= QtWidgets.QStyle.State_On
+            options.state |= QtWidgets.QStyle.StateFlag.State_On
         # if not self.isFlat() and not self.isDown():
-        #     options.state |= QtWidgets.QStyle.State_Raised
+        #     options.state |= QtWidgets.QStyle.StateFlag.State_Raised
 
         options.text = self.text()
         options.icon = self.icon()
@@ -5041,7 +5041,7 @@ class RotatedButton(QtWidgets.QPushButton):
         if self.orientation == "west":
             painter.rotate(90)
             painter.translate(0, -1 * self.width())
-        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+        painter.drawControl(QtWidgets.QStyle.ControlElement.CE_PushButton, self.getSyleOptions())
 
     def minimumSizeHint(self):
         size = super(RotatedButton, self).minimumSizeHint()
@@ -5069,11 +5069,11 @@ class RotatedButton(QtWidgets.QPushButton):
         if self.isDefault():
             options.features |= QtWidgets.QStyleOptionButton.ButtonFeature.DefaultButton
         if self.isDown() or (self.menu() and self.menu().isVisible()):
-            options.state |= QtWidgets.QStyle.State_Sunken
+            options.state |= QtWidgets.QStyle.StateFlag.State_Sunken
         if self.isChecked():
-            options.state |= QtWidgets.QStyle.State_On
+            options.state |= QtWidgets.QStyle.StateFlag.State_On
         if not self.isFlat() and not self.isDown():
-            options.state |= QtWidgets.QStyle.State_Raised
+            options.state |= QtWidgets.QStyle.StateFlag.State_Raised
 
         options.text = self.text()
         options.icon = self.icon()

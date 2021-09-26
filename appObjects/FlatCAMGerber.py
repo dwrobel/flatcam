@@ -941,7 +941,8 @@ class GerberObject(FlatCAMObj, Gerber):
                 used_color = random_color() if self.options['multicolored'] else 'black'
                 used_face_color = None
 
-            for g in geometry:
+            plot_geometry = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
+            for g in plot_geometry:
                 if isinstance(g, (Polygon, LineString)):
                     self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
 

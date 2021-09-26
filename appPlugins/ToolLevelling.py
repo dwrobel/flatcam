@@ -14,7 +14,7 @@ from appGUI.VisPyVisuals import *
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.GUIElements import RadioSet, FCButton, FCComboBox, FCLabel, FCFileSaveDialog, FCCheckBox, FCTable, \
     FCDoubleSpinner, FCSpinner, FCDetachableTab, FCZeroAxes, FCJog, FCSliderWithDoubleSpinner, RotatedToolButton, \
-    FCEntry, VerticalScrollArea, FCGridLayout
+    FCEntry, VerticalScrollArea, FCGridLayout, FCFrame, FCComboBox2
 from appEditors.AppTextEditor import AppTextEditor
 
 from camlib import CNCjob
@@ -256,7 +256,7 @@ class ToolLevelling(AppTool, CNCjob):
             pass
 
         loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
-        if loaded_obj:
+        if loaded_obj and loaded_obj.kind == 'cncjob':
             name = loaded_obj.options['name']
         else:
             name = ''
@@ -282,6 +282,7 @@ class ToolLevelling(AppTool, CNCjob):
 
         # Fill Form fields
         self.to_form()
+        self.on_controller_change_alter_ui()
 
         self.ui.al_probe_points_table.setRowCount(0)
         self.ui.al_probe_points_table.resizeColumnsToContents()
@@ -699,9 +700,11 @@ class ToolLevelling(AppTool, CNCjob):
                 try:
                     for sh in geometry:
                         if custom_color is None:
-                            k = self.add_probing_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
+                            k = self.add_probing_shape(shape=sh, color=edge_color, face_color=random_color(),
+                                                       visible=True)
                         else:
-                            k = self.add_probing_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
+                            k = self.add_probing_shape(shape=sh, color=custom_color, face_color=custom_color,
+                                                       visible=True)
                 except TypeError:
                     if custom_color is None:
                         self.add_probing_shape(
@@ -1024,6 +1027,18 @@ class ToolLevelling(AppTool, CNCjob):
             self.ui.al_rows_entry.setMinimum(1)
 
     def on_controller_change(self):
+        self.on_controller_change_alter_ui()
+
+        # if the is empty then there is a chance that we've added probe points but the GRBL controller was selected
+        # therefore no Probing GCode was genrated (it is different for GRBL on how it gets it's Probing GCode
+        target_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+        if (not self.probing_gcode_text or self.probing_gcode_text == '') and target_obj is not None:
+            # generate Probing GCode
+            al_method = self.ui.al_method_radio.get_value()
+            storage = self.al_voronoi_geo_storage if al_method == 'v' else self.al_bilinear_geo_storage
+            self.probing_gcode_text = self.probing_gcode(storage=storage)
+
+    def on_controller_change_alter_ui(self):
         if self.ui.al_controller_combo.get_value() == 'GRBL':
             self.ui.h_gcode_button.hide()
             self.ui.view_h_gcode_button.hide()
@@ -1037,14 +1052,6 @@ class ToolLevelling(AppTool, CNCjob):
 
             self.ui.import_heights_button.show()
             self.ui.grbl_frame.hide()
-
-        # if the is empty then there is a chance that we've added probe points but the GRBL controller was selected
-        # therefore no Probing GCode was genrated (it is different for GRBL on how it gets it's Probing GCode
-        if not self.probing_gcode_text or self.probing_gcode_text == '':
-            # generate Probing GCode
-            al_method = self.ui.al_method_radio.get_value()
-            storage = self.al_voronoi_geo_storage if al_method == 'v' else self.al_bilinear_geo_storage
-            self.probing_gcode_text = self.probing_gcode(storage=storage)
 
     @staticmethod
     def on_grbl_list_serial_ports():
@@ -1766,9 +1773,9 @@ class LevelUI:
         self.level.setCheckable(True)
         self.title_box.addWidget(self.level)
 
-        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("CNCjob"))
+        self.obj_combo_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _("Source Object"))
         self.obj_combo_label.setToolTip(
-            _("Source object.")
+            _("CNCJob source object to be levelled.")
         )
 
         self.tools_box.addWidget(self.obj_combo_label)
@@ -1784,10 +1791,10 @@ class LevelUI:
 
         self.tools_box.addWidget(self.object_combo)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.tools_box.addWidget(separator_line)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # self.tools_box.addWidget(separator_line)
 
         # Autolevelling
         self.al_frame = QtWidgets.QFrame()
@@ -1815,12 +1822,22 @@ class LevelUI:
 
         grid0.addLayout(hor_lay, 0, 0, 1, 2)
 
+        # #############################################################################################################
+        # Tool Table Frame
+        # #############################################################################################################
+        tt_frame = FCFrame()
+        self.tools_box.addWidget(tt_frame)
+
+        # Grid Layout
+        tool_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 0])
+        tt_frame.setLayout(tool_grid)
+
         self.al_probe_points_table = FCTable()
         self.al_probe_points_table.setColumnCount(3)
         self.al_probe_points_table.setColumnWidth(0, 20)
         self.al_probe_points_table.setHorizontalHeaderLabels(['#', _('X-Y Coordinates'), _('Height')])
 
-        grid0.addWidget(self.al_probe_points_table, 1, 0, 1, 2)
+        tool_grid.addWidget(self.al_probe_points_table, 0, 0, 1, 2)
 
         self.plot_probing_pts_cb = FCCheckBox(_("Plot probing points"))
         self.plot_probing_pts_cb.setToolTip(
@@ -1828,24 +1845,25 @@ class LevelUI:
               "If a Voronoi method is used then\n"
               "the Voronoi areas are also plotted.")
         )
-        grid0.addWidget(self.plot_probing_pts_cb, 3, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
+        tool_grid.addWidget(self.plot_probing_pts_cb, 2, 0, 1, 2)
 
         # #############################################################################################################
         # ############### Probe GCode Generation ######################################################################
         # #############################################################################################################
-
-        self.probe_gc_label = FCLabel('<b>%s</b>:' % _("Parameters"))
+        self.probe_gc_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.probe_gc_label.setToolTip(
             _("Will create a GCode which will be sent to the controller,\n"
               "either through a file or directly, with the intent to get the height map\n"
               "that is to modify the original GCode to level the cutting height.")
         )
-        grid0.addWidget(self.probe_gc_label, 7, 0, 1, 2)
+        self.tools_box.addWidget(self.probe_gc_label)
+
+        tp_frame = FCFrame()
+        self.tools_box.addWidget(tp_frame)
+
+        # Grid Layout
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        tp_frame.setLayout(param_grid)
 
         # Travel Z Probe
         self.ptravelz_label = FCLabel('%s:' % _("Probe Z travel"))
@@ -1856,8 +1874,8 @@ class LevelUI:
         self.ptravelz_entry.set_precision(self.decimals)
         self.ptravelz_entry.set_range(0.0000, 10000.0000)
 
-        grid0.addWidget(self.ptravelz_label, 9, 0)
-        grid0.addWidget(self.ptravelz_entry, 9, 1)
+        param_grid.addWidget(self.ptravelz_label, 0, 0)
+        param_grid.addWidget(self.ptravelz_entry, 0, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -1869,8 +1887,8 @@ class LevelUI:
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-910000.0000, 0.0000)
 
-        grid0.addWidget(self.pdepth_label, 11, 0)
-        grid0.addWidget(self.pdepth_entry, 11, 1)
+        param_grid.addWidget(self.pdepth_label, 2, 0)
+        param_grid.addWidget(self.pdepth_entry, 2, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Probe Feedrate"))
@@ -1881,13 +1899,13 @@ class LevelUI:
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0, 910000.0000)
 
-        grid0.addWidget(self.feedrate_probe_label, 13, 0)
-        grid0.addWidget(self.feedrate_probe_entry, 13, 1)
+        param_grid.addWidget(self.feedrate_probe_label, 4, 0)
+        param_grid.addWidget(self.feedrate_probe_entry, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 15, 0, 1, 2)
+        param_grid.addWidget(separator_line, 6, 0, 1, 2)
 
         # AUTOLEVELL MODE
         al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
@@ -1900,8 +1918,8 @@ class LevelUI:
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        grid0.addWidget(al_mode_lbl, 16, 0)
-        grid0.addWidget(self.al_mode_radio, 16, 1)
+        param_grid.addWidget(al_mode_lbl, 8, 0)
+        param_grid.addWidget(self.al_mode_radio, 8, 1)
 
         # AUTOLEVELL METHOD
         self.al_method_lbl = FCLabel('%s:' % _("Method"))
@@ -1918,8 +1936,8 @@ class LevelUI:
         self.al_method_radio.setDisabled(True)
         self.al_method_radio.set_value('v')
 
-        grid0.addWidget(self.al_method_lbl, 17, 0)
-        grid0.addWidget(self.al_method_radio, 17, 1)
+        param_grid.addWidget(self.al_method_lbl, 10, 0)
+        param_grid.addWidget(self.al_method_radio, 10, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -1929,8 +1947,8 @@ class LevelUI:
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
-        grid0.addWidget(self.al_columns_label, 19, 0)
-        grid0.addWidget(self.al_columns_entry, 19, 1)
+        param_grid.addWidget(self.al_columns_label, 12, 0)
+        param_grid.addWidget(self.al_columns_entry, 12, 1)
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
@@ -1940,34 +1958,38 @@ class LevelUI:
         self.al_rows_label.setToolTip(
             _("The number of grid rows.")
         )
-        grid0.addWidget(self.al_rows_label, 21, 0)
-        grid0.addWidget(self.al_rows_entry, 21, 1)
+        param_grid.addWidget(self.al_rows_label, 14, 0)
+        param_grid.addWidget(self.al_rows_entry, 14, 1)
 
         self.al_add_button = FCButton(_("Add Probe Points"))
-        grid0.addWidget(self.al_add_button, 23, 0, 1, 2)
+        self.tools_box.addWidget(self.al_add_button)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 25, 0, 1, 2)
-
-        self.al_controller_label = FCLabel('<b>%s</b>:' % _("Controller"))
+        # #############################################################################################################
+        # Controller Frame
+        # #############################################################################################################
+        self.al_controller_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Controller"))
         self.al_controller_label.setToolTip(
             _("The kind of controller for which to generate\n"
               "height map gcode.")
         )
+        self.tools_box.addWidget(self.al_controller_label)
+
+        self.c_frame = FCFrame()
+        self.tools_box.addWidget( self.c_frame)
+
+        ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        self.c_frame.setLayout(ctrl_grid)
 
         self.al_controller_combo = FCComboBox()
         self.al_controller_combo.addItems(["MACH3", "MACH4", "LinuxCNC", "GRBL"])
-        grid0.addWidget(self.al_controller_label, 27, 0)
-        grid0.addWidget(self.al_controller_combo, 27, 1)
+        ctrl_grid.addWidget(self.al_controller_combo, 0, 0, 1, 2)
 
         # #############################################################################################################
         # ########################## GRBL frame #######################################################################
         # #############################################################################################################
         self.grbl_frame = QtWidgets.QFrame()
         self.grbl_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.grbl_frame, 29, 0, 1, 2)
+        ctrl_grid.addWidget(self.grbl_frame, 2, 0, 1, 2)
 
         self.grbl_box = QtWidgets.QVBoxLayout()
         self.grbl_box.setContentsMargins(0, 0, 0, 0)
@@ -2023,8 +2045,11 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONNECT
         # #############################################################################################################
+        self.connect_frame = FCFrame()
+        self.gr_conn_tab_layout.addWidget(self.connect_frame)
+
         grbl_conn_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        self.gr_conn_tab_layout.addLayout(grbl_conn_grid)
+        self.connect_frame.setLayout(grbl_conn_grid)
 
         # COM list
         self.com_list_label = FCLabel('%s:' % _("COM list"))
@@ -2101,11 +2126,15 @@ class LevelUI:
         # #############################################################################################################
         # GRBL CONTROL
         # #############################################################################################################
+        self.ctrl_grbl_frame = FCFrame()
+        self.gr_ctrl_tab_layout.addWidget(self.ctrl_grbl_frame)
         grbl_ctrl_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[0, 1, 0])
-        self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
+        self.ctrl_grbl_frame.setLayout(grbl_ctrl_grid)
 
+        self.ctrl_grbl_frame2 = FCFrame()
+        self.gr_ctrl_tab_layout.addWidget(self.ctrl_grbl_frame2)
         grbl_ctrl2_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.gr_ctrl_tab_layout.addLayout(grbl_ctrl2_grid)
+        self.ctrl_grbl_frame2.setLayout(grbl_ctrl2_grid)
 
         self.gr_ctrl_tab_layout.addStretch(1)
 
@@ -2149,7 +2178,8 @@ class LevelUI:
         grbl_ctrl_grid.addWidget(self.zero_axs_wdg, 2, 2)
 
         self.pause_resume_button = RotatedToolButton()
-        self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum,
+                                               QtWidgets.QSizePolicy.Policy.Expanding)
         self.pause_resume_button.setText(_("Pause/Resume"))
         self.pause_resume_button.setCheckable(True)
         self.pause_resume_button.setStyleSheet("""
@@ -2202,10 +2232,11 @@ class LevelUI:
         # #############################################################################################################
         # GRBL SENDER
         # #############################################################################################################
-        grbl_send_grid = FCGridLayout(v_spacing=5, h_spacing=3)
-        grbl_send_grid.setColumnStretch(0, 1)
-        grbl_send_grid.setColumnStretch(1, 0)
-        self.gr_send_tab_layout.addLayout(grbl_send_grid)
+        self.sender_frame = FCFrame()
+        self.gr_send_tab_layout.addWidget(self.sender_frame)
+
+        grbl_send_grid = FCGridLayout(v_spacing=5, h_spacing=3, c_stretch=[1, 0])
+        self.sender_frame.setLayout(grbl_send_grid)
 
         # Send CUSTOM COMMAND
         self.grbl_command_label = FCLabel('%s:' % _("Send Command"))
@@ -2279,19 +2310,21 @@ class LevelUI:
         self.h_gcode_button.setToolTip(
             _("Will save the probing GCode.")
         )
-        self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                          QtWidgets.QSizePolicy.Policy.MinimumExpanding)
 
         height_lay.addWidget(self.h_gcode_button)
         self.view_h_gcode_button = QtWidgets.QToolButton()
         self.view_h_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-        # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Ignored)
+        # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+        #                                        QtWidgets.QSizePolicy.Policy.Ignored)
         self.view_h_gcode_button.setToolTip(
             _("View/Edit the probing GCode.")
         )
         # height_lay.addStretch()
         height_lay.addWidget(self.view_h_gcode_button)
 
-        grid0.addLayout(height_lay, 31, 0, 1, 2)
+        self.tools_box.addLayout(height_lay)
 
         self.import_heights_button = FCButton(_("Import Height Map"))
         self.import_heights_button.setToolTip(
@@ -2300,15 +2333,15 @@ class LevelUI:
               "over the original GCode therefore\n"
               "doing autolevelling.")
         )
-        grid0.addWidget(self.import_heights_button, 33, 0, 1, 2)
+        self.tools_box.addWidget(self.import_heights_button)
 
-        self.h_gcode_button.hide()
-        self.import_heights_button.hide()
+        # self.h_gcode_button.hide()
+        # self.import_heights_button.hide()
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 35, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # grid0.addWidget(separator_line, 35, 0, 1, 2)
 
         self.tools_box.addStretch(1)
 
