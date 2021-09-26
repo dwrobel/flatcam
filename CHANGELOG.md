@@ -13,6 +13,11 @@ CHANGELOG for FlatCAM beta
 - solved a Shapely 2.0 deprecation warning
 - more Qt6 port bugs fixed
 - in Autolevelling Plugin modified the UI; work in progress - the frame disable is not working
+- in Excellon Editor and Geometry Editor solved some Shapely 2.0 deprecation warnings
+- in Excellon Editor made sure that the tool diameter is always updated before adding a new drill (or drill array)
+- changing units is not possible while in Editors
+- changing units outside the Preferences will make no permanent changes
+- deleting all shapes from the shapes collection (OpenGl graphics) will reset also the index in the collection data dict
 
 25.09.2021
 

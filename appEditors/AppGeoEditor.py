@@ -1697,31 +1697,35 @@ class DrawToolShape(object):
 
         # Iterable: descend into each item.
         try:
-            for subo in o:
-                pts += DrawToolShape.get_pts(subo)
+            if isinstance(o, (MultiPolygon,  MultiLineString)):
+                for subo in o.geoms:
+                    pts += DrawToolShape.get_pts(subo)
+            else:
+                for subo in o:
+                    pts += DrawToolShape.get_pts(subo)
         # Non-iterable
         except TypeError:
-            if o is not None:
-                # DrawToolShape: descend into .geo.
-                if isinstance(o, DrawToolShape):
-                    pts += DrawToolShape.get_pts(o.geo)
-
-                # Descend into .exterior and .interiors
-                elif type(o) == Polygon:
-                    pts += DrawToolShape.get_pts(o.exterior)
-                    for i in o.interiors:
-                        pts += DrawToolShape.get_pts(i)
-                elif type(o) == MultiLineString:
-                    for line in o:
-                        pts += DrawToolShape.get_pts(line)
-                # Has .coords: list them.
-                else:
-                    if DrawToolShape.tolerance is not None:
-                        pts += list(o.simplify(DrawToolShape.tolerance).coords)
-                    else:
-                        pts += list(o.coords)
-            else:
+            if o is  None:
                 return
+
+            # DrawToolShape: descend into .geo.
+            if isinstance(o, DrawToolShape):
+                pts += DrawToolShape.get_pts(o.geo)
+
+            # Descend into .exterior and .interiors
+            elif isinstance(o, Polygon):
+                pts += DrawToolShape.get_pts(o.exterior)
+                for i in o.interiors:
+                    pts += DrawToolShape.get_pts(i)
+            elif isinstance(o, (MultiLineString, MultiPolygon)):
+                for geo_pol_line in o.geoms:
+                    pts += DrawToolShape.get_pts(geo_pol_line)
+            # Has .coords: list them.
+            else:
+                if DrawToolShape.tolerance is not None:
+                    pts += list(o.simplify(DrawToolShape.tolerance).coords)
+                else:
+                    pts += list(o.coords)
         return pts
 
     def __init__(self, geo: (BaseGeometry, list)):

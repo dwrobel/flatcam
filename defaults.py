@@ -24,6 +24,7 @@ class FlatCAMDefaults:
 
     factory_defaults = {
         # Global
+        "units": "MM",
         "version": 8.992,  # defaults format version, not necessarily equal to app version
         "first_run": True,
         "root_folder_path": '',
@@ -78,7 +79,6 @@ class FlatCAMDefaults:
         "global_tcl_path": '',
 
         # General APP Preferences
-        "units": "MM",
         "decimals_inch": 4,
         "decimals_metric": 4,
         "global_graphic_engine": '3D',

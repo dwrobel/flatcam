@@ -91,7 +91,7 @@ class SelectEditorExc(FCShapeTool):
 
             # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
             if isinstance(closest_shape.geo, MultiLineString):
-                x_coord, y_coord = closest_shape.geo[0].xy
+                x_coord, y_coord = closest_shape.geo.geoms[0].xy
                 delta = (x_coord[1] - x_coord[0])
                 # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
                 xmin = x_coord[0] - (0.7 * delta)
@@ -272,6 +272,8 @@ class DrillAdd(FCShapeTool):
         return DrawToolUtilityShape(self.util_shape(data))
 
     def util_shape(self, point):
+        self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -287,7 +289,7 @@ class DrillAdd(FCShapeTool):
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
     def make(self):
-
+        self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
@@ -525,6 +527,8 @@ class DrillArray(FCShapeTool):
         return circular_geo
 
     def util_shape(self, point):
+        self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -540,6 +544,7 @@ class DrillArray(FCShapeTool):
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
     def make(self):
+        self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         self.geometry = []
         geo = None
 
@@ -1609,7 +1614,11 @@ class MoveEditorExc(FCShapeTool):
     def selection_bbox(self):
         geo_list = []
         for select_shape in self.draw_app.get_selected():
-            geometric_data = select_shape.geo
+            if isinstance(select_shape.geo, (MultiLineString, MultiPolygon)):
+                geometric_data = select_shape.geo.geoms
+            else:
+                geometric_data = select_shape.geo
+
             try:
                 for g in geometric_data:
                     geo_list.append(g)
@@ -2921,7 +2930,7 @@ class AppExcEditor(QtCore.QObject):
                     # all x.geo in self.storage_dict[storage] are MultiLinestring objects for drills
                     # each MultiLineString is made out of Linestrings
                     # select first Linestring object in the current MultiLineString
-                    first_linestring = x.geo[0]
+                    first_linestring = x.geo.geoms[0]
                     # get it's coordinates
                     first_linestring_coords = first_linestring.coords
                     x_coord = first_linestring_coords[0][0] + (float(first_linestring.length / 2))
@@ -3638,22 +3647,19 @@ class AppExcEditor(QtCore.QObject):
 
     def draw_utility_geometry(self, geo):
         # Add the new utility shape
+
+        if isinstance(geo.geo, (MultiLineString, MultiPolygon)):
+            util_geo = geo.geo.geoms
+        else:
+            util_geo = geo.geo
+
         try:
             # this case is for the Font Parse
-            for el in list(geo.geo):
-                if type(el) == MultiPolygon:
-                    for poly in el:
+            for el in util_geo:
+                if isinstance(el, (MultiLineString, MultiPolygon)):
+                    for sub_geo in el.geoms:
                         self.tool_shape.add(
-                            shape=poly,
-                            color=(self.app.defaults["global_draw_color"] + '80'),
-                            update=False,
-                            layer=0,
-                            tolerance=None
-                        )
-                elif type(el) == MultiLineString:
-                    for linestring in el:
-                        self.tool_shape.add(
-                            shape=linestring,
+                            shape=sub_geo,
                             color=(self.app.defaults["global_draw_color"] + '80'),
                             update=False,
                             layer=0,
@@ -3665,12 +3671,15 @@ class AppExcEditor(QtCore.QObject):
                         color=(self.app.defaults["global_draw_color"] + '80'),
                         update=False,
                         layer=0,
-                        tolerance=None
-                    )
+                        tolerance=None)
         except TypeError:
             self.tool_shape.add(
-                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
-                update=False, layer=0, tolerance=None)
+                shape=util_geo,
+                color=(self.app.defaults["global_draw_color"] + '80'),
+                update=False,
+                layer=0,
+                tolerance=None)
+        # print(self.tool_shape.data)
         self.tool_shape.redraw()
 
     def replot(self):
@@ -3718,23 +3727,29 @@ class AppExcEditor(QtCore.QObject):
         if geometry is None:
             geometry = self.active_tool.geometry
 
+        if isinstance(geometry, (MultiLineString, MultiPolygon)):
+            use_geometry = geometry.geoms
+        else:
+            use_geometry = geometry
+
         try:
-            for geo in geometry:
+            for geo in use_geometry:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
 
         # ## Non-iterable
         except TypeError:
             # ## DrawToolShape
-            if isinstance(geometry, DrawToolShape):
-                plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
+            if isinstance(use_geometry, DrawToolShape):
+                plot_elements += self.plot_shape(geometry=use_geometry.geo, color=color, linewidth=linewidth)
 
             # ## Polygon: Descend into exterior and each interior.
-            if isinstance(geometry, Polygon):
-                plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
-                plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
+            if isinstance(use_geometry, Polygon):
+                plot_elements += self.plot_shape(geometry=use_geometry.exterior, color=color, linewidth=linewidth)
+                plot_elements += self.plot_shape(geometry=use_geometry.interiors, color=color, linewidth=linewidth)
 
-            if isinstance(geometry, (LineString, LinearRing)):
-                plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0, tolerance=self.tolerance))
+            if isinstance(use_geometry, (LineString, LinearRing)):
+                plot_elements.append(self.shapes.add(shape=use_geometry, color=color, layer=0,
+                                                     tolerance=self.tolerance))
 
             if type(geometry) == Point:
                 pass
@@ -3837,6 +3852,7 @@ class AppExcEditor(QtCore.QObject):
         if val == 'linear':
             self.ui.array_circular_frame.hide()
             self.ui.array_linear_frame.show()
+            self.app.inform.emit(_("Click to place ..."))
         else:
             self.delete_utility_geometry()
             self.ui.array_circular_frame.show()
@@ -3847,6 +3863,7 @@ class AppExcEditor(QtCore.QObject):
         if val == 'linear':
             self.ui.slot_array_circular_frame.hide()
             self.ui.slot_array_linear_frame.show()
+            self.app.inform.emit(_("Click to place ..."))
         else:
             self.delete_utility_geometry()
             self.ui.slot_array_circular_frame.show()

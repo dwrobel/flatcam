@@ -9,6 +9,7 @@
 # ##########################################################
 # File modified by: Marius Stanciu                         #
 # ##########################################################
+from PyQt6 import QtGui
 
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *

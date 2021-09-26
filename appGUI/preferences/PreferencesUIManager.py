@@ -33,6 +33,8 @@ class PreferencesUIManager:
         self.inform = inform
         self.ignore_tab_close_event = False
 
+        self.preferences_units = "MM"
+
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 
@@ -1114,14 +1116,8 @@ class PreferencesUIManager:
         # restore stylesheet to default for the statusBar icon
         self.ui.pref_status_label.setStyleSheet("")
 
-        try:
-            self.ui.general_pref_form.general_app_group.units_radio.activated_custom.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
-        self.ui.general_pref_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.ui.app.on_toggle_units(no_pref=False))
+
         self.defaults.update(self.defaults.current_defaults)
 
         # Preferences save, update the color of the Preferences Tab text
@@ -1144,6 +1140,7 @@ class PreferencesUIManager:
         self.defaults.reset_to_factory_defaults()
         self.defaults_write_form()
         self.on_preferences_edited()
+        self.ui.units_label.setText("[mm]")
         self.inform.emit('[success] %s' % _("Preferences default values are restored."))
 
     def save_defaults(self, silent=False, data_path=None, first_time=False):

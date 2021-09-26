@@ -1436,9 +1436,6 @@ class App(QtCore.QObject):
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
 
-        self.ui.general_pref_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.on_toggle_units(no_pref=False))
-
         # ##################################### Workspace Setting Signals ###########################################
         self.ui.general_pref_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
             self.on_workspace_modified)
@@ -4590,99 +4587,23 @@ class App(QtCore.QObject):
         self.ui.units_label.setText("[" + units.lower() + "]")
 
     def on_toggle_units_click(self):
-        try:
-            self.ui.general_pref_form.general_app_group.units_radio.activated_custom.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        new_units, factor =  self.on_toggle_units()
+        if self.ui.plot_tab_area.currentWidget().objectName() == "preferences_tab":
+            if factor != 1:     # means we had a unit change in the rest of the app
+                pref_units = self.preferencesUiManager.preferences_units
+                if pref_units != new_units:
+                    self.preferencesUiManager.preferences_units = new_units
+                    pref_factor = 25.4 if new_units == 'MM' else 1 / 25.4
+                    self.scale_preferenes(pref_factor, new_units)
 
-        if self.defaults["units"] == 'MM':
-            self.ui.general_pref_form.general_app_group.units_radio.set_value("IN")
-        else:
-            self.ui.general_pref_form.general_app_group.units_radio.set_value("MM")
+                    # update th new units in the preferences storage
+                    self.defaults["units"] = new_units
 
-        self.on_toggle_units(no_pref=True)
+    def scale_preferenes(self, sfactor, new_units):
+        self.preferencesUiManager.defaults_read_form()
 
-        self.ui.general_pref_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.on_toggle_units(no_pref=False))
-
-    def scale_defaults(self, sfactor, dimensions):
-        for dim in dimensions:
-            if dim in ['tools_mill_tooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
-                       'tools_paint_tooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
-                       'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
-                       'tools_mill_toolchangexy', 'tools_mill_endxy', 'tools_solderpaste_xy_toolchange']:
-                if not self.defaults[dim] or self.defaults[dim] == '':
-                    continue
-
-                if isinstance(self.defaults[dim], str):
-                    try:
-                        tools_diameters = eval(self.defaults[dim])
-                    except Exception as e:
-                        self.log.error("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
-                        continue
-                elif isinstance(self.defaults[dim], (float, int)):
-                    tools_diameters = [self.defaults[dim]]
-                else:
-                    tools_diameters = list(self.defaults[dim])
-
-                if isinstance(tools_diameters, (tuple, list)):
-                    pass
-                elif isinstance(tools_diameters, (int, float)):
-                    tools_diameters = [self.defaults[dim]]
-                else:
-                    continue
-
-                td_len = len(tools_diameters)
-                conv_list = []
-                for t in range(td_len):
-                    conv_list.append(self.dec_format(float(tools_diameters[t]) * sfactor, self.decimals))
-
-                self.defaults[dim] = conv_list
-            elif dim in ['global_gridx', 'global_gridy']:
-                # format the number of decimals to the one specified in self.decimals
-                try:
-                    val = float(self.defaults[dim]) * sfactor
-                except Exception as e:
-                    self.log.error('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
-                    continue
-
-                self.defaults[dim] = self.dec_format(val, self.decimals)
-            else:
-                # the number of decimals for the rest is kept unchanged
-                if self.defaults[dim]:
-                    try:
-                        val = float(self.defaults[dim]) * sfactor
-                    except Exception as e:
-                        self.log.error(
-                            'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
-                        )
-                        continue
-
-                    self.defaults[dim] = self.dec_format(val, self.decimals)
-
-    def on_toggle_units(self, no_pref=False):
-        """
-        Callback for the Units radio-button change in the Preferences tab.
-        Changes the application's default units adn for the project too.
-        If changing the project's units, the change propagates to all of
-        the objects in the project.
-
-        :return: None
-        """
-
-        self.defaults.report_usage("on_toggle_units")
-
-        if self.toggle_units_ignore:
-            return
-
-        new_units = self.ui.general_pref_form.general_app_group.units_radio.get_value().upper()
-
-        # If option is the same, then ignore
-        if new_units == self.defaults["units"].upper():
-            self.log.debug("on_toggle_units(): Same as previous, ignoring.")
-            return
-
-        # new_units = self.defaults["units"]
+        # update the defaults from form, some may assume that the conversion is enough and it's not
+        self.on_options_app2project()
 
         # Keys in self.defaults for which to scale their values
         dimensions = [
@@ -4723,7 +4644,7 @@ class App(QtCore.QObject):
             'tools_drill_endxy', 'tools_drill_feedrate_z', 'tools_drill_toolchangez', "tools_drill_drill_overlap",
             'tools_drill_offset', "tools_drill_toolchangexy", "tools_drill_startz", 'tools_drill_feedrate_rapid',
             "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
-            
+
             # NCC Tool
             "tools_ncc_tools", "tools_ncc_margin", "tools_ncc_offset_value", "tools_ncc_cutz", "tools_ncc_tipdia",
             "tools_ncc_newdia",
@@ -4794,11 +4715,86 @@ class App(QtCore.QObject):
             "tools_invert_margin",
 
         ]
+        for dim in dimensions:
+            if dim in ['tools_mill_tooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
+                       'tools_paint_tooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
+                       'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
+                       'tools_mill_toolchangexy', 'tools_mill_endxy', 'tools_solderpaste_xy_toolchange']:
+                if not self.defaults[dim] or self.defaults[dim] == '':
+                    continue
 
-        # The scaling factor depending on choice of units.
-        factor = 25.4 if new_units == 'MM' else 1 / 25.4
+                if isinstance(self.defaults[dim], str):
+                    try:
+                        tools_diameters = eval(self.defaults[dim])
+                    except Exception as e:
+                        self.log.error("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
+                        continue
+                elif isinstance(self.defaults[dim], (float, int)):
+                    tools_diameters = [self.defaults[dim]]
+                else:
+                    tools_diameters = list(self.defaults[dim])
 
-        # Changing project units. Warn user.
+                if isinstance(tools_diameters, (tuple, list)):
+                    pass
+                elif isinstance(tools_diameters, (int, float)):
+                    tools_diameters = [self.defaults[dim]]
+                else:
+                    continue
+
+                td_len = len(tools_diameters)
+                conv_list = []
+                for t in range(td_len):
+                    conv_list.append(self.dec_format(float(tools_diameters[t]) * sfactor, self.decimals))
+
+                self.defaults[dim] = conv_list
+            elif dim in ['global_gridx', 'global_gridy']:
+                # format the number of decimals to the one specified in self.decimals
+                try:
+                    val = float(self.defaults[dim]) * sfactor
+                except Exception as e:
+                    self.log.error('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
+                    continue
+
+                self.defaults[dim] = self.dec_format(val, self.decimals)
+            else:
+                # the number of decimals for the rest is kept unchanged
+                if self.defaults[dim]:
+                    try:
+                        val = float(self.defaults[dim]) * sfactor
+                    except Exception as e:
+                        self.log.error(
+                            'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
+                        )
+                        continue
+
+                    self.defaults[dim] = self.dec_format(val, self.decimals)
+
+        self.preferencesUiManager.defaults_write_form(fl_units=new_units)
+
+    def on_toggle_units(self):
+        """
+        Callback for the Units radio-button change in the Preferences tab.
+        Changes the application's default units adn for the project too.
+        If changing the project's units, the change propagates to all of
+        the objects in the project.
+
+        :return: The new application units. String: "IN" or "MM" with caps lock
+        """
+
+        if self.toggle_units_ignore:
+            return
+
+        new_units = self.defaults["units"]
+
+        # we can't change the units while inside the Editors
+        if self.call_source in ['geo_editor', 'grb_editor', 'exc_editor']:
+            msg = _("Units cannot be changed while the editor is active.")
+            self.inform.emit("[WARNING_NOTCL] %s" % msg)
+            return
+
+        # ##############################################################################################################
+        # Changing project units. Ask the user.
+        # ##############################################################################################################
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
@@ -4815,26 +4811,21 @@ class App(QtCore.QObject):
         response = msgbox.clickedButton()
 
         if response == bt_ok:
-            if no_pref is False:
-                self.preferencesUiManager.defaults_read_form()
-                self.scale_defaults(factor, dimensions)
-                self.preferencesUiManager.defaults_write_form(fl_units=new_units)
+            new_units = "IN" if self.defaults['units'].upper() == "MM" else "MM"
 
-                self.defaults["units"] = new_units
+            # The scaling factor depending on choice of units.
+            factor = 25.4 if new_units == 'MM' else 1 / 25.4
 
-                # update the defaults from form, some may assume that the conversion is enough and it's not
-                self.on_options_app2project()
-
-            # update the objects
+            # update the Application objects with the new units
             for obj in self.collection.get_list():
                 obj.convert_units(new_units)
-
                 # make that the properties stored in the object are also updated
                 self.app_obj.object_changed.emit(obj)
+
                 # rebuild the object UI
                 obj.build_ui()
 
-            # change this only if the workspace is active
+            # update workspace if active
             if self.defaults['global_workspace'] is True:
                 self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
@@ -4842,30 +4833,23 @@ class App(QtCore.QObject):
             val_x = float(self.defaults['global_gridx']) * factor
             val_y = val_x if self.ui.grid_gap_link_cb.isChecked() else float(self.defaults['global_gridx']) * factor
 
+            # update Object UI forms
             current = self.collection.get_active()
             if current is not None:
                 # the transfer of converted values to the UI form for Geometry is done local in the FlatCAMObj.py
                 if not isinstance(current, GeometryObject):
                     current.to_form()
 
-            # replot all objects
+            # plot again all objects
             self.plot_all()
-
-            # set the status labels to reflect the current FlatCAM units
             self.set_screen_units(new_units)
 
-            # signal to the app that we changed the object properties and it should save the project
+            # flag for the app that we changed the object properties and it should save the project
             self.should_we_save = True
 
             self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
         else:
-            # Undo toggling
-            self.toggle_units_ignore = True
-            if self.defaults['units'].upper() == 'MM':
-                self.ui.general_pref_form.general_app_group.units_radio.set_value('IN')
-            else:
-                self.ui.general_pref_form.general_app_group.units_radio.set_value('MM')
-            self.toggle_units_ignore = False
+            factor = 1
 
             # store the grid values so they are not changed in the next step
             val_x = float(self.defaults['global_gridx'])
@@ -4875,13 +4859,13 @@ class App(QtCore.QObject):
 
         self.preferencesUiManager.defaults_read_form()
 
-        # the self.preferencesUiManager.defaults_read_form() will update all defaults values
-        # in self.defaults from the GUI elements but
-        # I don't want it for the grid values, so I update them here
+        # update the Grid snap values
         self.defaults['global_gridx'] = val_x
         self.defaults['global_gridy'] = val_y
         self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
+
+        return new_units, factor
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()
@@ -5615,17 +5599,8 @@ class App(QtCore.QObject):
         # Set the relative position label
         dx = location[0] - float(self.rel_point1[0])
         dy = location[1] - float(self.rel_point1[1])
-        # self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
-        # # Set the position label
-        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
-        self.ui.update_location_labels(dx, dy, location[0], location[1])
 
-        # units = self.defaults["units"].lower()
-        # self.plotcanvas.text_hud.text = \
-        #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-        #         dx, units, dy, units, location[0], units, location[1], units)
+        self.ui.update_location_labels(dx, dy, location[0], location[1])
         self.plotcanvas.on_update_text_hud(dx, dy, location[0], location[1])
 
         self.inform.emit('[success] %s' % _("Done."))

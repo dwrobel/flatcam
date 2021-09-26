@@ -1701,11 +1701,15 @@ class Gerber(Geometry):
                 # features
                 if self.app.defaults['gerber_extra_buffering']:
                     candidate_geo = []
+                    if isinstance(self.solid_geometry, MultiPolygon):
+                        geo_to_buff = self.solid_geometry.geoms
+                    else:
+                        geo_to_buff = self.solid_geometry
                     try:
-                        for p in self.solid_geometry:
+                        for p in geo_to_buff:
                             candidate_geo.append(p.buffer(-0.0000001))
                     except TypeError:
-                        candidate_geo.append(self.solid_geometry.buffer(-0.0000001))
+                        candidate_geo.append(geo_to_buff.buffer(-0.0000001))
                     self.solid_geometry = candidate_geo
 
             else:
@@ -2106,7 +2110,10 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            self.geo_len = len(self.solid_geometry)
+            if isinstance(self.solid_geometry, MultiPolygon):
+                self.geo_len = len(self.solid_geometry.geoms)
+            else:
+                self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 

@@ -943,7 +943,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
             plot_geometry = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
             for g in plot_geometry:
-                if isinstance(g, (Polygon, LineString)):
+                if isinstance(g, (Polygon, LineString, LinearRing)):
                     self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
 
             self.shapes.redraw(

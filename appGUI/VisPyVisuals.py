@@ -335,6 +335,7 @@ class ShapeCollectionVisual(CompoundVisual):
         :param update: bool
             Set True to redraw collection
         """
+        self.last_key = -1
         self.data.clear()
         if update:
             self.__update()
