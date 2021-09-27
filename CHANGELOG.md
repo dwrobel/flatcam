@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.09.2021
+
+- in Gerber Object trying to solve the issue with too little details on plotting geometry with inch units
+
 26.09.2021
 
 - besides reporting the error into the log file now any application crash is reported also in a MessageBox after which the application will close

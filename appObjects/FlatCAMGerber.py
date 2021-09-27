@@ -942,10 +942,19 @@ class GerberObject(FlatCAMObj, Gerber):
                 used_face_color = None
 
             plot_geometry = geometry.geoms if isinstance(geometry, (MultiPolygon, MultiLineString)) else geometry
-            for g in plot_geometry:
-                if isinstance(g, (Polygon, LineString, LinearRing)):
-                    self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
-
+            try:
+                for g in plot_geometry:
+                    if isinstance(g, (Polygon, LineString)):
+                        self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
+                    elif isinstance(g, LinearRing):
+                        g = LineString(g)
+                        self.add_shape(shape=g, color=used_color, face_color=used_face_color, visible=visible)
+            except TypeError:
+                if isinstance(plot_geometry, (Polygon, LineString)):
+                    self.add_shape(shape=plot_geometry, color=used_color, face_color=used_face_color, visible=visible)
+                elif isinstance(plot_geometry, LinearRing):
+                    plot_geometry = LineString(plot_geometry)
+                    self.add_shape(shape=plot_geometry, color=used_color, face_color=used_face_color, visible=visible)
             self.shapes.redraw(
                 # update_colors=(self.fill_color, self.outline_color),
                 # indexes=self.app.plotcanvas.shape_collection.data.keys()

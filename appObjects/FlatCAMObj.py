@@ -417,17 +417,21 @@ class FlatCAMObj(QtCore.QObject):
         return
 
     def add_shape(self, **kwargs):
+        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
+
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.shapes.add(tolerance=self.drawing_tolerance, **kwargs)
+            key = self.shapes.add(tolerance=tol, **kwargs)
         return key
 
     def add_mark_shape(self, **kwargs):
+        tol = kwargs['tolerance'] if 'tolerance' in kwargs else self.drawing_tolerance
+
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.mark_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
+            key = self.mark_shapes.add(tolerance=tol, layer=0, **kwargs)
         return key
 
     def update_filters(self, last_ext, filter_string):

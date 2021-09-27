@@ -508,7 +508,7 @@ class Gerber(Geometry):
                             follow_buffer.append(geo_f)
                             geo_dict['follow'] = geo_f
 
-                        geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                         if self.app.defaults['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
                         if not geo_s.is_empty and geo_s.is_valid:
@@ -789,7 +789,7 @@ class Gerber(Geometry):
 
                             # --- Buffered ----
                             width = self.tools[last_path_aperture]["size"]
-                            geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                            geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if self.app.defaults['gerber_simplification']:
                                 geo_s = geo_s.simplify(s_tol)
                             if not geo_s.is_empty:
@@ -829,7 +829,7 @@ class Gerber(Geometry):
 
                         # --- Buffered ----
                         width = self.tools[last_path_aperture]["size"]
-                        geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                         if not geo_s.is_valid:
                             self.app.log.warning(
                                 "Found invalid Gerber geometry at line: %s. Fixing..." % str(line_num))
@@ -1228,7 +1228,7 @@ class Gerber(Geometry):
                                     self.app.log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 # TODO: this may (should) fail
                                 width = self.tools[last_path_aperture]["size"]
-                                geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                                geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
 
                             try:
                                 if self.tools[last_path_aperture]["type"] != 'R':
@@ -1297,7 +1297,7 @@ class Gerber(Geometry):
 
                             # this treats the case when we are storing geometry as solids
                             width = self.tools[last_path_aperture]["size"]
-                            geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                            geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not geo_s.is_empty:
                                 try:
                                     if self.tools[last_path_aperture]["type"] != 'R':
@@ -1610,7 +1610,7 @@ class Gerber(Geometry):
 
                     # this treats the case when we are storing geometry as solids
                     width = self.tools[last_path_aperture]["size"]
-                    geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                    geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                     if not geo_s.is_empty:
                         if self.app.defaults['gerber_simplification']:
                             geo_s = geo_s.simplify(s_tol)
@@ -1671,7 +1671,7 @@ class Gerber(Geometry):
             else:
                 self.app.log.debug("Union by union()...")
                 new_poly = unary_union(poly_buffer)
-                new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
+                new_poly = new_poly.buffer(0, int(self.steps_per_circle))
                 self.app.log.warning("Union done.")
 
             if current_polarity == 'D':
@@ -1749,7 +1749,7 @@ class Gerber(Geometry):
             location = Point(location)
 
         if aperture['type'] == 'C':  # Circles
-            return location.buffer(aperture['size'] / 2, int(steps_per_circle / 4))
+            return location.buffer(aperture['size'] / 2, int(steps_per_circle))
 
         if aperture['type'] == 'R':  # Rectangles
             loc = location.coords[0]
@@ -1768,13 +1768,13 @@ class Gerber(Geometry):
             if width > height:
                 p1 = Point(loc[0] + 0.5 * (width - height), loc[1])
                 p2 = Point(loc[0] - 0.5 * (width - height), loc[1])
-                c1 = p1.buffer(height * 0.5, int(steps_per_circle / 4))
-                c2 = p2.buffer(height * 0.5, int(steps_per_circle / 4))
+                c1 = p1.buffer(height * 0.5, int(steps_per_circle))
+                c2 = p2.buffer(height * 0.5, int(steps_per_circle))
             else:
                 p1 = Point(loc[0], loc[1] + 0.5 * (height - width))
                 p2 = Point(loc[0], loc[1] - 0.5 * (height - width))
-                c1 = p1.buffer(width * 0.5, int(steps_per_circle / 4))
-                c2 = p2.buffer(width * 0.5, int(steps_per_circle / 4))
+                c1 = p1.buffer(width * 0.5, int(steps_per_circle))
+                c2 = p2.buffer(width * 0.5, int(steps_per_circle))
             return unary_union([c1, c2]).convex_hull
 
         if aperture['type'] == 'P':  # Regular polygon

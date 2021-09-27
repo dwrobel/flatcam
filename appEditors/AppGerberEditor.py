@@ -1045,7 +1045,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         y = data[1]
 
         if len(self.points) == 0:
-            new_geo_el['solid'] = Point((x, y)).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = Point((x, y)).buffer(self.buf_val, resolution=int(self.steps_per_circle))
             return DrawToolUtilityShape(new_geo_el)
 
         elif len(self.points) == 1:
@@ -1129,7 +1129,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
             if len(self.temp_points) > 1:
                 try:
                     geo_sol = LineString(self.temp_points)
-                    geo_sol = geo_sol.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
+                    geo_sol = geo_sol.buffer(self.buf_val, int(self.steps_per_circle), join_style=1)
                     new_geo_el = {
                         'solid': geo_sol
                     }
@@ -1137,7 +1137,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
                 except Exception as e:
                     log.error("AppGerberEditor.RegionEditorGrb.utility_geometry() --> %s" % str(e))
             else:
-                geo_sol = Point(self.temp_points).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
+                geo_sol = Point(self.temp_points).buffer(self.buf_val, resolution=int(self.steps_per_circle))
                 new_geo_el = {
                     'solid': geo_sol
                 }
@@ -1225,7 +1225,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
 
             # create the geometry
             geo_line = LinearRing(self.temp_points)
-            geo_sol = geo_line.buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=1)
+            geo_sol = geo_line.buffer(self.buf_val, int(self.steps_per_circle), join_style=1)
             new_geo_el = {
                 'solid': geo_sol,
                 'follow': geo_line
@@ -1240,7 +1240,7 @@ class RegionEditorGrb(ShapeToolEditorGrb):
         if len(self.points) > 2:
 
             new_geo_el = {
-                'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle / 4), join_style=2),
+                'solid': Polygon(self.points).buffer(self.buf_val, int(self.steps_per_circle), join_style=2),
                 'follow': Polygon(self.points).exterior
             }
 
@@ -4547,6 +4547,9 @@ class AppGerberEditor(QtCore.QObject):
             else:
                 self.conversion_factor = 0.0393700787401575
 
+        def_tol_val = float(self.app.defaults["global_tolerance"])
+        self.tolerance = def_tol_val if self.units == 'MM' else def_tol_val / 25.4
+
         # Hide original geometry
         orig_grb_obj.visible = False
 
@@ -5550,6 +5553,7 @@ class AppGerberEditor(QtCore.QObject):
                 return
             if len(color) == 9:
                 color = color[:7] + 'AF'
+
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
 
     @property
