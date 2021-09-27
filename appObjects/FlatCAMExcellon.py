@@ -94,7 +94,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.source_file = ""
 
         self.multigeo = False
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         self.fill_color = self.app.defaults['excellon_plot_fill']
         self.outline_color = self.app.defaults['excellon_plot_line']
@@ -121,7 +121,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.app.log.debug("ExcellonObject.set_ui()")
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # # fill in self.options values  for the Drilling Tool from self.app.options
         # for opt_key, opt_val in self.app.options.items():
@@ -185,7 +185,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
 
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         self.set_offset_values()
 
@@ -251,7 +251,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         """
         FlatCAMObj.build_ui(self)
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         for row in range(self.ui.tools_table.rowCount()):
             try:

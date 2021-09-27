@@ -56,7 +56,7 @@ class ScriptObject(FlatCAMObj):
         self.script_code = ''
         self.script_filename = ''
 
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
     def set_ui(self, ui):
         """
@@ -70,8 +70,8 @@ class ScriptObject(FlatCAMObj):
         assert isinstance(self.ui, ScriptObjectUI), \
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.defaults['units'].upper()
-        self.units_found = self.app.defaults['units']
+        self.units = self.app.app_units.upper()
+        self.units_found = self.app.app_units
 
         # Fill form fields only on object create
         self.to_form()

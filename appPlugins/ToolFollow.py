@@ -135,7 +135,7 @@ class ToolFollow(AppTool, Gerber):
         self.ui.generate_geometry_button.clicked.connect(self.on_generate_geometry_click)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.clear_ui(self.layout)
         self.ui = FollowUI(layout=self.layout, app=self.app)
@@ -573,7 +573,7 @@ class ToolFollow(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)

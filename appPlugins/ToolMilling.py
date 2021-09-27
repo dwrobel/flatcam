@@ -405,7 +405,7 @@ class ToolMilling(AppTool, Excellon):
         self.ui = MillingUI(layout=self.layout, app=self.app, name=self.pluginName)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
         self.obj_name = ""
@@ -936,7 +936,7 @@ class ToolMilling(AppTool, Excellon):
             )
 
     def build_ui_mill(self):
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         if self.target_obj:
             self.ui.param_frame.setDisabled(False)
@@ -1056,7 +1056,7 @@ class ToolMilling(AppTool, Excellon):
 
     def build_ui_exc(self):
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         if self.target_obj:
             self.ui.param_frame.setDisabled(False)
@@ -2189,7 +2189,7 @@ class ToolMilling(AppTool, Excellon):
         """
 
         self.ui_disconnect()
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         tooldia = float(tool['tooldia'])
 

@@ -437,7 +437,7 @@ class TextInputTool(AppTool):
         self.text_path = self.f_parse.font_to_geometry(char_string=string_to_geo, font_name=self.font_name,
                                                        font_size=font_to_geo_size,
                                                        font_type=font_to_geo_type,
-                                                       units=self.app.defaults['units'].upper())
+                                                       units=self.app.app_units.upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -1581,7 +1581,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate cancelled"))
 
     def on_offx_key(self):
-        units = self.app.defaults['units'].lower()
+        units = self.app.app_units.lower()
 
         val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -1599,7 +1599,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset X cancelled"))
 
     def on_offy_key(self):
-        units = self.app.defaults['units'].lower()
+        units = self.app.app_units.lower()
 
         val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -3401,7 +3401,7 @@ class AppGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
         self.decimals = app.decimals
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # when True the Editor can't do selection due of an ongoing process
         self.interdict_selection = False
@@ -3889,7 +3889,7 @@ class AppGeoEditor(QtCore.QObject):
 
     def set_editor_ui(self):
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.decimals = self.app.decimals
 
         # Remove anything else in the GUI Selected Tab
@@ -4788,7 +4788,7 @@ class AppGeoEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)
@@ -5314,7 +5314,7 @@ class AppGeoEditor(QtCore.QObject):
 
         self.set_editor_ui()
 
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # Hide original geometry
         self.fcgeometry = fcgeometry
@@ -5367,7 +5367,7 @@ class AppGeoEditor(QtCore.QObject):
                 editor_obj.plot_all()
 
                 # updated units
-                editor_obj.units = self.app.defaults['units'].upper()
+                editor_obj.units = self.app.app_units.upper()
                 editor_obj.decimals = self.app.decimals
 
                 # start with GRID toolbar activated

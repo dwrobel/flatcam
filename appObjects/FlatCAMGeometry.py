@@ -141,7 +141,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # self.old_pp_state = self.app.defaults["tools_mill_multidepth"]
         # self.old_toolchangeg_state = self.app.defaults["tools_mill_toolchange"]
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         # this variable can be updated by the Object that generates the geometry
         self.tool_type = 'C1'
@@ -171,7 +171,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         FlatCAMObj.build_ui(self)
 
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         row_idx = 0
 
@@ -300,8 +300,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.defaults['units'].upper()
-        self.units_found = self.app.defaults['units']
+        self.units = self.app.app_units.upper()
+        self.units_found = self.app.app_units
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
@@ -549,8 +549,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             msp = dwg.modelspace()
 
             # add units
-            dwg.units = ezdxf.InsertUnits(4) if self.app.defaults['units'].lower() == 'mm' else ezdxf.InsertUnits(1)
-            dwg.header['$MEASUREMENT'] = 1 if self.app.defaults['units'].lower() == 'mm' else 0
+            dwg.units = ezdxf.InsertUnits(4) if self.app.app_units.lower() == 'mm' else ezdxf.InsertUnits(1)
+            dwg.header['$MEASUREMENT'] = 1 if self.app.app_units.lower() == 'mm' else 0
 
             def g2dxf(dxf_space, geo_obj):
                 if isinstance(geo_obj, MultiPolygon):

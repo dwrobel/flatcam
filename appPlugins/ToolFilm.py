@@ -46,7 +46,7 @@ class Film(AppTool):
         AppTool.__init__(self, app)
 
         self.decimals = self.app.decimals
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # #############################################################################################################
         # ######################################## Tool GUI ###########################################################

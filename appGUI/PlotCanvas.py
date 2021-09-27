@@ -313,7 +313,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :rtype:     None
         """
         # units
-        units = self.fcapp.defaults["units"].lower()
+        units = self.fcapp.app_units.lower()
 
         dx_dec = str(self.fcapp.dec_format(dx, self.fcapp.decimals)) if dx else '0.0'
         dy_dec = str(self.fcapp.dec_format(dy, self.fcapp.decimals)) if dy else '0.0'
@@ -416,7 +416,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :return:
         """
         try:
-            if self.fcapp.defaults['units'].upper() == 'MM':
+            if self.fcapp.app_units.upper() == 'MM':
                 dims = self.pagesize_dict[workspace_size]
             else:
                 dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
@@ -620,7 +620,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # rect.right *= 1.04
         # rect.top *= 1.04
 
-        # units = self.fcapp.defaults['units'].upper()
+        # units = self.fcapp.app_units.upper()
         # if units == 'MM':
         #     compensation = 0.5
         # else:

@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 27.09.2021
 
 - in Gerber Object trying to solve the issue with too little details on plotting geometry with inch units
+- working to differentiate between temporary units change and permanent units change
 
 26.09.2021
 

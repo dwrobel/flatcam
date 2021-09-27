@@ -33,8 +33,6 @@ class PreferencesUIManager:
         self.inform = inform
         self.ignore_tab_close_event = False
 
-        self.preferences_units = "MM"
-
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 

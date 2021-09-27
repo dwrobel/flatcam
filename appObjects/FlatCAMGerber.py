@@ -91,7 +91,7 @@ class GerberObject(FlatCAMObj, Gerber):
         # store the status of grid snapping
         self.grid_status_memory = None
 
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         self.fill_color = self.app.defaults['gerber_plot_fill']
         self.outline_color = self.app.defaults['gerber_plot_line']
@@ -120,7 +120,7 @@ class GerberObject(FlatCAMObj, Gerber):
         FlatCAMObj.set_ui(self, ui)
         log.debug("GerberObject.set_ui()")
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.replotApertures.connect(self.on_mark_cb_click_table)
 
@@ -195,7 +195,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.on_aperture_table_visibility_change()
 
         self.build_ui()
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         self.set_offset_values()
 

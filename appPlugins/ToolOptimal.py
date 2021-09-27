@@ -37,7 +37,7 @@ class ToolOptimal(AppTool):
     def __init__(self, app):
         AppTool.__init__(self, app)
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.decimals = self.app.decimals
 
         # #############################################################################
@@ -163,7 +163,7 @@ class ToolOptimal(AppTool):
             self.ui.gerber_object_combo.set_value(obj_name)
 
     def find_minimum_distance(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.decimals = int(self.ui.precision_spinner.get_value())
 
         selection_index = self.ui.gerber_object_combo.currentIndex()
@@ -431,7 +431,7 @@ class OptimalUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # ## Title
         title_label = FCLabel("%s" % self.pluginName)

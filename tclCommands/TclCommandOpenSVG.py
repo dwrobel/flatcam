@@ -80,7 +80,7 @@ class TclCommandOpenSVG(TclCommandSignaled):
         if obj_type != "geometry" and obj_type != "gerber":
             self.raise_tcl_error("Option type can be 'geometry' or 'gerber' only, got '%s'." % obj_type)
 
-        units = self.app.defaults['units'].upper()
+        units = self.app.app_units.upper()
 
         with self.app.proc_container.new('%s...' % _("Working")):
 

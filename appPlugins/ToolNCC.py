@@ -271,7 +271,7 @@ class NonCopperClear(AppTool, Gerber):
         self.app.cleanup.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.old_tool_dia = self.app.defaults["tools_ncc_newdia"]
 
         self.clear_ui(self.layout)
@@ -434,7 +434,7 @@ class NonCopperClear(AppTool, Gerber):
         self.bound_obj = None
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.first_click = False
         self.cursor_pos = None
@@ -794,7 +794,7 @@ class NonCopperClear(AppTool, Gerber):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         sorted_tools = []
         for k, v in self.ncc_tools.items():
@@ -1045,7 +1045,7 @@ class NonCopperClear(AppTool, Gerber):
     # multiprocessing variant
     def find_safe_tooldia_multiprocessing(self):
         self.app.inform.emit(_("Checking tools for validity."))
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         obj_name = self.ui.object_combo.currentText()
 
@@ -1114,7 +1114,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def find_safe_tooldia_worker(self):
         self.app.inform.emit(_("Checking tools for validity."))
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         obj_name = self.ui.object_combo.currentText()
 
@@ -1353,7 +1353,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def on_tool_default_add(self, dia=None, muted=None):
         self.blockSignals(True)
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         if dia:
             tool_dia = dia
@@ -1820,7 +1820,7 @@ class NonCopperClear(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -2329,7 +2329,7 @@ class NonCopperClear(AppTool, Gerber):
         # ######################### Read the parameters ########################################################
         # ######################################################################################################
 
-        units = self.app.defaults['units']
+        units = self.app.app_units
         order = order if order else self.ui.ncc_order_combo.get_value()
         ncc_select = self.ui.select_combo.get_value()
         rest_machining_choice = self.ui.ncc_rest_cb.get_value()
@@ -2915,7 +2915,7 @@ class NonCopperClear(AppTool, Gerber):
         # ####### Read the parameters #########################################
         # #####################################################################
 
-        units = self.app.defaults['units']
+        units = self.app.app_units
 
         log.debug("NCC Tool started. Reading parameters.")
         self.app.inform.emit(_("NCC Tool started. Reading parameters."))
@@ -3993,7 +3993,7 @@ class NonCopperClear(AppTool, Gerber):
         """
 
         self.ui_disconnect()
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         tooldia = float(tool['tooldia'])
 
@@ -4468,7 +4468,7 @@ class NccUI:
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setObjectName("n_offset_value")
 
-        units = self.app.defaults['units'].upper()
+        units = self.app.app_units.upper()
         if units == 'MM':
             self.ncc_offset_spinner.setSingleStep(0.1)
         else:
@@ -4565,7 +4565,7 @@ class NccUI:
         self.rest_ncc_offset_spinner.set_precision(4)
         self.rest_ncc_offset_spinner.setWrapping(True)
 
-        units = self.app.defaults['units'].upper()
+        units = self.app.app_units.upper()
         if units == 'MM':
             self.rest_ncc_offset_spinner.setSingleStep(0.1)
         else:

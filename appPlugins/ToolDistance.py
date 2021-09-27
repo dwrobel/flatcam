@@ -39,7 +39,7 @@ class Distance(AppTool):
         self.decimals = self.app.decimals
 
         self.canvas = self.app.plotcanvas
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -144,7 +144,7 @@ class Distance(AppTool):
 
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         self.app.command_active = "Distance"
 
@@ -202,7 +202,7 @@ class Distance(AppTool):
         self.original_call_source = copy(self.app.call_source)
 
         self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # we can connect the app mouse events to the measurement tool
         # NEVER DISCONNECT THOSE before connecting some other handlers; it breaks something in VisPy
@@ -488,7 +488,7 @@ class Distance(AppTool):
             # )
             self.app.ui.update_location_labels(dx=None, dy=None, x=pos[0], y=pos[1])
 
-            units = self.app.defaults["units"].lower()
+            units = self.app.app_units.lower()
             # self.app.plotcanvas.text_hud.text = \
             #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
             #         0.0000, units, 0.0000, units, pos[0], units, pos[1], units)
@@ -572,7 +572,7 @@ class DistUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # ## Title
         title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.pluginName)

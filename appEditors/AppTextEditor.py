@@ -278,7 +278,7 @@ class AppTextEditor(QtWidgets.QWidget):
                     # styleH = styles['Heading1']
                     story = []
 
-                    if self.app.defaults['units'].lower() == 'mm':
+                    if self.app.app_units.lower() == 'mm':
                         bmargin = self.app.defaults['global_tpdf_bmargin'] * mm
                         tmargin = self.app.defaults['global_tpdf_tmargin'] * mm
                         rmargin = self.app.defaults['global_tpdf_rmargin'] * mm

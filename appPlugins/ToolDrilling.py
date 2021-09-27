@@ -316,7 +316,7 @@ class ToolDrilling(AppTool, Excellon):
         self.ui = DrillingUI(layout=self.layout, app=self.app, name=self.pluginName)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.clear_ui(self.layout)
         self.init_ui()
@@ -473,7 +473,7 @@ class ToolDrilling(AppTool, Excellon):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # ########################################
         # #######3 TEMP SETTINGS #################
@@ -923,7 +923,7 @@ class ToolDrilling(AppTool, Excellon):
     def on_object_changed(self):
         log.debug("ToolDrilling.on_object_changed()")
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # load the Excellon object
         self.obj_name = self.ui.object_combo.currentText()

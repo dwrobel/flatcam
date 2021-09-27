@@ -517,7 +517,7 @@ class Geometry(object):
 
     def __init__(self, geo_steps_per_circle=None):
         # Units (in or mm)
-        self.units = self.app.defaults["units"]
+        self.units = self.app.app_units
         self.decimals = self.app.decimals
 
         self.drawing_tolerance = 0.0
@@ -1179,7 +1179,7 @@ class Geometry(object):
             self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed."))
             return
 
-        units = self.app.defaults['units'] if units is None else units
+        units = self.app.app_units if units is None else units
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
 
@@ -7719,7 +7719,7 @@ class CNCjob(Geometry):
             temp_gcode = ''
             header_start = False
             header_stop = False
-            units = self.app.defaults['units'].upper()
+            units = self.app.app_units.upper()
 
             lines = StringIO(g)
             for line in lines:

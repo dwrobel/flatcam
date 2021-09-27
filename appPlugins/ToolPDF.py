@@ -63,7 +63,7 @@ class ToolPDF(AppTool):
         # when empty we start the layer rendering
         self.parsing_promises = []
 
-        self.parser = PdfParser(units=self.app.defaults['units'],
+        self.parser = PdfParser(units=self.app.app_units,
                                 resolution=self.app.defaults["gerber_circle_steps"],
                                 abort=self.app.abort_flag)
 

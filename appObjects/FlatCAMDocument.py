@@ -51,7 +51,7 @@ class DocumentObject(FlatCAMObj):
         self.document_editor_tab = None
 
         self._read_only = False
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -60,8 +60,8 @@ class DocumentObject(FlatCAMObj):
         assert isinstance(self.ui, DocumentObjectUI), \
             "Expected a DocumentObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.defaults['units'].upper()
-        self.units_found = self.app.defaults['units']
+        self.units = self.app.app_units.upper()
+        self.units_found = self.app.app_units
 
         # Fill form fields only on object create
         self.to_form()

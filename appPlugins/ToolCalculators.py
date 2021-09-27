@@ -110,7 +110,7 @@ class ToolCalculator(AppTool):
         AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         self.clear_ui(self.layout)
         self.ui = CalcUI(layout=self.layout, app=self.app)
@@ -513,7 +513,7 @@ class CalcUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # ## Title
         title_label = FCLabel("%s" % self.pluginName)

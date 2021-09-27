@@ -218,7 +218,7 @@ class SolderPaste(AppTool):
         self.name = ""
         self.obj = None
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         for name in self.app.preprocessors.keys():
             # populate only with preprocessor files that start with 'Paste_'
@@ -242,7 +242,7 @@ class SolderPaste(AppTool):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():

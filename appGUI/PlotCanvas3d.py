@@ -162,7 +162,7 @@ class PlotCanvas3d(QtCore.QObject, scene.SceneCanvas):
             fsize = 8
 
         # units
-        # units = self.fcapp.defaults["units"].upper()
+        # units = self.fcapp.app_units.upper()
 
         # coordinates and anchors
         height = fsize * 11     # 90. Constant 11 is something that works

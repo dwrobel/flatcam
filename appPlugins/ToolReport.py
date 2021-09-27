@@ -240,7 +240,7 @@ class ObjectReport(AppTool):
                     log.error("PropertiesTool.addItems() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
-                if self.app.defaults['units'].lower() == 'mm':
+                if self.app.app_units.lower() == 'mm':
                     area = (length * width) / 100
                 else:
                     area = length * width
@@ -301,7 +301,7 @@ class ObjectReport(AppTool):
                     width = abs(ymax - ymin)
 
                     # calculate box area
-                    if self.app.defaults['units'].lower() == 'mm':
+                    if self.app.app_units.lower() == 'mm':
                         area = (length * width) / 100
                     else:
                         area = length * width
@@ -354,7 +354,7 @@ class ObjectReport(AppTool):
                         area_chull = None
                         log.error("Properties.addItems() --> %s" % str(er))
 
-            if self.app.defaults['units'].lower() == 'mm' and area_chull:
+            if self.app.app_units.lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100
 
             if area_chull is None:
@@ -365,7 +365,7 @@ class ObjectReport(AppTool):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
         # Units items
-        f_unit = {'in': _('Inch'), 'mm': _('Metric')}[str(self.app.defaults['units'].lower())]
+        f_unit = {'in': _('Inch'), 'mm': _('Metric')}[str(self.app.app_units.lower())]
         self.treeWidget.addChild(units, ['FlatCAM units:', f_unit], True)
 
         o_unit = {
@@ -441,7 +441,7 @@ class ObjectReport(AppTool):
                     toolid,
                     [
                         _('Diameter'),
-                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.defaults['units'].lower())
+                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.app_units.lower())
                     ],
                     True
                 )
@@ -507,7 +507,7 @@ class ObjectReport(AppTool):
                         exc_tool,
                         [
                             _('Diameter'),
-                            '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
+                            '%.*f %s' % (self.decimals, tool_dia, self.app.app_units.lower())
                         ],
                         True
                     )
@@ -535,7 +535,7 @@ class ObjectReport(AppTool):
                             '%.*f %s' % (
                                 self.decimals,
                                 (obj.z_cut - abs(value['data']['tools_drill_offset'])),
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -547,7 +547,7 @@ class ObjectReport(AppTool):
                             '%.*f %s' % (
                                 self.decimals,
                                 obj.z_move,
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -559,7 +559,7 @@ class ObjectReport(AppTool):
                             '%.*f %s/min' % (
                                 self.decimals,
                                 obj.feedrate,
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -589,7 +589,7 @@ class ObjectReport(AppTool):
                 others,
                 [
                     '%s:' % _('Travelled distance'),
-                    '%.*f %s' % (self.decimals, obj.travel_distance, self.app.defaults['units'].lower())
+                    '%.*f %s' % (self.decimals, obj.travel_distance, self.app.app_units.lower())
                 ],
                 True
             )
@@ -601,17 +601,17 @@ class ObjectReport(AppTool):
         # add dimensions
         self.treeWidget.addChild(
             location,
-            ['%s:' % _('Length'), '%.*f %s' % (self.decimals, length, self.app.defaults['units'].lower())],
+            ['%s:' % _('Length'), '%.*f %s' % (self.decimals, length, self.app.app_units.lower())],
             True
         )
         self.treeWidget.addChild(
             location,
-            ['%s:' % _('Width'), '%.*f %s' % (self.decimals, width, self.app.defaults['units'].lower())],
+            ['%s:' % _('Width'), '%.*f %s' % (self.decimals, width, self.app.app_units.lower())],
             True
         )
 
         # add box area
-        if self.app.defaults['units'].lower() == 'mm':
+        if self.app.app_units.lower() == 'mm':
             self.treeWidget.addChild(location, ['%s:' % _('Box Area'), '%.*f %s' % (self.decimals, area, 'cm2')], True)
             self.treeWidget.addChild(
                 location,
@@ -628,7 +628,7 @@ class ObjectReport(AppTool):
             )
 
         # add copper area
-        if self.app.defaults['units'].lower() == 'mm':
+        if self.app.app_units.lower() == 'mm':
             self.treeWidget.addChild(
                 location, ['%s:' % _('Copper Area'), '%.*f %s' % (self.decimals, copper_area, 'cm2')], True)
         else:

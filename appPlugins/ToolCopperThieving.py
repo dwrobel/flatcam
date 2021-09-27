@@ -45,7 +45,7 @@ class ToolCopperThieving(AppTool):
         self.canvas = self.app.plotcanvas
 
         self.decimals = self.app.decimals
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # #############################################################################
         # ######################### Tool GUI ##########################################
@@ -161,7 +161,7 @@ class ToolCopperThieving(AppTool):
         self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
         self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
 
         self.clear_ui(self.layout)
@@ -519,7 +519,7 @@ class ToolCopperThieving(AppTool):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        # units = self.app.defaults["units"].lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -1267,7 +1267,7 @@ class ThievingUI:
     def __init__(self, layout, app):
         self.app = app
         self.decimals = self.app.decimals
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
         self.layout = layout
 
         # ## Title

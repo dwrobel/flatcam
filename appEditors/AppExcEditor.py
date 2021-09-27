@@ -1745,7 +1745,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.dec_format = self.app.dec_format
 
@@ -1961,7 +1961,7 @@ class AppExcEditor(QtCore.QObject):
 
     def set_editor_ui(self):
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -2041,7 +2041,7 @@ class AppExcEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.edited_obj.options['name']
@@ -3439,7 +3439,7 @@ class AppExcEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)
@@ -3971,7 +3971,7 @@ class AppExcEditorUI:
         self.decimals = self.app.decimals
 
         # ## Current application units in Upper Case
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
         # ## Box for custom widgets

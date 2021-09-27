@@ -96,7 +96,7 @@ class TclCommandMillSlots(TclCommandSignaled):
         if not obj.slots:
             self.raise_tcl_error("The Excellon object has no slots: %s" % name)
 
-        # units = self.app.defaults['units'].upper()
+        # units = self.app.app_units.upper()
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
                 diameters = [x.strip() for x in args['milled_dias'].split(",")]

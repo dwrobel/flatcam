@@ -118,7 +118,7 @@ class FlatCAMObj(QtCore.QObject):
         self.selection_shape_drawn = False
 
         # self.units = 'IN'
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # this is the treeWidget from the UI; it is updated when the add_properties_items() method is called
         self.treeWidget = None
@@ -530,7 +530,7 @@ class FlatCAMObj(QtCore.QObject):
                     log.error("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
-                if self.app.defaults['units'].lower() == 'mm':
+                if self.app.app_units.lower() == 'mm':
                     area = (length * width) / 100
                 else:
                     area = length * width
@@ -586,7 +586,7 @@ class FlatCAMObj(QtCore.QObject):
                     width = abs(ymax - ymin)
 
                     # calculate box area
-                    if self.app.defaults['units'].lower() == 'mm':
+                    if self.app.app_units.lower() == 'mm':
                         area = (length * width) / 100
                     else:
                         area = length * width
@@ -637,7 +637,7 @@ class FlatCAMObj(QtCore.QObject):
                         area_chull = None
                         log.error("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
 
-            if self.app.defaults['units'].lower() == 'mm' and area_chull:
+            if self.app.app_units.lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100
 
             if area_chull is None:
@@ -726,7 +726,7 @@ class FlatCAMObj(QtCore.QObject):
                     toolid,
                     [
                         _('Diameter'),
-                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.defaults['units'].lower())
+                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.app_units.lower())
                     ],
                     True
                 )
@@ -792,7 +792,7 @@ class FlatCAMObj(QtCore.QObject):
                         exc_tool,
                         [
                             _('Diameter'),
-                            '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
+                            '%.*f %s' % (self.decimals, tool_dia, self.app.app_units.lower())
                         ],
                         True
                     )
@@ -820,7 +820,7 @@ class FlatCAMObj(QtCore.QObject):
                             '%.*f %s' % (
                                 self.decimals,
                                 (obj.z_cut - abs(value['data']['tools_drill_offset'])),
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -832,7 +832,7 @@ class FlatCAMObj(QtCore.QObject):
                             '%.*f %s' % (
                                 self.decimals,
                                 obj.z_move,
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -844,7 +844,7 @@ class FlatCAMObj(QtCore.QObject):
                             '%.*f %s/min' % (
                                 self.decimals,
                                 obj.feedrate,
-                                self.app.defaults['units'].lower()
+                                self.app.app_units.lower()
                             )
                         ],
                         True
@@ -874,7 +874,7 @@ class FlatCAMObj(QtCore.QObject):
                 others,
                 [
                     '%s:' % _('Travelled distance'),
-                    '%.*f %s' % (self.decimals, obj.travel_distance, self.app.defaults['units'].lower())
+                    '%.*f %s' % (self.decimals, obj.travel_distance, self.app.app_units.lower())
                 ],
                 True
             )
@@ -886,17 +886,17 @@ class FlatCAMObj(QtCore.QObject):
         # add dimensions
         self.treeWidget.addChild(
             location,
-            ['%s:' % _('Length'), '%.*f %s' % (self.decimals, length, self.app.defaults['units'].lower())],
+            ['%s:' % _('Length'), '%.*f %s' % (self.decimals, length, self.app.app_units.lower())],
             True
         )
         self.treeWidget.addChild(
             location,
-            ['%s:' % _('Width'), '%.*f %s' % (self.decimals, width, self.app.defaults['units'].lower())],
+            ['%s:' % _('Width'), '%.*f %s' % (self.decimals, width, self.app.app_units.lower())],
             True
         )
 
         # add box area
-        if self.app.defaults['units'].lower() == 'mm':
+        if self.app.app_units.lower() == 'mm':
             self.treeWidget.addChild(location, ['%s:' % _('Box Area'), '%.*f %s' % (self.decimals, area, 'cm2')], True)
             self.treeWidget.addChild(
                 location,
@@ -913,7 +913,7 @@ class FlatCAMObj(QtCore.QObject):
             )
 
         # add copper area
-        if self.app.defaults['units'].lower() == 'mm':
+        if self.app.app_units.lower() == 'mm':
             self.treeWidget.addChild(
                 location, ['%s:' % _('Copper Area'), '%.*f %s' % (self.decimals, copper_area, 'cm2')], True)
         else:
@@ -960,13 +960,13 @@ class FlatCAMObj(QtCore.QObject):
 
     @property
     def drawing_tolerance(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         tol = self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
         return tol
 
     @drawing_tolerance.setter
     def drawing_tolerance(self, value):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self._drawing_tolerance = value if self.units == 'MM' or not self.units else value / 25.4
 
     def clear(self, update=False):

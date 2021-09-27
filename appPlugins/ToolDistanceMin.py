@@ -33,7 +33,7 @@ class DistanceMin(AppTool):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
         self.decimals = self.app.decimals
 
         # #############################################################################
@@ -101,7 +101,7 @@ class DistanceMin(AppTool):
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.plugin_tab)
 
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # initial view of the layout
         self.ui.start_entry.set_value('(0, 0)')
@@ -121,7 +121,7 @@ class DistanceMin(AppTool):
         # ENABLE the Measuring TOOL
         self.ui.jump_hp_btn.setDisabled(False)
 
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         if self.app.call_source == 'app':
             selected_objs = self.app.collection.get_selected()
@@ -246,7 +246,7 @@ class DistMinUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
-        self.units = self.app.defaults['units'].lower()
+        self.units = self.app.app_units.lower()
 
         # ## Title
         title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.pluginName)

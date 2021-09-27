@@ -138,7 +138,7 @@ class ToolCorners(AppTool):
         self.ui.sel_radio.activated_custom.connect(self.on_selection_changed)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         self.clear_ui(self.layout)
         self.ui = CornersUI(layout=self.layout, app=self.app)

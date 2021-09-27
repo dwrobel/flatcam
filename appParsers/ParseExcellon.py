@@ -90,8 +90,8 @@ class Excellon(Geometry):
         self.match_routing_stop = None
 
         # ## IN|MM -> Units are inherited from Geometry
-        self.units = self.app.defaults['units']
-        self.units_found = self.app.defaults['units']
+        self.units = self.app.app_units
+        self.units_found = self.app.app_units
 
         # Trailing "T" or leading "L" (default)
         # self.zeros = "T"

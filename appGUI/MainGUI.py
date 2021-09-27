@@ -3265,7 +3265,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Change Units
                 if key == QtCore.Qt.Key.Key_Q:
-                    # if self.app.defaults["units"] == 'MM':
+                    # if self.app.app_units == 'MM':
                     #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("IN")
                     # else:
                     #     self.app.ui.general_pref_form.general_app_group.units_radio.set_value("MM")

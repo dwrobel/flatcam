@@ -147,7 +147,7 @@ class QRCode(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         self.clear_ui(self.layout)
         self.ui = QRcodeUI(layout=self.layout, app=self.app)
@@ -518,7 +518,7 @@ class QRCode(AppTool):
         # h = float(svg_root.get('height'))
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
-        units = self.app.defaults['units'] if units is None else units
+        units = self.app.app_units if units is None else units
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
         geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor, app=self.app)

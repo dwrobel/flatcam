@@ -163,7 +163,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_viewer_tab = None
 
         self.source_file = ''
-        self.units_found = self.app.defaults['units']
+        self.units_found = self.app.app_units
 
         self.prepend_snippet = ''
         self.append_snippet = ''
@@ -185,7 +185,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         FlatCAMObj.build_ui(self)
         self.app.log.debug("CNCJobObject.build_ui()")
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
         self.ui.cnc_tools_table.hide()
@@ -414,8 +414,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.defaults['units'].upper()
-        self.units_found = self.app.defaults['units']
+        self.units = self.app.app_units.upper()
+        self.units_found = self.app.app_units
 
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set below

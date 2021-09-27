@@ -704,7 +704,7 @@ class ToolsDB2UI:
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setObjectName("gdb_n_offset_value")
 
-        units = self.app.defaults['units'].upper()
+        units = self.app.app_units.upper()
         if units == 'MM':
             self.ncc_offset_spinner.setSingleStep(0.1)
         else:

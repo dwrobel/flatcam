@@ -191,7 +191,7 @@ class ToolImage(AppTool):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.app.defaults['units']
+            units = self.app.app_units
 
             self.app.app_obj.new_object(obj_type, name, obj_init)
 

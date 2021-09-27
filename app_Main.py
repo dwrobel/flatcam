@@ -593,7 +593,9 @@ class App(QtCore.QObject):
         if user_defaults:
             self.defaults.load(filename=current_defaults_path, inform=self.inform)
 
-        if self.defaults['units'] == 'MM':
+        self.app_units = self.defaults["units"]
+
+        if self.app_units == 'MM':
             self.decimals = int(self.defaults['decimals_metric'])
         else:
             self.decimals = int(self.defaults['decimals_inch'])
@@ -602,8 +604,6 @@ class App(QtCore.QObject):
             self.resource_location = 'assets/resources'
         else:
             self.resource_location = 'assets/resources/dark_resources'
-
-        self.current_units = self.defaults['units']
 
         # ###########################################################################################################
         # ####################################### Auto-complete KEYWORDS ############################################
@@ -1005,7 +1005,7 @@ class App(QtCore.QObject):
         # ########################
 
         # set FlatCAM units in the Status bar
-        self.set_screen_units(self.defaults['units'])
+        self.set_screen_units(self.app_units)
 
         # decide if to show or hide the Notebook side of the screen at startup
         if self.defaults["global_project_at_startup"] is True:
@@ -4575,7 +4575,7 @@ class App(QtCore.QObject):
         self.preferencesUiManager.defaults_write_form_field(field=field)
 
         if field == "units":
-            self.set_screen_units(self.defaults['units'])
+            self.set_screen_units(self.app_units)
 
     def set_screen_units(self, units):
         """
@@ -4590,14 +4590,14 @@ class App(QtCore.QObject):
         new_units, factor =  self.on_toggle_units()
         if self.ui.plot_tab_area.currentWidget().objectName() == "preferences_tab":
             if factor != 1:     # means we had a unit change in the rest of the app
-                pref_units = self.preferencesUiManager.preferences_units
-                if pref_units != new_units:
-                    self.preferencesUiManager.preferences_units = new_units
+                if self.app_units != new_units:
                     pref_factor = 25.4 if new_units == 'MM' else 1 / 25.4
                     self.scale_preferenes(pref_factor, new_units)
 
-                    # update th new units in the preferences storage
                     self.defaults["units"] = new_units
+
+        # update th new units in the preferences storage
+        self.app_units = new_units
 
     def scale_preferenes(self, sfactor, new_units):
         self.preferencesUiManager.defaults_read_form()
@@ -4784,7 +4784,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.defaults["units"]
+        new_units = 'IN' if self.app_units.upper() == 'MM' else 'MM'
 
         # we can't change the units while inside the Editors
         if self.call_source in ['geo_editor', 'grb_editor', 'exc_editor']:
@@ -4811,7 +4811,7 @@ class App(QtCore.QObject):
         response = msgbox.clickedButton()
 
         if response == bt_ok:
-            new_units = "IN" if self.defaults['units'].upper() == "MM" else "MM"
+            new_units = "IN" if self.app_units.upper() == "MM" else "MM"
 
             # The scaling factor depending on choice of units.
             factor = 25.4 if new_units == 'MM' else 1 / 25.4
@@ -4932,7 +4932,7 @@ class App(QtCore.QObject):
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
-        self.units = self.defaults['units'].upper()
+        self.units = self.app_units.upper()
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
@@ -5753,7 +5753,7 @@ class App(QtCore.QObject):
         #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
         self.ui.update_location_labels(self.dx, self.dy, location[0], location[1])
 
-        # units = self.defaults["units"].lower()
+        # units = self.app_units.lower()
         # self.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.dx, units, self.dy, units, location[0], units, location[1], units)
@@ -7002,7 +7002,7 @@ class App(QtCore.QObject):
         return True if self.ui.grid_snap_btn.isChecked() else False
 
     def populate_cmenu_grids(self):
-        units = self.defaults['units'].lower()
+        units = self.app_units.lower()
 
         # for act in self.ui.cmenu_gridmenu.actions():
         #     act.triggered.disconnect()
@@ -7039,7 +7039,7 @@ class App(QtCore.QObject):
 
     def on_grid_add(self):
         # ## Current application units in lower Case
-        units = self.defaults['units'].lower()
+        units = self.app_units.lower()
 
         grid_add_popup = FCInputDoubleSpinner(title=_("New Grid ..."),
                                               text=_('Enter a Grid Value:'),
@@ -7064,7 +7064,7 @@ class App(QtCore.QObject):
 
     def on_grid_delete(self):
         # ## Current application units in lower Case
-        units = self.defaults['units'].lower()
+        units = self.app_units.lower()
 
         grid_del_popup = FCInputDoubleSpinner(title="Delete Grid ...",
                                               text='Enter a Grid Value:',
@@ -7630,7 +7630,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         hover_rect = Polygon([pt1, pt2, pt3, pt4])
-        if self.defaults['units'].upper() == 'MM':
+        if self.app_units.upper() == 'MM':
             hover_rect = hover_rect.buffer(-0.1)
             hover_rect = hover_rect.buffer(0.2)
 
@@ -7689,7 +7689,7 @@ class App(QtCore.QObject):
 
         b_sel_rect = None
         try:
-            if self.defaults['units'].upper() == 'MM':
+            if self.app_units.upper() == 'MM':
                 b_sel_rect = sel_rect.buffer(-0.1)
                 b_sel_rect = b_sel_rect.buffer(0.2)
             else:
@@ -10310,7 +10310,7 @@ class MenuFileHandlers(QtCore.QObject):
         doc_final = doc.toprettyxml()
 
         try:
-            if self.defaults['units'].upper() == 'IN':
+            if self.app_units.upper() == 'IN':
                 unit = inch
             else:
                 unit = mm
@@ -10520,7 +10520,7 @@ class MenuFileHandlers(QtCore.QObject):
         eformat = self.defaults["excellon_exp_format"]
         slot_type = self.defaults["excellon_exp_slot_type"]
 
-        fc_units = self.defaults['units'].upper()
+        fc_units = self.app_units.upper()
         if fc_units == 'MM':
             factor = 1 if eunits == 'METRIC' else 0.03937
         else:
@@ -10665,7 +10665,7 @@ class MenuFileHandlers(QtCore.QObject):
         gfract = self.defaults["gerber_exp_decimals"]
         gzeros = self.defaults["gerber_exp_zeros"]
 
-        fc_units = self.defaults['units'].upper()
+        fc_units = self.app_units.upper()
         if fc_units == 'MM':
             factor = 1 if gunits == 'MM' else 0.03937
         else:
@@ -10860,7 +10860,7 @@ class MenuFileHandlers(QtCore.QObject):
                              _("Not supported type is picked as parameter. Only Geometry and Gerber are supported"))
             return
 
-        units = self.defaults['units'].upper()
+        units = self.app_units.upper()
 
         def obj_init(geo_obj, app_obj):
             res = geo_obj.import_svg(filename, obj_type, units=units)
@@ -10916,7 +10916,7 @@ class MenuFileHandlers(QtCore.QObject):
                              _("Not supported type is picked as parameter. Only Geometry and Gerber are supported"))
             return
 
-        units = self.defaults['units'].upper()
+        units = self.app_units.upper()
 
         def obj_init(geo_obj, app_obj):
             if obj_type == "geometry":

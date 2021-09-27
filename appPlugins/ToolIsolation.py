@@ -267,7 +267,7 @@ class ToolIsolation(AppTool, Gerber):
         }[self.ui.type_excobj_radio.get_value()]
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.clear_ui(self.layout)
         self.ui = IsoUI(layout=self.layout, app=self.app)
@@ -572,7 +572,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui_disconnect()
 
         # updated units
-        units = self.app.defaults['units'].upper()
+        units = self.app.app_units.upper()
         self.units = units
 
         self.sort_iso_tools()
@@ -1061,7 +1061,7 @@ class ToolIsolation(AppTool, Gerber):
     # multiprocessing variant
     def find_safe_tooldia_multiprocessing(self):
         self.app.inform.emit(_("Checking tools for validity."))
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         obj_name = self.ui.object_combo.currentText()
 
@@ -1126,7 +1126,7 @@ class ToolIsolation(AppTool, Gerber):
 
     def find_safe_tooldia_worker(self):
         self.app.inform.emit(_("Checking tools for validity."))
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         obj_name = self.ui.object_combo.currentText()
 
@@ -2649,7 +2649,7 @@ class ToolIsolation(AppTool, Gerber):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, curr_pos[0], curr_pos[1])
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
@@ -2785,7 +2785,7 @@ class ToolIsolation(AppTool, Gerber):
         """
 
         self.ui_disconnect()
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         tooldia = float(tool['tooldia'])
 

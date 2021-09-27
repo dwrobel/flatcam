@@ -1948,7 +1948,7 @@ class Gerber(Geometry):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
-        units = self.app.defaults['units'] if units is None else units
+        units = self.app.app_units if units is None else units
         res = self.app.defaults['gerber_circle_steps']
         factor = svgparse_viewbox(svg_root)
         geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor, app=self.app)

@@ -3254,7 +3254,7 @@ class AppGerberEditor(QtCore.QObject):
         self.decimals = self.app.decimals
 
         # Current application units in Upper Case
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.ui = AppGerberEditorUI(self.app)
 
@@ -3504,7 +3504,7 @@ class AppGerberEditor(QtCore.QObject):
 
     def set_editor_ui(self):
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
         self.decimals = self.app.decimals
 
         self.oldapcode_newapcode.clear()
@@ -3576,7 +3576,7 @@ class AppGerberEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gerber_obj.options['name']
@@ -4536,7 +4536,7 @@ class AppGerberEditor(QtCore.QObject):
         self.gerber_obj_options = orig_grb_obj.options
 
         file_units = self.gerber_obj.units if self.gerber_obj.units else 'IN'
-        app_units = self.app.defaults['units']
+        app_units = self.app.app_units
         # self.conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
 
         if file_units == app_units:
@@ -4923,7 +4923,7 @@ class AppGerberEditor(QtCore.QObject):
 
             grb_obj.multigeo = False
             grb_obj.follow = False
-            grb_obj.units = app_obj.defaults['units']
+            grb_obj.units = app_obj.app_units
 
             try:
                 grb_obj.create_geometry()
@@ -5435,7 +5435,7 @@ class AppGerberEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.defaults["units"].lower()
+        units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)
@@ -5937,7 +5937,7 @@ class AppGerberEditor(QtCore.QObject):
         # clear previous marking
         self.ma_annotation.clear(update=True)
 
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         text = []
         position = []
@@ -6015,7 +6015,7 @@ class AppGerberEditorUI:
         self.decimals = self.app.decimals
 
         # ## Current application units in Upper Case
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         self.grb_edit_widget = QtWidgets.QWidget()
 
@@ -7599,7 +7599,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Rotate cancelled"))
 
     def on_offx_key(self):
-        units = self.app.defaults['units'].lower()
+        units = self.app.app_units.lower()
 
         val_box = FCInputDoubleSpinner(title=_("Offset on X axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -7617,7 +7617,7 @@ class TransformEditorTool(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Offset X cancelled"))
 
     def on_offy_key(self):
-        units = self.app.defaults['units'].lower()
+        units = self.app.app_units.lower()
 
         val_box = FCInputDoubleSpinner(title=_("Offset on Y axis ..."),
                                        text='%s: (%s)' % (_('Enter a distance Value'), str(units)),

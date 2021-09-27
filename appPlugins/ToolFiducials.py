@@ -155,7 +155,7 @@ class ToolFiducials(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
     def set_tool_ui(self):
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         self.clear_ui(self.layout)
         self.ui = FidoUI(layout=self.layout, app=self.app)

@@ -446,7 +446,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             super().__init__()
 
             self.p = plotcanvas
-            units = self.p.app.defaults['units']
+            units = self.p.app.app_units
             # self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
             #              ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
             self.on_update_text_hud()
@@ -509,7 +509,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             :return:
             """
             # units
-            units = self.p.app.defaults['units'].lower()
+            units = self.p.app.app_units.lower()
 
             dx_dec = str(self.p.app.dec_format(dx, self.p.app.decimals)) if dx else '0.0'
             dy_dec = str(self.p.app.dec_format(dy, self.p.app.decimals)) if dy else '0.0'
@@ -553,7 +553,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         :return:
         """
         try:
-            if self.app.defaults['units'].upper() == 'MM':
+            if self.app.app_units.upper() == 'MM':
                 dims = self.pagesize_dict[workspace_size]
             else:
                 dims = (self.pagesize_dict[workspace_size][0] / 25.4, self.pagesize_dict[workspace_size][1] / 25.4)

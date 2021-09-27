@@ -40,7 +40,7 @@ class ToolPunchGerber(AppTool, Gerber):
 
         self.app = app
         self.decimals = self.app.decimals
-        self.units = self.app.defaults['units']
+        self.units = self.app.app_units
 
         # store here the old object name
         self.old_name = ''

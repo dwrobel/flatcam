@@ -728,7 +728,7 @@ class AppGCodeEditorUI:
         self.decimals = self.app.decimals
 
         # ## Current application units in Upper Case
-        self.units = self.app.defaults['units'].upper()
+        self.units = self.app.app_units.upper()
 
         # self.setSizePolicy(
         #     QtWidgets.QSizePolicy.Policy.MinimumExpanding,
