@@ -4,7 +4,7 @@ import traceback
 from datetime import datetime
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QSettings, QTimer, Qt
+from PyQt6.QtCore import QSettings, QTimer
 from app_Main import App
 from appGUI import VisPyPatches
 
@@ -124,12 +124,12 @@ if __name__ == '__main__':
             try:
                 msgbox = QtWidgets.QMessageBox()
                 displayed_msg = "The application encountered a critical error and it will close.\n"\
-                                "Please report this error to the developers.\n" \
-                                "**************************************************************\n\n"
-                displayed_msg += msg
-                msgbox.setInformativeText(displayed_msg)
+                                "Please report this error to the developers."
 
+                msgbox.setText(displayed_msg)
+                msgbox.setDetailedText(msg)
                 msgbox.setWindowTitle("Critical Error")
+                # msgbox.setWindowIcon()
                 msgbox.setIcon(QtWidgets.QMessageBox.Icon.Critical)
 
                 bt_yes = msgbox.addButton("Quit", QtWidgets.QMessageBox.ButtonRole.YesRole)
