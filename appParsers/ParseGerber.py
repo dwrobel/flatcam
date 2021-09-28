@@ -1898,10 +1898,10 @@ class Gerber(Geometry):
         the geometry appropriately. This call ``scale()``. Don't call
         it again in descendants.
 
-        :param obj_units: "IN" or "MM"
-        :type obj_units: str
-        :return: Scaling factor resulting from unit change.
-        :rtype: float
+        :param obj_units:   "IN" or "MM"
+        :type obj_units:    str
+        :return:            Scaling factor resulting from unit change.
+        :rtype:             float
         """
 
         if obj_units.upper() == self.units.upper():
@@ -1910,10 +1910,10 @@ class Gerber(Geometry):
 
         if obj_units.upper() == "MM":
             factor = 25.4
-            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: 25.4")
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(factor))
         elif obj_units.upper() == "IN":
             factor = 1 / 25.4
-            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(1 / 25.4))
+            self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(factor))
         else:
             self.app.log.error("Unsupported units: %s" % str(obj_units))
             self.app.log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
