@@ -67,27 +67,26 @@ class DrawToolShape(object):
                 pts += DrawToolShape.get_pts(sub_o)
         # Non-iterable
         except TypeError:
-            if o is not None:
-                # DrawToolShape: descend into .geo.
-                if isinstance(o, DrawToolShape):
-                    pts += DrawToolShape.get_pts(o.geo)
-
-                # ## Descend into .exerior and .interiors
-                elif type(o) == Polygon:
-                    pts += DrawToolShape.get_pts(o.exterior)
-                    for i in o.interiors:
-                        pts += DrawToolShape.get_pts(i)
-                elif type(o) == MultiLineString:
-                    for line in o:
-                        pts += DrawToolShape.get_pts(line)
-                # ## Has .coords: list them.
-                else:
-                    if DrawToolShape.tolerance is not None:
-                        pts += list(o.simplify(DrawToolShape.tolerance).coords)
-                    else:
-                        pts += list(o.coords)
-            else:
+            if o is None:
                 return
+
+            # DrawToolShape: descend into .geo.
+            if isinstance(o, DrawToolShape):
+                pts += DrawToolShape.get_pts(o.geo)
+            # ## Descend into .exerior and .interiors
+            elif type(o) == Polygon:
+                pts += DrawToolShape.get_pts(o.exterior)
+                for i in o.interiors:
+                    pts += DrawToolShape.get_pts(i)
+            elif type(o) == MultiLineString:
+                for line in o:
+                    pts += DrawToolShape.get_pts(line)
+            # ## Has .coords: list them.
+            else:
+                if DrawToolShape.tolerance is not None:
+                    pts += list(o.simplify(DrawToolShape.tolerance).coords)
+                else:
+                    pts += list(o.coords)
         return pts
 
     def __init__(self, geo=None):
@@ -5480,7 +5479,7 @@ class AppGerberEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
         self.app.ui.update_location_labels(self.app.dx, self.app.dy, x, y)
 
-        units = self.app.app_units.lower()
+        # units = self.app.app_units.lower()
         # self.app.plotcanvas.text_hud.text = \
         #     'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
         #         self.app.dx, units, self.app.dy, units, x, units, y, units)

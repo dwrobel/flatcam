@@ -486,6 +486,13 @@ class ToolFiducials(AppTool):
             geo_list = []
 
             def make_square_poly(center_pt, side_size):
+                """
+
+                :param center_pt:
+                :param side_size:
+                :return:
+                :type return:       Polygon
+                """
                 half_s = side_size / 2
                 x_center = center_pt[0]
                 y_center = center_pt[1]

@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from shapely.geometry import MultiLineString, LineString, LinearRing, box
+from shapely.geometry import MultiLineString, LinearRing
 import shapely.affinity as affinity
 
 from camlib import Geometry, flatten_shapely_geometry
@@ -18,14 +18,11 @@ from camlib import Geometry, flatten_shapely_geometry
 from appObjects.FlatCAMObj import *
 
 import ezdxf
-import math
 import numpy as np
 from copy import deepcopy
 import traceback
 from collections import defaultdict
 from functools import reduce
-
-import simplejson as json
 
 import gettext
 import appTranslation as fcTranslate

@@ -743,7 +743,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     geom = Polygon(geom.coords[::-1])
                 else:
                     self.app.log.debug("GerberObject.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
-                              type(geom))
+                                       type(geom))
             except Exception as e:
                 self.app.log.error("GerberObject.isolate().generate_envelope() Error --> %s" % str(e))
                 return 'fail'
@@ -770,8 +770,8 @@ class GerberObject(FlatCAMObj, Gerber):
                     tools_list = [
                         float(eval(dia)) for dia in temp_tools if dia != ''
                     ]
-                except Exception as e:
-                    self.app.log.error("GerberObject.follow_geo -> At least one tool diameter needed. -> %s" % str(e))
+                except Exception as er:
+                    self.app.log.error("GerberObject.follow_geo -> At least one tool diameter needed. -> %s" % str(er))
                     return 'fail'
 
             # Propagate options
@@ -963,45 +963,6 @@ class GerberObject(FlatCAMObj, Gerber):
             self.shapes.clear(update=True)
         except Exception as e:
             self.app.log.error("GerberObject.plot() --> %s" % str(e))
-
-        # try:
-        #     if self.options["solid"]:
-        #         for g in geometry:
-        #             if type(g) == Polygon or type(g) == LineString:
-        #                 self.add_shape(shape=g, color=color,
-        #                                face_color=random_color() if self.options['multicolored']
-        #                                else face_color, visible=visible)
-        #             elif type(g) == Point:
-        #                 pass
-        #             else:
-        #                 try:
-        #                     for el in g:
-        #                         self.add_shape(shape=el, color=color,
-        #                                        face_color=random_color() if self.options['multicolored']
-        #                                        else face_color, visible=visible)
-        #                 except TypeError:
-        #                     self.add_shape(shape=g, color=color,
-        #                                    face_color=random_color() if self.options['multicolored']
-        #                                    else face_color, visible=visible)
-        #     else:
-        #         for g in geometry:
-        #             if type(g) == Polygon or type(g) == LineString:
-        #                 self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
-        #                                visible=visible)
-        #             elif type(g) == Point:
-        #                 pass
-        #             else:
-        #                 for el in g:
-        #                     self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
-        #                                    visible=visible)
-        #     self.shapes.redraw(
-        #         # update_colors=(self.fill_color, self.outline_color),
-        #         # indexes=self.app.plotcanvas.shape_collection.data.keys()
-        #     )
-        # except (ObjectDeleted, AttributeError):
-        #     self.shapes.clear(update=True)
-        # except Exception as e:
-        #     self.app.log.error("GerberObject.plot() --> %s" % str(e))
 
     def plot_aperture(self, only_flashes=False, run_thread=False, **kwargs):
         """
