@@ -10,8 +10,9 @@ CHANGELOG for FlatCAM beta
 28.09.2021
 
 - changed the circle resolution back to the default of 16 since this value is good for fast rendering of Gerber files
-- added a shortcut to select all apertures in the Gerber Editor
+- added a shortcut to select all apertures in the Gerber Editor (Ctrl+A)
 - other minor fixes
+- added a shortcut to select all apertures in the Excellon Editor (Ctrl+A)
 
 27.09.2021
 

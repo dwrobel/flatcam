@@ -3833,6 +3833,11 @@ class MainGUI(QtWidgets.QMainWindow):
         elif self.app.call_source == 'exc_editor':
             # CTRL
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
+                # Select All
+                if key == QtCore.Qt.Key.Key_E or key == 'A':
+                    self.app.exc_editor.ui.tools_table_exc.selectAll()
+                    return
+
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key.Key_S or key == 'S':
                     self.app.editor2object()

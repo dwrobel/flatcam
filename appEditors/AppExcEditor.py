@@ -1890,6 +1890,7 @@ class AppExcEditor(QtCore.QObject):
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
+        self.ui.tools_table_exc.selectionModel().selectionChanged.connect(self.on_table_selection)
 
         self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.ui.slot_array_type_radio.activated_custom.connect(self.on_slot_array_type_radio)
@@ -3220,6 +3221,18 @@ class AppExcEditor(QtCore.QObject):
             self.app.log.error(str(e))
 
         self.replot()
+
+    def on_table_selection(self):
+        selected_rows = self.ui.tools_table_exc.selectionModel().selectedRows(0)
+
+        if len(selected_rows) == self.ui.tools_table_exc.rowCount():
+            for row in range(self.ui.tools_table_exc.rowCount() - 2):   # last 2 columns have no diameter
+                sel_dia = self.app.dec_format(float(self.ui.tools_table_exc.item(row, 1).text()), self.app.decimals)
+                for obj in self.storage_dict[sel_dia].get_objects():
+                    self.selected.append(obj)
+            self.replot()
+            return True
+        return False
 
     def on_canvas_click(self, event):
         """
