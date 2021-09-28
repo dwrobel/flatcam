@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 
-from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import RadioSet, FCSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,16 +21,15 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Plot options
-        self.export_options_label = FCLabel("<b>%s:</b>" % _("Export Options"))
-        self.export_options_label.setToolTip(
-            _("The parameters set here are used in the file exported\n"
-              "when using the File -> Export -> Export Gerber menu entry.")
-        )
-        self.layout.addWidget(self.export_options_label)
+        # #############################################################################################################
+        # Export Frame
+        # #############################################################################################################
+        exp_frame = FCFrame()
+        self.layout.addWidget(exp_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        # ## Grid Layout
+        exp_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        exp_frame.setLayout(exp_grid)
 
         # Gerber Units
         self.gerber_units_label = FCLabel('%s:' % _('Units'))
@@ -44,8 +43,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Gerber file.")
         )
 
-        grid0.addWidget(self.gerber_units_label, 0, 0)
-        grid0.addWidget(self.gerber_units_radio, 0, 1)
+        exp_grid.addWidget(self.gerber_units_label, 0, 0)
+        exp_grid.addWidget(self.gerber_units_radio, 0, 1)
 
         # Gerber format
         self.digits_label = FCLabel("%s:" % _("Int/Decimals"))
@@ -85,8 +84,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignmentFlag.AlignLeft)
         hlay1.addStretch()
 
-        grid0.addWidget(self.digits_label, 2, 0)
-        grid0.addLayout(hlay1, 2, 1)
+        exp_grid.addWidget(self.digits_label, 2, 0)
+        exp_grid.addLayout(hlay1, 2, 1)
 
         # Gerber Zeros
         self.zeros_label = FCLabel('%s:' % _('Zeros'))
@@ -109,7 +108,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are kept.")
         )
 
-        grid0.addWidget(self.zeros_label, 4, 0)
-        grid0.addWidget(self.zeros_radio, 4, 1)
+        exp_grid.addWidget(self.zeros_label, 4, 0)
+        exp_grid.addWidget(self.zeros_radio, 4, 1)
 
         self.layout.addStretch()

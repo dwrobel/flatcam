@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets
 
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCLabel, RadioSet, NumericalEvalTupleEntry, \
-    FCGridLayout
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,15 +22,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # Advanced Gerber Parameters
-        self.param_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # Gerber Editor Parameters Frame
+        # #############################################################################################################
+
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.param_label.setToolTip(
             _("A list of Gerber Editor parameters.")
         )
         self.layout.addWidget(self.param_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        par_frame = FCFrame()
+        self.layout.addWidget(par_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        par_frame.setLayout(param_grid)
 
         # Selection Limit
         self.sel_limit_label = FCLabel('%s:' % _("Selection limit"))
@@ -44,8 +50,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.sel_limit_entry = FCSpinner()
         self.sel_limit_entry.set_range(0, 10000)
 
-        grid0.addWidget(self.sel_limit_label, 0, 0)
-        grid0.addWidget(self.sel_limit_entry, 0, 1)
+        param_grid.addWidget(self.sel_limit_label, 0, 0)
+        param_grid.addWidget(self.sel_limit_entry, 0, 1)
 
         # New aperture code
         self.addcode_entry_lbl = FCLabel('%s:' % _('New Aperture code'))
@@ -57,8 +63,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.addcode_entry.set_range(10, 99)
         self.addcode_entry.setWrapping(True)
 
-        grid0.addWidget(self.addcode_entry_lbl, 1, 0)
-        grid0.addWidget(self.addcode_entry, 1, 1)
+        param_grid.addWidget(self.addcode_entry_lbl, 2, 0)
+        param_grid.addWidget(self.addcode_entry, 2, 1)
 
         # New aperture size
         self.addsize_entry_lbl = FCLabel('%s:' % _('New Aperture size'))
@@ -70,8 +76,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.addsize_entry.set_range(0, 100)
         self.addsize_entry.set_precision(self.decimals)
 
-        grid0.addWidget(self.addsize_entry_lbl, 2, 0)
-        grid0.addWidget(self.addsize_entry, 2, 1)
+        param_grid.addWidget(self.addsize_entry_lbl, 4, 0)
+        param_grid.addWidget(self.addsize_entry, 4, 1)
 
         # New aperture type
         self.addtype_combo_lbl = FCLabel('%s:' % _('New Aperture type'))
@@ -83,8 +89,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.addtype_combo = FCComboBox()
         self.addtype_combo.addItems(['C', 'R', 'O'])
 
-        grid0.addWidget(self.addtype_combo_lbl, 3, 0)
-        grid0.addWidget(self.addtype_combo, 3, 1)
+        param_grid.addWidget(self.addtype_combo_lbl, 6, 0)
+        param_grid.addWidget(self.addtype_combo, 6, 1)
 
         # Number of pads in a pad array
         self.grb_array_size_label = FCLabel('%s:' % _('Nr of pads'))
@@ -95,8 +101,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_array_size_entry = FCSpinner()
         self.grb_array_size_entry.set_range(0, 10000)
 
-        grid0.addWidget(self.grb_array_size_label, 4, 0)
-        grid0.addWidget(self.grb_array_size_entry, 4, 1)
+        param_grid.addWidget(self.grb_array_size_label, 8, 0)
+        param_grid.addWidget(self.grb_array_size_entry, 8, 1)
 
         self.adddim_label = FCLabel('%s:' % _('Aperture Dimensions'))
         self.adddim_label.setToolTip(
@@ -106,11 +112,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.adddim_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(self.adddim_label, 5, 0)
-        grid0.addWidget(self.adddim_entry, 5, 1)
+        param_grid.addWidget(self.adddim_label, 10, 0)
+        param_grid.addWidget(self.adddim_entry, 10, 1)
 
-        self.grb_array_linear_label = FCLabel('<b>%s:</b>' % _('Linear Pad Array'))
-        grid0.addWidget(self.grb_array_linear_label, 6, 0, 1, 2)
+        # #############################################################################################################
+        # Linear Pad Array Frame
+        # #############################################################################################################
+        self.grb_array_linear_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Linear Pad Array'))
+        self.layout.addWidget(self.grb_array_linear_label)
+
+        lin_frame = FCFrame()
+        self.layout.addWidget(lin_frame)
+
+        # ## Grid Layout
+        lin_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        lin_frame.setLayout(lin_grid)
 
         # Linear Pad Array direction
         self.grb_axis_label = FCLabel('%s:' % _('Linear Direction'))
@@ -125,8 +141,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
                                         {'label': _('Y'), 'value': 'Y'},
                                         {'label': _('Angle'), 'value': 'A'}])
 
-        grid0.addWidget(self.grb_axis_label, 7, 0)
-        grid0.addWidget(self.grb_axis_radio, 7, 1)
+        lin_grid.addWidget(self.grb_axis_label, 0, 0)
+        lin_grid.addWidget(self.grb_axis_radio, 0, 1)
 
         # Linear Pad Array pitch distance
         self.grb_pitch_label = FCLabel('%s:' % _('Pitch'))
@@ -137,8 +153,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_pitch_entry = FCDoubleSpinner()
         self.grb_pitch_entry.set_precision(self.decimals)
 
-        grid0.addWidget(self.grb_pitch_label, 8, 0)
-        grid0.addWidget(self.grb_pitch_entry, 8, 1)
+        lin_grid.addWidget(self.grb_pitch_label, 2, 0)
+        lin_grid.addWidget(self.grb_pitch_entry, 2, 1)
 
         # Linear Pad Array custom angle
         self.grb_angle_label = FCLabel('%s:' % _('Angle'))
@@ -150,11 +166,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_angle_entry.set_range(-360, 360)
         self.grb_angle_entry.setSingleStep(5)
 
-        grid0.addWidget(self.grb_angle_label, 9, 0)
-        grid0.addWidget(self.grb_angle_entry, 9, 1)
+        lin_grid.addWidget(self.grb_angle_label, 4, 0)
+        lin_grid.addWidget(self.grb_angle_entry, 4, 1)
 
-        self.grb_array_circ_label = FCLabel('<b>%s:</b>' % _('Circular Pad Array'))
-        grid0.addWidget(self.grb_array_circ_label, 10, 0, 1, 2)
+        # #############################################################################################################
+        # Circular Pad Array Frame
+        # #############################################################################################################
+        self.grb_array_circ_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _('Circular Pad Array'))
+        self.layout.addWidget(self.grb_array_circ_label)
+
+        circ_frame = FCFrame()
+        self.layout.addWidget(circ_frame)
+
+        # ## Grid Layout
+        circ_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        circ_frame.setLayout(circ_grid)
 
         # Circular Pad Array direction
         self.grb_circular_direction_label = FCLabel('%s:' % _('Circular Direction'))
@@ -166,8 +192,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_circular_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
                                                 {'label': _('CCW'), 'value': 'CCW'}])
 
-        grid0.addWidget(self.grb_circular_direction_label, 11, 0)
-        grid0.addWidget(self.grb_circular_dir_radio, 11, 1)
+        circ_grid.addWidget(self.grb_circular_direction_label, 0, 0)
+        circ_grid.addWidget(self.grb_circular_dir_radio, 0, 1)
 
         # Circular Pad Array Angle
         self.grb_circular_angle_label = FCLabel('%s:' % _('Circular Angle'))
@@ -180,11 +206,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.grb_circular_angle_entry.setSingleStep(5)
 
-        grid0.addWidget(self.grb_circular_angle_label, 12, 0)
-        grid0.addWidget(self.grb_circular_angle_entry, 12, 1)
+        circ_grid.addWidget(self.grb_circular_angle_label, 2, 0)
+        circ_grid.addWidget(self.grb_circular_angle_entry, 2, 1)
 
-        self.grb_array_tools_b_label = FCLabel('<b>%s:</b>' % _('Buffer Tool'))
-        grid0.addWidget(self.grb_array_tools_b_label, 13, 0, 1, 2)
+        # #############################################################################################################
+        # Buffer Frame
+        # #############################################################################################################
+        self.grb_array_tools_b_label = FCLabel('<span style="color:darkorange;"><b>%s</b></span>' % _('Buffer Tool'))
+        self.layout.addWidget(self.grb_array_tools_b_label)
+
+        buff_frame = FCFrame()
+        self.layout.addWidget(buff_frame)
+
+        # ## Grid Layout
+        buf_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_frame.setLayout(buf_grid)
 
         # Buffer Distance
         self.grb_buff_label = FCLabel('%s:' % _('Buffer distance'))
@@ -195,11 +231,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_buff_entry.set_precision(self.decimals)
         self.grb_buff_entry.set_range(-10000, 10000)
 
-        grid0.addWidget(self.grb_buff_label, 14, 0)
-        grid0.addWidget(self.grb_buff_entry, 14, 1)
+        buf_grid.addWidget(self.grb_buff_label, 0, 0)
+        buf_grid.addWidget(self.grb_buff_entry, 0, 1)
 
-        self.grb_array_tools_s_label = FCLabel('<b>%s:</b>' % _('Scale Tool'))
-        grid0.addWidget(self.grb_array_tools_s_label, 15, 0, 1, 2)
+        # #############################################################################################################
+        # Scale Frame
+        # #############################################################################################################
+        self.grb_array_tools_s_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Scale Tool'))
+        self.layout.addWidget(self.grb_array_tools_s_label)
+
+        scale_frame = FCFrame()
+        self.layout.addWidget(scale_frame)
+
+        # ## Grid Layout
+        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_frame.setLayout(scale_grid)
 
         # Scale Factor
         self.grb_scale_label = FCLabel('%s:' % _('Scale factor'))
@@ -210,11 +256,21 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_scale_entry.set_precision(self.decimals)
         self.grb_scale_entry.set_range(0, 10000)
 
-        grid0.addWidget(self.grb_scale_label, 16, 0)
-        grid0.addWidget(self.grb_scale_entry, 16, 1)
+        scale_grid.addWidget(self.grb_scale_label, 0, 0)
+        scale_grid.addWidget(self.grb_scale_entry, 0, 1)
 
-        self.grb_array_tools_ma_label = FCLabel('<b>%s:</b>' % _('Mark Area Tool'))
-        grid0.addWidget(self.grb_array_tools_ma_label, 17, 0, 1, 2)
+        # #############################################################################################################
+        # Mark Area Frame
+        # #############################################################################################################
+        self.grb_array_tools_ma_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Mark Area Tool'))
+        self.layout.addWidget(self.grb_array_tools_ma_label)
+
+        ma_frame = FCFrame()
+        self.layout.addWidget(ma_frame)
+
+        # ## Grid Layout
+        ma_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ma_frame.setLayout(ma_grid)
 
         # Mark area Tool low threshold
         self.grb_ma_low_label = FCLabel('%s:' % _('Threshold low'))
@@ -225,8 +281,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_ma_low_entry.set_precision(self.decimals)
         self.grb_ma_low_entry.set_range(0, 10000)
 
-        grid0.addWidget(self.grb_ma_low_label, 18, 0)
-        grid0.addWidget(self.grb_ma_low_entry, 18, 1)
+        ma_grid.addWidget(self.grb_ma_low_label, 0, 0)
+        ma_grid.addWidget(self.grb_ma_low_entry, 0, 1)
 
         # Mark area Tool high threshold
         self.grb_ma_high_label = FCLabel('%s:' % _('Threshold high'))
@@ -237,7 +293,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_ma_high_entry.set_precision(self.decimals)
         self.grb_ma_high_entry.set_range(0, 10000)
 
-        grid0.addWidget(self.grb_ma_high_label, 19, 0)
-        grid0.addWidget(self.grb_ma_high_entry, 19, 1)
+        ma_grid.addWidget(self.grb_ma_high_label, 2, 0)
+        ma_grid.addWidget(self.grb_ma_high_entry, 2, 1)
+
+        FCGridLayout.set_common_column_size([param_grid, lin_grid, circ_grid, buf_grid, scale_grid, ma_grid], 0)
 
         self.layout.addStretch()

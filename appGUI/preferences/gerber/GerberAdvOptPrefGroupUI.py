@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, OptionalInputSection, FCGridLayout
+from appGUI.GUIElements import FCCheckBox, RadioSet, FCDoubleSpinner, FCLabel, OptionalInputSection, FCGridLayout, \
+    FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,17 +22,14 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Advanced Gerber Parameters
-        self.adv_param_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
-        self.adv_param_label.setToolTip(
-            _("A list of advanced parameters.\n"
-              "Those parameters are available only for\n"
-              "Advanced App. Level.")
-        )
-        self.layout.addWidget(self.adv_param_label)
+        # #############################################################################################################
+        # Advanced Gerber Frame
+        # #############################################################################################################
+        adv_frame = FCFrame()
+        self.layout.addWidget(adv_frame)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_frame.setLayout(adv_grid)
 
         # Follow Attribute
         self.follow_cb = FCCheckBox(label=_('"Follow"'))
@@ -40,19 +38,19 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "This means that it will cut through\n"
               "the middle of the trace.")
         )
-        grid0.addWidget(self.follow_cb, 0, 0, 1, 2)
+        adv_grid.addWidget(self.follow_cb, 0, 0, 1, 2)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox(label=_('Table Show/Hide'))
         self.aperture_table_visibility_cb.setToolTip(
             _("Toggle the display of the Tools Table.")
         )
-        grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
+        adv_grid.addWidget(self.aperture_table_visibility_cb, 2, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        adv_grid.addWidget(separator_line, 4, 0, 1, 2)
 
         # Buffering Type
         buffering_label = FCLabel('%s:' % _('Buffering'))
@@ -64,15 +62,15 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
                                          {'label': _('Full'), 'value': 'full'}])
-        grid0.addWidget(buffering_label, 9, 0)
-        grid0.addWidget(self.buffering_radio, 9, 1)
+        adv_grid.addWidget(buffering_label, 6, 0)
+        adv_grid.addWidget(self.buffering_radio, 6, 1)
 
         # Delayed Buffering
         self.delayed_buffer_cb = FCCheckBox(label=_('Delayed Buffering'))
         self.delayed_buffer_cb.setToolTip(
             _("When checked it will do the buffering in background.")
         )
-        grid0.addWidget(self.delayed_buffer_cb, 10, 0, 1, 2)
+        adv_grid.addWidget(self.delayed_buffer_cb, 8, 0, 1, 2)
 
         # Simplification
         self.simplify_cb = FCCheckBox(label=_('Simplify'))
@@ -81,7 +79,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "loaded with simplification having a set tolerance.\n"
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
                                     )
-        grid0.addWidget(self.simplify_cb, 11, 0, 1, 2)
+        adv_grid.addWidget(self.simplify_cb, 10, 0, 1, 2)
 
         # Simplification tolerance
         self.simplification_tol_label = FCLabel(_('Tolerance'))
@@ -93,8 +91,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
 
-        grid0.addWidget(self.simplification_tol_label, 12, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 12, 1)
+        adv_grid.addWidget(self.simplification_tol_label, 12, 0)
+        adv_grid.addWidget(self.simplification_tol_spinner, 12, 1)
         self.ois_simplif = OptionalInputSection(
             self.simplify_cb,
             [
@@ -102,7 +100,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
             ],
             logic=True)
 
-        self.layout.addStretch()
+        # self.layout.addStretch()
 
         # signals
         self.buffering_radio.activated_custom.connect(self.on_buffering_change)

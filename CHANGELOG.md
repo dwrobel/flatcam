@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - added a shortcut to select all apertures in the Excellon Editor (Ctrl+A)
 - in Cutout Plugin simplified the UI
 - Gerber Extra Buffering is now OFf by default. For those cases where the Gerber file is not rendered correctly it will need to be activated. It has a performance penalty so it will no longer be enabled by default for everybody.
+- Gerber UI in Preferences is now updated
 
 27.09.2021
 

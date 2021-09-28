@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,8 +22,10 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Gerber Options")))
 
-        # ## Clear non-copper regions
-        self.clearcopper_label = FCLabel("<b>%s:</b>" % _("Non-copper regions"))
+        # #############################################################################################################
+        # Non-copper Regions Frame
+        # #############################################################################################################
+        self.clearcopper_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Non-copper regions"))
         self.clearcopper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
@@ -33,8 +35,12 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid1 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid1)
+        ncc_frame = FCFrame()
+        self.layout.addWidget(ncc_frame)
+
+        # ## Grid Layout
+        ncc_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        ncc_frame.setLayout(ncc_grid)
 
         # Margin
         bmlabel = FCLabel('%s:' % _('Boundary Margin'))
@@ -44,31 +50,32 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "objects with this minimum\n"
               "distance.")
         )
-        grid1.addWidget(bmlabel, 0, 0)
         self.noncopper_margin_entry = FCDoubleSpinner()
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
         self.noncopper_margin_entry.set_range(-9999, 9999)
-        grid1.addWidget(self.noncopper_margin_entry, 0, 1)
+
+        ncc_grid.addWidget(bmlabel, 0, 0)
+        ncc_grid.addWidget(self.noncopper_margin_entry, 0, 1)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded Geo"))
         self.noncopper_rounded_cb.setToolTip(
             _("Resulting geometry will have rounded corners.")
         )
-        grid1.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
+        ncc_grid.addWidget(self.noncopper_rounded_cb, 2, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid1.addWidget(separator_line, 2, 0, 1, 2)
-
-        # ## Bounding box
-        self.boundingbox_label = FCLabel('<b>%s:</b>' % _('Bounding Box'))
+        # #############################################################################################################
+        # Bounding Box Frame
+        # #############################################################################################################
+        self.boundingbox_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Bounding Box'))
         self.layout.addWidget(self.boundingbox_label)
 
-        grid2 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid2)
+        bb_frame = FCFrame()
+        self.layout.addWidget(bb_frame)
+
+        bb_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        bb_frame.setLayout(bb_grid)
 
         bbmargin = FCLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -80,8 +87,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.bbmargin_entry.setSingleStep(0.1)
         self.bbmargin_entry.set_range(-9999, 9999)
 
-        grid2.addWidget(bbmargin, 0, 0)
-        grid2.addWidget(self.bbmargin_entry, 0, 1)
+        bb_grid.addWidget(bbmargin, 0, 0)
+        bb_grid.addWidget(self.bbmargin_entry, 0, 1)
 
         self.bbrounded_cb = FCCheckBox(label='%s' % _("Rounded Geo"))
         self.bbrounded_cb.setToolTip(
@@ -90,5 +97,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "their radius is equal to\n"
               "the margin.")
         )
-        grid2.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        bb_grid.addWidget(self.bbrounded_cb, 2, 0, 1, 2)
+
+        FCGridLayout.set_common_column_size([ncc_grid, bb_grid], 0)
+
         self.layout.addStretch()
