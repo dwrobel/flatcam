@@ -168,7 +168,7 @@ class FlatCAMDefaults:
         "gerber_circle_steps": 16,
         "gerber_use_buffer_for_union": True,
         "gerber_clean_apertures": True,
-        "gerber_extra_buffering": True,
+        "gerber_extra_buffering": False,
 
         "gerber_plot_fill": '#BBF268BF',
         "gerber_plot_line": '#006E20BF',

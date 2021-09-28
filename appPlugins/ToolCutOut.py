@@ -188,14 +188,15 @@ class CutOut(AppTool):
         # #############################################################################
         self.ui.level.toggled.connect(self.on_level_changed)
 
-        self.ui.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
-        self.ui.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
+        self.ui.generate_cutout_btn.clicked.connect(self.on_cutout_generation)
 
         # adding tools
         self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.ui.cutout_shape_cb.stateChanged.connect(self.on_cutout_shape_changed)
+
         self.ui.cutout_type_radio.activated_custom.connect(self.on_cutout_type)
 
         self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
@@ -266,6 +267,9 @@ class CutOut(AppTool):
         # set as default the automatic adding of gaps
         self.ui.cutout_type_radio.set_value('a')
         self.on_cutout_type(val='a')
+
+        self.ui.cutout_shape_cb.set_value(False)
+        self.on_cutout_shape_changed(self.ui.cutout_shape_cb.get_value())
 
         # set the Cut By Drilling parameters
         self.ui.drill_dia_entry.set_value(float(self.app.defaults["tools_cutout_drill_dia"]))
@@ -392,8 +396,7 @@ class CutOut(AppTool):
         if val == 'a':
             self.ui.gaps_label.show()
             self.ui.gaps.show()
-            self.ui.ff_cutout_object_btn.show()
-            self.ui.rect_cutout_object_btn.show()
+            self.ui.generate_cutout_btn.show()
 
             self.ui.man_geo_creation_btn.hide()
             self.ui.man_gaps_creation_btn.hide()
@@ -401,12 +404,17 @@ class CutOut(AppTool):
         else:
             self.ui.gaps_label.hide()
             self.ui.gaps.hide()
-            self.ui.ff_cutout_object_btn.hide()
-            self.ui.rect_cutout_object_btn.hide()
+            self.ui.generate_cutout_btn.hide()
 
             self.ui.man_geo_creation_btn.show()
             self.ui.man_gaps_creation_btn.show()
             self.ui.man_frame.show()
+
+    def on_cutout_shape_changed(self, state):
+        if state:
+            self.ui.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
+        else:
+            self.ui.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -620,6 +628,13 @@ class CutOut(AppTool):
         self.app.tools_db_tab.ui.buttons_frame.hide()
         self.app.tools_db_tab.ui.add_tool_from_db.show()
         self.app.tools_db_tab.ui.cancel_tool_from_db.show()
+
+    def on_cutout_generation(self):
+        cutout_rect_shape = self.ui.cutout_shape_cb.get_value()
+        if cutout_rect_shape:
+            self.on_rectangular_cutout()
+        else:
+            self.on_freeform_cutout()
 
     def on_freeform_cutout(self):
 
@@ -2535,12 +2550,23 @@ class CutoutUI:
         gaps_grid.addWidget(self.gaps_label, 16, 0)
         gaps_grid.addWidget(self.gaps, 16, 1)
 
+        # Type of generated cutout: Rectangular or Any Form
+        self.cutout_shape_label = FCLabel('%s:' % _("Shape"))
+        self.cutout_shape_label.setToolTip(
+            _("Checked: the cutout shape is rectangular.\n"
+              "Unchecked: any-form cutout shape.")
+        )
+        self.cutout_shape_cb = FCCheckBox()
+
+        gaps_grid.addWidget(self.cutout_shape_label, 18, 0)
+        gaps_grid.addWidget(self.cutout_shape_cb, 18, 1)
+
         # #############################################################################################################
         # Manual Gaps Frame
         # #############################################################################################################
         self.man_frame = QtWidgets.QFrame()
         self.man_frame.setContentsMargins(0, 0, 0, 0)
-        gaps_grid.addWidget(self.man_frame, 18, 0, 1, 2)
+        gaps_grid.addWidget(self.man_frame, 20, 0, 1, 2)
 
         man_grid = FCGridLayout(v_spacing=5, h_spacing=3)
         man_grid.setContentsMargins(0, 0, 0, 0)
@@ -2608,38 +2634,19 @@ class CutoutUI:
         man_hlay.addWidget(self.man_geo_creation_btn)
         man_hlay.addWidget(self.man_gaps_creation_btn)
 
-        # Freeform Geometry Button
-        self.ff_cutout_object_btn = FCButton(_("Generate Geometry"))
-        self.ff_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
-        self.ff_cutout_object_btn.setToolTip(
-            _("Cutout the selected object.\n"
-              "The cutout shape can be of any shape.\n"
-              "Useful when the PCB has a non-rectangular shape.")
+        # Generate Geometry Button
+        self.generate_cutout_btn = FCButton(_("Generate Geometry"))
+        self.generate_cutout_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
+        self.generate_cutout_btn.setToolTip(
+            _("Generate the cutout geometry.")
         )
-        self.ff_cutout_object_btn.setStyleSheet("""
+        self.generate_cutout_btn.setStyleSheet("""
                                 QPushButton
                                 {
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(self.ff_cutout_object_btn)
-
-        # Rectangular Geometry Button
-        self.rect_cutout_object_btn = FCButton(_("Generate Geometry"))
-        self.rect_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
-        self.rect_cutout_object_btn.setToolTip(
-            _("Cutout the selected object.\n"
-              "The resulting cutout shape is\n"
-              "always a rectangle shape and it will be\n"
-              "the bounding box of the Object.")
-        )
-        self.rect_cutout_object_btn.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
-        self.tools_box.addWidget(self.rect_cutout_object_btn)
+        self.tools_box.addWidget(self.generate_cutout_btn)
 
         # self.tool_param_separator_line = QtWidgets.QFrame()
         # self.tool_param_separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
