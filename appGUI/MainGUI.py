@@ -3594,6 +3594,11 @@ class MainGUI(QtWidgets.QMainWindow):
         elif self.app.call_source == 'grb_editor':
             # CTRL
             if modifiers == QtCore.Qt.KeyboardModifier.ControlModifier:
+                # Select All
+                if key == QtCore.Qt.Key.Key_E or key == 'A':
+                    self.app.grb_editor.ui.apertures_table.selectAll()
+                    return
+
                 # Eraser Tool
                 if key == QtCore.Qt.Key.Key_E or key == 'E':
                     self.app.grb_editor.on_eraser()

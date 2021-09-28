@@ -3437,6 +3437,7 @@ class AppGerberEditor(QtCore.QObject):
 
         self.ui.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.ui.apertures_table.cellPressed.connect(self.on_row_selected)
+        self.ui.apertures_table.selectionModel().selectionChanged.connect(self.on_table_selection)
 
         self.ui.array_type_radio.activated_custom.connect(self.on_array_type_radio)
         self.ui.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
@@ -4121,6 +4122,9 @@ class AppGerberEditor(QtCore.QObject):
                     geo_el = geo['geo']
                     self.add_gerber_shape(DrawToolShape(geo_el), storage=stora)
 
+                is_sel_all = self.on_table_selection()
+                if is_sel_all:
+                    return
                 self.plot_all()
 
         self.app.worker_task.emit({'fcn': task_job, 'params': []})
@@ -5044,14 +5048,55 @@ class AppGerberEditor(QtCore.QObject):
 
         self.plot_all()
 
-    # def toolbar_tool_toggle(self, key):
-    #     """
-    #
-    #     :param key: key to update in self.options dictionary
-    #     :return:
-    #     """
-    #     self.options[key] = self.sender().isChecked()
-    #     return self.options[key]
+    def on_table_selection(self):
+        selected_rows = self.ui.apertures_table.selectionModel().selectedRows(0)
+
+        if len(selected_rows) == self.ui.apertures_table.rowCount():
+            for row in range(self.ui.apertures_table.rowCount()):
+                try:
+                    selected_ap_code = int(self.ui.apertures_table.item(row, 1).text())
+                    self.last_aperture_selected = copy(selected_ap_code)
+
+                    for obj in self.storage_dict[selected_ap_code]['geometry']:
+                        self.selected.append(obj)
+                except Exception as e:
+                    self.app.log.error("AppGerberEditor.on_row_selected() --> %s" % str(e))
+
+            # #########################################################################################################
+            # ######################### calculate vertex numbers for all selected shapes ##############################
+            # #########################################################################################################
+            vertex_nr = 0
+            for sha in self.selected:
+                sha_geo = sha.geo
+                if 'solid' in sha_geo:
+                    sha_geo_solid = sha_geo['solid']
+                    if sha_geo_solid.geom_type == 'Polygon':
+                        sha_geo_solid_coords = list(sha_geo_solid.exterior.coords)
+                    elif sha_geo_solid.geom_type in ['LinearRing', 'LineString']:
+                        sha_geo_solid_coords = list(sha_geo_solid.coords)
+                    else:
+                        sha_geo_solid_coords = []
+
+                    vertex_nr += len(sha_geo_solid_coords)
+
+            self.ui.geo_vertex_entry.set_value(vertex_nr)
+
+            # #########################################################################################################
+            # ######################### calculate total area for all selected shapes ##################################
+            # #########################################################################################################
+            t_area = 0
+            for sha in self.selected:
+                sha_geo = sha.geo
+                if 'solid' in sha_geo:
+                    sha_geo_solid = sha_geo['solid']
+                    if sha_geo_solid.geom_type == 'Polygon':
+                        t_area += sha_geo_solid.area
+
+            self.ui.area_entry.set_value(t_area)
+
+            self.plot_all()
+            return True
+        return False
 
     def on_grb_shape_complete(self, storage=None, specific_shape=None, no_plot=False):
         """

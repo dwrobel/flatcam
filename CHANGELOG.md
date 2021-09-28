@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.09.2021
+
+- changed the circle resolution back to the default of 16 since this value is good for fast rendering of Gerber files
+- added a shortcut to select all apertures in the Gerber Editor
+- other minor fixes
+
 27.09.2021
 
 - in Gerber Object trying to solve the issue with too little details on plotting geometry with inch units

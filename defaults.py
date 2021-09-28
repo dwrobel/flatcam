@@ -165,7 +165,7 @@ class FlatCAMDefaults:
         "gerber_color_list": [],
         "gerber_store_color_list": True,
 
-        "gerber_circle_steps": 64,
+        "gerber_circle_steps": 16,
         "gerber_use_buffer_for_union": True,
         "gerber_clean_apertures": True,
         "gerber_extra_buffering": True,
@@ -298,7 +298,7 @@ class FlatCAMDefaults:
         # Geometry General
         "geometry_plot": True,
         "geometry_multicolored": False,
-        "geometry_circle_steps": 64,
+        "geometry_circle_steps": 16,
         "geometry_merge_fuse_tools": True,
         "geometry_plot_line": "#FF0000",
 
@@ -688,7 +688,7 @@ class FlatCAMDefaults:
         "tools_copper_thieving_area": 0.1,
         "tools_copper_thieving_reference": 'itself',
         "tools_copper_thieving_box_type": 'rect',
-        "tools_copper_thieving_circle_steps": 64,
+        "tools_copper_thieving_circle_steps": 16,
         "tools_copper_thieving_fill_type": 'solid',
         "tools_copper_thieving_dots_dia": 1.0,
         "tools_copper_thieving_dots_spacing": 2.0,

@@ -8228,7 +8228,8 @@ class App(QtCore.QObject):
         self.log.debug("Recent items list has been populated.")
 
     def on_properties_tab_click(self):
-        if self.ui.properties_scroll_area.widget().objectName() == 'default_properties':
+        tab_wdg = self.ui.properties_scroll_area.widget()
+        if tab_wdg and tab_wdg.objectName() == 'default_properties':
             self.setup_default_properties_tab()
 
     def setup_default_properties_tab(self):
@@ -9043,7 +9044,7 @@ class MenuFileHandlers(QtCore.QObject):
         self.splash = self.app.splash
         self.worker_task = self.app.worker_task
         self.defaults = self.app.defaults
-
+        self.app_units = self.app.app_units
         self.pagesize = {}
 
         self.app.new_project_signal.connect(self.on_new_project_house_keeping)
