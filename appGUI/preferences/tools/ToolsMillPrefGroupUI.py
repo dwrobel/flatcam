@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry, FCGridLayout
+    OptionalInputSection, NumericalEvalEntry, FCLabel, FCComboBox2, FCEntry, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -22,15 +22,20 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Clear non-copper regions
-        self.mill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.mill_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.mill_label.setToolTip(
             _("Create CNCJob with toolpaths for milling either Geometry or drill holes.")
         )
         self.layout.addWidget(self.mill_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Tooldia
         tdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
@@ -41,8 +46,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.cnctooldia_entry = FCEntry()
 
-        grid0.addWidget(tdlabel, 0, 0)
-        grid0.addWidget(self.cnctooldia_entry, 0, 1)
+        param_grid.addWidget(tdlabel, 0, 0)
+        param_grid.addWidget(self.cnctooldia_entry, 0, 1)
 
         # Tip Dia
         self.tipdialabel = FCLabel('%s:' % _('V-Tip Dia'))
@@ -56,8 +61,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.tipdia_entry.set_range(0.00001, 10000.0000)
         self.tipdia_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.tipdialabel, 2, 0)
-        grid0.addWidget(self.tipdia_entry, 2, 1)
+        param_grid.addWidget(self.tipdialabel, 2, 0)
+        param_grid.addWidget(self.tipdia_entry, 2, 1)
 
         # Tip Angle
         self.tipanglelabel = FCLabel('%s:' % _('V-Tip Angle'))
@@ -72,8 +77,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.tipangle_entry.set_range(1.0, 180.0)
         self.tipangle_entry.setSingleStep(1)
 
-        grid0.addWidget(self.tipanglelabel, 4, 0)
-        grid0.addWidget(self.tipangle_entry, 4, 1)
+        param_grid.addWidget(self.tipanglelabel, 4, 0)
+        param_grid.addWidget(self.tipangle_entry, 4, 1)
 
         # Cut Z
         cutzlabel = FCLabel('%s:' % _('Cut Z'))
@@ -88,8 +93,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setWrapping(True)
 
-        grid0.addWidget(cutzlabel, 6, 0)
-        grid0.addWidget(self.cutz_entry, 6, 1)
+        param_grid.addWidget(cutzlabel, 6, 0)
+        param_grid.addWidget(self.cutz_entry, 6, 1)
 
         # Multidepth CheckBox
         self.multidepth_cb = FCCheckBox(label=_('Multi-Depth'))
@@ -101,7 +106,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                 "reached."
             )
         )
-        grid0.addWidget(self.multidepth_cb, 8, 0)
+        param_grid.addWidget(self.multidepth_cb, 8, 0)
 
         # Depth/pass
         self.depthperpass_entry = FCDoubleSpinner()
@@ -113,7 +118,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.depthperpass_entry.setSingleStep(0.1)
         self.depthperpass_entry.setWrapping(True)
 
-        grid0.addWidget(self.depthperpass_entry, 8, 1)
+        param_grid.addWidget(self.depthperpass_entry, 8, 1)
 
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
 
@@ -130,8 +135,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setWrapping(True)
 
-        grid0.addWidget(travelzlabel, 10, 0)
-        grid0.addWidget(self.travelz_entry, 10, 1)
+        param_grid.addWidget(travelzlabel, 10, 0)
+        param_grid.addWidget(self.travelz_entry, 10, 1)
 
         # Tool change:
         self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
@@ -141,7 +146,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                 "in the Machine Code (Pause for tool change)."
             )
         )
-        grid0.addWidget(self.toolchange_cb, 12, 0, 1, 2)
+        param_grid.addWidget(self.toolchange_cb, 12, 0, 1, 2)
 
         # Toolchange Z
         toolchangezlabel = FCLabel('%s:' % _('Toolchange Z'))
@@ -158,8 +163,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry.setSingleStep(0.1)
         self.toolchangez_entry.setWrapping(True)
 
-        grid0.addWidget(toolchangezlabel, 14, 0)
-        grid0.addWidget(self.toolchangez_entry, 14, 1)
+        param_grid.addWidget(toolchangezlabel, 14, 0)
+        param_grid.addWidget(self.toolchangez_entry, 14, 1)
 
         # End move Z
         endz_label = FCLabel('%s:' % _('End move Z'))
@@ -174,8 +179,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.endz_entry.setSingleStep(0.1)
         self.endz_entry.setWrapping(True)
 
-        grid0.addWidget(endz_label, 16, 0)
-        grid0.addWidget(self.endz_entry, 16, 1)
+        param_grid.addWidget(endz_label, 16, 0)
+        param_grid.addWidget(self.endz_entry, 16, 1)
 
         # End Move X,Y
         endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
@@ -186,8 +191,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(endmove_xy_label, 18, 0)
-        grid0.addWidget(self.endxy_entry, 18, 1)
+        param_grid.addWidget(endmove_xy_label, 18, 0)
+        param_grid.addWidget(self.endxy_entry, 18, 1)
 
         # Feedrate X-Y
         frlabel = FCLabel('%s:' % _('Feedrate X-Y'))
@@ -201,8 +206,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
 
-        grid0.addWidget(frlabel, 20, 0)
-        grid0.addWidget(self.cncfeedrate_entry, 20, 1)
+        param_grid.addWidget(frlabel, 20, 0)
+        param_grid.addWidget(self.cncfeedrate_entry, 20, 1)
 
         # Feedrate Z (Plunge)
         frz_label = FCLabel('%s:' % _('Feedrate Z'))
@@ -217,8 +222,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setWrapping(True)
 
-        grid0.addWidget(frz_label, 22, 0)
-        grid0.addWidget(self.feedrate_z_entry, 22, 1)
+        param_grid.addWidget(frz_label, 22, 0)
+        param_grid.addWidget(self.feedrate_z_entry, 22, 1)
 
         # Spindle Speed
         spdlabel = FCLabel('%s:' % _('Spindle speed'))
@@ -233,8 +238,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.set_step(100)
 
-        grid0.addWidget(spdlabel, 24, 0)
-        grid0.addWidget(self.cncspindlespeed_entry, 24, 1)
+        param_grid.addWidget(spdlabel, 24, 0)
+        param_grid.addWidget(self.cncspindlespeed_entry, 24, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox(label='%s' % _('Enable Dwell'))
@@ -252,8 +257,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.dwelltime_entry.setSingleStep(0.1)
         self.dwelltime_entry.setWrapping(True)
 
-        grid0.addWidget(self.dwell_cb, 26, 0)
-        grid0.addWidget(self.dwelltime_entry, 26, 1)
+        param_grid.addWidget(self.dwell_cb, 26, 0)
+        param_grid.addWidget(self.dwelltime_entry, 26, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -269,18 +274,32 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                                                QtWidgets.QSizePolicy.Policy.Preferred)
         self.pp_geometry_name_cb.addItems(self.defaults["tools_mill_preprocessor_list"])
 
-
         for it in range(self.pp_geometry_name_cb.count()):
             self.pp_geometry_name_cb.setItemData(it, self.pp_geometry_name_cb.itemText(it),
                                                  QtCore.Qt.ItemDataRole.ToolTipRole)
 
-        grid0.addWidget(pp_label, 28, 0)
-        grid0.addWidget(self.pp_geometry_name_cb, 28, 1)
+        param_grid.addWidget(pp_label, 28, 0)
+        param_grid.addWidget(self.pp_geometry_name_cb, 28, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 30, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 30, 0, 1, 2)
+
+        # #############################################################################################################
+        # Advanced Options Frame
+        # #############################################################################################################
+        self.adv_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _('Advanced Options'))
+        self.adv_label.setToolTip(
+            _("A list of advanced parameters.")
+        )
+        self.layout.addWidget(self.adv_label)
+
+        adv_frame = FCFrame()
+        self.layout.addWidget(adv_frame)
+
+        adv_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        adv_frame.setLayout(adv_grid)
 
         # Toolchange X,Y
         toolchange_xy_label = FCLabel('%s:' % _('Toolchange X-Y'))
@@ -289,8 +308,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(toolchange_xy_label, 32, 0)
-        grid0.addWidget(self.toolchangexy_entry, 32, 1)
+        adv_grid.addWidget(toolchange_xy_label, 0, 0)
+        adv_grid.addWidget(self.toolchangexy_entry, 0, 1)
 
         # Start move Z
         startzlabel = FCLabel('%s:' % _('Start Z'))
@@ -300,8 +319,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
         self.gstartz_entry = NumericalEvalEntry(border_color='#0069A9')
 
-        grid0.addWidget(startzlabel, 34, 0)
-        grid0.addWidget(self.gstartz_entry, 34, 1)
+        adv_grid.addWidget(startzlabel, 2, 0)
+        adv_grid.addWidget(self.gstartz_entry, 2, 1)
 
         # Feedrate rapids
         fr_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -318,8 +337,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_rapid_entry.setSingleStep(0.1)
         self.feedrate_rapid_entry.setWrapping(True)
 
-        grid0.addWidget(fr_rapid_label, 36, 0)
-        grid0.addWidget(self.feedrate_rapid_entry, 36, 1)
+        adv_grid.addWidget(fr_rapid_label, 4, 0)
+        adv_grid.addWidget(self.feedrate_rapid_entry, 4, 1)
 
         # End move extra cut
         self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))
@@ -341,8 +360,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
-        grid0.addWidget(self.extracut_cb, 38, 0)
-        grid0.addWidget(self.e_cut_entry, 38, 1)
+        adv_grid.addWidget(self.extracut_cb, 6, 0)
+        adv_grid.addWidget(self.e_cut_entry, 6, 1)
 
         # Probe depth
         self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
@@ -356,8 +375,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setWrapping(True)
 
-        grid0.addWidget(self.pdepth_label, 40, 0)
-        grid0.addWidget(self.pdepth_entry, 40, 1)
+        adv_grid.addWidget(self.pdepth_label, 8, 0)
+        adv_grid.addWidget(self.pdepth_entry, 8, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
@@ -370,8 +389,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setWrapping(True)
 
-        grid0.addWidget(self.feedrate_probe_label, 42, 0)
-        grid0.addWidget(self.feedrate_probe_entry, 42, 1)
+        adv_grid.addWidget(self.feedrate_probe_label, 10, 0)
+        adv_grid.addWidget(self.feedrate_probe_entry, 10, 1)
 
         # Spindle direction
         spindle_dir_label = FCLabel('%s:' % _('Spindle direction'))
@@ -383,9 +402,9 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         )
 
         self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
-                                          {'label': _('CCW'), 'value': 'CCW'}])
-        grid0.addWidget(spindle_dir_label, 44, 0)
-        grid0.addWidget(self.spindledir_radio, 44, 1)
+                                          {'label': _('CCW'), 'value': 'CCW'}], compact=True)
+        adv_grid.addWidget(spindle_dir_label, 12, 0)
+        adv_grid.addWidget(self.spindledir_radio, 12, 1)
 
         # Fast Move from Z Toolchange
         self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
@@ -395,21 +414,27 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        grid0.addWidget(self.fplunge_cb, 46, 0, 1, 2)
+        adv_grid.addWidget(self.fplunge_cb, 14, 0, 1, 2)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 48, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 48, 0, 1, 2)
 
-        # -----------------------------
-        # --- Area Exclusion ----------
-        # -----------------------------
-        self.area_exc_label = FCLabel('<b>%s:</b>' % _('Area Exclusion'))
+        # #############################################################################################################
+        # Area Exclusion Frame
+        # #############################################################################################################
+        self.area_exc_label = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _('Area Exclusion'))
         self.area_exc_label.setToolTip(
             _("Area exclusion parameters.")
         )
-        grid0.addWidget(self.area_exc_label, 52, 0, 1, 2)
+        self.layout.addWidget(self.area_exc_label)
+
+        area_frame = FCFrame()
+        self.layout.addWidget(area_frame)
+
+        area_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        area_frame.setLayout(area_grid)
 
         # Exclusion Area CB
         self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
@@ -420,7 +445,7 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
                 "is forbidden."
             )
         )
-        grid0.addWidget(self.exclusion_cb, 54, 0, 1, 2)
+        area_grid.addWidget(self.exclusion_cb, 0, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = FCLabel('%s:' % _("Shape"))
@@ -431,8 +456,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid0.addWidget(self.area_shape_label, 56, 0)
-        grid0.addWidget(self.area_shape_radio, 56, 1)
+        area_grid.addWidget(self.area_shape_label, 2, 0)
+        area_grid.addWidget(self.area_shape_radio, 2, 1)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -443,8 +468,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
 
-        grid0.addWidget(self.strategy_label, 58, 0)
-        grid0.addWidget(self.strategy_radio, 58, 1)
+        area_grid.addWidget(self.strategy_label, 4, 0)
+        area_grid.addWidget(self.strategy_radio, 4, 1)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))
@@ -454,24 +479,29 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.over_z_entry.set_range(-10000.000, 10000.0000)
         self.over_z_entry.set_precision(self.decimals)
 
-        grid0.addWidget(self.over_z_label, 60, 0)
-        grid0.addWidget(self.over_z_entry, 60, 1)
+        area_grid.addWidget(self.over_z_label, 6, 0)
+        area_grid.addWidget(self.over_z_entry, 6, 1)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        grid0.addWidget(separator_line, 62, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        # param_grid.addWidget(separator_line, 62, 0, 1, 2)
 
-        # -----------------------------
-        # --- Area POLISH ----------
-        # -----------------------------
-
-        self.pol_label = FCLabel('<b>%s:</b>' % _('Add Polish'))
+        # #############################################################################################################
+        # Area Polish Frame
+        # #############################################################################################################
+        self.pol_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _('Add Polish'))
         self.pol_label.setToolTip(
             _("Will add a Paint section at the end of the GCode.\n"
               "A metallic brush will clean the material after milling.")
         )
-        grid0.addWidget(self.pol_label, 70, 0, 1, 2)
+        self.layout.addWidget(self.pol_label)
+
+        polish_frame = FCFrame()
+        self.layout.addWidget(polish_frame)
+
+        polish_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        polish_frame.setLayout(polish_grid)
 
         # Polish Margin
         self.polish_margin_lbl = FCLabel('%s:' % _('Margin'))
@@ -482,8 +512,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.polish_margin_entry.set_precision(self.decimals)
         self.polish_margin_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(self.polish_margin_lbl, 72, 0)
-        grid0.addWidget(self.polish_margin_entry, 72, 1)
+        polish_grid.addWidget(self.polish_margin_lbl, 0, 0)
+        polish_grid.addWidget(self.polish_margin_entry, 0, 1)
 
         # Polish Overlap
         self.polish_over_lbl = FCLabel('%s:' % _('Overlap'))
@@ -496,8 +526,8 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
         self.polish_over_entry.set_range(0.0000, 99.9999)
         self.polish_over_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.polish_over_lbl, 74, 0)
-        grid0.addWidget(self.polish_over_entry, 74, 1)
+        polish_grid.addWidget(self.polish_over_lbl, 2, 0)
+        polish_grid.addWidget(self.polish_over_entry, 2, 1)
 
         # Polish Method
         self.polish_method_lbl = FCLabel('%s:' % _('Method'))
@@ -513,7 +543,9 @@ class ToolsMillPrefGroupUI(OptionsGroupUI):
             [_("Standard"), _("Seed"), _("Lines")]
         )
 
-        grid0.addWidget(self.polish_method_lbl, 76, 0)
-        grid0.addWidget(self.polish_method_combo, 76, 1)
+        polish_grid.addWidget(self.polish_method_lbl, 4, 0)
+        polish_grid.addWidget(self.polish_method_combo, 4, 1)
+
+        FCGridLayout.set_common_column_size([param_grid, adv_grid, area_grid, polish_grid], 0)
 
         self.layout.addStretch()

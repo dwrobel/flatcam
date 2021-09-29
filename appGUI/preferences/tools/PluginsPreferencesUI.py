@@ -32,10 +32,10 @@ class PluginsPreferencesUI(QtWidgets.QWidget):
         self.defaults = defaults
 
         self.tools_drill_group = ToolsDrillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
-        self.tools_drill_group.setMinimumWidth(220)
+        self.tools_drill_group.setMinimumWidth(180)
 
         self.tools_mill_group = ToolsMillPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
-        self.tools_mill_group.setMinimumWidth(220)
+        self.tools_mill_group.setMinimumWidth(180)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals, defaults=self.defaults)
         self.tools_cutout_group.setMinimumWidth(220)

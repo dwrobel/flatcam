@@ -132,7 +132,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # #############################################################################################################
         # Grid1 Frame
         # #############################################################################################################
-        self.color_lbl = FCLabel('<span style="color:red;"><b>%s</b></span>' % _("Colors"))
+        self.color_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Colors"))
         self.layout.addWidget(self.color_lbl)
 
         color_frame = FCFrame()

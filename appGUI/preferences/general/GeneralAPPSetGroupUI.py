@@ -191,7 +191,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # Font Frame
         # #############################################################################################################
         # Font Size
-        self.font_size_label = FCLabel('<span style="color:red;"><b>%s</b></span>' % _('Font Size'))
+        self.font_size_label = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _('Font Size'))
         self.layout.addWidget(self.font_size_label)
 
         fnt_frame = FCFrame()

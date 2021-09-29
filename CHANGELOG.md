@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.09.2021
+
+- more UI changes in the Preferences to align them to the new app look
+
 28.09.2021
 
 - changed the circle resolution back to the default of 16 since this value is good for fast rendering of Gerber files

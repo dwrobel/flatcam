@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,8 +21,10 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Board cuttout
-        self.panelize_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.panelize_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.panelize_label.setToolTip(
             _("Create an object that contains an array of (x, y) elements,\n"
               "each element is a copy of the source object spaced\n"
@@ -30,8 +32,11 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.panelize_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # ## Spacing Columns
         self.pspacing_columns = FCDoubleSpinner()
@@ -44,8 +49,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("Spacing between columns of the desired panel.\n"
               "In current units.")
         )
-        grid0.addWidget(self.spacing_columns_label, 0, 0)
-        grid0.addWidget(self.pspacing_columns, 0, 1)
+        param_grid.addWidget(self.spacing_columns_label, 0, 0)
+        param_grid.addWidget(self.pspacing_columns, 0, 1)
 
         # ## Spacing Rows
         self.pspacing_rows = FCDoubleSpinner()
@@ -58,8 +63,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("Spacing between rows of the desired panel.\n"
               "In current units.")
         )
-        grid0.addWidget(self.spacing_rows_label, 1, 0)
-        grid0.addWidget(self.pspacing_rows, 1, 1)
+        param_grid.addWidget(self.spacing_rows_label, 2, 0)
+        param_grid.addWidget(self.pspacing_rows, 2, 1)
 
         # ## Columns
         self.pcolumns = FCSpinner()
@@ -70,8 +75,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
         )
-        grid0.addWidget(self.columns_label, 2, 0)
-        grid0.addWidget(self.pcolumns, 2, 1)
+        param_grid.addWidget(self.columns_label, 4, 0)
+        param_grid.addWidget(self.pcolumns, 4, 1)
 
         # ## Rows
         self.prows = FCSpinner()
@@ -82,8 +87,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
         )
-        grid0.addWidget(self.rows_label, 3, 0)
-        grid0.addWidget(self.prows, 3, 1)
+        param_grid.addWidget(self.rows_label, 6, 0)
+        param_grid.addWidget(self.prows, 6, 1)
 
         # ## Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
@@ -95,8 +100,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
              "- Geometry")
         )
 
-        grid0.addWidget(self.panel_type_label, 4, 0)
-        grid0.addWidget(self.panel_type_radio, 4, 1)
+        param_grid.addWidget(self.panel_type_label, 8, 0)
+        param_grid.addWidget(self.panel_type_radio, 8, 1)
 
         # Path optimization
         self.poptimization_cb = FCCheckBox('%s' % _("Path Optimization"))
@@ -106,7 +111,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
               "any two overlapping Line elements in the panel\n"
               "and will remove the overlapping parts, keeping only one of them.")
         )
-        grid0.addWidget(self.poptimization_cb, 5, 0, 1, 2)
+        param_grid.addWidget(self.poptimization_cb, 10, 0, 1, 2)
 
         # ## Constrains
         self.pconstrain_cb = FCCheckBox('%s:' % _("Constrain within"))
@@ -117,7 +122,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
               "the final panel will have as many columns and rows as\n"
               "they fit completely within selected area.")
         )
-        grid0.addWidget(self.pconstrain_cb, 10, 0, 1, 2)
+        param_grid.addWidget(self.pconstrain_cb, 12, 0, 1, 2)
 
         self.px_width_entry = FCDoubleSpinner()
         self.px_width_entry.set_range(0.000001, 10000.0000)
@@ -129,8 +134,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
         )
-        grid0.addWidget(self.x_width_lbl, 12, 0)
-        grid0.addWidget(self.px_width_entry, 12, 1)
+        param_grid.addWidget(self.x_width_lbl, 14, 0)
+        param_grid.addWidget(self.px_width_entry, 14, 1)
 
         self.py_height_entry = FCDoubleSpinner()
         self.py_height_entry.set_range(0.000001, 10000.0000)
@@ -142,7 +147,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")
         )
-        grid0.addWidget(self.y_height_lbl, 17, 0)
-        grid0.addWidget(self.py_height_entry, 17, 1)
+        param_grid.addWidget(self.y_height_lbl, 16, 0)
+        param_grid.addWidget(self.py_height_entry, 16, 1)
 
         self.layout.addStretch()
