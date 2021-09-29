@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, RadioSet, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,14 +21,20 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
-
-        self.param_label = FCLabel('<b>%s:</b>' % _('Parameters'))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.param_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _('Parameters'))
         self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
-        grid0.addWidget(self.param_label, 0, 0, 1, 2)
+        self.layout.addWidget(self.param_label)
+
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Type of Marker
         self.type_label = FCLabel('%s:' % _("Type"))
@@ -41,8 +47,8 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
             {"label": _("Cross"), "value": "c"},
         ])
 
-        grid0.addWidget(self.type_label, 2, 0)
-        grid0.addWidget(self.type_radio, 2, 1)
+        param_grid.addWidget(self.type_label, 2, 0)
+        param_grid.addWidget(self.type_radio, 2, 1)
         
         # Thickness #
         self.thick_label = FCLabel('%s:' % _("Thickness"))
@@ -55,8 +61,8 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.thick_entry.setWrapping(True)
         self.thick_entry.setSingleStep(10 ** -self.decimals)
 
-        grid0.addWidget(self.thick_label, 4, 0)
-        grid0.addWidget(self.thick_entry, 4, 1)
+        param_grid.addWidget(self.thick_label, 4, 0)
+        param_grid.addWidget(self.thick_entry, 4, 1)
 
         # Margin #
         self.margin_label = FCLabel('%s:' % _("Margin"))
@@ -68,8 +74,8 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.margin_label, 6, 0)
-        grid0.addWidget(self.margin_entry, 6, 1)
+        param_grid.addWidget(self.margin_label, 6, 0)
+        param_grid.addWidget(self.margin_entry, 6, 1)
 
         # Length #
         self.l_label = FCLabel('%s:' % _("Length"))
@@ -81,8 +87,8 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.l_entry.set_precision(self.decimals)
         self.l_entry.setSingleStep(10 ** -self.decimals)
 
-        grid0.addWidget(self.l_label, 8, 0)
-        grid0.addWidget(self.l_entry, 8, 1)
+        param_grid.addWidget(self.l_label, 8, 0)
+        param_grid.addWidget(self.l_entry, 8, 1)
 
         # Drill Tool Diameter
         self.drill_dia_label = FCLabel('%s:' % _("Drill Dia"))
@@ -94,7 +100,7 @@ class ToolsCornersPrefGroupUI(OptionsGroupUI):
         self.drill_dia_entry.set_precision(self.decimals)
         self.drill_dia_entry.setWrapping(True)
 
-        grid0.addWidget(self.drill_dia_label, 10, 0)
-        grid0.addWidget(self.drill_dia_entry, 10, 1)
+        param_grid.addWidget(self.drill_dia_label, 10, 0)
+        param_grid.addWidget(self.drill_dia_entry, 10, 1)
 
         self.layout.addStretch()

@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 29.09.2021
 
 - more UI changes in the Preferences to align them to the new app look
+- finished the UI update in Preferences -> Processing
 
 28.09.2021
 

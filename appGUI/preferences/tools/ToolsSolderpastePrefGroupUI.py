@@ -1,6 +1,7 @@
 from PyQt6 import QtCore
 
-from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry, FCLabel, FCGridLayout, \
+    FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,16 +22,21 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Solder Paste Dispensing
-        self.solderpastelabel = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.solderpastelabel = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.solderpastelabel.setToolTip(
             _("A tool to create GCode for dispensing\n"
               "solder paste onto a PCB.")
         )
         self.layout.addWidget(self.solderpastelabel)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Nozzle Tool Diameters
         nozzletdlabel = FCLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
@@ -41,8 +47,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         )
         self.nozzle_tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
-        grid0.addWidget(nozzletdlabel, 0, 0)
-        grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
+        param_grid.addWidget(nozzletdlabel, 0, 0)
+        param_grid.addWidget(self.nozzle_tool_dia_entry, 0, 1)
 
         # New Nozzle Tool Dia
         self.addtool_entry_lbl = FCLabel('<b>%s:</b>' % _('New Nozzle Dia'))
@@ -54,8 +60,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.addtool_entry.set_range(0.0000001, 10000.0000)
         self.addtool_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.addtool_entry_lbl, 1, 0)
-        grid0.addWidget(self.addtool_entry, 1, 1)
+        param_grid.addWidget(self.addtool_entry_lbl, 1, 0)
+        param_grid.addWidget(self.addtool_entry, 1, 1)
 
         # Z dispense start
         self.z_start_entry = FCDoubleSpinner()
@@ -67,8 +73,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
         )
-        grid0.addWidget(self.z_start_label, 2, 0)
-        grid0.addWidget(self.z_start_entry, 2, 1)
+        param_grid.addWidget(self.z_start_label, 2, 0)
+        param_grid.addWidget(self.z_start_entry, 2, 1)
 
         # Z dispense
         self.z_dispense_entry = FCDoubleSpinner()
@@ -80,8 +86,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
         )
-        grid0.addWidget(self.z_dispense_label, 3, 0)
-        grid0.addWidget(self.z_dispense_entry, 3, 1)
+        param_grid.addWidget(self.z_dispense_label, 3, 0)
+        param_grid.addWidget(self.z_dispense_entry, 3, 1)
 
         # Z dispense stop
         self.z_stop_entry = FCDoubleSpinner()
@@ -93,8 +99,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
         )
-        grid0.addWidget(self.z_stop_label, 4, 0)
-        grid0.addWidget(self.z_stop_entry, 4, 1)
+        param_grid.addWidget(self.z_stop_label, 4, 0)
+        param_grid.addWidget(self.z_stop_entry, 4, 1)
 
         # Z travel
         self.z_travel_entry = FCDoubleSpinner()
@@ -107,8 +113,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("The height (Z) for travel between pads\n"
               "(without dispensing solder paste).")
         )
-        grid0.addWidget(self.z_travel_label, 5, 0)
-        grid0.addWidget(self.z_travel_entry, 5, 1)
+        param_grid.addWidget(self.z_travel_label, 5, 0)
+        param_grid.addWidget(self.z_travel_entry, 5, 1)
 
         # Z toolchange location
         self.z_toolchange_entry = FCDoubleSpinner()
@@ -120,8 +126,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.z_toolchange_label.setToolTip(
             _("The height (Z) for tool (nozzle) change.")
         )
-        grid0.addWidget(self.z_toolchange_label, 6, 0)
-        grid0.addWidget(self.z_toolchange_entry, 6, 1)
+        param_grid.addWidget(self.z_toolchange_label, 6, 0)
+        param_grid.addWidget(self.z_toolchange_entry, 6, 1)
 
         # X,Y Toolchange location
         self.xy_toolchange_entry = NumericalEvalTupleEntry(border_color='#0069A9')
@@ -130,8 +136,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("The X,Y location for tool (nozzle) change.\n"
               "The format is (x, y) where x and y are real numbers.")
         )
-        grid0.addWidget(self.xy_toolchange_label, 7, 0)
-        grid0.addWidget(self.xy_toolchange_entry, 7, 1)
+        param_grid.addWidget(self.xy_toolchange_label, 7, 0)
+        param_grid.addWidget(self.xy_toolchange_entry, 7, 1)
 
         # Feedrate X-Y
         self.frxy_entry = FCDoubleSpinner()
@@ -143,8 +149,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.frxy_label.setToolTip(
             _("Feedrate (speed) while moving on the X-Y plane.")
         )
-        grid0.addWidget(self.frxy_label, 8, 0)
-        grid0.addWidget(self.frxy_entry, 8, 1)
+        param_grid.addWidget(self.frxy_label, 8, 0)
+        param_grid.addWidget(self.frxy_entry, 8, 1)
 
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner()
@@ -157,8 +163,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
         )
-        grid0.addWidget(self.frz_label, 9, 0)
-        grid0.addWidget(self.frz_entry, 9, 1)
+        param_grid.addWidget(self.frz_label, 9, 0)
+        param_grid.addWidget(self.frz_entry, 9, 1)
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner()
@@ -171,8 +177,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("Feedrate (speed) while moving up vertically\n"
               "to Dispense position (on Z plane).")
         )
-        grid0.addWidget(self.frz_dispense_label, 10, 0)
-        grid0.addWidget(self.frz_dispense_entry, 10, 1)
+        param_grid.addWidget(self.frz_dispense_label, 10, 0)
+        param_grid.addWidget(self.frz_dispense_entry, 10, 1)
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCSpinner()
@@ -184,8 +190,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("The dispenser speed while pushing solder paste\n"
               "through the dispenser nozzle.")
         )
-        grid0.addWidget(self.speedfwd_label, 11, 0)
-        grid0.addWidget(self.speedfwd_entry, 11, 1)
+        param_grid.addWidget(self.speedfwd_label, 11, 0)
+        param_grid.addWidget(self.speedfwd_entry, 11, 1)
 
         # Dwell Forward
         self.dwellfwd_entry = FCDoubleSpinner()
@@ -197,8 +203,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
         )
-        grid0.addWidget(self.dwellfwd_label, 12, 0)
-        grid0.addWidget(self.dwellfwd_entry, 12, 1)
+        param_grid.addWidget(self.dwellfwd_label, 12, 0)
+        param_grid.addWidget(self.dwellfwd_entry, 12, 1)
 
         # Spindle Speed Reverse
         self.speedrev_entry = FCSpinner()
@@ -210,8 +216,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("The dispenser speed while retracting solder paste\n"
               "through the dispenser nozzle.")
         )
-        grid0.addWidget(self.speedrev_label, 13, 0)
-        grid0.addWidget(self.speedrev_entry, 13, 1)
+        param_grid.addWidget(self.speedrev_label, 13, 0)
+        param_grid.addWidget(self.speedrev_entry, 13, 1)
 
         # Dwell Reverse
         self.dwellrev_entry = FCDoubleSpinner()
@@ -224,8 +230,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             _("Pause after solder paste dispenser retracted,\n"
               "to allow pressure equilibrium.")
         )
-        grid0.addWidget(self.dwellrev_label, 14, 0)
-        grid0.addWidget(self.dwellrev_entry, 14, 1)
+        param_grid.addWidget(self.dwellrev_label, 14, 0)
+        param_grid.addWidget(self.dwellrev_entry, 14, 1)
 
         # Preprocessors
         pp_label = FCLabel('%s:' % _('Preprocessor'))
@@ -240,7 +246,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         for it in range(self.pp_combo.count()):
             self.pp_combo.setItemData(it, self.pp_combo.itemText(it), QtCore.Qt.ItemDataRole.ToolTipRole)
 
-        grid0.addWidget(pp_label, 15, 0)
-        grid0.addWidget(self.pp_combo, 15, 1)
+        param_grid.addWidget(pp_label, 15, 0)
+        param_grid.addWidget(self.pp_combo, 15, 1)
 
         self.layout.addStretch()

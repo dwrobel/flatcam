@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCLabel, FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,8 +21,10 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## V-shape Calculator Tool
-        self.vshape_tool_label = FCLabel("<b>%s:</b>" % _("V-Shape Tool Calculator"))
+        # #############################################################################################################
+        # V-Shape Tool Frame
+        # #############################################################################################################
+        self.vshape_tool_label = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("V-Shape Tool Calculator"))
         self.vshape_tool_label.setToolTip(
             _("Calculate the tool diameter for a given V-shape tool,\n"
               "having the tip diameter, tip angle and\n"
@@ -30,8 +32,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.vshape_tool_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        v_frame = FCFrame()
+        self.layout.addWidget(v_frame)
+
+        v_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        v_frame.setLayout(v_grid)
 
         # ## Tip Diameter
         self.tip_dia_entry = FCDoubleSpinner()
@@ -44,8 +49,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
             _("This is the tool tip diameter.\n"
               "It is specified by manufacturer.")
         )
-        grid0.addWidget(self.tip_dia_label, 0, 0)
-        grid0.addWidget(self.tip_dia_entry, 0, 1)
+        v_grid.addWidget(self.tip_dia_label, 0, 0)
+        v_grid.addWidget(self.tip_dia_entry, 0, 1)
 
         # ## Tip angle
         self.tip_angle_entry = FCDoubleSpinner()
@@ -58,8 +63,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
             _("This is the angle on the tip of the tool.\n"
               "It is specified by manufacturer.")
         )
-        grid0.addWidget(self.tip_angle_label, 2, 0)
-        grid0.addWidget(self.tip_angle_entry, 2, 1)
+        v_grid.addWidget(self.tip_angle_label, 2, 0)
+        v_grid.addWidget(self.tip_angle_entry, 2, 1)
 
         # ## Depth-of-cut Cut Z
         self.cut_z_entry = FCDoubleSpinner()
@@ -72,16 +77,24 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
             _("This is depth to cut into material.\n"
               "In the CNCJob object it is the CutZ parameter.")
         )
-        grid0.addWidget(self.cut_z_label, 4, 0)
-        grid0.addWidget(self.cut_z_entry, 4, 1)
+        v_grid.addWidget(self.cut_z_label, 4, 0)
+        v_grid.addWidget(self.cut_z_entry, 4, 1)
 
-        # ## Electroplating Calculator Tool
-        self.plate_title_label = FCLabel("<b>%s:</b>" % _("ElectroPlating Calculator"))
+        # #############################################################################################################
+        # Electroplating Frame
+        # #############################################################################################################
+        self.plate_title_label = FCLabel('<span style="color:brown;"><b>%s</b></span>' % _("ElectroPlating Calculator"))
         self.plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
         )
-        grid0.addWidget(self.plate_title_label, 3, 0, 1, 2)
+        self.layout.addWidget(self.plate_title_label)
+
+        el_frame = FCFrame()
+        self.layout.addWidget(el_frame)
+
+        el_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        el_frame.setLayout(el_grid)
 
         # ## PCB Length
         self.pcblength_entry = FCDoubleSpinner()
@@ -92,8 +105,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.pcblengthlabel = FCLabel('%s:' % _("Board Length"))
 
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
-        grid0.addWidget(self.pcblengthlabel, 6, 0)
-        grid0.addWidget(self.pcblength_entry, 6, 1)
+        el_grid.addWidget(self.pcblengthlabel, 0, 0)
+        el_grid.addWidget(self.pcblength_entry, 0, 1)
 
         # ## PCB Width
         self.pcbwidth_entry = FCDoubleSpinner()
@@ -104,8 +117,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.pcbwidthlabel = FCLabel('%s:' % _("Board Width"))
 
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
-        grid0.addWidget(self.pcbwidthlabel, 8, 0)
-        grid0.addWidget(self.pcbwidth_entry, 8, 1)
+        el_grid.addWidget(self.pcbwidthlabel, 2, 0)
+        el_grid.addWidget(self.pcbwidth_entry, 2, 1)
         
         # AREA
         self.area_label = FCLabel('%s:' % _("Area"))
@@ -115,8 +128,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.area_entry.set_precision(self.decimals)
         self.area_entry.set_range(0.0, 10000.0000)
         
-        grid0.addWidget(self.area_label, 10, 0)
-        grid0.addWidget(self.area_entry, 10, 1)
+        el_grid.addWidget(self.area_label, 4, 0)
+        el_grid.addWidget(self.area_entry, 4, 1)
         
         # ## Current Density
         self.cdensity_label = FCLabel('%s:' % _("Current Density"))
@@ -127,8 +140,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
                                          "In Amps per Square Feet ASF."))
-        grid0.addWidget(self.cdensity_label, 12, 0)
-        grid0.addWidget(self.cdensity_entry, 12, 1)
+        el_grid.addWidget(self.cdensity_label, 6, 0)
+        el_grid.addWidget(self.cdensity_entry, 6, 1)
 
         # ## PCB Copper Growth
         self.growth_label = FCLabel('%s:' % _("Copper Growth"))
@@ -139,7 +152,9 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
                                        "In microns."))
-        grid0.addWidget(self.growth_label, 14, 0)
-        grid0.addWidget(self.growth_entry, 14, 1)
+        el_grid.addWidget(self.growth_label, 8, 0)
+        el_grid.addWidget(self.growth_entry, 8, 1)
+
+        FCGridLayout.set_common_column_size([v_grid, el_grid], 0)
 
         self.layout.addStretch()

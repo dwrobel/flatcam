@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets, QtGui
 
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel, FCGridLayout
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox, FCLabel, \
+    FCGridLayout, FCFrame
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -21,16 +22,21 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
         self.defaults = defaults
 
-        # ## Transformations
-        self.transform_label = FCLabel("<b>%s:</b>" % _("Parameters"))
+        # #############################################################################################################
+        # PARAMETERS Frame
+        # #############################################################################################################
+        self.transform_label = FCLabel('<span style="color:blue;"><b>%s</b></span>' % _("Parameters"))
         self.transform_label.setToolTip(
             _("Various transformations that can be applied\n"
               "on a application object.")
         )
         self.layout.addWidget(self.transform_label)
 
-        grid0 = FCGridLayout(v_spacing=5, h_spacing=3)
-        self.layout.addLayout(grid0)
+        param_frame = FCFrame()
+        self.layout.addWidget(param_frame)
+
+        param_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        param_frame.setLayout(param_grid)
 
         # Reference Type
         ref_label = FCLabel('%s:' % _("Reference"))
@@ -46,8 +52,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.ref_items = [_("Origin"), _("Selection"), _("Point"), _("Object")]
         self.ref_combo.addItems(self.ref_items)
 
-        grid0.addWidget(ref_label, 0, 0)
-        grid0.addWidget(self.ref_combo, 0, 1)
+        param_grid.addWidget(ref_label, 0, 0)
+        param_grid.addWidget(self.ref_combo, 0, 1)
 
         self.point_label = FCLabel('%s:' % _("Point"))
         self.point_label.setToolTip(
@@ -55,8 +61,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         )
         self.point_entry = NumericalEvalTupleEntry()
 
-        grid0.addWidget(self.point_label, 1, 0)
-        grid0.addWidget(self.point_entry, 1, 1)
+        param_grid.addWidget(self.point_label, 2, 0)
+        param_grid.addWidget(self.point_entry, 2, 1)
 
         # Type of object to be used as reference
         self.type_object_label = FCLabel('%s:' % _("Object"))
@@ -73,12 +79,20 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        grid0.addWidget(self.type_object_label, 3, 0)
-        grid0.addWidget(self.type_obj_combo, 3, 1)
+        param_grid.addWidget(self.type_object_label, 4, 0)
+        param_grid.addWidget(self.type_obj_combo, 4, 1)
 
-        # ## Rotate Angle
-        rotate_title_lbl = FCLabel('<b>%s</b>' % _("Rotate"))
-        grid0.addWidget(rotate_title_lbl, 4, 0, 1, 2)
+        # #############################################################################################################
+        # Rotate Frame
+        # #############################################################################################################
+        rotate_title_lbl = FCLabel('<span style="color:tomato;"><b>%s</b></span>' % _("Rotate"))
+        self.layout.addWidget(rotate_title_lbl)
+
+        rot_frame = FCFrame()
+        self.layout.addWidget(rot_frame)
+
+        rot_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        rot_frame.setLayout(rot_grid)
 
         self.rotate_entry = FCDoubleSpinner()
         self.rotate_entry.set_range(-360.0, 360.0)
@@ -92,12 +106,19 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
         )
-        grid0.addWidget(self.rotate_label, 6, 0)
-        grid0.addWidget(self.rotate_entry, 6, 1)
+        rot_grid.addWidget(self.rotate_label, 0, 0)
+        rot_grid.addWidget(self.rotate_entry, 0, 1)
 
-        # ## Skew/Shear Angle on X axis
-        skew_title_lbl = FCLabel('<b>%s</b>' % _("Skew"))
-        grid0.addWidget(skew_title_lbl, 8, 0)
+        # #############################################################################################################
+        # Skew Frame
+        # #############################################################################################################
+        s_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(s_t_lay)
+
+        skew_title_lbl = FCLabel('<span style="color:teal;"><b>%s</b></span>' % _("Skew"))
+        s_t_lay.addWidget(skew_title_lbl)
+
+        s_t_lay.addStretch()
 
         # ## Link Skew factors
         self.skew_link_cb = FCCheckBox()
@@ -106,7 +127,13 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Link the Y entry to X entry and copy its content.")
         )
 
-        grid0.addWidget(self.skew_link_cb, 8, 1)
+        s_t_lay.addWidget(self.skew_link_cb)
+
+        skew_frame = FCFrame()
+        self.layout.addWidget(skew_frame)
+
+        skew_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        skew_frame.setLayout(skew_grid)
 
         self.skewx_entry = FCDoubleSpinner()
         self.skewx_entry.set_range(-360.0, 360.0)
@@ -118,8 +145,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewx_label, 9, 0)
-        grid0.addWidget(self.skewx_entry, 9, 1)
+        skew_grid.addWidget(self.skewx_label, 2, 0)
+        skew_grid.addWidget(self.skewx_entry, 2, 1)
 
         # ## Skew/Shear Angle on Y axis
         self.skewy_entry = FCDoubleSpinner()
@@ -132,19 +159,32 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Angle, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewy_label, 10, 0)
-        grid0.addWidget(self.skewy_entry, 10, 1)
+        skew_grid.addWidget(self.skewy_label, 4, 0)
+        skew_grid.addWidget(self.skewy_entry, 4, 1)
 
-        # ## Scale
-        scale_title_lbl = FCLabel('<b>%s</b>' % _("Scale"))
-        grid0.addWidget(scale_title_lbl, 12, 0)
+        # #############################################################################################################
+        # Scale Frame
+        # #############################################################################################################
+        sc_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(sc_t_lay)
+
+        scale_title_lbl = FCLabel('<span style="color:magenta;"><b>%s</b></span>' % _("Scale"))
+        sc_t_lay.addWidget(scale_title_lbl)
+
+        sc_t_lay.addStretch()
 
         # ## Link Scale factors
         self.scale_link_cb = FCCheckBox(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Link the Y entry to X entry and copy its content.")
         )
-        grid0.addWidget(self.scale_link_cb, 12, 1)
+        sc_t_lay.addWidget(self.scale_link_cb)
+
+        scale_frame = FCFrame()
+        self.layout.addWidget(scale_frame)
+
+        scale_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        scale_frame.setLayout(scale_grid)
 
         self.scalex_entry = FCDoubleSpinner()
         self.scalex_entry.set_range(0, 10000.0000)
@@ -155,8 +195,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
-        grid0.addWidget(self.scalex_label, 14, 0)
-        grid0.addWidget(self.scalex_entry, 14, 1)
+        scale_grid.addWidget(self.scalex_label, 2, 0)
+        scale_grid.addWidget(self.scalex_entry, 2, 1)
 
         # ## Scale factor on X axis
         self.scaley_entry = FCDoubleSpinner()
@@ -168,12 +208,20 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
-        grid0.addWidget(self.scaley_label, 16, 0)
-        grid0.addWidget(self.scaley_entry, 16, 1)
+        scale_grid.addWidget(self.scaley_label, 4, 0)
+        scale_grid.addWidget(self.scaley_entry, 4, 1)
 
-        # ## Offset
-        offset_title_lbl = FCLabel('<b>%s</b>' % _("Offset"))
-        grid0.addWidget(offset_title_lbl, 20, 0, 1, 2)
+        # #############################################################################################################
+        # Offset Frame
+        # #############################################################################################################
+        offset_title_lbl = FCLabel('<span style="color:green;"><b>%s</b></span>' % _("Offset"))
+        self.layout.addWidget(offset_title_lbl)
+
+        off_frame = FCFrame()
+        self.layout.addWidget(off_frame)
+
+        off_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        off_frame.setLayout(off_grid)
 
         self.offx_entry = FCDoubleSpinner()
         self.offx_entry.set_range(-10000.0000, 10000.0000)
@@ -184,8 +232,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offx_label.setToolTip(
            _("Distance to offset on X axis. In current units.")
         )
-        grid0.addWidget(self.offx_label, 22, 0)
-        grid0.addWidget(self.offx_entry, 22, 1)
+        off_grid.addWidget(self.offx_label, 0, 0)
+        off_grid.addWidget(self.offx_entry, 0, 1)
 
         # ## Offset distance on Y axis
         self.offy_entry = FCDoubleSpinner()
@@ -197,12 +245,19 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
-        grid0.addWidget(self.offy_label, 24, 0)
-        grid0.addWidget(self.offy_entry, 24, 1)
+        off_grid.addWidget(self.offy_label, 2, 0)
+        off_grid.addWidget(self.offy_entry, 2, 1)
 
-        # ## Buffer
-        buffer_title_lbl = FCLabel('<b>%s</b>' % _("Buffer"))
-        grid0.addWidget(buffer_title_lbl, 26, 0)
+        # #############################################################################################################
+        # Buffer Frame
+        # #############################################################################################################
+        b_t_lay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(b_t_lay)
+
+        buffer_title_lbl = FCLabel('<span style="color:indigo;"><b>%s</b></span>' % _("Buffer"))
+        b_t_lay.addWidget(buffer_title_lbl)
+
+        b_t_lay.addStretch()
 
         self.buffer_rounded_cb = FCCheckBox()
         self.buffer_rounded_cb.setText('%s' % _("Rounded"))
@@ -213,7 +268,13 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "of the buffered shape.")
         )
 
-        grid0.addWidget(self.buffer_rounded_cb, 26, 1)
+        b_t_lay.addWidget(self.buffer_rounded_cb)
+
+        buff_frame = FCFrame()
+        self.layout.addWidget(buff_frame)
+
+        buff_grid = FCGridLayout(v_spacing=5, h_spacing=3)
+        buff_frame.setLayout(buff_grid)
 
         self.buffer_label = FCLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
@@ -229,8 +290,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.buffer_entry.setWrapping(True)
         self.buffer_entry.set_range(-10000.0000, 10000.0000)
 
-        grid0.addWidget(self.buffer_label, 28, 0)
-        grid0.addWidget(self.buffer_entry, 28, 1)
+        buff_grid.addWidget(self.buffer_label, 2, 0)
+        buff_grid.addWidget(self.buffer_entry, 2, 1)
 
         self.buffer_factor_label = FCLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
@@ -247,7 +308,10 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.buffer_factor_entry.setWrapping(True)
         self.buffer_factor_entry.setSingleStep(1)
 
-        grid0.addWidget(self.buffer_factor_label, 30, 0)
-        grid0.addWidget(self.buffer_factor_entry, 30, 1)
+        buff_grid.addWidget(self.buffer_factor_label, 4, 0)
+        buff_grid.addWidget(self.buffer_factor_entry, 4, 1)
+
+        FCGridLayout.set_common_column_size(
+            [param_grid, rot_grid, skew_grid, scale_grid, off_grid, buff_grid], 0)
 
         self.layout.addStretch()
